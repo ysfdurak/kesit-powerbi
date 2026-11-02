@@ -1,5 +1,5 @@
 /* ===== Kesit Power BI v2: 6 seviye, rehberler, biçim bölmesi, dashboard çekmecesi, laboratuvar, püf noktaları, menüler, final ===== */
-:root{ --lv1:#2F9A5A; --lv2:#1E8A8A; --lv3:#3866D1; --lv4:#7A4FD0; --lv5:#B8418F; --lv6:#C2410C; --muted-mark:#C9C5BA }
+:root{ --lv1:#1F7F47; --lv2:#1E8A8A; --lv3:#3866D1; --lv4:#7A4FD0; --lv5:#B8418F; --lv6:#C2410C; --muted-mark:#C9C5BA }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --lv1:#4CC27E; --lv2:#3CB8B8; --lv3:#6E93F0; --lv4:#A784F0; --lv5:#E06BB6; --lv6:#F07A45; --muted-mark:#4A473E }}
 :root[data-theme="dark"]{ --lv1:#4CC27E; --lv2:#3CB8B8; --lv3:#6E93F0; --lv4:#A784F0; --lv5:#E06BB6; --lv6:#F07A45; --muted-mark:#4A473E }
 
@@ -1093,3 +1093,6 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 @media (max-width:760px){.morelist{gap:6px}.morelist .tool{display:grid; grid-template-columns:34px 1fr; column-gap:10px; align-items:center; padding:9px 12px}.morelist .tool .tic{grid-row:span 2; width:34px; height:34px}.morelist .tool b{font-size:.95rem}.morelist .tool small{font-size:.78rem}}
 .lhead .row{flex-wrap:wrap}
 .lfb{order:3; flex:1 1 100%; margin:0}
+
+/* Pratik listesi telefonda: rozetler başlığın altına iner, başlık sütunu daralmaz */
+@media (max-width:560px){ #prList .litem{grid-template-columns:28px minmax(0,1fr)} #prList .litem>.row{grid-column:2; flex-wrap:wrap} }
