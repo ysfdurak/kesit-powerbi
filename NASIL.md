@@ -1,13 +1,14 @@
 # Kesit Power BI · kaynak dalı: derleme ve test
 
 Bu dal (`kaynak`) uygulamanın kaynak dosyalarını, derleme betiklerini ve test araçlarını içerir.
+Kod kimlikleri, adresler ve `pbipatika.v1` depolama anahtarı eski adla kaldı; görünür metin “öğrenme yolu” der.
 Yayındaki site `main` dalındadır ve bu daldan **üretilir**; `main`'i elle düzenleme.
 
 ## Klasörler
 
 | Klasör | Ne var | Çalışırken beklenen mutlak yol |
 |---|---|---|
-| `app/` | Uygulamanın kaynağı: içerik dosyaları (`c*.js`, `x_*.js`, `vd_*.js`…), motor (`dax.js`, `pq.js`), arayüz (`app.js`, `pages.js`, `portfolio.js`…), stiller (`app.css`), `build/` (derleme betikleri, GitHub sayfası şablonları), `veri/` (vaka paketlerinin zip'leri ve claude.ai yayını için base64 kopyaları), `index.html` (derleme çıktısı) | `/home/claude/pbi` |
+| `app/` | Uygulamanın kaynağı: içerik dosyaları (`c*.js`, `x_*.js`, `vd_*.js`…), motor (`dax.js`, `pq.js`), öğrenme yolları ve sıra (`yollar.js`), alıştırma denetimi (`denetim.js`), veri notları (`bilinen-sinirlar.js`), arayüz (`app.js`, `pages.js`, `portfolio.js`…), stiller (`app.css`), `build/` (derleme betikleri, GitHub sayfası şablonları), `veri/` (vaka paketlerinin zip'leri ve claude.ai yayını için base64 kopyaları), `index.html` (derleme çıktısı) | `/home/claude/pbi` |
 | `tests/` | Doğrulayıcılar (node betikleri) | `/home/claude/recover` |
 | `scratchpad/` | Yazım kuralları (`*_SPEC.md`), müfredat ve model dökümleri, tarayıcı testleri (Playwright), vaka veri setlerinin CSV'leri (`ds/csv`) ve üreteçleri (`sqlsrc/`, `ds/seed.js`, `ds/mk.py`), sosyal görsel şablonu (`og/`), tek seferlik yardımcı betikler | `/tmp/claude-0/-home-claude/53cd9548-0d28-57c3-99dc-de41d98193f5/scratchpad` |
 | `scratchpad-8d15/` | Eski oturumun betikleri; tam ders taraması `crawl.js` burada | `/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad` |
@@ -34,7 +35,7 @@ for z in veri/*.zip; do base64 -w0 $z > ${z%.zip}.b64.txt; done   # claude.ai ya
 sh build/ghpack.sh           # GitHub Pages paketi → scratchpad/gh/kesit-powerbi/ ve kesit-powerbi.zip
 ```
 
-- **Yeni bir JS dosyası** eklenirse `build/build.sh` içindeki `for f in …` listesine doğru sıraya yaz. Sıra önemli: veri → motor → içerik → `app.js` → modüller → `pages.js`.
+- **Yeni bir JS dosyası** eklenirse `build/build.sh` içindeki `for f in …` listesine doğru sıraya yaz. Sıra önemli: veri → motor → içerik → `roles.js` → `yollar.js` → `denetim.js` → `app.js` → modüller → `pages.js`. Ders sırası ve yol içerikleri yalnız `yollar.js`'te değiştirilir.
 - **`ghpack.sh`**: bütün betikleri tek `kesit.js` dosyasında birleştirir, `build/gh/config.js` (dolu yapılandırma), `build/gh/static/` (simgeler, manifest, `sw.js`, `og.png`, yerel yazı tipleri) ve lisans/rehber dosyalarını ekler, `build/ghhead.py` ile Google Fonts yerine yerel yazı tiplerini ve paylaşım etiketlerini koyar, `build/readme.js` ile README'yi sayılardan üretir.
 - **Sosyal görsel** (`og.png`) ve simgeler: `scratchpad/og/og.html` + `scratchpad/icons.js` (8799 portunda `scratchpad/og` sunulurken çalıştır).
 
@@ -67,7 +68,11 @@ node codeval.js /home/claude/pbi/interview2.js     # kod havuzu + canlı mülaka
 node arenaval.js              # DAX Arena
 node agentval.js /home/claude/pbi/confused.js /home/claude/pbi/confused2.js /home/claude/pbi/interview.js /home/claude/pbi/interview2.js
 node dashval.js               # 24 rapor, tüm sayfalar, yer imleri, parametreler, mobil
-node lessonval.js /home/claude/pbi/c21.js /home/claude/pbi/c22.js /home/claude/pbi/c23.js   # yeni ders dosyası (şablon B)
+node lessonval.js /home/claude/pbi/c21.js /home/claude/pbi/c22.js /home/claude/pbi/c23.js /home/claude/pbi/c24.js   # yeni ders dosyası (şablon B)
+node argval.js                # DAX motoru: bağımsız değişken sayısı, tür hataları, ham JS hatası yok
+node hiddenval.js             # gizli dilimleyici testleri, teknik şartı, sorgu karşılaştırması, ipucu temizliği, ALL↔ALLSELECTED mutasyonları
+node yolval.js                # öğrenme yolları: sıra, aşama, belge şartı, PL-300 dersleri, DP-600 payı, kapsam haritası
+node termval.js               # ürün dili: eski adlar (patika, Stüdyo, yer imi…) görünür metinde kalmadı
 node extval.js /home/claude/pbi/x_*.js             # ders genişletme dosyaları (şablon A)
 for f in ilgaz kanat lezzet pusula pedal; do node vdval.js /home/claude/pbi/vd_$f.js | tail -1; done   # vaka paketleri: DAX = beklenen = SQLite
 node longest.js               # çoktan seçmeli şık dengesi (bilgi)

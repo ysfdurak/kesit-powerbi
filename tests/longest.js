@@ -1,5 +1,5 @@
 global.window = global; const P = '/home/claude/pbi/';
-for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'pqdata','extra','mcfix']) require(P + f + '.js');
+for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','c24','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'pqdata','extra','mcfix']) require(P + f + '.js');
 const plain = s => String(s).replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, 'x');
 const all = [];
 PBI_LESSONS.forEach(l => (l.ex || []).forEach((e, i) => { if (e.t === 'mc' && !e.thumbs) all.push({ src: l.id + '#' + i, e }); }));
