@@ -44,7 +44,7 @@ function sqlPct(where, p) {
       ['order_id', 'Tam sayı', 'Değerlendirilen sipariş → lk_orders (her siparişe en çok bir değerlendirme)'],
       ['food_score', 'Tam sayı', 'Yemek puanı (1–5)'],
       ['courier_score', 'Tam sayı', 'Kurye puanı (1–5)'],
-      ['comment', 'Metin', 'Yorum; çoğunlukla boş']] },
+      ['comment', 'Metin', 'Serbest metin yorum; yaklaşık %40 boş, yazım hataları olabilir']] },
     { name: 'lk_customers', kind: 'dim', desc: 'Müşteriler (1.209)', cols: [
       ['customer_id', 'Tam sayı', 'Müşteri numarası (anahtar)'],
       ['full_name', 'Metin', 'Ad soyad'],

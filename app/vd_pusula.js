@@ -29,7 +29,7 @@
     { name: 'ik_job_history', kind: 'fact', desc: 'Görev geçmişi (2.848)', cols: [
       ['emp_id', 'Tam sayı', 'Çalışan → ik_employees'], ['position_id', 'Tam sayı', 'Pozisyon'], ['start_date', 'Tarih', 'Görev başlangıcı'],
       ['end_date', 'Tarih', 'Görev bitişi (devam ediyorsa boş)'], ['change_type', 'Metin', 'işe giriş / terfi / yatay geçiş']] },
-    { name: 'ik_salaries', kind: 'fact', desc: 'Maaş geçmişi (11.358; zaman aralıklı)', cols: [
+    { name: 'ik_salaries', kind: 'fact', desc: 'Maaş geçmişi (11.352; zaman aralıklı)', cols: [
       ['emp_id', 'Tam sayı', 'Çalışan → ik_employees'], ['effective_date', 'Tarih', 'Geçerlilik başlangıcı; bir sonraki kayda kadar geçerli'],
       ['monthly_gross', 'Sabit ondalık sayı', 'Aylık brüt maaş (TL)'], ['reason', 'Metin', 'devir (2019 açılış) / işe giriş / yıllık zam / ara zam / terfi / düzeltme']] },
     { name: 'ik_reviews', kind: 'fact', desc: 'Yıl sonu performans değerlendirmeleri (6.618)', cols: [

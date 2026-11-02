@@ -25,7 +25,7 @@
 <li><b>Microsoft ekosistemi:</b> Excel, Teams, SharePoint, Azure ve Fabric ile doğal olarak bağlanır.</li>
 <li><b>Hızlı motor:</b> VertiPaq, verileri sütun sütun sıkıştırır. Birkaç yüz milyon satır bile dizüstü bilgisayarda çalışabilir.</li>
 </ul>
-<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL’deki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX fonksiyonların tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
+<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL ile aynı şirket ve aynı siparişler; burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü ve hedef, gider, talep gibi tablolarla zenginleştirildi. Ürün stoğu ve web olayları iki uygulamada farklıdır. DAX fonksiyonların tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
 `,
   ex: [
     { t: 'mc', q: 'DAX dili ilk olarak hangi ürünle kullanıcılara ulaştı?', o: ['Power BI Desktop (2015)', 'PowerPivot for Excel 2010', 'SQL Server 2000', 'Power View'], a: 1, why: 'DAX, 2010\'da PowerPivot eklentisiyle geldi. Power BI Desktop aynı motoru ve dili devraldı.' },

@@ -28,7 +28,7 @@ function card(d) {
 }
 /* “Bilerek bırakılanlar ve bilinen sınırlamalar”: metinler bilinen-sinirlar.js içindeki window.KESIT_SINIRLAR'dan gelir */
 const LIMIT_EMPTY = '<p class="muted" style="margin:0">Bu veri seti için not henüz eklenmedi.</p>';
-function limitsOf(id) { const x = (window.KESIT_SINIRLAR || {})[id]; if (!x) return ''; if (Array.isArray(x)) return x.length ? '<ul>' + x.map(t => '<li>' + t + '</li>').join('') + '</ul>' : ''; return String(x); }
+function limitsOf(id) { const x = (window.KESIT_SINIRLAR || {})[id]; if (!x) return ''; if (typeof x === 'object' && !Array.isArray(x)) { const g = (b, l) => l && l.length ? '<h4>' + b + '</h4><ul>' + l.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul>' : ''; return g('Bilerek bırakılanlar', x.bilerek) + g('Bilinen sınırlamalar', x.sinir); } if (Array.isArray(x)) return x.length ? '<ul>' + x.map(t => '<li>' + t + '</li>').join('') + '</ul>' : ''; return String(x); }
 function limitsAll() {
   const items = [['anadolu-market', 'Anadolu Market']].concat(DS.map(d => [d.id, d.name]));
   return '<section class="panel vd-how" id="sinirlar"><h3>Bilerek bırakılanlar ve bilinen sınırlamalar</h3>' + items.map(([id, name]) => '<details class="vd-limit"><summary><b>' + esc(name) + '</b></summary>' + (limitsOf(id) || LIMIT_EMPTY) + '</details>').join('') + '</section>';

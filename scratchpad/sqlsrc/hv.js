@@ -1,4 +1,4 @@
-/* SQLPatika — Kanat Havayolları örnek veritabanı (hayali; deterministik üretim)
+/* Kesit SQL — Kanat Havayolları örnek veritabanı (hayali; deterministik üretim)
    Eylül–Aralık 2024 uçuşları. Tüm zamanlar Türkiye saatiyle (UTC+3) tutulur. */
 (function (root) {
   function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -226,6 +226,7 @@ CREATE TABLE hv_bookings (
   bookings.sort((a, b) => a[3] < b[3] ? -1 : a[3] > b[3] ? 1 : a[1] - b[1]); bookings.forEach(b => b[0] = bid++);
   sql += ins('hv_bookings', ['booking_id', 'passenger_id', 'flight_id', 'booked_at', 'fare_class', 'price', 'status', 'bags', 'seat'], bookings);
 
+  sql += '\nCREATE INDEX ix_hv_flights_route ON hv_flights (route_id);\nCREATE INDEX ix_hv_bookings_flight ON hv_bookings (flight_id);\nCREATE INDEX ix_hv_bookings_pax ON hv_bookings (passenger_id);\n';
   root.SQLP_SEED = (root.SQLP_SEED || '') + sql;
   Object.assign(root.SQLP_SCHEMA_NOTES = root.SQLP_SCHEMA_NOTES || {}, {
     hv_airports: 'Kanat Havayolları\'nın uçtuğu havalimanları (19); tz_offset UTC farkı (saat, kış saati)',

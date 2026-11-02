@@ -39,6 +39,10 @@ sh build/ghpack.sh           # GitHub Pages paketi → scratchpad/gh/kesit-power
 - **`ghpack.sh`**: bütün betikleri tek `kesit.js` dosyasında birleştirir, `build/gh/config.js` (dolu yapılandırma), `build/gh/static/` (simgeler, manifest, `sw.js`, `og.png`, yerel yazı tipleri) ve lisans/rehber dosyalarını ekler, `build/ghhead.py` ile Google Fonts yerine yerel yazı tiplerini ve paylaşım etiketlerini koyar, `build/readme.js` ile README'yi sayılardan üretir.
 - **Sosyal görsel** (`og.png`) ve simgeler: `scratchpad/og/og.html` + `scratchpad/icons.js` (8799 portunda `scratchpad/og` sunulurken çalıştır).
 
+### Vaka veri setleri
+
+Beş vaka setinin kaynağı Kesit SQL üreteçleridir (Kesit SQL `NASIL.md` → Ortak veri setleri). `scratchpad/sqlsrc/` onların kopyasıdır. Değişiklikten sonra: dosyaları kopyala, `scratchpad/ds` içinde `node seed.js <sqlsrc yolu> && python3 mk.py` (`kur.sh` SQLite kopyalarını da üretir), `vdval.js` ile beklenen değerleri denetle, `node build/vdpack.js` ve `.b64.txt` kopyaları, `sh build/build.sh`, `sh build/ghpack.sh`. Bilerek bırakılanlar ve bilinen sınırlamalar `app/bilinen-sinirlar.js`; metin üç uygulamada aynıdır.
+
 ### Yayın
 
 - **GitHub Pages (`main` dalı):** `sh build/ghpack.sh`, sonra `scratchpad/gh/kesit-powerbi/` içeriğini `main` dalına kopyala ve gönder. Site: https://ysfdurak.github.io/kesit-powerbi/ (Pages ayarı: Settings → Pages → `main` / root).
