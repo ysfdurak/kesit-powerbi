@@ -1,0 +1,11 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell' });
+ const m = await (await b.newContext({ viewport: { width: 400, height: 860 }, colorScheme: 'dark' })).newPage();
+ await m.goto('http://localhost:8765/index.html?r=1#ders-pq-temel'); await m.waitForTimeout(500); await m.click('.steps button[data-step="5"]'); await m.waitForTimeout(300);
+ await m.click('[data-act="hint"]'); await m.click('[data-act="hint"]'); await m.click('th[data-pqcol="Şehir"]'); await m.click('[data-pqtab="tr"]'); await m.click('[data-pqop="trim"]'); await m.waitForTimeout(200);
+ await m.screenshot({ path: 'sh4/m_pqex.png', fullPage: true });
+ const d = await (await b.newContext({ viewport: { width: 1360, height: 900 } })).newPage();
+ await d.goto('http://localhost:8765/index.html?r=2#ders-blank-hata'); await d.waitForTimeout(500); await d.screenshot({ path: 'sh4/d_blank.png' });
+ await d.click('.steps button[data-step="2"]'); await d.waitForTimeout(200); for (let i=0;i<3;i++){ const hb = await d.$('[data-act="hint"]:not([disabled])'); if (hb) await hb.click(); } await d.waitForTimeout(150); await d.screenshot({ path: 'sh4/d_hint.png' });
+ await d.goto('http://localhost:8765/index.html?r=3#patika-dax'); await d.waitForTimeout(500); await d.screenshot({ path: 'sh4/d_path.png' });
+ await b.close(); })();

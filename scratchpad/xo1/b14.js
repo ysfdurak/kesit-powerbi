@@ -1,0 +1,18 @@
+require('./e.js');
+const t=(e,s)=>{try{return ev(e,s)}catch(x){return 'ERR '+x.message.slice(0,90)}};
+const tq=(s)=>{try{return q(s)}catch(x){return 'ERR '+x.message.slice(0,90)}};
+p(tq('DEFINE MEASURE Satislar[Deneme] = [Net Satış] * 2 EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "D", [Deneme])'));
+p(tq('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "A", [Net Satış]) ORDER BY [A] DESC'));
+const ty='VAR OncekiBas = EDATE(MIN(Tarih[Tarih]), -12) VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih)) RETURN IF(OncekiBas >= IlkSatis, [YoY %])';
+p(g([{t:'Tarih',c:'Yil'}],[ty]), g([{t:'Tarih',c:'YilAy'}],[ty]).slice(16,20), g([{t:'Kategoriler',c:'Kategori'}],[ty]).slice(0,2), t(ty));
+const yd='DIVIDE([Net Maliyet], AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])) * DIVIDE(12, COUNTROWS(VALUES(Tarih[YilAy])))';
+p(g([{t:'Tarih',c:'Yil'}],[yd]), g([{t:'Kategoriler',c:'Kategori'}],[yd]), t(yd));
+const sd='VAR Kapanis = [Stok Adedi] VAR Acilis = CALCULATE([Stok Adedi], PREVIOUSDAY(FIRSTDATE(Tarih[Tarih]))) RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)';
+p(g([{t:'Tarih',c:'Yil'}],[sd]), g([{t:'Tarih',c:'YilAy'}],[sd]).slice(0,3));
+p(q('EVALUATE TOPN(2, Tarih)'));
+p(t('[Hedef Gerçekleşme %]',[{t:'Kategoriler',c:'Kategori',values:['Hediye']}]));
+const bt='IF(HASONEVALUE(Urunler[Urun]), RANKX(ALL(Urunler[Urun]), [Sipariş Sayısı] * 1000000 + [Net Satış]))';
+p(g([{t:'Urunler',c:'Urun'}],[bt]).slice(0,3), t(bt));
+const sr='IF(NOT ISBLANK([Net Satış]), RANKX(ALL(Urunler[Urun]), [Net Satış]))';
+p(g([{t:'Urunler',c:'Urun'}],[sr]).filter(x=>/null/.test(x)));
+p(t('CALCULATE([Net Satış], Satislar[Indirim] > 0 || Satislar[Kanal] = "Mağaza")'));

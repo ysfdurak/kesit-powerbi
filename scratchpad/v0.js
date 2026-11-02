@@ -1,0 +1,13 @@
+global.window = global; const P = '/home/claude/pbi/';
+for (const f of ['data','dax','measures']) require(P + f + '.js');
+const M = PBI_MODEL;
+const S=M.tables.Satislar.rows; const ds=S.map(r=>r.Tarih).sort(); console.log('satis tarih', ds[0], ds[ds.length-1]);
+const cnt=(a,k)=>{const o={};a.forEach(r=>o[r[k]]=(o[r[k]]||0)+1);return o;};
+console.log(cnt(S,'Kanal'),cnt(S,'Durum'),cnt(M.tables.Musteriler.rows,'Segment'),cnt(M.tables.Musteriler.rows,'Sehir'),cnt(M.tables.Musteriler.rows,'YasGrubu'));
+console.log(cnt(M.tables.Calisanlar.rows,'Unvan'),cnt(M.tables.Calisanlar.rows,'Seviye'),cnt(M.tables.Calisanlar.rows,'DepartmanNo'));
+console.log(M.tables.Departmanlar.rows);
+const W=M.tables.WebOlaylari.rows; console.log(cnt(W,'Adim'),cnt(W,'Cihaz'),cnt(W,'Kaynak'), W.map(r=>r.Tarih).sort()[0], W.map(r=>r.Tarih).sort().pop());
+const SG=M.tables.StokGorunum.rows; console.log([...new Set(SG.map(r=>r.Tarih))].sort().join(' '));
+const H=M.tables.Hedefler.rows; console.log([...new Set(H.map(r=>r.Tarih))].sort().slice(0,5), H.length);
+console.log(cnt(S,'KargoGun'), cnt(S,'TemsilciNo'));
+console.log(M.tables.Calisanlar.rows.slice(0,5));

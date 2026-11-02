@@ -1,0 +1,10 @@
+global.window = global; const P = '/home/claude/pbi/';
+for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'pqdata','extra','tricks']) require(P + f + '.js');
+const plain = s => String(s).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+const seen = {}; const out = [];
+PBI_LESSONS.forEach(l => (l.ex || []).forEach((e, i) => { const k = e.t === 'mc' ? plain(e.q) : e.t + ':' + (Array.isArray(e.sol) ? JSON.stringify(e.sol) : String(e.sol).replace(/\s+/g, '')); if (seen[k]) out.push('TEKRAR ' + seen[k] + ' = ' + l.id + '#' + i + ' | ' + k.slice(0, 80)); else seen[k] = l.id + '#' + i; if (e.t === 'mc' && e.o.some(o => !plain(o))) out.push('BOŞ ŞIK ' + l.id + '#' + i); if (!plain(e.q || '')) out.push('BOŞ SORU ' + l.id + '#' + i); }));
+PBI_PLACEMENT.forEach((q, i) => { const k = plain(q.q); if (seen[k]) out.push('TEKRAR test#' + i + ' = ' + seen[k]); });
+const t = {}; PBI_LESSONS.forEach(l => { if (t[l.title]) out.push('AYNI BAŞLIK ' + l.id + ' ' + t[l.title]); t[l.title] = l.id; });
+const pn = {}; PBI_PATTERNS.forEach(p => { if (pn[p.name]) out.push('AYNI KALIP ADI ' + p.name); pn[p.name] = 1; });
+const ln = {}; PBI_MEASURES.forEach(m => { if (pn[m.name]) out.push('KALIP=KÜTÜPHANE ADI ' + m.name); });
+console.log(out.length ? out.join('\n') : 'tekrar/boş alan yok');

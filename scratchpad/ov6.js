@@ -1,0 +1,6 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell' });
+ const p = await (await b.newContext({ viewport: { width: 400, height: 900 } })).newPage();
+ for (const id of ['kokpit', 'destek', 'web']) { await p.goto('http://localhost:8765/index.html?r=' + Math.random() + '#dashboard-' + id); await p.waitForTimeout(500); await p.click('[data-dtab="yapim"]'); await p.waitForTimeout(500);
+  console.log(id, await p.evaluate(() => { const out = [document.documentElement.scrollWidth]; document.querySelectorAll("body *").forEach(e => { const r = e.getBoundingClientRect(); if (e.scrollWidth > e.clientWidth + 2 && getComputedStyle(e).overflowX === "visible" && e.clientWidth > 0 && e.children.length < 40) { let a = e.parentElement, clip = false; while (a && a.id !== 'main') { if (getComputedStyle(a).overflowX !== 'visible') { clip = true; break; } a = a.parentElement; } if (!clip) out.push(e.tagName + '.' + e.className + ' r' + Math.round(r.right) + ' :: ' + (e.textContent || '').slice(0, 50)); } }); return out.slice(0,1).concat(out.slice(-6)); })); }
+ await b.close(); })();

@@ -1,0 +1,2 @@
+require('./h.js');
+T(`EVALUATE ADDCOLUMNS(SUMMARIZE(Urunler, Urunler[UrunNo], Urunler[Urun], Urunler[Kategori], Urunler[BirimMaliyet], Urunler[Fiyat]), "A23", CALCULATE([Satılan Adet], Tarih[Yil]=2023), "A24", CALCULATE([Satılan Adet], Tarih[Yil]=2024), "NM24", CALCULATE([Net Maliyet], Tarih[Yil]=2024), "NS24", CALCULATE([Net Satış], Tarih[Yil]=2024), "ABF", CALCULATE([Ortalama Birim Fiyat], Tarih[Yil]=2024))`);

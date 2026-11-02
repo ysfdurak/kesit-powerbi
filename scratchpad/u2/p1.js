@@ -1,0 +1,21 @@
+const A=require('./h.js'); const a=A(['yil','kanal'],{yil:[2024]});
+const T=PBI_MODEL.tables;
+console.log('sehir', a.Q(['Musteriler[Sehir]'],['Net Satış','Ortalama Kargo Günü']).rows.map(x=>x.keys[0]+':'+Math.round(x.vals[0])+'/'+(x.vals[1]||0).toFixed(2)).join(' | '));
+console.log('kanal kargo', a.Q(['Satislar[Kanal]'],['Ortalama Kargo Günü','Zamanında Teslim %']).rows.map(x=>x.keys[0]+':'+x.vals.join('/')).join(' | '));
+console.log('kargo vals', JSON.stringify(a.Q(['Satislar[KargoGun]'],['S'],{extraMeasures:{S:'COUNTROWS(Satislar)'}}).rows.map(x=>[x.keys[0],x.vals[0]])));
+console.log('fiyat vals', JSON.stringify(PBI_DASHCORE.SL.fiyat.vals));
+console.log('urun', T.Urunler.rows.map(u=>u.Urun+'('+u.Kategori+')').join(', '));
+console.log('geo', Object.keys(PBI_MODEL.geo||{}).length);
+console.log('net', a.M('[Net Satış]'), 'gider', a.M('[Gider]'), 'maas', a.M('[Toplam Maaş]'), 'brut', a.M('CALCULATE([Brüt Tutar], Satislar[Durum] <> "İptal")'), 'ind', a.M('[İndirim Tutarı]'));
+console.log('talep', a.M('[Talep Sayısı]'), a.M('[CSAT %]'));
+// visitor attrs constant?
+const vis={}; T.WebOlaylari.rows.forEach(r=>{const k=r.ZiyaretciNo; vis[k]=vis[k]||new Set(); vis[k].add(r.Cihaz+'|'+r.Kaynak)}); console.log('visitors', Object.keys(vis).length, 'multi', Object.values(vis).filter(s=>s.size>1).length);
+console.log('reps', PBI_DASHCORE.SL.viewAs.vals);
+console.log('bolge', a.Q(['Musteriler[Bolge]'],['Net Satış','Satış GY']).rows.map(x=>x.keys[0]+':'+x.vals.map(Math.round)).join(' | '));
+console.log('ted', a.Q(['Tedarikciler[Tedarikci]'],['Satın Alma Tutarı','Ortalama Tedarik Süresi','Tedarikte Zamanında %','Kusur Oranı %']).rows.map(x=>x.keys[0]+':'+x.vals.map(v=>v&&v.toFixed(2))).join(' | '));
+console.log('stokgun', a.Q(['Urunler[Urun]'],['Stok Gün Sayısı','ABC Sınıfı','Stok Adedi']).rows.slice(0,12).map(x=>x.keys[0]+':'+x.vals.map(v=>typeof v=='number'?v.toFixed(0):v)).join(' | '));
+console.log('gider dept', a.Q(['Departmanlar[Departman]'],['Gider','Toplam Maaş']).rows.map(x=>x.keys[0]+':'+x.vals.map(Math.round)).join(' | '));
+console.log('gider tur', a.Q(['GiderTurleri[GiderTuru]'],['Gider','Gider Bütçe']).rows.map(x=>x.keys[0]+':'+x.vals.map(Math.round)).join(' | '));
+console.log('allexcept', a.Q(['Calisanlar[AdSoyad]'],['D'],{extraMeasures:{D:'CALCULATE(AVERAGE(Calisanlar[Maas]), ALLEXCEPT(Calisanlar, Calisanlar[DepartmanNo]))'}}).rows.slice(0,6).map(x=>x.keys[0]+':'+x.vals[0]).join(' | '));
+console.log('senaryo', a.Q(['FiyatSenaryosu[FiyatDegisimi]'],['Senaryo Kârı','Senaryo Satışı'],{except:[['FiyatSenaryosu','FiyatDegisimi']]}).rows.map(x=>x.keys[0]+':'+x.vals.map(Math.round)).join(' | '));
+console.log(ms['Senaryo Satışı'].expr); console.log(ms['Senaryo Kârı'].expr);

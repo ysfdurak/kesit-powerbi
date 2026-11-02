@@ -1,0 +1,432 @@
+/* PBIPatika — Orta seviye genişletme (2): görselleştirme ilkeleri, etkileşim, koşullu biçim, tema, hikâye, mobil ve erişilebilirlik, istatistik, analiz özellikleri, Power Query orta ve modele hazırlık */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const ext = (id, o) => { const l = L.find(x => x.id === id); if (!l) { if (W.console) console.warn('ext: ders yok', id); return; } if (o.html) l.body += '
+Uzmanlaş' + o.html + '
+'; if (o.ex) l.ex = (l.ex || []).concat(o.ex); if (o.min) l.min += o.min; (W.PBI_EXT = W.PBI_EXT || []).push({ id, html: o.html || '', ex: o.ex || [] }); };
+/* Power Query alıştırmaları için adım yardımcıları (pqdata.js ile aynı biçim) */
+const S = (op, cols, extra) => Object.assign({ op, cols: cols || [] }, extra || {});
+const BAYI_A = [S('removeTop', [], { n: 1 }), S('promote'), S('removeCols', ['Not'])];
+const BAYI_B = [S('trim', ['Şehir']), S('proper', ['Şehir']), S('replace', ['Tutar'], { find: '-', repl: 'null', whole: true }), S('type', ['Tutar'], { to: 'number' })];
+const BAYI_C = [S('removeBlank'), S('distinct'), S('type', ['Tarih'], { to: 'date' }), S('removeErrors', ['Tarih'])];
+const HEDEF_A = [S('unpivot', ['Kategori']), S('rename', ['Öznitelik'], { to: 'Ay' }), S('rename', ['Değer'], { to: 'Hedef' })];
+const MUS_A = [S('promote'), S('type', ['MusteriNo'], { to: 'int' }), S('lower', ['E-posta']), S('proper', ['Ad Soyad']), S('distinct', ['MusteriNo'])];
+/* ------------------------------------------------------------------ */
+ext('gorsel-ilkeler', { min: 14, html: `
+Eksen sıfırdan başlamalı mı? Karar kuralı
+“Eksen her zaman sıfırdan başlar” kuralı yarım bir kuraldır. Doğrusu şu: uzunlukla değer anlatan grafiklerde eksen sıfırdan başlar; konumla değişim anlatan grafiklerde başlamak zorunda değildir.
+ | Grafik |  | Göz neyi okur? |  | Eksen |
+ | Sütun / çubuk |  | Çubuğun boyu |  | Sıfırdan başlamalı. Kesik eksen boyu yalan söyletir. |
+ | Alan grafiği |  | Dolgunun alanı |  | Sıfırdan başlamalı. |
+ | Çizgi |  | Eğim ve yön |  | Veriye yakın başlayabilir; küçük oynamaları görmek için uygundur. |
+ | Dağılım |  | Noktanın konumu |  | Veriye yakın başlar; sıfır çoğu zaman boşluk yaratır. |
+Somut örnek: Anadolu Market’te Giyim’in toplam net satışı yaklaşık 190.169 TL, Spor’un 184.231 TL. Fark yalnızca %3 civarında. Bir sütun grafiğinde y eksenini 180.000’den başlatırsan Giyim çubuğu yaklaşık 10.169, Spor çubuğu 4.231 birim boyunda çizilir. Okuyucu “Giyim, Spor’un iki katından fazla” diye okur. Aynı veriyi çizgi grafikte aylık eğilim olarak gösterirken eksenin 180.000’den başlaması ise sorun değildir; çünkü orada kimse çizginin boyunu ölçmez.
+Power BI’da nerede?Görseli seç → Biçim → Y ekseni → Aralık → Minimum. Varsayılan “Otomatik” değeri çubuk grafikte sıfırdan başlar ama elle yazılmış bir minimum, rapor yıllarca kopyalanırken fark edilmeden kalabilir. Gözden geçirmede her çubuk grafiğin minimumuna bak.
+Yanıltıcı grafik kataloğu
+Aşağıdaki hataların çoğu kötü niyetle değil, “daha etkileyici görünsün” isteğiyle yapılır. Gözden geçirmede bu listeyi tek tek tara:
+Kesik eksenli çubuk: Yukarıdaki örnek. Çözüm: sıfırdan başlat ya da farkı ayrı bir “fark” ölçüsüyle göster.
+Çift eksen oyunu: Net satış sol eksende, kâr marjı sağ eksende. İki eksenin ölçeği elle seçildiği için çizgiler istenen yerde kesişir ve sahte bir ilişki görünür. Görsel algı dersindeki kombo grafik kurallarına uy; emin değilsen iki ayrı küçük grafik kullan.
+Eksik dönemle karşılaştırma: İçinde bulunulan ayın yarısı geçmişken ayı tam aylarla aynı çizgide göstermek, son noktada sahte bir düşüş yaratır. Son noktayı farklı renkle işaretle ya da tamamlanmamış ayı filtrele.
+Kümülatif ile dönemsel karışıklığı: Kümülatif satış çizgisi hiç düşmez. Kötü geçen bir ay, eğimdeki küçük bir yassılmadan ibaret kalır. Başlıkta “kümülatif” sözcüğü mutlaka geçsin.
+3B ve pasta: Perspektif öndeki dilimi büyük gösterir. Yedi kategoriyi pastada okumak zordur; sıralı yatay çubuk her zaman daha dürüsttür.
+Renk ölçeğinin her filtrede yeniden kurulması: Isı haritasında “koyu” bir sayfada yüksek, öbür sayfada orta anlamına gelir. Koşullu biçim dersinde sabit eşik yöntemini gördün.
+Oran yerine mutlak sayı: Mobil kanal satışı (yaklaşık 599.841 TL) Mağaza’dan (yaklaşık 193.600 TL) büyük diye “Mobil daha başarılı” denemez; sipariş, müşteri ya da ziyaretçi başına bakmadan karar verilmez.
+Veri-mürekkep oranını adım adım artırmak
+Varsayılan bir sütun grafiği alıp beş adımda sadeleştir. Her adımdan sonra “bu kaldırdığım şey okuyucunun bir sorusuna cevap veriyor muydu?” diye sor:
+Kenarlık, gölge ve arka plan rengini kapat (Biçim → Genel → Efektler).
+Y ekseni ve yatay ızgara çizgilerini kapat, onun yerine veri etiketlerini aç. Yedi çubuk için yedi etiket, eksenden daha hızlı okunur.
+Etiketleri kısalt: “339.303,65” yerine “339 B” (Görüntüleme birimleri: Bin). Ondalık hane okuyucuya bilgi değil, gürültü verir.
+Gösterge (legend) tek seri için gereksizdir; kapat. Bilgiyi başlığa taşı.
+Başlığı bulguya çevir: “Kategoriye göre net satış” yerine “Elektronik satışın yaklaşık %27’sini taşıyor”.
+Aşırıya kaçmaSadeleştirme bağlamı yok etmemeli. Hedef çizgisi, geçen yıl karşılaştırması ya da birim (TL, adet) “mürekkep” değil, anlamdır. Kural: veriyi ya da karşılaştırmayı taşıyan öğe kalır, süs olan gider.
+Renk bütçesi
+Bir sayfada kaç renk kullandığını say. İyi bir rapor sayfasında genellikle şunlar yeterlidir: bir nötr gri (bağlam), bir vurgu rengi (odak), ve gerekiyorsa durum renkleri (iyi/kötü). Kanal gibi kategorik bir boyut varsa onun 3 rengi eklenir. Bu sayının 6–7’yi geçmesi, okuyucunun göstergeye bakmak zorunda kalması demektir. Vurguyu ölçüyle yapmak, “hangi çubuk renkli olsun?” kararını rapor yazarının elinden alıp veriye bırakır: en yüksek satışlı kategori kendiliğinden renklenir.
+En İyi Kategori Rengi =
+VAR Bu = [Net Satış]
+VAR EnYuksek = MAXX(ALLSELECTED(Kategoriler[Kategori]), [Net Satış])
+RETURN IF(Bu = EnYuksek, "#2A78D6", "#B8B5AD")
+Bu ölçüyü sütun grafiğinin Biçim → Sütunlar → Renk → fx → Biçim stili: Alan değeri ile bağlarsın. Kullanıcı bir yıl seçtiğinde lider kategori değişirse vurgu da değişir.
+`, ex: [
+  { t: 'mc', q: 'Pazarlama müdürü aylık net satış çizgi grafiğinde y ekseninin 0’dan değil 20.000’den başladığını görüp “bu yanıltıcı” diyor. Ne cevap verirsin?', o: ['Haklı; tüm grafiklerde eksen sıfırdan başlamalı', 'Çizgide kabul edilir; göz eğimi okur', 'Ekseni gizlersek sorun ortadan kalkar', 'Çizgiyi alan grafiğine çevirmek gerekir'], a: 1, why: 'Çizgi grafikte göz uzunluğu değil yönü ve eğimi okur; eksenin veriye yakın başlaması değişimi görünür kılar. Sıfır kuralı uzunluk ya da alan anlatan çubuk ve alan grafikleri içindir. Ekseni gizlemek sorunu gizler; alan grafiğine geçmek ise sıfır zorunluluğunu geri getirir.' },
+  { t: 'mc', q: 'Bir yönetici sayfasında bu ayın satışı (ayın 12’si) önceki tam aylarla aynı çizgide gösteriliyor ve son noktada sert bir düşüş var. En doğru düzeltme?', o: ['Çizgiyi kümülatif satışa çevirmek', 'Y eksenini logaritmik yapmak', 'Eksik ayı işaretlemek', 'Grafiği sütun grafiğe çevirmek'], a: 2, why: 'Düşüş gerçek değil; ay tamamlanmadığı için toplam küçük. Tamamlanmamış dönemi filtrelemek ya da farklı renk/etiketle işaretlemek sorunu çözer. Kümülatife geçmek düşüşü gizler ama soruyu değiştirir; logaritmik eksen ve sütun grafik eksik dönem sorununu çözmez.' },
+  { t: 'mc', q: 'Bir sütun grafiğinde y ekseni kapatılıp veri etiketleri açılıyor, ızgara çizgileri kaldırılıyor. Ekip arkadaşın “hedef çizgisini de kaldıralım, daha sade olur” diyor. Doğru tutum?', o: ['Kaldır; sadelik her zaman bağlamdan önce gelir', 'Kaldır ama hedefi başlığa yaz', 'Hedef çizgisini kalın ve kırmızı yaparak öne çıkar', 'Kalsın; karşılaştırmayı taşıyan öğe süs değil'], a: 3, why: 'Veri-mürekkep oranı süsü atar, anlamı değil. Hedef çizgisi her çubuğun neye göre iyi ya da kötü olduğunu söyler; kaldırılırsa okuyucu karşılaştırmayı kafasında yapmak zorunda kalır. Başlığa yazmak tek bir sayıyı verir, çubuk çubuk karşılaştırmayı vermez. Kalın kırmızı çizgi ise veriyle yarışır.' },
+  { t: 'dax', name: 'En İyi Kategori Rengi', q: 'En İyi Kategori Rengi: Sütun grafiğinde yalnızca en yüksek net satışlı kategori mavi ("#2A78D6"), diğerleri gri ("#B8B5AD") olsun. Karşılaştırmayı görünen kategoriler (ALLSELECTED(Kategoriler[Kategori])) içinde yap.', sol: 'VAR Bu = [Net Satış] VAR EnYuksek = MAXX(ALLSELECTED(Kategoriler[Kategori]), [Net Satış]) RETURN IF(Bu = EnYuksek, "#2A78D6", "#B8B5AD")', hint: 'Önce satırın değerini VAR ile sakla, sonra MAXX ile görünen kategoriler arasındaki en büyük değeri bul ve IF ile karşılaştır.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('etkilesim', { min: 14, html: `
+Filtrele mi, vurgula mı? Okuyucu ne görür?
+Satış müdürü Kanal çubuğunda “Mobil”e tıklıyor. Yanındaki Kategori sütun grafiği iki farklı şekilde tepki verebilir:
+ | Davranış |  | Kategori grafiğinde ne olur? |  | Ne zaman iyi? |
+ | Vurgula (Highlight) |  | Her çubuğun tam boyu soluk kalır; Mobil’in payı koyu renkle çubuğun içinde çizilir. |  | Parçanın bütüne oranı görülmek istenirken: “Elektronik’in ne kadarı Mobil’den?” |
+ | Filtrele (Filter) |  | Çubuklar yalnızca Mobil satışıyla yeniden çizilir; eksen yeniden ölçeklenir, sıralama değişebilir. |  | Seçimin kendi dünyasına bakılırken: “Mobil’de hangi kategori lider?” |
+ | Yok (None) |  | Hiçbir şey değişmez. |  | Genel toplamı gösteren KPI kartları, karşılaştırma için sabit kalması gereken referans grafikler. |
+Learn’e göre çizgi, dağılım ve harita görselleri vurgulanamaz; bu yüzden onlar her zaman filtrelenir. Kartlar da vurgulanamaz, seçim onlara filtre olarak ulaşır. Ayar Biçim → Etkileşimleri düzenle (Edit interactions) ile açılır: kaynak görseli seç, diğer görsellerin köşesinde beliren filtre, vurgu ve “yok” simgelerinden birine tıkla. Ayar kaynak → hedef yönündedir; A’nın B’ye etkisi, B’nin A’ya etkisinden bağımsızdır.
+Varsayılanı değiştirmekVurgulama yerine her yerde filtreleme istiyorsan tek tek ayarlamak zorunda değilsin: Dosya → Seçenekler ve ayarlar → Seçenekler → Geçerli dosya → Rapor ayarları altında varsayılan etkileşimi çapraz vurgulamadan çapraz filtrelemeye çeviren bir seçenek bulunur. Yalnızca o dosyayı etkiler.
+Detaya inme ile detaya git farkı
+İki özellik adları benzediği için sürekli karıştırılır. Tek cümleyle: detaya inme aynı görselin içinde hiyerarşide aşağı iner, detaya git başka bir sayfaya gider.
+ |  |  | Detaya inme (Drill down) |  | Detaya git (Drill through) |
+ | Nerede olur? |  | Aynı görselde |  | Hedef sayfada |
+ | Kurulum |  | Eksene birden çok alan (Yıl → Çeyrek → Ay) |  | Hedef sayfanın Detaylandırma kutusuna alan |
+ | Diğer görselleri etkiler mi? |  | Varsayılan olarak hayır |  | Hedef sayfadaki tüm görseller süzülür |
+ | Geri dönüş |  | Görselin üstündeki yukarı ok |  | Otomatik eklenen Geri düğmesi |
+Detaya inmenin sayfadaki diğer görselleri de süzmesini istiyorsan: görseli seç → Biçim şeridi → Detaya inme filtrelerini uygula (Apply drill down filters to) → Tüm sayfa. Böylece kullanıcı 2024 → 2. çeyreğe indiğinde yanındaki kartlar da o çeyreği gösterir.
+Dilimleyici eşitlemenin ileri hâli: eşitleme grupları
+Hikâye anlatımı dersinde aynı dilimleyiciyi sayfalar arasında eşitlemeyi gördün. Bazen eşitlenmesi gereken şey iki ayrı dilimleyicidir: örneğin Özet sayfasında açılır liste biçiminde, Detay sayfasında döşeme biçiminde bir Kategori dilimleyicisi. Dilimleyicileri eşitle bölmesinde Gelişmiş seçenekler’i aç ve iki dilimleyiciye birebir aynı grup adını yaz. İki seçenek var:
+Filtre değişikliklerini diğer dilimleyicilerle eşitle: Birinde yapılan seçim ötekine taşınır.
+Alan değişikliklerini diğer dilimleyicilerle eşitle: Birinin alanını değiştirirsen öteki de değişir.
+Eşitleme ile performansBeş sayfaya eşitlenmiş bir dilimleyicide her tıklama, açık sayfanın tüm görsellerini yeniden sorgular. Kullanıcı çok sayıda dilimleyiciyi art arda değiştiriyorsa Tüm dilimleyicileri uygula (Apply all slicers) eylemli bir düğme koy: seçimler önce toplanır, sorgular tek seferde gider. Desktop’ta düğmeyi denemek için Ctrl tuşuna basılı tutarak tıkla.
+Düğme eylemleri: hangi iş için hangisi?
+ | Eylem |  | Tipik kullanım |
+ | Sayfa gezintisi |  | Menü şeridi; yer imi gerektirmez |
+ | Yer imi |  | Grafik/Tablo geçişi, hazır filtre senaryoları |
+ | Detaya git |  | Seçili ürünün ayrıntı sayfasına götüren düğme; seçim yokken devre dışı görünür |
+ | Tüm dilimleyicileri uygula / temizle |  | Çok dilimleyicili filtre panelleri |
+ | Geri |  | Detay sayfasından dönüş |
+ | Web URL’si |  | Kaynak sisteme, belge sayfasına bağlantı |
+Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik Aralık 2026’da kaldırılacağı için yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.
+Seçim Özeti Metni =
+IF(
+    ISFILTERED(Kategoriler[Kategori]),
+    "Kategori: " & CONCATENATEX(VALUES(Kategoriler[Kategori]), Kategoriler[Kategori], ", "),
+    "Tüm kategoriler"
+)
+`, ex: [
+  { t: 'mc', q: 'Kategori grafiğinde “Kitap”a tıklandığında yanındaki Kanal çubuk grafiği, çubukların tam boyunu soluk bırakıp Kitap payını koyu gösteriyor. Müdür ise Kitap’ta hangi kanalın lider olduğunu, eksen yeniden ölçeklenmiş hâlde görmek istiyor. Ne yaparsın?', o: ['Kanal grafiğini çizgi grafiğe çevir', 'Etkileşimi Filtrele yap', 'Kanal grafiğine Kategori dilimleyicisi ekle', 'Kanal grafiğinde detaya inmeyi aç'], a: 1, why: 'Gördüğü davranış çapraz vurgulamadır. Filtreleme seçilen kategoriyle çubukları yeniden çizer ve ekseni yeniden ölçekler. Çizgiye çevirmek soruyu değiştirir; ek dilimleyici aynı işi kullanıcıya yaptırır; detaya inme hiyerarşi içindir.' },
+  { t: 'mc', q: 'Yıl → Çeyrek → Ay hiyerarşili sütun grafiğinde kullanıcı 2024’ün 2. çeyreğine indiğinde yan taraftaki kartların da o çeyreği göstermesi isteniyor. Hangisi?', o: ['Detaya inme filtrelerini Tüm sayfa’ya uygula', 'Kartları ayrı bir detay sayfasına taşıyıp bağla', 'Kartlarda etkileşimi Vurgula yap', 'Tarih dilimleyicisini tüm sayfalarla eşitle'], a: 0, why: 'Detaya inme varsayılan olarak diğer görselleri etkilemez; Biçim şeridindeki “Detaya inme filtrelerini uygula: Tüm sayfa” bunu açar. Detay sayfası başka bir sayfaya gider; kartlar vurgulanamaz; dilimleyici eşitleme detaya inme durumunu taşımaz.' },
+  { t: 'mc', q: 'Özet sayfasında açılır liste, Detay sayfasında döşeme biçiminde iki ayrı Kategori dilimleyicisi var. Birinde yapılan seçimin ötekine geçmesi gerekiyor. En temiz yol?', o: ['İki sayfayı tek sayfada birleştirmek', 'Her iki sayfaya aynı yer imini koymak', 'Kategoriyi rapor düzeyi filtreye taşıyıp kilitlemek', 'İkisine aynı eşitleme grubu adını vermek'], a: 3, why: 'Eşitleme grupları ayrı dilimleyicileri aynı grup adıyla bağlar ve “filtre değişikliklerini eşitle” seçimi taşır; biçimleri farklı kalabilir. Yer imi seçimi anlık kaydeder, canlı eşitlemez. Rapor düzeyi filtre kullanıcıya dilimleyici deneyimi vermez.' },
+  { t: 'mc', q: 'Filtre panelinde 6 dilimleyici var. Kullanıcı her seçimde tüm sayfanın yeniden yüklenmesinden şikâyet ediyor. Hangi düğme eylemi işe yarar?', o: ['Tüm dilimleyicileri uygula', 'Sayfa gezintisi düğmesi', 'Yer imi gezgini ile sekmeler', 'Detaya git düğmesi'], a: 0, why: '“Tüm dilimleyicileri uygula” seçimlerin önce toplanmasını, sorguların tek seferde gönderilmesini sağlar. Diğer eylemler gezinme içindir ve sorgu sayısını azaltmaz.' },
+  { t: 'dax', name: 'Seçim Özeti Metni', q: 'Seçim Özeti Metni: Kategori süzülüyse "Kategori: " ve ardından seçili kategorilerin virgülle ayrılmış listesini, süzülmüyorsa "Tüm kategoriler" metnini döndür.', sol: 'IF(ISFILTERED(Kategoriler[Kategori]), "Kategori: " & CONCATENATEX(VALUES(Kategoriler[Kategori]), Kategoriler[Kategori], ", "), "Tüm kategoriler")', hint: 'ISFILTERED ile kategori sütununda doğrudan filtre olup olmadığına bak; CONCATENATEX(VALUES(...), sütun, ", ") listeyi birleştirir.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('kosullu-bicim', { min: 14, html: `
+Kurallarda yüzde tuzağı
+Finans ekibi Hedef Gerçekleşme % sütununa kural yazıyor: “%95’in altı kırmızı”. Kural iletişim kutusunda değerin yanındaki birim açılır listesi iki seçenek sunar: Sayı ve Yüzde. Sezgisel olarak “Yüzde” seçilir ve sonuç tutarsızlaşır. Nedeni: Learn’e göre buradaki “Yüzde”, değerin kendisini değil, en küçük ile en büyük arasındaki aralıktaki konumu ifade eder. Veri 100 ile 400 arasındaysa “yüzde 33’ten küçük” kuralı 200’ün altını boyar.
+Oran ölçüsüne kural yazarken değeri ondalık gir (%95 → 0,95) ve birimi Sayı seç.
+Negatif oranlar için ayrı bir “0’dan küçük” kuralı ekle; yoksa o hücreler hiçbir kurala girmez ve biçimsiz kalır.
+Renk ölçeği ve yüzde tabanlı kurallar, veride NaN (sıfıra bölmeden gelen “sayı değil”) varsa çalışmaz. Oranları her zaman DIVIDE ile yaz.
+Başka bir ölçüye göre boyamak
+Koşullu biçim iletişim kutusundaki Hangi alanı temel almalıyız? (What field should we base this on?) sorusu en güçlü ve en az bilinen ayardır. Net Satış sütununun arka planını Kâr Marjı %’ye göre boyayabilirsin: hücrede ciro yazar ama renk kârlılığı anlatır. Matriste bu, tek bir sütunla iki boyutlu bilgi demektir. Okuyucunun bunu anlaması için sütun başlığına ya da görsel alt başlığına “renk: kâr marjı” notu düş.
+Toplam satırı ve boş değerler
+Alan değeri yöntemiyle bağladığın renk ölçüsü toplam ve ara toplam satırlarında da çalışır. Kategori satırları için yazdığın “marj %40’ın üstü yeşil” kuralı toplam satırını da boyar; toplam çoğu zaman ortalamaya yakın olduğu için sarı görünür ve okuyucu “genelde kötüyüz” diye anlar. İki çözüm:
+Ölçü toplam satırında BLANK() döndürsün. ISINSCOPE satırda hangi düzeyde olduğunu söyler; boş renk “biçim uygulama” anlamına gelir.
+Kural iletişim kutusunda Boş değerleri nasıl biçimlendirelim? seçeneğini “Biçimlendirme yok” bırak.
+Marj Rengi (Toplamsız) =
+IF(
+    ISINSCOPE(Kategoriler[Kategori]),
+    SWITCH(TRUE(),
+        [Kâr Marjı %] >= 0.37, "#17855A",
+        [Kâr Marjı %] >= 0.35, "#A86A12",
+        "#C0392B")
+)
+Bu modelde kategori marjları dar bir aralıkta: Elektronik yaklaşık %38,0 ile en yüksek, Hediye yaklaşık %32,3 ile en düşük. Eşikler bu yüzden %37 ve %35 seçildi; eşiği verinin gerçek dağılımına bakmadan yazmak, bütün hücrelerin aynı renge boyanmasıyla sonuçlanır.
+Simgeler ve veri çubukları: ince ayarlar
+Simge düzeni: Değerin solunda, sağında ya da yalnızca simge. Dar sütunlarda “yalnızca simge” kullanıyorsan, yanında değer gösteren ikinci bir sütun bırak; simge tek başına sayı vermez.
+Kuraldan simge seçmek: Her kuralın simge listesinden herhangi bir setten simge alabilirsin; üçlü setlere mahkûm değilsin.
+Alan değeriyle özel simge: Bir sütunda resim adresleri tutup simge olarak gösterebilirsin (SVG, PNG gibi biçimler). Adres herkese açık ya da OneLake dosya bağlantısı olmalı.
+Veri çubukları ve negatifler: Negatif değerler için ayrı renk ve eksen rengi seçilir. Hedef farkı gibi işaret değiştiren ölçülerde çubuğun ortadan iki yöne açılması, okumayı kolaylaştırır.
+Yalnızca çubuğu göster: Sayıyı gizler. Yöneticiye ilk bakışta sıralama, ayrıntı isteyene araç ipucunda sayı vermek için uygundur.
+Renk körlüğüne dayanıklı durum paleti
+Kırmızı-yeşil çifti en sık kullanılan ve en sorunlu çifttir. Alternatifler: mavi-turuncu ıraksak palet (iyi = mavi, kötü = turuncu) ya da aynı tonun koyu-açık çifti. Büyüme gibi işaretli bir ölçüde üçüncü durumu unutma: geçen yıl verisi yoksa büyüme hesaplanamaz. Bu modelde 2022 ilk yıl olduğu için YoY % boş döner; renk ölçüsü bu durumu açıkça gri yapmalı, yoksa boş hücre “sıfır büyüme” gibi okunur.
+Büyüme Rengi =
+VAR B = [YoY %]
+RETURN
+    SWITCH(TRUE(),
+        ISBLANK(B), "#8A8780",
+        B >= 0, "#2A78D6",
+        "#D9622B")
+`, ex: [
+  { t: 'mc', q: 'Analist, Hedef Gerçekleşme % sütununa “değer 95’ten küçükse kırmızı” kuralını birimi Yüzde seçerek yazıyor. Filtre değiştikçe kırmızı hücreler anlamsızca değişiyor. Sorun ne?', o: ['Kural toplam ve ara toplam satırlarına uygulanmıyor', 'Ölçü DIVIDE yerine bölme işaretiyle yazılmış', 'Kurallar en fazla üç adım alabildiği için kesiliyor', 'Yüzde aralıktaki konumdur; 0,95 ve Sayı seç'], a: 3, why: 'Kuraldaki Yüzde birimi en küçük–en büyük aralığındaki konumu ifade eder; aralık filtreyle değişince eşik de kayar. Oran ölçüleri için değer ondalık girilir ve birim Sayı seçilir. Diğer şıklar bu davranışı açıklamaz.' },
+  { t: 'mc', q: 'Matriste Net Satış sütunu var. Müdür, hücrede ciro yazmasını ama rengin kârlılığı göstermesini istiyor. Ne yaparsın?', o: ['Arka plan renginde temel alanı Kâr Marjı % seç', 'Kâr Marjı % sütununu ekleyip Net Satış’ı gizle', 'Net Satış’a veri çubuğu ekle', 'Tema JSON’unda good ve bad renklerini değiştirmek'], a: 0, why: '“Hangi alanı temel almalıyız?” ayarı hücrenin değerinden farklı bir ölçüye göre renk vermeyi sağlar. Sütun eklemek isteği karşılamaz; veri çubuğu ciroyu gösterir; tema renkleri kuralı değiştirmez.' },
+  { t: 'dax', name: 'Marj Rengi (Toplamsız)', q: 'Marj Rengi (Toplamsız): Satırda kategori düzeyindeysen (ISINSCOPE(Kategoriler[Kategori])) marj 0,37 ya da üstüyse "#17855A", 0,35 ya da üstüyse "#A86A12", değilse "#C0392B" döndür; toplam satırında boş kalsın.', sol: 'IF(ISINSCOPE(Kategoriler[Kategori]), SWITCH(TRUE(), [Kâr Marjı %] >= 0.37, "#17855A", [Kâr Marjı %] >= 0.35, "#A86A12", "#C0392B"))', hint: 'Dış katman IF(ISINSCOPE(...), ...); üçüncü argüman yazılmazsa IF boş döndürür. İçeride SWITCH(TRUE(), ...) ile eşikleri büyükten küçüğe sırala.' },
+  { t: 'dax', name: 'Büyüme Rengi', q: 'Büyüme Rengi: [YoY %] boşsa gri "#8A8780", sıfır ya da üstüyse mavi "#2A78D6", negatifse turuncu "#D9622B" döndür. Renk körlüğüne dayanıklı bir palet kullanıyorsun.', sol: 'VAR B = [YoY %] RETURN SWITCH(TRUE(), ISBLANK(B), "#8A8780", B >= 0, "#2A78D6", "#D9622B")', hint: 'Boş kontrolünü ilk sıraya koy: BLANK karşılaştırmalarda 0 gibi davranır ve B >= 0 koşulu boş değeri de yakalar.' },
+  { t: 'mc', q: 'Kategori satırları için yazılmış renk ölçüsü matrisin toplam satırını sarıya boyuyor ve yönetici “genelde kötüyüz” diye yorumluyor. En doğru düzeltme?', o: ['Toplam satırını matristen kaldırmak', 'Toplam satırında ölçüyü boş döndürmek', 'Eşikleri toplamın üstünde kalacak biçimde düşürmek', 'Renk ölçeğine geçip min/max’ı otomatik bırakmak'], a: 1, why: 'Alan değeri renkleri toplam satırında da hesaplanır. ISINSCOPE ile toplamda BLANK döndürmek toplamı biçimsiz bırakır ve bilgi kaybı olmaz. Toplamı kaldırmak bilgi siler; eşikleri oynamak kuralı bozar; otomatik ölçek anlamı her filtrede değiştirir.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('tema-sayfa', { min: 12, html: `
+Tema dosyasının iskeleti
+Tema JSON’unda zorunlu olan tek alan name’dir. Değiştirmek istemediğin her şeyi yazmazsın; Power BI eksikleri kendi varsayılanıyla doldurur. Bu yüzden iyi bir kurumsal tema küçük başlar, ihtiyaç çıktıkça büyür. Üç katman vardır:
+ | Katman |  | Ne ayarlar? |  | Örnek alanlar |
+ | Renk sınıfları |  | Seriler, durum renkleri, renk ölçeği, arayüz tonları |  | dataColors, good/neutral/bad, minimum/center/maximum/null, background, tableAccent |
+ | Metin sınıfları |  | Yazı tipi, boyut, renk |  | callout (kart ve KPI sayıları), title, header, label |
+ | Görsel stilleri |  | Biçim bölmesindeki hemen her ayarın varsayılanı |  | visualStyles |
+minimum, center, maximum ve null renkleri koşullu biçimdeki renk ölçeğinin başlangıç renkleridir. Analistler ısı haritası için her matriste aynı üç rengi elle seçeceğine bunları temaya koyar. Dört ana metin sınıfından türeyen ikincil sınıflar (örneğin largeTitle, smallLabel) ana sınıftan miras alır; yalnızca farklı olmasını istediğini yaz.
+visualStyles: dört düzeyli adres
+Bir görsel stili şu adresle yazılır: görsel türü → stil ön ayarı → biçim kartı → özellik. Her düzeyde "*" “hepsi” anlamına gelir.
+"visualStyles": {
+  "*": { "*": {
+      "title": [{ "fontSize": 12, "bold": true }],
+      "categoryAxis": [{ "gridlineStyle": "dotted" }]
+  } },
+  "card": { "*": {
+      "labels": [{ "fontSize": 28 }]
+  } },
+  "slicer": { "*": {
+      "general": [{ "responsive": true }]
+  } }
+}
+İlk blok tüm görsellerin başlığını 12 punto kalın yapar ve kategori ekseni olan her görselde ızgarayı noktalı çizer; ikinci blok yalnızca kartları etkiler. Kart adları her zaman Biçim bölmesindeki etiketle aynı değildir. Doğru adı bulmanın iki yolu var: Microsoft’un GitHub’daki tema şeması (VS Code’da otomatik tamamlama verir) ya da ayarı bir görselde elle yapıp temayı dışa aktararak çıkan JSON’a bakmak. Power BI içe aktarılan temayı şemaya göre doğrular; tanımadığı bir alan içe aktarmayı hata ile durdurur.
+Tema ile elle biçim çatıştığında
+Ekip, raporun yarısını bitirdikten sonra kurumsal temayı içe aktarıyor ve bazı grafikler değişmiyor. Neden: Biçim bölmesinde elle değiştirilmiş bir ayar, temanın üstünde durur. Görseli temaya döndürmek için görselde ya da bölümde Varsayılana sıfırla (Reset to default) kullanılır.
+Sıfırlamanın bedeliLearn’e göre varsayılana sıfırlama yalnızca renk ve yazı tipini değil; düğme ve görüntü eylemlerini, tüm koşullu biçim kurallarını, adresten gelen görüntüleri ve veriye bağlı öğeleri (fx ile bağlanmış başlık, referans etiketi) de kaldırır. Bir matrisi sıfırlamadan önce koşullu biçimlerini not al. Doğru sıra: önce temayı yükle, sonra rapor yaz.
+Tema koşullu biçim kuralı taşıyamaz; kuralları görsel görsel uygularsın. Ama kuralın renklerini good/neutral/bad ve renk ölçeği alanlarından alırsan, kurumsal renk değiştiğinde tek dosya yeter.
+Tema yaşam döngüsü
+Oluştur: Görünüm → Temalar → Geçerli temayı özelleştir. Renkler, metin, görsel arka planı, sayfa arka planı ve duvar kâğıdı, filtre bölmesi burada.
+Dışa aktar: Aynı menüde Geçerli temayı kaydet. Çıkan JSON’u ince ayar için düzenle.
+Sürümle: JSON’u ekibin ortak deposunda tut; dosya adına sürüm yaz (anadolu-tema-v3.json). Kimin hangi sürümü kullandığı ancak böyle izlenir.
+Dağıt: Yeni raporlar Temalara gözat ile bu dosyayı içe aktarır. Daha iyisi: temanın, sayfa düzeninin ve standart ölçülerin hazır olduğu bir şablon dosyası (.pbit). Analist şablonu açar, veri kaynağını gösterir, boş bir kurumsal raporla başlar.
+Sayfa arka planı temada da dururTuval arka planını ve duvar kâğıdını her sayfada elle ayarlamak yerine temaya koyarsan, yeni eklenen her sayfa doğru renkle doğar. Arka plan görseli ise sayfa başına ayarlanır; tasarımcının çizdiği şablonu tüm sayfalara uygulamak için sayfayı çoğalt.
+`, ex: [
+  { t: 'mc', q: 'Kurumsal tema raporun ortasında içe aktarıldı. Bazı grafikler yeni renklere geçmedi. Bir analist “hepsini varsayılana sıfırlayalım” diyor. Ne uyarısı yaparsın?', o: ['Sıfırlama yalnızca yazı tiplerini değiştirir', 'Sıfırlama raporun temasını da kaldırır', 'Koşullu biçimleri de siler', 'Sıfırlama yalnızca Service’te çalışır'], a: 2, why: 'Varsayılana sıfırlama görseli temaya döndürür ama düğme eylemlerini, koşullu biçim kurallarını ve veriye bağlı öğeleri de kaldırır. Temayı kaldırmaz; yazı tipinden fazlasını etkiler; Desktop’ta da çalışır.' },
+  { t: 'mc', q: 'Tüm raporlardaki ısı haritalarında aynı açık-koyu mavi ölçeğin başlangıç rengi olarak gelmesini istiyorsun. Tema dosyasında neyi ayarlarsın?', o: ['dataColors listesindeki ilk üç rengi', 'tableAccent ve background renklerini', 'textClasses içindeki label sınıfının rengini', 'minimum, center ve maximum renklerini'], a: 3, why: 'minimum/center/maximum (ve null) koşullu biçimdeki renk ölçeğinin varsayılan renkleridir. dataColors seri renkleri, tableAccent tablo vurgusu, label metin sınıfıdır.' },
+  { t: 'mc', q: 'Tema JSON’una el ile "kartGolgesi": true gibi bir alan eklenince Power BI temayı içe aktarmıyor. Neden?', o: ['Şemada olmayan alan reddedilir', 'Tema dosyası izin verilen boyutu aşmış', 'Alan adları Türkçe olamaz ama değerler olabilir', 'Tema yalnızca Service’ten yüklenebilir'], a: 0, why: 'Power BI içe aktarılan temayı şemaya göre doğrular ve tanımadığı alanları hata olarak görür. Doğru kart ve özellik adını şemadan ya da dışa aktarılmış bir temadan bulmak gerekir.' },
+  { t: 'mc', q: 'Ekipte her yeni rapor aynı tema, aynı sayfa düzeni, aynı tarih tablosu ve standart ölçülerle başlamalı. En sürdürülebilir yol?', o: ['Her analiste tema JSON’unu e-postayla göndermek', 'Tema, düzen ve ölçüleri taşıyan .pbit şablonu', 'Eski bir raporu kopyalayıp verisini silmek', 'Her raporda Geçerli temayı özelleştir’i kullanmak'], a: 1, why: 'Şablon dosyası tema, sayfa yapısı ve model öğelerini veri olmadan taşır; analist veri kaynağını bağlayıp başlar. Tema tek başına ölçü ve düzen taşımaz; eski raporu kopyalamak gizli artıklar bırakır; elle özelleştirme tutarlılık sağlamaz.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('hikaye', { min: 14, html: `
+Anlatı akışı: dört soruluk iskelet
+Bölge müdürü toplantıya 10 dakika ayırıyor. Rapor ona dört soruyu sırayla cevaplamalı:
+Bağlam: Neye bakıyoruz? (Dönem, kapsam, hedef.)
+Bulgu: Ne oldu? Tek cümle: “2024’te net satış hedefin yaklaşık %2 altında kaldı.”
+Neden: Kim ya da ne sürükledi? Kategori, kanal, temsilci kırılımı.
+Eylem: Ne yapılmalı? Sahip ve tarih (Rapordan karara dersinde bunu ayrıntılı gördün).
+Bu iskelet sayfa düzenine doğrudan çevrilir: üst şeritte bağlam (dönem dilimleyicisi + hedef kartı), altında bulgu başlığı, ortada neden grafikleri, sağ altta eylem notu. Hikâye sayfadan sayfaya da akar: Özet → Analiz → Detay. Modelde 2024 için Hedef Gerçekleşme % yaklaşık %97,9; 2023 için %99,6. Yani bulgu cümlesi “hedefe çok yaklaştık ama iki yıldır altındayız” olabilir; grafik bu cümleyi kanıtlamak için oradadır.
+Bulgu başlığını ölçüye bağlamak
+Elle yazılmış bulgu başlığı ilk filtrede yalan söyler. “Elektronik lider” başlığı, kullanıcı 2022’yi seçtiğinde de durur. Başlığı ölçüyle üret: Biçim → Genel → Başlık → metnin yanındaki fx → Alan değeri.
+Lider Kategori Metni =
+VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış])
+VAR Ad = CONCATENATEX(Lider, Kategoriler[Kategori], ", ")
+VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış])
+RETURN Ad & " satışın %" & FORMAT(Pay * 100, "0") & " kadarını taşıyor"
+Bu ölçü tüm dönemde “Elektronik satışın %27 kadarını taşıyor” üretir. FORMAT(Pay, "0%") yazsaydın sonuç “27%” olurdu; Türkçe yazımda yüzde işareti sayının önüne gelir. Ölçü kategori kırılımlı bir görselde kullanılmaz; her satırda kendi kategorisini %100 ile yazar. Başlık ve kart ölçüleri görselin değil sayfanın bağlamında çalışacak şekilde yazılır.
+Eşitlik durumuTOPN eşit değerleri birlikte döndürür. İki kategori aynı satışta ise Ad “A, B” olur; CONCATENATEX’in ayırıcısı bu yüzden virgüldür. Eşitliği görmezden gelen bir ölçü, rapor yıllarca çalışırken bir gün tek bir adı rastgele seçer.
+Yer imi stratejisi: az, adlı, bakımlı
+Yer imi kurulumunu gördün; asıl sorun altı ay sonra gelir. Rapora yeni bir görsel eklenir, eski yer imleri onu bilmez: “Tablo” yer imine geçince yeni görsel de gizlenir ya da yanlış yerde kalır. Kurallar:
+Ad standardı: Sayfa | Durum biçimi (“Özet | Grafik”, “Özet | Tablo”). Yer imi bölmesinde sırala, gruplara ayır.
+Kapsamı daralt: Yalnızca değişen görselleri seçip “Seçili görseller” ile kaydet. Sayfaya eklenen yeni görsel yer iminden etkilenmez.
+Veri seçeneğini bilinçli seç: Görünürlük değiştiren yer imlerinde Veri kapalı olsun; kullanıcının filtresi korunur.
+Patlamayı fark et: 3 ölçü × 3 görsel türü için 9 yer imi yapıyorsan yanlış araçtasın. Ölçü değiştirmek için alan parametresi ya da ölçü seçici tablo (Seçili Ölçü kalıbı) daha az bakım ister.
+Kişisel yer imleri: Okuyucu kendi filtre durumunu kişisel yer imi olarak kaydedebilir; rapor yer imleri tasarım içindir, kişisel yer imleri kullanıcı içindir.
+Düğme gezintisi ve açıklama metni
+Gezinme şeridi tüm sayfalarda aynı yerde, aynı sırada durmalı; bir sayfadaki şeridi kopyalayıp diğerlerine yapıştırmak konumu korur. Etkin sayfa düğmesi farklı görünmeli: Sayfa gezgini bunu “Seçili” durum biçimiyle kendisi yapar. Düğme hedefini sabit bir sayfa yerine bir ölçüye bağlayabilirsin (Eylem → Hedef → fx): ölçü, kullanıcının seçimine göre sayfa adını metin olarak döndürür. Sayfa adı değişirse ölçü bozulur; sayfa adlarını sabitle ve belgeye yaz.
+Açıklama metni için üç katman kullan:
+Bulgu başlığı: Ölçüyle üretilen tek cümle.
+Metin kutusu + değer: Metin kutusunda “+ Değer” ile cümlenin içine canlı bir sayı yerleştirilir; filtre değişince sayı güncellenir.
+Tanım notu: “Net Satış: iptaller hariç, KDV hariç.” Sayfanın altında küçük puntoyla ya da bir bilgi (i) düğmesinin araç ipucunda. Tanımı olmayan KPI toplantıda tartışma çıkarır.
+`, ex: [
+  { t: 'dax', name: 'Lider Kategori Metni', q: 'Lider Kategori Metni: Bağlamdaki en yüksek net satışlı kategorinin adını ve satıştaki payını yaz: Ad & " satışın %" & FORMAT(Pay * 100, "0") & " kadarını taşıyor" (Türkçede yüzde işareti sayının önüne gelir). Lideri TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) ile bul; eşitlikte adlar virgülle birleşsin.', sol: 'VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) VAR Ad = CONCATENATEX(Lider, Kategoriler[Kategori], ", ") VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış]) RETURN Ad & " satışın %" & FORMAT(Pay * 100, "0") & " kadarını taşıyor"', hint: 'TOPN bir tablo döndürür; onu hem CONCATENATEX’e hem CALCULATE’in filtre argümanına verebilirsin.' },
+  { t: 'mc', q: 'Özet sayfasına yeni bir kart eklendi. “Özet | Tablo” yer imine geçildiğinde yeni kart da kayboluyor. Kalıcı çözüm?', o: ['Kartı ayrı bir sayfaya taşıyıp gizlemek', 'Seçili görsellerle yeniden kaydetmek', 'Yer iminde Veri seçeneğini de açmak', 'Kartı diğerleriyle gruplayıp kilitlemek'], a: 1, why: 'Tüm görseller kapsamındaki yer imi, kaydedildiği andaki görünürlüğü sayfadaki her nesneye uygular. Yalnızca değişen görselleri seçip kaydetmek, sonradan eklenen görselleri yer iminin dışında bırakır. Veri seçeneği filtreleri etkiler, görünürlüğü değil.' },
+  { t: 'mc', q: 'Bir rapor sahibi 4 ölçü × 3 görsel türü için 12 yer imi ve 12 düğme kurmuş. Bakım kâbusa dönmüş. Ne önerirsin?', o: ['Yer imlerini tek bir yer imi grubuna toplamak', 'Her kombinasyon için ayrı sayfa açmak', 'Ölçü seçimini alan parametresine taşımak', 'Yer imi gezginini sayfa gezginiyle değiştirmek'], a: 2, why: 'Ölçü değiştirme işi verinin işidir; alan parametresi ya da ölçü seçici tablo tek görselle aynı sonucu verir ve yer imi sayısını düşürür. Gruplamak ve gezgin değiştirmek sayıyı azaltmaz; ayrı sayfalar bakımı daha da büyütür.' },
+  { t: 'mc', q: 'Özet sayfasının başlığı elle “Elektronik lider kategori” yazılmış. Kullanıcı 2022’yi seçince başlık hâlâ aynı. Ne yaparsın?', o: ['Başlığı fx ile ölçüye bağlarım', 'Başlığı kaldırıp göstergeyi açarım', 'Sayfaya 2022 için ayrı bir yer imi eklerim', 'Yıl dilimleyicisini sayfadan kaldırırım'], a: 0, why: 'Bulgu başlığı veriye bağlı olmalı; fx → Alan değeri ile bir metin ölçüsüne bağlanan başlık her filtrede yeniden hesaplanır. Yer imi ve dilimleyiciyi kaldırmak sorunu çözmez, kullanıcıyı kısıtlar.' },
+  { t: 'mc', q: 'Yönetici “Bu sayfadaki Net Satış iadeleri içeriyor mu?” diye her toplantıda soruyor. En iyi kalıcı çözüm?', o: ['Ölçünün adını “Net Satış (İptalsiz)” yapmak', 'Toplantıda sözlü olarak açıklamak', 'Ayrı bir “Tanımlar” raporu yayımlamak', 'Sayfaya kısa bir tanım notu koymak'], a: 3, why: 'Tanım, sayının yanında durmalı: kısa bir dipnot ya da bilgi düğmesinin araç ipucu soruyu kaynağında cevaplar. Ayrı rapor bulunmaz; sözlü açıklama kalıcı değildir; uzun ölçü adları görselleri kalabalıklaştırır ve iadeyi de açıklamaz.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('mobil-erisilebilirlik', { min: 13, html: `
+Mobil düzeni otomatik oluşturmak
+Mobil düzen görünümünde (Görünüm → Mobil düzen) boş telefon tuvalini sıfırdan doldurmak yerine otomatik mobil düzen oluşturma seçeneğini kullanabilirsin. Learn’e göre bu özellik masaüstü düzenindeki görsellerin konumuna, boyutuna, türüne ve sırasına bakarak tam bir mobil düzen üretir. Bilmen gerekenler:
+Var olan mobil düzenin üzerine yazar; elle yaptığın düzenleme gider.
+En iyi sonucu soldan sağa, yukarıdan aşağı okunan sayfalarda verir. Arka plan görselini taşıyamaz, üst üste binen görsellerde zorlanır.
+Gizli görselleri de yerleştirir; böylece yer imleriyle görünürlük değiştiren düğmeler telefonda da çalışır.
+Yerleştiremediği görseller Sayfa görselleri bölmesinde kalır; elle sürüklersin.
+Mobil tuvalde test ederkenMobil tuvalde araç ipuçları kapalıdır (uygulamada çalışır). Tuvalde yaptığın dilimleyici seçimleri web düzenine taşınmaz; yayımlanan rapor, web düzenindeki dilimleyici seçimleriyle açılır. Yani “telefonda 2024 seçili açılsın” istiyorsan seçimi web düzeninde yap.
+Alternatif metin: 250 karakterde içgörü
+Ekran okuyucu görselin başlığını ve türünü zaten okur. Alternatif metne “Kategoriye göre net satış sütun grafiği” yazmak bu yüzden tekrardır. Alternatif metin okuyucuya görselden çıkarılması gereken sonucu söylemeli. Sınır 250 karakterdir. Sabit metne sayı yazma; sayılar filtreyle değişir. Bunun yerine alternatif metin kutusunun yanındaki fx düğmesiyle bir ölçüye bağla. Lider kategoriyi ve payını söyleyen bir ölçü, sütun grafiğinin özünü tek cümlede verir: tüm dönemde “En yüksek satış Elektronik kategorisinde, payı %27.”
+Alt Metin Lider Kategori =
+VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış])
+VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış])
+RETURN "En yüksek satış " & CONCATENATEX(Lider, Kategoriler[Kategori], ", ") & " kategorisinde, payı %" & FORMAT(Pay * 100, "0") & "."
+Dekoratif şekillerin ve arka plan görsellerinin alternatif metni boş kalsın ve sekme sırasından çıkarılsın (Seçim bölmesi → Sekme sırası → nesnenin yanındaki numaraya tıkla). Metin kutularının içeriğini ise alternatif metne de yaz.
+Renk dışında bir ipucu: işaretçiler ve simgeler
+Üç kanalı gösteren çizgi grafikte renkler ayırt edilemiyorsa, her seriye farklı işaretçi şekli ver: Biçim → İşaretçiler → Seriyi özelleştir. Durum bilgisi ise metin ve simgeyle birlikte verilmeli; yalnızca kırmızı yazı, renk körü bir kullanıcı için hiçbir şey söylemez.
+Erişilebilir Durum =
+IF(
+    [Hedef Gerçekleşme %] >= 0.97,
+    "▲ Hedefe yakın",
+    "▼ Hedefin gerisinde"
+)
+Learn ayrıca ayırt edilmesi zor renk çiftlerini sayar: yeşil-kırmızı, yeşil-kahverengi, mavi-mor, yeşil-mavi, açık yeşil-sarı, mavi-gri, yeşil-gri, yeşil-siyah. Kurumsal paletinde bu çiftler yan yana duruyorsa sırayı değiştir.
+Klavye ve ekran okuyucu ile test
+Erişilebilirlik bir ayar değil, bir testtir. Yayından önce raporu fareye dokunmadan gez:
+Ctrl + F6 ile ana alanlar (tuval, sayfa sekmeleri, bölmeler) arasında geç; Tab ile görseller arasında dolaş. Sıra, gözün sayfayı okuduğu sırayla aynı mı?
+Bir görselde Alt + Shift + F11 ile veriyi tablo olarak aç. Tablo görselin sıralamasını kullanır; sıralamayı bilinçli seçmediysen anlamsız bir sırayla okunur.
+Shift + ? klavye kısayolları penceresini açar; kullanıcı eğitiminde bunu göster.
+Yer imi düğmeleriyle gezinen sayfaları yalnızca klavyeyle dene.
+Önemli bilgiyi araç ipucuna saklama: rapor sayfası araç ipuçları ekran okuyucuyla okunamaz.
+Windows’ta yüksek karşıtlık temasını aç; Desktop bunu algılar. Service’te düzenleme modunda Görünüm → Yüksek karşıtlık renkleri ile dene.
+Kısa gözden geçirme sorusu“Bu sayfadaki her bilgi, renk görmeyen, fare kullanmayan ve görseli göremeyen biri için de bir yoldan ulaşılabilir mi?” Cevap hayırsa hangi kanalın eksik olduğunu (metin, klavye, ekran okuyucu) not et.
+`, ex: [
+  { t: 'mc', q: 'Bir rapor sayfasında mobil düzen elle titizlikle hazırlanmıştı. Yeni gelen analist “Otomatik oluştur”a basmak istiyor. Ne söylersin?', o: ['Sorun yok, yalnızca eksik görselleri ekler', 'Var olan mobil düzenin üzerine yazar', 'Masaüstü düzenini de değiştirir', 'Yalnızca Service’te çalışır, Desktop’ta işe yaramaz'], a: 1, why: 'Otomatik oluşturma mevcut mobil tuval düzenini değiştirir; elle yapılan yerleşim kaybolur. Masaüstü düzenine dokunmaz ve Desktop’ta da kullanılabilir.' },
+  { t: 'mc', q: 'Bir sütun grafiğinin alternatif metnine “Kategoriye göre net satış sütun grafiği” yazılmış. Erişilebilirlik gözden geçirmesinde neden zayıf bulunur?', o: ['250 karakter sınırını aşıyor', 'Alternatif metin yalnızca görüntülerde okunur', 'Başlık ve türü tekrarlıyor, içgörü vermiyor', 'Ekran okuyucular Türkçe okumaz'], a: 2, why: 'Ekran okuyucu başlığı ve görsel türünü zaten duyurur. Alternatif metin kullanıcının çıkarması gereken sonucu söylemeli, sayılar değişeceği için de bir ölçüye bağlanmalı. Metin sınırı aşmıyor ve tüm görsellerde okunur.' },
+  { t: 'mc', q: 'Kategori grafiğinin üzerine gelince açılan araç ipucu sayfasında her kategorinin hedef farkı yazıyor ve bu bilgi başka hiçbir yerde yok. Erişilebilirlik açısından sorun?', o: ['Araç ipucu sayfaları ekran okuyucuyla okunamaz', 'Araç ipucu sayfaları mobil uygulamada hiç çalışmaz', 'Araç ipucu kontrast oranını düşürür', 'Sorun yok; araç ipucu klavyeyle açılır'], a: 0, why: 'Learn, rapor sayfası araç ipuçlarının ekran okuyucuyla okunamadığını ve önemli bilginin yalnızca araç ipucunda tutulmamasını söyler. Mobil uygulamada araç ipuçları çalışır; kontrastla ilgisi yoktur.' },
+  { t: 'dax', name: 'Alt Metin Lider Kategori', q: 'Alt Metin Lider Kategori: Alternatif metin için şu cümleyi üret: "En yüksek satış " & lider kategori & " kategorisinde, payı %" & FORMAT(Pay * 100, "0") & ".". Lideri TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) ile bul.', sol: 'VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış]) RETURN "En yüksek satış " & CONCATENATEX(Lider, Kategoriler[Kategori], ", ") & " kategorisinde, payı %" & FORMAT(Pay * 100, "0") & "."', hint: 'Pay = lider kategorinin satışı / bağlamdaki toplam satış. CALCULATE([Net Satış], Lider) liderin satışını verir.' },
+  { t: 'dax', name: 'Erişilebilir Durum', q: 'Erişilebilir Durum: Hedef gerçekleşme 0,97 ya da üstündeyse "▲ Hedefe yakın", değilse "▼ Hedefin gerisinde" döndür. Durum renk görmeyen biri için de okunur olsun.', sol: 'IF([Hedef Gerçekleşme %] >= 0.97, "▲ Hedefe yakın", "▼ Hedefin gerisinde")', hint: '[Hedef Gerçekleşme %] hazır ölçüsünü IF içinde 0.97 ile karşılaştır. Simgeyi metnin başına koy.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('istatistik', { min: 15, html: `
+Ortalama mı, medyan mı? Sayılarla karar
+CRM müdürü “Tipik bir müşteri bize ne kadar kazandırıyor?” diye soruyor. Modelde satın alma yapmış 136 müşteri var. İki cevap çıkıyor:
+ | İstatistik |  | Değer (yaklaşık) |
+ | Müşteri başı ortalama net satış |  | 9.197 TL |
+ | Müşteri başı medyan net satış |  | 6.467 TL |
+ | En düşük / en yüksek müşteri |  | 586 TL / 37.955 TL |
+ | Ortalamanın üstünde kalan müşteri |  | 136 müşteriden 47’si |
+Ortalama, medyandan yaklaşık %42 yüksek. Müşterilerin yalnızca üçte biri ortalamanın üstünde. Yani “ortalama müşteri” aslında azınlıktaki büyük alıcıların çektiği bir sayıdır. Karar kuralı:
+Ortalama: Toplamla ilişkili sorular. “100 yeni müşteri kazanırsak ciro ne kadar artar?” sorusunda ortalama doğrudur, çünkü toplamı ortalama belirler.
+Medyan: “Tipik” sorular. Kampanya eşiği, müşteri segmenti sınırı, “sıradan bir sipariş ne kadar?” sorularında.
+İkisini birlikte göster: Aradaki fark çarpıklığın ölçüsüdür. Fark büyükse dağılıma bak (histogram).
+Medyan Müşteri Satışı =
+MEDIANX(VALUES(Musteriler[MusteriNo]), [Net Satış])
+Aynı ayrım satır düzeyinde de var: satış satırı tutarının ortalaması yaklaşık 831 TL, medyanı 640 TL. Sipariş düzeyinde ise ortalama sepet yaklaşık 1.493 TL, medyan sipariş 1.087 TL. Hangi düzeyde (satır, sipariş, müşteri) ortalama aldığını ölçünün adına yaz; “Ortalama Satış” adı üç farklı sayıya karşılık gelebilir.
+Ağırlıklı ve basit ortalama
+Ürün müdürü “kategorilerin ortalama marjı” istiyor. İki hesap var:
+Ağırlıklı (oranların oranı): Toplam brüt kâr / toplam net satış = [Kâr Marjı %] ≈ %36,5. Büyük kategori sonuca daha çok etki eder.
+Basit (oranların ortalaması): Yedi kategorinin marjının aritmetik ortalaması ≈ %35,6. Hediye gibi küçük bir kategori, Elektronik ile aynı ağırlıkta sayılır.
+Şirketin kârlılığı sorulduğunda ağırlıklı oran doğrudur. “Kategori yöneticilerinin performansı” gibi her birimin eşit sayıldığı sorularda basit ortalama savunulabilir. Matriste toplam satırı her zaman ağırlıklı oranı gösterir; kategori satırlarının ortalamasıyla tutmaması hata değildir.
+Basit Ortalama Marj =
+AVERAGEX(VALUES(Kategoriler[Kategori]), [Kâr Marjı %])
+Dağılımı tek bakışta anlatmak
+Keşifçi veri analizi dersinde çeyrekler ve aykırı değer kuralını ayrıntılı göreceksin; burada raporda nasıl sunulacağına odaklan. Müşteri satışlarında 25. yüzdebirlik yaklaşık 3.759 TL, 75. yüzdebirlik yaklaşık 14.782 TL. “Müşterilerin yarısı 3.759 ile 14.782 TL arasında harcıyor” cümlesi, standart sapmadan çok daha anlaşılırdır. Yönetici sayfasında dağılım için şu üçlü yeterlidir: medyan kartı, çeyrekler arası aralık cümlesi, küçük bir histogram.
+Büyüme oranlarının ortalaması: GEOMEAN
+Finans direktörü “son iki yılda ortalama yıllık büyümemiz ne?” diye soruyor. Modelde net satış 2023’te yaklaşık %290, 2024’te yaklaşık %86 büyüdü. Bu iki oranın aritmetik ortalaması yaklaşık %188 eder. Ama 2022’nin 102.837 TL’sini iki yıl üst üste %188 büyütürsen 2024 için yaklaşık 854 bin TL bulursun; gerçek değer 747 bin TL. Doğru cevap bileşik (geometrik) büyümedir: (1 + 2,898) × (1 + 0,864) çarpımının karekökünden 1 çıkar, yaklaşık %170. Oranlar çarpılarak birikir; bu yüzden ortalamaları da çarpımsal alınır. DAX’ta GEOMEAN ve GEOMEANX bunun içindir; büyüme katsayılarının (1 + oran) ortalamasını alıp 1 çıkarırsın. İlk yıl gibi büyümesi boş olan dönemi hesaba katma.
+Analiz bölmesindeki ortalama çizgisi neyin ortalaması?
+Aylık net satış sütun grafiğine Analiz bölmesinden Ortalama çizgisi eklediğinde çizgi, görünen noktaların (ayların) ortalamasıdır. Modelde satış olan 31 ayın ortalaması yaklaşık 40.347 TL. Bu sayı ne satır tutarı ortalamasıdır ne de sepet ortalaması. İki tuzak:
+Grafik filtrelenip 6 ay kalırsa çizgi o 6 ayın ortalamasına kayar. “Ortalama” sabit bir referans değildir.
+Satışı olmayan aylar eksende görünmüyorsa ortalamaya girmez. Eksik ay, ortalamayı yukarı çeker.
+Sabit bir referans istiyorsan (ör. tüm geçmişin aylık ortalaması) Sabit çizgi ekle ve değerini fx ile bir ölçüye bağla. Ölçü görünen aylardan bağımsız hesaplanmalı:
+Aylık Ortalama (Tüm Dönem) =
+CALCULATE(
+    AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış]),
+    REMOVEFILTERS(Tarih)
+)
+Ortalama çizgisinin yanına notÇizginin etiketini aç ve adını “Görünen ayların ortalaması” yap. İki dakikalık bu iş, toplantıdaki “bu ortalama nereden çıktı?” tartışmasını bitirir.
+`, ex: [
+  { t: 'dax', name: 'Medyan Müşteri Satışı', q: 'Medyan Müşteri Satışı: Bağlamdaki müşterilerin net satışlarının ortancasını hesapla. Müşteriler üzerinde dolaşmak için VALUES(Musteriler[MusteriNo]) kullan.', sol: 'MEDIANX(VALUES(Musteriler[MusteriNo]), [Net Satış])', hint: 'MEDIANX(tablo, ifade): tablodaki her satır için ifadeyi hesaplar ve ortancayı alır. Satışı olmayan müşteriler boş döner ve hesaba katılmaz.' },
+  { t: 'dax', name: 'Basit Ortalama Marj', q: 'Basit Ortalama Marj: Her kategoriyi eşit sayarak kategorilerin [Kâr Marjı %] değerlerinin aritmetik ortalamasını al.', sol: 'AVERAGEX(VALUES(Kategoriler[Kategori]), [Kâr Marjı %])', hint: 'AVERAGEX ile Kategoriler[Kategori] değerleri üzerinde dolaş; her satırda hazır marj ölçüsü kategori bağlamında hesaplanır.' },
+  { t: 'query', q: 'Tüm müşteriler için müşteri başı net satışın ortalamasını ve medyanını tek satırda yan yana döndüren bir sorgu yaz. Sütun adları “Ortalama” ve “Medyan” olsun.', start: 'EVALUATE\n', sol: 'EVALUATE\nROW(\n    "Ortalama", AVERAGEX(VALUES(Musteriler[MusteriNo]), [Net Satış]),\n    "Medyan", MEDIANX(VALUES(Musteriler[MusteriNo]), [Net Satış])\n)', hint: 'ROW("Ad1", ifade1, "Ad2", ifade2) tek satırlık bir tablo üretir. Her iki ifade de müşteri listesi üzerinde dolaşmalı.' },
+  { t: 'mc', q: 'Pazarlama ekibi “kampanyada ortalama müşteriden fazla harcayanlara hediye verelim” diyor; ortalama 9.197 TL, medyan 6.467 TL. Ekip “müşterilerin yarısına hediye gider” sanıyor. Ne söylersin?', o: ['Doğru; ortalamanın üstü her zaman yarıdır', 'Hayır; ortalamanın üstü azınlıkta kalır', 'Ortalama ile medyan aynı şeyi ölçer', 'Medyan her zaman ortalamadan büyüktür'], a: 1, why: 'Yarıyı ayıran değer medyandır. Birkaç büyük alıcı ortalamayı yukarı çektiği için bu modelde 136 müşteriden yalnızca 47’si ortalamanın üstündedir. Diğer şıklar ortalama ile medyan arasındaki farkı yanlış anlatır.' },
+  { t: 'mc', q: 'Aylık satış grafiğine Analiz bölmesinden Ortalama çizgisi eklendi. Kullanıcı yalnızca son 6 ayı seçince çizginin yeri değişiyor. Yönetici sabit bir referans istiyor. Ne yaparsın?', o: ['Ortalama yerine Medyan çizgisi eklerim', 'Grafiğe Yıl dilimleyicisi eklerim', 'Ortalama çizgisini yüzdebirlik çizgisine çeviririm', 'Ölçüye bağlı bir Sabit çizgi eklerim'], a: 3, why: 'Ortalama çizgisi görünen noktaların ortalamasıdır, filtreyle kayar. Sabit çizgi fx ile REMOVEFILTERS kullanan bir ölçüye bağlanırsa seçimden bağımsız kalır. Medyan ve yüzdebirlik çizgileri de görünen noktalara göre hesaplanır.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('analiz-ozellikleri', { min: 14, html: `
+Anomali algılama: koşulları ve okuma biçimi
+Operasyon müdürü aylık net satış çizgisinde “normal dışı” ayları otomatik görmek istiyor. Çizgi grafiği seç → Analiz bölmesi → Anomaliler (Anomalies) → Ekle. Power BI beklenen aralığı gölge olarak çizer, aralık dışındaki noktaları işaretler. Learn’e göre koşullar sıkıdır:
+Yalnızca çizgi grafik, eksende zaman serisi.
+En az 4 veri noktası.
+Gösterge (legend), birden çok değer ya da ikincil değer varken çalışmaz. Kanal göstergeli bir çizgide anomali istiyorsan kanal başına küçük katlar kullan ya da tek kanalı filtrele.
+Tahmin, ortalama, medyan, min/max ve yüzdebirlik çizgileriyle birlikte kullanılamaz. Bir grafikte ya tahmin ya anomali.
+Hiyerarşide detaya inme desteklenmez.
+Duyarlılık (sensitivity) kaydırıcısı artırıldıkça küçük sapmalar da işaretlenir. İşaretli bir noktaya tıklayınca açılan bölmede Power BI modeli tarar ve olası nedenleri güç sırasıyla listeler. Taramayı ilgili alanlarla sınırlamak için Açıklama ölçütü (Explain by) kutusuna alan koy: Kanal, Kategori, Bölge. Güç, o kırılımın beklenenden sapmasının toplam sapmaya oranıdır.
+Bu modelde dikkatSatış 2022’de yıl ortasında başlıyor ve şirket hızla büyüyor (2022’de yaklaşık 103 bin TL, 2024’te 747 bin TL). Güçlü büyüme dönemlerinde ilk aylar “düşük anomali” görünebilir. İşaretleri iş bilgisiyle oku: yeni açılan kanal, kampanya, eksik veri.
+Kendi beklenen aralığını yazmak
+Yerleşik özellik kara kutudur ve bir yönetim raporunda “neden bu ay kırmızı?” sorusuna formülle cevap veremez. Basit ve açıklanabilir bir alternatif: görünen ayların ortalaması ± 2 standart sapma. Modelde satışı olan 31 ayda aylık ortalama yaklaşık 40.347 TL, standart sapma yaklaşık 23.536 TL. Üst sınır yaklaşık 87.419 TL çıkar ve 31 aydan yalnızca 2’si onu aşar: 2024 Kasım ve Aralık. Bunlar sıra dışı aylar değil, büyümenin en ileri noktasıdır. Büyüyen bir seride sabit bant anomaliyi değil eğilimi yakalar. Ders: sabit bir bant yerine hareketli bir ortalama (3 Ay Hareketli Ort. gibi) çevresinde bant kur ya da İleri istatistik dersindeki z-skoru ve mevsimsellik yöntemlerine geç.
+Aylık Üst Bant =
+VAR Aylar = VALUES(Tarih[YilAy])
+RETURN
+    AVERAGEX(Aylar, [Net Satış]) + 2 * STDEVX.P(Aylar, [Net Satış])
+Bu ölçüyü Analiz bölmesinde Hata çubukları ya da sabit çizgi ile göstermek, kuralı herkesin okuyabileceği bir yere taşır.
+Akıllı anlatı: Özel mod ile Copilot modu
+Görselleştirmeler bölmesindeki Anlatı (Narrative) görselinin iki modu var:
+ |  |  | Özel (Custom) mod |  | Copilot modu |
+ | Metni kim yazar? |  | Sen; içine dinamik değerler eklersin |  | Copilot, seçtiğin sayfa ya da görsellerden |
+ | Filtre değişince |  | Değerler kendiliğinden güncellenir |  | Okuyucu yenile düğmesine basmalı |
+ | Metni düzenlemek |  | Doğrudan |  | Doğrudan değil; komut (prompt) ile |
+ | Gereksinim |  | Ek lisans yok |  | Copilot açık kiracı, ücretli Fabric kapasitesi; deneme kapasitesi desteklenmez |
+ | Kaynak |  | Senin seçtiğin alan ve ölçüler |  | Tuvaldeki görseller (model değil); dipnotlar kaynağa götürür |
+Özel modda “+ Değer” ile bir ölçü ya da alan seçer, özetleme ve biçim verirsin. Learn’e göre bu mod görsel başına en fazla 4, sayfa başına en fazla 16 özet üretir. Tablo, matris, özel görseller ve hesaplama grupları desteklenmez.
+Copilot anlatısı tuvali okuduğu için görsel ve eksen adları açık yazılmalı; “Ölçü 1” adlı bir sütunu kimse doğru özetleyemez. Üretilen metni yayımlamadan önce dipnotlardan tek tek doğrula. Copilot’un modeli anlaması ve “Yapay zekâ için verileri hazırla” adımları için Copilot dersine bak; Soru-Cevap görseli Aralık 2026’da kaldırılacağı için yeni raporlarda yer vermiyoruz.
+Hangi araç ne zaman? Karar listesi
+“Gelecek 6 ay ne olur?” → Tahmin (yalnızca çizgi; varsayımları başlığa yaz).
+“Hangi ay sıra dışı?” → Anomaliler; yönetim raporunda açıklanabilir DAX bandı.
+“Bu artış nereden geldi?” → Analiz et → Artışı açıkla; derinlemesine sorgu için ayrıştırma ağacı.
+“Sayfayı iki cümleyle özetle” → Anlatı; sayılar kesin olmalıysa Özel mod.
+Hiçbiri karar vermez: her bulguyu iş sahibine doğrulat.
+`, ex: [
+  { t: 'mc', q: 'Kanal göstergeli (Web, Mobil, Mağaza) aylık satış çizgisinde Analiz bölmesinde Anomaliler seçeneği kullanılamıyor. En olası neden ve çözüm?', o: ['Gösterge engeller; tek seri kullan', 'Anomaliler yalnızca sütun grafikte çalışır', 'Anomaliler için en az 24 ay gerekir', 'DirectQuery kaynaklarında hiç çalışmaz'], a: 0, why: 'Anomali algılama gösterge, birden çok değer ve ikincil değerle desteklenmez. Tek seriye indirmek ya da küçük katlara geçmek çözer. Özellik çizgi grafik içindir; en az 4 nokta yeter; DirectQuery’deki kısıt yalnızca bazı kaynaklar içindir.' },
+  { t: 'mc', q: 'Aynı çizgi grafikte hem 6 aylık tahmin hem anomali işaretleri isteniyor. Ne yaparsın?', o: ['İkisini aynı grafikte açarım', 'Duyarlılığı düşürüp ikisini birlikte kullanırım', 'İki ayrı çizgi grafik kullanırım', 'Tahmini kapatıp ortalama çizgisi eklerim'], a: 2, why: 'Learn’e göre tahmin, ortalama, medyan, min/max ve yüzdebirlik çizgileri anomali algılamayla birlikte çalışmaz. İki ihtiyaç iki grafik ister. Ortalama çizgisi de anomaliyle birlikte kullanılamaz.' },
+  { t: 'mc', q: 'Yönetici, sayfadaki anlatı metninin dilimleyici değişince kendiliğinden güncellenmesini ve sayıların biçiminin kesin olmasını istiyor. Hangisi?', o: ['Copilot modunda anlatı', 'Anlatı görselinin Özel modu', 'Görsel başlığına sabit metin', 'Soru-Cevap görseli'], a: 1, why: 'Özel modda dinamik değerler filtrelerle kendiliğinden güncellenir ve biçimleri yazar belirler. Copilot anlatısı okuyucunun yenilemesini ister ve metin doğrudan düzenlenemez. Sabit başlık güncellenmez; Soru-Cevap kaldırılıyor.' },
+  { t: 'mc', q: 'Copilot anlatısı “Ölçü 3 en yüksek Sütun2’de” gibi anlamsız cümleler üretiyor. İlk bakacağın yer?', o: ['Fabric kapasitesinin boyutu', 'Anlatının dil ve bölge ayarı', 'Raporun tema dosyası ve renkleri', 'Görsel, eksen ve ölçü adları'], a: 3, why: 'Copilot anlatısı tuvaldeki görselleri okur; görsel başlıkları, eksen ve ölçü adları anlamsızsa metin de anlamsız olur. Kapasite ve tema içeriği etkilemez.' },
+  { t: 'dax', name: 'Aylık Üst Bant', q: 'Aylık Üst Bant: Görünen aylar (VALUES(Tarih[YilAy])) üzerinde aylık net satışın ortalamasına, aylık net satışın popülasyon standart sapmasının iki katını ekle.', sol: 'VAR Aylar = VALUES(Tarih[YilAy]) RETURN AVERAGEX(Aylar, [Net Satış]) + 2 * STDEVX.P(Aylar, [Net Satış])', hint: 'Ay listesini VAR ile bir kez al; AVERAGEX ve STDEVX.P aynı tabloyu kullansın.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('pq-orta', { min: 15, html: `
+Birleştir mi, ekle mi? İlk karar
+Satış operasyonundan iki dosya geliyor: bayilerin Ocak satışları ve Şubat satışları. Bir de bayi listesi (bayi adı, bölge, açılış tarihi). Hangi dosya hangi işlemle gelir?
+ | Soru |  | İşlem |  | Sonuç |
+ | Aynı sütunlar, farklı dönem mi? |  | Ekle (Append) |  | Satır sayısı artar, sütunlar aynı kalır |
+ | Bir tabloya başka tablodan bilgi mi ekleniyor? |  | Birleştir (Merge) |  | Sütun sayısı artar; eşleşmeyen satır birleştirme türüne göre kalır ya da düşer |
+Ocak + Şubat = Ekle. Satış + bayi bölgesi = Birleştir. Ama çoğu zaman birleştirmeye hiç gerek yoktur: bayi listesini ayrı bir boyut tablosu olarak yükleyip modelde ilişki kurmak, bölgeyi satış tablosuna kopyalamaktan daha temizdir. Birleştirmeyi; anahtar yoksa, iki kaynağı tek boyutta toplamak gerekiyorsa ya da bir arama tablosu modelde gereksiz kalacaksa kullan. Join türlerinin ayrıntısı ve birleştirme sonrası neden null geldiği Power Query ileri dersinde.
+“Yeni olarak” seçenekleriGiriş → Sorguları Birleştir / Ekle düğmelerinin açılır okunda “Yeni olarak” seçenekleri var. Yeni olarak birleştirmek, mevcut sorguyu bozmadan üçüncü bir sorgu üretir; kaynak sorgular ara adım olarak kalır, yüklemelerini kapatırsın.
+Eklemede sütun adı uyuşmazlığı
+Ekleme sütunları sırasına göre değil adına göre eşler. Ocak dosyasında Tutar, Şubat dosyasında Tutar TL yazıyorsa sonuçta iki ayrı sütun oluşur: Ocak satırlarında Tutar TL null, Şubat satırlarında Tutar null. Toplam doğru gibi görünür ama her ölçü yarım çalışır. Önlem:
+Eklemeden önce her kaynakta sütunları aynı adla yeniden adlandır.
+Eklemeden sonra sütun profilinde (Görünüm → Sütun profili) beklenmedik null oranına bak.
+Klasörden birleştirmede örnek dosya dönüşümü tüm dosyalara uygulanır; adı farklı olan dosya bu dönüşümde hata verir ve sorun erken görünür.
+Gruplandırmanın gelişmiş hâli
+Gruplandırma ölçütü iletişim kutusunda Gelişmiş’i seçince birden çok gruplama sütunu ve birden çok toplama ekleyebilirsin: aynı adımda bayi başına toplam tutar, satır sayısı ve en son tarih. İşlem listesindeki Tüm satırlar seçeneği ise her grubu iç içe bir tablo olarak tutar; sonra her grubun içinden “en son satır” ya da “en büyük tutar” gibi bir seçim yapmak için kullanılır. Ama dikkat: modelde ayrıntıyı tutup DAX ile toplamak çoğu zaman daha esnektir. Gruplandırmayı, ayrıntının modelde hiç gerekmediği durumlar (ör. günlük ham log’u saatlik özete indirmek) için sakla.
+Koşullu sütun ve arkasındaki M
+Sütun ekle → Koşullu sütun. Sihirbaz koşulları yukarıdan aşağı dener ve ilk eşleşende durur. Bu yüzden sıra önemlidir: “Tutar > 1000 ise Büyük” koşulunu “Tutar > 2000 ise Çok büyük” koşulunun üstüne yazarsan 2.040 TL’lik bayi satırı “Büyük” olur. En dar koşulu en üste koy. Sihirbaz arka planda şu M’yi yazar:
+= Table.AddColumn(Kaynak, "Satış Bandı", each
+    if [Tutar] = null then "Bilinmiyor"
+    else if [Tutar] > 2000 then "Çok büyük"
+    else if [Tutar] > 1000 then "Büyük"
+    else "Normal", type text)
+null kontrolünü en başa koymak önemli: null > 2000 karşılaştırması hata vermez, false döner; kontrol olmasa boş tutarlı satır sessizce “Normal” olur.
+Hata yönetimi: adım hatası, hücre hatası
+Power Query’de iki tür hata görürsün:
+Adım düzeyi hata: Sorgunun tamamı durur; ön izleme yerine sarı bir uyarı çıkar. Tipik neden: kaynak dosyanın yeri ya da bir sütunun adı değişmiş. Çözüm adımın formülünde.
+Hücre düzeyi hata: Tablo yüklenir ama bazı hücrelerde Error yazar. Tipik neden: “bilinmiyor” yazan bir tarih, “-” yazan bir tutar.
+Hücre hatalarında dört yol var; seçim, hatanın iş anlamına bağlı:
+ | Yol |  | Ne yapar? |  | Ne zaman? |
+ | Hataları kaldır |  | Satırı atar |  | Satır anlamsızsa (test kaydı) |
+ | Hataları değiştir |  | Hücreye sabit değer yazar (null, 0) |  | Satır değerli, alan boş kalabilir |
+ | Hataları koru (Keep errors) |  | Yalnızca hatalı satırları bırakır |  | Ayrı bir “denetim” sorgusu: kaynak sahibine gönderilecek liste |
+ | try … otherwise |  | Hata olursa yedek ifade |  | Birden çok olası biçim: önce bir yolu dene, olmazsa ötekini |
+= Table.AddColumn(Kaynak, "Kayıt Tarihi", each
+    try Date.FromText([KayitTarihi], [Culture = "tr-TR"]) otherwise null, type date)
+Sessiz düzeltme tehlikesiHatayı 0 ile değiştirmek raporda “satış yok” gibi görünür; null ile değiştirmek ise “bilinmiyor” demektir. Tutar için 0 değil null tercih et ve hatalı satır sayısını bir denetim sorgusunda izle.
+`, ex: [
+  { t: 'pq', src: 'bayi', pre: BAYI_A.concat(BAYI_B, BAYI_C), sol: [S('group', ['Şehir'], { name: 'Kayıt Sayısı', agg: 'count' })], q: 'Şehir başına kayıt say. Temizlenmiş bayi tablosunu Şehir’e göre gruplandır ve her şehirdeki satır sayısını Kayıt Sayısı adlı sütunda hesapla. Ankara’nın iki kaydı olmalı.', hint: 'Şehir sütununu seç → Gruplandırma ölçütü: yeni sütun adı “Kayıt Sayısı”, işlem “Satırları say”.' },
+  { t: 'pq', src: 'musteri', pre: MUS_A, sol: [S('type', ['KayitTarihi'], { to: 'date' }), S('replaceErr', ['KayitTarihi'], { v: 'null' })], q: 'Hatalı tarihi koru, değeri boşalt. Müşteri tablosunda KayitTarihi’ni tarihe çevir. “2024-02-30” geçerli bir tarih olmadığı için Error olur. Müşteriyi kaybetmemek için satırı silme; hatayı null ile değiştir.', hint: 'KayitTarihi’ni seç → Veri türü: Tarih → Hataları değiştir: null yaz.' },
+  { t: 'mc', q: 'Ocak dosyasında sütun adı Tutar, Şubat dosyasında Tutar TL. İki sorgu eklendikten sonra toplam satış yarı yarıya eksik çıkıyor. Neden?', o: ['Sütunlar adla eşlenir; iki ayrı sütun oluşur', 'Ekleme yalnızca ilk sorgunun satırlarını alır', 'Ekleme sayı sütunlarını metne çevirir', 'Ekleme yinelenen satırları kendiliğinden siler'], a: 0, why: 'Append sütunları adla eşler. Adlar farklıysa her biri ayrı sütun olur ve diğer dosyanın satırlarında null kalır; ölçü yalnızca birini toplar. Diğer şıklar Append’in davranışı değildir.' },
+  { t: 'mc', q: 'Koşullu sütunda ilk koşul “Tutar > 1000 ise Büyük”, ikinci koşul “Tutar > 2000 ise Çok büyük”. 2.040 TL’lik satır “Büyük” çıkıyor. Neden?', o: ['Koşullu sütun yalnızca tam sayılarla çalışır', 'İlk doğru koşulda durulur', 'Tutar sütunu metin türünde kalmış', 'İkinci koşul “ve” ile bağlanmamış'], a: 1, why: 'Koşullu sütun (if … else if …) ilk doğru koşulda durur. 2.040 > 1000 olduğu için ikinci koşula hiç bakılmaz. En dar koşul en üste yazılır.' },
+  { t: 'mc', q: 'Kaynak sistemden gelen tarihlerin bir kısmı hatalı. Veri sahibi her hafta hangi kayıtların bozuk olduğunu görmek istiyor. Ana sorguyu temiz tutarken ne yaparsın?', o: ['Ana sorguda hataları 0 ile değiştiririm', 'Ana sorguda hataları kaldırırım ve unuturum', 'Tarih sütununu metin bırakırım', 'Başvuru sorgusunda Hataları koru'], a: 3, why: 'Hataları koru yalnızca hatalı satırları bırakır; ana sorgudan başvuruyla türetilmiş bir denetim sorgusu, veri sahibine gönderilecek listeyi üretir. Hatayı 0 yapmak anlamı bozar; kaldırıp unutmak sorunu gizler; metin bırakmak modelde tarih işlemlerini engeller.' }
+] });
+/* ------------------------------------------------------------------ */
+ext('pq-model', { min: 15, html: `
+Sorgu katlama: nerede bozuluyor, nasıl görürsün?
+BT ekibi “Power BI yenilemesi veritabanını 40 dakika meşgul ediyor” diye şikâyet ediyor. İlk bakılacak yer sorgu katlamadır: adımların kaynağa tek bir SQL sorgusu olarak gidip gitmediği. Desktop’ta adıma sağ tıklayınca Yerel Sorguyu Görüntüle (View Native Query) etkinse o adıma kadar katlanıyordur; gri ise katlama o adımda ya da öncesinde bozulmuştur. Power Query Online’da (veri akışları, Fabric) her adımın yanında katlama göstergesi çıkar: katlanıyor, katlanmıyor, katlanabilir (ODBC/OData gibi bağlayıcılarda çalışma anında karar verilir), opak (belirsiz plan) ve bilinmiyor. Learn’e göre bu göstergeler yalnızca Power Query Online’da var.
+ | Genellikle katlanan |  | Genellikle katlamayı bozan |
+ | Sütun seçme/kaldırma, satır filtreleme, gruplandırma, aynı kaynaktaki tablolarla birleştirme, sıralama, basit tür değişimi |  | Dizin sütunu, Text.Proper gibi kaynağın bilmediği metin fonksiyonları, farklı kaynaklarla birleştirme, ilk N satırı tutmanın bazı biçimleri, özel M fonksiyonu çağrısı |
+Kural: katlanan adımları öne, katlanmayanları sona. Filtreyi ve sütun seçimini kaynak adımının hemen arkasına koy; dizin sütunu ve metin güzelleştirme en sonda kalsın. Böylece katlanmayan adımlar veritabanında zaten küçülmüş veri üzerinde çalışır. Artımlı yenileme için RangeStart/RangeEnd filtresinin katlanması zorunludur; katlanmazsa her bölüm için tüm tablo okunur.
+Başvuru zincirinin gizli maliyeti
+Başvuru ile çoğaltma farkını gördün. Ekibin sık düştüğü yanılgı: “Ham satış sorgusunu bir kez okuyorum, Musteriler ve Urunler ondan türüyor; demek kaynak bir kez okunur.” Hayır. Yenilemede her yüklenen sorgu kendi zincirini değerlendirir; ham sorgu, ona başvuran her yüklenen sorgu için ayrıca çalışabilir. Önbellekleme bazı durumlarda tekrarı azaltır ama buna güvenme. Sonuçları:
+Bir API’ye ya da yavaş bir Excel’e üç başvuru, kaynağa birden çok istek demektir.
+Ham sorgunun yüklemesini kapatmak onu yenilemeden çıkarmaz; başvuran sorgular onu yine çalıştırır.
+Büyük ve yavaş kaynaklarda hazırlığı bir kez yapıp sonucu paylaşmak için veri akışı (dataflow) daha doğru araçtır.
+Parametreleri derinleştirmek
+Giriş → Parametreleri Yönet → Yeni. Her parametrenin adı, açıklaması, gerekli olup olmadığı, türü, önerilen değerleri ve geçerli değeri vardır.
+Türü mutlaka seç. “Herhangi” bırakılan bir tarih parametresi filtre adımında metin gibi davranır.
+Önerilen değerler: Herhangi bir değer, değer listesi (açılır liste + varsayılan değer) ya da bir liste döndüren sorgu. “Geliştirme / Test / Canlı” sunucu adları için değer listesi idealdir.
+Sabitten parametreye: Tek bir sabit döndüren sorguya sağ tık → Parametreye dönüştür.
+Fonksiyona dönüştürmek: Parametre kullanan bir sorguya sağ tık → İşlev oluştur. Sorgu, parametreyi argüman olarak alan özel bir fonksiyona dönüşür; klasördeki her dosyaya aynı dönüşümü uygulamanın temeli budur.
+Filtre iletişim kutusunda değerin yanındaki tür düğmesinden Parametre’yi seçebilirsin; filtre sabit bir değer yerine parametreyi kullanır.
+Sorgu bağımlılıkları görünümü
+Power Query Düzenleyicisi’nde Görünüm → Sorgu Bağımlılıkları (Query Dependencies), sorguları ve aralarındaki başvuruları bir diyagram olarak gösterir: hangi kaynaktan hangi ara sorgu, hangi ara sorgudan hangi tablo türüyor. Yüklemesi kapalı sorgular ayrıca işaretlenir. Kullanım alanları:
+Bir kaynağı değiştirmeden önce etkisini görmek: “Bu Excel’i silersem hangi tablolar bozulur?”
+Yanlışlıkla yüklenen ara sorguları bulmak: yalnızca başka sorgulara hizmet eden bir düğüm modelde tablo olarak duruyorsa yüklemesini kapat.
+Devir teslim: diyagramın ekran görüntüsü, model belgesinin en hızlı okunan sayfasıdır.
+Yükleme ayarlarının kontrol listesi
+ | Sorgu türü |  | Yüklemeyi etkinleştir |  | Rapor yenilemeye dahil et |
+ | Olgu ve boyut tabloları |  | Açık |  | Açık |
+ | Ham ve ara sorgular |  | Kapalı |  | Açık (başvuranlar zaten çalıştırır) |
+ | Parametreler ve fonksiyonlar |  | Kapalı (zaten tablo değil) |  | — |
+ | Hiç değişmeyen referans tablo (ör. eski bölge kodları) |  | Açık |  | Kapalı olabilir; kaynak değişirse elle yenile |
+Yüklemeyi kapatınca kaybolanlarYüklemesi açık bir sorgunun yüklemesini sonradan kapatırsan modeldeki tablo silinir; o tabloya dayanan ölçüler, ilişkiler ve görseller bozulur. Kapatmadan önce Sorgu Bağımlılıkları’na ve modeldeki kullanımlarına bak.
+`, ex: [
+  { t: 'pq', src: 'hedef', pre: HEDEF_A, sol: [S('keepCols', ['Kategori']), S('distinct', ['Kategori'])], q: 'Uzun hedef tablosundan boyut türet. Bu sorgunun ham hedef sorgusuna bir başvuru olduğunu düşün. Yalnızca Kategori sütununu tut ve yinelenenleri kaldır; sonuçta her kategori için tek satırlık bir boyut kalsın.', hint: 'Kategori’yi seç → Diğer sütunları kaldır → Yinelenenleri kaldır.' },
+  { t: 'pq', src: 'bayi', pre: BAYI_A.concat(BAYI_B, BAYI_C), sol: [S('keepCols', ['Bayi', 'Şehir']), S('distinct', ['Bayi'])], q: 'Bayi boyutunu çıkar. Temizlenmiş bayi satışlarından yalnızca Bayi ve Şehir sütunlarını tut. Kızılay Bayi iki kez geçiyor; Bayi’ye göre yinelenenleri kaldırarak her bayiye tek satır bırak.', hint: 'Bayi ve Şehir sütunlarını birlikte seç → Diğer sütunları kaldır. Sonra yalnızca Bayi’yi seçip Yinelenenleri kaldır.' },
+  { t: 'mc', q: 'SQL kaynağındaki sorguda 8. adım dizin sütunu, 9. adım satır filtresi. Yenileme çok yavaş ve 9. adımda Yerel Sorguyu Görüntüle gri. En iyi ilk hamle?', o: ['Filtreyi dizin sütununun önüne taşımak', 'Dizin sütununu kaldırıp yerine gruplandırma eklemek', 'Sorguyu çoğaltıp iki parçaya bölmek', 'Gizlilik düzeyini Genel yapmak'], a: 0, why: 'Dizin sütunu katlamayı bozar; ondan sonraki filtre artık veritabanında değil Power Query’de, tüm veri üzerinde çalışır. Filtreyi öne almak satırları kaynakta azaltır. Çoğaltma ve gizlilik ayarı katlama sırasını düzeltmez.' },
+  { t: 'mc', q: 'Yavaş bir API’den gelen ham sorguya üç ayrı tablo başvuruyor. Ekip “ham sorgunun yüklemesini kapattık, API artık bir kez çağrılır” diyor. Doğru mu?', o: ['Doğru; yüklemesi kapalı sorgu önbelleğe alınır', 'Doğru; başvurular yalnızca sonucu okur', 'Yanlış; ham sorgu yenilemeye hiç katılmaz', 'Yanlış; başvuranlar onu yeniden çalıştırır'], a: 3, why: 'Yüklemeyi kapatmak sorguyu modelden çıkarır ama başvuran yüklenen her sorgu onu kendi değerlendirmesinde yeniden çalıştırabilir. Paylaşılan tek bir sonuç gerekiyorsa veri akışı uygun araçtır.' },
+  { t: 'mc', q: 'Geliştirme, test ve canlı ortam sunucu adları arasında hatasız geçiş yapmak istiyorsun. Parametreyi nasıl tanımlarsın?', o: ['Herhangi türünde, önerilen değer yok', 'Metin türü, değer listesiyle', 'Liste türünde, Power Query Online’da', 'Ondalık sayı türünde, geçerli değer boş'], a: 1, why: 'Değer listesi üç sunucu adını açılır liste olarak sunar ve yazım hatasını önler; tür Metin olmalıdır. Herhangi türü filtrelerde beklenmedik davranır; liste türündeki parametreler yalnızca Online’dadır ve tek değer seçimi için değildir.' }
+] });
+})(window);

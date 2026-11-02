@@ -1,0 +1,27 @@
+require('./h.js');
+const p=(...x)=>console.log(JSON.stringify(x));
+const q=(rows,vals,sl)=>{const r=X.query({rows,measures:ms,values:vals,slicers:sl||[],totals:true,keepBlank:true});return {rows:r.rows.map(x=>[x.keys.join('/'),...x.vals.map(v=>typeof v!=='number'?v:Math.round(v*1000)/1000)]),total:r.total}};
+const T={
+'Büyük Siparişli Müşteri':'COUNTROWS(FILTER(VALUES(Satislar[MusteriNo]), MAXX(VALUES(Satislar[SiparisNo]), [Net Satış]) >= 3000))',
+'En Büyük Müşteri Payı %':'DIVIDE(MAXX(VALUES(Satislar[MusteriNo]), [Net Satış]), [Net Satış])',
+'Satılmayan Ürün Sayısı':'COUNTROWS(EXCEPT(VALUES(Urunler[UrunNo]), CALCULATETABLE(VALUES(Satislar[UrunNo]), Satislar[Durum] <> "İptal")))',
+'Çok Kanallı Müşteri':'COUNTROWS(INTERSECT(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Web", Satislar[Durum] <> "İptal"), CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Mobil", Satislar[Durum] <> "İptal")))',
+'A Sınıfı Ürün Sayısı':'VAR Siralama = FILTER(ADDCOLUMNS(VALUES(Urunler[Urun]), "S", [Net Satış]), NOT ISBLANK([S])) VAR Toplam = SUMX(Siralama, [S]) RETURN COUNTROWS(FILTER(Siralama, VAR Ben = [S] RETURN DIVIDE(SUMX(FILTER(Siralama, [S] > Ben), [S]), Toplam) < 0.7))',
+'Mali YTD Satış':'VAR Son = MAX(Tarih[Tarih]) VAR MaliBas = DATE(YEAR(Son) - IF(MONTH(Son) < 7, 1, 0), 7, 1) RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], MaliBas, Son))',
+'Tam 12 Ay Hareketli Toplam':'VAR Son = MAX(Tarih[Tarih]) VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih)) VAR PencereBas = EDATE(Son, -12) + 1 RETURN IF(IlkSatis <= PencereBas, CALCULATE([Net Satış], DATESINPERIOD(Tarih[Tarih], Son, -12, MONTH)))',
+'Dönem Stok Değişimi':'VAR Bas = MIN(Tarih[Tarih]) VAR Kapanis = CALCULATE(SUM(StokGorunum[StokAdet]), LASTDATE(Tarih[Tarih])) VAR Acilis = CALCULATE(SUM(StokGorunum[StokAdet]), REMOVEFILTERS(Tarih), Tarih[Tarih] = Bas - 1) RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)',
+'Medyan Sipariş Tutarı':'MEDIANX(FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S])), [S])',
+'Aykırı Sipariş Sayısı (IQR)':'VAR T = FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S])) VAR Q1 = PERCENTILEX.INC(T, [S], 0.25) VAR Q3 = PERCENTILEX.INC(T, [S], 0.75) VAR Ust = Q3 + 1.5 * (Q3 - Q1) RETURN COUNTROWS(FILTER(T, [S] > Ust))',
+'Sepet Ortalaması Hata Payı':'VAR T = FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S])) VAR N = COUNTROWS(T) RETURN IF(N >= 30, 1.96 * STDEVX.S(T, [S]) / SQRT(N))',
+'Doğrudan Ekip Satışı':'VAR Kisi = SELECTEDVALUE(Calisanlar[CalisanNo]) RETURN IF(NOT ISBLANK(Kisi), CALCULATE([Net Satış], REMOVEFILTERS(Calisanlar), Calisanlar[YoneticiNo] = Kisi))',
+'Ekipteki Satışçı Sayısı':'VAR Kisi = SELECTEDVALUE(Calisanlar[CalisanNo]) RETURN IF(NOT ISBLANK(Kisi), COUNTROWS(FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], Kisi) && NOT ISBLANK([Net Satış]))))',
+'Düzeye Göre Satış':'IF(ISINSCOPE(Calisanlar[AdSoyad]), [Ekip Satışı], [Net Satış])',
+'Yıl İçi Önceki Ay (Bölümlü)':'CALCULATE([Net Satış], OFFSET(-1, ALLSELECTED(Tarih[Yil], Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC), PARTITIONBY(Tarih[Yil])))',
+'Yılın En İyi Ayı Satışı':'CALCULATE([Net Satış], INDEX(1, ALLSELECTED(Tarih[Yil], Tarih[YilAy]), ORDERBY([Net Satış], DESC), PARTITIONBY(Tarih[Yil])))',
+'Tam Pencere 3 Ay Ort.':'VAR Pencere = WINDOW(-2, REL, 0, REL, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC)) VAR Dolu = COUNTROWS(FILTER(Pencere, NOT ISBLANK([Net Satış]))) RETURN IF(Dolu = 3, AVERAGEX(Pencere, [Net Satış]))',
+'Siparişte Birlikte Alma %':'VAR A = CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] <> "İptal") VAR B = CALCULATETABLE(VALUES(Satislar[SiparisNo]), REMOVEFILTERS(Urunler), REMOVEFILTERS(Kategoriler), TREATAS(VALUES(KarsiUrunler[KarsiUrunNo]), Urunler[UrunNo]), Satislar[Durum] <> "İptal") RETURN DIVIDE(COUNTROWS(INTERSECT(A, B)), COUNTROWS(A))',
+'Toplam Değere Göre Dilim':'VAR MusteriSatis = ADDCOLUMNS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), "S", CALCULATE([Net Satış], REMOVEFILTERS(Urunler), REMOVEFILTERS(Kategoriler))) RETURN SUMX(MusteriDilimleri, COUNTROWS(FILTER(MusteriSatis, [S] > MusteriDilimleri[Min] && [S] <= MusteriDilimleri[Max])))',
+'Geri Kazanılan Müşteri (Çeyrek)':'VAR Bas = MIN(Tarih[Tarih]) VAR Simdi = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal") VAR Onceki = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal", DATESBETWEEN(Tarih[Tarih], EDATE(Bas, -3), Bas - 1)) VAR Eski = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal", Tarih[Tarih] < EDATE(Bas, -3)) RETURN COUNTROWS(INTERSECT(EXCEPT(Simdi, Onceki), Eski))',
+};
+const grids={'Doğrudan Ekip Satışı':[{t:'Calisanlar',c:'AdSoyad'}],'Ekipteki Satışçı Sayısı':[{t:'Calisanlar',c:'AdSoyad'}],'Düzeye Göre Satış':[{t:'Calisanlar',c:'AdSoyad'},{t:'Departmanlar',c:'Departman'}],'Yıl İçi Önceki Ay (Bölümlü)':[{t:'Tarih',c:'YilAy'}],'Yılın En İyi Ayı Satışı':[{t:'Tarih',c:'YilAy'},{t:'Tarih',c:'Yil'}],'Tam Pencere 3 Ay Ort.':[{t:'Tarih',c:'YilAy'}],'Siparişte Birlikte Alma %':[{t:'KarsiUrunler',c:'KarsiKategori'}],'Toplam Değere Göre Dilim':[{t:'MusteriDilimleri',c:'Dilim'}],'Geri Kazanılan Müşteri (Çeyrek)':[{t:'Tarih',c:'YilCeyrek'}]};
+for(const k in T){ const g=grids[k]||[{t:'Kategoriler',c:'Kategori'},{t:'Tarih',c:'Yil'}]; try{ console.log(k,'TOT',M(T[k]), g.map(gg=>JSON.stringify(q([gg],[T[k]]).rows.slice(0,14))).join(' | ')); }catch(e){console.log(k,'ERR',e.message)} }

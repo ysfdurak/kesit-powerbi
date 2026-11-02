@@ -1,0 +1,2 @@
+require('./h.js');
+T(`EVALUATE ADDCOLUMNS(VALUES(Calisanlar[AdSoyad]), "a", CALCULATE([İade Oranı %], ALL(Calisanlar)), "b", CALCULATE([İade Oranı %], REMOVEFILTERS(Calisanlar[AdSoyad])), "c", CALCULATE([İade Oranı %], ALL(Calisanlar), Urunler[Kategori]="Kitap"), "d", SUMX(VALUES(Urunler[Kategori]), CALCULATE([İade Oranı %], ALL(Calisanlar))), "e", SUMX(VALUES(Urunler[Kategori]), CALCULATE(COUNTROWS(Satislar))), "f", COUNTX(VALUES(Urunler[Kategori]), 1))`);

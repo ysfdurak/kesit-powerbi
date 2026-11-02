@@ -1,0 +1,11 @@
+const { chromium } = require('playwright'); const fs = require('fs'); const G = '/home/claude/pbi/build/gh/static/';
+const svg = fs.readFileSync(G + 'favicon.svg', 'utf8');
+(async () => { const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell' });
+  const shot = async (name, size, pad, bg) => { const p = await b.newPage({ viewport: { width: size, height: size } });
+    await p.setContent('<html><body style="margin:0;background:' + bg + ';display:grid;place-items:center;width:' + size + 'px;height:' + size + 'px">' + svg.replace('<svg ', '<svg width="' + (size - 2 * pad) + '" height="' + (size - 2 * pad) + '" ') + '</body></html>');
+    await p.screenshot({ path: G + name, omitBackground: bg === 'transparent' }); await p.close(); };
+  await shot('icon-192.png', 192, 0, 'transparent'); await shot('icon-512.png', 512, 0, 'transparent');
+  await shot('icon-512-maskable.png', 512, 80, '#E9B10C'); await shot('apple-touch-icon.png', 180, 14, '#F1F0EC');
+  const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
+  await p.goto('http://localhost:8799/og.html'); await p.waitForTimeout(800); await p.screenshot({ path: G + 'og.png' });
+  await b.close(); })();

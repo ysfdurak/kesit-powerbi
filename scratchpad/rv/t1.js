@@ -1,0 +1,11 @@
+const C=require('./common.js');
+(async()=>{const {b,p,errs}=await C.open();
+const t0=Date.now(); await p.goto('http://localhost:8765/index.html'); 
+const perf=await p.evaluate(()=>{const n=performance.getEntriesByType('navigation')[0];const fp=performance.getEntriesByType('paint');return {dcl:n.domContentLoadedEventEnd,load:n.loadEventEnd,paints:fp.map(x=>x.name+':'+Math.round(x.startTime))}});
+console.log('perf',JSON.stringify(perf),'wall',Date.now()-t0);
+await p.screenshot({path:C.SS+'01_home.png',fullPage:false});
+console.log(await p.evaluate(()=>{const P=window.PBI_CORE; return {views:Object.keys(P.view?P.view:{}), lessons:P.LESSONS.length, paths:Object.keys(P.PMAP||{})}}));
+const links=await p.$$eval('a[href^="#"]',as=>[...new Set(as.map(a=>a.getAttribute('href')+' | '+a.textContent.trim().slice(0,40)))]);
+console.log(links.join('\n'));
+console.log((await p.innerText('body')).slice(0,2500));
+console.log(errs);await b.close();})();

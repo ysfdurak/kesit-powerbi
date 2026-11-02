@@ -1,0 +1,420 @@
+/* PBIPatika — Temel seviye ders genişletmeleri (Ekim 2026): Başlangıç, Veri Hazırlama, Veri Modelleme, DAX Temelleri, Görselleştirme */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const ext = (id, o) => { const l = L.find(x => x.id === id); if (!l) { if (W.console) console.warn('ext: ders yok', id); return; } if (o.html) l.body += 'Uzmanlaş' + o.html + ''; if (o.min) l.min += o.min; if (o.ex) l.ex = (l.ex || []).concat(o.ex); (W.PBI_EXT = W.PBI_EXT || []).push({ id, html: o.html || '', ex: o.ex || [] }); };
+/* ───────────── tarih ───────────── */
+ext('tarih', { min: 9, html: `
+Bugün nerede duruyor? (Ekim 2026 özeti)
+Tarihçe 2025'te bitmedi. Power BI her ay yeni bir Desktop sürümü çıkarır. Bir işe başladığında ekibin “bunu yeni sürümde yapıyoruz” dediği şeylerin çoğu son iki yılda geldi. Aşağıdaki özet, bu uygulamanın hangi derslerinde nereye bakacağını da gösterir.
+1. Fabric: Power BI artık bir platformun parçası
+Power BI, Microsoft Fabric'in içindeki iş yüklerinden biridir. Rapor, anlam modeli, lakehouse, veri ambarı ve not defteri aynı çalışma alanında (workspace) yan yana durur. Veriler OneLake adlı ortak depoda tutulur. Direct Lake modu, OneLake'teki tabloları kopyalamadan okur. Kurumlar eskiden “Premium kapasite” alırdı; bugün Fabric kapasitesi (F SKU'ları) alır. Ayrıntılar Microsoft Fabric'e giriş dersinde.
+2. Copilot ve yapay zekâya hazır modeller
+Copilot rapor sayfasını özetleyebilir, soruya göre görsel önerebilir, DAX yazmana yardım eder. Copilot'un iyi cevap vermesi için modelin temiz olması gerekir. Bunun için Yapay zekâ için verileri hazırla (Prep data for AI) özelliği var: hangi tabloların kullanılacağını seçersin, doğrulanmış cevaplar ve yapay zekâ talimatları eklersin. Eski doğal dil soru görseli Aralık 2026'da kaldırılıyor; onun yerini Copilot alıyor. Copilot ile çalışmak dersinde adım adım göreceksin.
+3. Desktop'ta yeni görünümler ve görseller
+Yenilik | Ne işe yarar? | Durum (Ekim 2026) | 
+DAX sorgu görünümü | EVALUATE sorgusu yazıp sonucu tablo olarak görürsün; sonuçta sıralama ve filtre yapabilirsin. | Genel kullanımda | 
+TMDL görünümü | Modeli kod olarak okur ve düzenlersin. Artık web'de de var. | Desktop'ta ve web'de | 
+Görsel hesaplamalar | Görselin kendi satırları üzerinde hesap (ör. sıra, kümülatif). | Mayıs 2026'dan beri genel kullanımda | 
+Yeni kart, liste ve düğme dilimleyici | Birden çok değer gösteren kart, görüntülü düğmeler. | Kullanımda | 
+Modern görsel varsayılanları, Tema bölmesi, tarih seçici dilimleyici | Yeni raporlar daha sade bir temayla açılır; tarih dilimleyicisinde takvimden seçim. | Ağustos 2026 güncellemesi | 
+Web'de modelleme | Modeli tarayıcıda düzenlemek; Desktop'u açmadan küçük değişiklikler. | Kullanımda | 
+Güncel kalMart 2026 ve öncesindeki Desktop sürümleri Ekim 2026'dan itibaren OneDrive ve SharePoint'e dosya kaydedemez. Kurulum dersinde anlatılan güncelleme yolunu kullan. Özelliklerin durumu sık değişir; bir karar vermeden önce Microsoft'un aylık güncelleme sayfasına bak.
+Eski adlar, yeni adlar
+İş yerinde eski belgelere, eski e-postalara rastlarsın. Aynı şeyin iki adını bilmek seni yanlış anlaşılmaktan korur.
+Eski belgede gördüğün | Bugünkü karşılığı | 
+Dataset (veri kümesi) | Anlam modeli (semantic model) | 
+Premium kapasite (P SKU) | Fabric kapasitesi (F SKU) | 
+Veri görünümü | Tablo görünümü | 
+Power View | Power BI rapor tuvali | 
+Doğal dil soru görseli | Copilot | 
+Neden önemli?Bir iş görüşmesinde “dataset'i yeniledim” diyen biriyle “anlam modelini yeniledim” diyen aynı işi anlatır. İkisini de anlarsan, sen de güncel adı kullanırsan hem eski hem yeni ekiplerle rahat konuşursun.
+`, ex: [
+  { t: 'mc', q: 'Eski bir iç belgede “Raporu açmadan önce dataset’i yenile” yazıyor. Bugünkü Power BI hizmetinde neyi yenilersin?', o: ['Anlam modelini', 'Panoyu (dashboard)', 'Veri akışını (dataflow)', 'Uygulamayı (app)'], a: 0, why: 'Dataset kavramı Fabric ile birlikte anlam modeli (semantic model) adını aldı. Pano yalnızca sabitlenmiş kutuları gösterir, kendi verisi yoktur. Veri akışı ayrı bir hazırlık nesnesidir. Uygulama ise raporları dağıtmanın yoludur; yenilenecek bir verisi yoktur.' },
+  { t: 'mc', q: 'Satış müdürü, ekibin rapordaki veriye düz cümleyle soru sorup cevap almasını istiyor. Ekim 2026 itibarıyla hangi yolu önerirsin?', o: ['Her sayfaya doğal dil soru görseli koymayı', 'Copilot’u açıp modeli ona hazırlamayı', 'Raporu Excel’e aktarıp Power Pivot’ta sormayı', 'Her olası soru için ayrı bir sayfa açmayı'], a: 1, why: 'Doğal dil soru görseli Aralık 2026’da kaldırılıyor; yeni yatırım için doğru yol Copilot ve “Yapay zekâ için verileri hazırla” özelliğidir. Excel’e aktarmak soruyu cevaplamaz, her soru için sayfa açmak sürdürülemez.' },
+  { t: 'mc', q: 'Ekip, modelin ölçülerini ve tablolarını Git’te sürüm sürüm izlemek ve değişikliği satır satır görmek istiyor. Hangi gelişme bunu kolaylaştırdı?', o: ['Otomatik tarih/saat tabloları', 'Dilimleyicileri eşitleme bölmesi', 'PBIP proje biçimi ve TMDL', 'Performans Analizi bölmesi'], a: 2, why: 'PBIP biçimi raporu ve modeli metin dosyaları olarak kaydeder; TMDL de modeli okunur kod hâline getirir. Böylece Git değişikliği satır satır gösterir. Diğer seçenekler tasarım ve performans araçlarıdır, sürüm izlemeyle ilgisi yoktur.' }
+] });
+/* ───────────── aile ───────────── */
+ext('aile', { min: 9, html: `
+Hizmetteki nesneler: kim kimin içinde?
+Raporunu yayımladığında Power BI hizmetinde (Service) tek bir dosya görmezsin; birkaç ayrı nesne oluşur. Bunları bilmek, “raporu sildim, veri de gitti mi?” gibi soruları cevaplamanı sağlar.
+Nesne | Ne tutar? | Anadolu Market örneği | 
+Çalışma alanı (Workspace) | Bir ekibin klasörü. İçindeki her şeye erişimi yönetir. | “Satış Analitiği” çalışma alanı | 
+Anlam modeli (Semantic model) | Tablolar, ilişkiler, ölçüler ve verinin kendisi. Yenileme buna yapılır. | Satislar, Urunler, Tarih ve hazır ölçüler | 
+Rapor (Report) | Sayfalar ve görseller. Verisi yoktur; bir anlam modeline bağlanır. | “Aylık Satış Raporu” | 
+Pano (Dashboard) | Farklı raporlardan sabitlenmiş (pin) kutuları tek ekranda toplar. | Genel müdürün tek sayfalık özeti | 
+Uygulama (App) | Çalışma alanındaki seçili raporları paketleyip geniş bir kitleye dağıtır. | Tüm bölge müdürlerine “Satış Uygulaması” | 
+En önemli fikir şudur: bir anlam modeli, birçok rapor. Finans, satış ve lojistik ekipleri aynı modeli kullanıp kendi raporlarını yaparsa “Net Satış” her raporda aynı çıkar. Herkes kendi kopyasını yaparsa bir ay sonra üç farklı rakam tartışılır.
+Çalışma alanı rolleri
+Rol | Ne yapabilir? | Kime verilir? | 
+Yönetici (Admin) | Her şey; üye ekleyip çıkarır, alanı siler. | BI ekibi lideri | 
+Üye (Member) | İçerik ekler, düzenler, uygulamayı yayımlar. | Kıdemli geliştiriciler | 
+Katkıda Bulunan (Contributor) | İçerik ekler ve düzenler, uygulamayı yayımlayamaz. | Rapor geliştiren analistler | 
+Görüntüleyici (Viewer) | Yalnızca görüntüler ve etkileşir. | Okuyucular (çoğu zaman uygulama daha iyidir) | 
+İyi alışkanlıkOkuyucuları çalışma alanına tek tek eklemek yerine onlara uygulama üzerinden erişim ver. Böylece sen çalışma alanında rapor üzerinde değişiklik yaparken okuyucular yarım kalmış hâlini görmez; uygulamayı güncellediğinde yeni hâl yayına çıkar.
+Rolle göre bir gün
+Analist: Sabah Desktop'ta yeni bir ölçü yazar, test eder, çalışma alanına yayımlar.
+Satış müdürü: Teams'te ya da telefonda uygulamayı açar, kendi bölgesini dilimleyiciyle seçer, bir veri uyarısı kurar.
+Veri mühendisi: Fabric'te verinin her gece OneLake'e gelmesini sağlar; analistin modeli bu veriyi okur.
+BI yöneticisi: Lisansları, kapasiteyi ve kimin hangi çalışma alanına girdiğini izler.
+Bu derste rolleri kısaca tanıdın; erişim ve güvenlik ayrıntıları Yönetişim ve Satır düzeyinde güvenlik derslerinde.
+`, ex: [
+  { t: 'mc', q: 'Finans, satış ve lojistik ekipleri aynı satış verisinden kendi raporlarını istiyor. Hangi yapı rakamların her raporda aynı çıkmasını sağlar?', o: ['Her ekip için modelin ayrı bir kopyası', 'Tek bir anlam modeli, üç ayrı rapor', 'Tek rapor, her ekip için gizli sayfa', 'Her ekibe Excel’e aktarılmış bir tablo'], a: 1, why: 'Ortak anlam modeli tek doğru kaynaktır: ölçüler bir kez tanımlanır, üç rapor da aynı modele bağlanır. Kopyalar zamanla birbirinden ayrılır. Gizli sayfalar erişim sorununu çözmez, Excel kopyaları da güncelliğini yitirir.' },
+  { t: 'mc', q: 'Genel müdür, üç farklı rapordaki birer kartı ve bir grafiği tek ekranda görmek istiyor. Hangi nesneyi kurarsın?', o: ['Bir pano (dashboard)', 'Yeni bir anlam modeli', 'Bir veri akışı (dataflow)', 'Yeni bir çalışma alanı'], a: 0, why: 'Pano, farklı raporlardan sabitlenmiş kutuları bir araya getirir. Anlam modeli veriyi tutar, görsel göstermez. Veri akışı veri hazırlar. Yeni bir çalışma alanı yalnızca bir klasördür.' },
+  { t: 'mc', q: 'Bir analist raporları geliştirmeli ama uygulamayı yayımlama yetkisi olmamalı. Çalışma alanında hangi rolü verirsin?', o: ['Üye (Member)', 'Görüntüleyici (Viewer)', 'Yönetici (Admin)', 'Katkıda Bulunan (Contributor)'], a: 3, why: 'Katkıda Bulunan içerik ekleyip düzenleyebilir ama uygulamayı yayımlayamaz. Üye uygulamayı yayımlayabilir, Yönetici her şeyi yapar. Görüntüleyici ise rapor geliştiremez.' }
+] });
+/* ───────────── arayuz ───────────── */
+ext('arayuz', { min: 8, html: `
+İlk on dakika: boş dosyadan ilk görsele
+Arayüzü ezberlemenin en iyi yolu, bir kez baştan sona küçük bir iş yapmaktır. Aşağıdaki sırayı izle; her adımda hangi bölgeyi kullandığına dikkat et.
+Şerit (üst): Giriş → Veri al ile bir Excel dosyası yükle.
+Veri bölmesi (sağ): Tabloların listesi gelir. Bir tablonun yanındaki oka tıklayıp sütunlarını aç.
+Tuval (orta): Veri bölmesinden bir ölçüyü tuvale sürükle. Power BI bir görsel oluşturur.
+Görselleştirmeler bölmesi: Görsel türünü değiştir, alan kutularını düzenle.
+Sayfa sekmeleri (alt): Artı (+) ile yeni sayfa ekle; sekmeye çift tıklayıp “Özet” adını ver.
+Dosya: Ctrl + S ile kaydet. Kaydetmeden çalışmak, ilk dersin en pahalı hatasıdır.
+Görselleştirmeler bölmesinin üç simgesi
+Simge | Adı | Ne yaparsın? | 
+Izgara / grafik | Görsel oluştur | Görsel türünü seçer, alanları kutulara koyarsın. | 
+Boya fırçası | Görseli biçimlendir | Renk, başlık, eksen, veri etiketi gibi görünüş ayarları. | 
+Büyüteç | Analiz | Ortalama çizgisi, eğilim çizgisi gibi ek çizgiler. | 
+Bu simgeler yalnızca bir görsel seçiliyken anlamlıdır. Hiçbir görsel seçili değilken fırçaya basarsan sayfanın kendisini (tuval arka planı, sayfa boyutu) biçimlendirirsin. Yeni başlayanların “ayar kayboldu” şikâyetinin çoğu bundandır.
+Alt kenar: sayfalar ve durum çubuğu
+Sayfa sekmeleri: Sağ tık ile çoğalt, yeniden adlandır, gizle, sil. Gizli sayfa, yayımlanınca okuyucuya görünmez; detay ve araç ipucu sayfaları için kullanılır.
+Yakınlaştırma: Sağ alttaki kaydırıcı ve “Sayfaya sığdır” düğmesi. Küçük ekranda tuvali bütün görmek için.
+Kaybolan bölmeler ve formül çubuğu
+Bölmeler, başlıklarındaki ok ile daraltılır. Tamamen kapanan bir bölmeyi Görünüm sekmesindeki Bölmeleri göster grubundan (Filtreler, Yer imleri, Seçim, Performans Analizi…) geri açarsın. Formül çubuğu ise yalnızca bir ölçü, hesaplanmış sütun ya da tablo seçiliyken şeridin hemen altında belirir. Veri bölmesinde ölçünün adına tıkla; formülü orada görürsün.
+Arama kutusuVeri bölmesinin üstündeki arama kutusu, onlarca tablonun olduğu modellerde sütunu ya da ölçüyü bulmanın en hızlı yoludur. “satış” yazınca adında satış geçen her alan süzülür.
+`, ex: [
+  { t: 'mc', q: 'Sağ taraftaki Filtreler bölmesini yanlışlıkla kapattın ve göremiyorsun. Onu nereden geri açarsın?', o: ['Dosya → Seçenekler', 'Görünüm sekmesi', 'Modelleme sekmesi', 'Giriş → Yenile'], a: 1, why: 'Bölmeler Görünüm sekmesindeki bölme düğmeleriyle açılıp kapanır. Seçenekler penceresi uygulama ayarlarıdır, Modelleme sekmesi ölçü ve ilişkiler içindir, Yenile ise veriyi yeniden yükler.' },
+  { t: 'mc', q: 'Bir sütun grafiği seçtin ve çubukların rengini değiştirmek istiyorsun. Görselleştirmeler bölmesinde hangi simgeye basarsın?', o: ['Büyüteç (Analiz sekmesi)', 'Izgara (Görsel oluştur sekmesi)', 'Boya fırçası (Biçimlendir)', 'Huni (Filtreler bölmesi)'], a: 2, why: 'Renk, başlık, eksen gibi görünüş ayarları boya fırçası simgesindeki Görseli biçimlendir sekmesindedir. Büyüteç ek analiz çizgileri içindir, ızgara alan kutularını gösterir; huni ise Görselleştirmeler bölmesinde değil, ayrı Filtreler bölmesindedir.' },
+  { t: 'mc', q: 'Bir ölçünün formülünü görmek istiyorsun ama şeridin altında formül çubuğu yok. Ne yaparsın?', o: ['Veri bölmesinde ölçünün adını seçerim', 'Model görünümüne geçip ilişkiye tıklarım', 'Tuvaldeki boş bir alana çift tıklarım', 'Dosya → Dışa aktar ile şablon alırım'], a: 0, why: 'Formül çubuğu yalnızca bir ölçü, hesaplanmış sütun ya da tablo seçiliyken görünür. İlişkiye tıklamak ilişki özelliklerini açar, boş tuval sayfayı seçer, şablon dışa aktarmak formülü göstermez.' }
+] });
+/* ───────────── menuler-turu ───────────── */
+ext('menuler-turu', { min: 9, html: `
+Seçenekler penceresi: yeni projede ilk bakılacaklar
+Şeritteki komutlar günlük iştir. Bazı kararlar ise projenin başında bir kez verilir ve Dosya → Seçenekler ve ayarlar → Seçenekler penceresinde durur. Pencerenin solunda iki grup vardır: Genel (bu bilgisayardaki tüm dosyalar) ve Geçerli dosya (yalnızca açık dosya).
+Nerede? | Ayar | Neden bakarsın? | 
+Geçerli dosya → Veri Yükleme | Otomatik tarih/saat | Kendi tarih tablon varsa kapat; model küçülür. | 
+Geçerli dosya → Veri Yükleme | Yüklemeden sonra yeni ilişkileri otomatik algıla | Power BI ad benzerliğinden yanlış ilişki kurabilir. Modeli kendin kuruyorsan kapat. | 
+Geçerli dosya → Bölgesel ayarlar | İçeri aktarma için yerel ayar | “1.250,50” gibi Türkçe sayıları ve “31.12.2024” gibi tarihleri doğru okumak için. | 
+Genel → Gizlilik | Gizlilik düzeyleri | Farklı kaynakları birleştirirken verinin nereye gönderilebileceği. Veri alma dersinde. | 
+Genel → Önizleme özellikleri | Yeni, henüz deneme aşamasındaki özellikler | Açtığın önizleme özelliğini ekip arkadaşın da açmalı; yoksa dosya onda farklı davranır. | 
+Aynı menüdeki Veri kaynağı ayarları ise bağlandığın kaynakların listesidir: dosya yolunu değiştirir, kimlik bilgisini yeniler, izinleri düzenlersin.
+Sağ tık menüleri: en kısa yol
+Şeritte aradığın komutun çoğu, nesneye sağ tıkladığında da çıkar ve orada yalnızca o nesneye uygun komutlar listelenir.
+Veri bölmesinde tabloya sağ tık: Yeni ölçü, Yeni sütun, Verileri yenile, Tarih tablosu olarak işaretle, Görünümde gizle.
+Sütuna sağ tık: Yeniden adlandır, Gizle, Yeni hiyerarşi, Yeni grup.
+Görseldeki bir çubuğa sağ tık: Detaya git, Ayrıntıya in, Grupla, “Tablo olarak göster” (görselin arkasındaki sayıları görmek için).
+Sayfa sekmesine sağ tık: Sayfayı çoğalt, Sayfayı gizle.
+Komutu bulamıyorsan
+Bir şey seçili mi? Bağlamsal sekmeler (Tablo araçları, Sütun araçları, Ölçü araçları) yalnızca ilgili nesne seçiliyken görünür.
+Doğru görünümde misin? Sütuna göre sıralama Rapor ya da Tablo görünümünde çalışır; ilişki çizmek Model görünümünde.
+Pencerenin üstündeki arama kutusunu kullan: Komutun adını yazınca Power BI onu bulup çalıştırır.
+Sürümünü kontrol et: Yardım → Hakkında. Eğitimdeki komut senin sürümünde yoksa güncelleme gerekebilir.
+Ekip kuralıProjenin başında Seçenekler penceresindeki kararları (otomatik tarih kapalı, ilişki algılama kapalı, Türkçe yerel ayar) kısa bir nota yaz ve proje klasörüne koy. Ekibe yeni katılan biri aynı ayarlarla başlar.
+`, ex: [
+  { t: 'mc', q: 'Muhasebeden gelen CSV’de “1.250,50” yazan tutarlar Power BI’da yanlış sayı olarak okunuyor. İlk bakacağın yer neresi?', o: ['Görünüm → Temalar → Tema bölmesi', 'Biçim bölmesindeki veri etiketleri', 'Ölçü araçları → Biçim → Ondalık', 'Seçenekler → Bölgesel ayarlar'], a: 3, why: 'Sayının nasıl okunacağı içeri aktarma yerel ayarına bağlıdır; Türkçe seçilince nokta binlik, virgül ondalık olur. Tema, veri etiketi ve ölçü biçimi yalnızca görünüşü değiştirir; yanlış okunmuş veriyi düzeltmez.' },
+  { t: 'mc', q: 'Yeni tablolar yüklediğinde Power BI, adları benzediği için birbiriyle ilgisiz sütunlar arasında kendiliğinden ilişki kuruyor. Bunu nasıl durdurursun?', o: ['İlişki algılama seçeneğini kapatırım', 'Tüm tabloları tek tabloda birleştiririm', 'Otomatik tarih/saat seçeneğini açarım', 'Model görünümünü hiç açmam'], a: 0, why: 'Veri Yükleme bölümündeki “yüklemeden sonra yeni ilişkileri otomatik algıla” seçeneği bu davranışı yönetir. Tek tabloya birleştirmek modeli bozar, otomatik tarih/saat ilişkiyle ilgili değildir, Model görünümünü açmamak ilişkileri engellemez.' },
+  { t: 'mc', q: 'Yönetici bir çubuktaki rakamın hangi sayılardan geldiğini soruyor. Görselden çıkmadan sayıları hızlıca görmenin yolu nedir?', o: ['Seçenekler penceresini açmak', 'Veri kaynağı ayarlarına girmek', 'Sağ tık → Tablo olarak göster', 'Raporu PDF olarak dışa aktarmak'], a: 2, why: '“Tablo olarak göster”, görselin arkasındaki değerleri bir tablo hâlinde açar. Seçenekler ve Veri kaynağı ayarları yapılandırma pencereleridir; PDF yalnızca görüntüyü verir.' }
+] });
+/* ───────────── dax-giris ───────────── */
+ext('dax-giris', { min: 12, html: `
+Ölçünü adım adım oluştur
+Veri bölmesinde ölçünün “yaşayacağı” tabloya sağ tıkla → Yeni ölçü. Şeritte Giriş ya da Modelleme sekmesindeki Yeni ölçü düğmesi de aynı işi yapar.
+Şeridin altında formül çubuğu açılır. Ölçü = ... yazısını sil, kendi formülünü yaz.
+Enter ile onayla. Birden çok satır yazmak için Shift + Enter.
+Ölçü seçiliyken Ölçü araçları sekmesinden biçimi (para birimi, yüzde, ondalık) ayarla.
+Ölçüyü bir karta ya da tabloya koyup sonucu kontrol et.
+Formül yazarken Power BI öneri listesi açar. [ yazınca ölçüler, tablo adını yazınca o tablonun sütunları listelenir. Listeden seçmek yazım hatalarını önler.
+Ölçüler nerede yaşar?
+Ölçü verinin içinde saklanmaz; yalnızca formülü saklanır. Hangi tablonun altında göründüğü (giriş tablosu) sadece düzen içindir, hesabı değiştirmez. Çok ölçülü modellerde ekipler boş bir “_Ölçüler” tablosu açıp tüm ölçüleri orada toplar ve klasörlere ayırır. Her ölçüye bir açıklama yazarsan, ölçünün üzerine gelen kişi “bu iptalleri içeriyor mu?” sorusunun cevabını hemen görür.
+İşleçler: dört işlem ve fazlası
+İşleç | Anlamı | Örnek | 
++ - * / | Dört işlem | SUM(Satislar[Tutar]) / 1000 | 
+& | Metinleri birleştirir | "Yıl: " & 2024 | 
+= <> > < >= <= | Karşılaştırma | Satislar[Durum] <> "İptal" | 
+&& ve || | VE / VEYA | Satislar[Adet] > 1 && Satislar[Kanal] = "Web" | 
+Yönetim kurulu sunumunda sayılar binlik gösterilmek isteniyor. Bir ölçüyle bunu yapabilirsin:
+Satış (Bin) = SUM(Satislar[Tutar]) / 1000
+Bu modelde sonuç yaklaşık 1.346,2 olur; yani iptaller dahil toplam tutar 1.346.190 ₺. Aynı işi ölçünün biçim ayarıyla (görüntü birimi: Bin) da yapabilirsin. Fark şu: biçim yalnızca görünüşü değiştirir, bölme ise sayının kendisini değiştirir. Başka bir ölçü bu ölçüyü kullanacaksa biçim ayarı daha güvenlidir.
+İlk hata mesajların
+Ne yazdın? | Ne oldu? | Çözüm | 
+Satır Tutarı = Satislar[Tutar] | “Tek bir değer belirlenemiyor” hatası | Ölçü tek bir sayı döndürmeli. Sütunu bir toplayıcıya sar: SUM(Satislar[Tutar]). | 
+SUM(Satis[Tutar]) | Tablo ya da sütun bulunamadı | Adı öneri listesinden seç; tablonun adı Satislar. | 
+SUM(Satislar[Tutar] | Söz dizimi hatası | Her açılan parantez kapanmalı. | 
+Satır Tutarı = Satislar[Tutar]   -- hatalı: ölçüde çıplak sütun
+Neden hata? Bir ölçü bir kartta tek bir sayı göstermek zorundadır. Satislar[Tutar] ise 1.620 satırlık bir sütundur; Power BI hangisini göstereceğini bilemez. Aynı ifade bir hesaplanmış sütunda çalışır, çünkü orada her satır kendi değerini alır. Bu farkın adı satır bağlamıdır; Filtre bağlamı ve satır bağlamı dersinde ayrıntısıyla göreceksin.
+Ölçüyü ölçüyle kurUygulamadaki hazır ölçüler birbirinin üzerine kurulur: [Brüt Kâr], [Net Satış] eksi [Net Maliyet] demektir. Bu modelde sonuç 456.108 ₺. İptal kuralı değişirse yalnızca [Net Satış] ve [Net Maliyet] güncellenir, [Brüt Kâr] kendiliğinden doğru kalır.
+`, ex: [
+  { t: 'dax', name: 'Satış Tutarı (Bin ₺)', q: 'Satış Tutarı (Bin ₺): Sunumda sayılar binlik görünsün. Satislar[Tutar] toplamını 1000’e bölen ölçüyü yaz.', sol: 'SUM(Satislar[Tutar]) / 1000', hint: 'Önce SUM ile topla, sonra / 1000 ile böl.' },
+  { t: 'dax', name: 'Kâr (Hazır Ölçülerden)', q: 'Kâr (Hazır Ölçülerden): Hiç sütun kullanmadan, yalnızca hazır [Net Satış] ve [Net Maliyet] ölçülerini kullanarak kârı hesapla.', sol: '[Net Satış] - [Net Maliyet]', hint: 'Ölçüler köşeli parantezle, tablo adı olmadan yazılır.' },
+  { t: 'mc', q: 'Bir ölçüye = Satislar[Tutar] yazdın ve “tek bir değer belirlenemiyor” hatası aldın. Neden?', o: ['Tablo adı yanlış, Satis yazılmalıydı', 'Sütun çok satır, ölçü tek değer ister', 'Ölçüye para birimi biçimi verilmemiş', 'İlişki tek yönlü olduğu için filtre geçmiyor'], a: 1, why: 'Ölçü bir hücrede tek bir değer döndürmelidir; çıplak sütun 1.620 değer içerir. SUM gibi bir toplayıcı gerekir. Tablo adı doğru olsaydı bile hata sürerdi; biçim ve ilişki yönü bu hatanın sebebi değildir.' }
+] });
+/* ───────────── toplama ───────────── */
+ext('toplama', { min: 12, html: `
+Hangi soru, hangi fonksiyon?
+Doğru toplayıcıyı seçmek için önce soruyu cümle olarak yaz. Cümledeki anahtar kelime fonksiyonu söyler.
+Soru cümlesi | Fonksiyon | Bu modelde sonuç | 
+“Toplam ne kadar sattık?” | SUM(Satislar[Tutar]) | 1.346.190 ₺ (iptaller dahil) | 
+“Kaç satır kayıt var?” | COUNTROWS(Satislar) | 1.620 | 
+“Kaç sipariş aldık?” | DISTINCTCOUNT(Satislar[SiparisNo]) | 910 | 
+“Kaç farklı müşteri aldı?” | DISTINCTCOUNT(Satislar[MusteriNo]) | 136 | 
+“Kaç farklı ürün satıldı?” | DISTINCTCOUNT(Satislar[UrunNo]) | 38 (katalogda 40 ürün var) | 
+“Kaç satırda kargo günü dolu?” | COUNT(Satislar[KargoGun]) | 1.489 | 
+“Bir satır ortalama kaç lira?” | AVERAGE(Satislar[Tutar]) | yaklaşık 831 ₺ | 
+Ortalama tuzağı: satır ortalaması sepet değildir
+Satış müdürü “ortalama sepetimiz ne kadar?” diye soruyor. Aceleyle AVERAGE(Satislar[Tutar]) yazarsan yaklaşık 831 ₺ bulursun. Oysa doğru cevap toplam tutarın sipariş sayısına bölümüdür: 1.346.190 / 910 = yaklaşık 1.479 ₺.
+Neden fark var? AVERAGE her satırı bir kez sayar. Bir siparişte üç ürün varsa o sipariş üç satırdır ve ortalamayı üç küçük parça olarak etkiler. “Sepet” ise siparişin tamamıdır. Kural: ortalama istendiğinde önce “neyin ortalaması?” diye sor. Cevap “satırın” değilse DIVIDE(toplam, sayım) kur.
+Sayımlar toplanmaz
+Bir matriste kategorilere göre müşteri sayısını gösterdin. Elektronik 98, Kitap 115, Ev & Yaşam 99… Alt alta toplarsan 649 eder. Ama toplam satırında 136 yazar. Hata yok: aynı müşteri hem kitap hem elektronik almış olabilir ve her iki satırda da sayılır. Toplam satırı ise müşterileri bir kez sayar.
+Aynı şey yıllar için de geçerli: 2022'de 33, 2023'te 79, 2024'te 123 müşteri vardır; toplamları 235 eder ama üç yılda alışveriş yapan farklı müşteri sayısı 136'dır. DISTINCTCOUNT ile hesaplanan bir rakamı Excel'e alıp alt alta toplamak, iş hayatındaki en yaygın raporlama hatalarından biridir.
+Okuyucuyu önceden uyarMüşteri sayısı gibi toplanmayan ölçülerin olduğu matrislerde toplam satırının yanına kısa bir not ya da araç ipucu ekle: “Bir müşteri birden çok kategoride sayılabilir.” Böylece toplantıda “toplam yanlış” tartışması çıkmaz.
+COUNT, COUNTA, COUNTROWS: boşlukları kim sayar?
+Satislar tablosunda 1.620 satır var ama KargoGun sütunu 131 satırda boş. COUNTROWS(Satislar) 1.620, COUNT(Satislar[KargoGun]) 1.489 döndürür. COUNT yalnızca dolu (boş olmayan) değerleri sayar. “Kaç satır?” sorusu için COUNTROWS, “kaç satırda bu bilgi var?” sorusu için COUNT ya da COUNTA (metin sütunlarında) kullan. Boşlukların nedeni ve nasıl ele alınacağı BLANK, hatalar ve DAX'ta hata ayıklama dersinde.
+Kargo Bilgisi Olan Satır = COUNT(Satislar[KargoGun])
+Kargo Bilgisi Eksik Satır = COUNTROWS(Satislar) - [Kargo Bilgisi Olan Satır]
+`, ex: [
+  { t: 'dax', name: 'İptalsiz Satılan Farklı Ürün', q: 'İptalsiz Satılan Farklı Ürün: Katalogdaki tüm ürünleri değil, iptal edilmemiş bir siparişte en az bir kez satılmış farklı ürünleri say (Satislar tablosundan).', sol: 'CALCULATE(DISTINCTCOUNT(Satislar[UrunNo]), Satislar[Durum] <> "İptal")', hint: 'DISTINCTCOUNT(Satislar[UrunNo]) ifadesini CALCULATE ile Satislar[Durum] <> "İptal" filtresiyle sar.' },
+  { t: 'dax', name: 'Satır Başına Ortalama Tutar', q: 'Satır Başına Ortalama Tutar: Bir sipariş satırının ortalama Tutar değerini hesapla (sepet değil, satır ortalaması).', sol: 'AVERAGE(Satislar[Tutar])', hint: 'Satır düzeyinde ortalama için AVERAGE yeterli.' },
+  { t: 'dax', name: 'Kargo Günü Dolu Satır', q: 'Kargo Günü Dolu Satır: KargoGun sütununda değeri olan (boş olmayan) satırların sayısı.', sol: 'COUNT(Satislar[KargoGun])', hint: 'COUNT yalnızca boş olmayan sayısal değerleri sayar.' },
+  { t: 'mc', q: 'Matriste kategorilere göre müşteri sayısının satırları toplanınca 649 ediyor ama toplam satırı 136 diyor. Yöneticiye ne söylersin?', o: ['Toplam satırı hatalı, kapatmak gerekir', 'Ölçü yanlış, SUM ile yeniden yazılmalı', 'Müşteri birden çok kategoride sayılır', 'Model yenilenmemiş, yenileyince düzelir'], a: 2, why: 'DISTINCTCOUNT her satırda o kategoriden alışveriş yapan müşterileri sayar; aynı müşteri birkaç kategoride görünür. Toplam satırı müşterileri bir kez sayar, bu yüzden 136 doğrudur. Toplamı kapatmak ya da SUM kullanmak yanlış bilgi verir; yenileme sonucu değiştirmez.' }
+] });
+/* ───────────── ilk-rapor ───────────── */
+ext('ilk-rapor', { min: 9, html: `
+Boş sayfadan yayına: sekiz adımlık çalışma düzeni
+İlk raporda en çok zaman kaybettiren şey, görselleri rastgele eklemek ve sonra her şeyi yeniden dizmektir. Aşağıdaki sıra, işyerinde ilk haftanda vereceğin bir raporu düzenli kurmanı sağlar.
+Soruyu yaz: “Satış müdürü bu sayfaya bakınca hangi üç soruya cevap bulacak?” Sayfanın üstüne bir metin kutusuyla bu soruyu not al; sonra silersin.
+Kaydet ve adlandır: Dosyaya anlamlı bir ad ver (“Satis_Ozet_v1.pbix”), sayfa sekmesine “Özet” de.
+Tuvali ayarla: Hiçbir görsel seçili değilken Biçim → Tuval ayarları: 16:9 çoğu ekran için doğrudur.
+Üst şerit: Soldan sağa 3–4 kart: [Net Satış], [Brüt Kâr], [Kâr Marjı %], [Sipariş Sayısı].
+Orta alan: Solda kategoriye göre sıralı çubuk, sağda aylara göre çizgi grafik.
+Dilimleyici: Üstte ya da solda tek bir yıl dilimleyicisi. Başlangıçta fazla dilimleyici koyma.
+Test et: Rakamları bir kontrol değerine karşı doğrula (aşağıda).
+Yayımla: Giriş → Yayımla → çalışma alanını seç. Hizmette raporu açıp bir kez daha dene.
+Sayfa düzeni: göz nereden başlar?
+Soldan sağa okuyan biri sayfaya sol üstten girer, sağa ve aşağı doğru ilerler. Bu yüzden en önemli rakam sol üstte, ayrıntı sağ altta durur. Genelden özele: önce “ne kadar?”, sonra “nerede?”, en son “hangi kalemler?”. Görseller arasında eşit boşluk bırak; hizalamak için birden çok görseli seçip Biçim → Hizala komutunu kullan.
+Az ama doğruİlk sürümde bir sayfaya 6–8 görsel yeter. Daha fazlası gerekiyorsa ayrıntıyı ikinci bir sayfaya ya da detay sayfasına taşı. Kalabalık sayfa hem okunmaz hem yavaş açılır.
+Kendini test et: kontrol rakamları
+Rapor ne kadar güzel olursa olsun, rakam yanlışsa güven bir kez kaybolur. Yayımlamadan önce birkaç değeri başka bir kaynakla karşılaştır. Bu modelde kontrol rakamları şunlar:
+Kontrol | Beklenen | Fark çıkarsa ilk şüphe | 
+Tüm yıllar [Net Satış] | 1.250.772 ₺ | Rapor düzeyinde unutulmuş bir filtre | 
+2024 [Net Satış] | 747.066 ₺ | Dilimleyici başka bir yılda kalmış | 
+2024 iptaller dahil tutar | 808.362 ₺ | Karşıdaki kişi iptalleri de topluyor | 
+Muhasebeden biri “bizde 2024 satışı 808 bin” diyorsa ikiniz de haklı olabilirsiniz: biri iptalleri dahil ediyor, diğeri etmiyor. Bu yüzden her kartın araç ipucuna ya da sayfa altına kısa bir tanım yaz: “Net satış: iptal edilen siparişler hariç.” Ayrıntılı test yöntemleri Rapor kalitesi dersinde.
+`, ex: [
+  { t: 'mc', q: 'Raporundaki 2024 net satış kartı 747.066 ₺ gösteriyor; finans “bizde 808.362 ₺” diyor. İlk neyi kontrol edersin?', o: ['Kartın yazı tipi boyutunu ve rengini', 'İptallerin dahil olup olmadığını', 'Raporun temasını ve sayfa boyutunu', 'Dilimleyicinin stilini ve konumunu'], a: 1, why: 'Bu modelde 2024’te iptaller dahil tutar 808.362 ₺, iptaller hariç net satış 747.066 ₺’dir; fark tanımdan gelir. Yazı tipi, tema ya da dilimleyici stili hesabı değiştirmez.' },
+  { t: 'mc', q: 'Satış özet sayfasında en önemli rakam olan toplam net satış kartını nereye koyarsın?', o: ['Sağ alt köşeye', 'Sayfanın ortasına, küçük', 'Sol üst köşeye', 'Ayrı bir gizli sayfaya'], a: 2, why: 'Soldan sağa okuyan biri sayfaya sol üstten girer; ana rakam orada ilk görülür. Sağ alt ayrıntı içindir, ortada küçük bir kart kaybolur, gizli sayfa okuyucuya görünmez.' },
+  { t: 'mc', q: 'İlk raporunda bir sayfaya 12 görsel ve 6 dilimleyici yerleştirdin; sayfa kalabalık ve yavaş. En iyi ilk adım hangisi?', o: ['Tüm görselleri küçültüp sığdırmak', 'Dilimleyicileri gizleyip filtreyi kilitlemek', 'Ayrıntıları ikinci bir sayfaya taşımak', 'Temayı koyu renge çevirmek'], a: 2, why: 'Ana sayfada özeti bırakıp ayrıntıyı başka bir sayfaya ya da detay sayfasına taşımak hem okunurluğu hem hızı artırır. Küçültmek okunurluğu bozar, dilimleyicileri gizlemek okuyucunun seçimini elinden alır, tema hız ve kalabalık sorununu çözmez.' }
+] });
+/* ───────────── gorsel-secimi ───────────── */
+ext('gorsel-secimi', { min: 9, html: `
+Soru cümlesinden grafiğe
+Bir yönetici sana genelde grafik türü söylemez, soru sorar. Sorudaki anahtar kelimeyi yakalarsan grafik kendiliğinden belli olur. Aşağıdaki tablo, ana dersteki karar tablosunu iş hayatında sık duyacağın cümlelerle genişletir.
+Duyduğun cümle | Anahtar kelime | Görsel | Kurulum ipucu | 
+“En çok satan 10 ürün hangisi?” | en çok, sıralama | Sıralı yatay çubuk | İlk N filtresiyle 10 ürün, azalan sıralama | 
+“Hedefin neresindeyiz?” | hedef | Kart (referans etiketiyle) ya da KPI | Değer: [Net Satış], hedef: [Hedef] | 
+“Siparişlerin çoğu hangi tutar aralığında?” | çoğu, aralık | Histogram (sütun) | Tutarı gruplara (kutulara) böl, sipariş say | 
+“Mobil'in payı yıllar içinde arttı mı?” | pay + zaman | %100 yığılmış sütun | X: yıl, gösterge: kanal | 
+“Hangi kategori hangi yılda zayıf?” | iki boyut | Matris + koşullu biçim | Satır: kategori, sütun: yıl, arka plan rengi | 
+“Şehirlere göre satış?” | yer | Önce sıralı çubuk; harita yalnızca konum anlam taşıyorsa | Haritada küçük farklar görünmez | 
+“Bu ayın sipariş listesi lazım.” | liste | Tablo | Okuyucu dışa aktaracaksa en uygun görsel | 
+Anadolu Market'ten üç örnek
+1. Kategoriler: pasta neden kötü seçim?
+Yedi kategorinin net satışı Elektronik'te 339.304 ₺, Hediye'de 17.370 ₺. Pasta grafikte Hediye ince bir çizgi olarak kaybolur; Kitap (151.882 ₺) ile Kozmetik (133.564 ₺) arasındaki fark ise açılardan okunamaz. Sıralı yatay çubukta her iki fark da tek bakışta görünür.
+2. Kanallar: üç dilimde halka kabul edilebilir
+Mobil 599.841 ₺, Web 457.331 ₺, Mağaza 193.600 ₺. Yalnızca üç parça var ve soru “bütünün ne kadarı?” ise halka grafik işini görür. Ama soru “kanalların payı nasıl değişti?” olursa yıllara göre %100 yığılmış sütuna geçmen gerekir; tek bir halka zamanı gösteremez.
+3. Hedef: tek sayı, tek bağlam
+2024'te net satış 747.066 ₺, hedef 763.200 ₺; gerçekleşme yaklaşık %97,9. Bunun için bir sütun grafiği gerekmez. Kart görselinde ana değer olarak net satışı, referans etiketi olarak hedefi ve gerçekleşme oranını göster. Okuyucu üç saniyede “hedefin biraz altındayız” der.
+Beş saniye testi
+Grafiği yaptıktan sonra bir arkadaşına beş saniye göster ve kapat. Sonra “ne gördün?” diye sor. Cevabı senin göstermek istediğin mesaja yakınsa görsel doğrudur. Değilse sıralamayı, renkleri ya da görsel türünü değiştir. Bu küçük test, toplantıda yanlış anlaşılmanın önüne geçer. Daha fazla ilke Görselleştirme ilkeleri ve Görsel algı derslerinde.
+`, ex: [
+  { t: 'mc', q: 'Pazarlama müdürü “Siparişlerimizin çoğu hangi tutar aralığında?” diye soruyor. Hangi görseli kurarsın?', o: ['Tutar aralığına göre sipariş sayısı', 'Kategori bazında sipariş payı pastası', 'Aylara göre net satış ve sipariş çizgisi', 'Ortalama sepet tutarını gösteren kart'], a: 0, why: 'Soru bir dağılım sorusudur: tutarlar gruplara (aralıklara) bölünür ve her gruptaki sipariş sayısı sütunla gösterilir (histogram). Pasta kategori payını, çizgi zamanı, tek kart ise yalnızca ortalamayı gösterir; dağılımı göstermez.' },
+  { t: 'mc', q: 'Yönetim “Mobil kanalın payı 2022’den 2024’e nasıl değişti?” diye soruyor. Hangi görsel en doğrudan cevap verir?', o: ['Tüm yılların toplamıyla tek bir halka', 'Yıllara göre %100 yığılmış sütun', 'Kanallara göre sıralı çubuk', 'Kanal başına ayrı bir kart'], a: 1, why: '%100 yığılmış sütun her yılın bütününü eşit boyda gösterir; Mobil diliminin büyüyüp küçüldüğü yıldan yıla görülür. Tek halka zamanı göstermez, sıralı çubuk payı değil tutarı karşılaştırır, ayrı kartlar ise yıl kırılımı vermez.' },
+  { t: 'mc', q: '12 şehrin net satışını karşılaştırmak istiyorsun; şehirlerin çoğu birbirine yakın. Yönetici en iyi beş şehri görmek istiyor. Ne kurarsın?', o: ['Kabarcık boyutlu harita', 'Şehir başına pasta dilimi', 'Sıralı yatay çubuk', 'Şehirlere göre çizgi grafik'], a: 2, why: 'Yakın değerleri ve sıralamayı en iyi sıralı çubuk gösterir. Haritada kabarcık boyutları arasındaki küçük farklar okunmaz, 12 dilimli pasta okunamaz, çizgi grafik ise zaman gibi sıralı bir eksen içindir.' }
+] });
+/* ───────────── gorsel-temel ───────────── */
+ext('gorsel-temel', { min: 9, html: `
+Alan kutusundaki küçük ok: özetleme seçenekleri
+Alan kutusuna koyduğun her alanın yanında küçük bir aşağı ok vardır. Bu menü, Power BI'ın o alanla ne yapacağını belirler.
+Seçenek | Ne yapar? | Ne zaman? | 
+Topla, Ortalama, En az, En çok | Sayısal sütunu bu yolla özetler (örtük ölçü). | Hızlı keşifte; kalıcı raporda açık ölçü yaz. | 
+Say, Farklı say | Değerleri ya da farklı değerleri sayar. | Metin sütunlarında varsayılan. | 
+Özetleme | Her değeri olduğu gibi gösterir. | Tabloda ürün kodu, fiyat listesi gibi alanlarda. | 
+Bu görsel için yeniden adlandır | Yalnızca bu görselde başlığı değiştirir; modeldeki ad aynı kalır. | “Sum of Tutar” yerine “Satış” yazmak için. | 
+Değeri olmayan öğeleri göster | Ölçüsü boş olan satırları da listeler. | Satışı olmayan kategorileri de görmek için. | 
+Bir örnek: tabloya Satislar[KargoGun] sütununu sürükledin. Power BI onu kendiliğinden toplar ve “KargoGun toplamı: 4.647” yazar. Bu sayının iş anlamı yoktur; kimse kargo günlerini toplamaz. Oktan Ortalama seçebilirsin ama doğrusu hazır [Ortalama Kargo Günü] ölçüsünü kullanmaktır. Böylece aynı hesap her raporda aynı adla çıkar.
+Tablo mu, matris mi?
+ | Tablo | Matris | 
+Yapı | Düz liste; her satır bir kayıt ya da grup | Satır × sütun çaprazı (Excel'deki pivot tablo gibi) | 
+Alt toplam | Yalnızca en altta toplam | Her düzeyde alt toplam | 
+Hiyerarşi | Yok | Artı / eksi ile açılıp kapanan düzeyler | 
+Tipik kullanım | Sipariş listesi, müşteri listesi, dışa aktarma | Kategori × yıl satışı, bölge → şehir kırılımı | 
+Kategoriler[Kategori] satırlara, Tarih[Yil] sütunlara, [Net Satış] değerlere konunca matris bir pivot tablo olur: örneğin Elektronik 2022'de 26.724 ₺, Hediye 2022'de 2.000 ₺. Aynı alanları bir tabloya koyarsan her kategori-yıl çifti ayrı bir satır olur; karşılaştırmak zorlaşır.
+Satış olmayan satırlar neden kayboluyor?
+Power BI, ölçüsü boş (BLANK) olan satırları varsayılan olarak gizler. Bir dilimleyicide yalnızca bir ay seçtiğinde o ay satışı olmayan kategori listeden düşer. Çoğu zaman bu istenen davranıştır: boş satırlar gürültüdür. Ama yönetici “satış yapmayan kategoriyi de görmek istiyorum” diyorsa satır alanının okundan Değeri olmayan öğeleri göster seçeneğini aç. Boş yerine 0 görmek istenirse bu bir ölçü kararıdır; BLANK, hatalar ve DAX'ta hata ayıklama dersinde nasıl yapılacağını göreceksin.
+Tarih alanında hiyerarşiOtomatik tarih/saat açıksa bir tarih sütununu eksene koyduğunda Yıl → Çeyrek → Ay → Gün hiyerarşisi gelir. Kendi tarih tablonu kullanıyorsan oktan yalnızca tarihin kendisini seçebilir ya da Tarih tablosundaki Yil, Ay sütunlarını ayrı ayrı koyabilirsin. Tarih tablosu dersinde neden kendi tablonun daha iyi olduğunu gördün.
+`, ex: [
+  { t: 'mc', q: 'Tabloya Satislar[KargoGun] sütununu ekledin, başlıkta “KargoGun toplamı” ve 4.647 yazıyor. Kalıcı raporda en doğru çözüm nedir?', o: ['Sütunu tablodan tamamen çıkarmak', 'Görsel başlığını yeniden adlandırmak', 'Tabloyu matrise çevirmek', 'Hazır ortalama kargo ölçüsünü koymak'], a: 3, why: 'Kargo günlerini toplamak anlamsızdır; ortalama gerekir. Bunu her raporda aynı tutmanın yolu açık bir ölçüdür ([Ortalama Kargo Günü]). Yeniden adlandırmak yanlış hesabı gizler, matris toplamı değiştirmez, sütunu çıkarmak ise soruyu cevapsız bırakır.' },
+  { t: 'mc', q: 'Bir ay seçince satışı olmayan kategori tablodan kayboluyor. Yönetici o kategorinin de listede görünmesini istiyor. Ne yaparsın?', o: ['Değeri olmayan öğeleri göster’i açarım', 'Kategoriyi rapor filtresine eklerim', 'Dilimleyiciyi tek seçime çeviririm', 'İlişkiyi çift yönlü yaparım'], a: 0, why: 'Power BI boş ölçülü satırları varsayılan olarak gizler; “Değeri olmayan öğeleri göster” bu satırları geri getirir. Rapor filtresi satırı geri getirmez, tek seçim ayarı ilgisizdir, çift yönlü ilişki ise başka sorunlara yol açar ve bu sorunu çözmez.' },
+  { t: 'mc', q: 'Kategori × yıl satışını, her düzeyde alt toplamla ve artı/eksi ile açılan bölge → şehir kırılımıyla göstermek istiyorsun. Hangi görsel?', o: ['Tablo', 'Matris', 'Kart', 'Kümelenmiş sütun'], a: 1, why: 'Satır × sütun çaprazı, her düzeyde alt toplam ve açılıp kapanan hiyerarşi matrisin özelliğidir. Tablo düz listedir, kart tek değer gösterir, sütun grafiği alt toplam vermez.' }
+] });
+/* ───────────── bicim-temel ───────────── */
+ext('bicim-temel', { min: 10, html: `
+Biçimi kopyala: Biçim boyacısı
+Altı grafiğin aynı görünmesini istiyorsun. Her birinde yirmi ayarı tek tek yapmak yerine birini bitir, onu seç ve Giriş → Biçim boyacısı (Format painter) düğmesine bas. Sonra hedef görsele tıkla. Başlık, renk, kenarlık, yazı tipi aynen kopyalanır. Düğmeye çift tıklarsan birden çok görsele art arda uygulayabilirsin.
+Tema mı, tek tek ayar mı?
+Biçim ayarlarının bir önceliği vardır. Görselde elle yaptığın ayar, temadan gelen ayarı ezer. Bu iyi bir şeydir ama bir tuzağı var: temayı sonradan değiştirdiğinde elle ayarlanmış görseller eski renklerinde kalır.
+Yol | Ne zaman doğru? | Dikkat | 
+Tema (Görünüm → Temalar) | Kurumsal renkler, yazı tipleri, tüm raporlarda aynı görünüm | Ağustos 2026'dan beri yeni raporlar sade bir temel temayla açılır; Tema bölmesinden düzenlenir. | 
+Biçim boyacısı | Bu rapordaki birkaç görseli eşitlemek | Kopyalanan ayarlar da elle yapılmış sayılır. | 
+Görsel ayarı | Bir görseli bilinçli olarak farklı yapmak (vurgu) | Az kullan; tema değişince elle düzeltmen gerekir. | 
+Bir görsel temayı dinlemiyorsa Biçim bölmesinde ilgili bölümün altındaki Varsayılana sıfırla bağlantısını kullan. O bölümün ayarları temaya geri döner.
+Koşullu biçime ilk adım
+Renk, anlam taşıdığında güçlüdür. Bir çubuğun ya da hücrenin rengini sabit seçmek yerine bir kurala bağlayabilirsin. Renk ayarının yanındaki fx düğmesi üç yol sunar:
+Renk ölçeği (Gradient): Değer büyüdükçe renk koyulaşır. Isı haritası gibi matrislerde.
+Kurallar (Rules): “%97'den küçükse kırmızı” gibi eşikler.
+Alan değeri (Field value): Rengi bir ölçü döndürür. Kural karmaşıksa ve birden çok görselde kullanılacaksa en temiz yol budur.
+Örnek: hedefi en az %97 tutturan kategori yeşil, diğerleri kırmızı olsun. Bu modelde Kitap ve Giyim %97'nin üstünde; Elektronik %96,4 ile altında kalır. Yıllara bakınca 2022 (%77) kırmızı, 2023 ve 2024 yeşildir.
+Hedef Rengi = IF([Hedef Gerçekleşme %] >= 0.97, "#1B7F3B", "#B3261E")
+Sonra çubuk renginin fx'inde Biçim stili: Alan değeri, alan: [Hedef Rengi] seçersin. Simgeler, veri çubukları ve daha ayrıntılı kurallar Koşullu biçimlendirme ve KPI'lar dersinde.
+Rengi tek başına bırakmaKırmızı-yeşil ayrımını görmekte zorlanan okuyucular vardır. Renge ek olarak veri etiketi, simge ya da “▲/▼” gibi bir işaret kullan. Erişilebilirlik ayrıntıları Mobil düzen ve erişilebilirlik dersinde.
+`, ex: [
+  { t: 'dax', name: 'Hedef Rengi (Temel)', q: 'Hedef Rengi (Temel): Çubuk rengine bağlanacak ölçü. [Hedef Gerçekleşme %] 0,97 ya da üstündeyse "#1B7F3B", değilse "#B3261E" döndür.', sol: 'IF([Hedef Gerçekleşme %] >= 0.97, "#1B7F3B", "#B3261E")', hint: 'IF(koşul, doğruysa, yanlışsa) kalıbını kullan; renk kodları çift tırnak içinde metindir.' },
+  { t: 'mc', q: 'Bir grafiği istediğin gibi biçimlendirdin. Aynı sayfadaki beş grafik de böyle görünsün istiyorsun. En hızlı yol hangisi?', o: ['Her grafikte ayarları elle tekrarlamak', 'Grafikleri silip kopyasını yapıştırmak', 'Yeni bir JSON tema yazıp yüklemek', 'Biçim boyacısıyla biçimi kopyalamak'], a: 3, why: 'Biçim boyacısı bir görselin biçimini diğerlerine tek tıkla aktarır. Elle tekrar yavaştır, kopyala-yapıştır alanları da değiştirir, yeni tema ise tüm raporu etkileyen daha büyük bir iştir.' },
+  { t: 'mc', q: 'Raporun temasını kurumsal renklere çevirdin ama iki grafik eski renklerinde kaldı. Büyük olasılıkla neden?', o: ['O grafiklerde renk elle ayarlanmış', 'Tema yalnızca kartlara uygulanır', 'Grafiklerin verisi yenilenmemiş', 'Grafikler başka bir sayfada duruyor'], a: 0, why: 'Görsel düzeyindeki elle yapılmış ayar temayı ezer; tema değişse de o ayar kalır. Çözüm ilgili bölümde Varsayılana sıfırla’dır. Tema tüm görsellere uygulanır, veri yenilemesi rengi etkilemez, tema tüm sayfaları kapsar.' },
+  { t: 'mc', q: 'Kategori × yıl matrisinde yüksek satışlar koyu, düşükler açık renkte görünsün; okuyucu zayıf hücreleri hemen fark etsin. Hangi fx biçim stilini seçersin?', o: ['Kurallar, tek eşikle', 'Alan değeri, sabit metin', 'Renk ölçeği', 'Varsayılana sıfırla'], a: 2, why: 'Değere göre kademeli koyulaşan renk, renk ölçeğidir (gradient); ısı haritası etkisi verir. Tek eşikli kural yalnızca iki renk üretir, sabit metinli alan değeri her hücreyi aynı boyar, sıfırlama ise koşullu biçimi kaldırır.' }
+] });
+/* ───────────── filtreler ───────────── */
+ext('filtreler', { min: 10, html: `
+Filtre mi, dilimleyici mi? Yan yana karşılaştırma
+Dört yol da sonunda aynı şeyi yapar: ölçünün hesaplandığı satırları daraltır. Farkları kimin değiştirdiği, nerede durduğu ve neyi etkilediğidir.
+ | Görsel filtresi | Sayfa filtresi | Rapor filtresi | Dilimleyici (Slicer) | 
+Nerede durur? | Filtreler bölmesi | Filtreler bölmesi | Filtreler bölmesi | Tuvalin üzerinde | 
+Neyi etkiler? | Tek görsel | O sayfadaki görseller | Tüm sayfalar | Sayfadaki görseller (eşitlenirse başka sayfalar da) | 
+Kim değiştirir? | Okuyucu (kilitli ya da gizli değilse) | Okuyucu, tek tıkla | 
+Görsel bazında kapatılabilir mi? | Gerekmez | Hayır | Evet: Etkileşimleri düzenle | 
+Ölçüye göre filtre | Evet | Hayır | Hayır | 
+Pratik kural: okuyucunun sık değiştireceği bir seçimse ve göz önünde olmalıysa dilimleyici; arka planda duran bir iş kuralıysa kilitli bir filtre. “Bu sayfa yalnızca 2024” gibi okuyucunun değiştirmemesi gereken bir şeyi dilimleyiciyle yaparsan biri mutlaka başka yıla tıklar.
+Etkileşimleri düzenle
+Varsayılan olarak bir dilimleyici sayfadaki her görseli süzer. Bazen istemezsin. Örnek: sayfada “Tüm zamanların net satışı: 1.250.772 ₺” kartı var ve yıl seçilince değişmemeli. Dilimleyiciyi seç → Biçim sekmesi → Etkileşimleri düzenle. Her görselin üstünde küçük simgeler çıkar: Filtrele, Vurgula (yalnızca grafiklerde) ve Hiçbiri. Karttaki “Hiçbiri” simgesine bas; artık kart dilimleyiciyi dinlemez. Aynı ayar, bir grafiğe tıklayınca diğer grafiklerin nasıl tepki vereceği için de geçerlidir.
+Okuyucu tarafında üç ayrıntı
+Kalıcı filtreler: Hizmette okuyucunun son seçimleri hatırlanır. Ertesi gün rapor aynı seçimle açılır. Sağ üstteki Varsayılana sıfırla düğmesi senin yayımladığın hâle döner.
+Uygula düğmesi: Çok dilimleyicili sayfada her tıklama yeni bir hesap başlatır. İyileştir sekmesindeki sorgu azaltma ayarlarıyla dilimleyicilere ve filtrelere bir Uygula düğmesi eklenir; okuyucu seçimlerini bitirip bir kez hesaplatır.
+Yayımlarken seçim kalır: Desktop'ta dilimleyicide 2023'ü seçili bırakıp yayımlarsan okuyucu raporu 2023 ile açar. Yayımlamadan önce dilimleyicileri istediğin başlangıç hâline getir.
+Dilimleyici her şeyi süzmez
+Filtre ilişkiler üzerinden akar. Bu modelde Hedefler tablosu Tarih ve Kategoriler'e bağlıdır ama kanal bilgisi yoktur. Satislar[Kanal] dilimleyicisinde “Web” seçtiğinde net satış küçülür, [Hedef] ise 1.299.300 ₺ olarak aynı kalır. Bu bir hata değil, hedefin kanal düzeyinde verilmemiş olmasıdır. Okuyucu “Web'in hedefi bu mu?” diye yanlış okumasın diye hedef görselinde kanal etkileşimini Hiçbiri yap ya da başlığa “Hedef kanal ayrımı içermez” yaz. Farklı ayrıntı düzeyleri Hedef ve gerçekleşen dersinde.
+`, ex: [
+  { t: 'mc', q: 'Sayfadaki “Tüm zamanların net satışı” kartı, yıl dilimleyicisinde seçim yapılınca değişiyor. Kart hiç etkilenmesin istiyorsun. Ne yaparsın?', o: ['Kartı rapor düzeyi filtreye eklerim', 'Dilimleyiciyi açılır menü yaparım', 'Etkileşimleri düzenle → kartta Hiçbiri', 'Kartı başka bir sayfaya taşıyıp eşitlerim'], a: 2, why: 'Etkileşimleri düzenle ile dilimleyicinin bu kartı süzmesi kapatılır. Rapor filtresi kartı yine süzer, dilimleyici stili davranışı değiştirmez; başka sayfaya taşıyıp eşitlemek ise kartın yine süzülmesine yol açar.' },
+  { t: 'mc', q: 'Kanal dilimleyicisinde “Web” seçilince net satış değişiyor ama hedef 1.299.300 ₺ olarak sabit kalıyor. En olası açıklama nedir?', o: ['Hedef ölçüsü yanlış tabloyu topluyor', 'Hedeflerde kanal sütunu yok', 'Dilimleyici tek seçim moduna ayarlı', 'Rapor hizmette henüz yenilenmemiş'], a: 1, why: 'Filtre ilişkiler üzerinden akar; Hedefler tablosu Tarih ve Kategoriler’e bağlıdır, kanalla bir yolu yoktur. Bu yüzden kanal seçimi hedefi değiştirmez. Ölçü doğrudur, tek seçim ayarı ve yenileme bu davranışı açıklamaz.' },
+  { t: 'mc', q: 'Sayfada beş dilimleyici var; okuyucu her tıkladığında tüm görseller yeniden hesaplanıyor ve sayfa yavaşlıyor. Hangi ayar yardımcı olur?', o: ['Dilimleyicilere Uygula düğmesi eklemek', 'Görsellerin gölgesini kapatmak', 'Dilimleyicileri döşeme stiline çevirmek', 'Filtre bölmesini okuyucuya gizlemek'], a: 0, why: 'Sorgu azaltma ayarlarıyla eklenen Uygula düğmesi, okuyucu seçimlerini bitirene kadar hesaplamayı bekletir. Gölge ve stil yalnızca görünüştür; filtre bölmesini gizlemek dilimleyicilerin yarattığı yükü azaltmaz.' }
+] });
+/* ───────────── veri-alma ───────────── */
+ext('veri-alma', { min: 12, html: `
+Dosya kaynakları: CSV, Excel, klasör
+İş hayatında ilk raporların çoğu bir veritabanından değil, birinin e-postayla gönderdiği bir dosyadan başlar. Üç dosya türünün kendine özgü tuzakları vardır.
+Metin/CSV
+Giriş → Veri al → Metin/CSV. Açılan önizlemede üç ayara bak:
+Dosya kökeni (kodlama): Türkçe karakterler “Ã¼” gibi bozuk görünüyorsa 65001: Unicode (UTF-8) seç.
+Sınırlayıcı: Türkçe Excel'den kaydedilen CSV dosyaları çoğu zaman virgül değil noktalı virgül kullanır. Tüm veri tek sütunda geliyorsa sınırlayıcı yanlıştır.
+Veri türü algılama: Power BI türü ilk satırlara bakarak tahmin eder. Sonradan gelen farklı değerler hata olabilir; türleri Power Query'de kendin kontrol et.
+Excel çalışma kitabı
+Gezgin penceresinde hem sayfalar hem de Excel tabloları görünür. Mümkünse tabloyu seç: tablo büyüyünce yeni satırlar kendiliğinden gelir ve başlık satırı nettir. Birleştirilmiş hücreler, üstteki başlık-logo satırları ve alt toplam satırları Power BI için gürültüdür; Power Query ile temizlenir (Power Query ile veri temizleme dersi).
+Klasör
+Her ay aynı yapıda bir dosya geliyorsa (“satis_2024_09.xlsx”, “satis_2024_10.xlsx”…) dosyaları tek tek eklemek yerine Klasör bağlayıcısını kullan. Birleştir ve Dönüştür dediğinde Power BI bir örnek dosyadaki adımları tüm dosyalara uygular. Yeni ayın dosyasını klasöre bırakman yeterli: bir sonraki yenilemede rapora girer. Dosyalar şirketin SharePoint'indeyse SharePoint klasörü bağlayıcısını seç; kaynak bulutta olduğu için hizmette yenilemek için ağ geçidine gerek kalmaz.
+Web kaynakları
+Web bağlayıcısına bir adres verirsin. Adres bir HTML sayfasıysa Power BI sayfadaki tabloları listeler; bir CSV ya da JSON dosyasıysa onu doğrudan okur. Örnek: Merkez bankasının yayımladığı döviz kuru tablosu. İki uyarı: sayfanın düzeni değişirse sorgu bozulabilir ve bazı siteler otomatik okumaya izin vermez. Kalıcı bir iş için sitenin sunduğu resmi dosya ya da API adresini tercih et.
+Gizlilik düzeyleri: veri nereye gidebilir?
+Power Query bazen iki kaynağı birleştirirken birinin verisini diğerine sorgu içinde gönderir. Şirketin müşteri listesini, herkese açık bir web sitesine filtre olarak göndermesini istemezsin. Gizlilik düzeyi bunu yönetir.
+Düzey | Anlamı | Örnek kaynak | 
+Özel (Private) | Hassas veri; başka hiçbir kaynağa gönderilmez. | Maaş dosyası, kişisel veriler | 
+Kuruluş (Organizational) | Şirket içinde paylaşılabilir; genel kaynaklara gönderilmez. | Şirketin SQL sunucusu, SharePoint | 
+Genel (Public) | Herkese açık veri. | Herkese açık döviz kuru sayfası | 
+Yok (None) | Ayar yok; yalnızca kontrollü deneme için. | — | 
+Ayarlamak için: Dosya → Seçenekler ve ayarlar → Veri kaynağı ayarları → kaynağı seç → İzinleri düzenle → Gizlilik düzeyi. Yalnızca açık dosya için Giriş sekmesindeki Veri kaynağı ayarları da aynı pencereyi açar. Düzeyler uyumsuzsa Power Query birleştirmeyi durdurur ve bir “Formula.Firewall” hatası verir.
+“Yok say” kestirmesiSeçenekler → Gizlilik bölümünde gizlilik düzeylerini yok sayma seçeneği vardır ve hatayı susturur. Ama hassas verinin dışarı gitmesine izin verebilir ve hizmette yayımlanan rapor bu ayara uymaz. Doğru yol, her kaynağa gerçek düzeyini vermektir.
+Dosyanın yeri değiştiğinde (ör. masaüstünden ortak klasöre) aynı Veri kaynağı ayarları penceresindeki Kaynağı değiştir ile yeni yolu gösterirsin; sorgunun adımları korunur.
+`, ex: [
+  { t: 'mc', q: 'Bölge ofisleri her ay aynı yapıda bir Excel dosyası gönderiyor ve bunlar bir klasörde birikiyor. Raporun her ay elle uğraşmadan güncellenmesi için ne yaparsın?', o: ['Her ay yeni dosyayı ayrı bir sorgu olarak eklerim', 'Klasör bağlayıcısıyla dosyaları birleştiririm', 'Dosyaları elle tek bir Excel’e kopyalarım', 'Her ayı ayrı bir .pbix dosyasında tutarım'], a: 1, why: 'Klasör bağlayıcısı klasördeki tüm dosyalara aynı adımları uygular; yeni dosya bir sonraki yenilemede kendiliğinden gelir. Ayrı sorgular ve ayrı dosyalar bakım yükü yaratır, elle kopyalama hataya açıktır.' },
+  { t: 'mc', q: 'Bir CSV dosyasını aldın; “Şehir” sütun başlığı ve şehir adları “Ã…ehir” gibi bozuk karakterlerle görünüyor. Önizlemede neyi değiştirirsin?', o: ['Sınırlayıcıyı noktalı virgül yaparım', 'Veri türü algılamayı kapatırım', 'Dosya kökenini UTF-8 (65001) yaparım', 'Dosyayı Excel tablosu olarak alırım'], a: 2, why: 'Bozuk Türkçe karakter bir kodlama sorunudur; Dosya kökeni UTF-8 seçilince düzelir. Sınırlayıcı sütunların nasıl ayrılacağını, veri türü algılama sütun türlerini belirler; Excel’e dönüştürmek gereksiz ek iştir.' },
+  { t: 'mc', q: 'Herkese açık bir web sayfasındaki döviz kurlarını şirket SQL sunucusundaki satışlarla birleştirirken Formula.Firewall hatası aldın. Doğru çözüm hangisi?', o: ['SQL’i Kuruluş, web’i Genel olarak ayarlarım', 'Gizlilik düzeylerini her seferinde yok sayarım', 'İki kaynağı da Yok düzeyine çekerim', 'Döviz kurlarını elle bir tabloya yazarım'], a: 0, why: 'Her kaynağa gerçek gizlilik düzeyini vermek Power Query’nin güvenli bir birleştirme planı yapmasını sağlar. Yok saymak ya da Yok düzeyi hassas verinin dışarı gitmesine izin verebilir; elle yazmak ise güncelliği kaybettirir.' }
+] });
+/* ───────────── model-temel ───────────── */
+ext('model-temel', { min: 12, html: `
+Kardinaliteyi veriyle oku
+Kardinalite, bir ilişkinin iki ucunda kaç satırın eşleştiğini söyler. Ezberlemek yerine veriye bakarak bulabilirsin. Urunler ile Satislar ilişkisini ele alalım:
+Soru | Urunler[UrunNo] | Satislar[UrunNo] | 
+Kaç satır? | 40 | 1.620 | 
+Kaç farklı değer? | 40 (her ürün bir kez) | 38 (ürünler tekrar ediyor) | 
+Sonuç | “Bir” tarafı | “Çok” tarafı | 
+Satır sayısı ile farklı değer sayısı eşitse o sütun benzersizdir ve ilişkinin bir tarafı olabilir. Satislar'da 38 farklı ürün var; demek ki katalogdaki iki ürün hiç satılmamış. Bu bir hata değil, bir bilgidir. Model görünümünde ilişki çizgisinin ucunda 1 ve * işaretleri bu durumu gösterir.
+Kontrol etmenin kolay yolu: Tablo görünümünde sütunu seç; Power Query'de ise Görünüm → Sütun profili ile “farklı” ve “benzersiz” sayılarını gör. Boyut tablosunda farklı sayısı satır sayısından azsa yinelenen anahtar vardır ve önce onu temizlemen gerekir.
+Filtre yönünü bir örnekle izle
+İlişkiler tek yönlüyken filtre bir tarafından çok tarafına akar. Bunu iki basit ölçüyle görebilirsin:
+Katalog Ürün Sayısı = COUNTROWS(Urunler)
+Satılmış Ürün Sayısı = DISTINCTCOUNT(Satislar[UrunNo])
+Kırılım | Katalog Ürün Sayısı | Satılmış Ürün Sayısı | Neden? | 
+Kategori: Elektronik | 8 | 8 | Kategoriler → Urunler → Satislar yolu var; ikisi de süzülür. | 
+Kategori: Hediye | 2 | 1 | İki hediye ürününden biri hiç satılmamış. | 
+Yıl: 2022, 2023, 2024 | 40, 40, 40 | 36, 38, 38 | Tarih yalnızca Satislar'ı süzer; Urunler'e geri akmaz. | 
+Segment: Premium | 40 | 38 | Musteriler → Satislar akar, Satislar → Urunler akmaz. | 
+“Premium müşterilerin aldığı ürün sayısı” isteniyorsa yanlış yol ilişkiyi çift yönlü yapmaktır. Doğru yol, sayımı olgu tablosu üzerinden yapmaktır: DISTINCTCOUNT(Satislar[UrunNo]). Olgu tablosu her boyuttan filtre alır; sayımı orada yaparsan çift yönlü ilişkiye ihtiyaç kalmaz.
+İlişkiyi adım adım kurmak
+Model görünümünde bir tarafındaki sütunu (Urunler[UrunNo]) çok tarafındaki sütunun (Satislar[UrunNo]) üzerine sürükle.
+Açılan pencerede kardinaliteyi (Bire çok), çapraz filtre yönünü (Tek) ve “Bu ilişkiyi etkin yap” kutusunu kontrol et.
+İki sütunun veri türü aynı olmalı. Biri metin “27”, diğeri tam sayı 27 ise ilişki kurulmaz ya da eşleşme olmaz; türü Power Query'de eşitle.
+Kurduktan sonra bir tablo görselinde Urunler[Kategori] ile [Net Satış]'ı yan yana koy; boş (BLANK) bir kategori satırı görürsen olgu tablosunda boyutta karşılığı olmayan anahtarlar var demektir.
+Model sağlık kontrolüHer boyut anahtarı benzersiz mi? Her ilişki bire-çok ve tek yönlü mü? Boş boyut satırı var mı? Bu üç soruya “evet, evet, hayır” diyorsan temel model sağlamdır. İleri konular Model tasarımı II dersinde.
+`, ex: [
+  { t: 'dax', name: 'Katalogdaki Kategori Adedi', q: 'Katalogdaki Kategori Adedi: Kategoriler tablosundaki satır sayısını döndür. Sonra kategori ve yıl kırılımına bak: yıl sütununda neden hep aynı sayı (7) çıkıyor?', sol: 'COUNTROWS(Kategoriler)', hint: 'COUNTROWS bir tablonun satırlarını sayar. Tarih filtresi Kategoriler’e akmaz; ilişkiler bir tarafından çok tarafına doğru filtreler.' },
+  { t: 'dax', name: 'Alışveriş Yapan Farklı Müşteri', q: 'Alışveriş Yapan Farklı Müşteri: Sayımı olgu tablosu üzerinden yap: Satislar’daki farklı MusteriNo sayısı. Böylece kategori ve yıl filtresi sonuca yansır.', sol: 'DISTINCTCOUNT(Satislar[MusteriNo])', hint: 'Musteriler tablosunu değil, Satislar[MusteriNo] sütununu say.' },
+  { t: 'mc', q: 'Satislar[UrunNo] metin, Urunler[UrunNo] tam sayı türünde. İlişkiyi kurdun ama hiçbir satır eşleşmiyor. Ne yaparsın?', o: ['İlişkiyi çift yönlü yaparım', 'İki sütunun veri türünü eşitlerim', 'İlişkiyi çoka çok olarak işaretlerim', 'Urunler tablosunu Satislar’a eklerim'], a: 1, why: 'Anahtar sütunların veri türü aynı olmalıdır; tür eşitlenince değerler eşleşir. Filtre yönü ya da kardinalite tür uyumsuzluğunu çözmez; tabloları birleştirmek ise yıldız şemayı bozar.' },
+  { t: 'mc', q: 'Segment dilimleyicisinde “Premium” seçince “ürün sayısı” kartı hep 40 gösteriyor. Kartta COUNTROWS(Urunler) var. Premium müşterilerin aldığı ürünleri saymak için en iyi düzeltme hangisi?', o: ['Urunler–Satislar ilişkisini çift yönlü yapmak', 'Musteriler ile Urunler arasında ilişki kurmak', 'Kartı rapor düzeyi filtreye bağlamak', 'Sayımı DISTINCTCOUNT(Satislar[UrunNo]) yapmak'], a: 3, why: 'Filtre Musteriler’den Satislar’a akar ama Urunler’e geri akmaz. Sayımı olgu tablosunda yapmak sonucu doğru verir (Premium’da 38). Çift yönlü ilişki belirsizlik ve performans riski getirir, doğrudan Musteriler–Urunler ilişkisi modeli bozar, rapor filtresi sorunu çözmez.' }
+] });
+/* ───────────── tarih-tablosu ───────────── */
+ext('tarih-tablosu', { min: 12, html: `
+CALENDAR mı, CALENDARAUTO mu?
+İki fonksiyon da tek sütunlu (Date) bir gün listesi üretir. Farkları, aralığın nereden geldiğidir.
+ | CALENDAR(başlangıç, bitiş) | CALENDARAUTO([mali yıl sonu ayı]) | 
+Aralık | Senin verdiğin iki tarih | Modeldeki tüm tarih sütunlarının en küçüğünden en büyüğüne, tam yıllara genişletilmiş | 
+Kontrol | Tam sende | Modele eklenen her tarih sütunu aralığı değiştirebilir | 
+Ne zaman? | Çoğu üretim modelinde | Hızlı deneme; ya da tüm tarih sütunlarının temiz olduğundan eminsen | 
+Bu modelde bir deneme yapalım. Satışlar 22 Haziran 2022 ile 31 Aralık 2024 arasında. Ama CALENDARAUTO() çalıştırınca tablo 1 Ocak 2015'te başlar, 31 Aralık 2025'te biter: 4.018 gün. Neden? Calisanlar[IseGiris] sütununda 2015'te işe girmiş bir çalışan, Projeler[BitisPlan] sütununda 2025'te bitmesi planlanan bir proje var. CALENDARAUTO bunları da hesaba katar. Rapordaki yıl dilimleyicisinde satış olmayan sekiz yıl görünür.
+Daha güvenli yol, aralığı satış verisinden almak ve tam yıla yuvarlamaktır:
+EVALUATE
+CALENDAR(
+    DATE(YEAR(MIN(Satislar[Tarih])), 1, 1),
+    DATE(YEAR(MAX(Satislar[Tarih])), 12, 31)
+)
+Sonuç 1.096 gündür: 2022'nin başından 2024'ün sonuna. Bu uygulamadaki Tarih tablosu da tam olarak bu aralıktadır. Mali yılın Haziran'da bittiği bir şirkette CALENDARAUTO(6) yazılırsa aralık Temmuz–Haziran yıllarına genişletilir.
+Sıralama sütunlarıyla tam bir tablo
+Metin olan her takvim sütununun yanında onu doğru sıraya koyacak bir sayı sütunu olmalı:
+EVALUATE
+ADDCOLUMNS(
+    CALENDAR(DATE(2024, 1, 1), DATE(2024, 12, 31)),
+    "Yil", YEAR([Date]),
+    "AyNo", MONTH([Date]),
+    "Ay", FORMAT([Date], "MMM"),
+    "YilAy", FORMAT([Date], "yyyy-MM"),
+    "GunNo", WEEKDAY([Date], 2),
+    "HaftaninGunu", FORMAT([Date], "dddd")
+)
+Metin sütunu | Sırala ölçütü | Yapılmazsa | 
+Ay (Oca, Şub…) | AyNo | Ağu, Ara, Eki… alfabetik | 
+HaftaninGunu (Pazartesi…) | GunNo (Pazartesi = 1) | Cuma, Cumartesi, Pazar… alfabetik | 
+YilAy (2024-01) | Gerekmez | Yıl-ay biçimi kendiliğinden doğru sıralanır | 
+Ayarlamak için sütunu seç → Sütun araçları → Sütuna göre sırala → sayı sütunu. WEEKDAY'in ikinci bağımsız değişkeni 2 olunca hafta Pazartesi başlar; Türkiye'deki alışkanlığa uygundur.
+İşaretlemeden önce kontrol listesi
+Tabloya sağ tık → Tarih tablosu olarak işaretle (ya da tabloyu seçip Tablo araçları şeridindeki aynı komut). Power BI tarih sütununu şu kurallara göre denetler:
+Değerler benzersiz: her gün bir kez.
+Boş değer yok.
+Kesintisiz: başlangıçtan bitişe tek gün eksik değil.
+Sütun türü Tarih ya da Tarih/Saat; Tarih/Saat ise tüm değerlerde saat aynı.
+Bu yüzden tarih tablosunu satış tablosundan (ör. VALUES(Satislar[Tarih])) üretmek yanlıştır: bu modelde satış olan gün sayısı 2022'de yalnızca 54, 2023'te 202, 2024'te 277'dir. Takvimde ise 365, 365 ve 366 gün olmalı. Eksik günler zaman zekâsı hesaplarını bozar. Zaman zekâsı fonksiyonları Zaman zekâsı dersinde.
+`, ex: [
+  { t: 'query', q: 'Satış verisinin ilk yılının 1 Ocak’ından son yılının 31 Aralık’ına kadar her günü içeren bir takvim döndür. Tarihleri elle yazma; MIN ve MAX ile Satislar[Tarih] sütunundan al.', start: 'EVALUATE\n', sol: 'EVALUATE\nCALENDAR(DATE(YEAR(MIN(Satislar[Tarih])), 1, 1), DATE(YEAR(MAX(Satislar[Tarih])), 12, 31))', hint: 'CALENDAR(DATE(YEAR(MIN(...)), 1, 1), DATE(YEAR(MAX(...)), 12, 31)) kalıbını kur. Sonuç 1.096 satır olmalı.' },
+  { t: 'query', q: '2024’ün ilk çeyreği (1 Ocak – 31 Mart) için bir takvim döndür ve her güne AyNo (ay numarası) ile Ay (kısa ay adı) sütunlarını ekle.', start: 'EVALUATE\n', sol: 'EVALUATE\nADDCOLUMNS(CALENDAR(DATE(2024, 1, 1), DATE(2024, 3, 31)), "AyNo", MONTH([Date]), "Ay", FORMAT([Date], "MMM"))', hint: 'ADDCOLUMNS(CALENDAR(...), "AyNo", MONTH([Date]), "Ay", FORMAT([Date], "MMM"))' },
+  { t: 'dax', name: 'Satış Yapılan Gün Sayısı', q: 'Satış Yapılan Gün Sayısı: En az bir satış satırı olan farklı gün sayısını hesapla. Yıl kırılımında bunu takvimdeki gün sayısıyla karşılaştır.', sol: 'DISTINCTCOUNT(Satislar[Tarih])', hint: 'Satislar[Tarih] sütunundaki farklı değerleri say.' },
+  { t: 'mc', q: 'Modelde CALENDARAUTO() ile tarih tablosu kurdun. Satışlar 2022’de başlıyor ama yıl dilimleyicisinde 2015’ten 2025’e kadar yıllar görünüyor. En olası neden nedir?', o: ['CALENDARAUTO yalnızca bugünün tarihine bakar', 'Tarih tablosu işaretlenmemiştir', 'Diğer tarih sütunları aralığı genişletir', 'Dilimleyici yanlış sütuna bağlıdır'], a: 2, why: 'CALENDARAUTO modeldeki tüm tarih sütunlarına bakar; burada işe giriş (2015) ve planlanan proje bitişi (2025) tarihleri aralığı genişletir. Bugünün tarihine bakmaz; işaretleme aralığı değiştirmez; dilimleyici doğru sütundadır.' }
+] });
+})(window);

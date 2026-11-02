@@ -1,0 +1,12 @@
+const C=require('./common.js');
+(async()=>{const {b,ctx,p,errs}=await C.open();
+await p.goto('http://localhost:8765/index.html#hedef');
+await p.click('[data-ob-path="analist"]'); await p.click('[data-ob-next]'); 
+await p.click('[data-ob-exp="sifir"]'); await p.click('[data-ob-next]');
+await p.click('[data-ob-hours="5"]'); await p.click('[data-ob-next]'); await p.waitForTimeout(400);
+console.log('URL',p.url());
+await p.screenshot({path:C.SS+'05_after_onboard.png',fullPage:false});
+console.log((await p.innerText('#main')).slice(0,3000));
+console.log((await p.$$eval('#main button, #main a',els=>els.slice(0,40).map(e=>e.tagName+JSON.stringify(e.dataset)+' '+e.textContent.trim().slice(0,60)))).join('\n'));
+await ctx.storageState({path:'st_onb.json'});
+console.log(errs);await b.close();})();

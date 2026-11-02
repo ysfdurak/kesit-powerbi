@@ -1,0 +1,11 @@
+global.window = global; const P = '/home/claude/pbi/';
+for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'pqdata','extra','mcfix']) require(P + f + '.js');
+const plain = s => String(s).replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, 'x');
+const all = [];
+PBI_LESSONS.forEach(l => (l.ex || []).forEach((e, i) => { if (e.t === 'mc' && !e.thumbs) all.push({ src: l.id + '#' + i, e }); }));
+PBI_PLACEMENT.forEach((e, i) => all.push({ src: 'test#' + i, e }));
+let longest = 0, strict = 0; const flagged = [];
+all.forEach(({ src, e }) => { const L = e.o.map(o => plain(o).length); const mx = Math.max(...L); const second = L.slice().sort((a, b) => b - a)[1];
+  if (L[e.a] === mx) { longest++; if (L[e.a] > 1.3 * second) { strict++; flagged.push(src + ' | ' + L.join('/') + ' | ' + plain(e.q).slice(0, 70)); } } });
+console.log('toplam', all.length, 'doğru en uzun', longest, '(%' + Math.round(longest / all.length * 100) + ')', 'belirgin en uzun (>%30)', strict);
+if (process.argv[2]) console.log(flagged.join('\n'));

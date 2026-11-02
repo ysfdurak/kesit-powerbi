@@ -1,0 +1,15 @@
+require('./e.js');
+const t=(e,s)=>{try{return ev(e,s)}catch(x){return 'ERR '+x.message.slice(0,90)}};
+const j=[{t:'Tarih',c:'YilAy',values:['2024-01']}];
+const wrong='CALCULATE([Net Satış], Satislar[TeslimTarihi] >= MIN(Tarih[Tarih]), Satislar[TeslimTarihi] <= MAX(Tarih[Tarih]))';
+const wrong2='VAR Bas = MIN(Tarih[Tarih]) VAR Son = MAX(Tarih[Tarih]) RETURN CALCULATE([Net Satış], Satislar[TeslimTarihi] >= Bas, Satislar[TeslimTarihi] <= Son)';
+const fix='VAR Bas = MIN(Tarih[Tarih]) VAR Son = MAX(Tarih[Tarih]) RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Satislar[TeslimTarihi] >= Bas, Satislar[TeslimTarihi] <= Son)';
+p('ocak24 siparis', t('[Net Satış]',j), 'teslim', t('[Teslime Göre Satış]',j), 'wrong', t(wrong2,j), 'fix', t(fix,j));
+p(g([{t:'Tarih',c:'Yil'}],['[Net Satış]','[Teslime Göre Satış]','[Teslime Göre Satış] - [Net Satış]','CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))','CALCULATE([Satılan Adet], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))']));
+p('tot', t('[Net Satış]'), t('[Teslime Göre Satış]'), t('CALCULATE([Net Satış], ISBLANK(Satislar[TeslimTarihi]))'), t('CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[TeslimTarihi]))'));
+p(g([{t:'Satislar',c:'Durum'}],['COUNTROWS(Satislar)','CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[TeslimTarihi]))']));
+p(g([{t:'Tarih',c:'YilAy'}],['[Net Satış]','[Teslime Göre Satış]']).slice(22,26));
+const sa='DIVIDE(CALCULATE(COUNTROWS(Satislar), FILTER(Satislar, NOT ISBLANK(Satislar[TeslimTarihi]) && EOMONTH(Satislar[TeslimTarihi], 0) = EOMONTH(Satislar[Tarih], 0))), CALCULATE(COUNTROWS(Satislar), NOT ISBLANK(Satislar[TeslimTarihi])))';
+p('ayni ay', t(sa), g([{t:'Tarih',c:'Yil'}],[sa]));
+p('ytd teslim dec', t('CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))',[{t:'Tarih',c:'YilAy',values:['2024-05']}]), t('[Satış YTD]',[{t:'Tarih',c:'YilAy',values:['2024-05']}]));
+p('avg kargo', t('[Ortalama Kargo Günü]'), t('CALCULATE([Ortalama Kargo Günü], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))',j), t('[Ortalama Kargo Günü]',j));

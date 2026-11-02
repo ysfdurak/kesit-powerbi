@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8765",
+      "localStorage": [
+        {
+          "name": "pbipatika.v1",
+          "value": "{\"weak\":{},\"skillStat\":{\"pl-ws4\":{\"n\":1,\"p\":0},\"pl-ws3\":{\"n\":1,\"p\":0},\"pl-tl9\":{\"n\":1,\"p\":0},\"pl-dm1\":{\"n\":1,\"p\":0},\"pl-gc3\":{\"n\":1,\"p\":0},\"pl-dx2\":{\"n\":2,\"p\":0},\"pl-us8\":{\"n\":1,\"p\":0},\"pl-gc4\":{\"n\":1,\"p\":1},\"pl-dm3\":{\"n\":1,\"p\":0},\"pl-tl4\":{\"n\":2,\"p\":0},\"pl-cr9\":{\"n\":1,\"p\":1},\"pl-tl10\":{\"n\":1,\"p\":0},\"pl-sg3\":{\"n\":1,\"p\":0},\"pl-ws2\":{\"n\":1,\"p\":0},\"pl-us5\":{\"n\":1,\"p\":0},\"pl-us3\":{\"n\":1,\"p\":0},\"pl-us6\":{\"n\":1,\"p\":0},\"pl-pt5\":{\"n\":1,\"p\":0}},\"rv\":{},\"rvc\":0,\"reports\":[],\"exams\":{\"pl300k\":{\"best\":10,\"n\":1,\"last\":10,\"date\":\"2026-10-27\"}},\"arena\":null,\"theme\":\"auto\",\"done\":{},\"ex\":{},\"xp\":4,\"days\":{\"2026-10-27\":4},\"placement\":null,\"drafts\":{},\"last\":null,\"seen\":{},\"mine\":[],\"studio\":null,\"gclosed\":{\"sinav\":false,\"home\":false},\"final\":{},\"labSeen\":{},\"trickSeen\":{},\"pq\":{},\"pqFree\":{},\"ivr\":{},\"cap\":{},\"ready\":{},\"cert\":{},\"navc\":{\"Başvuru\":true}}"
+        }
+      ]
+    }
+  ]
+}

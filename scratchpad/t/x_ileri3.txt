@@ -1,0 +1,552 @@
+/* PBIPatika — ileri ders genişletmeleri (3): müşteri analitiği, segmentasyon, dashboard tasarımı, bitirme, PL-300, DP-600, mülakat */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const ext = (id, o) => { const l = L.find(x => x.id === id); if (!l) { if (W.console) console.warn('ext: ders yok', id); return; } if (o.html) l.body += 'Uzmanlaş' + o.html + ''; if (o.ex) l.ex = (l.ex || []).concat(o.ex); if (o.min) l.min += o.min; (W.PBI_EXT = W.PBI_EXT || []).push({ id, html: o.html || '', ex: o.ex || [] }); };
+/* ───────────────────────── 1. Müşteri analitiği ───────────────────────── */
+ext('musteri-analitigi', { min: 16, html: `
+Aktif müşteri: tanımı sen seçersin
+Pazarlama müdürü soruyor: “Şu anda kaç aktif müşterimiz var?” “Aktif” bir iş tanımıdır; raporu yazan kişi onu açıkça seçip belgeye yazar. Anadolu Market'te kullanılan tanım şu: son 90 günde en az bir iptal edilmemiş siparişi olan müşteri.
+Aktif Müşteri (90 Gün) =
+COUNTROWS(
+    CALCULATETABLE(
+        VALUES(Satislar[MusteriNo]),
+        DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -90, DAY),
+        Satislar[Durum] <> "İptal"
+    )
+)
+Motor bunu nasıl değerlendirir?
+MAX(Tarih[Tarih]) dış bağlamda hesaplanır: 2024 hücresinde 31.12.2024.
+DATESINPERIOD geriye 90 günlük bir liste döndürür: 3 Ekim – 31 Aralık 2024.
+CALCULATETABLE bu listeyi Tarih[Tarih] filtresinin yerine koyar; tarih tablosu işaretli olduğu için Yıl filtresi de kalkar. Hücre artık “son 90 günde alışveriş yapanlar”ı sayar.
+Hücre | Müşteri Sayısı (dönem içinde) | Aktif Müşteri (90 Gün) | 
+2022 | 32 | 28 | 
+2023 | 77 | 55 | 
+2024 | 123 | 89 | 
+2024-Ç4 | 90 | 89 | 
+2024-Ç4'teki 1 kişilik fark öğreticidir: çeyrek 92 gün, pencere 90 gün. 1–2 Ekim'de alışveriş yapıp sonra gelmeyen müşteri çeyreğin müşterisidir ama “aktif” değildir.
+Kenar durumlar
+Toplam satırı: Kategori matrisinde satırlar 32, 32, 34, 5, 50, 46, 30 gösterir. Toplamları 229 eder, ama toplam satırı 89 der. Bir müşteri birden çok kategoriden alır. Bu doğrudur; araç ipucunda (tooltip) açıkla.
+Gün sayımı: -90, DAY son günü de sayar ve tam 90 gün verir. “Son alımdan bu yana ≤ 90 gün” yazarsan 91 gün sayarsın: 2024 sonunda 90 müşteri çıkar, ölçü 89 der. Tanımı veri sözlüğüne yaz.
+TODAY() tuzağı: Çapayı TODAY() yaparsan veri 31.12.2024'te bittiği hâlde pencere bugünden geriye kayar ve sonuç boş gelir. Yenileme bir gün gecikirse de sayı sessizce düşer. Çapa her zaman verinin son günü olmalı: CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()).
+Kayıp (churn) tanımını seçmek
+Tanım | Nasıl ölçülür? | Ne zaman doğru? | 
+Sabit eşik | Son alımdan bu yana X günden fazla geçti | Abonelik olmayan perakende; kampanya listesi | 
+Dönem karşılaştırma | Önceki 12 ayda vardı, bu dönemde yok ([Kayıp Müşteri]) | Yıllık yönetim raporu, bütçe | 
+Olay tabanlı | Üyelik iptali, sözleşme bitişi | Abonelik işi; olay verisi gerekir | 
+Sabit eşiği tahminle seçme. Müşterilerin iki alışveriş arasında normalde ne kadar beklediğine bak. Aşağıdaki sorgu bunu motorda hesaplar:
+EVALUATE
+VAR T =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"),
+        "Ilk", CALCULATE(MIN(Satislar[Tarih]), Satislar[Durum] <> "İptal"),
+        "Son", CALCULATE(MAX(Satislar[Tarih]), Satislar[Durum] <> "İptal"),
+        "N", CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), Satislar[Durum] <> "İptal")
+    )
+VAR Tekrar = ADDCOLUMNS(FILTER(T, [N] > 1), "Ara", DIVIDE(DATEDIFF([Ilk], [Son], DAY), [N] - 1))
+RETURN
+    ROW(
+        "Medyan", MEDIANX(Tekrar, [Ara]),
+        "Yuzde90", PERCENTILEX.INC(Tekrar, [Ara], 0.9)
+    )
+Sonuç: tekrar alan 127 müşteride medyan aralık 83 gün, %90'lık değer 155 gün (%80'lik değer 136). 90 günlük bir “kayıp” eşiği normal davranan müşterilerin neredeyse yarısını kayıp sayar; 180 gün, %90'ın olağan aralığının dışında kalır. 2024 sonunda son alımı 180 günden eski müşteri sayısı 27. Rapor hâli Vaka: müşteri kaybı dersinde.
+Anti-kalıp: pencere uyuşmazlığı
+“Önceki 12 ayda vardı, bu dönemde yok” mantığını çeyrek kırılımına koyarsan şu olur: 2024 yıl hücresinde oran %16,9 (77 müşterinin 13'ü). Çeyreklerde ise %30–39 görünür. Çünkü 12 aylık bir geçmiş, 3 aylık bir gözlemle karşılaştırılıyor. Üç ay alışveriş yapmamak kayıp değildir. Kural: gözlem penceresi karşılaştırma penceresinden kısa olmamalı; olursa ölçü BLANK dönsün.
+Korumalı Yıllık Kayıp % =
+VAR Gun = COUNTROWS(Tarih)
+VAR DonemBasi = MIN(Tarih[Tarih])
+VAR Onceki =
+    CALCULATETABLE(
+        VALUES(Satislar[MusteriNo]),
+        DATESINPERIOD(Tarih[Tarih], DonemBasi - 1, -12, MONTH),
+        Satislar[Durum] <> "İptal"
+    )
+VAR Simdi = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")
+RETURN
+    IF(Gun >= 365, DIVIDE(COUNTROWS(EXCEPT(Onceki, Simdi)) + 0, COUNTROWS(Onceki)))
++ 0 önemli: boş kümede COUNTROWS BLANK döner ve 2023'te (2022 müşterilerinin hepsi geri döndü) oran %0 yerine boş görünür.
+CLV: müşteri yaşam boyu değeri
+Finans direktörü soruyor: “Yeni bir müşteri kazanmak için en fazla ne harcayabiliriz?” Cevap CLV'dir (Customer Lifetime Value). Tek bir doğru formül yok. Olasılıksal modeller Python ya da Fabric not defterinde kurulur ve sonucu tabloya yazılır; DAX tarafında üç yaklaşım var.
+Yaklaşım | Hesap | Güçlü yanı | Zayıf yanı | 
+Tarihsel | Bugüne kadarki brüt kâr ÷ müşteri | Kesin, denetlenebilir | Geleceği söylemez; yeni müşteriyi küçük gösterir | 
+Basit formül | Yıllık müşteri başı kâr × beklenen ömür (≈ 1 ÷ yıllık kayıp oranı) | Anlaşılır, tek ölçü | Kayıp oranına çok duyarlı | 
+Kohort temelli | Her kohortun ay ay birikimli kârı | En dürüst eğri | Uzun geçmiş ister | 
+Birikimli Müşteri Kârı =
+VAR Son = MAX(Tarih[Tarih])
+RETURN
+    DIVIDE(
+        CALCULATE([Brüt Kâr], REMOVEFILTERS(Tarih), Tarih[Tarih] <= Son),
+        CALCULATE([Müşteri Sayısı], REMOVEFILTERS(Tarih), Tarih[Tarih] <= Son)
+    )
+Basit CLV =
+VAR KarMusteri = DIVIDE([Brüt Kâr], [Müşteri Sayısı])
+VAR Onceki = CALCULATE([Müşteri Sayısı], DATESINPERIOD(Tarih[Tarih], MIN(Tarih[Tarih]) - 1, -12, MONTH))
+VAR Kayip = IF(COUNTROWS(Tarih) >= 365, DIVIDE([Kayıp Müşteri] + 0, Onceki))
+VAR Omur = MIN(5, DIVIDE(1, Kayip))
+RETURN IF(Kayip > 0, KarMusteri * Omur)
+2024 için: müşteri başı yıllık brüt kâr 2.346 ₺, kayıp oranı %16,9. Ömür 1 ÷ 0,169 ≈ 5,9 yıl çıkar; 5 yıllık tavanla CLV 11.730 ₺ olur. Birikimli kâr ise 2024 sonunda müşteri başı 3.354 ₺ (2023 sonunda 2.176 ₺).
+Kayıp oranı 0: 2023'te 1 ÷ 0 sonsuz ömür demektir. IF(Kayip > 0, …) bu hücreyi boş bırakır. Tavan (5 yıl) bir iş varsayımıdır; ölçü açıklamasına yaz.
+Tek sayı verme: Bir aralık sun: ömür 3 yılsa 7.038 ₺, 5 yılsa 11.730 ₺. Karar alt uçla verilir.
+Segment farkı: Tüm dönemde müşteri başı brüt kâr Premium'da 5.866 ₺, Bireysel'de 1.961 ₺. Ortalama bir CLV, iki çok farklı kitleyi tek sayıda saklar.
+Kohort matrisi: üretimde üç tuzak
+1. Sağdan sansür
+Son kohortların ileri ayları henüz yaşanmadı. [Kohort Tutma %] ölçüsü 12. ay sütununun toplamında %19,1 der (136 müşterinin 26'sı). Ama Ocak 2024'ten sonraki kohortlar 12. aya ulaşmadı; paydada olmamalılar. Yalnızca olgun kohortlarla oran %33,8 olur. 6. ayda fark %31,6'ya karşı %38,1.
+Olgun Kohort Tutma % =
+VAR Ay = SELECTEDVALUE(Satislar[KohortAyFarki])
+VAR SonTarih = CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS())
+VAR Olgun =
+    FILTER(
+        VALUES(Musteriler[KohortAy]),
+        VAR Ilk = CALCULATE(MIN(Musteriler[IlkSiparis]))
+        RETURN NOT ISBLANK(Ilk) && DATEDIFF(Ilk, SonTarih, MONTH) >= Ay
+    )
+VAR Aktif = CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal", REMOVEFILTERS(Tarih), Olgun)
+VAR Boyut =
+    CALCULATE(
+        DISTINCTCOUNT(Satislar[MusteriNo]),
+        Satislar[KohortAyFarki] = 0, Satislar[Durum] <> "İptal", REMOVEFILTERS(Tarih), Olgun
+    )
+RETURN IF(NOT ISBLANK(Ay) && Ay >= 0, DIVIDE(Aktif, Boyut))
+2. Negatif ay farkı
+Matriste −6 ile −1 arası sütunlar görünür. Kohort, ilk iptal edilmemiş siparişten hesaplanır. Ondan önce iptal edilmiş siparişi olan müşteri negatif fark üretir. Görsel filtresine KohortAyFarki ≥ 0 koy ve bu kararı belgeye yaz.
+3. Küçük kohortlar
+2023-09 kohortunda 1 müşteri var; hücreleri ya %100 ya %0 görünür. Kohort büyüklüğünü ilk sütuna koy, 5'ten küçük kohortları gri yap ya da çeyreklik kohorta geç. Kohort büyüklüğü ölçüsünde KohortAyFarki = 0 filtresi sütundan gelen ay farkının üzerine yazar; değer satırda sabit kalır.
+RFM'yi üretime almak
+Uygulamadaki [RFM Skoru] sabit eşikler kullanıyor (ör. son 12 ay satışı 12.000 ₺ ve üstü → M = 5). İki seçenek var:
+Sabit eşik yıllar arası kıyası anlamlı tutar (“Şampiyon” her yıl aynı ölçüt) ama dağılım dengesiz olabilir: 2024'te 123 müşteriden yalnızca 16'sı M ≥ 12.000. Yüzdelik eşik her puana yaklaşık eşit müşteri koyar ama dağılım her yıl yeniden bölündüğü için yıl kıyası zayıflar. 2024 net satışında %20'lik sınırlar 2.030 / 3.735 / 5.372 / 9.305 ₺. Segment dağılımı 2023 sonundan 2024 sonuna şöyle değişti: Şampiyon 17 → 27, Potansiyel sadık 37 → 75, Kaybedilmiş 0 → 13.
+Ölçü mü, anlık görüntü mü?
+Ölçü dilimleyiciye tepki verir; keşif için iyidir. Ama CRM ekibi “1 Kasım'da Şampiyon olanlara kampanya gönderdik” dediğinde rapor aynı listeyi yeniden üretebilmelidir. Bunun için her ay sonunda bir anlık görüntü tablosu (Ay, MusteriNo, Segment) yazılır; segment geçişleri de bu tablodan basit bir sayımla çıkar. Milyonlarca müşteride ölçü her hücrede müşteri başına üç CALCULATE çalıştırır; o ölçekte anlık görüntü zorunludur (DAX optimizasyonu dersi).
+Yayın öncesi kontrol listesiTanımlar veri sözlüğünde mi? Çapa verinin son günü mü? Kayıp eşiği aralık dağılımına dayanıyor mu? Kohortta olgun payda, büyüklük sütunu ve ay farkı ≥ 0 filtresi var mı? CLV aralık ve varsayımlarıyla mı sunuluyor? Kampanya segmentleri anlık görüntüden mi?
+`, ex: [
+  { t:'dax', name:'Aktif Müşteri (90 Gün)', q:'Aktif Müşteri (90 Gün): Filtre bağlamının son gününden geriye 90 gün içinde en az bir iptal edilmemiş siparişi olan müşteri sayısı. 2024 hücresi 89 olmalı.', sol:'COUNTROWS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -90, DAY), Satislar[Durum] <> "İptal"))', hint:'Müşteri listesini CALCULATETABLE ile al; tarih penceresi DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -90, DAY).' },
+  { t:'dax', name:'Yıllık Kayıp Oranı %', q:'Yıllık Kayıp Oranı %: Dönem başından önceki 12 ayda alışveriş yapan müşterilerden bu dönemde alışveriş yapmayanların oranı (iptaller hariç). Hiç kayıp yoksa boş değil %0 göstersin. Kontrol yıl kırılımında yapılır: 2024 için yaklaşık %16,9.', sol:'VAR DonemBasi = MIN(Tarih[Tarih]) VAR Onceki = CALCULATETABLE(VALUES(Satislar[MusteriNo]), DATESINPERIOD(Tarih[Tarih], DonemBasi - 1, -12, MONTH), Satislar[Durum] <> "İptal") VAR Simdi = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal") RETURN DIVIDE(COUNTROWS(EXCEPT(Onceki, Simdi)) + 0, COUNTROWS(Onceki))', hint:'Önceki 12 ayın müşterileri EXCEPT bu dönemin müşterileri; payda önceki kümenin büyüklüğü. Boş küme için COUNTROWS(...) + 0.', grid:[{t:'Tarih',c:'Yil'}] },
+  { t:'dax', name:'Kohort Büyüklüğü', q:'Kohort Büyüklüğü: Kohort matrisinin ilk sütunu için, satırdaki kohortun 0. ayında (KohortAyFarki = 0) alışveriş yapan müşteri sayısı. Takvim filtrelerini yok say, iptalleri hariç tut. Kontrol Musteriler[KohortAy] kırılımında yapılır.', sol:'CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[KohortAyFarki] = 0, Satislar[Durum] <> "İptal", REMOVEFILTERS(Tarih))', hint:'DISTINCTCOUNT(Satislar[MusteriNo]) üç filtreyle: KohortAyFarki = 0, Durum <> "İptal", REMOVEFILTERS(Tarih).', grid:[{t:'Musteriler',c:'KohortAy'}] },
+  { t:'dax', name:'Birikimli Müşteri Kârı', q:'Birikimli Müşteri Kârı: Tarihsel CLV. Verinin başından filtre bağlamının son gününe kadar elde edilen brüt kârın, aynı aralıkta alışveriş yapan müşteri sayısına bölümü. 2024 hücresi yaklaşık 3.354 ₺.', sol:'VAR Son = MAX(Tarih[Tarih]) RETURN DIVIDE(CALCULATE([Brüt Kâr], REMOVEFILTERS(Tarih), Tarih[Tarih] Dört segmentleme yolu: hangisi ne zaman?
+Satış direktörü üç şey istiyor: müşterileri yıllık harcamaya göre bantlara ayırmak, her bandın satış payını görmek ve “geçen yıla göre kaç müşteri üst banda çıktı?” sorusunu cevaplamak. Önce hangi yolu kullanacağına karar ver.
+Yol | Filtreye tepki | Eksende kullanım | Maliyet | Doğru olduğu yer | 
+Hesaplanmış sütun | Yok | Doğrudan | Yenilemede bir kez | Ömür boyu değer, kayıt kanalı gibi sabit özellikler | 
+Ölçü + ilişkisiz bant tablosu | Var | Bant tablosu üzerinden | Her hücrede müşteri sayısıyla orantılı | Keşif, “seçili dönemde hangi bant?” | 
+Yüzdelik eşik (ölçü) | Var | Bant tablosu ya da kart | Sıralama + yüzdelik hesap | “En iyi %20” gibi göreli tanımlar | 
+Anlık görüntü tablosu | Dondurulmuş | Doğrudan | Kaynakta, ayda bir | Kampanya listeleri, geçiş analizi, denetim | 
+İlişkisiz bant tablosu: mekanizma ve toplam satırı
+MusteriDilimleri tablosunun modelde hiçbir ilişkisi yok. Matrisin satırına Dilim konduğunda filtre yalnızca bu küçük tabloyu daraltır; Satislar'a ulaşmaz. Bu yüzden ölçü üç iş yapar: müşterileri ve satışlarını sanal bir tabloda hesaplar, görünen bant satırlarını dolaşır, sınırlar arasındaki müşterileri toplar. Hazır [Dilimdeki Müşteri] ölçüsü bunu SUMX(MusteriDilimleri, …) ile yapar.
+Anti-kalıp: SELECTEDVALUE ile sınır okumak
+Naif Dilim Müşterisi =
+VAR AltSinir = SELECTEDVALUE(MusteriDilimleri[Min])
+VAR UstSinir = SELECTEDVALUE(MusteriDilimleri[Max])
+RETURN
+    COUNTROWS(
+        FILTER(VALUES(Musteriler[MusteriNo]), [Net Satış] > AltSinir && [Net Satış] <= UstSinir)
+    )
+2024 seçiliyken bant satırları doğru görünür: Küçük 24, Orta 53, Büyük 36, VIP 10. Ama toplam satırı boş gelir. Toplamda dört bant birden görünür, SELECTEDVALUE BLANK döner ve hiçbir müşteri koşulu sağlamaz. SUMX(MusteriDilimleri, …) kalıbı ise toplamda dört bandı tek tek dolaşır ve 123 verir. Kural: ilişkisiz tablodan değer okuyorsan, toplam satırında birden çok satır görüneceğini varsay ve satırları dolaş.
+Sınırların çakışması
+Bantlar “alt sınır hariç, üst sınır dahil” kuralıyla tanımlı: [S] > Min && [S] <= Max. İki tarafı da dahil yazarsan, tam 6.000 ₺ harcayan bir müşteri hem Orta'da hem Büyük'te sayılır. Satırların toplamı toplam satırından büyük çıkar. Bu modelde tam sınırda müşteri olmadığı için hata bugün görünmez; veri büyüdüğünde sessizce ortaya çıkar. Bunu test sayfana bir kontrol olarak ekle: bant satırlarının toplamı, toplam satırına eşit mi?
+Bant payı ve toplam
+Bant Satış Payı % =
+DIVIDE([Dilim Satışı], [Net Satış])
+Pay ölçüsü ilişkisiz tabloda kolaydır, çünkü [Net Satış] bant filtresinden etkilenmez: payda her satırda dönemin tamamıdır. 2024'te VIP bandı 10 müşteriyle 184.624 ₺ getirir (%24,7). Tüm yıllar birlikte alındığında VIP'te 34 müşteri ve %56,6 pay görünür. Aynı bant tanımı, dönem uzadıkça müşterileri yukarı taşır. Yıllık eşikleri tüm dönemde kullanma; ya dönemi sabitle ya eşikleri dönem uzunluğuna göre ölçekle.
+Göreli segment: yüzdelik eşik
+“En iyi %20 müşterimiz satışın ne kadarını getiriyor?” Burada eşik sabit değil; seçili döneme ve kategoriye göre yeniden hesaplanır.
+Müşteri 80. Yüzdelik Satışı =
+PERCENTILEX.INC(
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"),
+        "S", [Net Satış]
+    ),
+    [S], 0.8
+)
+Üst Beşte Bir Payı % =
+VAR Esik = [Müşteri 80. Yüzdelik Satışı]
+VAR T =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"),
+        "S", [Net Satış]
+    )
+RETURN DIVIDE(SUMX(FILTER(T, [S] >= Esik), [S]), [Net Satış])
+2024'te eşik 9.305 ₺; bu eşiği geçen müşteriler satışın %48,4'ünü getirir. Elektronik'te eşik 7.420 ₺ ve pay %57,1; Hediye'de eşik 580 ₺ ve pay %35,1. Neden VALUES(Musteriler[MusteriNo]) değil de Satislar'dan alınan liste? Musteriler'de 150 kayıt var. Seçili dönemde alışveriş yapmayanlar BLANK satışla yüzdelik hesabına girerse eşik aşağı kayar. Kenar durum: eşikte birden çok müşteri varsa >= nedeniyle “%20” biraz fazla müşteri kapsayabilir. Kartın altına gerçek müşteri sayısını yaz.
+Segment geçişleri: bu yıl ve geçen yıl
+Geçiş sorusunun iki biçimi var. Tek sayı (“kaç müşteri üst banda çıktı?”) bir ölçüyle cevaplanır:
+Bandı Yükselen Müşteri =
+VAR T = ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "Bu", [Net Satış], "GY", [Satış GY])
+RETURN
+    COUNTROWS(
+        FILTER(
+            T,
+            VAR B1 = MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] < [Bu] && [Bu] <= MusteriDilimleri[Max]), MusteriDilimleri[Sira])
+            VAR B0 = MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] < [GY] && [GY] <= MusteriDilimleri[Max]), MusteriDilimleri[Sira])
+            RETURN NOT ISBLANK(B0) && B1 > B0
+        )
+    )
+2024'te 28 müşteri üst banda çıktı; 25 müşteri alt banda indi ya da hiç alışveriş yapmadı. Tam geçiş matrisi (2023 bandı × 2024 bandı) için iki ilişkisiz bant tablosu gerekir: biri satırlara, biri sütunlara. Modelde tek tablo varsa geçişi önce bir DAX sorgusuyla doğrula:
+EVALUATE
+VAR T =
+    ADDCOLUMNS(
+        VALUES(Musteriler[MusteriNo]),
+        "S23", CALCULATE([Net Satış], Tarih[Yil] = 2023),
+        "S24", CALCULATE([Net Satış], Tarih[Yil] = 2024)
+    )
+VAR T2 =
+    ADDCOLUMNS(
+        T,
+        "Onceki", COALESCE(MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] < [S23] && [S23] <= MusteriDilimleri[Max]), MusteriDilimleri[Dilim]), "Yok"),
+        "Simdi", COALESCE(MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] < [S24] && [S24] <= MusteriDilimleri[Max]), MusteriDilimleri[Dilim]), "Yok")
+    )
+RETURN GROUPBY(T2, [Onceki], [Simdi], "Musteri", COUNTX(CURRENTGROUP(), 1))
+ORDER BY [Onceki], [Simdi]
+Sorgu ilginç bir tablo verir: 2023'te Büyük bantta olan 24 müşteriden 7'si yerinde kaldı, 4'ü VIP'e çıktı, 8'i Orta'ya indi, 4'ü hiç gelmedi. 2023'te alışveriş yapmayıp 2024'te gelen 59 müşteri var (“Yok” satırı). Bu satırlar “Yükselen” değildir; yeni müşteridir. Ölçüdeki NOT ISBLANK(B0) koşulu tam olarak bunu ayırır.
+Üretim notuGeçiş ölçüsü her hücrede müşteri sayısı × 2 bağlam geçişi yapar. Birkaç bin müşteride sorun yok. Yüz binlerde, aylık anlık görüntü tablosu (Ay, MusteriNo, Bant) kaynakta hazırlanır ve geçiş basit bir sayıma döner. Hangi yolu seçtiğini rapor belgesine yaz; iki ekip aynı soruya iki farklı sayıyla gelmesin.
+Kontrol listesiBant sınırları tek taraflı mı (Min hariç, Max dahil)? Toplam satırı satırların toplamına eşit mi? İlişkisiz tablodan değer okuyan ölçü toplamda satırları dolaşıyor mu? Yıllık eşikler çok yıllık dönemde kullanılmıyor mu? Yüzdelik eşiğin altında gerçek müşteri sayısı yazıyor mu? Geçişte yeni müşteri ile yükselen müşteri ayrılıyor mu?
+`, ex: [
+  { t:'dax', name:'Bant Satış Payı %', q:'Bant Satış Payı %: Satırlarda MusteriDilimleri[Dilim] var. Her bandın, seçili dönemin net satışı içindeki payı. Toplam satırı %100 olmalı.', sol:'DIVIDE([Dilim Satışı], [Net Satış])', hint:'Pay için hazır [Dilim Satışı] ölçüsünü kullan. [Net Satış] ilişkisiz bant tablosundan etkilenmez; paydaya doğrudan yazılabilir.', grid:[{t:'MusteriDilimleri',c:'Dilim'}] },
+  { t:'dax', name:'Müşteri 80. Yüzdelik Satışı', q:'Müşteri 80. Yüzdelik Satışı: Seçili bağlamda alışveriş yapmış (iptal edilmemiş siparişi olan) müşterilerin net satışlarının 80. yüzdeliği. Bu, “en iyi %20” bandının eşiğidir. 2024 için 9.305 ₺.', sol:'PERCENTILEX.INC(ADDCOLUMNS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), "S", [Net Satış]), [S], 0.8)', hint:'Müşteri listesini Satislar’dan al (Durum <> "İptal"); ADDCOLUMNS ile her müşterinin [Net Satış]’ını ekle; PERCENTILEX.INC(tablo, [S], 0.8).' },
+  { t:'dax', name:'Bandı Yükselen Müşteri', q:'Bandı Yükselen Müşteri: Geçen yılın aynı döneminde bir banttayken (MusteriDilimleri, Min hariç, Max dahil) bu dönemde daha yüksek Sira numaralı bir banda çıkan müşteri sayısı. Geçen yıl hiç alışveriş yapmayanlar sayılmaz. 2024 için 28.', sol:'VAR T = ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "Bu", [Net Satış], "GY", [Satış GY]) RETURN COUNTROWS(FILTER(T, VAR B1 = MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min]  B0))', hint:'Önce müşteri başına [Net Satış] ve [Satış GY] içeren bir tablo kur. Her satırda iki bandın Sira değerini MAXX(FILTER(MusteriDilimleri, …)) ile bul, sonra karşılaştır.' },
+  { t:'query', q:'2023 bandından 2024 bandına geçiş tablosunu yazan bir DAX sorgusu yaz. Her müşteri için iki yılın net satışını hesapla, MusteriDilimleri ile bant adını bul (alışveriş yoksa "Yok"), sonra (Onceki, Simdi) çiftlerine göre müşteri say.', start:'EVALUATE\n', sol:'EVALUATE\nVAR T = ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "S23", CALCULATE([Net Satış], Tarih[Yil] = 2023), "S24", CALCULATE([Net Satış], Tarih[Yil] = 2024))\nVAR T2 = ADDCOLUMNS(T, "Onceki", COALESCE(MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min]  15.000 ₺). Bir yönetici dilimleyicide tüm yılları seçince VIP bandında 34 müşteri ve %57 pay görüyor; 2024’te 10 müşteri ve %25. Ne yaparsın?', o:['Hiçbir şey yapmamak; ölçü teknik olarak doğru çalışıyor','VIP eşiğini elle 15.000 ₺ yerine 30.000 ₺ yapmak','Dönemi tek yıla sabitlemek ya da eşiği ölçeklemek','Bant ölçüsünü Musteriler’de hesaplanmış sütuna çevirmek'], a:2, why:'Ölçü teknik olarak doğrudur ama yıllık bir tanımı üç yıllık harcamaya uyguladığı için müşterileri yukarı taşır; iş anlamı bozulur. Ya dönem tek yıla sabitlenir ya eşikler gün sayısına göre ölçeklenir. Eşiği elle yükseltmek tek bir dilimleyici durumuna göre ayar yapmaktır. Hesaplanmış sütun dönemi hiç dikkate almaz; tersi bir hata üretir.' },
+  { t:'mc', q:'Bant tanımında koşul [S] >= Min && [S] Bilgi hiyerarşisi: üç soru, üç katman
+Genel müdür pazartesi toplantısında rapora 30 saniye bakacak. Bu sürede iki soruya cevap almalı: “Hedefin neresindeyiz?” ve “Sorun nerede?” Tasarımın işi, gözün bu iki cevaba ilk önce gitmesini sağlamaktır.
+Katman | Soru | Anadolu Market örneği (2024) | Nerede durur? | 
+1. Durum | İyi mi, kötü mü? | Net satış 747.066 ₺, hedefin %97,9'u | Sol üst şerit, en büyük yazı | 
+2. Neden | Fark nereden geliyor? | Hediye %83,6 ile en geride; Kitap %100,2 | Orta bölge: kategori × hedef, aylık eğilim | 
+3. Ayrıntı | Hangi ürün, hangi müşteri? | Hediye ürünleri, iade oranı, son 12 ay | Detay sayfası, araç ipucu | 
+Görsel ağırlığı üç şey belirler: boyut, konum ve kontrast. Bir sayfada yalnızca bir öğe “en ağır” olmalı. İki büyük grafik yan yana durursa göz ikisi arasında gidip gelir ve hiyerarşi kaybolur. Hızlı test: sayfayı bulanıklaştırılmış hâlde düşün. Hâlâ seçilebilen tek bir blok kalıyorsa hiyerarşi doğrudur.
+Izgara sistemi: piksele kadar plan
+16:9 tuval 1280 × 720 pikseldir. 12 sütunlu bir ızgara kur: dış kenar boşluğu 24 px, sütun arası 16 px. Bir sütun (1280 − 2 × 24 − 11 × 16) ÷ 12 = 88 px olur.
+Öğe | Sütun | Genişlik | 
+KPI kartı (4 adet yan yana) | 3 | 3 × 88 + 2 × 16 = 296 px | 
+Ana grafik | 8 | 8 × 88 + 7 × 16 = 816 px | 
+Yan grafik | 4 | 4 × 88 + 3 × 16 = 400 px | 
+Dört kart ve üç aralık tam 1.232 px eder: 1280'den iki kenar boşluğu çıkınca kalan genişlik. Görünüm (View) sekmesinde Kılavuz çizgileri (Gridlines) ve Izgaraya yasla (Snap to grid) açılır. Kesin değerler Biçim bölmesinde Genel → Özellikler → Boyut ve Konum alanlarına elle girilir. Ekipte herkes aynı ızgarayı kullansın diye ızgarayı ve başlık şeridini içeren boş bir şablon sayfası hazırla, her yeni sayfayı ondan çoğalt.
+Sayfa mimarisi: ne nerede açılır?
+Kademeli açıklamanın düğme, panel ve alan parametresi teknikleri Kullanıcı odaklı tasarım dersinde; yer imi, araç ipucu ve detay sayfasının kurulumu Raporla hikâye anlatmak dersinde. Burada karar kısmına bakıyoruz: bir bilgi hangi mekanizmaya gider?
+Kullanıcı bunu… | Mekanizma | Kural | 
+her açılışta görmeli | Ana sayfa görseli | Bütçeden yer kaplar; gerçekten gerekli mi? | 
+bir noktanın üstünde merak eder | Araç ipucu sayfası | Tek soru, 2–3 küçük görsel, hızlı açılmalı | 
+tek bir varlık için derine iner | Detay sayfası (drillthrough) | Bir kategori, bir müşteri; geri düğmesi zorunlu | 
+aynı soruya başka açıdan bakar | Alan parametresi ya da yer imi | Görsel değişimi için önce alan parametresi | 
+Tipik bir yönetici raporu: 1 özet sayfası, 2–3 analiz sayfası, 1–2 detay sayfası, 1–2 araç ipucu sayfası. Yardımcı sayfaları gizle ve adlarına önek ver (“İP_Kategori”, “DS_Ürün”). Böylece ekip arkadaşın sayfa listesinde neyin ne olduğunu bir bakışta anlar.
+Anti-kalıp: yer imi yığınıGörsel değiştirmek için 12 yer imi kuran bir rapor, her yeni görselde 12 yer iminin yeniden güncellenmesini ister. Ayrıca “Veri” seçeneği açık bırakılan yer imleri dilimleyici seçimini de kaydeder; kullanıcı düğmeye bastığında kendi seçimi sıfırlanır. Görsel değiştirmeyi alan parametresiyle yap; yer imlerinde yalnızca “Görüntüle” durumunu tut.
+Performans bütçesi
+Her veri görseli en az bir sorgu gönderir. Sayfa açılırken bu sorgular paralel çalışır ama sınırsız değildir; ayrıca her görsel ayrıca çizilir. Bu yüzden görsel sayısı bir bütçedir:
+Özet sayfası: en fazla 8–10 veri görseli. Dört ayrı kart yerine birden çok değeri tek görselde gösteren bir kart düşün.
+Ayrıntı tablosu: özet sayfasında nadiren kullanılıyorsa detay sayfasına taşı. En pahalı görsel çoğunlukla çok satırlı tablodur.
+Ölç, tahmin etme: Performans Analizi'nde (Performance Analyzer) her görselin DAX sorgusu ve görsel çizim süresini ayrı ayrı gör. Sorgu yavaşsa sorun DAX'ta ya da modelde; çizim yavaşsa görsel sayısında ya da görsel türündedir.
+Durum rengi ve dinamik başlık
+Koşullu biçimlendirmede renk kurallarını görselde tek tek tanımlamak yerine rengi bir ölçüye taşı. Kural tek yerde durur; kart, tablo ve madde grafiği aynı eşiği kullanır.
+KPI Durum Rengi =
+VAR Oran = [Hedef Gerçekleşme %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Oran), "#8A8A8A",
+        Oran >= 1, "#1B7F3B",
+        Oran >= 0.95, "#B26A00",
+        "#B42318"
+    )
+Biçim bölmesinde renk alanının yanındaki fx düğmesi → Biçim stili: Alan değeri → bu ölçü. 2024'te sonuç turuncu (%97,9), Hediye kırmızı (%83,6).
+Kenar durum: yuvarlama. 2023 oranı %99,6. Kart “%0” ondalıkla biçimlenmişse ekranda “%100” yazar ama renk turuncu kalır. Kullanıcı “hedefi tutturmuşuz, neden turuncu?” diye sorar. Ya bir ondalık göster (%99,6) ya da eşiği ekranda görünen yuvarlanmış değere göre kur. Renk tek başına anlam taşımamalı; yanına ▲ ▼ gibi bir simge ya da “Hedefin altında” metni koy. Bu hem renk körlüğü olan kullanıcılar hem de siyah-beyaz çıktı için gereklidir.
+Seçim Özeti Başlığı =
+VAR Kat =
+    IF(
+        ISFILTERED(Kategoriler[Kategori]),
+        IF(
+            HASONEVALUE(Kategoriler[Kategori]),
+            SELECTEDVALUE(Kategoriler[Kategori]),
+            COUNTROWS(VALUES(Kategoriler[Kategori])) & " kategori"
+        ),
+        "Tüm kategoriler"
+    )
+VAR Yil = IF(HASONEVALUE(Tarih[Yil]), FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"), "Tüm yıllar")
+RETURN "Net satış · " & Kat & " · " & Yil
+Kitap ve Spor seçiliyse başlık “Net satış · 2 kategori · Tüm yıllar” olur. Neden ISFILTERED? Filtre yokken de HASONEVALUE yanlış döner; ISFILTERED “hiç seçim yok” ile “birden çok seçim”i ayırır. Kullanıcı Urunler[Kategori] sütunundan filtrelerse ISFILTERED(Kategoriler[Kategori]) yanlış döner; bu durumda ISCROSSFILTERED kullan.
+Erişilebilirlik: ileri kontroller
+Kontrast: Metin ile arka plan arasında en az 4,5:1 kontrast hedefle. Açık gri eksen etiketleri en sık hatadır.
+Sekme sırası: Seçim bölmesindeki Sekme sırası görünümünde, klavyeyle gezen kullanıcı için sırayı bilgi hiyerarşisiyle aynı yap: KPI'lar, ana grafik, ayrıntı. Dekoratif şekilleri sekme sırasından çıkar.
+Alternatif metin: fx ile bir ölçüye bağlanabilir. Böylece ekran okuyucu “Net satış 747.066 ₺, hedefin %97,9'u” gibi güncel bir cümle okur.
+Temel ayarlar Mobil düzen, erişilebilirlik dersinde.
+Tasarım eleştirisi kontrol listesi
+Bir raporu eleştirirken her maddeyi gözlem → etki → öneri biçiminde yaz. Örnek: “İki ana grafik aynı boyutta (gözlem). Göz önce nereye bakacağını bilmiyor (etki). Hedef grafiğini 8 sütuna büyüt, eğilimi 4 sütuna al (öneri).”
+Ana mesaj 5 saniyede okunuyor mu? Tek bir “en ağır” öğe var mı?
+Her KPI bir karşılaştırmayla mı geliyor (hedef, geçen yıl)?
+Öğeler ızgaraya hizalı mı, boşluklar tutarlı mı?
+Başlıklar bir sonucu söylüyor mu (“Hediye hedefin %16 gerisinde”)?
+Renk tek bir anlam mı taşıyor, yanında simge ya da metin var mı?
+Görsel sayısı bütçede mi; Performans Analizi ne diyor?
+Detay ve araç ipucu yolları keşfedilebilir mi (“Ayrıntı için sağ tıkla → Detaya git” notu)?
+Sekme sırası, alternatif metin ve kontrast kontrol edildi mi?
+`, ex: [
+  { t:'dax', name:'KPI Durum Rengi', q:'KPI Durum Rengi: Hedef gerçekleşme oranına göre renk kodu döndür: oran boşsa "#8A8A8A", %100 ve üstü "#1B7F3B", %95 ve üstü "#B26A00", altı "#B42318". Oran için [Hedef Gerçekleşme %] kullan.', sol:'VAR Oran = [Hedef Gerçekleşme %] RETURN SWITCH(TRUE(), ISBLANK(Oran), "#8A8A8A", Oran >= 1, "#1B7F3B", Oran >= 0.95, "#B26A00", "#B42318")', hint:'SWITCH(TRUE(), …) ile koşulları büyükten küçüğe sırala; BLANK kontrolü ilk sırada olsun.' },
+  { t:'dax', name:'Seçim Özeti Başlığı', q:'Seçim Özeti Başlığı: Görsel başlığı için metin. Biçim: "Net satış · {kategori} · {yıl}". Tek kategori varsa adı; birden çok seçim varsa "N kategori"; filtre yoksa "Tüm kategoriler". Yıl tekse yıl, değilse "Tüm yıllar".', sol:'VAR Kat = IF(ISFILTERED(Kategoriler[Kategori]), IF(HASONEVALUE(Kategoriler[Kategori]), SELECTEDVALUE(Kategoriler[Kategori]), COUNTROWS(VALUES(Kategoriler[Kategori])) & " kategori"), "Tüm kategoriler") VAR Yil = IF(HASONEVALUE(Tarih[Yil]), FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"), "Tüm yıllar") RETURN "Net satış · " & Kat & " · " & Yil', hint:'Önce ISFILTERED ile “seçim var mı?”, sonra HASONEVALUE ile “tek mi?” sor. Yılı FORMAT(…, "0") ile metne çevir.' },
+  { t:'mc', q:'Yönetici özet sayfasında 4 kart, 6 grafik, 2 ayrıntı tablosu ve 3 dilimleyici var; sayfa 5,8 saniyede açılıyor. Kullanım verisi ayrıntı tablolarının nadiren kullanıldığını gösteriyor. İlk adımın ne olur?', o:['Tabloları detay sayfasına taşıyıp kartları birleştirmek','Kapasiteyi bir üst SKU’ya yükseltip sayfayı aynen bırakmak','Tabloları bir yer imiyle gizleyip düğmeyle gösterilebilir yapmak','Modelin depolama modunu Import’tan DirectQuery’ye çevirmek'], a:0, why:'Görsel sayısı bir bütçedir; nadiren kullanılan pahalı tablolar detay sayfasında yerinde durur, kartlar da tek görselde birleşir. Kapasite artırmak tasarım sorununu parayla örter. Gizleme düğmesi sayfayı karmaşıklaştırır ve önce ölçmeden yapılan bir tahmindir. DirectQuery genellikle sorguları daha da yavaşlatır.' },
+  { t:'mc', q:'Bir taslakta sayfanın üst yarısında aynı boyutta iki büyük grafik, sağ alt köşede küçük KPI kartları var. Eleştirinde ana öneri ne olmalı?', o:['Grafiklerin renk paletini birbirinden belirgin biçimde ayırmak','İki grafiği tek bir kombo grafikte birleştirmek','Kartların yazı tipini büyütüp kartları yerinde bırakmak','KPI’ları sol üste alıp tek ana grafik seçmek'], a:3, why:'Bilgi hiyerarşisi bozuk: durum katmanı (KPI) en az görülen köşede, iki eşit grafik de gözü ikiye bölüyor. KPI’ları sol üste almak ve tek bir “en ağır” grafik seçmek sorunu çözer. Renk ayrımı hiyerarşiyi düzeltmez. Yazıyı büyütmek konum sorununu çözmez. Kombo grafik farklı soruları tek görsele sıkıştırabilir.' },
+  { t:'mc', q:'Kategori yöneticisi bir kategoriye tıklayınca o kategorinin ürün listesini, iade oranını ve 12 aylık eğilimini görmek istiyor. Bunu ayda birkaç kez yapıyor. Hangi mekanizma?', o:['Araç ipucu sayfası','Özet sayfasına üç yeni görsel','Detay sayfası','Her kategori için bir yer imi'], a:2, why:'Tek bir varlık için derine inme ve birden çok ayrıntı görseli detay sayfasının işidir. Araç ipucu tek bir soruya hızlı cevap içindir; liste ve eğilim için küçük kalır. Özet sayfasına eklemek bütçeyi her açılışta harcar. Kategori başına yer imi bakımı zor bir yığın üretir.' },
+  { t:'mc', q:'Kart “Hedef gerçekleşme %100” gösteriyor ama arka plan turuncu. Kullanıcılar şikâyet ediyor. Gerçek değer %99,6 ve eşik %100. Ne yaparsın?', o:['Turuncu eşiğini %100 yerine %99’a indirmek','Kartta yüzde yerine hedef farkını tutar olarak göstermek','Bir ondalık göstermek ya da eşiği hizalamak','Koşullu biçimlendirmeyi karttan tamamen kaldırmak'], a:2, why:'Sorun, ekrandaki yuvarlanmış değer ile rengin kullandığı gerçek değerin farklı olması. Bir ondalık (%99,6) ya da yuvarlanmış değere göre eşik bu çelişkiyi kaldırır. Eşiği keyfî indirmek iş kuralını değiştirir. Tutar göstermek soruyu değiştirir. Biçimi kaldırmak durum bilgisini yok eder.' },
+  { t:'mc', q:'Kullanıcılar “Grafik / Tablo” düğmesine basınca kendi dilimleyici seçimlerinin sıfırlandığını söylüyor. Düğmeler yer imlerine bağlı. En olası neden?', o:['Dilimleyiciler sayfalar arasında eşitlenmemiş','Düğme eylemi yanlış sayfaya gidiyor','Seçim bölmesinde görseller gruplanmamış','Yer imlerinde “Veri” seçeneği açık'], a:3, why:'“Veri” seçeneği açık bir yer imi, kaydedildiği andaki filtre ve dilimleyici durumunu da geri yükler. Yalnızca “Görüntüle” tutulursa kullanıcının seçimi korunur; görsel değişimi için alan parametresi daha da iyidir. Eşitleme sayfalar arası bir ayardır. Yanlış sayfa başka bir belirti verir. Gruplama filtreyi etkilemez.' }
+] });
+/* ───────────────────────── 4. Bitirme projesine hazırlık ───────────────────────── */
+ext('final-hazirlik', { min: 14, html: `
+Bitirme projesini yürütmek: altı aşama
+Bitirme projesi bir “rapor yapma” ödevi değil, küçük bir iş projesidir. Değerlendiren kişi sonuçtan çok yolu görmek ister: bir soruyu nasıl tanımladın, nasıl modelledin, sayının doğru olduğunu nasıl kanıtladın. Aşamaları ve “bitti” ölçütlerini baştan bil.
+Aşama | Çıktı | Zaman payı | Bitti sayılır, eğer… | 
+1. Gereksinim | Brif, KPI sözlüğü, sayfa taslağı | %15 | Her KPI'ın bir cümlelik tanımı ve iş kuralı var | 
+2. Model | Yıldız şema diyagramı, tarih tablosu | %20 | Tüm ilişkiler bire-çok ve tek yönlü (gerekçesi yazılı istisnalar hariç) | 
+3. Ölçüler | Temel → türetilmiş ölçüler, görüntü klasörleri | %25 | Her ölçünün açıklaması, biçimi ve bir test sorgusu var | 
+4. Rapor | Sayfa haritası, ızgara, etkileşimler | %20 | Tasarım eleştirisi listesinden geçti | 
+5. Test | Mutabakat, kenar durum, RLS, performans | %10 | Sonuçlar bir test sayfasında belgeli | 
+6. Sunum | 5 dakikalık demo, README | %10 | Bir yabancı README'den projeyi anlayabiliyor | 
+En sık hata, zamanın yarısını 4. aşamaya harcayıp 1. ve 5. aşamaları atlamaktır. Güzel görünen ama tanımı belirsiz bir rapor, değerlendirmede en çok puan kaybeden rapordur.
+1. Gereksinim: tanımlar sayıdan önce gelir
+Brif yazımı Talepten rapor brifine dersinde. Bitirme projesinde en çok işe yarayan belge KPI sözlüğüdür: ad, tek cümlelik tanım, iş kuralı, kaynak sütun, biçim. Neden bu kadar önemli? Bu modelde “Net satış” iki farklı sayı olabilir:
+Tanım | Kural | Tüm dönem | 
+Uygulamadaki [Net Satış] | İptaller hariç, iadeler dahil | 1.250.772 ₺ | 
+Finansın beklediği olabilir | İptaller ve iadeler hariç | 1.169.937 ₺ | 
+Aradaki 80.835 ₺ tam olarak [İade Tutarı]'dır. İkisi de savunulabilir; savunulamayan, hangisinin kullanıldığını yazmamaktır. Sözlüğe tek satır ekle: “Net satış: iptal hariç, iade dahil; iade ayrı KPI olarak izlenir.”
+2–3. Model ve ölçüler: katmanlı kur
+Ölçüleri dört katmanda düşün. Her katman yalnızca bir alttakini kullanır:
+Temel: [Toplam Satış] = SUM(Satislar[Tutar]) — ham toplama, rapora konmaz.
+İş kuralı: [Net Satış] — sözlükteki tanımın tek yeri.
+Türetilmiş: marj, YoY, hedef farkı — iş kuralı ölçülerinden kurulur.
+Sunum: başlık, renk, etiket metni — rapora özgü.
+Kural bir gün değişirse (ör. iade hariç tutulacak) yalnızca 2. katmandaki bir ölçüyü değiştirirsin; yüzlerce ölçü kendiliğinden güncellenir.
+Gereksinimden ölçüye: bir örnek
+Satış direktörü: “Her kategori için hedefe ne kadar kaldığını görmek istiyorum. Hedefi aşan kategoride eksi sayı görmeyeyim.”
+Hedefe Kalan Tutar =
+VAR Kalan = [Hedef] - [Net Satış]
+RETURN IF(NOT ISBLANK([Hedef]), MAX(Kalan, 0))
+Kategori Bazında Kalan =
+SUMX(VALUES(Kategoriler[Kategori]), [Hedefe Kalan Tutar])
+2024'te Kitap hedefi aştı ve satırında 0 görünür. Toplam satırında ise iki ölçü ayrışır: [Hedefe Kalan Tutar] 16.134 ₺ der (şirketin toplam hedefi ile toplam satışı arasındaki fark). [Kategori Bazında Kalan] 16.361 ₺ der (satırların toplamı). Çünkü ilk ölçü Kitap'ın fazlasını diğer kategorilerin açığından düşer. Hangisi doğru? Bu bir iş sorusudur: “Kategorilerin toplam açığı” mı, “şirketin net açığı” mı? Direktöre sor, cevabı ölçü açıklamasına yaz. Değerlendirmede tam puan alan proje, bu tür bir kararı belgelemiş projedir.
+4–5. Rapor ve test
+Rapor aşaması için Dashboard tasarımı dersindeki ızgara ve eleştiri listesini kullan. Test aşaması için Rapor kalitesi dersindeki test paketini uygula. Bitirme projesinde en az şu üç test belgeli olsun:
+Mutabakat: DAX sorgu görünümünde, rapor ölçüsü ile kaynak tablodan doğrudan hesaplanan toplamı yıl yıl karşılaştıran bir sorgu. Fark sütunu her satırda 0 olmalı.
+Kenar durumlar: hedefi olmayan dönem, satışı olmayan kategori, tek gün seçimi, çoklu seçim, toplam satırı.
+Güvenlik ve performans: RLS rolü “Farklı görüntüle” ile iki kullanıcıda; Performans Analizi'nde her sayfanın açılış süresi.
+6. Sunum ve portföy
+Beş dakikalık demo akışı:
+30 sn — bağlam: Kim kullanıyor, hangi kararı veriyor?
+1 dk — ana bulgu: “2024'te hedefin %97,9'undayız; açığın büyük kısmı Elektronik ve Ev & Yaşam'da.”
+2 dk — gezinme: özet → kategori detayı → araç ipucu.
+1 dk — teknik: model diyagramı ve en zor ölçünün mantığı.
+30 sn — sınırlar ve sonraki adım: “Hedefler aylık; günlük hedef gelirse model şöyle değişir.”
+README başlıkları: amaç, kullanıcılar, veri kaynakları, model görseli, KPI sözlüğü, varsayımlar, bilinen sınırlar, test sonuçları. Portföyde paylaşırken gerçek şirket verisi kullanma. Web'de yayımla (Publish to web) bağlantısı herkese açıktır; yalnızca anonim, örnek veriyle kullan. Ayrıntı Portföy, CV ve ilk 90 gün dersinde.
+Rubrik: puan nerede kazanılır?
+Ölçüt | Başlangıç | Yeterli | Profesyonel | 
+Tanımlar | KPI'lar adıyla var | Formüller yazılı | İş kuralları ve istisnalar sözlükte | 
+Model | Çalışıyor | Yıldız şema, tarih tablosu | Her istisna gerekçeli; gereksiz sütun yok | 
+DAX | Doğru sonuç | Katmanlı, VAR, biçimli | Toplam satırı kararı belgeli, test sorgusu var | 
+Rapor | Bilgiler sayfada | Hiyerarşi ve ızgara | Mimari (detay, araç ipucu) ve erişilebilirlik | 
+Test | Elle bakıldı | Mutabakat yapıldı | Kenar durum, RLS, performans belgeli | 
+Sunum | Rapor gösterildi | Bulgu anlatıldı | Karar, sınır ve sonraki adım net | 
+Teslim öncesi son kontrolKPI sözlüğü raporla birebir aynı mı? Mutabakat sorgusunda fark 0 mı? Her toplam satırı kararı bir ölçü açıklamasında mı? README bir yabancıya yetiyor mu? Demo 5 dakikaya sığıyor mu (saatle dene)?
+`, ex: [
+  { t:'dax', name:'Hedefe Kalan (Bitirme)', q:'Hedefe Kalan (Bitirme): Hedef ile net satış arasındaki fark; hedef aşıldıysa 0, hedef yoksa boş. 2024 kategori kırılımında Kitap 0 göstermeli.', sol:'VAR Kalan = [Hedef] - [Net Satış] RETURN IF(NOT ISBLANK([Hedef]), MAX(Kalan, 0))', hint:'Farkı bir değişkene al; MAX(Kalan, 0) eksiyi keser. Hedef boşsa IF ile BLANK döndür.' },
+  { t:'query', q:'Mutabakat testi: yıl bazında rapor ölçüsü [Net Satış] ile kaynaktan doğrudan hesaplanan toplamı (Durum “Teslim Edildi”, “Kargoda” ya da “İade” olan satırların Tutar toplamı) ve ikisinin farkını veren bir DAX sorgusu yaz. Sütunlar: Rapor, Kaynak, Fark.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[Yil],\n    "Rapor", [Net Satış],\n    "Kaynak", CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] IN {"Teslim Edildi", "Kargoda", "İade"}),\n    "Fark", [Net Satış] - CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] IN {"Teslim Edildi", "Kargoda", "İade"})\n)', hint:'SUMMARIZECOLUMNS(Tarih[Yil], "Rapor", …, "Kaynak", …, "Fark", …). Kaynak için ölçüyü kullanma; SUM ve IN { … } ile kuralı yeniden yaz.' },
+  { t:'mc', q:'Bitirme projen için iki haftan var. İlk iki günü nasıl kullanırsın?', o:['KPI sözlüğü ve sayfa taslağı yazmak','Temayı ve sayfa düzenini hazırlamak','Tüm ölçüleri hızlıca yazıp sonra ayıklamak','Power Query’de tüm tabloları temizlemek'], a:0, why:'Tanımlar olmadan yazılan ölçü ve tasarım sonradan yeniden yapılır. Sözlük ve taslak hangi verinin, hangi ölçünün, hangi sayfanın gerekli olduğunu belirler. Tema en son işlerden biridir. Ölçüleri önce yazıp ayıklamak bakım yükü üretir. Tüm tabloları temizlemek de neyin gerekli olduğu bilinmeden emek harcamaktır.' },
+  { t:'mc', q:'Finans ekibi raporundaki tüm dönem net satışın 1.169.937 ₺ olduğunu, seninkinin 1.250.772 ₺ gösterdiğini söylüyor. Fark tam olarak iade tutarı kadar. Ne yaparsın?', o:['Ölçüyü hemen iadeleri hariç tutacak biçimde değiştirmek','Tanımı finansla netleştirip KPI sözlüğüne yazmak','Raporun altına iki sayının da doğru olduğunu not etmek','Finansın kaynağının hatalı olduğunu belirtmek'], a:1, why:'İki sayı da bir tanıma göre doğrudur; sorun tanımın yazılı olmaması. Önce paydaşla hangi tanımın kullanılacağına karar verilir, sonra sözlük ve gerekirse ölçü güncellenir. Tek taraflı değiştirmek başka bir ekibi bozabilir. “İkisi de doğru” notu kullanıcıyı belirsizlikte bırakır. Finansı suçlamak hem yanlış hem ilişkiyi bozar.' },
+  { t:'mc', q:'Değerlendirmede “Hedefe kalan” ölçünün toplam satırı 16.134 ₺, satırların toplamı 16.361 ₺. Değerlendirici neyi görmek ister?', o:['Toplam satırının matristen kapatılmasını','İki ölçünün ortalamasının toplamda gösterilmesini','Seçilen anlamın ölçü açıklamasında yazılmasını','Toplamı her zaman satırların toplamına zorlayan bir ölçü'], a:2, why:'Fark, hedefi aşan Kitap’ın fazlasının toplamda diğer açıklardan düşülmesinden gelir. İki anlam da geçerlidir; profesyonel çözüm iş sorusunu sorup kararı belgelemektir. Toplamı kapatmak bilgiyi gizler. Ortalama anlamsızdır. Her zaman satır toplamına zorlamak “şirketin net açığı” sorusunu yanlış cevaplar.' },
+  { t:'mc', q:'Portföyün için bitirme projeni paylaşacaksın. Model, çalıştığın şirketin gerçek müşteri verisinden kopyalanmış bir örnek içeriyor. Ne yaparsın?', o:['Web’de yayımla ile paylaşıp bağlantıyı yalnızca CV’ye koymak','Raporu PDF’e aktarıp yalnızca müşteri adlarını kapatmak','Çalışma alanına okuma izniyle işe alanları eklemek','Veriyi anonim ya da sentetik veriyle değiştirmek'], a:3, why:'Gerçek şirket verisi portföyde kullanılmaz. Web’de yayımla bağlantısı herkese açıktır ve dizinlenebilir. PDF’te adları kapatmak verinin geri kalanını korumaz. Dış kişileri şirket çalışma alanına eklemek de bir veri paylaşımı ihlalidir. Anonim ya da sentetik veriyle aynı modeli göstermek güvenli yoldur.' }
+] });
+/* ───────────────────────── 5. PL-300 ───────────────────────── */
+ext('pl300', { min: 16, html: `
+Güncel çerçeve: neyi, ne ağırlıkla?
+Aşağıdaki ağırlıklar Microsoft Learn'deki PL-300 çalışma kılavuzunun 20 Nisan 2026 tarihli “ölçülen beceriler” listesinden alındı. Sınava girmeden önce aynı sayfayı bir kez daha aç; Microsoft listeyi yılda birkaç kez günceller. İngilizce sürüm önce güncellenir, yerelleştirilmiş sürümler genellikle yaklaşık sekiz hafta geriden gelir.
+Alan | Ağırlık | Dikkat çeken maddeler | Bu uygulamada | 
+Veriyi hazırlama | %25–30 | DirectLake / DirectQuery / Import seçimi, gizlilik düzeyleri, referans mı çoğaltma mı, ilişki anahtarları | Veri alma, Power Query dersleri, M dili | 
+Veriyi modelleme | %25–30 | Rol oynayan boyutlar, yarı toplanabilir ölçüler, hesaplama grupları, Performans Analizi ve DAX sorgu görünümü | Modelleme, DAX dersleri, Performans | 
+Görselleştirme ve analiz | %25–30 | Copilot ile anlatı görseli ve sayfa önerisi, görsel hesaplamalar, sayfalandırılmış rapor ne zaman, erişilebilirlik, otomatik sayfa yenileme | Görselleştirme dersleri, Copilot, Pencere fonksiyonları | 
+Power BI'ı yönetme ve güvenli hâle getirme | %15–20 | Dağıtım yöntemi seçimi, abonelik ve uyarılar, ağ geçidi ne zaman, RLS grup üyeliği, duyarlılık etiketleri | Yayımlama, Güvenlik, Yönetişim | 
+Geçme puanı 1000 üzerinden 700. Laboratuvar içermeyen rol tabanlı sınavlarda süre 100 dakika, oturum süresi 120 dakikadır. Sınav ana dilinde sunulmuyorsa 30 dakika ek süre istenebilir. Yapay zekâ görselleri maddesinde ayrıştırma ağacı ve önemli etkileyenler çalış. Soru-Cevap (Q&A) görseli Aralık 2026'da kaldırılıyor; doğal dil soruları için Copilot'u ve modeli “Yapay zekâ için verileri hazırla” (Prep data for AI) ile hazırlamayı öğren.
+Soru türleri ve her birinin çözüm yolu
+Microsoft sınavdaki biçimleri önceden açıklamaz, ama deneme ortamında (exam sandbox) şu türleri gösterir:
+Tür | Nasıl görünür? | Strateji | 
+Çoktan seçmeli | Tek ya da birden çok doğru | Kaç seçim istendiğini oku; kısıt ifadesini bul | 
+Liste oluşturma, sürükle-bırak | Adımları doğru sıraya koy | Önce ilk ve son adımı sabitle, sonra aradakileri yerleştir | 
+Etkin alan (hot area) | Ekran görüntüsünde doğru yer ya da açılır listelerle DAX tamamlama | DAX'ı kafanda bir hücrede çalıştır: hangi filtre kalıyor, hangisi kalkıyor? | 
+Vaka çalışması | Şirket anlatısı, gereksinimler, birden çok soru | Önce soruları oku, sonra anlatıda yalnızca ilgili bölümü ara | 
+Sorun–çözüm setleri | “Bu çözüm hedefi karşılıyor mu? Evet / Hayır”; aynı senaryo farklı çözümlerle tekrar eder | Her çözümü bağımsız değerlendir; ara verilemez, cevabı kesin ver | 
+Rol tabanlı sınavlarda Microsoft Learn'e sınav içinden erişebilirsin; Q&A, alıştırma değerlendirmeleri ve profil sayfası hariç. Saat bu sırada durmaz. Learn'i her soru için değil, emin olmadığın bir sınır ya da menü adı için kullan.
+Zaman yönetimi
+Hız hedefi: Sınavlar bölümündeki not, raporlarda soru sayısının çoğunlukla 50–55 olduğunu söylüyor. 100 dakikada soru başına yaklaşık 1,5 dakika eder. Vaka için 15–20 dakika ayır.
+90 saniye kuralı: 90 saniyede çözemediğin soruyu işaretle (mark for review) ve geç. İlk turda emin olduklarını topla.
+Ara kuralı: Ara verebilirsin ama saat işlemeye devam eder ve aradan sonra daha önce gördüğün sorulara dönemezsin; işaretli olanlara bile. Önce işaretlileri bitir, sonra ara ver.
+Son 10 dakika: Boş soru bırakma; yanlış cevabın ceza puanı yok.
+Kısıt ifadeleri: soruyu çözen anahtar
+Senaryo sorularında genellikle birden çok seçenek teknik olarak çalışır. Doğruyu seçtiren şey sorudaki kısıttır:
+İfade | Genellikle doğru yön | 
+“En az geliştirme çabasıyla” | Yerleşik özellik: hızlı ölçü, yerleşik görsel, Power Query arayüzü | 
+“En az ayrıcalık ilkesiyle” | İşi yapabilen en düşük rol ya da izin | 
+“Veri mümkün olduğunca güncel olmalı” | DirectQuery ya da Direct Lake, otomatik sayfa yenileme | 
+“Model boyutunu küçült” | Gereksiz satır ve sütunu kaldır, ayrıntı düzeyini düşür | 
+“Kullanıcılar raporu değiştirmeden kendi görünümünü kursun” | Görselleri kişiselleştirme | 
+Sık tuzak konular: motorla gösterilmiş hâlleri
+1. Yarı toplanabilir ölçüde LASTDATE
+Stok anlık görüntüleri her ayın son gününde alınıyor. LASTDATE(Tarih[Tarih]) bağlamın son takvim gününü döndürür. Yıl kırılımında sorun yok: iki yöntem de 2024 için 311 adet verir. Ama haftanın günü kırılımında “Salı” dışındaki her hücre boş gelir, çünkü bu günlerin son tarihinde kayıt yok. Seçim ayın ortasında biterse (ör. kapanmamış ay) aynı boşluk raporda da görünür. LASTNONBLANK kaydı olan son günü bulur.
+Dönem Sonu Stok (Son Kayıt) =
+CALCULATE(
+    SUM(StokGorunum[StokAdet]),
+    LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum)))
+)
+2. Yıl kırılımında “önceki dönem”
+CALCULATE([Net Satış], PREVIOUSQUARTER(Tarih[Tarih])) 2024 yıl hücresinde 144.346 ₺ döndürür. Bu geçen yılın satışı değil, 2023-Ç4'tür: bağlamın ilk tarihinden önceki çeyrek. Sınavda bu tür sorular hücrenin hangi tarih kümesini gördüğünü sorar.
+3. Temel istatistik: neyin medyanı?
+MEDIAN(Satislar[Tutar]) sipariş satırlarının medyanıdır: 640 ₺. Soru “sipariş tutarının medyanı” ise önce sipariş düzeyine çıkmak gerekir: 1.086,5 ₺. Ortalama sepet (1.492,57 ₺) ile medyan arasındaki fark, birkaç büyük siparişin ortalamayı yukarı çektiğini gösterir.
+Sipariş Düzeyi Medyan Tutar =
+MEDIANX(
+    CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] <> "İptal"),
+    [Net Satış]
+)
+4. RLS kime uygulanır?
+Satır düzeyi güvenlik çalışma alanında yalnızca Görüntüleyici rolündeki kullanıcıları ve uygulama ya da paylaşım yoluyla erişenleri kısıtlar. Yönetici, Üye ve Katkıda bulunan rolleri tüm veriyi görür. “RLS çalışmıyor” şikâyetinin en sık nedeni budur.
+Uygulamanın sınav bölümünü kullanma planı
+Konu alıştırması: Sınavlar → PL-300 konu alıştırması. Her alanı ayrı çöz; %70'in altındaki alanı not al.
+Kısa deneme: Üçüncü haftanın sonunda. Süreyi tut ve 90 saniye kuralını uygula.
+Tam deneme: Son hafta iki kez. Arada yanlışlarını ilgili derse dönerek çalış; aynı denemeyi ezberlemek için tekrar çözme.
+Microsoft'un ücretsiz alıştırma değerlendirmesi: Biçimi tanıtır. Gerçek sınav soruları değildir.
+Sınav sorusu paylaşan sitelerden uzak durGerçek soruları dolaştıran “dump” siteleri sınav sözleşmesini ihlal eder; sertifikanın iptaline yol açabilir. Üstelik bu sorular çoğu zaman eski ve yanlış cevaplıdır. Buradaki ve uygulamadaki tüm sorular özgün alıştırmalardır.
+`, ex: [
+  { t:'dax', name:'Dönem Sonu Stok Değeri (Son Kayıt)', q:'Dönem Sonu Stok Değeri (Son Kayıt): Seçili dönemde StokGorunum’da kaydı olan son günün toplam stok değeri (StokDegeri). Bağlamın son takvim gününde kayıt yoksa da değer dönmeli. 2024 için 163.465 ₺.', sol:'CALCULATE(SUM(StokGorunum[StokDegeri]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum))))', hint:'LASTDATE yerine LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum))) kullan; içteki CALCULATE her tarih için bağlam geçişi yapar.' },
+  { t:'dax', name:'Sipariş Düzeyi Medyan Tutar', q:'Sipariş Düzeyi Medyan Tutar: İptal edilmemiş siparişlerin sipariş düzeyindeki net satış tutarlarının medyanı (satır düzeyindeki Tutar’ın medyanı değil). Tüm dönem için 1.086,5 ₺.', sol:'MEDIANX(CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] <> "İptal"), [Net Satış])', hint:'Sipariş listesini CALCULATETABLE(VALUES(Satislar[SiparisNo]), …) ile al ve MEDIANX ile her sipariş için [Net Satış] hesapla.' },
+  { t:'mc', q:'Bir matriste satırlarda Tarih[Yil], değer olarak CALCULATE([Net Satış], PREVIOUSQUARTER(Tarih[Tarih])) var. 2024 hücresi neyi gösterir?', o:['2023 yılının toplam net satışını','2024’ün ilk çeyreğinin net satışını','2023’ün son çeyreğinin net satışını','Boş, çünkü yıl düzeyinde çeyrek yoktur'], a:2, why:'PREVIOUSQUARTER bağlamın ilk tarihine göre bir önceki çeyreği döndürür; 2024 yılının ilk günü 1 Ocak olduğu için sonuç 2023-Ç4’tür (bu modelde 144.346 ₺). Geçen yılın toplamı için SAMEPERIODLASTYEAR gerekir. Fonksiyon yılın kendi çeyreğini döndürmez. Yıl düzeyinde de tarih kümesi olduğu için boş dönmez.' },
+  { t:'mc', q:'Bölge RLS’i yayımlandı. Çalışma alanında Üye rolündeki satış müdürü tüm bölgeleri görüyor, Görüntüleyici rolündeki temsilci yalnızca kendi bölgesini. Müdür de kendi bölgesine sınırlanmalı. Ne yaparsın?', o:['RLS rolünün DAX filtresini USERNAME() ile yeniden yazmak','Modeldeki tüm ilişkileri çift yönlü hâle getirmek','Müdüre Görüntüleyici rolü ya da uygulama erişimi vermek','Müdürü RLS rolüne e-posta adresiyle ikinci kez eklemek'], a:2, why:'RLS, çalışma alanında Yönetici, Üye ve Katkıda bulunan rollerine uygulanmaz; bu roller düzenleme yetkisi taşır. Müdür Görüntüleyici olur ya da içeriği uygulama üzerinden alırsa RLS devreye girer. Filtre fonksiyonunu değiştirmek rol sorununu çözmez. Role tekrar eklemek bir şey değiştirmez. Çift yönlü ilişki güvenlikle ilgili değildir.' },
+  { t:'mc', q:'Temizlenmiş bir “Satışlar” sorgusundan iki ayrı tablo türetmek istiyorsun: biri günlük, biri aylık özet. Temizlik adımları tek yerde kalmalı ve değişince ikisine de yansımalı. Hangisi?', o:['Sorguyu iki kez çoğaltmak (Duplicate)','Temiz sorguyu iki ayrı kez içeri aktarmak','Özetleri DAX hesaplanmış tablolarıyla yapmak','İki başvuru sorgusu (Reference) kurmak'], a:3, why:'Başvuru (Reference), temiz sorgunun çıktısını girdi olarak kullanır; temizlik adımı değişince iki türev de güncellenir. Çoğaltma adımları kopyalar; değişiklik iki yerde yapılmak zorunda kalır. İki kez içeri aktarmak aynı sorunu taşır. Hesaplanmış tablo mümkündür ama soru Power Query’de adımların tek yerde kalmasını istiyor.' },
+  { t:'mc', q:'Sınavın 60. dakikasındasın, 7 soruyu gözden geçirmek için işaretledin ve kısa bir ara vermen gerekiyor. En doğru sıra hangisi?', o:['Önce işaretlileri gözden geçirmek, sonra ara vermek','Hemen ara vermek, sonra işaretlilere dönmek','Ara vermeden sınavı bitirmek, işaretlileri boş bırakmak','Arada Learn’de işaretli konulara bakmak'], a:0, why:'Aradan sonra daha önce görülen sorulara, işaretli olsalar bile dönülemez. Önce işaretlileri bitirmek gerekir. Boş bırakmak puan kaybettirir; yanlış cevabın cezası yoktur. Arada herhangi bir materyale bakmak sınavın iptaline yol açar; Learn erişimi yalnızca sınav ekranından ve saat işlerken yapılır.' },
+  { t:'mc', q:'Operasyon ekibi, DirectQuery kaynağına bağlı bir izleme sayfasının kimse dokunmadan her 30 saniyede güncellenmesini istiyor. En az geliştirme çabasıyla ne yaparsın?', o:['Zamanlanmış yenilemeyi 30 saniyeye ayarlamak','Power Automate ile raporu yeniden açan bir akış kurmak','Modeli Import’a çevirip artımlı yenileme kurmak','Sayfada otomatik sayfa yenilemeyi açmak'], a:3, why:'Otomatik sayfa yenileme DirectQuery kaynaklı sayfaların belirli aralıklarla sorgulanmasını sağlar; yerleşik bir ayardır. Zamanlanmış yenileme Import modelleri içindir ve bu sıklıkta değildir. Power Automate akışı gereksiz geliştirme çabasıdır. Import ve artımlı yenileme 30 saniyelik güncelliği vermez.' }
+] });
+/* ───────────────────────── 6. DP-600 ───────────────────────── */
+ext('dp600', { min: 16, html: `
+Çerçeveyi doğrula: 19 Ekim 2026 sürümü
+Microsoft Learn'deki DP-600 çalışma kılavuzunun ölçülen beceriler listesi 19 Ekim 2026 tarihli. Alan ağırlıkları değişmedi: analitik çözümü sürdürme %25–30, veriyi hazırlama %45–50, anlam modellerini uygulama ve yönetme %25–30. Değişiklik günlüğünde yalnızca “Veriyi sorgulama ve analiz etme” alt başlığında küçük bir değişiklik var. İngilizce sürüm önce güncellenir; yerelleştirilmiş sürüm birkaç hafta geriden gelebilir. Geçme puanı 700.
+Ağırlıkların anlamı açık: sınavın neredeyse yarısı veriyi hazırlamak. Burada T-SQL görünümleri, saklı yordamlar, yıldız şemayı lakehouse ya da ambarda kurmak, yinelenen ve eksik veriyi temizlemek ve veriyi dört araçla sorgulamak var: görsel sorgu düzenleyici, SQL, KQL ve DAX. Power BI geçmişinden gelen biri için en büyük açık genellikle SQL'dir.
+Depo kararı: bir karar ağacı
+Veri saniyeler içinde akıyor mu? (telemetri, log, tıklama akışı) → Eventhouse / KQL veritabanı. Analiz katmanı için OneLake erişilebilirliğini açarsan aynı veri Delta olarak OneLake'te görünür ve kopyalamadan anlam modeline bağlanabilir.
+Ekip veriyi T-SQL ile yazacak mı? (INSERT, UPDATE, MERGE, çok tablolu işlemler, saklı yordamlar) → Warehouse.
+Dosya, yarı yapılandırılmış veri ya da Spark / Python mühendisliği var mı? → Lakehouse. Lakehouse'un SQL analiz uç noktası T-SQL ile okur; tablolara yazmaz.
+Veri başka bir yerde zaten var mı? (ADLS, başka bir lakehouse) → kopyalama, kısayol (shortcut) oluştur.
+Raporlar nasıl tüketecek? → Anlam modeli her zaman en üstte durur. Depolama modu kararı aşağıda.
+Ayrıntılı tasarım Fabric'te yıldız şema ve Fabric'te veriyi hazırlamak derslerinde.
+Direct Lake: OneLake mı, SQL uç noktası mı?
+Beceri listesinde ayrı bir madde var: “Direct Lake on OneLake ile Direct Lake on SQL analytics endpoint arasında seçim”. Fabric belgelerindeki farklar:
+Konu | Direct Lake on OneLake | Direct Lake on SQL | 
+Kaynak | Bir ya da birden çok Fabric öğesi (kısayollar dahil) | SQL analiz uç noktası olan tek kaynak | 
+DirectQuery'ye geri dönüş | Yok | Var (açıksa); kapalıysa sorgu hata verir | 
+Import tablolarla karışım | Mümkün | Aynı modelde DirectQuery / Dual ile karışmaz | 
+Ambardaki SQL RLS | Uygulanmaz; kullanıcının OneLake dosya erişimi gerekir | Uygulanır ama sorgular DirectQuery'ye düşer | 
+Sınır (guardrail) aşılırsa | Yenileme başarısız; Delta tabloları optimize edilene kadar model sorgulanamaz | Uyarıyla devam eder, sorgular DirectQuery'ye düşer ve yavaşlar | 
+SQL uç noktasında geri dönüşü tetikleyenler: gerçekleştirilmemiş SQL görünümü, ambarda SQL tabanlı ayrıntılı erişim denetimi (SQL RLS dahil), henüz işlenmemiş tablo ve sınır aşımı. Direct Lake yenilemesi (framing) veri kopyalamaz; yalnızca en son Delta dosyalarına işaret eden meta veriyi günceller ve saniyeler sürer.
+Sınav dili“Raporlar yavaşladı, Performans Analizi'nde Direct Lake görselleri DirectQuery sorgusu gönderiyor” cümlesini görürsen geri dönüş tetikleyicilerini düşün: görünüm mü, SQL RLS mi, sınır mı?
+Aynı soru, üç dil: DAX, SQL, KQL
+Soru: “2024'te en çok satan 5 ürün hangisi?” Anlam modelinde DAX sorgusu:
+EVALUATE
+TOPN(
+    5,
+    SUMMARIZECOLUMNS(
+        Urunler[Urun], Urunler[Kategori],
+        TREATAS({2024}, Tarih[Yil]),
+        "Net Satış 2024", [Net Satış]
+    ),
+    [Net Satış 2024], DESC
+)
+ORDER BY [Net Satış 2024] DESC
+Sonuç: 27" Monitör 59.992 ₺, Akıllı Saat 37.789 ₺, Türk Kahvesi Makinesi 34.744 ₺, Robot Süpürge 32.396 ₺, Yoga Matı 28.868 ₺. Aynı sorunun ambar ya da SQL uç noktası karşılığı:
+SELECT TOP 5 u.Urun, u.Kategori, SUM(s.Tutar) AS NetSatis2024
+FROM dbo.Satislar AS s
+JOIN dbo.Urunler AS u ON u.UrunNo = s.UrunNo
+WHERE s.Durum <> 'İptal' AND YEAR(s.Tarih) = 2024
+GROUP BY u.Urun, u.Kategori
+ORDER BY NetSatis2024 DESC;
+Eventhouse'ta bir satış olayı tablosu olsaydı KQL karşılığı:
+SatisOlaylari
+| where Durum != "İptal" and Tarih between (datetime(2024-01-01) .. datetime(2024-12-31T23:59:59))
+| summarize NetSatis2024 = sum(Tutar) by Urun, Kategori
+| top 5 by NetSatis2024 desc
+Dil | Nerede doğru? | Dikkat | 
+DAX | İş kuralı anlam modelinde; tüm raporlar aynı tanımı kullanmalı | SQL'de “Net satış”ı yeniden yazmak iki tanım üretir | 
+SQL | Dönüştürme, görünüm, saklı yordam, veri kalitesi kontrolü | SQL uç noktası salt okunur; yazma ambarda | 
+KQL | Zaman serisi, log, yakın gerçek zamanlı analiz | Zaman aralığı filtresini erken uygula | 
+Görsel sorgu düzenleyici | Kod yazmadan hızlı seçme, filtreleme, toplama | Karmaşık mantıkta SQL'e geç | 
+Anlam modeli kararları: sınavın sevdiği eşleşmeler
+Depolama modu: Delta tabloları OneLake'teyse önce Direct Lake; eski bir kaynak varsa DirectQuery ya da Import; boyutlar için Dual (Kurumsal model dersi).
+Artımlı yenileme: RangeStart / RangeEnd parametreleri; filtre kaynağa katlanmalı.
+Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri: Hesaplama grupları dersinde.
+Pencere ve bilgi fonksiyonları: OFFSET, WINDOW, INDEX; ISINSCOPE, ISFILTERED gibi bilgi fonksiyonları (Pencere fonksiyonları dersi).
+Yaşam döngüsü: Git sürüm denetimi ve .pbip, dağıtım işlem hatları ve dağıtım kuralları, XMLA ile dağıtım, etki analizi (Yaşam döngüsü dersi).
+Sınav stratejisi
+Uygulamanın Sınavlar bölümündeki aday notlarına göre DP-600'de vaka çalışması çoğunlukla başta gelir ve geri dönülemez; sonda “aynı senaryo, farklı çözüm” evet/hayır serisi olur. T-SQL ağırlıklıdır. Plan: Sınavlar → DP-600 konu alıştırması ile alanları tek tek çalış, son iki haftada kısa ve tam denemeleri çöz. Her yanlışta kendine şu soruyu sor: kısıt neydi (en az çaba, en az ayrıcalık, kopyasız, gerçek zamana yakın)? Yanlış şık o kısıtın hangisini çiğniyordu?
+`, ex: [
+  { t:'query', q:'2024 yılında net satışı en yüksek 5 ürünü, kategorileriyle birlikte, satışa göre azalan sırada döndüren bir DAX sorgusu yaz. Yıl filtresini TREATAS ile ver; değer sütununun adı "Net Satış 2024" olsun.', start:'EVALUATE\n', sol:'EVALUATE\nTOPN(5, SUMMARIZECOLUMNS(Urunler[Urun], Urunler[Kategori], TREATAS({2024}, Tarih[Yil]), "Net Satış 2024", [Net Satış]), [Net Satış 2024], DESC)\nORDER BY [Net Satış 2024] DESC', hint:'SUMMARIZECOLUMNS içinde filtre argümanı olarak TREATAS({2024}, Tarih[Yil]); dışında TOPN(5, …, [Net Satış 2024], DESC).' },
+  { t:'mc', q:'Veri mühendisleri lakehouse’taki Delta tablolarını Spark ile yüklüyor. SQL ekibi aynı tablolarda UPDATE çalıştıran bir saklı yordamı lakehouse’un SQL analiz uç noktasında kurmak istiyor. Ne söylersin?', o:['Uç noktada UPDATE çalışır, yalnızca yazma izni vermek gerekir','Uç nokta salt okunur; yazma ambarda ya da Spark’ta','Tabloları KQL veritabanına taşıyıp orada güncellemek gerekir','Saklı yordam yerine Dataflow Gen2 ile UPDATE yazılmalı'], a:1, why:'Lakehouse’un SQL analiz uç noktası tablolara T-SQL ile okuma (ve görünüm, fonksiyon) sunar; DML ile yazmaz. T-SQL yazma gerekiyorsa veri bir ambarda tutulur ya da güncelleme Spark ile yapılır. İzin vermek salt okunurluğu değiştirmez. KQL veritabanı bu iş yükü için değildir. Dataflow Gen2 UPDATE çalıştırmaz.' },
+  { t:'mc', q:'Direct Lake on SQL kullanan bir modelde raporlar yavaşladı. Performans Analizi bazı görsellerin DirectQuery sorgusu gönderdiğini gösteriyor. Ambar ekibi geçen hafta satış tablosuna SQL tabanlı satır düzeyi güvenlik ekledi. En olası açıklama?', o:['Delta tablolarında V-Order kapatılmış','Anlam modelinin son yenilemesi başarısız oldu','SQL RLS sorguları DirectQuery’ye düşürüyor','Kullanıcıların Fabric lisansı eksik'], a:2, why:'Direct Lake on SQL, ambarda SQL tabanlı ayrıntılı erişim denetimi görünce o sorgular için DirectQuery’ye geri döner; bu da yavaşlık yaratır. V-Order okuma performansını etkiler ama DirectQuery’ye düşürmez. Başarısız yenileme sorguyu yavaşlatmaz, veriyi eski bırakır. Lisans sorunu erişim hatası verir.' },
+  { t:'mc', q:'IoT sensör verisi bir Eventhouse’ta toplanıyor. Analistler bu veriyi kopyalamadan, bir lakehouse’taki ürün tablosuyla aynı anlam modelinde kullanmak istiyor. İlk adım ne?', o:['KQL veritabanında OneLake erişilebilirliğini açmak','Bir işlem hattıyla veriyi her saat lakehouse’a kopyalamak','Anlam modelinde Eventhouse’a DirectQuery ile bağlanmak','Sensör verisini Dataflow Gen2 ile ambara yazmak'], a:0, why:'OneLake erişilebilirliği, Eventhouse tablolarını OneLake’te Delta olarak görünür kılar; anlam modeli bunu kopya olmadan kullanabilir. Saatlik kopya, kopyasız şartını çiğner ve gecikme ekler. DirectQuery bağlantısı çalışabilir ama iki kaynağı tek Direct Lake modelinde birleştirmez. Dataflow ile yazmak da bir kopyadır.' },
+  { t:'mc', q:'Anlam modeli geliştirme, test ve üretim çalışma alanlarından geçmeli; her aşamada veri kaynağı o aşamanın lakehouse’u olmalı. En az bakım çabasıyla hangisi?', o:['Her aşamada PBIX’i elle yayımlayıp kaynağı değiştirmek','Üç ayrı model kopyası ve üç ayrı Git dalı','XMLA ile her aşamaya ayrı betik çalıştırmak','Dağıtım işlem hattı ve dağıtım kuralları'], a:3, why:'Dağıtım işlem hattı içeriği aşamalar arasında taşır; dağıtım kuralları her aşama için veri kaynağını ve parametreleri otomatik değiştirir. Elle yayımlamak hataya açıktır. Üç model kopyası tanımları ayrıştırır. XMLA betikleri çalışır ama bakım çabası daha yüksektir.' },
+  { t:'mc', q:'Bir uygulamanın hata loglarında “son 1 saatte 5 dakikalık aralıklarla hata sayısı” isteniyor; veri saniyede yüzlerce kayıtla Eventhouse’a geliyor. Hangi dil ve yaklaşım?', o:['DAX ölçüsü ve otomatik sayfa yenilemesi kurmak','T-SQL görünümü ve saatlik zamanlanmış yenileme','KQL’de zaman filtresi ve bin() ile summarize','Görsel sorgu düzenleyicide zaman sütununa göre gruplama'], a:2, why:'Yakın gerçek zamanlı log analizi KQL’in alanıdır: önce zaman aralığı filtrelenir, sonra summarize count() by bin(Zaman, 5m). DAX ölçüsü bu veri hacminde ve gecikmede doğru katman değildir. T-SQL görünümü ve zamanlanmış yenileme gecikme ekler. Görsel sorgu düzenleyici bu senaryoda KQL’in zaman serisi araçlarını sunmaz.' },
+  { t:'mc', q:'Direct Lake on OneLake modelinin yenilemesi bir sınır (guardrail) aşıldığı için başarısız oldu ve model sorgulanamıyor. Ne yaparsın?', o:['Delta tablolarını optimize edip yenilemek','Modelde DirectQuery’ye geri dönüş ayarını açmak','Modeli Import moduna çevirip yeniden yayımlamak','Kapasiteyi bir gece için duraklatıp sürdürmek'], a:0, why:'Direct Lake on OneLake’te geri dönüş yoktur; sınır aşılınca yenileme başarısız olur ve Delta tabloları optimize edilene kadar model sorgulanamaz. Dosya ve satır grubu sayısını azaltan bakım (OPTIMIZE) çözümdür. Geri dönüş ayarı SQL uç noktası türüne özgüdür. Import’a çevirmek büyük bir mimari değişikliktir. Kapasiteyi duraklatmak sorunu çözmez.' }
+] });
+/* ───────────────────────── 7. Mülakat ───────────────────────── */
+ext('mulakat', { min: 16, html: `
+İleri teknik mülakat: dört tur
+Kıdemli analist ve BI geliştirici mülakatlarında kavram soruları kısalır, uygulama turları uzar. Genellikle şu dört tur görülür:
+Tur | Süre | Ölçülen | En çok puan kaybettiren | 
+Canlı DAX kodlama | 30–45 dk | Soruyu ölçüye çevirme, doğrulama alışkanlığı | Sessizce yazıp test etmeden “bitti” demek | 
+Model tasarım tahtası | 30 dk | Tanecik, olgu–boyut ayrımı, zor ilişkiler | Doğrudan tablo çizmeye başlamak | 
+Rapor eleştirisi | 15–20 dk | Önceliklendirme, iş dili | Renk ve yazı tipiyle başlamak | 
+“Bu rakam yanlış” | 20–30 dk | Sistematik hata ayıklama | Tahminle formül değiştirmek | 
+Canlı DAX turu: sorgu ile çalış
+Mülakatçı ekran paylaşımında şunu ister: “Birden fazla kanaldan alışveriş yapmış müşteri sayısını yıl yıl göster.” Ölçüyü model içinde yazmak yerine DAX sorgu görünümünde DEFINE MEASURE ile yaz. Hem tanımı hem sonucu aynı ekranda gösterirsin ve modeli değiştirmeden denersin:
+DEFINE
+    MEASURE Satislar[Çok Kanallı Müşteri] =
+        COUNTROWS(
+            FILTER(
+                VALUES(Satislar[MusteriNo]),
+                CALCULATE(DISTINCTCOUNT(Satislar[Kanal]), Satislar[Durum] <> "İptal") >= 2
+            )
+        )
+EVALUATE
+SUMMARIZECOLUMNS(Tarih[Yil], "Çok kanallı", [Çok Kanallı Müşteri], "Müşteri", [Müşteri Sayısı])
+Sonuç: 2022'de 32 müşteriden 9'u, 2023'te 77'den 48'i, 2024'te 123'ten 88'i birden çok kanal kullanmış. Şimdi sesli doğrula:
+Bağlam geçişi: FILTER her müşteri satırında CALCULATE çağırır; satır bağlamı müşteri filtresine döner ve kanal sayısı o müşteri için hesaplanır.
+Toplam: Tüm dönemde 113. Yılların toplamı (145) değildir, çünkü müşteri yıllar arasında tekrar eder. Bunu mülakatçı sormadan söyle.
+Kenar durum: İptal filtresi içerideki CALCULATE'te. Yalnızca iptal edilmiş bir Mağaza siparişi olan müşteri “çok kanallı” sayılmaz.
+Takip sorusuna hazır ol
+İkinci görev çoğu zaman bir öncekinin üstüne kurulur: “Her kategorinin lider ürününü yaz.” TOPN(1, VALUES(Urunler[Urun]), [Net Satış]) çoğu hücrede doğru çalışır. Ama satış olmayan aylarda (bu modelde 2022'nin ilk beş ayı) bütün ürünler BLANK ile berabere kalır ve TOPN 40 ürünün hepsini döndürür. Çözüm: önce satışı olan ürünleri filtrele. Bu tuzağı kendin bulup söylemek, kıdemli adayı ayıran davranıştır.
+Lider Ürün =
+VAR Satanlar = FILTER(VALUES(Urunler[Urun]), NOT ISBLANK([Net Satış]))
+VAR Lider = TOPN(1, Satanlar, [Net Satış], DESC)
+RETURN CONCATENATEX(Lider, Urunler[Urun], ", ")
+Model tasarım tahtası
+Örnek soru: “Bir e-ticaret şirketi kampanya etkisini ölçmek istiyor. Bir sipariş birden çok kampanya kodu kullanabilir. Hedefler aylık ve kategori bazında. İadeler ayrı bir sistemden geliyor. Modeli çiz.” Çizmeden önce şu sırayla konuş:
+Tanecik (grain): “Satış olgusu sipariş satırı düzeyinde; hedef ay × kategori düzeyinde; iade, iade satırı düzeyinde.” Bu cümle modelin yarısıdır.
+Olgular: Satislar, Hedefler, Iadeler. Üç olgu, üç ayrı tanecik; birleştirilmez.
+Ortak boyutlar: Tarih, Ürün (kategori dahil), Müşteri, Kanal, Kampanya. Hedefler Tarih ve Kategori'ye bağlanır, Ürün'e değil.
+Zor kısım: Sipariş–kampanya çoka-çok. Bir köprü tablo (SiparisNo, KampanyaNo) ve iki bire-çok ilişki. Kampanya filtresinin satışa ulaşması için ölçü içinde yön açma ya da köprü üzerinden filtre. Bir siparişi iki kampanyaya tam olarak saymanın toplamı şişireceğini söyle ve ağırlık (paylaştırma) seçeneğini öner.
+Güvenlik ve büyüme: RLS hangi boyutta? Veri büyürse artımlı yenileme ve toplama tabloları.
+Sık hatalar: her şeyi tek düz tabloya koymak, hedefleri satış satırlarına join etmek, “filtreler aksın” diye her ilişkiyi çift yönlü yapmak. Ayrıntı Model tasarımı II ve Fabric'te yıldız şema derslerinde.
+Rapor eleştirisi turu
+Bir dashboard ekran görüntüsü verilir. İlk dakika konuşma; incele. Sonra eleştiriyi doğruluk → anlam → tasarım önceliğiyle ve gözlem → etki → öneri biçiminde anlat.
+Doğruluk: “Kategori matrisinin toplam satırında marj %249,5 görünüyor. Bu bir oranın satırlarının toplanmış hâli; gerçek marj %36,5. Ölçü SUMX ile kategori marjlarını topluyor olabilir.” Doğruluk hatası her zaman ilk maddedir.
+Anlam: “Net satış kartında karşılaştırma yok; iyi mi kötü mü bilinmiyor.”
+Tasarım: “Yedi dilimli pasta grafikte küçük dilimler ayırt edilmiyor; sıralı çubuk daha iyi.”
+Tam liste Dashboard tasarımı dersindeki eleştiri kontrol listesinde.
+“Bu rakam yanlış” turu: beş adım
+Mülakatçı der ki: “CRM 2023'te 77 müşteri alışveriş yaptı diyor, sizin rapor 79 diyor. Bul.”
+Tanımı sor: “CRM neyi sayıyor? İptal edilen siparişler dahil mi?”
+Bağlamı sabitle: Aynı dönem, aynı filtreler. Rapordaki dilimleyicileri yaz.
+En küçük sorguda yeniden üret: İki tanımı yan yana koy. DISTINCTCOUNT(Satislar[MusteriNo]) 2023 için 79, [Müşteri Sayısı] 77.
+Farkı satır düzeyinde bul: Küme farkı sorgusu farkı yapan müşterileri listeler.
+Düzelt ve testi ekle: Rapordaki görsel yanlış ölçüyü kullanıyordu. Doğru ölçüye geç ve bu karşılaştırmayı test sayfasına ekle.
+EVALUATE
+EXCEPT(
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023),
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023, Satislar[Durum] <> "İptal")
+)
+Sorgu iki müşteri döndürür (78 ve 102): 2023'te yalnızca iptal edilmiş siparişleri var. Aynı turda sık gelen iki varyasyon:
+Şikâyet | Rapordaki | Beklenen | Kök neden | 
+“Ortalama sipariş tutarı çok düşük” | AVERAGE(Satislar[Tutar]) = 831 ₺ | 1.492,57 ₺ | Satır ortalaması, sipariş ortalaması değil; iptaller de içeride | 
+“Net satış finanstan yüksek” | 1.250.772 ₺ | 1.169.937 ₺ | İadeler dahil; fark tam olarak iade tutarı (80.835 ₺) | 
+Sesli düşünme kalıbı“Önce tanımı netleştireyim. Sonra aynı bağlamda iki sayıyı yan yana üreteyim. Fark satır düzeyinde nereden geliyor, bulayım. Düzeltmeden önce bir test yazayım ki bir daha olmasın.” Bu dört cümle, doğru formülden daha çok puan getirir.
+`, ex: [
+  { t:'dax', name:'Web ve Mobil Müşterisi', q:'Web ve Mobil Müşterisi: Canlı kodlama görevi. Bağlamda, iptal edilmemiş siparişlerde en az iki farklı kanal kullanmış müşteri sayısı. 2024 için 88.', sol:'COUNTROWS(FILTER(VALUES(Satislar[MusteriNo]), CALCULATE(DISTINCTCOUNT(Satislar[Kanal]), Satislar[Durum] <> "İptal") >= 2))', hint:'VALUES(Satislar[MusteriNo]) üzerinde FILTER; her müşteri için CALCULATE(DISTINCTCOUNT(Satislar[Kanal]), Durum <> "İptal") >= 2.' },
+  { t:'dax', name:'Lider Ürün', q:'Lider Ürün: Takip sorusu. Bağlamda net satışı en yüksek ürünün adı; eşitlikte adları virgülle birleştir. Satış olmayan bağlamda 40 ürünün hepsi listelenmesin: yalnızca satışı olan ürünler aday olsun.', sol:'VAR Satanlar = FILTER(VALUES(Urunler[Urun]), NOT ISBLANK([Net Satış])) VAR Lider = TOPN(1, Satanlar, [Net Satış], DESC) RETURN CONCATENATEX(Lider, Urunler[Urun], ", ")', hint:'Önce FILTER(VALUES(Urunler[Urun]), NOT ISBLANK([Net Satış])), sonra TOPN(1, …), en son CONCATENATEX.' },
+  { t:'dax', name:'Sipariş Ortalaması (Düzeltilmiş)', q:'Sipariş Ortalaması (Düzeltilmiş): “Bu rakam yanlış” turu. Rapordaki ölçü AVERAGE(Satislar[Tutar]) ve tüm dönemde 831 ₺ gösteriyor. Ölçüyü, iptal edilmemiş siparişlerin sipariş başına ortalama tutarını verecek biçimde düzelt (beklenen 1.492,57 ₺).', sol:'DIVIDE(CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] <> "İptal"), CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), Satislar[Durum] <> "İptal"))', hint:'Satır ortalaması değil: toplam tutarı sipariş sayısına böl. İkisinde de iptalleri dışla (ya da hazır ölçüleri kullan).' },
+  { t:'query', q:'“CRM 2023’te 77 müşteri diyor, rapor 79 diyor” vakası. 2023’te en az bir satırı olan ama iptal edilmemiş hiçbir siparişi olmayan müşterilerin numaralarını döndüren bir DAX sorgusu yaz.', start:'EVALUATE\n', sol:'EVALUATE\nEXCEPT(\n    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023),\n    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023, Satislar[Durum] <> "İptal")\n)', hint:'İki müşteri kümesi kur: 2023’ün tüm müşterileri ve iptal dışı müşterileri. EXCEPT ile farkı al.' },
+  { t:'mc', q:'Model tasarım tahtasında soru: “Bir sipariş birden çok kampanya kodu kullanabilir; kampanya etkisini ölçmek istiyoruz.” Tahtaya ilk ne yazarsın?', o:['Satış, kampanya ve hedef olgularının tanecik cümlelerini','Kampanya tablosunun sütun listesini','Satış ile kampanya arasında çift yönlü ilişkiyi','Kampanyaları sipariş satırına virgüllü metin olarak eklemeyi'], a:0, why:'Tanecik cümleleri hangi olgunun hangi düzeyde tutulduğunu ve hangi ilişkilerin gerektiğini belirler; köprü tablo ihtiyacı buradan çıkar. Sütun listesi sonraki adımdır. Çift yönlü ilişki gerekçesiz bir kısayoldur ve belirsiz yollar yaratır. Virgüllü metin filtrelenemez ve toplamları bozar.' },
+  { t:'mc', q:'Rapor eleştirisi turunda bir dashboard görüyorsun: pasta grafikte 7 kategori, karşılaştırmasız KPI kartları ve toplam satırında %249,5 marj gösteren bir matris. Eleştirine nereden başlarsın?', o:['Pasta grafiğin sıralı çubukla değişmesinden','KPI kartlarına hedef ve geçen yıl eklenmesinden','Toplam satırındaki hatalı marjdan','Renk paletinin kurumsal temaya uymamasından'], a:2, why:'Doğruluk hatası her zaman ilk maddedir: %249,5 bir oranın toplanmış hâlidir; gerçek marj %36,5. Yanlış bir sayı, iyi tasarlanmış bir sayfanın tüm güvenilirliğini yok eder. KPI karşılaştırması anlam sorunudur, ikinci sırada gelir. Pasta grafik ve renk tasarım sorunlarıdır, en sonda.' }
+] });
+})(window);

@@ -1,0 +1,14 @@
+EVALUATE
+VAR Birim = CALCULATE(DIVIDE([Net Maliyet], [Satılan Adet]), Tarih[Yil] = 2024, Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+RETURN
+    ADDCOLUMNS(
+        GENERATESERIES(150, 450, 50),
+        "Mevcut", [Value] * Birim,
+        "Yeni", IF([Value] >= 250, 3000 + 0.88 * [Value] * Birim),
+        "Kendi", 18000 + 0.55 * [Value] * Birim,
+        "En ucuz",
+            VAR M = [Value] * Birim
+            VAR Y = IF([Value] >= 250, 3000 + 0.88 * [Value] * Birim, M)
+            VAR K = 18000 + 0.55 * [Value] * Birim
+            RETURN SWITCH(TRUE(), K <= MIN(M, Y), "Kendi üretim", Y < M, "Yeni tedarikçi", "Mevcut tedarikçi")
+    )

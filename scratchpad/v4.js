@@ -1,0 +1,10 @@
+const {ev,q,run,def}=require('./h.js');
+const Y=[{t:'Tarih',c:'Yil'}];
+def('Ortalama Stok Değeri','AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])');
+def('Stok Devir Hızı','DIVIDE([Net Maliyet], [Ortalama Stok Değeri])');
+def('Stokta Kalma Günü','DIVIDE(DATEDIFF(MIN(Tarih[Tarih]), MAX(Tarih[Tarih]), DAY) + 1, [Stok Devir Hızı])');
+def('Stoksuz Ay','COUNTROWS(FILTER(VALUES(Tarih[YilAy]), [Stok Adedi] = 0))');
+console.log(q(['[Stok Değeri]','[Ortalama Stok Değeri]','[Net Maliyet]','[Stok Devir Hızı]','[Stokta Kalma Günü]','[Stok Gün Sayısı]','[Stok Adedi]','[Stoksuz Ay]'],Y));
+console.log(ev('[Stok Değeri (Toplam)]'), ev('SUMX(Urunler, Urunler[Stok])'));
+const F=[{t:'Tarih',c:'Yil',v:[2024]}];
+console.log(X=require('./h.js').X.query({rows:[{t:'Kategoriler',c:'Kategori'}],filters:[{t:'Tarih',c:'Yil',op:'in',v:[2024]}],measures:require('./h.js').ms,values:['[Stok Değeri]','[Ortalama Stok Değeri]','[Net Maliyet]','[Stok Devir Hızı]','[Stokta Kalma Günü]','[Stoksuz Ay]'],totals:true}).rows.map(r=>r.keys+' '+r.vals.map(v=>typeof v=='number'?v.toFixed(2):v).join(' | ')));

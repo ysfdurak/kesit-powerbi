@@ -1,0 +1,5 @@
+for (const e of ['[Net Satış]','[Sipariş Sayısı]','[Ortalama Sepet]','[Satış GA]','[MoM %]','[Satış GY]','[YoY %]','[Hedef]','[Hedef Gerçekleşme %]','[Müşteri Sayısı]','[İptal Oranı %]','[Satış YTD]','[Hedef YTD]']) console.log(e, at(e,'2024-12'), at(e,'2024-11'));
+console.log(rq(`EVALUATE CALCULATETABLE(ADDCOLUMNS(VALUES(Urunler[Kategori]), "N", [Net Satış], "GA", [Satış GA], "F", [Net Satış]-[Satış GA], "H", [Hedef Gerçekleşme %]), Tarih[YilAy]="2024-12")`));
+console.log(rq(`EVALUATE CALCULATETABLE(ADDCOLUMNS(VALUES(Satislar[Kanal]), "N", [Net Satış], "GA", [Satış GA], "S",[Sipariş Sayısı]), Tarih[YilAy]="2024-12")`));
+console.log('dijital tüm', ev('CALCULATE([Net Satış], Satislar[Kanal] IN {"Web","Mobil"})'), q('CALCULATE([Net Satış], Satislar[Kanal] IN {"Web","Mobil"})',{t:'Tarih',c:'Yil'}), q('DIVIDE(CALCULATE([Net Satış], Satislar[Kanal] IN {"Web","Mobil"}),[Net Satış])',{t:'Tarih',c:'Yil'}));
+console.log(q('[Net Satış] - [Satış GA]',{t:'Tarih',c:'YilAy'}).slice(-4), q('[Net Satış] - [Satış GA]',{t:'Urunler',c:'Kategori'}));

@@ -1,0 +1,12 @@
+const {ev,q,run,def}=require('./h.js');
+const w=m=>`CALCULATE(${m}, Tarih[Yil] = 2024)`;
+console.log(q(['[Net Satış]','[Hedef]','[Hedef Gerçekleşme %]','[Satış GY]','[YoY %]'].map(w),{t:'Kategoriler',c:'Kategori'}));
+console.log(ev(w('[Hedef Gerçekleşme %]')), ev(w('[YoY %]')), ev(w('[Hedef Farkı]')));
+console.log(q(['[Satış YTD]','[Hedef YTD]','DIVIDE([Satış YTD],[Hedef YTD])','[Net Satış]','[Hedef]'],{t:'Tarih',c:'YilAy'}).filter(s=>s.startsWith('2024')));
+console.log(q(['[Net Satış]','[Hedef]','[Hedef Gerçekleşme %]'],{t:'Tarih',c:'YilCeyrek'}).filter(s=>s.startsWith('2024')));
+console.log(q(['[Net Satış]','[Sipariş Sayısı]','[Müşteri Sayısı]','[Ortalama Sepet]','[YoY %]','[Kâr Marjı %]'].map(w),{t:'Calisanlar',c:'AdSoyad'}));
+console.log(q(['[Net Satış]'],{t:'Calisanlar',c:'AdSoyad'}));
+console.log(q(['[Net Satış]','[Ekip Satışı]'].map(w),{t:'Calisanlar',c:'AdSoyad'}).slice(0,3));
+console.log(w('[Yönetici Özeti Metni]'), ev(w('[Yönetici Özeti Metni]')));
+console.log(q(['[Net Satış]','[Hedef]','[Hedef Gerçekleşme %]'],{t:'Kategoriler',c:'Kategori'}));
+console.log(q(['[Kâr Marjı %]'].map(w),{t:'Kategoriler',c:'Kategori'}));

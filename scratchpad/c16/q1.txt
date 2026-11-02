@@ -1,0 +1,26 @@
+EVALUATE
+VAR Pazar = DATATABLE(
+    "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+    {
+        {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+        {"Ev & Yaşam", 2023, 3400000}, {"Ev & Yaşam", 2024, 4760000},
+        {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+        {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+        {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+        {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+        {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+    }
+)
+VAR T =
+    ADDCOLUMNS(
+        VALUES(Kategoriler[Kategori]),
+        "Satış", CALCULATE([Net Satış], Tarih[Yil] = 2024),
+        "Pazar", VAR k = Kategoriler[Kategori] RETURN SUMX(FILTER(Pazar, [Kategori] = k && [Yil] = 2024), [PazarTL])
+    )
+VAR Ilk3 = TOPN(3, T, [Satış], DESC)
+VAR Diger = EXCEPT(T, Ilk3)
+RETURN
+    UNION(
+        SELECTCOLUMNS(Ilk3, "Grup", Kategoriler[Kategori], "Satış", [Satış], "Pazar", [Pazar], "Pay", DIVIDE([Satış], [Pazar])),
+        ROW("Grup", "Diğer", "Satış", SUMX(Diger, [Satış]), "Pazar", SUMX(Diger, [Pazar]), "Pay", DIVIDE(SUMX(Diger, [Satış]), SUMX(Diger, [Pazar])))
+    )

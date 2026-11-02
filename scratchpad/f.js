@@ -1,0 +1,12 @@
+m('CALCULATE(TOTALYTD([Net Satış], Tarih[Tarih]), Tarih[YilAy]="2024-03")');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2022,7,1), DATE(2023,3,31)))');
+const ms2 = Object.assign({}, ms, {'Mali YTD': {name:'Mali YTD', expr:'VAR son = MAX(Tarih[Tarih]) VAR bas = IF(MONTH(son) >= 7, DATE(YEAR(son), 7, 1), DATE(YEAR(son) - 1, 7, 1)) RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))'}});
+console.log(X.evalMeasure(ms2, 'CALCULATE(CALCULATE([Mali YTD], SAMEPERIODLASTYEAR(Tarih[Tarih])), Tarih[YilAy]="2024-03")', []));
+console.log(X.query({ rows: [{ t: 'Tarih', c: 'Yil' }], measures: ms, values: ['CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -364, DAY))','[Satış GY]'], slicers: [], totals: true }).rows);
+q('EVALUATE ADDCOLUMNS(FILTER(Tarih, Tarih[Gun] = 1), "MaliYil", Tarih[Yil] + IF(Tarih[AyNo] >= 7, 1, 0), "MaliAyNo", MOD(Tarih[AyNo] + 5, 12) + 1, "MaliCeyrek", "MÇ" & (INT(MOD(Tarih[AyNo] + 5, 12) / 3) + 1))');
+q('EVALUATE ADDCOLUMNS(FILTER(Tarih, Tarih[Tarih] >= DATE(2024,12,28)), "ISOYil", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4), "HaftaBaslangic", Tarih[Tarih] - Tarih[GunNo] + 1, "HaftaAnahtari", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) & "-H" & IF(Tarih[HaftaNo] < 10, "0", "") & Tarih[HaftaNo])');
+q('EVALUATE ROW("Yanlis", CALCULATE([Net Satış], Tarih[Yil] = 2024, Tarih[HaftaNo] = 1), "Dogru", CALCULATE([Net Satış], FILTER(ALL(Tarih), YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024 && Tarih[HaftaNo] = 1)))');
+q('EVALUATE ROW("w", WEEKNUM(DATE(2024,12,30), 21), "w2", WEEKNUM(DATE(2022,1,1), 21))');
+const WTD='VAR son = MAX(Tarih[Tarih]) VAR bas = son - WEEKDAY(son, 2) + 1 RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))';
+console.log(X.query({ rows: [{ t: 'Tarih', c: 'Yil' }], measures: ms, values: [WTD], slicers: [], totals: true }).rows);
+console.log(X.query({ rows: [{ t: 'Kategoriler', c: 'Kategori' }], measures: ms, values: [WTD], slicers: [], totals: true }).rows);

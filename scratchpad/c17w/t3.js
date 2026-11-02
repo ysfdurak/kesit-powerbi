@@ -1,0 +1,12 @@
+console.log(rq(`EVALUATE ROW("Satır", COUNTROWS(Satislar), "Tekil satır", DISTINCTCOUNT(Satislar[SatirNo]), "Tutar", SUM(Satislar[Tutar]), "Net", [Net Satış], "İptal", CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum]="İptal"), "BosKargo", COUNTBLANK(Satislar[KargoGun]), "BosMus", COUNTROWS(FILTER(Musteriler, ISBLANK(Musteriler[Sehir]))))`));
+console.log(rq(`EVALUATE SUMMARIZECOLUMNS(Tarih[YilAy], "Satır", COUNTROWS(Satislar), "Tutar", SUM(Satislar[Tutar]))`).slice(-4));
+console.log(rq(`EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "Satır", COUNTROWS(Satislar), "Tutar", SUM(Satislar[Tutar]), "Net", [Net Satış])`));
+console.log('kargo bos by durum', q('COUNTBLANK(Satislar[KargoGun])',{t:'Satislar',c:'Durum'}), q('COUNTROWS(FILTER(Satislar, ISBLANK(Satislar[KargoGun])))',{t:'Satislar',c:'Durum'}));
+console.log('sepet', ev('[Ortalama Sepet]'), ev('SUMX(VALUES(Kategoriler[Kategori]), [Ortalama Sepet])'), ev('AVERAGEX(VALUES(Kategoriler[Kategori]), [Ortalama Sepet])'), ev('SUMX(VALUES(Kategoriler[Kategori]), [Sipariş Sayısı])'), ev('[Sipariş Sayısı]'));
+console.log(q('IF(ABS([Ortalama Sepet] - SUMX(VALUES(Kategoriler[Kategori]), [Ortalama Sepet])) < 0.01, "OK", "FARK")',{t:'Kategoriler',c:'Kategori'}), q('IF(ABS([Ortalama Sepet] - SUMX(VALUES(Kategoriler[Kategori]), [Ortalama Sepet])) < 0.01, "OK", "FARK")',{t:'Tarih',c:'Yil'}));
+console.log(q('IF(ABS([Net Satış] - SUMX(VALUES(Kategoriler[Kategori]), [Net Satış])) < 0.01, "OK", "FARK")',{t:'Tarih',c:'Yil'}));
+console.log('tutar check', ev('SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]*(1-Satislar[Indirim]))'), ev('SUM(Satislar[Tutar])'), ev('COUNTROWS(FILTER(Satislar, ABS(Satislar[Tutar] - Satislar[Adet]*Satislar[BirimFiyat]*(1-Satislar[Indirim]))>0.01))'));
+console.log('urun yetim', ev('COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Urunler[Urun]))))'), ev('COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Musteriler[Musteri]))))'));
+console.log('hedef', q('[Hedef]',{t:'Tarih',c:'Yil'}), q('COUNTROWS(Hedefler)',{t:'Tarih',c:'Yil'}));
+console.log('kat sepet', q('[Ortalama Sepet]',{t:'Kategoriler',c:'Kategori'}), q('[Sipariş Sayısı]',{t:'Kategoriler',c:'Kategori'}));
+console.log('mom first', q('[MoM %]',{t:'Tarih',c:'YilAy'}).slice(0,8));

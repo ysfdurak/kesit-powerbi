@@ -1,0 +1,3 @@
+scratchpad/ds/*.sql
+scratchpad/ds/*.sqlite
+node_modules/

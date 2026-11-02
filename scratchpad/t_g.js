@@ -1,0 +1,18 @@
+const y24 = [{t:'Tarih', c:'Yil', values:[2024]}];
+console.log('urun', ev('COUNTROWS(Urunler)'), 'cj', ev('COUNTROWS(CROSSJOIN(VALUES(Tarih[Tarih]), VALUES(Urunler[UrunNo])))'), ev('COUNTROWS(CROSSJOIN(VALUES(Tarih[Tarih]), VALUES(Urunler[UrunNo]), VALUES(Satislar[Kanal])))'));
+console.log('gmax', ev('CEILING(MAX([Net Satış], [Hedef]) * 1.1, 1000)', y24), g('CEILING(MAX([Net Satış], [Hedef]) * 1.1, 1000)', 'Kategoriler', 'Kategori'));
+console.log('durum yil', g('VAR O = [Hedef Gerçekleşme %] RETURN SWITCH(TRUE(), ISBLANK(O), BLANK(), O >= 1, 1, O >= 0.95, 0, -1)', 'Tarih', 'Yil'));
+console.log('durum 2024 kat', X.query({ rows: [{t:'Kategoriler',c:'Kategori'}], measures: ms, values: ['VAR O = [Hedef Gerçekleşme %] RETURN SWITCH(TRUE(), ISBLANK(O), BLANK(), O >= 1, 1, O >= 0.95, 0, -1)'], slicers: y24, totals: true }).rows.map(r => r.keys[0]+'='+r.vals[0]).join(' '));
+console.log('pay 2024', X.query({ rows: [{t:'Kategoriler',c:'Kategori'}], measures: ms, values: ['[Kategori Payı %]'], slicers: y24 }).rows.map(r => r.keys[0]+'='+Math.round(r.vals[0]*1000)/10).join(' '));
+console.log('web sl', X.query({ rows: [{t:'Kategoriler',c:'Kategori'}], measures: ms, values: ['[Net Satış]'], slicers: [{t:'Satislar',c:'Kanal',values:['Web']}] }).rows.slice(0,2).map(r => r.keys[0]+'='+r.vals[0]).join(' '));
+console.log('kadin sol', g('-CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Kadın")', 'Tarih', 'Yil'));
+console.log('fark', g('[Net Satış] - [Satış GY]', 'Tarih', 'Yil'));
+console.log('min/max kargo', ev('MAX(Satislar[KargoGun])'));
+console.log('kanal 2024 sira', X.query({ rows: [{t:'Satislar',c:'Kanal'}], measures: ms, values: ['[Net Satış]'], slicers: y24 }).rows.map(r => r.keys[0]+'='+r.vals[0]).join(' '));
+console.log('seg kat rows', X.query({ rows: [{t:'Musteriler',c:'YasGrubu'}], measures: ms, values: ['VAR k = VALUES(Musteriler[YasGrubu]) RETURN DIVIDE([İade Oranı %], CALCULATE([İade Oranı %], EXCEPT(ALL(Musteriler[YasGrubu]), k)))'] }).rows.map(r => r.keys[0]+'='+r.vals[0]).join(' '));
+console.log('kurumsal fark', g('CALCULATE([İade Oranı %], Musteriler[Segment] = "Kurumsal") - CALCULATE([İade Oranı %], Musteriler[Segment] <> "Kurumsal")', 'Kategoriler', 'Kategori'), g('CALCULATE([İade Oranı %], Musteriler[Segment] = "Kurumsal") - CALCULATE([İade Oranı %], Musteriler[Segment] <> "Kurumsal")', 'Tarih', 'Yil'));
+console.log('kurumsal seg rate', ev('CALCULATE([İade Oranı %], Musteriler[Segment] = "Kurumsal")'), ev('CALCULATE([İade Oranı %], Musteriler[Segment] <> "Kurumsal")'));
+console.log('Iade by ege', ev('CALCULATE([İade Oranı %], Musteriler[Bolge] = "Ege")'), ev('CALCULATE(COUNTROWS(Satislar), Musteriler[Bolge] = "Ege", Satislar[Durum]="İade")'));
+console.log('MOBIL share 2024', ev('DIVIDE(CALCULATE([Net Satış], Satislar[Kanal]="Mobil"), [Net Satış])', y24));
+console.log('top kat pay seg', g('DIVIDE(MAXX(VALUES(Kategoriler[Kategori]), [Net Satış]), [Net Satış])', 'Musteriler', 'Segment'), ev('DIVIDE(MAXX(VALUES(Kategoriler[Kategori]), [Net Satış]), [Net Satış])'));
+console.log('kadin 2024', ev('CALCULATE([Net Satış], Musteriler[Cinsiyet]="Kadın")', y24), 'İçA', ev('CALCULATE([Net Satış], Musteriler[Bolge]="İç Anadolu")', y24));

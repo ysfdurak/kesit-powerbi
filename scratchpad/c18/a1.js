@@ -1,0 +1,11 @@
+const {M, ev, q, rq} = require('./h.js');
+const S = M.tables.Satislar.rows; console.log('rows', S.length, Object.keys(M.tables).map(t=>t+':'+M.tables[t].rows.length).join(' '));
+console.log(S.slice(0,2));
+console.log('durum', [...new Set(S.map(r=>r.Durum))], 'segment', [...new Set(M.tables.Musteriler.rows.map(r=>r.Segment))]);
+console.log('net', ev('[Net Satış]'), 'sip', ev('[Sipariş Sayısı]'), 'sepet', ev('[Ortalama Sepet]'));
+console.log('median order', ev('MEDIANX(CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] <> "İptal"), CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] <> "İptal"))'));
+console.log('median row', ev('CALCULATE(MEDIAN(Satislar[Tutar]), Satislar[Durum] <> "İptal")'), 'avg row', ev('CALCULATE(AVERAGE(Satislar[Tutar]), Satislar[Durum] <> "İptal")'));
+console.log(q(['[Net Satış]','[Satış GY]','[YoY %]','[Kâr Marjı %]','[İade Oranı %]','[Sipariş Sayısı]'], {t:'Tarih',c:'Yil'}));
+console.log(q(['[Net Satış]','[Kâr Marjı %]','[İade Oranı %]','[Zamanında Teslim %]'], {t:'Satislar',c:'Kanal'}));
+console.log(q(['[Net Satış]','[Kâr Marjı %]','[İade Oranı %]'], {t:'Kategoriler',c:'Kategori'}));
+console.log('last date', ev('MAX(Satislar[Tarih])'), ev('MIN(Satislar[Tarih])'), 'blank kargo', ev('COUNTBLANK(Satislar[KargoGun])'), ev('COUNTROWS(Satislar)'));

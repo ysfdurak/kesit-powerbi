@@ -1,0 +1,17 @@
+global.window = global; const P = '/home/claude/pbi/';
+['data','data2','dax','measures'].forEach(f => require(P + f + '.js'));
+const X = PBI_DAX, ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
+const e = s => { try { console.log(s, '=>', X.evalMeasure(ms, s, [])); } catch (x) { console.log(s, 'ERR', x.message); } };
+const q = s => { try { const r = X.runQuery(ms, s); console.log(s.replace(/\n/g,' '), '=>', r.rows.length, JSON.stringify(r.rows.slice(0, 10))); } catch (x) { console.log(s, 'ERR', x.message); } };
+e('CALCULATE(SUM(Satislar[Tutar]), Tarih[Yil] = 2024)'); e('CALCULATE([Net Satış], Tarih[Yil] = 2024)');
+q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], Kategoriler[Kategori], "s", [Net Satış])');
+q('EVALUATE SUMMARIZECOLUMNS(Musteriler[Segment], "u", DISTINCTCOUNT(Satislar[UrunNo]), "k", COUNTROWS(Urunler))');
+e('CALCULATE([Hedef], Satislar[Kanal] = "Web")'); e('[Hedef]');
+q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "r", IF([Net Satış] >= [Hedef], "#1B7F3B", "#B3261E"), "g", [Hedef Gerçekleşme %])');
+q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "r", IF([Net Satış] >= [Hedef], "#1B7F3B", "#B3261E"))');
+q('EVALUATE ROW("n", COUNTROWS(CALENDAR(DATE(YEAR(MIN(Satislar[Tarih])), 1, 1), DATE(YEAR(MAX(Satislar[Tarih])), 12, 31))))');
+q('EVALUATE TOPN(3, ADDCOLUMNS(CALENDAR(DATE(2024,1,1), DATE(2024,1,7)), "Gun", FORMAT([Date], "dddd"), "GunNo", WEEKDAY([Date], 2), "YilAy", FORMAT([Date], "YYYY-MM"), "Ceyrek", "Ç" &amp; QUARTER([Date])), [Date], ASC)'.replace('&amp;','&'));
+q('EVALUATE SUMMARIZECOLUMNS(Tarih[Ay], Tarih[AyNo], "s", [Net Satış])');
+e('SUM(Satislar[KargoGun])');
+e('DIVIDE(CALCULATE([Net Satış], Tarih[Yil]=2024), CALCULATE([Hedef], Tarih[Yil]=2024))');
+q('EVALUATE SUMMARIZECOLUMNS(Musteriler[Sehir], "s", [Net Satış])');

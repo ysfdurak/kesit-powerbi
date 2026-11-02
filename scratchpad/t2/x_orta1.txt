@@ -1,0 +1,541 @@
+/* PBIPatika — orta seviye DAX derslerine "Uzmanlaş" genişletmeleri (bölüm 1): bağlam, CALCULATE, yineleyiciler, FILTER/ALL, VAR, sıralama, yarı toplanabilir, hızlı ölçü, zaman, hedef, rol oynayan */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const ext = (id, o) => { const l = L.find(x => x.id === id); if (!l) { if (W.console) console.warn('ext: ders yok', id); return; } if (o.html) l.body += '
+Uzmanlaş' + o.html + '
+'; if (o.ex) l.ex = (l.ex || []).concat(o.ex); if (o.min) l.min += o.min; (W.PBI_EXT = W.PBI_EXT || []).push({ id, html: o.html || '', ex: o.ex || [] }); };
+/* ---------------------------------------------------------------- baglam */
+ext('baglam', { min: 14, html: `
+Hesaplanmış sütun mu, ölçü mü?
+Satış müdürü iki şey istiyor: tabloda her satış satırının kâr marjı, kartta da “ortalama marjımız”. Hızlı çözüm şuna benzer: Satislar tablosuna bir hesaplanmış sütun (calculated column) eklenir, karta da bu sütunun ortalaması konur.
+Satır Marjı =
+DIVIDE(Satislar[Tutar] - Satislar[Maliyet], Satislar[Tutar])
+Sütun, yenileme sırasında her satır için bir kez hesaplanır. Bu bir satır bağlamı işidir ve sorun çıkarmaz. Sorun karttadır. Sütunun ortalaması her satırı eşit sayar: 50 ₺’lik bir kitap satırı ile 5.000 ₺’lik bir monitör satırı ortalamayı aynı ölçüde etkiler. Aynı hesabı ölçü olarak yazınca farkı görürsün:
+Satır Marjı Ortalaması =
+AVERAGEX(
+    FILTER(Satislar, Satislar[Durum] <> "İptal"),
+    DIVIDE(Satislar[Tutar] - Satislar[Maliyet], Satislar[Tutar])
+)
+Bu modelde satır ortalaması %35,9 çıkar; hazır [Kâr Marjı %] ise %36,5. Fark kategori düzeyinde daha da açılır, üstelik yönü bile değişir:
+ | Kategori |  | [Kâr Marjı %] (toplam kâr / toplam satış) |  | Satır marjlarının ortalaması |
+ | Elektronik |  | %38,0 |  | %36,9 |
+ | Kozmetik |  | %35,1 |  | %37,9 |
+ | Tüm satışlar |  | %36,5 |  | %35,9 |
+Kozmetikte küçük tutarlı satırların marjı yüksek, büyük tutarlı satırlarınki düşük. Satır ortalaması bu yüzden kategoriyi olduğundan iyi gösterir. Yöneticinin sorduğu “kazandığımız her 100 ₺’nin kaçı kâr?” sorusunun cevabı ilk sütundur.
+ | Soru |  | Hesaplanmış sütun |  | Ölçü |
+ | Ne zaman hesaplanır? |  | Yenilemede, bir kez |  | Her görsel sorgusunda, o hücrenin bağlamında |
+ | Hangi bağlamı görür? |  | Yalnızca satır bağlamı |  | Filtre bağlamı (dilimleyici, eksen, filtreler) |
+ | Bellek |  | Her satır için değer saklar, modeli büyütür |  | Saklamaz, yalnızca formül |
+ | Dilimleyici / eksen olabilir mi? |  | Evet |  | Hayır |
+ | Tipik kullanım |  | Gruplama etiketi (“Büyük sipariş”), sıralama anahtarı |  | Toplam, oran, pay, karşılaştırma |
+Karar kuralıSonucu dilimleyiciye, eksene ya da satır başlığına koyacaksan sütun yaz. Sonucu bir sayı olarak, kullanıcının seçimine göre değişsin istiyorsan ölçü yaz. Oranı, ortalamayı ve payı asla sütunda saklayıp sonra toplama ya da ortalama alma.
+Hesaplanmış sütunda filtre bağlamı yoktur
+İkinci klasik tuzak: Urunler tablosuna her ürünün cirosunu yazan bir sütun eklemek.
+Ürün Cirosu = SUM(Satislar[Tutar])
+Beklenen, her ürün satırında o ürünün cirosu. Gerçekte her satırda aynı sayı çıkar: 1.346.190 ₺, yani bütün satışlar. Sebep şu: hesaplanmış sütunda satır bağlamı vardır ama filtre bağlamı boştur. Satır bağlamı bir filtre değildir; ilişki üzerinden Satislar’a hiçbir şey yaymaz. SUM de filtre bağlamına baktığı için tüm tabloyu toplar.
+Formülü CALCULATE içine alınca satır bağlamı bir filtreye dönüşür ve ilişki üzerinden yayılır. Bunun adı bağlam geçişidir; ayrıntısı İleri DAX’taki “Bağlam geçişi” dersinde. Etkisini bir sorguyla görebilirsin:
+EVALUATE
+ADDCOLUMNS(
+    TOPN(3, Urunler, Urunler[UrunNo], ASC),
+    "Ham SUM", SUM(Satislar[Tutar]),
+    "CALCULATE ile", CALCULATE(SUM(Satislar[Tutar]))
+)
+Kablosuz Kulaklık, Akıllı Saat ve Bluetooth Hoparlör satırlarında “Ham SUM” hep 1.346.190 ₺ çıkar. “CALCULATE ile” sütunu ise sırasıyla 42.762 ₺, 64.906 ₺ ve 33.032 ₺ verir. Bir ölçü referansı ([Toplam Satış]) yazsaydın, ölçüler kendiliğinden CALCULATE ile sarıldığı için sonuç doğru olurdu.
+Bir hücrenin filtre bağlamını okumak
+Bazen ölçünün kendi bağlamını bilmesi gerekir: “Toplam satırında mıyım? Kullanıcı kategori seçti mi?” Bunun için dört fonksiyon var ve her biri farklı bir soruya cevap verir:
+ | Fonksiyon |  | Sorduğu soru |  | Toplam satırında, dilimleyicide tek kategori seçiliyken |
+ | ISFILTERED(Kategoriler[Kategori]) |  | Bu sütuna doğrudan bir filtre var mı? |  | DOĞRU |
+ | HASONEVALUE(Kategoriler[Kategori]) |  | Görünen tek bir değer mi kaldı? |  | DOĞRU |
+ | ISINSCOPE(Kategoriler[Kategori]) |  | Görselin gruplama düzeyi bu sütun mu? |  | YANLIŞ |
+ | COUNTROWS(VALUES(Kategoriler[Kategori])) |  | Kaç değer görünüyor? |  | 1 |
+Toplam satırını gizlemek için ISINSCOPE, “tek bir seçim var mı?” sorusu için HASONEVALUE doğru araçtır. İkisini karıştırınca toplam satırı tek seçimde bir kategori gibi davranır. Hangi hücrede hangi cevabın geldiğini görmek için şu tanı ölçüsünü bir matrise koy:
+Bağlam Dedektörü =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Kategoriler[Kategori]), "Kategori satırı",
+    ISFILTERED(Kategoriler[Kategori]), "Toplam, kategori filtreli",
+    "Filtre yok"
+)
+Kontrol listesi: bağlam sorusu1) Formül nerede çalışıyor: hesaplanmış sütun mu, ölçü mü, yineleyicinin içi mi? 2) Satır bağlamı varsa, ilişkili tabloyu süzmesi gerekiyor mu? Gerekiyorsa CALCULATE ya da ölçü referansı kullan. 3) Sonuç bir oran mı? Oransa ölçü yaz, sütunda saklama. 4) Toplam satırında ne görünmeli? ISINSCOPE ile karar ver.
+`, ex: [
+  { t:'dax', name:'Satır Bazlı Marj Ortalaması', q:'Satır Bazlı Marj Ortalaması: İptal edilmeyen satışlar için her satırın marjını hesapla: (Tutar − Maliyet) / Tutar. Sonra bu satır marjlarının basit ortalamasını döndür. (Bu, [Kâr Marjı %] ile karşılaştırmak için yazılan “yanlış ortalama”dır.)', sol:'AVERAGEX(FILTER(Satislar, Satislar[Durum] <> "İptal"), DIVIDE(Satislar[Tutar] - Satislar[Maliyet], Satislar[Tutar]))', hint:'AVERAGEX’in ilk bağımsız değişkeni FILTER(Satislar, Satislar[Durum] <> "İptal") olsun; ikinci bağımsız değişkende DIVIDE ile satırın marjını hesapla.' },
+  { t:'dax', name:'Kategori Filtresi Durumu', q:'Kategori Filtresi Durumu: Kategoriler[Kategori] sütununa doğrudan bir filtre varsa "Kategori seçili", yoksa "Tüm kategoriler" metnini döndür.', sol:'IF(ISFILTERED(Kategoriler[Kategori]), "Kategori seçili", "Tüm kategoriler")', hint:'ISFILTERED(Kategoriler[Kategori]) bir DOĞRU/YANLIŞ döndürür; IF ile iki metinden birini seç.' },
+  { t:'query', q:'Her kategori için iki sütun döndüren bir sorgu yaz: "Ham" adlı sütunda SUM(Satislar[Tutar]), "Bağlamlı" adlı sütunda aynı ifadenin CALCULATE ile sarılmış hâli. Satırlar VALUES(Kategoriler[Kategori]) olsun. İki sütunun neden farklı çıktığını sonuçta gör.', start:'EVALUATE\n', sol:'EVALUATE\nADDCOLUMNS(\n    VALUES(Kategoriler[Kategori]),\n    "Ham", SUM(Satislar[Tutar]),\n    "Bağlamlı", CALCULATE(SUM(Satislar[Tutar]))\n)', hint:'ADDCOLUMNS satır bağlamı açar. Satır bağlamı ilişki üzerinden süzmez; CALCULATE onu filtreye çevirir.' },
+  { t:'mc', q:'Pazarlama ekibi siparişleri “Küçük / Orta / Büyük” diye üç gruba ayırıp bu grupları dilimleyicide kullanmak istiyor. Grup, siparişin kendi tutarına göre belirleniyor ve kullanıcı seçimiyle değişmiyor. Ne yaparsın?', o:['Grubu SWITCH ile döndüren bir ölçü yazar, dilimleyiciye o ölçüyü koyarım','Satislar’a grup sütunu ekler, dilimleyiciye onu koyarım','Grubu her görselde ayrı bir görsel filtresiyle elle tanımlarım','Gruplamayı Copilot’a bırakır, dilimleyiciyi Copilot panelinden yönetirim'], a:1, why:'Dilimleyiciye ve eksene yalnızca sütun konabilir; ölçü konamaz. Grup, satırın kendi değerinden çıkıyor ve seçime göre değişmiyor. Bu yüzden satır bağlamında bir kez hesaplanan sütun doğru araç. Görsel filtresiyle elle gruplama bakımı zorlaştırır. Copilot ise dilimleyici yönetmez.' },
+  { t:'mc', q:'Bir analist Urunler tablosuna Ürün Adedi = SUM(Satislar[Adet]) hesaplanmış sütununu ekledi. Her üründe aynı büyük sayı görünüyor. En doğru açıklama hangisi?', o:['Urunler ile Satislar arasındaki ilişki pasif olduğu için filtre geçmiyor','SUM yalnızca ölçülerde çalışır; sütunda her zaman genel toplamı döndürür','Sütunda filtre bağlamı yok; satır bağlamı Satislar’ı süzmez','Adet sütunu metin türünde olduğu için toplama yanlış yapılıyor'], a:2, why:'Hesaplanmış sütunda filtre bağlamı boştur. Satır bağlamı bir filtre değildir, ilişki üzerinden yayılmaz; SUM bu yüzden tüm Satislar’ı toplar. CALCULATE(SUM(...)) bağlam geçişiyle ürün filtresini oluşturur. İlişki modelde etkin; SUM sütunda da çalışır, yalnızca bağlam farklıdır.' }
+] });
+/* ---------------------------------------------------------------- calculate */
+ext('calculate', { min: 14, html: `
+Filtre bağımsız değişkeninin türleri
+CALCULATE’in ilk bağımsız değişkeninden sonra yazdığın her şey ya bir tablo ya da bir düzenleyicidir. Boolean ifade bile perde arkasında tabloya çevrilir. Hangi türü yazdığını bilmek, sonucun neden öyle çıktığını açıklar:
+ | Tür |  | Örnek |  | Etkisi |
+ | Boolean (sütun koşulu) |  | Satislar[Kanal] = "Web" |  | O sütundaki dış filtrenin yerine geçer |
+ | Tablo ifadesi |  | FILTER(Satislar, …), VALUES(…), bir tablo değişkeni |  | Tablonun satırları ve tüm sütunları filtre olur |
+ | Kaldırıcı |  | REMOVEFILTERS(Urunler), ALL(Satislar[Kanal]) |  | Filtreyi siler, yerine bir şey koymaz |
+ | Düzenleyici |  | KEEPFILTERS, USERELATIONSHIP, CROSSFILTER |  | Filtrenin nasıl birleşeceğini ya da ilişkinin nasıl çalışacağını değiştirir |
+Boolean filtrenin üç sınırı
+1. İçinde ölçü olamaz
+Hatalı = CALCULATE([Net Satış], [Net Satış] > 1000)
+Boolean filtre bir sütunun değerlerini süzer; ölçünün “sütunu” yoktur. Koşul bir ölçüye dayanıyorsa önce hangi satırlar üzerinde test edileceğini seçmen gerekir: FILTER(VALUES(Urunler[Urun]), [Net Satış] > 1000).
+2. Tek bir tablonun sütunlarını kullanabilir
+Kampanya ekibinin sorusu: “Web kanalından gelen ya da Kitap kategorisindeki satışlar ne kadar?” İlk deneme genellikle iki ayrı bağımsız değişkendir:
+Web ve Kitap (yanlış soru) =
+CALCULATE([Net Satış], Satislar[Kanal] = "Web", Urunler[Kategori] = "Kitap")
+Ayrı bağımsız değişkenler VE ile birleşir: sonuç 57.545 ₺, yani yalnızca web’den satılan kitaplar. Satislar[Kanal] = "Web" || Urunler[Kategori] = "Kitap" yazmak ise hata verir, çünkü koşul iki tabloya yayılıyor. Doğru yol, koşulu satır satır test eden bir tablo filtresidir:
+Web veya Kitap =
+CALCULATE(
+    [Net Satış],
+    FILTER(Satislar, Satislar[Kanal] = "Web" || RELATED(Urunler[Kategori]) = "Kitap")
+)
+Sonuç 551.668 ₺. Sağlamasını yap: web 457.331 ₺ + kitap 151.882 ₺ − ikisinin kesişimi 57.545 ₺ = 551.668 ₺. Aynı tablodaki iki sütunla VEYA kurmak ise boolean filtreyle mümkündür: Satislar[Indirim] > 0 || Satislar[Kanal] = "Mağaza" geçerli bir filtredir.
+3. Aynı sütuna iki koşul VE olur
+CALCULATE([Net Satış], Satislar[Kanal] = "Web", Satislar[Kanal] = "Mobil") BLANK döndürür. Bir satır aynı anda hem Web hem Mobil olamaz. İki kanalı birlikte istiyorsan tek koşul yaz: Satislar[Kanal] IN {"Web", "Mobil"}.
+Filtre bağımsız değişkeni dış bağlamda hesaplanır
+Operasyon müdürü yıllık tabloda “her yılın son günündeki ciro” sütununu istiyor:
+Takvimin Son Günü =
+CALCULATE([Net Satış], Tarih[Tarih] = MAX(Tarih[Tarih]))
+Satışın Son Günü =
+CALCULATE([Net Satış], Satislar[Tarih] = MAX(Satislar[Tarih]))
+MAX, CALCULATE filtreyi değiştirmeden önce, hücrenin kendi bağlamında hesaplanır. Yıl satırında MAX(Tarih[Tarih]) 31 Aralık’tır. 2022 ve 2023’te 31 Aralık’ta hiç satış olmadığı için ilk ölçü bu yıllarda BLANK döner; 2024’te 1.047 ₺ verir. İkinci ölçü satış olan son günü arar: 2022’de 2.871,95 ₺, 2023’te 1.216,40 ₺. Hangisi doğru? Soru “takvimin son günü” mü, “son işlem günü” mü? Bunu ölçü adında açıkça yaz.
+Boolean filtre mi, FILTER(Satislar, …) mı?
+İkisi çoğu zaman aynı sayıyı verir. Fark, dışarıda aynı sütuna bir filtre olduğunda ortaya çıkar. Satırlarda Satislar[Kanal] olan bir tabloda üç yazımı karşılaştır:
+ | Yazım |  | Mağaza satırı |  | Mobil satırı |  | Web satırı |  | Neden? |
+ | Satislar[Kanal] = "Web" |  | 457.331 |  | 457.331 |  | 457.331 |  | İçteki ALL(Satislar[Kanal]) satır filtresinin yerine geçer |
+ | FILTER(Satislar, Satislar[Kanal] = "Web") |  | (boş) |  | (boş) |  | 457.331 |  | FILTER yalnızca görünen satırları dolaşır; dış filtre korunur |
+ | FILTER(ALL(Satislar), Satislar[Kanal] = "Web") |  | 457.331 |  | 457.331 |  | 457.331 |  | Tüm tablo filtresizleşir; kategori, tarih filtreleri de gider |
+Üçüncü yazım en tehlikelisidir. Satırlarda kategori olan bir tabloda her satırda 457.331 ₺ görürsün, çünkü ALL(Satislar) genişletilmiş tablo üzerinden kategori filtresini de siler (bir sonraki derste). İkinci yazım dış filtreyi korur, ama bütün Satislar tablosunu dolaştığı için büyük modelde yavaştır. Dış filtreyle kesişim istiyorsan aynı sonucu daha ucuza KEEPFILTERS(Satislar[Kanal] = "Web") verir.
+Karar ağacıKoşul tek sütunda mı? Boolean yaz. Aynı tablonun birkaç sütununda mı? Yine boolean (||, &&). Birden çok tabloya mı yayılıyor ya da ölçü mü içeriyor? FILTER yaz ve dolaşılan tabloyu olabildiğince küçük seç (VALUES(Urunler[Urun]) gibi). Dış filtreyi silmek değil kesiştirmek mi istiyorsun? KEEPFILTERS ekle.
+`, ex: [
+  { t:'dax', name:'Web veya Kitap Satışı', q:'Web veya Kitap Satışı: Web kanalından gelen ya da Kitap kategorisindeki (Urunler[Kategori]) satışların [Net Satış] toplamı. İki koşul farklı tablolarda.', sol:'CALCULATE([Net Satış], FILTER(Satislar, Satislar[Kanal] = "Web" || RELATED(Urunler[Kategori]) = "Kitap"))', hint:'Boolean filtre iki tabloyu kapsayamaz. FILTER(Satislar, ...) içinde Urunler[Kategori] değerini RELATED ile oku ve koşulları || ile bağla.' },
+  { t:'dax', name:'Satışın Son Günü Cirosu', q:'Satışın Son Günü Cirosu: Görünen dönemde satış yapılan son gündeki [Net Satış]. Son günü Satislar[Tarih] sütunundan bul.', sol:'CALCULATE([Net Satış], Satislar[Tarih] = MAX(Satislar[Tarih]))', hint:'MAX(Satislar[Tarih]) dış bağlamda hesaplanır ve o hücrede satış olan son günü verir; bunu Satislar[Tarih] üzerinde boolean filtre olarak kullan.' },
+  { t:'dax', name:'Liste Fiyatı 1000+ Satışı', q:'Liste Fiyatı 1000+ Satışı: Liste fiyatı (Urunler[Fiyat]) 1.000 ₺ ya da üzerinde olan ürünlerin [Net Satış] toplamı. Tablo filtresi değil, sütun filtresi kullan.', sol:'CALCULATE([Net Satış], Urunler[Fiyat] >= 1000)', hint:'Koşul tek sütunda: CALCULATE([Net Satış], Urunler[Fiyat] >= 1000).' },
+  { t:'query', q:'Kanal başına üç sütun döndüren bir sorgu yaz: "Net" ([Net Satış]), "Boolean" (Satislar[Kanal] = "Web" filtresiyle [Net Satış]) ve "FILTER" (FILTER(Satislar, Satislar[Kanal] = "Web") ile [Net Satış]). Satırlar Satislar[Kanal] olsun.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Satislar[Kanal],\n    "Net", [Net Satış],\n    "Boolean", CALCULATE([Net Satış], Satislar[Kanal] = "Web"),\n    "FILTER", CALCULATE([Net Satış], FILTER(Satislar, Satislar[Kanal] = "Web"))\n)', hint:'SUMMARIZECOLUMNS(Satislar[Kanal], "Ad", ifade, ...) kalıbını kullan. Boolean sütunu her satırda aynı, FILTER sütunu yalnızca Web satırında dolu çıkmalı.' },
+  { t:'mc', q:'Bir ekip arkadaşın CALCULATE([Net Satış], [Sipariş Sayısı] >= 5) yazdı ve hata aldı. Amacı “en az 5 siparişi olan müşterilerin satışı”. Ne önerirsin?', o:['Koşulu KEEPFILTERS içine almasını; ölçü filtresi böylece geçerli olur','Ölçüyü bir hesaplanmış sütuna çevirip koşulu o sütunda yazmasını','FILTER(VALUES(Satislar[MusteriNo]), …) tablosunu vermesini','İki CALCULATE’i iç içe yazıp koşulu dıştakine taşımasını'], a:2, why:'Boolean filtre bir sütunu süzer, içinde ölçü olamaz. Koşul ölçüye dayanıyorsa hangi satırlar üzerinde test edileceğini bir tabloyla seçmek gerekir: müşteri listesi. KEEPFILTERS ve iç içe CALCULATE bu kuralı değiştirmez. Sütun ise sipariş sayısını seçime göre değil sabit hesaplar; dönem filtresine tepki vermez.' }
+] });
+/* ---------------------------------------------------------------- iteratorler */
+ext('iteratorler', { min: 14, html: `
+Ağırlıklı ortalama: neyin ortalaması?
+Fiyatlama ekibi soruyor: “Ortalama satış fiyatımız ne kadar?” Bu soruya üç farklı ve üçü de savunulabilir cevap var. Hangisini verdiğini bilmezsen toplantıda üç farklı sayı dolaşır.
+Basit Ortalama Fiyat =
+CALCULATE(AVERAGE(Satislar[BirimFiyat]), Satislar[Durum] <> "İptal")
+Adet Ağırlıklı Fiyat =
+CALCULATE(
+    DIVIDE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]), SUM(Satislar[Adet])),
+    Satislar[Durum] <> "İptal"
+)
+İndirimli Birim Gelir = DIVIDE([Net Satış], [Satılan Adet])
+ | Ölçü |  | Sonuç |  | Cevapladığı soru |
+ | Basit ortalama |  | 710,16 ₺ |  | “Ortalama bir satış satırındaki fiyat ne?” Her satır bir oy. |
+ | Adet ağırlıklı |  | 537,83 ₺ |  | “Sattığımız ortalama bir ürünün liste fiyatı ne?” Her adet bir oy. |
+ | İndirimli birim gelir |  | 520,72 ₺ |  | “Bir adetten ortalama ne kazanıyoruz?” İndirim de hesapta. |
+Basit ortalama en yüksek çıkıyor, çünkü pahalı ürünler genellikle tek adet satılıyor; ucuz kitaplar ise satır başına daha çok adetle. Basit ortalama her satırı eşit saydığı için pahalı satırlar ortalamayı yukarı çeker. Ağırlıklı ortalamanın genel kalıbı her zaman aynıdır:
+Ağırlıklı Ortalama =
+DIVIDE(SUMX(Tablo, Ağırlık * Değer), SUMX(Tablo, Ağırlık))
+İndirimde de durum benzer. AVERAGE(Satislar[Indirim]) tüm satırlar için %3,25 verir; brüt tutarla ağırlıklandırılmış indirim oranı %3,15’tir. Kategori düzeyinde fark büyür: Ev & Yaşam’da satır ortalaması %3,81 iken ciro ağırlıklı oran %4,19. Bu kategoride indirim büyük tutarlı satışlarda yoğunlaşıyor. Satır ortalamasına bakan biri bunu kaçırır.
+Hangi tabloyu dolaşıyorsun?
+Bir yineleyicinin ilk bağımsız değişkeni, sorunun tanecik (grain) düzeyidir. Aynı ifade farklı tablolar üzerinde farklı sorulara cevap verir:
+ | Dolaşılan tablo |  | Örnek |  | Soru |
+ | Satislar |  | AVERAGEX(Satislar, …) |  | Satır başına |
+ | VALUES(Satislar[SiparisNo]) |  | Sipariş başına ortalama tutar |  | Sipariş başına |
+ | VALUES(Tarih[YilAy]) |  | MAXX(VALUES(Tarih[YilAy]), [Net Satış]) |  | En iyi ay: 94.001 ₺ (Aralık 2024) |
+ | VALUES(Kategoriler[Kategori]) |  | Kategorilerin ortalaması |  | Kategori başına |
+Boş aylar tuzağı
+“Aylık ortalama satışımız ne?” sorusunu AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış]) ile cevaplarsın. Ama AVERAGEX BLANK sonuçları atlar. Bu modelde satışlar Haziran 2022’de başlıyor; 2022’de satış olan yalnızca 7 ay var.
+Satışlı Ay Ortalaması =
+AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış])
+Takvim Ayı Ortalaması =
+AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış] + 0)
+2022 satırında ilk ölçü 14.691 ₺ (7 aya bölünür), ikincisi 8.570 ₺ (12 aya bölünür) verir. Tüm dönemde 40.347 ₺’ye karşı 34.744 ₺. Hangisi doğru? “Faaliyet gösterdiğimiz aylarda ortalama” sorusu için ilki, “yıllık bütçeyi 12’ye böl” sorusu için ikincisi. + 0 hilesini dikkatli kullan: verinin henüz gelmediği gelecek ayları da sıfır sayar.
+Yineleyicide çıplak toplayıcı tuzağı
+Yineleyicinin içinde ölçü yerine doğrudan AVERAGE ya da SUM yazarsan, satır bağlamı ilişki üzerinden süzmez:
+EVALUATE
+ADDCOLUMNS(
+    VALUES(Kategoriler[Kategori]),
+    "Çıplak", AVERAGE(Satislar[BirimFiyat]),
+    "CALCULATE ile", CALCULATE(AVERAGE(Satislar[BirimFiyat]))
+)
+“Çıplak” sütunu her kategoride 704,80 ₺ gösterir: tüm satırların ortalaması. “CALCULATE ile” sütunu ise Elektronik’te 1.462 ₺, Kitap’ta 218,80 ₺ verir. Bu hatayı fark etmenin en kolay yolu sütundaki değerlerin hepsinin aynı olmasıdır. Ölçü referansı kullanırsan ([Ortalama Birim Fiyat]) CALCULATE otomatik eklenir.
+Kontrol listesi: yineleyici yazarken1) Sorunun tanecik düzeyi ne: satır, sipariş, müşteri, ay? İlk bağımsız değişken o olsun. 2) Ortalama mı istiyorsun, ağırlıklı ortalama mı? Ağırlığı açıkça yaz. 3) BLANK değerler atlansın mı, sıfır mı sayılsın? 4) İçerideki ifade ölçü değilse CALCULATE gerekiyor mu? 5) Dolaşılan tablo gereğinden büyük mü? 1.620 satır yerine 7 kategori dolaşmak çok daha ucuzdur.
+`, ex: [
+  { t:'dax', name:'Adet Ağırlıklı Liste Fiyatı', q:'Adet Ağırlıklı Liste Fiyatı: İptal edilmeyen satışlarda birim fiyatın (Satislar[BirimFiyat]) adet ile ağırlıklandırılmış ortalaması: Σ(Adet × BirimFiyat) / Σ Adet.', sol:'CALCULATE(DIVIDE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]), SUM(Satislar[Adet])), Satislar[Durum] <> "İptal")', hint:'Pay SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]), payda SUM(Satislar[Adet]). İkisini DIVIDE ile böl, bütününü CALCULATE ile iptal hariç hesapla.' },
+  { t:'dax', name:'Ciro Ağırlıklı İndirim %', q:'Ciro Ağırlıklı İndirim %: Tüm satırlarda indirim oranının brüt tutarla (Adet × BirimFiyat) ağırlıklandırılmış ortalaması. Pay: Σ(Adet × BirimFiyat × Indirim), payda: Σ(Adet × BirimFiyat).', sol:'DIVIDE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat] * Satislar[Indirim]), SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]))', hint:'İki ayrı SUMX yaz: biri indirim tutarını, diğeri brüt tutarı toplasın. Sonra DIVIDE.' },
+  { t:'dax', name:'Takvim Ayı Ortalaması', q:'Takvim Ayı Ortalaması: Görünen her takvim ayının (Tarih[YilAy]) [Net Satış] değerinin ortalaması. Satış olmayan aylar ortalamaya sıfır olarak girsin.', sol:'AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış] + 0)', hint:'AVERAGEX BLANK değerleri atlar. Ölçüye + 0 ekleyerek boş ayları sıfıra çevir.' },
+  { t:'query', q:'Net satışı en yüksek 3 ayı (Tarih[YilAy]) ve her ayın satışını "Satış" adlı sütunda döndüren bir sorgu yaz.', start:'EVALUATE\n', sol:'EVALUATE\nTOPN(\n    3,\n    ADDCOLUMNS(VALUES(Tarih[YilAy]), "Satış", [Net Satış]),\n    [Satış], DESC\n)', hint:'Önce ADDCOLUMNS(VALUES(Tarih[YilAy]), "Satış", [Net Satış]) ile ay tablosunu kur, sonra TOPN(3, ..., [Satış], DESC).' },
+  { t:'mc', q:'Satın alma müdürü “tedarikçilere ödediğimiz ortalama birim fiyat” kartını istiyor. Kartta AVERAGE(SatinAlmalar[BirimFiyat]) var. Bir siparişte 2 adet, başka birinde 400 adet alınmış olabiliyor. Ne yaparsın?', o:['Kartı olduğu gibi bırakırım; AVERAGE zaten tüm satırları hesaba katar','Ortalamayı AVERAGEX(VALUES(SatinAlmalar[TedarikciNo]), …) ile tedarikçi başına alırım','Kartı MEDIAN(SatinAlmalar[BirimFiyat]) ile değiştiririm; uç değerler böylece etkisiz kalır','Toplam tutarı toplam adede bölerim: DIVIDE(SUM(Tutar), SUM(Adet))'], a:3, why:'Soru “ödediğimiz ortalama birim fiyat”; her adet bir oy olmalı. Bu, toplam tutarın toplam adede bölünmesiyle bulunan adet ağırlıklı ortalamadır. AVERAGE 2 adetlik siparişle 400 adetlik siparişi eşit sayar. Tedarikçi başına ortalama ya da medyan başka sorulara cevap verir.' }
+] });
+/* ---------------------------------------------------------------- filter-all */
+ext('filter-all', { min: 14, html: `
+ALLSELECTED ve görselin toplamı
+Kategori müdürü dilimleyicide yalnızca Elektronik, Kitap ve Spor’u seçti. Pasta grafiğinde payların 100’e tamamlanmasını bekliyor. Hazır [Kategori Payı %] ölçüsü ise şunu gösteriyor:
+ | Kategori |  | [Net Satış] |  | [Kategori Payı %] (ALL) |  | Seçime göre pay (ALLSELECTED) |
+ | Elektronik |  | 339.304 ₺ |  | %27,1 |  | %50,2 |
+ | Kitap |  | 151.882 ₺ |  | %12,1 |  | %22,5 |
+ | Spor |  | 184.231 ₺ |  | %14,7 |  | %27,3 |
+ | Toplam |  | 675.417 ₺ |  | %54,0 |  | %100 |
+İki ölçü de doğru; farklı sorulara cevap veriyorlar. ALL(Kategoriler) paydaya tüm şirketi koyar: “Elektronik, şirketin %27’si.” ALLSELECTED(Kategoriler) ise görselin kendi satır filtresini kaldırır ama dilimleyici gibi dışarıdan gelen filtreleri korur. Payda 675.417 ₺ olur: “Seçtiğin üç kategorinin yarısı Elektronik.”
+Seçili Kategoriler İçinde Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Kategoriler)))
+ALLSELECTED’in sınırıALLSELECTED “görselin dışından gelen filtreleri” tanır. Başka bir görselden gelen çapraz filtre de bu gruba girer. Ölçüyü başka bir yineleyicinin içinden çağırırsan davranışı tahmin etmek zorlaşır. Kural: ALLSELECTED’i görselde doğrudan kullanılan en dış ölçüde kullan, yardımcı ölçülerin içine gömme.
+Paydayı kurarken hangi filtre kalıyor?
+Şimdi dilimleyicide kategori değil, Kanal = Web seçili olsun. Satırlarda kategoriler var. Paydayı üç farklı şekilde kurarsan:
+ | Payda |  | Ne kaldırılır? |  | Elektronik |  | Okunuşu |
+ | ALL(Kategoriler) |  | Yalnızca kategori |  | %28,6 |  | Web satışları içinde Elektronik’in payı |
+ | ALL(Satislar) |  | Kategori, kanal, tarih, müşteri… hepsi |  | %10,5 |  | Web’deki Elektronik, şirketin tüm satışlarının yüzde kaçı? |
+ | ALLSELECTED(Kategoriler) |  | Görselin kategori filtresi |  | %28,6 |  | Kategori seçimi olmadığı için ALL ile aynı |
+Dilimleyicinin kanal filtresi ALL(Satislar) ile de silinir, çünkü Satislar[Kanal] olgu tablosundadır ve genişletilmiş Satislar bütün boyutları kapsar. Kullanıcı “Web’i seçtim, neden paydada Web yok?” diye sorarsa ilk bakacağın yer burasıdır.
+Zaman içinde pay
+Pay her zaman kategoriyle ilgili değildir. Finans ekibi iki soru soruyor: “Aralık, yılın yüzde kaçı?” ve “2024, üç yılın yüzde kaçı?”
+Yıl İçi Ay Payı % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALLEXCEPT(Tarih, Tarih[Yil])))
+Tüm Yıllara Göre Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Tarih)))
+Aralık 2024 yılın %7,5’i; 2024 ise tüm dönemin %59,7’si. Yıl içi payda ALL(Tarih[YilAy]) yazmak da yalnız ay sütunu varken aynı sonucu verir. Ama matrise Tarih[Ay] ya da Tarih[Ceyrek] eklenince o filtreler yerinde kalır ve paylar bozulur. ALLEXCEPT(Tarih, Tarih[Yil]) “yıl dışındaki tüm tarih filtrelerini kaldır” dediği için daha sağlamdır.
+Hiyerarşide ebeveyne göre pay
+Kategori → Ürün hiyerarşisi olan bir matriste her düzey kendi ebeveynine göre pay göstersin: ürün satırında kategorinin yüzde kaçı, kategori satırında şirketin yüzde kaçı.
+Ebeveyn Payı (Hiyerarşi) =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Urunler[Urun]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun]))),
+    ISINSCOPE(Kategoriler[Kategori]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))
+)
+Sıra önemlidir. Ürün satırında hem ürün hem kategori kapsamdadır. Bu yüzden en derin düzey önce denenir. 27" Monitör, Elektronik’in %30,1’i; Elektronik de şirketin %27,1’i. Toplam satırında hiçbir koşul doğru olmadığı için ölçü BLANK döner. %100 göstermek anlamsız olacağından bu bilinçli bir tercihtir.
+Kontrol listesi: pay ölçüsü1) Payda kim: şirket, seçim, ebeveyn, yıl? Ölçü adına yaz. 2) Görselde hangi sütunla grupluyorsun? Paydada o sütunun (ya da tablosunun) filtresini kaldır. 3) Dilimleyici filtresi paydada kalmalı mı? Kalmalıysa olgu tablosunu değil boyutu hedefle. 4) Toplam satırında ne görünmeli: %100 mü, BLANK mi?
+`, ex: [
+  { t:'dax', name:'Seçili Kategoriler İçinde Pay %', q:'Seçili Kategoriler İçinde Pay %: [Net Satış] değerinin, görselin kategori filtresi kaldırılmış ama dilimleyici seçimleri korunmuş toplama oranı. Kategoriler tablosunu hedefle.', sol:'DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Kategoriler)))', hint:'Payda CALCULATE([Net Satış], ALLSELECTED(Kategoriler)). Dilimleyici yokken sonuç [Kategori Payı %] ile aynıdır.' },
+  { t:'dax', name:'Yıl İçi Ay Payı %', q:'Yıl İçi Ay Payı %: Her ayın [Net Satış] değerinin, kendi yılının toplamına oranı. Paydada yıl dışındaki tüm Tarih filtrelerini kaldır. (Kontrol satırları Tarih[YilAy].)', sol:'DIVIDE([Net Satış], CALCULATE([Net Satış], ALLEXCEPT(Tarih, Tarih[Yil])))', hint:'ALLEXCEPT(Tarih, Tarih[Yil]) yıl filtresini korur, ay ve gün filtrelerini kaldırır.', grid:[{t:'Tarih',c:'YilAy'}] },
+  { t:'dax', name:'Tüm Yıllara Göre Pay %', q:'Tüm Yıllara Göre Pay %: [Net Satış] değerinin, tarih filtresi olmadan hesaplanan [Net Satış] değerine oranı. Kategori filtresi korunsun.', sol:'DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Tarih)))', hint:'Paydada yalnızca Tarih tablosunun filtrelerini kaldır: REMOVEFILTERS(Tarih).' },
+  { t:'query', q:'Her kategori için "Satış" ([Net Satış]) ve "Şirket Payı" (paydası tüm kategorilerin net satışı olan pay) sütunlarını döndüren bir sorgu yaz. Satırlar Kategoriler[Kategori] olsun.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Kategoriler[Kategori],\n    "Satış", [Net Satış],\n    "Şirket Payı", DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))\n)', hint:'SUMMARIZECOLUMNS içinde ikinci sütun DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler))) olsun.' },
+  { t:'mc', q:'Bölge müdürü dilimleyicide 3 kategori seçiyor ve çubuk grafikteki yüzdelerin toplamının %100 olmasını istiyor. Grafikteki ölçü DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler))). Ne değiştirirsin?', o:['ALL yerine ALLSELECTED(Kategoriler) kullanırım','ALL(Kategoriler) yerine ALL(Satislar) yazarım','DIVIDE yerine bölme işleci (/) kullanırım','Dilimleyiciyi kaldırıp kategori seçimini görsel filtresine taşırım'], a:0, why:'ALLSELECTED görselin kendi kategori filtresini kaldırır ama dilimleyici seçimini korur; payda seçili 3 kategorinin toplamı olur ve paylar 100’e tamamlanır. ALL(Satislar) paydayı daha da büyütür. Bölme işleci sonucu değiştirmez. Görsel filtresi de dışarıdan gelen bir filtredir; ALL onu yine siler.' }
+] });
+/* ---------------------------------------------------------------- var-mantik */
+ext('var-mantik', { min: 13, html: `
+VAR ile hata ayıklama: ölçüyü parça parça aç
+Satış direktörü “Hedef etiketi bazı aylarda saçma” diyor. Ölçü tek satırlık uzun bir formülse nereden başlayacağını bilemezsin. Değişkenlerle yazılmış bir ölçüde ise her ara adımı tek tek görebilirsin. Yöntem basit: RETURN’den sonra sonucu değil, şüphelendiğin değişkeni yaz.
+Hedef Etiketi =
+VAR Satis = [Net Satış]
+VAR Hedef = [Hedef]
+VAR Oran = DIVIDE(Satis, Hedef)
+RETURN
+    -- geçici: RETURN Oran
+    SWITCH(TRUE(), ISBLANK(Oran), "Hedef yok", Oran >= 1, "Hedefte", "Geride")
+Ara değerleri tek tek açmak yerine hepsini aynı anda görmek istersen DAX sorgu görünümünü (DAX query view) kullan. Değişkenleri sorgu sütunu yapınca her ayın ara adımlarını yan yana görürsün:
+DEFINE
+    MEASURE Satislar[Tanı Oranı] = DIVIDE([Net Satış], [Hedef])
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[YilAy],
+    "Satış", [Net Satış],
+    "Hedef", [Hedef],
+    "Oran", [Tanı Oranı]
+)
+Bu yöntem bir ekip alışkanlığıdır. Ölçüyü değiştirmeden önce sorgu sekmesinde çalıştır, sonuçları kaydet; değişiklikten sonra aynı sorguyu yeniden çalıştırıp karşılaştır. Böylece “düzelttim ama başka bir yeri bozdum” durumunu yakalarsın.
+SWITCH(TRUE()) sırası: ilk doğru kazanır
+SWITCH(TRUE(), …) koşulları yukarıdan aşağıya dener ve ilk doğru olanın sonucunu döndürür. Eşikleri yanlış sırada yazmak sessiz bir hatadır; formül çalışır, ama bazı etiketler hiç görünmez.
+Etiket (yanlış sıra) =
+VAR Oran = DIVIDE([Net Satış], [Hedef])
+RETURN SWITCH(TRUE(), Oran >= 0.95, "Hedefte", Oran >= 1.05, "Üstün", "Geride")
+Etiket (doğru sıra) =
+VAR Oran = DIVIDE([Net Satış], [Hedef])
+RETURN SWITCH(TRUE(), Oran >= 1.05, "Üstün", Oran >= 0.95, "Hedefte", "Geride")
+36 aylık bir tabloda yanlış sıralı ölçü hiçbir aya “Üstün” demez: 21 “Hedefte”, 15 “Geride”. Doğru sıralı ölçü iki ayı “Üstün” olarak işaretler: Haziran 2023 ve Aralık 2024 (oran %106,3). Yanlış sırada %106’lık bir ay önce “≥ 0,95” koşuluna takılır ve “Hedefte” olur.
+Sıralama kuralı1) BLANK kontrolünü en başa koy. 2) Büyükten küçüğe eşiklerde en yüksek eşik önce gelsin. 3) Son bağımsız değişken “hiçbiri” durumudur; bilerek yaz. 4) Eşik sayılarını değişkene al (VAR UstEsik = 1.05), böylece değiştirmen gerektiğinde tek yeri düzeltirsin.
+BLANK’i unutmanın iki bedeli
+ISBLANK(Oran) kontrolünü atlarsan iki şey olur. Birincisi, satışı olmayan bir kırılımda Oran BLANK’tir; BLANK karşılaştırmalarda 0 gibi davranır ve satır “Geride” etiketi alır. Bu bir hedef başarısızlığı değil, veri yokluğudur. İkincisi, ölçü hiçbir zaman BLANK döndürmediği için görsel, satışı olmayan ürün ve müşterileri de listeler; tablo gereksiz satırlarla dolar.
+Sınıflandırmayı saymak
+Bir sonraki soru genellikle “Kaç tanesi?” olur: “Bu yıl kaç kategori hedefini tuttu?” Etiketi bir değişkende ya da FILTER koşulunda hesaplayıp satırları sayarsın:
+Hedefi Aşan Kategori =
+COUNTROWS(
+    FILTER(VALUES(Kategoriler[Kategori]), [Net Satış] >= [Hedef])
+)
+2023’te 3 kategori, 2024’te 1 kategori hedefini tuttu; 2022’de hiçbiri (sonuç BLANK). Aylık bakınca Kasım ve Aralık 2024’te 5 kategori hedefte. Tüm dönem satırında sonuç yine BLANK, çünkü hiçbir kategori üç yılın toplam hedefini tutturamadı. Bu, toplam satırının satırların toplamı olmadığının bir örneği daha (Filtre bağlamı dersindeki kural).
+FILTER’ın içinde de değişken kullanabilirsin. Değişken, FILTER’ın her satırında o satırın bağlamında yeniden hesaplanır, çünkü tanımlandığı yer satır ifadesinin içidir:
+Hedefe Yakın Kategori =
+COUNTROWS(
+    FILTER(
+        VALUES(Kategoriler[Kategori]),
+        VAR Oran = DIVIDE([Net Satış], [Hedef])
+        RETURN Oran >= 0.95 && Oran < 1
+    )
+)
+Kontrol listesi: koşullu ölçü1) Her değişkenin adı ne hesapladığını söylüyor mu? 2) BLANK durumu ilk koşul mu? 3) Eşikler büyükten küçüğe mi? 4) Ara değerleri DAX sorgu görünümünde bir kez yan yana gördün mü? 5) Etiket ölçüsü, satırı olmayan kırılımlarda BLANK dönüyor mu?
+`, ex: [
+  { t:'dax', name:'Sepet Bandı', q:'Sepet Bandı: VAR ile [Ortalama Sepet] değerini al. BLANK ise BLANK, 1.500 ve üzeriyse "Büyük sepet", 800 ve üzeriyse "Orta sepet", değilse "Küçük sepet" döndür.', sol:'VAR S = [Ortalama Sepet] RETURN SWITCH(TRUE(), ISBLANK(S), BLANK(), S >= 1500, "Büyük sepet", S >= 800, "Orta sepet", "Küçük sepet")', hint:'SWITCH(TRUE(), ...) içinde önce ISBLANK(S), sonra S >= 1500, sonra S >= 800 koşulunu yaz.' },
+  { t:'dax', name:'Hedefi Aşan Kategori Sayısı', q:'Hedefi Aşan Kategori Sayısı: Görünen kategoriler (Kategoriler[Kategori]) içinde [Net Satış] değeri [Hedef] değerine eşit ya da büyük olanların sayısı.', sol:'COUNTROWS(FILTER(VALUES(Kategoriler[Kategori]), [Net Satış] >= [Hedef]))', hint:'FILTER(VALUES(Kategoriler[Kategori]), [Net Satış] >= [Hedef]) tablosunu COUNTROWS ile say.' },
+  { t:'dax', name:'Büyüme Etiketi', q:'Büyüme Etiketi: VAR ile [YoY %] değerini al. BLANK ise "Karşılaştırma yok", 0,5 ve üzeriyse "Hızlı büyüme", 0 ve üzeriyse "Büyüme", değilse "Düşüş" döndür.', sol:'VAR B = [YoY %] RETURN SWITCH(TRUE(), ISBLANK(B), "Karşılaştırma yok", B >= 0.5, "Hızlı büyüme", B >= 0, "Büyüme", "Düşüş")', hint:'Önce ISBLANK(B) koşulunu yaz; ardından büyük eşikten küçüğe: B >= 0.5, B >= 0.' },
+  { t:'mc', q:'Bir ölçüde SWITCH(TRUE(), Oran >= 0.9, "Sarı", Oran >= 1, "Yeşil", "Kırmızı") yazılmış. Rapor kullanıcıları hiç yeşil görmediklerini söylüyor. Sebep ne?', o:['SWITCH(TRUE()) yalnızca iki koşulu destekler','Oran ≥ 1 olan her satır önce “≥ 0,9” koşuluna takılıyor','Oran değişkeni BLANK olduğu için hiçbir koşul çalışmıyor','Renk adları metin olduğu için koşullu biçim tanımıyor'], a:1, why:'SWITCH(TRUE()) ilk doğru koşulun sonucunu döndürür. Oran ≥ 1 olan her değer zaten ≥ 0,9 olduğu için “Sarı” alır, “Yeşil” koşuluna hiç sıra gelmez. Çözüm: yüksek eşiği önce yazmak. SWITCH çok sayıda koşul alabilir; BLANK yalnızca boş kırılımları etkiler.' },
+  { t:'mc', q:'Ekip arkadaşın bir etiket ölçüsünden ISBLANK(Oran) satırını sildi. Ürün tablosunda artık satışı hiç olmayan ürünler de “Geride” etiketiyle görünüyor. Neden?', o:['BLANK, 0 gibi karşılaştırılır; ölçü hiç BLANK dönmediği için satır gizlenmez','ISBLANK silinince SWITCH(TRUE()) varsayılan değeri döndüremez ve hata yerine etiket basar','Ürün tablosunun ilişkisi çift yönlü olduğu için boş ürünler filtreden geçiyor','DIVIDE sıfıra bölmede BLANK değil “Geride” döndürür'], a:0, why:'Satışı olmayan üründe Oran BLANK’tir; BLANK, 0 gibi karşılaştırılır ve son koşula, “Geride” etiketine düşer. Görsel, ölçünün değeri BLANK olmayan satırları gösterdiği için bu ürünler listeye girer. DIVIDE sıfıra bölmede BLANK döndürür; ilişki yönünün bununla ilgisi yok.' }
+] });
+/* ---------------------------------------------------------------- siralama */
+ext('siralama', { min: 14, html: `
+Bağlar: kim beşinci?
+Satış ekibi “sipariş sayısına göre ilk 5 ürün” listesini prim hesabında kullanacak. Liste beşinci sırada bir bağla karşılaşıyor:
+ | Ürün |  | [Sipariş Sayısı] |  | RANKX (varsayılan, SKIP) |  | RANKX (DENSE) |  | Bağ bozmalı |
+ | Nemlendirici Krem |  | 55 |  | 5 |  | 5 |  | 5 |
+ | Dudak Balmı |  | 55 |  | 5 |  | 5 |  | 6 |
+ | Yün Atkı |  | 54 |  | 7 |  | 6 |  | 7 |
+ | İstatistiğe Giriş |  | 53 |  | 8 |  | 7 |  | 8 |
+ | Basic Tişört |  | 53 |  | 8 |  | 7 |  | 9 |
+ | Suç ve Ceza |  | 53 |  | 8 |  | 7 |  | 10 |
+“İlk 5” filtresi SKIP sıralamasıyla 6 ürün döndürür (iki tane 5.), DENSE ile ise 9 ürün (7. sıraya kadar 6 sıra numarası var). İş kuralı bir bağ bozucu ister: “Eşitlikte cirosu yüksek olan önde.” RANKX’te bunun en sade yolu, ikinci ölçüyü ilk ölçüye küçük bir ağırlıkla eklemektir:
+Bağ Bozmalı Sıra =
+IF(
+    HASONEVALUE(Urunler[Urun]),
+    RANKX(ALL(Urunler[Urun]), [Sipariş Sayısı] * 1000000 + [Net Satış])
+)
+Çarpan, ikinci ölçünün alabileceği en büyük değerden büyük olmalı. Bu modelde bir ürünün net satışı 102.000 ₺’yi geçmiyor, 1.000.000 güvenli. Çarpan küçük kalırsa ciro sipariş farkını ezer ve sıra bozulur. Okunurluk istiyorsan Pencere fonksiyonları dersindeki RANK + ORDERBY kalıbı aynı işi açıkça yapar.
+Satışı olmayanlar da sıralanır
+40 üründen 2’si (Koşu Bandı ve Gurme Lokum Kutusu) hiç satmamış. RANKX ikisine de 39 verir; tabloda “39. sırada” iki ürün görünür. Çoğu raporda bu satırlar gizlenmeli:
+Satışlı Ürün Sırası =
+IF(NOT ISBLANK([Net Satış]), RANKX(ALL(Urunler[Urun]), [Net Satış]))
+TOPN dış bağlamda değerlendirilir
+Temel bölümdeki İlk 5 Ürün Satışı ölçüsü tüm şirkette 315.381 ₺ verir. Aynı ölçüyü kategori satırlarına koyunca ne olur? TOPN’in içindeki [Net Satış], kategori filtresi altında hesaplanır. Başka kategorilerin ürünleri o hücrede BLANK değer alır. Sonuçta TOPN o kategorinin ilk 5 ürününü seçer. Elektronik satırında “Elektronik’in ilk 5’i” görürsün, “şirketin ilk 5’inden Elektronik’e düşenler” değil.
+İlk 5 Dışı Satış =
+[Net Satış] - CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))
+Bu ölçü Elektronik’te 68.487 ₺ verir, Hediye, Kozmetik ve Spor’da 0. Bu üç kategoride satışı olan ürün sayısı zaten 5 ya da daha az. Hangisini istediğini bil: kategori içi ilk N ise bu davranış doğru; şirketin ilk N’i ise listeyi kategori filtresi kaldırılmış bir bağlamda hesaplamalısın.
+Top N + Diğer
+Yönetim kurulu sunumunda 40 çubuklu grafik yerine “ilk 5 ürün + Diğer” isteniyor. Sorun: Diğer bir ürün değil, ürün ekseninde böyle bir değer yok. Çözümün iki parçası var:
+Eksen tablosu: UrunlerVeDiger, 40 ürün adına bir “Diğer” satırı eklenmiş 41 satırlık bağlantısız bir tablo. Grafiğin eksenine bu tablonun Urun sütunu konur.
+Ölçü: hazır [Satış (Top N + Diğer)] ölçüsü her eksen değeri için karar verir. Değer ilk N’deyse o ürünün satışını, “Diğer” ise genel toplam eksi ilk N toplamını döndürür, kalan ürünler için BLANK döndürür ve çubuk görünmez.
+N = 5 iken grafik şöyle görünür: 27" Monitör 101.986 ₺, Akıllı Saat 61.757 ₺, Türk Kahvesi Makinesi 53.963 ₺, Robot Süpürge 49.494 ₺, Kamp Çadırı 48.181 ₺ ve Diğer 935.391 ₺. Sağlama: ilk 5’in toplamı 315.381 ₺ + Diğer 935.391 ₺ = 1.250.772 ₺, yani [Net Satış]’ın tamamı. Grafik hiçbir satışı kaybetmez.
+Dinamik N
+TopNSecim tablosu 3’ten 15’e kadar N değerlerini tutar. Bu tabloyu bir dilimleyiciye koyarsın, ölçü SELECTEDVALUE(TopNSecim[N], 5) ile seçimi okur; seçim yoksa 5 kullanır. Kullanıcı 10 seçerse Diğer 727.113 ₺’ye iner.
+Sıralama tuzağıGrafiği değere göre azalan sıralarsan “Diğer” en büyük çubuk olur ve en başa geçer. Çözüm: Diğer için büyük bir sıra numarası döndüren bir yardımcı sıra ölçüsü yazıp araç ipucu (Tooltip) alanına eklemek ve grafiği o alana göre sıralamak.
+Üretim notu: RANKX’in maliyetiRANKX her hücrede, sıralama tablosundaki her satır için ölçüyü yeniden hesaplar. 40 ürünlük bir tabloda bu 40 × 40 = 1.600 hesaptır ve fark edilmez. 20.000 müşterilik bir tabloda ise yüz milyonlarca hesaba çıkar. Büyük boyutlarda sıralama tablosunu daralt (ALLSELECTED, ya da yalnızca satışı olanlar), sıra numarasını görselde değil yalnızca gereken sayfada kullan ve süreyi Performans Analizi (Performance analyzer) ile ölç.
+`, ex: [
+  { t:'dax', name:'Bağ Bozmalı Ürün Sırası', q:'Bağ Bozmalı Ürün Sırası: Tek bir ürün görünüyorsa ürünleri [Sipariş Sayısı] değerine göre büyükten küçüğe sırala; eşitlikte [Net Satış] yüksek olan önde olsun. Sıralama ifadesi olarak [Sipariş Sayısı] * 1000000 + [Net Satış] kullan. Tek ürün yoksa BLANK.', sol:'IF(HASONEVALUE(Urunler[Urun]), RANKX(ALL(Urunler[Urun]), [Sipariş Sayısı] * 1000000 + [Net Satış]))', hint:'IF(HASONEVALUE(Urunler[Urun]), RANKX(ALL(Urunler[Urun]), ...)) kalıbını kullan; ikinci bağımsız değişken bileşik ifade olsun.', grid:[{t:'Urunler',c:'Urun'}] },
+  { t:'dax', name:'Satışlı Ürün Sırası', q:'Satışlı Ürün Sırası: [Net Satış] boş değilse ürünün tüm ürünler içindeki sırasını (büyükten küçüğe), boşsa BLANK döndür.', sol:'IF(NOT ISBLANK([Net Satış]), RANKX(ALL(Urunler[Urun]), [Net Satış]))', hint:'IF(NOT ISBLANK([Net Satış]), RANKX(ALL(Urunler[Urun]), [Net Satış])) yeterli.', grid:[{t:'Urunler',c:'Urun'}] },
+  { t:'dax', name:'İlk N Dışı Satış', q:'İlk N Dışı Satış: N değerini SELECTEDVALUE(TopNSecim[N], 5) ile oku. [Net Satış] değerinden, net satışa göre ilk N ürünün (ALL(Urunler[Urun]) üzerinden TOPN) satışını çıkar.', sol:'VAR N = SELECTEDVALUE(TopNSecim[N], 5) RETURN [Net Satış] - CALCULATE([Net Satış], TOPN(N, ALL(Urunler[Urun]), [Net Satış]))', hint:'VAR N = SELECTEDVALUE(TopNSecim[N], 5), sonra CALCULATE([Net Satış], TOPN(N, ALL(Urunler[Urun]), [Net Satış])) değerini [Net Satış]’tan çıkar.' },
+  { t:'query', q:'Net satışa göre ilk 5 ürünü ve satışlarını ("Satış" sütunu) döndüren bir sorgu yaz. Sonuç satışa göre azalan sıralı olsun.', start:'EVALUATE\n', sol:'EVALUATE\nTOPN(\n    5,\n    ADDCOLUMNS(VALUES(Urunler[Urun]), "Satış", [Net Satış]),\n    [Satış], DESC\n)\nORDER BY [Satış] DESC', hint:'TOPN tabloyu sıralı döndürmez; sonucu sıralamak için sorgunun sonuna ORDER BY [Satış] DESC ekle.' },
+  { t:'mc', q:'Prim kuralı “sipariş sayısına göre ilk 5 ürünün satış temsilcileri prim alır” diyor. RANKX ile filtrelenen liste 6 ürün döndürüyor. Ne yaparsın?', o:['DENSE kullanırım; böylece bağlar ortadan kalkar ve 5 ürün kalır','Listeyi alfabetik sıralar, ilk 5 ürünü elle seçerek prime gönderirim','RANKX yerine TOPN(5) kullanırım; TOPN bağları kendisi bozar','Bir bağ bozucu kuralı iş birimiyle belirleyip ifadeye eklerim'], a:3, why:'Bağ bir iş kuralı sorusudur; DAX bunu senin yerine çözmez. Kural belirlenince (ör. cirosu yüksek olan önde) bileşik ifade ya da RANK + ORDERBY ile uygulanır. DENSE bağları kaldırmaz, sıra numaralarını sıkıştırır ve listeyi büyütür. TOPN da bağdaki tüm satırları döndürür. Elle seçim ise tekrarlanabilir değildir.' }
+] });
+/* ---------------------------------------------------------------- yari-toplanabilir */
+ext('yari-toplanabilir', { min: 14, html: `
+Yanlışın boyutu: SUM stoku ne kadar şişirir?
+Depo müdürü yıl sonu raporunda “stok adedi” satırında 4.183 görüyor ve şaşırıyor. Depoda 311 ürün var. Fark, ay sonu görüntülerinin toplanmasından geliyor. Bunu tek sorguyla göster:
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    "Toplanmış (yanlış)", SUM(StokGorunum[StokAdet]),
+    "Kapanış", [Stok Adedi],
+    "Toplanmış değer", SUM(StokGorunum[StokDegeri]),
+    "Kapanış değeri", [Stok Değeri]
+)
+ | Yıl |  | SUM(StokAdet) |  | Kapanış adedi |  | SUM(StokDegeri) |  | Kapanış değeri |
+ | 2022 |  | 3.541 |  | 325 |  | 1.964.884 ₺ |  | 164.498 ₺ |
+ | 2023 |  | 4.181 |  | 309 |  | 2.048.566 ₺ |  | 166.057 ₺ |
+ | 2024 |  | 4.183 |  | 311 |  | 2.163.992 ₺ |  | 163.465 ₺ |
+Toplanmış değer kapanışın 13 katından fazla. “12 ay toplandıysa 12 kat olmalı” diye düşünme: stok ay içinde dalgalandığı için oran sabit değildir. Bu yüzden yanlış sayıyı 12’ye bölerek “düzeltmek” de yanlıştır. Tüm dönem satırında fark daha da büyük: 11.905’e karşı 311.
+Kapanışı bulmanın üç yolu
+ | Yöntem |  | Hangi günü seçer? |  | Zayıf noktası |
+ | MAX(StokGorunum[Tarih]) ile (hazır [Stok Adedi]) |  | Görünen dönemde kaydı olan son gün |  | Bir ürün son ayda kaydedilmediyse o ürün kapanışta yok olur |
+ | LASTNONBLANK(Tarih[Tarih], …) (hazır [Stok Değeri]) |  | İfadenin boş olmadığı son gün |  | Aynı sorun; ürün bazında çözüm için SUMX(VALUES(Urunler[UrunNo]), …) gerekir |
+ | CLOSINGBALANCEMONTH / YEAR |  | Takvimin son günü (ay ya da yıl sonu) |  | O gün kayıt yoksa boş döner; ayın ortasına kadar süzülmüş bir dönemde bile ay sonunu getirir |
+Bu modelde her ürünün her ay sonunda kaydı olduğu için üç yöntem aynı sayıyı verir. Gerçek hayatta öyle olmaz: yeni açılan bir ürün, satıştan kalkan bir ürün ya da geç gelen bir depo dosyası farkı ortaya çıkarır. Bir kenar durum daha: kullanıcı tarih dilimleyicisinde 1–15 Aralık 2024’ü seçerse [Stok Adedi] BLANK döner, çünkü bu günlerde görüntü yok. CLOSINGBALANCEMONTH ise 31 Aralık değerini getirir, yani seçilen dönemin dışındaki bir günü. İkisinden hangisi doğru, rapor sahibinin kararıdır. Ama kararı bilinçli ver ve görsel başlığına yaz.
+Açılış, kapanış ve hareket mutabakatı
+Stok kontrolünün temel denklemi: Kapanış − Açılış = Giren − Çıkan. Görüntü ölçüsü ile hareket ölçüsünü yan yana koymak veri kalitesini test eder.
+Yıllık Stok Değişimi =
+VAR Kapanis = [Stok Adedi]
+VAR Acilis = CALCULATE([Stok Adedi], PREVIOUSDAY(FIRSTDATE(Tarih[Tarih])))
+RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)
+2023’te stok 325’ten 309’a indi (−16), 2024’te 311’e çıktı (+2). 2022 satırı BLANK’tir: veri Ocak 2022’de başlıyor, açılış görüntüsü yok. IF(NOT ISBLANK(Acilis), …) bu yüzden var. Yoksa ölçü 2022’de “+325” gösterirdi, yani bütün stok o yıl gelmiş gibi.
+2024’te depoya 1.489 adet girdi ([Gelen Adet]). Denklemden çıkan adet 1.489 − 2 = 1.487 olur. Oysa [Satılan Adet] 1.426. Aradaki 61 adet fire, iade, sayım farkı ya da veri hatasıdır. Böyle bir fark rapordan önce tedarik ekibine sorulacak bir sorudur. Bir stok raporunun en değerli satırı bazen bu mutabakat satırıdır.
+Ortalama bakiye ve devir hızı
+Stok devir hızı “stok yılda kaç kez yenileniyor?” sorusunu cevaplar: dönem maliyeti / ortalama stok değeri. Ortalama stok, ay sonu görüntülerinin ortalamasıdır:
+Ay Sonu Ortalama Stok Değeri =
+AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])
+Yıllıklaştırılmış Stok Devri =
+DIVIDE([Net Maliyet], [Ay Sonu Ortalama Stok Değeri])
+    * DIVIDE(12, COUNTROWS(VALUES(Tarih[YilAy])))
+2024: ortalama stok değeri 180.333 ₺, net maliyet 458.504 ₺, devir 2,54. Yıllıklaştırma çarpanı neden var? Tüm dönem satırında maliyet 36 ayın maliyetidir; çarpan olmadan sonuç “3 yıllık devir” olur ve yıllık sayılarla karşılaştırılamaz. Çarpanla tüm dönem 1,54. Kategori düzeyinde en hızlı dönen Kitap (2,36), en yavaş Spor (0,68). Spor’da ortalama 59.005 ₺’lik stok duruyor; nakit bağlayan kategori burası.
+Eksik yıl2022’de devir 0,39 çıkar. Stok 12 ay boyunca var, ama satışlar Haziran 2022’de başlıyor. Maliyet 7 ayın, ortalama stok 12 ayın. Bu bir iş sonucu değil veri sonucu; görselde not düş ya da yılı karşılaştırmadan çıkar.
+`, ex: [
+  { t:'dax', name:'Ay Sonu Ortalama Stok Değeri', q:'Ay Sonu Ortalama Stok Değeri: Görünen ayların (Tarih[YilAy]) kapanış stok değerlerinin ortalaması. Hazır [Stok Değeri] ölçüsünü kullan.', sol:'AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])', hint:'AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri]) her ayın kapanış değerini alır ve ortalamasını hesaplar.' },
+  { t:'dax', name:'Yıllıklaştırılmış Stok Devri', q:'Yıllıklaştırılmış Stok Devri: [Net Maliyet] / (ay sonu stok değerlerinin ortalaması), sonra 12 / (görünen ay sayısı) ile çarp. Ortalama için AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri]) kullan.', sol:'DIVIDE([Net Maliyet], AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])) * DIVIDE(12, COUNTROWS(VALUES(Tarih[YilAy])))', hint:'İki DIVIDE’ı çarp: DIVIDE([Net Maliyet], ortalama stok) * DIVIDE(12, COUNTROWS(VALUES(Tarih[YilAy]))).' },
+  { t:'dax', name:'Dönem Stok Değişimi', q:'Dönem Stok Değişimi: Kapanış = [Stok Adedi]; Açılış = dönemin ilk gününden bir önceki gündeki [Stok Adedi] (PREVIOUSDAY(FIRSTDATE(Tarih[Tarih]))). Açılış boş değilse Kapanış − Açılış, boşsa BLANK döndür. (Kontrol satırları Tarih[Yil] ve Tarih[YilAy].)', sol:'VAR Kapanis = [Stok Adedi] VAR Acilis = CALCULATE([Stok Adedi], PREVIOUSDAY(FIRSTDATE(Tarih[Tarih]))) RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)', hint:'Açılışı CALCULATE([Stok Adedi], PREVIOUSDAY(FIRSTDATE(Tarih[Tarih]))) ile bul; IF(NOT ISBLANK(Acilis), ...) ile ilk dönemi boş bırak.', grid:[{t:'Tarih',c:'Yil'},{t:'Tarih',c:'YilAy'}] },
+  { t:'query', q:'Yıl başına (Tarih[Yil]) üç sütun döndüren bir sorgu yaz: "Kapanış" ([Stok Adedi]), "Giren" ([Gelen Adet]) ve "Satılan" ([Satılan Adet]). Mutabakat farkını gözle kontrol edeceksin.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[Yil],\n    "Kapanış", [Stok Adedi],\n    "Giren", [Gelen Adet],\n    "Satılan", [Satılan Adet]\n)', hint:'SUMMARIZECOLUMNS(Tarih[Yil], "Kapanış", [Stok Adedi], ...) kalıbı.' },
+  { t:'mc', q:'Bir abonelik şirketinde “aktif abone sayısı” her ay sonunda kaydediliyor. Yönetici çeyrek satırında aboneliklerin toplamını değil, çeyrek boyunca tipik abone sayısını görmek istiyor. Hangisi doğru ölçü?', o:['Çeyreğin son ayının kapanışındaki abone sayısı','Ay sonu abone sayılarının ortalaması','Çeyrekteki ay sonu abone sayılarının toplamı','Çeyreğin ilk ayının sonundaki abone sayısı'], a:1, why:'“Tipik” düzey ortalama bakiyedir: ay sonu görüntülerinin ortalaması (AVERAGEX(VALUES(Tarih[YilAy]), …)). Son ay kapanış değeridir; “çeyrek sonunda kaç abone var?” sorusuna cevap verir. İlk ay açılışa yakındır. Toplam ise yarı toplanabilir bir değeri zamanda topladığı için anlamsızdır.' }
+] });
+/* ---------------------------------------------------------------- hizli-olcu */
+ext('hizli-olcu', { min: 13, html: `
+Hızlı ölçünün ürettiği kodu okumak
+Hızlı ölçü (Quick measure) kodu sen yazmasan da sorumluluğu sende. Üretilen kod genellikle doğrudur, ama modelini tanımaz. Üç tipik kalıbı okuyup iyileştirelim.
+1. Kategori başına ortalama
+“Kategori başına ortalama” hızlı ölçüsüne Satislar[Tutar] sütununu ve Urunler[Kategori] alanını sürüklersen şuna benzer bir kod alırsın:
+Tutar ortalaması Kategori başına =
+AVERAGEX(
+    KEEPFILTERS(VALUES(Urunler[Kategori])),
+    CALCULATE(SUM(Satislar[Tutar]))
+)
+Okuma: kategorileri dolaş (KEEPFILTERS dış kategori filtresini koru demek), her kategoride tutarı topla, ortalamasını al. Sorunlar modelle ilgili: SUM(Satislar[Tutar]) iptalleri de içerir; sonuç 192.313 ₺. Şirketin kuralına uyan [Net Satış] ile 178.682 ₺. Ayrıca Urunler[Kategori] hedef tablosunu süzmez; hedefle aynı görselde kullanılacaksa paylaşılan Kategoriler boyutu gerekir (Hedef ve gerçekleşen dersi). İyileştirilmiş hâli:
+Kategori Başına Ortalama =
+AVERAGEX(VALUES(Kategoriler[Kategori]), [Net Satış])
+2. Filtrelenmiş değerden yüzde fark
+“Web kanalına göre yüzde fark” hızlı ölçüsü, temel değeri ve karşılaştırılan değeri iki değişkene koyar:
+Tutar Web’den fark % =
+VAR __BASELINE_VALUE = CALCULATE(SUM(Satislar[Tutar]), Satislar[Kanal] IN { "Web" })
+VAR __VALUE_TO_COMPARE = SUM(Satislar[Tutar])
+RETURN
+    IF(NOT ISBLANK(__VALUE_TO_COMPARE), DIVIDE(__VALUE_TO_COMPARE - __BASELINE_VALUE, __BASELINE_VALUE))
+Yapı doğru, ama yine ham tutar kullanılmış. Mobil satırında +%23,0 gösterir; net satışla doğru değer +%31,2. Mağaza’da −%59,5 yerine −%57,7. Fark küçük görünebilir, ama yönetim sunumunda “Mobil, Web’den %23 büyük” ile “%31 büyük” farklı kararlara götürür. İyileştirme: SUM(Satislar[Tutar]) yerine [Net Satış], değişken adlarında da ekip standardı (WebSatisi, Satis).
+3. Kümülatif toplam
+Kümülatif toplam hızlı ölçüsü ALLSELECTED ve ISONORAFTER ile bir filtre kurar. Aynı mantığı daha okunur şekilde şöyle yazabilirsin:
+Seçim İçi Kümülatif =
+CALCULATE(
+    [Net Satış],
+    FILTER(ALLSELECTED(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih]))
+)
+Önemli davranış: ALLSELECTED yüzünden toplam, kullanıcının seçtiği dönemin başından başlar. Dilimleyicide 2023–2024 seçiliyse 2024 satırı 1.147.935 ₺ gösterir. Hazır [Kümülatif Satış] ise ALL kullandığı için 2022’yi de katar ve 1.250.772 ₺ gösterir. Hızlı ölçü sana hangisini istediğini sormaz; sen karar ver.
+Copilot ile ölçü yazdırıp denetlemek
+DAX sorgu görünümünde Copilot (Ctrl+I) doğal dilden sorgu yazabilir, seçili bir sorguyu açıklayabilir (“Explain this query”) ve bir DAX kavramını anlatabilir. Önerilen sorguyu çalıştırır (Run), beğenirsen sekmeye eklersin (Keep query). Bu özellik Fabric kapasitesi ve yönetici ayarları gerektirir.
+Copilot modelin meta verisini görür: tablo, sütun ve ölçü adları ile açıklamaları. Verinin kendisini okumaz. Bu yüzden iki şey çok önemli:
+Açıklamalar: ölçü ve sütun açıklamalarına iş kuralını yaz: “Net satış: iptal edilen siparişler hariç tutar”. Açıklamanın yalnızca ilk 200 karakteri kullanılır; kuralı başa koy.
+Yapay zekâ için verileri hazırla (Prep data for AI): modele yapay zekâ talimatları ekleyerek “satış dendiğinde [Net Satış] ölçüsünü kullan” gibi kuralları Copilot’a kalıcı olarak öğretebilirsin.
+İyi bir istem, modelin adlarını kullanır ve beklenen sonucu tarif eder: “[Net Satış] ölçüsünü kullanarak her kategori için Web kanalının payını hesaplayan bir ölçü yaz; payda kategorinin tüm kanallardaki net satışı olsun.” Sonra öneriyi bilinen bir sayıyla test et:
+EVALUATE
+SUMMARIZECOLUMNS(
+    Satislar[Kanal],
+    "Net", [Net Satış],
+    "Web'e göre fark %", DIVIDE([Net Satış] - CALCULATE([Net Satış], Satislar[Kanal] = "Web"), CALCULATE([Net Satış], Satislar[Kanal] = "Web"))
+)
+Üretilen ölçüyü kabul etmeden önce1) Temel ölçü doğru mu ([Net Satış] mı, ham sütun mu)? 2) Boyut sütunu paylaşılan boyuttan mı? 3) Bilinen bir sayıyla eşleşiyor mu (ör. toplam net satış 1.250.772 ₺)? 4) Toplam satırında ve boş dönemde ne veriyor? 5) Dilimleyici seçimi davranışı (ALL mı, ALLSELECTED mı) bilinçli mi? 6) Adı, biçimi ve açıklaması ekip standardına uygun mu?
+`, ex: [
+  { t:'dax', name:'Kategori Başına Ortalama Satış', q:'Kategori Başına Ortalama Satış: Görünen her kategorinin (Kategoriler[Kategori]) [Net Satış] değerinin ortalaması. Hızlı ölçünün ürettiği kodu iyileştirilmiş hâliyle yaz.', sol:'AVERAGEX(VALUES(Kategoriler[Kategori]), [Net Satış])', hint:'AVERAGEX(VALUES(Kategoriler[Kategori]), [Net Satış]). Ölçü referansı CALCULATE’i kendiliğinden içerir.' },
+  { t:'dax', name:'Seçim İçi Yürüyen Toplam', q:'Seçim İçi Yürüyen Toplam: [Net Satış] değerinin, kullanıcının seçtiği tarihler (ALLSELECTED(Tarih[Tarih])) içinde, görünen son tarihe kadar olan kümülatif toplamı.', sol:'CALCULATE([Net Satış], FILTER(ALLSELECTED(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih])))', hint:'FILTER(ALLSELECTED(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih])) tablosunu CALCULATE’e filtre olarak ver.' },
+  { t:'dax', name:'Web Kanalına Göre Fark %', q:'Web Kanalına Göre Fark %: Web kanalının net satışını bir değişkene al. [Net Satış] ile bu değerin farkını Web değerine böl.', sol:'VAR WebSatisi = CALCULATE([Net Satış], Satislar[Kanal] = "Web") RETURN DIVIDE([Net Satış] - WebSatisi, WebSatisi)', hint:'VAR WebSatisi = CALCULATE([Net Satış], Satislar[Kanal] = "Web"), sonra DIVIDE([Net Satış] - WebSatisi, WebSatisi).' },
+  { t:'mc', q:'Copilot’a “müşteri başı satış ölçüsü yaz” dedin. Gelen ölçü DIVIDE(SUM(Satislar[Tutar]), COUNTROWS(Musteriler)). Modele eklemeden önce ne yaparsın?', o:['Söz dizimi hatasız olduğu için ölçüyü olduğu gibi eklerim','Copilot’tan aynı ölçüyü yeniden üretmesini ister, iki sonucu karşılaştırırım','Payı [Net Satış], paydayı alışveriş yapan müşteri yapıp test ederim','Ölçüyü bir hesaplanmış sütuna çevirip satır düzeyinde kontrol ederim'], a:2, why:'Önerideki iki sorun da modelle ilgili: ham tutar iptalleri içerir, COUNTROWS(Musteriler) ise hiç alışveriş yapmamış kayıtlı müşterileri de sayar. Hazır [Müşteri Başı Satış] = DIVIDE([Net Satış], [Müşteri Sayısı]) gibi şirket kuralına uyan sürüm bilinen bir sayıyla doğrulanmalı. Söz diziminin doğru olması anlamın doğru olduğunu göstermez. Yeniden üretmek aynı varsayımları tekrarlayabilir.' },
+  { t:'mc', q:'Copilot önerileri sürekli iptal edilen siparişleri de sayıyor. Ekipteki herkes için kalıcı bir iyileştirme istiyorsun. En etkili adım hangisi?', o:['Her istemin sonuna “iptalleri hariç tut” yazmayı ekipten rica ederim','Satislar tablosundan iptal satırlarını silerim','Copilot’u kapatıp hızlı ölçülere geçerim','[Net Satış] açıklamasına kuralı yazar, yapay zekâ talimatı eklerim'], a:3, why:'Copilot veriyi değil meta veriyi okur. Ölçü açıklamaları ve “Yapay zekâ için verileri hazırla” ile eklenen talimatlar, kuralı herkes için kalıcı hâle getirir. İstem disiplini kişiye bağlıdır. Satır silmek iade ve iptal analizini yok eder. Hızlı ölçüler de modelin kurallarını bilmez.' }
+] });
+/* ---------------------------------------------------------------- zaman */
+ext('zaman', { min: 14, html: `
+YTD, QTD, MTD: aynı satırda üç farklı pencere
+Aylık yönetim raporunda Mayıs 2024 satırına bakan bir finans uzmanı üç sayı görür. Üçü de “bugüne kadar” der, ama başlangıç noktaları farklıdır:
+Ay Başından Bugüne = TOTALMTD([Net Satış], Tarih[Tarih])
+Çeyrek Başından Bugüne = TOTALQTD([Net Satış], Tarih[Tarih])
+Yıl Başından Bugüne = TOTALYTD([Net Satış], Tarih[Tarih])
+ | Mayıs 2024 satırı |  | Pencere |  | Değer |
+ | MTD |  | 1–31 Mayıs |  | 46.239 ₺ |
+ | QTD |  | 1 Nisan – 31 Mayıs |  | 80.472 ₺ |
+ | YTD |  | 1 Ocak – 31 Mayıs |  | 235.863 ₺ |
+ | Geçen yıl YTD ([Satış GY YTD]) |  | 1 Ocak – 31 Mayıs 2023 |  | 117.309 ₺ |
+YTD büyümesi: (235.863 − 117.309) / 117.309 = %101. Bu sayı “yılın ilk beş ayında satışlar ikiye katlandı” demektir. Aylık YoY’den daha az dalgalıdır ve yönetimin en sık sorduğu sayıdır.
+Yıl satırında MTD ne gösterir?
+2024 yıl satırında MTD 94.001 ₺ gösterir: Aralık’ın ay başından bugüne değeri. Fonksiyon “görünen son tarihin ayı” ile çalışır. Yıl satırında bu sayı yanıltıcıdır; kullanıcı bunu yılın toplamı sanabilir. MTD ve QTD ölçülerini matriste kullanıyorsan üst düzeylerde gizle: IF(ISINSCOPE(Tarih[YilAy]), TOTALMTD(…)).
+Mali yıl
+Şirketin mali yılı Temmuz’da başlıyorsa TOTALYTD ve DATESYTD fonksiyonlarına yıl sonu tarihini metin olarak verirsin:
+Mali YTD = TOTALYTD([Net Satış], Tarih[Tarih], "6-30")
+Tarih tablosuna da mali yıl ve mali çeyrek sütunları eklenmeli. Yoksa görselde “2024” yazan satır takvim yılını, ölçü ise mali yılı gösterir.
+“Önceki dönem” dört farklı şey olabilir
+Çeyreklik bir tabloda “önceki dönem” sütunu istendi. 2024-Ç2 satırında (net satış 145.102 ₺) dört yazım dört farklı sayı verir:
+ | Yazım |  | Hangi tarihler? |  | 2024-Ç2 satırı |
+ | PREVIOUSMONTH(Tarih[Tarih]) |  | Görünen ilk tarihten önceki tam ay: Mart |  | 63.252 ₺ |
+ | DATEADD(Tarih[Tarih], -1, MONTH) |  | Tüm dönem bir ay geri: Mart–Mayıs |  | 143.724 ₺ |
+ | PREVIOUSQUARTER(Tarih[Tarih]) |  | Önceki tam çeyrek: Ocak–Mart |  | 155.391 ₺ |
+ | DATEADD(Tarih[Tarih], -1, QUARTER) |  | Tüm dönem bir çeyrek geri: Ocak–Mart |  | 155.391 ₺ |
+Hazır [Satış GA] ölçüsü PREVIOUSMONTH kullandığı için çeyrek satırında yalnızca Mart’ı gösterir; “önceki çeyreğe göre büyüme” için uygun değildir. Kural: ölçünün adındaki dönemi fonksiyonda da kullan. Çeyreklik görsel için çeyreklik ölçü yaz.
+Aynı ayrım yıllar için de geçerlidir. Ay satırında SAMEPERIODLASTYEAR geçen yılın aynı ayını verir; PREVIOUSYEAR ise geçen yılın tamamını. 2024’ün her ay satırında PREVIOUSYEAR 400.870 ₺ gösterir. Bu bir hata değil, “geçen yılın toplamına karşı bu ay” karşılaştırması için kullanılan bir ölçüdür.
+Eksik başlayan yıl tuzağı
+Bu modelde satış verisi 22 Haziran 2022’de başlıyor. 2023’ün YoY değeri bu yüzden %289,8 çıkar: 2023’ün 12 ayı, 2022’nin yaklaşık 6 ayıyla karşılaştırılıyor. Kimse bu sayıya göre karar vermemeli. Bir çözüm, karşılaştırılan dönemin tamamı veri kapsamındaysa YoY göstermektir:
+Tam Dönem YoY % =
+VAR OncekiBas = EDATE(MIN(Tarih[Tarih]), -12)
+VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih))
+RETURN IF(OncekiBas >= IlkSatis, [YoY %])
+2023 yıl satırında önceki dönem 1 Ocak 2022’de başlar. Bu tarih ilk satıştan önce olduğu için ölçü BLANK döner. 2024 satırında %86,4 görünür. Ay satırlarında Temmuz 2023’ten itibaren değer çıkar.
+Tarih tablosu kontrol listesi1) Her gün bir satır, boşluk yok; ilk yılın 1 Ocak’ından son yılın 31 Aralık’ına. 2) Tarih sütununda saat yok (00:00 olmayan değerler ilişkiyi bozar). 3) “Tarih tablosu olarak işaretle” yapıldı. 4) Seçenekler’de “Otomatik tarih/saat” kapalı; yoksa her tarih sütunu için gizli bir tarih tablosu oluşur. 5) Ay adı gibi metin sütunları “Sütuna göre sırala” ile sayıya bağlı (Ay → AyNo). 6) Verinin başladığı ve bittiği tarih biliniyor; eksik dönemli karşılaştırmalar gizleniyor.
+`, ex: [
+  { t:'dax', name:'Ay Başından Bugüne Satış', q:'Ay Başından Bugüne Satış: [Net Satış] ölçüsünün, görünen son tarihin ayının başından o tarihe kadar olan toplamı (MTD).', sol:'TOTALMTD([Net Satış], Tarih[Tarih])', hint:'TOTALYTD ile aynı kalıp: TOTALMTD([Net Satış], Tarih[Tarih]).' },
+  { t:'dax', name:'YTD Büyüme %', q:'YTD Büyüme %: Yılbaşından bugüne satışın, geçen yılın aynı dönemine göre büyüme oranı. Hazır [Satış YTD] ve [Satış GY YTD] ölçülerini kullan.', sol:'DIVIDE([Satış YTD] - [Satış GY YTD], [Satış GY YTD])', hint:'DIVIDE(yeni − eski, eski) kalıbı.', grid:[{t:'Tarih',c:'Yil'},{t:'Tarih',c:'YilAy'}] },
+  { t:'dax', name:'Tam Dönem YoY %', q:'Tam Dönem YoY %: Karşılaştırılan önceki dönemin başı (EDATE(MIN(Tarih[Tarih]), -12)) ilk satış tarihinden (tüm tarihler üzerinde MIN(Satislar[Tarih])) önce değilse [YoY %] değerini, aksi hâlde BLANK döndür.', sol:'VAR OncekiBas = EDATE(MIN(Tarih[Tarih]), -12) VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih)) RETURN IF(OncekiBas >= IlkSatis, [YoY %])', hint:'İlk satış tarihini CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih)) ile bul; IF(OncekiBas >= IlkSatis, [YoY %]).', grid:[{t:'Tarih',c:'Yil'},{t:'Tarih',c:'YilAy'}] },
+  { t:'query', q:'Çeyrek başına (Tarih[YilCeyrek]) üç sütun döndüren bir sorgu yaz: "Satış" ([Net Satış]), "Önceki Ay (PREVIOUSMONTH)" ve "Önceki Çeyrek" (PREVIOUSQUARTER ile [Net Satış]).', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[YilCeyrek],\n    "Satış", [Net Satış],\n    "Önceki Ay (PREVIOUSMONTH)", CALCULATE([Net Satış], PREVIOUSMONTH(Tarih[Tarih])),\n    "Önceki Çeyrek", CALCULATE([Net Satış], PREVIOUSQUARTER(Tarih[Tarih]))\n)', hint:'İki sütun da CALCULATE([Net Satış], (Tarih[Tarih])) biçiminde.' },
+  { t:'mc', q:'Çeyreklik bir tabloda “önceki döneme göre büyüme” sütunu, hazır [Satış GA] (PREVIOUSMONTH) üzerine kurulmuş. Her çeyrekte büyüme %100’ün üzerinde görünüyor. Sebep ne?', o:['Çeyrek satırında PREVIOUSMONTH yalnızca bir ayı döndürüyor','Tarih tablosu tarih tablosu olarak işaretlenmemiş','DIVIDE sıfıra bölmede büyük sayılar üretiyor','Tarih[YilCeyrek] sütunu metin olduğu için sıralama bozuk'], a:0, why:'PREVIOUSMONTH, görünen ilk tarihten önceki tam ayı döndürür. Çeyrek satırında üç aylık satış tek bir ayla karşılaştırılır ve büyüme şişer. PREVIOUSQUARTER ya da DATEADD(…, −1, QUARTER) kullanılmalı. DIVIDE sıfıra bölmede BLANK döndürür; işaretleme ve sıralama bu sonucu açıklamaz.' }
+] });
+/* ---------------------------------------------------------------- hedef */
+ext('hedef', { min: 14, html: `
+Hedefe ulaşma oranı: oranların ortalaması değil
+Satış direktörü yıl sonu sunumu için “2024’te hedefin yüzde kaçını tutturduk?” diye soruyor. İki ekip iki cevap getiriyor:
+Gerçekleşme (doğru) = DIVIDE([Net Satış], [Hedef])
+Aylık Oranların Ortalaması = AVERAGEX(VALUES(Tarih[YilAy]), [Hedef Gerçekleşme %])
+2024 için ilki %97,9, ikincisi %97,4 verir. Fark küçük, ama yön farkı önemlidir. Oranların ortalaması, hedefi 30.000 ₺ olan bir ay ile 90.000 ₺ olan bir ayı eşit sayar. Doğru cevap her zaman toplam gerçekleşen / toplam hedef’tir. Bu, Yineleyiciler dersindeki ağırlıklı ortalama kuralının hedefteki karşılığıdır.
+Yılbaşından bugüne gerçekleşme
+Mayıs 2024 satırında aylık gerçekleşme %96,7. YTD gerçekleşme ise 235.863 ₺ / 243.300 ₺ = %96,9. Yönetim toplantısında genellikle ikincisi sorulur: “Yılın bu noktasında planın neresindeyiz?” İki ölçü yan yana konunca okuyucu hem ayın performansını hem yılın gidişatını görür.
+Kategori düzeyinde tablo netleşir. Hediye kategorisi tüm dönemde hedefinin yalnızca %68,9’unu tutturmuş, diğer kategoriler %95–99 arasında. Bir “hedefe kalan” sütunu bu açığı tutar olarak gösterir:
+Hedefe Kalan =
+IF([Net Satış] < [Hedef], [Hedef] - [Net Satış], 0)
+Tüm dönemde Elektronik’in açığı 12.496 ₺, Hediye’ninki 7.830 ₺. Oran olarak Hediye çok daha kötü, tutar olarak Elektronik’in açığı daha büyük. İkisini birlikte göstermek önceliklendirmeyi kolaylaştırır.
+Ay içinde günlük hedef payı
+Ayın 15’inde bölge müdürü panoyu açıyor ve tarih dilimleyicisinde 1–15 Mart 2024’ü seçiyor. Ekranda şu var:
+ | Ölçü |  | Değer |  | Yorum |
+ | [Net Satış] |  | 36.217 ₺ |  | 15 günlük satış |
+ | [Hedef] |  | 63.700 ₺ |  | Mart’ın tüm hedefi |
+ | [Hedef Gerçekleşme %] |  | %56,9 |  | Yanlış alarm |
+Hedef ayın ilk gününe bağlı olduğu için 1 Mart seçimdeyse ayın tamamı gelir. Seçim 2 Mart’ta başlasaydı hedef BLANK olurdu. İki durumda da sayı anlamsızdır. Çözüm, aylık hedefi görünen gün sayısına göre paylaştırmaktır:
+Gün Payına Göre Hedef =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR AyHedef = CALCULATE([Hedef], ALLEXCEPT(Tarih, Tarih[YilAy]))
+    VAR GorunenGun = CALCULATE(COUNTROWS(Tarih))
+    VAR AyGunu = CALCULATE(COUNTROWS(Tarih), ALLEXCEPT(Tarih, Tarih[YilAy]))
+    RETURN AyHedef * DIVIDE(GorunenGun, AyGunu)
+)
+Mekanizma adım adım:
+SUMX(VALUES(Tarih[YilAy]), …) görünen her ayı ayrı ele alır. Seçim iki aya yayılırsa iki ayın payı toplanır.
+ALLEXCEPT(Tarih, Tarih[YilAy]) gün filtresini kaldırır ama ayı korur. Böylece AyHedef ayın tam hedefini, AyGunu ayın gün sayısını verir.
+GorunenGun ise seçimdeki gün sayısıdır: 15.
+Sonuç: 63.700 × 15 / 31 = 30.823 ₺. Gerçekleşme 36.217 / 30.823 = %117,5. Bölge, ayın ilk yarısında planın önünde. Tam ay ya da yıl seçildiğinde ölçü [Hedef] ile aynı sonucu verir (2024: 763.200 ₺). Yani bu ölçü [Hedef]’in yerine güvenle kullanılabilir.
+Takvim günü mü, iş günü mü?Mağaza satışları hafta sonu artıyorsa, kurumsal satış ise hafta içi yoğunsa takvim günüyle paylaştırma adil olmaz. COUNTROWS yerine CALCULATE(COUNTROWS(Tarih), Tarih[HaftaSonu] = "Hayır") yazarak iş günü bazlı pay kurarsın. Daha ileri bir yöntem, geçmiş yılların gün bazlı satış dağılımını ağırlık olarak kullanmaktır.
+Kaç ay hedefi tuttuk?
+Bir başka sık soru başarının oranı değil sıklığıdır:
+Hedefi Tutan Ay =
+COUNTROWS(FILTER(VALUES(Tarih[YilAy]), [Net Satış] >= [Hedef]))
+2023’te 5 ay, 2024’te yalnızca 2 ay hedef tutturuldu. Ama 2024’ün yıllık gerçekleşmesi 2023’ten çok farklı değil (%97,9’a karşı %99,6). Yani 2024’te çoğu ay hedefe yakın kalıp aşamamış. Kategori kırılımında Giyim 36 ayın 13’ünde, Hediye 7’sinde hedefi tutmuş. Oran ve sıklık birlikte okununca hikâye tamamlanır.
+Kontrol listesi: hedef görseli1) Gerçekleşme oranı toplam/toplam mı? 2) Kategori ve tarih paylaşılan boyutlardan mı geliyor? 3) Ay içi seçimlerde hedef gün payına göre mi? 4) YTD gerçekleşme aylık gerçekleşmenin yanında mı? 5) Oran ile tutar açığı birlikte mi gösteriliyor?
+`, ex: [
+  { t:'dax', name:'Gün Payına Göre Hedef', q:'Gün Payına Göre Hedef: Görünen her ay (Tarih[YilAy]) için ayın tam hedefini (ALLEXCEPT(Tarih, Tarih[YilAy]) ile [Hedef]), görünen gün sayısı / ayın gün sayısı oranıyla çarp ve ayları topla.', sol:'SUMX(VALUES(Tarih[YilAy]), VAR AyHedef = CALCULATE([Hedef], ALLEXCEPT(Tarih, Tarih[YilAy])) VAR GorunenGun = CALCULATE(COUNTROWS(Tarih)) VAR AyGunu = CALCULATE(COUNTROWS(Tarih), ALLEXCEPT(Tarih, Tarih[YilAy])) RETURN AyHedef * DIVIDE(GorunenGun, AyGunu))', hint:'SUMX(VALUES(Tarih[YilAy]), ...) içinde üç değişken: AyHedef, GorunenGun (CALCULATE(COUNTROWS(Tarih))), AyGunu (ALLEXCEPT ile). Sonuç AyHedef * DIVIDE(GorunenGun, AyGunu).' },
+  { t:'dax', name:'Hedeften Sapma %', q:'Hedeften Sapma %: Net satışın hedeften yüzde kaç saptığı: ([Net Satış] − [Hedef]) / [Hedef]. Hedef yoksa BLANK dönsün.', sol:'DIVIDE([Net Satış] - [Hedef], [Hedef])', hint:'DIVIDE(fark, [Hedef]) kalıbı; hedef boşsa DIVIDE BLANK döner.' },
+  { t:'dax', name:'Hedefin Altında Kalan Ay', q:'Hedefin Altında Kalan Ay: Görünen aylar (Tarih[YilAy]) içinde [Net Satış] < [Hedef] olan ayların sayısı.', sol:'COUNTROWS(FILTER(VALUES(Tarih[YilAy]), [Net Satış] < [Hedef]))', hint:'FILTER(VALUES(Tarih[YilAy]), [Net Satış] < [Hedef]) tablosunu COUNTROWS ile say.' },
+  { t:'query', q:'Ay başına (Tarih[YilAy]) "Satış" ([Net Satış]), "Hedef" ([Hedef]) ve "Gerçekleşme" ([Hedef Gerçekleşme %]) sütunlarını döndüren bir sorgu yaz.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[YilAy],\n    "Satış", [Net Satış],\n    "Hedef", [Hedef],\n    "Gerçekleşme", [Hedef Gerçekleşme %]\n)', hint:'SUMMARIZECOLUMNS(Tarih[YilAy], "Satış", [Net Satış], ...) kalıbı.' },
+  { t:'mc', q:'Bölge müdürü her pazartesi panoda “ayın 1’inden bugüne” dönemini seçiyor ve gerçekleşme oranının ay boyunca %20’den %100’e tırmandığını görüyor. Ekip her hafta “hedefin çok gerisindeyiz” paniği yaşıyor. Ne yaparsın?', o:['Hedefi gün payına göre paylaştıran bir ölçüyle oranı yeniden hesaplarım','Hedef tablosunu günlük düzeye indirip her güne ayın 1/30’unu yazarım','Gerçekleşme oranını panodan kaldırır, yalnızca satış tutarını gösteririm','Dilimleyiciyi tam aya kilitler, ay içi seçime izin vermem'], a:0, why:'Sorun aylık hedefin ay içi bir seçimle karşılaştırılması. Gün payına göre hedef, seçilen günlerin hedefini hesaplar ve oranı adil kılar. Hedef tablosunu günlüğe çevirmek bakım yükü getirir ve 30 gün varsayımı yanlıştır. Oranı kaldırmak ya da ay içi seçimi yasaklamak müdürün sorusunu cevapsız bırakır.' }
+] });
+/* ---------------------------------------------------------------- rol-oynayan */
+ext('rol-oynayan', { min: 14, html: `
+Hangi soru hangi tarihi ister?
+Teknik çözüm (USERELATIONSHIP ya da ikinci tablo) ikinci adımdır. İlk adım, her sorunun hangi tarih rolüne ait olduğunu belirlemektir:
+ | İş sorusu |  | Soran |  | Tarih rolü |
+ | “Bu ay ne kadar sipariş aldık?” |  | Satış ekibi |  | Sipariş tarihi |
+ | “Bu ay ne kadar gelir tanıyabiliriz?” |  | Finans |  | Teslim tarihi |
+ | “Gelecek hafta kaç teslimat yapacağız?” |  | Lojistik |  | Teslim tarihi |
+ | “Siparişler ortalama kaç günde teslim ediliyor?” |  | Operasyon |  | İkisi birlikte (fark) |
+Ocak 2024 için sipariş tarihine göre net satış 47.433 ₺, teslim tarihine göre 47.297 ₺. Yıl düzeyinde fark büyür: 2024’te sipariş bazlı 747.066 ₺, teslim bazlı 738.304 ₺. Sınır ayları (Aralık’ta verilip Ocak’ta teslim edilen siparişler) iki ölçüyü birbirinden ayırır.
+Teslim tarihi boş olan satırlar
+Teslim bazlı ölçünün genel toplamı yine 1.250.772 ₺’dir, ama yıl satırlarının toplamı 1.239.709 ₺ tutar. Aradaki 11.063 ₺, henüz teslim edilmemiş (Durum = “Kargoda”) ve TeslimTarihi boş olan satırlardır. Toplam satırında tarih filtresi olmadığı için bu satırlar sayılır. Power BI yıl ekseninde bunları (Boş) etiketli ayrı bir satırda gösterir. Finans raporunda bu satırı gizlemek yerine “Teslim bekleyen” diye adlandırmak daha dürüsttür.
+Anti-kalıp: olgu sütununu tarih dilimleyicisiyle süzmek
+USERELATIONSHIP’i bilmeyen biri teslim bazlı ölçüyü şöyle kurar:
+Teslim Satışı (hatalı) =
+VAR Bas = MIN(Tarih[Tarih])
+VAR Son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], Satislar[TeslimTarihi] >= Bas, Satislar[TeslimTarihi] <= Son)
+Ocak 2024 satırında sonuç 44.996 ₺; doğrusu 47.297 ₺. Eksik 2.301 ₺, Aralık 2023’te verilip Ocak’ta teslim edilen siparişlerdir. Sebep: etkin ilişki hâlâ çalışıyor. Ocak filtresi önce sipariş tarihine göre süzüyor, ölçünün koşulu bunun üstüne ekleniyor. Sonuç “Ocak’ta verilip Ocak’ta teslim edilenler” oluyor. İki düzeltme var:
+Teslim Satışı (filtre kaldırarak) =
+VAR Bas = MIN(Tarih[Tarih])
+VAR Son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Satislar[TeslimTarihi] >= Bas, Satislar[TeslimTarihi] <= Son)
+Teslim Satışı (ilişkiyle) =
+CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))
+İkisi de 47.297 ₺ verir. İkincisi tercih edilir: niyeti açıkça söyler ve zaman zekâsı fonksiyonlarıyla birlikte çalışır. İlk kalıp, hazır [Yoldaki Sipariş] ölçüsündeki gibi iki tarih sütununu aynı anda karşılaştırman gerektiğinde gerekir (“sipariş verilmiş ama teslim edilmemiş”).
+USERELATIONSHIP ve zaman zekâsı birlikte
+Finans teslim bazlı YTD istiyor. Yeni bir YTD formülü yazmana gerek yok. Var olan ölçüyü pasif ilişkiyle sarmalarsın:
+Teslime Göre YTD =
+CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))
+Dıştaki CALCULATE’in etkinleştirdiği ilişki, içteki ölçünün bütün hesabı boyunca geçerlidir. Mayıs 2024’te teslim bazlı YTD 235.031 ₺, sipariş bazlı YTD 235.863 ₺. Aynı yöntem adet, sipariş sayısı ya da kargo süresi için de çalışır. Ocak 2024’te teslim edilen siparişlerin ortalama kargo süresi 2,74 gün, Ocak’ta verilen siparişlerinki 2,67 gün.
+Ölçü ailesi kurHer temel ölçünün teslim sürümünü tek tek yazmak yerine ad kuralı belirle: “… (Teslim)”. Görüntüleme klasörü (Display folder) ile ayrı bir klasöre koy. Ölçü sayısı çok artarsa aynı mantığı hesaplama grubuyla tek yerde toplayabilirsin (İleri Modelleme’deki hesaplama grupları dersi).
+İkinci tarih tablosuna ne zaman geçmeli?
+Lojistik müdürü bir matris istiyor: satırlarda sipariş ayı, sütunlarda teslim ayı, hücrede sipariş sayısı. Bu soru USERELATIONSHIP ile cevaplanamaz, çünkü aynı görselde aynı tablonun iki rolü aynı anda filtre olamaz. Burada ikinci bir tarih tablosu (ör. TeslimTakvimi) gerekir. Bu modelde siparişlerin %91,7’si verildiği ay içinde teslim ediliyor. Matrisin köşegeni dolu, köşegen dışı ise sınır aylarındaki kaymayı gösterir.
+İkinci tablo kurarken1) Sütun adlarını rolüyle başlat (“Teslim Yıl”, “Teslim Ay”); kullanıcı iki “Yil” sütununu karıştırmasın. 2) Tabloyu da tarih tablosu olarak işaretle. 3) Zaman zekâsı ölçüleri hangi takvimi kullanıyorsa adında yazsın. 4) Dilimleyicilerde iki takvimi aynı sayfada kullanacaksan hangi dilimleyicinin hangi rolü süzdüğünü başlıkta belirt.
+`, ex: [
+  { t:'dax', name:'Teslime Göre YTD', q:'Teslime Göre YTD: Hazır [Satış YTD] ölçüsünü teslim tarihine göre hesapla (Satislar[TeslimTarihi] ile Tarih[Tarih] arasındaki pasif ilişkiyi etkinleştir).', sol:'CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))', hint:'CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih])).', grid:[{t:'Tarih',c:'Yil'},{t:'Tarih',c:'YilAy'}] },
+  { t:'dax', name:'Teslime Göre Adet', q:'Teslime Göre Adet: Hazır [Satılan Adet] ölçüsünü teslim tarihine göre hesapla.', sol:'CALCULATE([Satılan Adet], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))', hint:'Teslime Göre Satış ile aynı kalıp; ölçü olarak [Satılan Adet] kullan.' },
+  { t:'dax', name:'Teslim-Sipariş Farkı', q:'Teslim-Sipariş Farkı: Teslim tarihine göre [Net Satış] ile sipariş tarihine göre [Net Satış] arasındaki fark (teslim − sipariş).', sol:'CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih])) - [Net Satış]', hint:'Hazır [Teslime Göre Satış] ölçüsünü ya da CALCULATE + USERELATIONSHIP ifadesini kullan, sonra [Net Satış]’ı çıkar.', grid:[{t:'Tarih',c:'Yil'},{t:'Tarih',c:'YilAy'}] },
+  { t:'query', q:'Ay başına (Tarih[YilAy]) "Sipariş Bazlı" ([Net Satış]) ve "Teslim Bazlı" (pasif ilişkiyle [Net Satış]) sütunlarını döndüren bir sorgu yaz.', start:'EVALUATE\n', sol:'EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[YilAy],\n    "Sipariş Bazlı", [Net Satış],\n    "Teslim Bazlı", CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))\n)', hint:'İkinci sütunda CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih])) kullan.' },
+  { t:'mc', q:'Finans, teslim bazlı satışı aylık raporlamak istiyor. Bir analist ölçüde Satislar[TeslimTarihi] >= MIN(Tarih[Tarih]) ve <= MAX(Tarih[Tarih]) koşullarını kullanmış. Ocak sonucu beklenenden düşük. En doğru açıklama hangisi?', o:['MIN ve MAX dış bağlamda değil CALCULATE’in içinde hesaplandığı için tarih aralığı boş kalıyor','Teslim tarihi boş olan satırlar koşulu bozup tüm ayı eksik gösteriyor','Etkin sipariş tarihi ilişkisi hâlâ süzüyor; Aralık siparişleri dışarıda kalıyor','Satislar[TeslimTarihi] sütununun veri türü tarih değil metin'], a:2, why:'Ay filtresi etkin ilişki üzerinden önce sipariş tarihine göre süzer; koşullar bunun üstüne eklenir. Aralık’ta verilip Ocak’ta teslim edilen siparişler kaybolur (bu modelde 2.301 ₺). REMOVEFILTERS(Tarih) eklemek ya da USERELATIONSHIP kullanmak çözer. Filtre bağımsız değişkenleri dış bağlamda hesaplanır; boş teslim tarihleri yalnızca kendi satırlarını etkiler.' }
+] });
+})(window);

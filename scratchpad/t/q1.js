@@ -1,0 +1,12 @@
+const { a, M } = require('./h.js');
+console.log(Object.keys(M), Object.keys(M.geo||{}).length);
+console.log(M.tables.Departmanlar.rows);
+console.log(a.Q(['GiderTurleri[GiderTuru]'], ['Gider', 'Gider Bütçe', 'Gider Sapma %']).rows);
+console.log(a.Q(['Departmanlar[Departman]'], ['Gider']).rows);
+console.log(a.M('[Net Satış]'), a.M('[Hedef]'), a.M('[Brüt Kâr]'), a.M('[Gider]'), a.M('[Faaliyet Kârı]'), a.M('[Satış GY]'));
+console.log(a.M('CALCULATE([Gider], SAMEPERIODLASTYEAR(Tarih[Tarih]))'));
+console.log(a.Q(['Musteriler[Bolge]'], ['Net Satış','Müşteri Sayısı']).rows);
+console.log([...new Set(M.tables.Musteriler.rows.map(r=>r.Sehir))].length, M.tables.Musteriler.rows.length, M.tables.Urunler.rows.length, M.tables.Satislar.rows.length);
+console.log(a.Q(['Talepler[Konu]'], ['Talep Sayısı','CSAT %']).rows);
+console.log(a.Q(['Satislar[Durum]'], ['Toplam Satış']).rows);
+console.log(a.Q(['Satislar[IndirimBandi]'], ['İade Oranı %']).rows);

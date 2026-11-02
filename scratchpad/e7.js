@@ -1,0 +1,1 @@
+Q('EVALUATE\nCALCULATETABLE(\n  ADDCOLUMNS(VALUES(Tedarikciler[Tedarikci]), "Zamanında %", [Tedarikte Zamanında %], "Kusur %", [Kusur Oranı %], "Sipariş", CALCULATE(COUNTROWS(SatinAlmalar))),\n  Tarih[Yil] = 2024\n)\nORDER BY [Zamanında %] DESC');

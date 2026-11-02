@@ -1,0 +1,10 @@
+require('./h.js');
+console.log(Q('EVALUATE ROW("min", MIN(Satislar[Tarih]), "max", MAX(Satislar[Tarih]), "tmin", MIN(Tarih[Tarih]), "tmax", MAX(Tarih[Tarih]))'));
+console.log(E('[Müşteri Sayısı]'), E('[Kayıtlı Müşteri]'), E('[Net Satış]'));
+console.log(G([{t:'Tarih',c:'Yil'}], ['[Net Satış]','[Müşteri Sayısı]','[Sipariş Sayısı]','[Yeni Müşteri]','[Kayıp Müşteri]']));
+console.log(Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Durum], "N", COUNTROWS(Satislar))'));
+console.log(Q('EVALUATE SUMMARIZECOLUMNS(Musteriler[Segment], "N", COUNTROWS(Musteriler))'));
+console.log(PBI_MEASURES.find(m=>m.name==='RFM Skoru').expr);
+console.log(PBI_MEASURES.find(m=>m.name==='RFM Segmenti').expr);
+console.log(PBI_MEASURES.find(m=>m.name==='Kohort Tutma %').expr);
+console.log(PBI_MEASURES.find(m=>m.name==='Kayıp Müşteri').expr);

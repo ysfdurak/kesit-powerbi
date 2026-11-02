@@ -1,0 +1,14 @@
+const C=require('./common.js');
+(async()=>{const {b,ctx,p,errs}=await C.open();
+await ctx.addInitScript(s=>{},null);
+const st=require('./st_onb.json'); await ctx.addCookies([]); 
+await p.goto('http://localhost:8765/index.html');
+await p.evaluate(ls=>{for(const o of ls)localStorage.setItem(o.name,o.value)}, st.origins[0].localStorage);
+await p.goto('http://localhost:8765/index.html#patika-analist'); await p.reload();
+await p.click('text=Patikaya başla'); await p.waitForTimeout(400);
+console.log('URL',p.url());
+await p.screenshot({path:C.SS+'06_lesson1.png',fullPage:false});
+const txt=await p.innerText('#main'); console.log(txt.length, txt.slice(0,1500)); console.log('...',txt.slice(-1500));
+console.log((await p.$$eval('#main button',els=>els.map(e=>JSON.stringify(e.dataset)+' '+e.textContent.trim().slice(0,50)))).join('\n'));
+console.log(await p.evaluate(()=>{const L=PBI_CORE.LESSONS;const i=L.findIndex(l=>l.id==='tarih');return JSON.stringify(L[i].ex.map(e=>({t:e.t,q:(e.q||'').slice(0,60),a:e.a,opts:e.opts&&e.opts.length})))}));
+console.log(errs);await b.close();})();

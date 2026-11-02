@@ -1,0 +1,17 @@
+require('./e.js');
+const p = x => console.log(JSON.stringify(x).slice(0,600));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Gorunum[Gorunum], TREATAS({2024}, Tarih[Yil]), "Değer", [Görünüm (Dinamik Biçim)])'));
+p(Q('EVALUATE CALCULATETABLE(SUMMARIZECOLUMNS(Gorunum[Gorunum], "Değer", [Görünüm (Dinamik Biçim)]), Tarih[Yil] = 2024)'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], TREATAS({"Elektronik","Kitap"}, Kategoriler[Kategori]), "Net Satış", [Net Satış])'));
+p(Q('EVALUATE VALUES(Kategoriler[Kategori])'));
+p(Q('EVALUATE CALCULATETABLE(SELECTCOLUMNS(Satislar, "Sipariş", Satislar[SiparisNo], "Tarih", Satislar[Tarih], "Tutar", Satislar[Tutar]), Satislar[Kanal] = "Mağaza", Tarih[YilAy] = "2024-12") ORDER BY [Tarih]'));
+p(Q('EVALUATE FILTER(SELECTCOLUMNS(Calisanlar, "Ad", Calisanlar[AdSoyad], "Unvan", Calisanlar[Unvan], "Yol", Calisanlar[Yol]), PATHCONTAINS([Yol], 4))'));
+p(M('CALCULATE([Net Satış], Calisanlar[CalisanNo] = 9 || Calisanlar[CalisanNo] = 10)'));
+p(M('CALCULATE([Net Satış], Calisanlar[CalisanNo] IN {9, 10})'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "x", CALCULATE(COUNTROWS(FILTER(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])) > 2000)), Satislar[Durum] <> "İptal"))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "x", CALCULATE(COUNTROWS(FILTER(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])) > 2000)), Satislar[Durum] <> "İptal"), "hs", CALCULATE([Net Satış], Tarih[HaftaSonu] = "Evet"), "son", CALCULATE(MAX(Satislar[Tarih]), Satislar[Durum] <> "İptal"))'));
+p(Q('EVALUATE ROW("Siparis", DISTINCTCOUNT(Satislar[SiparisNo]), "Musteri", DISTINCTCOUNT(Satislar[MusteriNo]), "Kanal", DISTINCTCOUNT(Satislar[Kanal]))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Durum], "Toplam", [Toplam Satış], "Net", [Net Satış])'));
+p(Q('EVALUATE ROW("dc", CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), "cr", CALCULATE(COUNTROWS(VALUES(Satislar[MusteriNo])), Satislar[Durum] <> "İptal"))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "sum", CALCULATE(SUM(Satislar[Tutar]), Satislar[Indirim] > 0, Satislar[Durum] <> "İptal"), "sx", SUMX(Satislar, IF(Satislar[Indirim] > 0 && Satislar[Durum] <> "İptal", Satislar[Tutar])))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "kg", AVERAGE(Satislar[KargoGun]), "mx", MAX(Satislar[KargoGun]))'));

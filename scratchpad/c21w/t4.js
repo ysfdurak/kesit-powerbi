@@ -1,0 +1,11 @@
+require('./h.js');
+const F='FILTER(ALL(Tarih[Yil], Tarih[AyNo]), (Tarih[Yil] = 2023 && Tarih[AyNo] = 12) || (Tarih[Yil] = 2024 && Tarih[AyNo] = 1))';
+console.log('arb', E(`CALCULATE([Net Satış], ${F})`));
+console.log('overwrite', E(`CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), ${F})`));
+console.log('keep', E(`CALCULATE(CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024)), ${F})`));
+const F2='FILTER(ALL(Tarih[YilAy]), Tarih[YilAy] IN {"2023-12","2024-01"})';
+console.log('yilay', E(`CALCULATE([Net Satış], ${F2})`), E(`CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), ${F2})`),E(`CALCULATE(CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024)), ${F2})`));
+console.log(Q('EVALUATE TOPN(3, VALUES(Tarih[YilAy]))'));
+const K=[{t:'Kategoriler',c:'Kategori'}];
+const sl=[{t:'Kategoriler',c:'Kategori',values:['Elektronik','Kitap','Spor']}];
+const r=X.query({rows:K, measures:ms, values:['[Net Satış]','[Seçime Göre Pay %]','CALCULATE([Net Satış], ALLSELECTED(Kategoriler))','CALCULATE([Net Satış], ALL(Kategoriler))', 'DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))'], slicers:sl, totals:true}); r.rows.forEach(x=>console.log(x.keys.join(),x.vals.join(' | '))); console.log(r.total);

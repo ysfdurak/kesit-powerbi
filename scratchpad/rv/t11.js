@@ -1,0 +1,10 @@
+const C=require('./common.js');
+(async()=>{const {b,ctx,p,errs}=await C.open();
+p.on('dialog',d=>{console.log('DIALOG',d.message());d.accept()});
+await p.goto('http://localhost:8765/index.html#sinavlar'); await p.waitForTimeout(300);
+await p.click('[data-exstart="pl300"]'); await p.waitForTimeout(400);
+console.log('URL',p.url());
+console.log((await p.innerText('#main')).slice(0,1500));
+console.log((await p.$$eval('#main button, #main input',els=>els.map(e=>e.tagName+JSON.stringify(e.dataset)+' '+(e.type||'')+' '+e.textContent.trim().slice(0,50)))).join('\n'));
+await p.screenshot({path:C.SS+'13_exam_q1.png'});
+console.log(errs);await b.close();})();

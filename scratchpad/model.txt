@@ -1,0 +1,174 @@
+TABLOLAR (satır sayısı):
+Satislar (1620): SatirNo, SiparisNo, Tarih, TeslimTarihi, KargoGun, MusteriNo, UrunNo, TemsilciNo, Kanal, Durum, Adet, BirimFiyat, Indirim, IndirimBandi, Tutar, Maliyet, KohortAyFarki
+Urunler (40): UrunNo, Urun, Kategori, Fiyat, BirimMaliyet, Stok
+Musteriler (150): MusteriNo, Musteri, Cinsiyet, DogumYili, YasGrubu, Sehir, Bolge, Segment, KayitTarihi, IlkSiparis, KohortAy, TemsilciNo
+Tarih (1096): Tarih, Yil, CeyrekNo, Ceyrek, YilCeyrek, AyNo, Ay, YilAy, AySonu, Gun, HaftaNo, GunNo, HaftaninGunu, HaftaSonu
+Kategoriler (7): Kategori
+Hedefler (252): Tarih, Kategori, Hedef
+Calisanlar (27): CalisanNo, AdSoyad, DepartmanNo, YoneticiNo, Unvan, Maas, IseGiris, Eposta, Yol, Seviye, KidemYil, MaasKutusu
+Departmanlar (8): DepartmanNo, Departman, Sehir
+StokGorunum (1440): Tarih, UrunNo, StokAdet, GelenAdet, StokDegeri
+WebOlaylari (2019): OlayNo, ZiyaretciNo, Tarih, Saat, AdimNo, Adim, Cihaz, Kaynak
+DovizKurlari (72): Tarih, ParaBirimi, Kur
+ParaBirimleri (3): ParaBirimi, Sembol, Sira
+FiyatSenaryosu (9): FiyatDegisimi
+TopNSecim (13): N
+MusteriDilimleri (4): Dilim, Min, Max, Sira
+UrunlerVeDiger (41): Urun, Sira
+KarsiUrunler (40): KarsiUrunNo, KarsiUrun, KarsiKategori
+OlcuSecimi (4): Olcu, Sira
+RFMSegmentleri (7): Segment, Sira, Aciklama, Eylem
+Gorunum (4): Gorunum, Sira
+GiderTurleri (6): GiderTuru, Grup, Sira, DepartmanNo
+Giderler (186): GiderNo, Tarih, GiderTuru, DepartmanNo, Tutar
+GiderButce (186): Tarih, GiderTuru, Butce
+Talepler (270): TalepNo, Tarih, MusteriNo, Kanal, Konu, Oncelik, IlkYanitDk, CozumSaat, Cozuldu, Memnuniyet
+Tedarikciler (8): TedarikciNo, Tedarikci, Ulke, Sehir, SozGun
+SatinAlmalar (256): SiparisNo, Tarih, UrunNo, TedarikciNo, Adet, BirimFiyat, Tutar, TeslimGun, Zamaninda, Kusurlu
+Projeler (14): ProjeNo, Proje, DepartmanNo, Birim, Baslangic, BitisPlan, BitisGercek, Durum, Butce, Harcanan, Ilerleme
+
+İLİŞKİLER:
+{"from":"Satislar","fromCol":"UrunNo","to":"Urunler","toCol":"UrunNo"}
+{"from":"Satislar","fromCol":"MusteriNo","to":"Musteriler","toCol":"MusteriNo"}
+{"from":"Satislar","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"Satislar","fromCol":"TeslimTarihi","to":"Tarih","toCol":"Tarih","inactive":true}
+{"from":"Satislar","fromCol":"TemsilciNo","to":"Calisanlar","toCol":"CalisanNo"}
+{"from":"Calisanlar","fromCol":"DepartmanNo","to":"Departmanlar","toCol":"DepartmanNo"}
+{"from":"Urunler","fromCol":"Kategori","to":"Kategoriler","toCol":"Kategori"}
+{"from":"Hedefler","fromCol":"Kategori","to":"Kategoriler","toCol":"Kategori"}
+{"from":"Hedefler","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"StokGorunum","fromCol":"UrunNo","to":"Urunler","toCol":"UrunNo"}
+{"from":"StokGorunum","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"WebOlaylari","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"Giderler","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"Giderler","fromCol":"GiderTuru","to":"GiderTurleri","toCol":"GiderTuru"}
+{"from":"Giderler","fromCol":"DepartmanNo","to":"Departmanlar","toCol":"DepartmanNo"}
+{"from":"GiderButce","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"GiderButce","fromCol":"GiderTuru","to":"GiderTurleri","toCol":"GiderTuru"}
+{"from":"Talepler","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"Talepler","fromCol":"MusteriNo","to":"Musteriler","toCol":"MusteriNo"}
+{"from":"SatinAlmalar","fromCol":"Tarih","to":"Tarih","toCol":"Tarih"}
+{"from":"SatinAlmalar","fromCol":"UrunNo","to":"Urunler","toCol":"UrunNo"}
+{"from":"SatinAlmalar","fromCol":"TedarikciNo","to":"Tedarikciler","toCol":"TedarikciNo"}
+{"from":"Projeler","fromCol":"DepartmanNo","to":"Departmanlar","toCol":"DepartmanNo"}
+
+HAZIR ÖLÇÜLER (119):
+[Toplam Satış] = SUM(Satislar[Tutar])
+[Toplam Maliyet] = SUM(Satislar[Maliyet])
+[Net Satış] = CALCULATE([Toplam Satış], Satislar[Durum] <> "İptal")
+[Net Maliyet] = CALCULATE([Toplam Maliyet], Satislar[Durum] <> "İptal")
+[Brüt Kâr] = [Net Satış] - [Net Maliyet]
+[Kâr Marjı %] = DIVIDE([Brüt Kâr], [Net Satış])
+[Sipariş Sayısı] = CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), Satislar[Durum] <> "İptal")
+[Ortalama Sepet] = DIVIDE([Net Satış], [Sipariş Sayısı])
+[Satılan Adet] = CALCULATE(SUM(Satislar[Adet]), Satislar[Durum] <> "İptal")
+[Brüt Tutar] = SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])
+[İndirim Tutarı] = CALCULATE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat] * Satislar[Indirim]), Satislar[Durum] <> "İptal")
+[Ortalama İndirim %] = DIVIDE([İndirim Tutarı], [İndirim Tutarı] + [Net Satış])
+[İndirimli Satış Payı %] = DIVIDE(CALCULATE([Net Satış], Satislar[Indirim] > 0), [Net Satış])
+[Ortalama Birim Fiyat] = DIVIDE([Net Satış], [Satılan Adet])
+[Müşteri Sayısı] = CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")
+[Müşteri Başı Satış] = DIVIDE([Net Satış], [Müşteri Sayısı])
+[Müşteri Başı Sipariş] = DIVIDE([Sipariş Sayısı], [Müşteri Sayısı])
+[Kayıtlı Müşteri] = COUNTROWS(Musteriler)
+[Satış GY] = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+[YoY %] = DIVIDE([Net Satış] - [Satış GY], [Satış GY])
+[Satış YTD] = TOTALYTD([Net Satış], Tarih[Tarih])
+[Satış GY YTD] = CALCULATE([Satış YTD], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+[Satış QTD] = TOTALQTD([Net Satış], Tarih[Tarih])
+[Satış GA] = CALCULATE([Net Satış], PREVIOUSMONTH(Tarih[Tarih]))
+[MoM %] = DIVIDE([Net Satış] - [Satış GA], [Satış GA])
+[3 Ay Hareketli Ort.] = VAR Donem = DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -3, MONTH) RETURN DIVIDE(CALCULATE([Net Satış], Donem), 3)
+[Kümülatif Satış] = CALCULATE([Net Satış], FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih])))
+[Teslime Göre Satış] = CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))
+[Hedef] = SUM(Hedefler[Hedef])
+[Hedef Farkı] = [Net Satış] - [Hedef]
+[Hedef Gerçekleşme %] = DIVIDE([Net Satış], [Hedef])
+[Hedef YTD] = TOTALYTD([Hedef], Tarih[Tarih])
+[Kategori Payı %] = DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler), ALL(Urunler)))
+[Kanal Payı %] = DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Satislar[Kanal])))
+[Seçime Göre Pay %] = DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED()))
+[İade Oranı %] = DIVIDE(CALCULATE(COUNTROWS(Satislar), Satislar[Durum] = "İade"), COUNTROWS(Satislar))
+[İptal Oranı %] = DIVIDE(CALCULATE(COUNTROWS(Satislar), Satislar[Durum] = "İptal"), COUNTROWS(Satislar))
+[İade Tutarı] = CALCULATE([Toplam Satış], Satislar[Durum] = "İade")
+[Ortalama Kargo Günü] = AVERAGE(Satislar[KargoGun])
+[Zamanında Teslim %] = DIVIDE(CALCULATE(COUNTROWS(Satislar), Satislar[KargoGun] <= 3, NOT ISBLANK(Satislar[KargoGun])), CALCULATE(COUNTROWS(Satislar), NOT ISBLANK(Satislar[KargoGun])))
+[Ürün Sırası] = IF(HASONEVALUE(Urunler[Urun]), RANKX(ALL(Urunler[Urun]), [Net Satış]))
+[Müşteri Sırası] = IF(HASONEVALUE(Musteriler[Musteri]), RANKX(ALL(Musteriler[Musteri]), [Net Satış]))
+[Temsilci Sırası] = IF(HASONEVALUE(Calisanlar[AdSoyad]), RANKX(ALLSELECTED(Calisanlar[AdSoyad]), [Net Satış]))
+[Yeni Müşteri] = COUNTROWS(FILTER(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), CALCULATE(MIN(Satislar[Tarih]), ALL(Tarih), Satislar[Durum] <> "İptal") >= MIN(Tarih[Tarih])))
+[Stok Değeri (Toplam)] = SUMX(Urunler, Urunler[Stok] * Urunler[BirimMaliyet])
+[Gelen Adet] = SUM(StokGorunum[GelenAdet])
+[Ziyaretçi] = DISTINCTCOUNT(WebOlaylari[ZiyaretciNo])
+[Satın Alan Ziyaretçi] = CALCULATE([Ziyaretçi], WebOlaylari[Adim] = "Satın alma")
+[Dönüşüm Oranı %] = DIVIDE([Satın Alan Ziyaretçi], CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 1))
+[İlk Adıma Göre %] = DIVIDE([Ziyaretçi], CALCULATE([Ziyaretçi], REMOVEFILTERS(WebOlaylari[Adim]), WebOlaylari[AdimNo] = 1))
+[Önceki Adıma Göre %] = VAR Adim = SELECTEDVALUE(WebOlaylari[AdimNo]) RETURN IF(Adim > 1, DIVIDE([Ziyaretçi], CALCULATE([Ziyaretçi], REMOVEFILTERS(WebOlaylari[Adim]), WebOlaylari[AdimNo] = Adim - 1)))
+[Çalışan Sayısı] = COUNTROWS(Calisanlar)
+[Ortalama Maaş] = AVERAGE(Calisanlar[Maas])
+[Toplam Maaş] = SUM(Calisanlar[Maas])
+[Ortalama Kıdem] = AVERAGE(Calisanlar[KidemYil])
+[Medyan Maaş] = MEDIAN(Calisanlar[Maas])
+[Maaş Std. Sapma] = STDEV.P(Calisanlar[Maas])
+[Seçili Ölçü] = SWITCH(SELECTEDVALUE(OlcuSecimi[Olcu], "Net Satış"), "Net Satış", [Net Satış], "Brüt Kâr", [Brüt Kâr], "Sipariş Sayısı", [Sipariş Sayısı], "Müşteri Sayısı", [Müşteri Sayısı])
+[Gider] = SUM(Giderler[Tutar])
+[Gider Bütçe] = SUM(GiderButce[Butce])
+[Gider Sapma] = [Gider] - [Gider Bütçe]
+[Gider Sapma %] = DIVIDE([Gider] - [Gider Bütçe], [Gider Bütçe])
+[Faaliyet Kârı] = [Brüt Kâr] - [Gider]
+[Faaliyet Kâr Marjı %] = DIVIDE([Faaliyet Kârı], [Net Satış])
+[Gider / Satış %] = DIVIDE([Gider], [Net Satış])
+[Talep Sayısı] = COUNTROWS(Talepler)
+[Çözüm Oranı %] = DIVIDE(CALCULATE(COUNTROWS(Talepler), Talepler[Cozuldu] = "Evet"), COUNTROWS(Talepler))
+[Ortalama İlk Yanıt (dk)] = AVERAGE(Talepler[IlkYanitDk])
+[Ortalama Çözüm (saat)] = AVERAGE(Talepler[CozumSaat])
+[CSAT %] = DIVIDE(CALCULATE(COUNTROWS(Talepler), Talepler[Memnuniyet] >= 4), COUNT(Talepler[Memnuniyet]))
+[SLA Uyum %] = DIVIDE(CALCULATE(COUNTROWS(Talepler), Talepler[IlkYanitDk] <= 60), COUNTROWS(Talepler))
+[Satın Alma Tutarı] = SUM(SatinAlmalar[Tutar])
+[Satın Alma Adedi] = SUM(SatinAlmalar[Adet])
+[Ortalama Tedarik Süresi] = AVERAGE(SatinAlmalar[TeslimGun])
+[Tedarikte Zamanında %] = DIVIDE(CALCULATE(COUNTROWS(SatinAlmalar), SatinAlmalar[Zamaninda] = "Evet"), COUNTROWS(SatinAlmalar))
+[Kusur Oranı %] = DIVIDE(SUM(SatinAlmalar[Kusurlu]), SUM(SatinAlmalar[Adet]))
+[Proje Sayısı] = COUNTROWS(Projeler)
+[Proje Bütçesi] = SUM(Projeler[Butce])
+[Proje Harcaması] = SUM(Projeler[Harcanan])
+[Bütçe Kullanımı %] = DIVIDE([Proje Harcaması], [Proje Bütçesi])
+[Riskli Proje] = CALCULATE(COUNTROWS(Projeler), Projeler[Durum] IN {"Gecikmede", "Riskli"})
+[Seçili Görünüm] = SWITCH(SELECTEDVALUE(Gorunum[Gorunum], "Cari"), "Cari", [Net Satış], "Geçen yıl", [Satış GY], "YTD", [Satış YTD], "YoY %", [YoY %])
+[YoY % (VAR)] = VAR BuYil = [Net Satış] VAR GecenYil = CALCULATE( [Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]) ) VAR Fark = BuYil - GecenYil RETURN IF( NOT ISBLANK(GecenYil), DIVIDE(Fark, GecenYil) )
+[Hedef Durumu] = VAR Oran = DIVIDE([Net Satış], [Hedef]) VAR Sapma = Oran - 1 VAR Etiket = FORMAT(Sapma, "+0.0%;-0.0%") RETURN SWITCH( TRUE(), ISBLANK(Oran), "Hedef yok", Oran >= 1.05, "▲ Hedefin çok üstünde (" & Etiket & ")", Oran >= 1,
+[Dinamik Başlık] = VAR Yil = IF( HASONEVALUE(Tarih[Yil]), FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"), "Tüm yıllar" ) VAR Kanallar = IF( ISFILTERED(Satislar[Kanal]), CONCATENATEX(VALUES(Satislar[Kanal]), Satislar[Kanal], ", ", Satislar[Kanal], 
+[Akıllı Etiket] = VAR V = [Net Satış] VAR Mutlak = ABS(V) RETURN SWITCH( TRUE(), ISBLANK(V), BLANK(), Mutlak >= 1000000, FORMAT(V / 1000000, "#,0.0") & " Mn ₺", Mutlak >= 1000, FORMAT(V / 1000, "#,0.0") & " B ₺", FORMAT(V, "#,0") & " ₺" )
+[İlk N Satışı] = VAR N = SELECTEDVALUE(TopNSecim[N], 5) VAR IlkN = TOPN( N, ALL(Urunler[Urun]), [Net Satış], DESC ) RETURN CALCULATE([Net Satış], KEEPFILTERS(IlkN))
+[Seçime Göre Sıra] = VAR Satis = [Net Satış] RETURN IF( ISINSCOPE(Urunler[Urun]) && NOT ISBLANK(Satis), RANKX( ALLSELECTED(Urunler[Urun]), [Net Satış], Satis, DESC, DENSE ) )
+[Stok Adedi] = VAR SonTarih = CALCULATE( MAX(StokGorunum[Tarih]) ) RETURN CALCULATE( SUM(StokGorunum[StokAdet]), Tarih[Tarih] = SonTarih )
+[Stok Değeri] = CALCULATE( SUM(StokGorunum[StokDegeri]), LASTNONBLANK( Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum)) ) )
+[Yoldaki Sipariş] = VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE( DISTINCTCOUNT(Satislar[SiparisNo]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun, Satislar[TeslimTarihi] > Gun )
+[Geri Dönen Müşteri] = VAR DonemBasi = MIN(Tarih[Tarih]) VAR BuDonem = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal" ) VAR Onceki = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Tarih[Tarih] < DonemBasi, Satislar[Durum
+[Yeni Müşteri (Küme)] = VAR DonemBasi = MIN(Tarih[Tarih]) VAR BuDonem = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal") VAR Onceki = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Tarih[Tarih] < DonemBasi, Satislar[Durum] 
+[Kayıp Müşteri] = VAR DonemBasi = MIN(Tarih[Tarih]) VAR OncekiYil = CALCULATETABLE( VALUES(Satislar[MusteriNo]), DATESINPERIOD(Tarih[Tarih], DonemBasi - 1, -12, MONTH), Satislar[Durum] <> "İptal" ) VAR BuDonem = CALCULATETABLE( VALUES(Sat
+[ABC Sınıfı] = VAR UrunSatis = [Net Satış] VAR Toplam = CALCULATE([Net Satış], ALLSELECTED(Urunler)) VAR Siralama = ADDCOLUMNS( ALLSELECTED(Urunler[Urun]), "S", [Net Satış] ) VAR Kumulatif = SUMX( FILTER(Siralama, [S] >= UrunSatis), [S
+[Kümülatif Pay %] = VAR UrunSatis = [Net Satış] VAR Toplam = CALCULATE([Net Satış], ALLSELECTED(Urunler[Urun])) VAR Kumulatif = SUMX( FILTER( ADDCOLUMNS(ALLSELECTED(Urunler[Urun]), "S", [Net Satış]), [S] >= UrunSatis ), [S] ) RETURN IF(NOT 
+[Dilimdeki Müşteri] = VAR MusteriSatis = ADDCOLUMNS( VALUES(Musteriler[MusteriNo]), "S", [Net Satış] ) RETURN SUMX( MusteriDilimleri, COUNTROWS( FILTER( MusteriSatis, [S] > MusteriDilimleri[Min] && [S] <= MusteriDilimleri[Max] ) ) )
+[Dilim Satışı] = VAR MusteriSatis = ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "S", [Net Satış]) RETURN SUMX( MusteriDilimleri, SUMX( FILTER( MusteriSatis, [S] > MusteriDilimleri[Min] && [S] <= MusteriDilimleri[Max] ), [S] ) )
+[RFM Skoru] = VAR Bugun = MAX(Tarih[Tarih]) VAR SonAlim = CALCULATE( MAX(Satislar[Tarih]), Tarih[Tarih] <= Bugun, Satislar[Durum] <> "İptal" ) VAR Son12Ay = DATESINPERIOD(Tarih[Tarih], Bugun, -12, MONTH) VAR R = DATEDIFF(SonAlim, Bugu
+[RFM Segmenti] = VAR Skor = [RFM Skoru] VAR R = INT(Skor / 100) VAR F = INT(MOD(Skor, 100) / 10) VAR M = MOD(Skor, 10) RETURN SWITCH( TRUE(), ISBLANK(Skor), BLANK(), R >= 4 && F >= 4, "Şampiyon", F >= 4, "Sadık", R >= 4 && F <= 1, "Yeni"
+[Segmentteki Müşteri] = VAR Secili = VALUES(RFMSegmentleri[Segment]) RETURN COUNTROWS( FILTER( VALUES(Musteriler[MusteriNo]), [RFM Segmenti] IN Secili ) )
+[Kohort Tutma %] = VAR Aktif = CALCULATE( DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal", REMOVEFILTERS(Tarih) ) VAR KohortBuyuklugu = CALCULATE( DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[KohortAyFarki] = 0, Satislar[Dur
+[Senaryo Satışı] = VAR Degisim = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0) VAR Esneklik = -1.4 VAR AdetCarpani = MAX(0, 1 + Esneklik * Degisim) VAR FiyatCarpani = 1 + Degisim RETURN CALCULATE( SUMX( Satislar, Satislar[Tutar] * FiyatC
+[Senaryo Kârı] = VAR Degisim = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0) VAR AdetCarpani = MAX(0, 1 - 1.4 * Degisim) VAR YeniSatis = CALCULATE( SUMX(Satislar, Satislar[Tutar] * (1 + Degisim) * AdetCarpani), Satislar[Durum] <> "İpta
+[Satış (Seçili Para)] = VAR Para = SELECTEDVALUE(ParaBirimleri[ParaBirimi], "TRY") RETURN IF( Para = "TRY", [Net Satış], SUMX( VALUES(Tarih[YilAy]), VAR AyBasi = DATEVALUE(Tarih[YilAy] & "-01") VAR Kur = LOOKUPVALUE( DovizKurlari[Kur], DovizKur
+[Stok Gün Sayısı] = VAR Stok = [Stok Değeri] VAR Gun = DATEDIFF(MIN(Tarih[Tarih]), MAX(Tarih[Tarih]), DAY) + 1 VAR GunlukMaliyet = DIVIDE([Net Maliyet], Gun) RETURN DIVIDE(Stok, GunlukMaliyet)
+[Önceki Ay (OFFSET)] = CALCULATE( [Net Satış], OFFSET( -1, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC) ) )
+[Mevsim Endeksi] = VAR AyNo = SELECTEDVALUE(Tarih[AyNo]) VAR AylikSeri = FILTER( CALCULATETABLE( ADDCOLUMNS( SUMMARIZE(Tarih, Tarih[YilAy], Tarih[AyNo]), "S", [Net Satış] ), REMOVEFILTERS(Tarih), Tarih[Yil] >= 2023 ), [S] > 0 ) VAR AyOrt =
+[Satış (Top N + Diğer)] = VAR N = SELECTEDVALUE(TopNSecim[N], 5) VAR SeciliUrun = SELECTEDVALUE(UrunlerVeDiger[Urun]) VAR Siralama = ADDCOLUMNS(ALL(Urunler[Urun]), "S", [Net Satış]) VAR IlkN = TOPN(N, Siralama, [S], DESC) VAR IlkNToplam = SUMX(Il
+[Birlikte Alma Oranı %] = VAR A_Musteriler = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal" ) VAR B_Musteriler = CALCULATETABLE( VALUES(Satislar[MusteriNo]), REMOVEFILTERS(Urunler), REMOVEFILTERS(Kategoriler), TREATAS(VAL
+[LFL Büyüme %] = VAR BuYilUrunler = CALCULATETABLE( VALUES(Satislar[UrunNo]), Satislar[Durum] <> "İptal" ) VAR GecenYilUrunler = CALCULATETABLE( VALUES(Satislar[UrunNo]), SAMEPERIODLASTYEAR(Tarih[Tarih]), Satislar[Durum] <> "İptal" ) VAR
+[Trend Mini Grafik] = VAR Seri = CALCULATETABLE( ADDCOLUMNS(VALUES(Tarih[AyNo]), "S", [Net Satış] + 0), REMOVEFILTERS(Tarih), Tarih[Yil] = 2024 ) VAR EnAz = MINX(Seri, [S]) VAR EnCok = MAXX(Seri, [S]) VAR Noktalar = CONCATENATEX( Seri, FORMAT
+[Eğilim Çizgisi] = VAR Seri = ADDCOLUMNS( ALLSELECTED(Tarih[YilAy]), "X", RANKX(ALLSELECTED(Tarih[YilAy]), Tarih[YilAy], , ASC), "Y", [Net Satış] ) VAR Gecerli = FILTER(Seri, NOT ISBLANK([Y])) VAR N = COUNTROWS(Gecerli) VAR SX = SUMX(Gecer
+[Z-Skoru] = VAR Seri = FILTER( ADDCOLUMNS(ALLSELECTED(Tarih[YilAy]), "S", [Net Satış]), NOT ISBLANK([S]) ) VAR Ortalama = AVERAGEX(Seri, [S]) VAR Sapma = STDEVX.P(Seri, [S]) VAR Deger = [Net Satış] RETURN IF( HASONEVALUE(Tarih[YilAy
+[Ekip Satışı] = VAR Kisi = SELECTEDVALUE(Calisanlar[CalisanNo]) VAR Ekip = FILTER( ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], Kisi) ) RETURN IF( NOT ISBLANK(Kisi), CALCULATE([Net Satış], Ekip) )
+[Görünüm (Dinamik Biçim)] = VAR Secim = SELECTEDVALUE(Gorunum[Gorunum], "Cari") VAR Deger = SWITCH( Secim, "Cari", [Net Satış], "Geçen yıl", [Satış GY], "YTD", [Satış YTD], "YoY %", [YoY %] ) VAR Bicim = IF(Secim = "YoY %", "+0.0%;-0.0%", "#,0 ₺") 
+[Satış Köprüsü (PVM)] = VAR UrunTablosu = ADDCOLUMNS( VALUES(Urunler[UrunNo]), "S1", [Net Satış], "Q1", CALCULATE(SUM(Satislar[Adet]), Satislar[Durum] <> "İptal"), "S0", [Satış GY], "Q0", CALCULATE( SUM(Satislar[Adet]), Satislar[Durum] <> "İpta
+[Müşteri Hareketi Özeti] = VAR BasT = MIN(Tarih[Tarih]) VAR OncekiBas = EDATE(BasT, -6) VAR Simdi = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal" ) VAR Onceki = CALCULATETABLE( VALUES(Satislar[MusteriNo]), Satislar[Durum]
+[Yönetici Özeti Metni] = VAR Satis = [Net Satış] VAR GY = [Satış GY] VAR Hedef = [Hedef] VAR Buyume = DIVIDE(Satis - GY, GY) VAR Gercek = DIVIDE(Satis, Hedef) VAR KatTablo = ADDCOLUMNS( VALUES(Kategoriler[Kategori]), "S", [Net Satış], "B", [YoY 

@@ -1,0 +1,13 @@
+ev('DISTINCTCOUNT(Satislar[KargoGun])')
+ev('DISTINCTCOUNTNOBLANK(Satislar[KargoGun])')
+ev('COUNTROWS(VALUES(Satislar[KargoGun]))')
+q('COUNTROWS(Satislar)','Satislar','Kanal')
+q('COUNT(Satislar[KargoGun])','Satislar','Kanal')
+q('CALCULATE([Net Satış], ALL(Satislar[Kanal]))','Satislar','Kanal')
+q('CALCULATE([Net Satış], ALLSELECTED(Satislar[Kanal]))','Satislar','Kanal')
+q('CALCULATE([Net Satış], REMOVEFILTERS(Satislar[Kanal]))','Satislar','Kanal')
+q('CALCULATE([Net Satış], ALLEXCEPT(Satislar, Satislar[Kanal]))','Urunler','Kategori')
+q('CALCULATE([Net Satış], ALL(Urunler))','Urunler','Kategori')
+q('[Net Satış]','Urunler','Kategori')
+X.query({rows:[{t:'Urunler',c:'Kategori'}], measures:ms, values:['CALCULATE([Net Satış], ALLSELECTED(Urunler))'], totals:true, filters:[]}).rows.length
+Object.keys(X)

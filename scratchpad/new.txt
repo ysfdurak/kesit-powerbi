@@ -1,0 +1,667 @@
+## pl-n01 pl300 pl-gc3 mc [Veriyi hazırla] Bir Fabric lakehouse’ta Delta biçiminde tutulan 900 milyon satırlık bir satış tablosu var. Veri mühendisleri tabloyu gün içinde sık sık güncelliyor. Rapor hızlı olmalı, veri ikinci kez kopyalanmamalı ve uzun içeri aktarma yenilemeleri olmamalı. Anlam modelinde hangi depolama modunu seçersin?
+    0) Import (İçeri aktarma)
+    1) DirectQuery
+   *2) Direct Lake
+    3) Bileşik model: Import + Çift (Dual)
+   meta:{"id":"pl-n01","s":"pl-gc3","type":"mc","a":2}
+   WHY: Direct Lake, OneLake’teki Delta tablolarını kopyalamadan belleğe yükler ve sorguları VertiPaq ile yanıtlar; yenileme yalnızca meta veriyi günceller (framing). Import veriyi kopyalar ve bu boyutta uzun yenileme ister; DirectQuery kopyalamaz ama her sorgu kaynağa gider ve genelde daha yavaştır.
+
+## pl-n02 pl300 pl-gc3 yesno [Veriyi hazırla] Bir ekip yeni anlam modeli için depolama modu seçiyor. Her ifade için Evet ya da Hayır seç.
+   [E] DirectQuery modunda görsellerin sorguları, kullanıcı etkileşimlerinde kaynak sisteme gönderilir.
+   [H] Import modundaki bir model, kaynakta değişen veriyi yenileme yapılmadan raporda hemen gösterir.
+   [E] Direct Lake depolama modu bir Microsoft Fabric kapasitesi gerektirir.
+   meta:{"id":"pl-n02","s":"pl-gc3","type":"yesno"}
+   WHY: DirectQuery veriyi kopyalamaz, her görsel sorgusu kaynağa gider. Import modunda veri yalnızca yenilemeyle güncellenir. Direct Lake yalnızca Fabric kapasitesinde (F SKU) kullanılabilir.
+
+## pl-n03 pl300 pl-gc2 mc [Veriyi hazırla] Power Query’de gizlilik düzeyi “Özel (Private)” olan bir Excel dosyasını, “Kuruluş (Organizational)” düzeyindeki bir SQL Server tablosuyla birleştiriyorsun ve sorgu gizlilik düzeyleri yüzünden engelleniyor. Excel dosyası aslında yalnızca şirket çalışanlarının erişebildiği bir SharePoint sitesinde duruyor. En doğru çözüm hangisi?
+    0) Seçeneklerde “Gizlilik düzeylerini her zaman yoksay” ayarını açmak
+   *1) Excel kaynağının gizlilik düzeyini Kuruluş yapmak
+    2) Excel kaynağını Genel (Public) düzeyine almak
+    3) İki sorguyu ayrı yükleyip modelde ilişkiyle bağlamak
+   meta:{"id":"pl-n03","s":"pl-gc2","type":"mc","a":1}
+   WHY: Kuruluş düzeyindeki kaynaklar birbirleriyle birleştirilebilir; dosya gerçekten şirket içiyse doğru sınıflandırma onu Kuruluş yapmaktır. Gizlilik düzeylerini yoksaymak hassas verinin istenmeyen bir kaynağa gitmesine yol açabilir; Genel düzeyi de verinin gerçek durumunu yansıtmaz.
+
+## pl-n04 pl300 pl-gc2 multi [Veriyi hazırla] Power Query gizlilik düzeyleri (privacy levels) için hangi iki ifade doğrudur? İki tane seç.
+    0) Gizlilik düzeylerini yoksaymak sorguyu yavaşlatır ama veri güvenliğini artırır.
+   *1) Özel (Private) bir kaynağın verisi, başka bir Özel kaynağa bile katlanamaz.
+    2) Gizlilik düzeyleri yalnızca Power BI hizmetinde ayarlanır, Desktop’ta ayarlanamaz.
+   *3) Desktop’ta düzey, Veri kaynağı ayarları > İzinleri düzenle (Edit Permissions) ekranından seçilir.
+    4) Genel (Public) düzeyi, kaynağa bağlanmak için kimlik bilgisi gerekmediği anlamına gelir.
+   meta:{"id":"pl-n04","s":"pl-gc2","type":"multi","a":[1,3]}
+   WHY: Özel en kısıtlayıcı düzeydir; başka hiçbir kaynağa, diğer Özel kaynaklara bile katlanmaz. Düzey, Dosya > Seçenekler ve ayarlar > Veri kaynağı ayarları > İzinleri düzenle’den seçilir. Yoksaymak tersine performansı artırabilir ama gizliliği koruyamaz; kimlik bilgisi ayrı bir ayardır.
+
+## pl-n05 pl300 pl-tl7 mc [Veriyi hazırla] “Satislar_Ham” sorgusu kaynağa bağlanıp temizleme adımlarını yapıyor. Bundan aylık özet üreten ikinci bir sorgu türetmek istiyorsun. Ham sorgudaki temizlik adımları ileride değişirse özet sorgu da bu değişikliği kendiliğinden almalı. Ne yaparsın?
+   *0) Satislar_Ham’a başvurup (Reference) gruplamak
+    1) Satislar_Ham’ı çoğaltıp (Duplicate) gruplamak
+    2) Gelişmiş Düzenleyici’deki kodu yeni boş sorguya kopyalamak
+    3) Satislar_Ham’ın son adımına bir gruplama adımı eklemek
+   meta:{"id":"pl-n05","s":"pl-tl7","type":"mc","a":0}
+   WHY: Başvuru (Reference), ilk adımı kaynak sorgunun sonucu olan yeni bir sorgu açar; kaynak sorgudaki değişiklik onu kullanan sorguya yansır. Çoğaltma ve kod kopyalama adımların bağımsız bir kopyasını oluşturur. Ham sorguya gruplama eklemek ise ayrıntı satırlarını kaybettirir.
+
+## pl-n06 pl300 pl-tl7 yesno [Veriyi hazırla] “Musteriler_Kaynak” sorgusundan iki yeni sorgu türetiyorsun: biri başvuru (Reference), diğeri çoğaltma (Duplicate). Her ifade için Evet ya da Hayır seç.
+   [E] Çoğaltılan sorgu, kaynak sorgunun tüm adımlarını kendi içinde bağımsız bir kopya olarak taşır.
+   [H] Kaynak sorguya yeni bir adım eklendiğinde çoğaltılan sorgu da bu adımı otomatik alır.
+   [E] Başvuru sorgusu, ilk adım olarak kaynak sorgunun sonucunu kullanır.
+   meta:{"id":"pl-n06","s":"pl-tl7","type":"yesno"}
+   WHY: Çoğaltma, adımların o anki bir kopyasıdır; sonradan kaynak sorguda yapılan değişiklik kopyaya geçmez. Başvuru sorgusunun kaynağı `= Musteriler_Kaynak` gibi diğer sorgunun kendisidir, bu yüzden değişiklikleri izler.
+
+## pl-n07 pl300 pl-tl4 hot [Veriyi hazırla] Hedefler Excel’de geniş biçimde geliyor: ilk sütun Bolge, sonraki sütunlar Oca, Şub, Mar… (her ay bir sütun). Bölge sabit kalmalı, ay sütunları satırlara dönmeli; yıl içinde yeni ay sütunları eklendiğinde sorgu değiştirilmeden çalışmalı. Kodu tamamla.
+   meta:{"id":"pl-n07","s":"pl-tl4","type":"hot","code":"let\n    Kaynak = Excel.Workbook(File.Contents(DosyaYolu), null, true){[Item=\"Hedef\", Kind=\"Sheet\"]}[Data],\n    Basliklar = Table.PromoteHeaders(Kaynak, [PromoteAllScalars = true]),\n    Uzun = {0}(Basliklar, {1}, \"Ay\", \"Hedef\")\nin\n    Uzun","slots":[{"o":["Table.UnpivotOtherColumns","Table.Unpivot","Table.Pivot","Table.Transpose"],"a":0},{"o":["{\"Bolge\"}","{\"Oca\", \"Şub\", \"Mar\"}","\"Hedef\""],"a":0}]}
+   WHY: `Table.UnpivotOtherColumns`, listede verilen sütunlar (Bolge) dışındaki tüm sütunları Ay/Hedef çiftlerine çevirir; yeni bir ay sütunu gelince onu da kapsar. `Table.Unpivot` ise döndürülecek sütunları adlarıyla ister ve sonradan eklenen ayı kaçırır.
+
+## pl-n08 pl300 pl-tl4 mc [Veriyi hazırla] Bir sorguda Tarih, Metrik ve Deger sütunları var; Metrik sütununda “Satış”, “Adet” ve “İade” değerleri tekrar ediyor. Her metriğin ayrı bir sütun olmasını, satırların tarih başına bir tane olmasını istiyorsun. Power Query’de ne yaparsın?
+    0) Diğer sütunların özetini kaldır (Unpivot other columns) uygulamak
+    1) Tabloyu devrik (Transpose) yapıp ilk satırı üst bilgi olarak kullanmak
+    2) Metrik sütununa göre Gruplandır (Group by) ve Deger’i toplamak
+   *3) Metrik sütununda Özet sütun (Pivot column), değerler: Deger
+   meta:{"id":"pl-n08","s":"pl-tl4","type":"mc","a":3}
+   WHY: Özet sütun, seçilen sütunun (Metrik) her farklı değerini yeni bir sütun yapar ve Deger’i bu sütunlara dağıtır. Özeti kaldırmak tam tersini yapar; devrik tüm satır ve sütunların yerini değiştirir; gruplama ise metrikleri sütuna çevirmez.
+
+## pl-n09 pl300 pl-tl4 order [Veriyi hazırla] Bir Excel sayfasında satırlarda metrikler (Satış, Adet), sütunlarda aylar var; Power Query ilk satırı otomatik olarak üst bilgi yaptı, bu yüzden ay adları sütun başlıklarında. Ayların satırda, metriklerin sütunda olduğu bir tablo istiyorsun. Adımları doğru sıraya koy.
+   meta:{"id":"pl-n09","s":"pl-tl4","type":"order","items":["Üst bilgileri ilk satır olarak kullan (Use headers as first row)","Dönüştür > Devrik (Transpose) uygula","İlk satırı üst bilgi olarak kullan (Use first row as headers)","İlk sütunun adını “Ay” yap","Sütunların veri türlerini ayarla"],"extra":["Diğer sütunların özetini kaldır (Unpivot other columns)"]}
+   WHY: Devrik işlemi başlıkları dikkate almaz; önce başlıklar satıra indirilmezse ay adları kaybolur. Devrikten sonra metrik adları ilk satırdadır ve başlık yapılır; ardından sütun adı ve türler düzeltilir. Bu senaryoda özeti kaldırmaya gerek yoktur.
+
+## pl-n10 pl300 pl-gc3 multi [Veriyi hazırla] Hangi iki durumda DirectQuery, Import’a göre daha uygun bir seçimdir? İki tane seç.
+    0) Modelde çok sayıda karmaşık Power Query dönüşümü yapılacak.
+    1) Kaynak sistem zaten yoğun ve ek sorgu yüküne dayanamıyor.
+   *2) Kaynak veri birkaç dakikada bir değişiyor ve rapor en güncel veriyi göstermeli.
+   *3) Veri hacmi çok büyük ve verinin Power BI’da kopyasının tutulması kurum politikasıyla yasak.
+    4) Görsellerde mümkün olan en hızlı yanıt süresi her şeyden önemli.
+   meta:{"id":"pl-n10","s":"pl-gc3","type":"multi","a":[2,3]}
+   WHY: DirectQuery veri kopyalamaz ve her sorguyu kaynağa gönderir; güncellik ve veri yerinde kalmalı gereksinimleri için uygundur. Hız, karmaşık dönüşümler ve kaynağı korumak ise Import lehinedir; DirectQuery kaynağa ek yük bindirir.
+
+## pl-n11 pl300 pl-pc2 mc [Veriyi hazırla] Musteriler sorgusunda Sehir sütununda “ankara”, “Ankara ” ve “ANKARA” gibi farklı yazımlar var ve bazı hücreler null. Aynı şehrin tek bir değer olarak görünmesi, boşların da “Bilinmiyor” olması gerekiyor. Hangi adım dizisi bunu sağlar?
+    0) Yalnızca Temizle (Clean) uygula ve null satırları filtreyle kaldır
+    1) Yinelenenleri kaldır (Remove duplicates), null’ları olduğu gibi bırak
+   *2) Kırp (Trim), Her Sözcüğü Büyük Harfle Başlat (Capitalize Each Word), sonra null’ları “Bilinmiyor” ile değiştir
+    3) Sütun türünü Metin yap; Power Query büyük/küçük harf farkını kendisi giderir
+   meta:{"id":"pl-n11","s":"pl-pc2","type":"mc","a":2}
+   WHY: Kırp sondaki boşluğu, büyük harf dönüşümü yazım farkını giderir; Değerleri değiştir ile null “Bilinmiyor” olur. Temizle yalnızca yazdırılamayan karakterleri siler; null satırları silmek müşteri kaybettirir; Power Query metin karşılaştırmasında büyük/küçük harfe duyarlıdır.
+
+## pl-n12 pl300 pl-dx5 hot [Modelle] StokGorunum tablosu her ürün için ay sonu stok adedini tutuyor. Yıl ya da kategori düzeyinde ayların stoklarını toplamak yerine, dönemdeki son kayıtlı tarihin stokunu gösteren ölçüyü tamamla.
+   meta:{"id":"pl-n12","s":"pl-dx5","type":"hot","dax":true,"code":"Kapanış Stoku =\nCALCULATE(\n    SUM(StokGorunum[StokAdet]),\n    {0}(\n        Tarih[Tarih],\n        {1}\n    )\n)","slots":[{"o":["LASTNONBLANK","FIRSTNONBLANK","LASTDATE","MAXX"],"a":0},{"o":["CALCULATE(COUNTROWS(StokGorunum))","COUNTROWS(StokGorunum)","SUM(StokGorunum[StokAdet])"],"a":0}]}
+   WHY: `LASTNONBLANK`, ifadenin boş olmadığı son tarihi döndürür; ifadedeki `CALCULATE` her tarih için bağlam geçişi yapar, böylece o tarihte stok kaydı olup olmadığına bakılır. `CALCULATE` olmadan `COUNTROWS(StokGorunum)` her tarihte tüm tabloyu sayar ve dönemin son takvim günü seçilir; o gün kayıt yoksa sonuç boş çıkar.
+
+## pl-n13 pl300 pl-dx5 mc [Modelle] Bakiye tablosunda her hesap için bakiye yalnızca iş günlerinde kaydediliyor; ay sonu bazen hafta sonuna denk geliyor. `SUM(Bakiye[Tutar])` ölçüsü ay düzeyinde günlük bakiyeleri topladığı için anlamsız. Ay ve yıl düzeyinde dönemin son kayıtlı bakiyesini veren ölçü hangisi?
+    0) `CLOSINGBALANCEMONTH(SUM(Bakiye[Tutar]), Tarih[Tarih])`
+   *1) `CALCULATE(SUM(Bakiye[Tutar]), LASTNONBLANK(Tarih[Tarih], CALCULATE(SUM(Bakiye[Tutar]))))`
+    2) `AVERAGEX(VALUES(Tarih[Tarih]), CALCULATE(SUM(Bakiye[Tutar])))`
+    3) `TOTALMTD(SUM(Bakiye[Tutar]), Tarih[Tarih])`
+   meta:{"id":"pl-n13","s":"pl-dx5","type":"mc","a":1}
+   WHY: `LASTNONBLANK` dönemde bakiyesi olan son tarihi bulur, bu yüzden ay sonu hafta sonuna düşse de son iş gününün bakiyesini verir. `CLOSINGBALANCEMONTH` ayın son takvim gününe bakar; o gün kayıt yoksa boş döner. Ortalama ve MTD toplam ise bakiye değil, başka bir değer üretir.
+
+## pl-n14 pl300 pl-dx8 hot [Modelle] “Zaman Hesapları” adlı bir hesaplama grubuna “YoY %” öğesi ekliyorsun. Öğe, görselde hangi ölçü kullanılıyorsa onun geçen yıla göre değişim oranını vermeli. Kodu tamamla.
+   meta:{"id":"pl-n14","s":"pl-dx8","type":"hot","code":"YoY % =\nVAR Cari = {0}\nVAR GecenYil =\n    CALCULATE({0}, {1}(Tarih[Tarih]))\nRETURN\n    DIVIDE(Cari - GecenYil, GecenYil)","slots":[{"o":["SELECTEDMEASURE()","SELECTEDMEASURENAME()","[Net Satış]","ISSELECTEDMEASURE()"],"a":0},{"o":["SAMEPERIODLASTYEAR","PREVIOUSMONTH","DATESYTD"],"a":0}]}
+   WHY: `SELECTEDMEASURE()`, hesaplama öğesinin uygulandığı ölçünün yerini tutar; böylece tek öğe tüm açık ölçülerde çalışır. `SELECTEDMEASURENAME()` ölçünün adını metin olarak verir, `[Net Satış]` yazmak ise öğeyi tek ölçüye bağlar. Yüzde gösterimi için öğede dinamik biçim dizesi kullanılabilir.
+
+## pl-n15 pl300 pl-dx8 yesno [Modelle] Power BI Desktop’ta Model görünümünde ilk hesaplama grubunu (calculation group) oluşturuyorsun. Her ifade için Evet ya da Hayır seç.
+   [E] “Örtük ölçüleri engelle (Discourage implicit measures)” kapalıysa Desktop bu özelliği açmanı ister.
+   [H] Hesaplama öğeleri, sütunların değer alanına sürüklenmesiyle oluşan örtük ölçülere de uygulanır.
+   [E] Grubun sütunu bir dilimleyiciye konarak seçilen öğe sayfadaki ölçülere uygulanabilir.
+   meta:{"id":"pl-n15","s":"pl-dx8","type":"yesno"}
+   WHY: Hesaplama öğeleri yalnızca açık (explicit) ölçülere uygulanır; bu yüzden Desktop örtük ölçüleri engelleme özelliğini açtırır. Grubun sütunu matriste ya da dilimleyicide kullanılarak öğe seçilir.
+
+## pl-n16 pl300 pl-dx8 mc [Modelle] Modelde iki hesaplama grubu var: “Zaman” (YTD, GY) ve “Para Birimi” (TRY’den USD’ye dönüşüm). Bir görselde ikisinden de öğe seçildiğinde hangisinin önce uygulanacağını belirlemek için hangi özelliği ayarlarsın?
+    0) Hesaplama öğelerinin Sıra (Ordinal) değeri
+    1) Ölçülerin Görüntüleme klasörü (Display folder)
+    2) Öğelerin dinamik biçim dizesi (Dynamic format string)
+   *3) Grubun Öncelik (Precedence) özelliği
+   meta:{"id":"pl-n16","s":"pl-dx8","type":"mc","a":3}
+   WHY: Birden çok hesaplama grubu aynı ölçüye uygulandığında hangisinin önce değerlendirileceğini grubun Öncelik değeri belirler. Ordinal yalnızca öğelerin görünüm sırasını, görüntüleme klasörü ve biçim dizesi de sunumu etkiler.
+
+## pl-n17 pl300 pl-dx4 mc [Modelle] Bir sipariş Satislar tablosunda birden çok satıra yayılıyor. Yöneticiler “tipik bir siparişin tutarını” görmek istiyor; birkaç çok büyük kurumsal sipariş ortalamayı şişiriyor. Hangi ölçü doğru?
+    0) `MEDIAN(Satislar[Tutar])`
+   *1) `MEDIANX(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])))`
+    2) `AVERAGEX(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])))`
+    3) `DIVIDE(SUM(Satislar[Tutar]), COUNTROWS(Satislar))`
+   meta:{"id":"pl-n17","s":"pl-dx4","type":"mc","a":1}
+   WHY: Önce sipariş başına tutar hesaplanmalı (`CALCULATE` ile bağlam geçişi), sonra bu tutarların medyanı alınmalı; medyan aykırı değerlerden az etkilenir. `MEDIAN(Satislar[Tutar])` satır düzeyinde çalışır ve sipariş tutarını vermez; ortalamalı seçenekler büyük siparişlerden etkilenir.
+
+## pl-n18 pl300 pl-dx4 multi [Modelle] İK raporunda maaş dağılımını, birkaç üst yönetici maaşından az etkilenecek biçimde özetlemek istiyorsun. Hangi iki DAX fonksiyonu bu amaca uygundur? İki tane seç.
+    0) `AVERAGE`
+    1) `STDEV.P`
+    2) `MAX`
+   *3) `MEDIAN`
+   *4) `PERCENTILE.INC`
+   meta:{"id":"pl-n18","s":"pl-dx4","type":"multi","a":[3,4]}
+   WHY: Medyan ve yüzdelikler (ör. 25. ve 75. yüzdelik) sıraya dayanır, uç değerlerden az etkilenir. Ortalama ve standart sapma uç değerlerle büyür; `MAX` yalnızca en yüksek maaşı verir.
+
+## pl-n19 pl300 pl-op2 mc [Modelle] Performans Analizi’nde (Performance Analyzer) bir matrisin DAX sorgusu 5 saniye sürüyor. Ölçüyü yeniden yazıp modeli değiştirmeden önce yeni hâlinin sonucunu ve süresini denemek istiyorsun. En uygun yol hangisi?
+   *0) Sorguyu DAX sorgu görünümünde açıp ölçüyü `DEFINE MEASURE` ile denemek
+    1) Ölçüyü doğrudan modelde değiştirip raporu yeniden yayımlayarak ölçmek
+    2) Matrisi tablo görseline çevirip Performans Analizi kaydını yeniden başlatmak
+    3) Ölçüyü hesaplanmış sütuna çevirip modeli yenileyerek süreyi karşılaştırmak
+   meta:{"id":"pl-n19","s":"pl-op2","type":"mc","a":0}
+   WHY: Performans Analizi’ndeki görsel sorgusu DAX sorgu görünümünde açılabilir; `DEFINE MEASURE` ile tanımlanan ölçü yalnızca o sorgu için geçerlidir ve model değişmez. Sonuç beğenilirse CodeLens ya da “Modeli güncelle” ile modele kaydedilir.
+
+## pl-n20 pl300 pl-op2 order [Modelle] Yavaş bir ölçüyü bulup düzeltmek ve düzeltmeyi modele kaydetmek istiyorsun. Adımları doğru sıraya koy.
+   meta:{"id":"pl-n20","s":"pl-op2","type":"order","items":["Optimize sekmesinden Performans Analizi’ni (Performance Analyzer) aç ve kaydı başlat","Görselleri yenile ve DAX sorgusu süresi en uzun olan görseli bul","Görselin sorgusunu DAX sorgu görünümünde çalıştır","Sorguda `DEFINE MEASURE` ile ölçünün yeni hâlini yazıp süreleri karşılaştır","“Modeli güncelle (Update model)” ile yeni tanımı modele kaydet"],"extra":["Anlam modelini Import’tan DirectQuery’ye çevir"]}
+   WHY: Önce ölçüm yapılır, yavaş görsel bulunur, sorgusu DAX sorgu görünümüne alınır; ölçünün yeni hâli sorgu kapsamında denenir ve ancak sonra modele yazılır. Depolama modunu değiştirmek ölçü sorununu çözmez.
+
+## pl-n21 pl300 pl-dx3 hot [Modelle] Geçen yılın aynı tarihe kadarki birikimli net satışını (GY YTD) veren ölçüyü tamamla. Ölçü yıl, çeyrek ve ay düzeyinde doğru çalışmalı; Tarih tablosu tarih tablosu olarak işaretli.
+   meta:{"id":"pl-n21","s":"pl-dx3","type":"hot","dax":true,"code":"Satış GY YTD =\nCALCULATE(\n    {0}([Net Satış], Tarih[Tarih]),\n    {1}(Tarih[Tarih])\n)","slots":[{"o":["TOTALYTD","TOTALMTD","SUMX","DATESYTD"],"a":0},{"o":["SAMEPERIODLASTYEAR","PREVIOUSMONTH","DATESYTD","LASTDATE"],"a":0}]}
+   WHY: `TOTALYTD` yıl başından bağlamdaki son tarihe kadar toplar; dıştaki `CALCULATE` ve `SAMEPERIODLASTYEAR` bu hesabı bir yıl geriye kaydırır. `PREVIOUSMONTH` yalnızca bir önceki ayı, `DATESYTD` ise yine cari yılı verir.
+
+## pl-n22 pl300 pl-dx2 hot [Modelle] Her satırda (kategori, yıl…) Web kanalının o satırdaki toplam net satış içindeki payını veren ölçüyü tamamla. Raporda Kanal dilimleyicisi olsa bile payda tüm kanalları kapsamalı.
+   meta:{"id":"pl-n22","s":"pl-dx2","type":"hot","dax":true,"code":"Web Payı % =\nDIVIDE(\n    CALCULATE([Net Satış], {0}),\n    CALCULATE([Net Satış], {1}(Satislar[Kanal]))\n)","slots":[{"o":["Satislar[Kanal] = \"Web\"","KEEPFILTERS(Satislar[Kanal])","FILTER(Satislar, [Net Satış] > 0)"],"a":0},{"o":["REMOVEFILTERS","VALUES","KEEPFILTERS","SELECTEDVALUE"],"a":0}],"grid":[{"t":"Urunler","c":"Kategori"},{"t":"Tarih","c":"Yil"}]}
+   WHY: Payda `REMOVEFILTERS(Satislar[Kanal])` ile yalnızca kanal filtresini kaldırır; kategori ve yıl filtreleri korunur. Pay ise `CALCULATE` içindeki `Satislar[Kanal] = "Web"` filtresiyle kanal filtresinin üzerine yazar. `VALUES` mevcut kanal filtresini korur ve payı her zaman %100’e yaklaştırır.
+
+## pl-n23 pl300 pl-cr3 mc [Görselleştir ve analiz et] Bir rapor sayfasına Copilot ile anlatı görseli (Narrative with Copilot) ekledin. Kullanıcı Bölge dilimleyicisinde “Ege”yi seçiyor ama özet metni hâlâ tüm bölgelerden söz ediyor. En doğru açıklama hangisi?
+    0) Dilimleyici etkileşimi kapalıdır; Etkileşimleri düzenle’den “Filtre” seçilmelidir
+    1) Copilot özetleri yalnızca anlam modeli zamanlanmış yenilemesinden sonra güncellenir
+    2) Kapsam “tüm rapor” seçildiği için görsel dilimleyicileri hiçbir zaman dikkate almaz
+   *3) Özet kendiliğinden güncellenmez; görseldeki yenile düğmesi kullanılır
+   meta:{"id":"pl-n23","s":"pl-cr3","type":"mc","a":3}
+   WHY: Copilot anlatı görseli filtre ya da dilimleyici değiştiğinde özeti kendiliğinden yeniden üretmez; kullanıcı görselin yenile düğmesine basınca güncel seçimlere göre yeni özet alınır.
+
+## pl-n24 pl300 pl-cr7 multi [Görselleştir ve analiz et] Raporu Düzenleme görünümünde açtın ve Copilot bölmesiyle yeni bir rapor sayfası oluşturmak istiyorsun. Hangi iki ifade doğrudur? İki tane seç.
+    0) Analysis Services’e canlı bağlantılı modellerde de aynı şekilde çalışır.
+    1) Copilot, sayfa oluşturmak için modelde örtük ölçülerin kapatılmış olmasını ister.
+   *2) “Bu rapor için içerik öner (Suggest content for this report)” seçilince Copilot veriyi değerlendirip içerik önerir.
+   *3) Copilot’un sayfada yaptığı son işlemler geri al (undo) ile geri alınabilir.
+    4) Copilot sayfaları AppSource’taki özel görsellerle de oluşturabilir.
+   meta:{"id":"pl-n24","s":"pl-cr7","type":"multi","a":[2,3]}
+   WHY: Copilot bölmesinde içerik önerisi alınabilir ya da istem yazılarak sayfa oluşturulur; son Copilot işlemleri geri al/yinele ile geri alınır. Özel görseller, Analysis Services canlı bağlantısı ve örtük ölçüleri kapatılmış modeller bu özellikte desteklenmez.
+
+## pl-n25 pl300 pl-pt5 mc [Görselleştir ve analiz et] Yeni katılan analistler Copilot bölmesinde “Bu modelde neler var, hangi ölçü ne anlatıyor?” gibi sorular soracak. Copilot’un modeli doğru özetleyip doğru yanıt vermesi için anlam modelinde en etkili hazırlık hangisi?
+    0) Tüm tabloları tek bir geniş tabloda birleştirmek
+    1) Ölçüleri gizleyip yalnızca sütunları görünür bırakmak
+   *2) Nesnelere anlaşılır ad ve açıklama vermek
+    3) Modeli DirectQuery’ye çevirerek veriyi canlı tutmak
+   meta:{"id":"pl-n25","s":"pl-pt5","type":"mc","a":2}
+   WHY: Copilot yanıtlarını modelin meta verisine dayandırır; açık tablo, sütun ve ölçü adları ile açıklamalar (Copilot bunları üretmeye de yardım edebilir) özetin kalitesini doğrudan artırır. Tek geniş tablo yıldız şemadan uzaklaştırır; ölçüleri gizlemek bilgiyi azaltır.
+
+## pl-n26 pl300 pl-cr10 hot [Görselleştir ve analiz et] Satırlarında Tarih[YilAy], değerlerinde [Net Satış] olan bir matrise iki görsel hesaplama (visual calculation) ekliyorsun: satırlar boyunca birikimli toplam ve bir önceki aya göre fark. Kodu tamamla.
+   meta:{"id":"pl-n26","s":"pl-cr10","type":"hot","code":"Birikimli = {0}([Net Satış], {1})\n\nÖnceki Aya Göre = [Net Satış] - {2}([Net Satış])","slots":[{"o":["RUNNINGSUM","MOVINGAVERAGE","TOTALYTD","CALCULATE"],"a":0},{"o":["ROWS","COLUMNS","NONE"],"a":0},{"o":["PREVIOUS","FIRST","NEXT","PREVIOUSMONTH"],"a":0}]}
+   WHY: Görsel hesaplamada `RUNNINGSUM` görsel matrisi boyunca birikimli toplam alır; ay satırlarda olduğu için eksen `ROWS`’tur. `PREVIOUS` aynı eksende bir önceki satırın değerini verir; `PREVIOUSMONTH` model tarih tablosuna dayanan bir zaman zekâsı fonksiyonudur, görsel matris satırına bakmaz.
+
+## pl-n27 pl300 pl-cr10 yesno [Görselleştir ve analiz et] Bir tablo görseline görsel hesaplama (visual calculation) ekleyeceksin. Her ifade için Evet ya da Hayır seç.
+   [E] Görsel hesaplama anlam modelinde değil, eklendiği görselde saklanır.
+   [H] Görsel hesaplama, görselde bulunmayan bir model sütununa doğrudan başvurabilir.
+   [E] Görselde gizlenen bir alan, onu kullanan görsel hesaplamada kullanılmaya devam eder.
+   meta:{"id":"pl-n27","s":"pl-cr10","type":"yesno"}
+   WHY: Görsel hesaplama yalnızca görselde bulunan alanlara başvurabilir; gereken alan önce görsele eklenir. Alanı görselde gizlemek onu görsel matristen çıkarmaz, bu yüzden hesaplama çalışmaya devam eder.
+
+## pl-n28 pl300 pl-us6 order [Görselleştir ve analiz et] Ürün özet sayfasındaki tablodan bir ürün seçilip düğmeye basıldığında o ürünün ayrıntı sayfası açılsın istiyorsun. Adımları doğru sıraya koy.
+   meta:{"id":"pl-n28","s":"pl-us6","type":"order","items":["Yeni bir “Ürün Ayrıntı” sayfası ekle","Bu sayfanın Detaylandırma (Drill through) alanına Urunler[Urun] sütununu koy","Özet sayfaya bir düğme ekle; Eylem türünü Detaylandırma, hedefi “Ürün Ayrıntı” yap","Özet tablodan bir ürün seçip düğmeyi Ctrl+tıklayarak Desktop’ta dene"],"extra":["Urunler[Urun] sütununu rapor düzeyi filtreye sabitle"]}
+   WHY: Hedef sayfa önce oluşturulur ve detaylandırma alanı eklenir; düğmenin hedef listesinde ancak böyle bir sayfa görünür. Düğme Desktop’ta Ctrl+tık ile denenir. Rapor düzeyi filtre detaylandırmayı sağlamaz.
+
+## pl-n29 pl300 pl-us6 mc [Görselleştir ve analiz et] Özet sayfadaki “Ayrıntıya git” düğmesinin eylemi Detaylandırma (drillthrough), hedefi “Ürün Ayrıntı” sayfası. Kullanıcı hiçbir şey seçmeden sayfayı açtığında düğme soluk görünüyor ve çalışmıyor. Doğru açıklama hangisi?
+    0) Ayrıntı sayfası gizli olduğu için düğme kalıcı olarak devre dışıdır
+    1) Düğmeye yer işareti bağlanmadığı için eylem çalışmaz
+    2) Detaylandırma yalnızca sağ tık menüsünden yapılabilir, düğmeyle yapılamaz
+   *3) Düğme, kaynak görselde tek bir ürün seçilince etkinleşir
+   meta:{"id":"pl-n29","s":"pl-us6","type":"mc","a":3}
+   WHY: Detaylandırma düğmesi, hedef sayfanın detaylandırma alanı için geçerli bir seçim yapılana kadar devre dışı görünür; kaynak görselde bir ürün seçilince etkinleşir. Hedef sayfanın gizli olması detaylandırmayı engellemez; yer işareti gerekmez.
+
+## pl-n30 pl300 pl-us5 multi [Görselleştir ve analiz et] Bölge dilimleyicisi “Özet”, “Ürün” ve “Müşteri” sayfalarının hepsini süzmeli ama yalnızca Özet sayfasında görünmeli. Ayrıca Özet sayfasındaki üç KPI kartı tek parça olarak gösterilip gizlenebilmeli. Hangi iki işlem gerekir? İki tane seç.
+    0) Üç kartı tek bir çok satırlı kart görseline dönüştürmek
+   *1) Dilimleyicileri eşitle (Sync slicers) bölmesinde üç sayfada eşitlemeyi açıp görünürlüğü yalnızca Özet’te bırakmak
+   *2) Seçim (Selection) bölmesinde üç kartı gruplamak
+    3) Dilimleyiciyi üç sayfaya ayrı ayrı kopyalayıp ikisini kartların arkasına saklamak
+    4) Bölge alanını rapor düzeyi filtreye ekleyip dilimleyiciyi silmek
+   meta:{"id":"pl-n30","s":"pl-us5","type":"multi","a":[1,2]}
+   WHY: Dilimleyicileri eşitle bölmesinde her sayfa için “eşitle” ve “görünür” ayrı ayrı seçilir. Seçim bölmesinde gruplanan görseller tek öğe gibi gizlenip gösterilir. Ayrı kopyalar eşitlenmedikçe birbirini süzmez; rapor filtresi kullanıcıya dilimleyici sunmaz.
+
+## pl-n31 pl300 pl-us8 mc [Görselleştir ve analiz et] Satış ekibi raporu telefonda dikey ekranda kullanacak. Masaüstü düzeni bozulmadan, telefona uygun bir yerleşim hazırlamak istiyorsun. Ne yaparsın?
+    0) Sayfa boyutunu 9:16 yapıp tüm görselleri yeniden boyutlandırmak
+    1) Raporun bir kopyasını telefon için ayrı bir rapor olarak yayımlamak
+   *2) Görünüm > Mobil düzen (Mobile layout) ile yerleşim yapmak
+    3) Tema dosyasında yazı tiplerini büyütüp raporu yeniden yayımlamak
+   meta:{"id":"pl-n31","s":"pl-us8","type":"mc","a":2}
+   WHY: Mobil düzen görünümünde mevcut görseller telefon tuvaline sürüklenip yerleştirilir; masaüstü düzeni değişmez ve uygulama telefonda bu düzeni gösterir. Sayfa boyutunu değiştirmek masaüstü düzenini bozar, ayrı kopya ise bakım yükü getirir.
+
+## pl-n32 pl300 pl-us9 mc [Görselleştir ve analiz et] Bir operasyon sayfası DirectQuery ile bir Azure SQL veritabanına bağlı, model Fabric kapasitesindeki bir çalışma alanında ve onlarca kişi sayfayı aynı anda açık tutuyor. Yeni kayıt geldiğinde sayfa yenilenmeli ama kaynağa giden sorgu sayısı en az olmalı. Otomatik sayfa yenilemede (Automatic page refresh) hangi seçeneği kullanırsın?
+    0) Sabit aralık (Fixed interval), 1 saniye
+   *1) Değişiklik algılama (Change detection) ölçüsü
+    2) Anlam modelinde 30 dakikalık zamanlanmış yenileme
+    3) Sabit aralık ve her görsel için ayrı bir yer işareti
+   meta:{"id":"pl-n32","s":"pl-us9","type":"mc","a":1}
+   WHY: Değişiklik algılamada tek bir ölçü belirli aralıkla sorgulanır ve görseller yalnızca ölçünün değeri değişince yenilenir; izleyici ve görsel sayısından bağımsız olarak kaynağa tek sorgu gider. Sabit aralıkta her görsel her aralıkta kendi sorgusunu gönderir. Değişiklik algılama ayrılmış kapasite ister; bu senaryoda vardır.
+
+## pl-n33 pl300 pl-pt2 mc [Görselleştir ve analiz et] Bir dağılım grafiğinde (scatter chart) müşterileri yıllık satış ve sipariş sayısına göre gösteriyorsun. Benzer müşterileri otomatik olarak gruplara ayırıp bu grupları başka görsellerde de kullanmak istiyorsun. Ne yaparsın?
+   *0) Görselin … menüsünden “Kümeleri otomatik bul (Automatically find clusters)”
+    1) Müşteri sütununa sağ tıklayıp Yeni grup > Bölme (Bin) oluşturmak
+    2) Analiz bölmesinden eğilim çizgisi ekleyip üstünde kalan noktaları renklendirmek
+    3) Musteriler[Segment] sütununu Gösterge (Legend) alanına sürüklemek
+   meta:{"id":"pl-n33","s":"pl-pt2","type":"mc","a":0}
+   WHY: Kümeleme, seçilen ölçülere göre benzer noktaları gruplar ve sonucu modele yeni bir kategorik alan olarak ekler; alan Gösterge’ye konur ve başka görsellerde de kullanılabilir. Bölme sayısal bir sütunu eşit aralıklara ayırır, var olan Segment ise önceden tanımlı bir sınıflamadır.
+
+## pl-n34 pl300 pl-pt1 mc [Görselleştir ve analiz et] Aylık satış sütun grafiğinde Nisan, Mart’a göre belirgin şekilde yüksek. Yönetici artışın hangi kategori, bölge ya da kanaldan geldiğini otomatik bir açıklamayla görmek istiyor. En hızlı yol hangisi?
+   *0) Nisan sütununa sağ tık > Analiz et (Analyze) > Artışı açıkla
+    1) Grafiğe Analiz bölmesinden ortalama ve sabit çizgi ekleyip farkı yorumlamak
+    2) Nisan için ayrı bir rapor sayfası ve yer işareti oluşturup karşılaştırmak
+    3) Grafiği Soru-Cevap (Q&A) görseliyle değiştirip “Nisan satışı” yazmak
+   meta:{"id":"pl-n34","s":"pl-pt1","type":"mc","a":0}
+   WHY: Analiz et > Artışı açıkla (Explain the increase), seçilen nokta ile bir önceki nokta arasındaki farkı modeldeki alanlara göre ayrıştırıp açıklayan görseller üretir. Başvuru çizgileri ve yer işaretleri açıklama üretmez; Soru-Cevap değeri gösterir ama nedeni açıklamaz.
+
+## pl-n35 pl300 pl-pt3 multi [Görselleştir ve analiz et] Aylık satış çizgi grafiğinde belirsizliği göstermek istiyorsun: her ay için bir alt ve üst sınır ile gelecek aylar için bir tahmin. Hangi iki ifade doğrudur? İki tane seç.
+    0) Hata çubukları yalnızca dağılım grafiğinde kullanılabilir.
+    1) Tahmin eklemek için önce bir hesaplama grubu oluşturmak gerekir.
+    2) Tahmin, gelecek ayların değerlerini anlam modeline yeni satırlar olarak yazar.
+   *3) Hata çubukları (Error bars) için üst ve alt sınır olarak ölçüler atanabilir.
+   *4) Tahmin (Forecast) Analiz bölmesinden eklenir ve bir güven aralığıyla gösterilir.
+   meta:{"id":"pl-n35","s":"pl-pt3","type":"multi","a":[3,4]}
+   WHY: Hata çubuklarında üst ve alt sınır alanlarına ölçü bağlanır. Tahmin, Analiz bölmesinden eklenir; tahmin uzunluğu, güven aralığı ve mevsimsellik ayarlanır. Tahmin yalnızca görselde çizilir, modele veri yazmaz.
+
+## pl-n36 pl300 pl-pt4 yesno [Görselleştir ve analiz et] Günlük web ziyaretçisi çizgi grafiğinde olağan dışı günleri bulmak için anomali algılamayı (Anomaly detection) kullanacaksın. Her ifade için Evet ya da Hayır seç.
+   [E] Anomaliler, ekseninde zaman serisi olan bir çizgi grafiğinde Analiz bölmesinden açılır.
+   [H] Grafiğin Gösterge (Legend) alanında Cihaz sütunu varken de anomali algılama kullanılabilir.
+   [E] Bir anomali seçildiğinde Power BI, modeldeki alanlara bakarak olası nedenleri açıklar.
+   meta:{"id":"pl-n36","s":"pl-pt4","type":"yesno"}
+   WHY: Anomali algılama ekseninde zaman serisi ve tek değer alanı olan çizgi grafiklerde çalışır; Gösterge, birden çok değer ya da ikincil değer varken desteklenmez. Bir anomaliye tıklanınca “Açıkla” alanlarına göre nedenler güç sırasıyla listelenir.
+
+## pl-n37 pl300 pl-sg2 mc [Yönet ve güvenli hâle getir] Pazarlama çalışma alanındaki bir analist, Finans çalışma alanındaki onaylı “Satış” anlam modeline bağlanıp kendi raporunu oluşturmalı. Analist Finans çalışma alanındaki diğer içerikleri görmemeli ve modeli düzenleyememeli. Ne verirsin?
+    0) Finans çalışma alanında Katkıda bulunan (Contributor) rolü
+   *1) Anlam modelinde Derleme (Build) izni
+    2) Finans çalışma alanında İzleyici (Viewer) rolü
+    3) Satış raporunda yeniden paylaşma (Reshare) izni
+   meta:{"id":"pl-n37","s":"pl-sg2","type":"mc","a":1}
+   WHY: Derleme izni, kullanıcının modele bağlanıp başka bir çalışma alanında yeni rapor oluşturmasını sağlar; çalışma alanına rol vermez. Katkıda bulunan modeli düzenleyebilir, İzleyici ise alandaki tüm içeriği görür ve kendi başına yeni rapor oluşturma hakkı vermez.
+
+## pl-n38 pl300 pl-sg2 yesno [Yönet ve güvenli hâle getir] Anlam modeli erişimi ve Derleme (Build) izni hakkında her ifade için Evet ya da Hayır seç.
+   [E] Çalışma alanında Katkıda bulunan ve üstü roller, o alandaki anlam modellerinde Derleme iznine sahiptir.
+   [H] Derleme izni olan bir İzleyici, Excel’de Çözümle (Analyze in Excel) kullanırken RLS’ye takılmaz.
+   [H] Bir kullanıcıyı uygulama hedef kitlesinden çıkarmak, modeldeki Derleme iznini de kendiliğinden kaldırır.
+   meta:{"id":"pl-n38","s":"pl-sg2","type":"yesno"}
+   WHY: Katkıda bulunan, Üye ve Yönetici rolleri alandaki modellerde Derleme iznine sahiptir. RLS, Derleme izni olan İzleyicilere de uygulanır. Uygulamadan çıkarılan kullanıcının Derleme izni modelin izinlerinden ayrıca kaldırılmalıdır.
+
+## pl-n39 pl300 pl-sg3 mc [Yönet ve güvenli hâle getir] Bölge müdürleri için “Marmara” RLS rolüne Service’te bir Microsoft 365 grubu eklemeye çalışıyorsun ama grup eklenemiyor. Müdürler değiştikçe rolü tek tek güncellemek de istemiyorsun. Ne yapmalısın?
+    0) Rolü Service’te silip Desktop’ta aynı adla yeniden oluşturmak
+    1) Grubu çalışma alanına İzleyici olarak ekleyip rolü boş bırakmak
+    2) Modeli DirectQuery’ye çevirip kaynağın kendi güvenliğini kullanmak
+   *3) Rol üyesi olarak Entra güvenlik grubu eklemek
+   meta:{"id":"pl-n39","s":"pl-sg3","type":"mc","a":3}
+   WHY: RLS rollerine Microsoft Entra güvenlik grupları, posta etkin gruplar ve dağıtım grupları eklenebilir; Microsoft 365 grupları desteklenmez. Rolü olmayan bir İzleyici RLS’li modelde genellikle hiç veri görmez.
+
+## pl-n40 pl300 pl-sg3 hot [Yönet ve güvenli hâle getir] Musteriler tablosundaki her müşteri bir satış temsilcisine (TemsilciNo) bağlı; Calisanlar tablosunda temsilcilerin oturum adresleri Eposta sütununda. Temsilcinin yalnızca kendi müşterilerini görmesi için Musteriler tablosuna yazılacak dinamik RLS filtresini tamamla.
+   meta:{"id":"pl-n40","s":"pl-sg3","type":"hot","code":"[TemsilciNo] =\n    {0}(\n        Calisanlar[CalisanNo],\n        {1}, {2}()\n    )","slots":[{"o":["LOOKUPVALUE","SELECTEDVALUE","RELATED"],"a":0},{"o":["Calisanlar[Eposta]","Calisanlar[AdSoyad]","Calisanlar[YoneticiNo]"],"a":0},{"o":["USERPRINCIPALNAME","USERCULTURE","CUSTOMDATA"],"a":0}]}
+   WHY: `USERPRINCIPALNAME()` oturum açan kullanıcının UPN’ini (e-posta biçiminde) döndürür; `LOOKUPVALUE` bu adresi Calisanlar[Eposta]’da arayıp temsilcinin numarasını bulur ve satır yalnızca bu numarayla eşleşirse görünür. `CUSTOMDATA` gömülü senaryolar içindir, `USERCULTURE` dil ayarını verir.
+
+## pl-n41 pl300 pl-ws3 mc [Yönet ve güvenli hâle getir] Genel müdür, üç farklı rapordan seçilmiş KPI’ları tek ekranda görmek ve Net Satış kartı belirli bir eşiğin altına düşünce bildirim almak istiyor. En uygun çözüm hangisi?
+    0) Üç raporu tek bir .pbix dosyasında birleştirip yer işaretleri eklemek
+    1) Her rapora ayrı abonelik oluşturup hepsini aynı saate ayarlamak
+   *2) Görselleri bir panoya (dashboard) sabitleyip kart kutucuğunda veri uyarısı kurmak
+    3) Sayfalandırılmış rapor oluşturup üç raporu alt rapor olarak eklemek
+   meta:{"id":"pl-n41","s":"pl-ws3","type":"mc","a":2}
+   WHY: Pano, farklı raporlardan sabitlenen kutucukları tek sayfada toplar ve yalnızca Power BI hizmetinde oluşturulur; kart, KPI ve ölçer kutucuklarında veri uyarısı kurulabilir. Abonelik eşik bazlı uyarı vermez; raporları birleştirmek gereksiz bakım yükü getirir.
+
+## pl-n42 pl300 pl-ws3 order [Yönet ve güvenli hâle getir] Desktop’ta hazırlanan raporun görsellerinden yeni bir pano (dashboard) oluşturmak istiyorsun. Adımları doğru sıraya koy.
+   meta:{"id":"pl-n42","s":"pl-ws3","type":"order","items":["Raporu Desktop’tan bir çalışma alanına yayımla (Publish)","Raporu Power BI hizmetinde aç","Görselin üzerindeki Görseli sabitle (Pin visual) simgesini seç","“Yeni pano” seçip panoya ad ver ve sabitle","Panoyu açıp kutucukların yerini ve boyutunu düzenle"],"extra":["Desktop’ta Görünüm sekmesinden pano düzenini aç"]}
+   WHY: Panolar Desktop’ta değil, Power BI hizmetinde oluşturulur: rapor yayımlanır, hizmette açılır, görseller yeni ya da mevcut bir panoya sabitlenir, ardından pano düzenlenir.
+
+## pl-n43 pl300 pl-sg3 multi [Yönet ve güvenli hâle getir] Satış anlam modelinde RLS rolleri tanımlı ve kullanıcılar rollere atanmış. Aşağıdakilerden hangi ikisi raporda RLS’ye göre süzülmüş veri görür? İki tane seç.
+    0) Çalışma alanının Yöneticisi (Admin)
+    1) Çalışma alanında Üye (Member) rolündeki ekip lideri
+   *2) Çalışma alanında İzleyici (Viewer) rolündeki bölge müdürü
+   *3) Çalışma alanında rolü olmayan, raporu uygulamadan açan ve Derleme izni olan kullanıcı
+    4) Çalışma alanında Katkıda bulunan (Contributor) rolündeki analist
+   meta:{"id":"pl-n43","s":"pl-sg3","type":"multi","a":[2,3]}
+   WHY: RLS yalnızca modeli düzenleme izni olmayan kullanıcılara uygulanır: İzleyiciler ve uygulama ya da paylaşım yoluyla erişenler (Derleme izni olsa bile). Yönetici, Üye ve Katkıda bulunan rolleri modeli düzenleyebildiği için RLS’ye takılmaz.
+
+## pl-m01 pl300 pl-tl3 hot [Veriyi hazırla] Satış sorgusunu Power Query’de bölge başına toplam tutara indirmek istiyorsun. M kodundaki boşlukları doldur.
+   meta:{"id":"pl-m01","s":"pl-tl3","type":"hot","code":"Ozet = {0}(\n    Kaynak,\n    {\"Bolge\"},\n    {{\"Toplam Tutar\", each {1}([Tutar]), type number}}\n)","slots":[{"o":["Table.Group","Table.Combine","Table.Pivot"],"a":0},{"o":["List.Count","List.Sum","Table.RowCount"],"a":1}]}
+   WHY: “Gruplandırma ölçütü” (Group by) adımı `Table.Group` üretir; her grup için toplam `List.Sum` ile alınır. `Table.Combine` sorguları alt alta ekler, `List.Count` satır sayar.
+
+## pl-m02 pl300 pl-tl9 mc [Veriyi hazırla] Urunler tablosundaki ürün kodu “A-001” biçiminde, satış dosyasında ise aynı ürün “a001 ” (küçük harf, tiresiz, sonda boşluk) olarak geliyor. İki tablo arasında ilişki kurulamıyor. En doğru çözüm hangisi?
+    0) Kardinaliteyi çoka çok yapıp iki tabloyu ürün koduyla doğrudan ilişkilendirmek
+   *1) Power Query’de iki taraftaki kodu aynı biçime getirip tekrarları denetlemek
+    2) Satış tablosuna LOOKUPVALUE ile ürün adını getiren bir hesaplanmış sütun eklemek
+    3) İlişkiyi çift yönlü yapmak
+   meta:{"id":"pl-m02","s":"pl-tl9","type":"mc","a":1}
+   WHY: İlişki anahtarı iki tarafta birebir eşleşmeli ve boyut tarafında benzersiz olmalıdır. Temizliği yüklemeden önce Power Query’de yapmak hem doğru eşleşme hem de daha küçük bir model sağlar.
+
+## pl-m03 pl300 pl-dx6 yesno [Modelle] Bir analist “Kategoriye göre yıl başından bugüne toplam” için hızlı ölçü (quick measure) kullanmayı düşünüyor. Her ifade için Evet ya da Hayır seç.
+   [E] Hızlı ölçünün oluşturduğu DAX, modelde normal bir ölçü olarak görünür ve düzenlenebilir.
+   [H] Hızlı ölçüler yalnızca Power BI hizmetinde oluşturulabilir, Desktop’ta oluşturulamaz.
+   [E] Zaman zekâsı hızlı ölçüleri uygun bir tarih alanı ister: işaretli tarih tablosunun tarih sütunu ya da Power BI’ın tarih hiyerarşisi.
+   meta:{"id":"pl-m03","s":"pl-dx6","type":"yesno"}
+   WHY: Hızlı ölçü yalnızca bir şablondur; sonuç DAX formülü modelde durur ve okunup değiştirilebilir. Zaman zekâsı şablonları geçerli bir tarih alanı olmadan çalışmaz.
+
+## pl-m04 pl300 pl-dx7 hot [Modelle] 2022–2024 yıllarını kapsayan ve yıl sütunu olan bir tarih tablosunu DAX ile hesaplanmış tablo olarak oluştur. Boşlukları doldur.
+   meta:{"id":"pl-m04","s":"pl-dx7","type":"hot","code":"Takvim =\n{0}(\n    CALENDAR(DATE(2022, 1, 1), DATE(2024, 12, 31)),\n    \"Yil\", {1}([Date])\n)","slots":[{"o":["SELECTCOLUMNS","ADDCOLUMNS","SUMMARIZE"],"a":1},{"o":["YEAR","YEARFRAC","DATEDIFF"],"a":0}]}
+   WHY: `CALENDAR` tek sütunlu ([Date]) bir tablo döndürür; `ADDCOLUMNS` bu sütunu koruyarak yeni sütun ekler. `SELECTCOLUMNS` yalnızca adı verilen sütunları döndürür, [Date] düşerdi. Yılı `YEAR` verir.
+
+## pl-m05 pl300 pl-op3 mc [Modelle] Olgu tablosu saniye düzeyinde 200 milyon satır içeriyor; raporlar yalnızca gün ve mağaza düzeyinde toplam satış gösteriyor. Model boyutunu en çok hangisi küçültür?
+   *0) Tabloyu gün ve mağaza düzeyine gruplamak
+    1) Bütün ölçüleri değişken (VAR) kullanacak biçimde yeniden yazmak
+    2) Olgu tablosuyla boyutlar arasındaki ilişkilerin hepsini çift yönlü yapmak
+    3) Rapordaki görsel sayısını azaltmak
+   meta:{"id":"pl-m05","s":"pl-op3","type":"mc","a":0}
+   WHY: Ayrıntı düzeyini (granularity) raporun ihtiyacına indirmek satır sayısını ve sütunların kardinalitesini birlikte azaltır. Ölçüleri yeniden yazmak ya da görselleri azaltmak model boyutunu değiştirmez.
+
+## pl-m06 pl300 pl-cr4 multi [Görselleştir ve analiz et] Kurumsal bir tema JSON dosyası (report theme) hazırlıyorsun. Bu dosyayla hangi iki şeyi tanımlayabilirsin? İki tane seç.
+    0) Satır düzeyi güvenlik rolleri
+   *1) Grafiklerde kullanılacak veri renkleri paleti
+    2) Ölçülerin DAX formülleri
+   *3) Görsel türlerinin varsayılan biçim ayarları (yazı tipi, kenarlık, başlık)
+    4) Rapor sayfalarının sırası
+   meta:{"id":"pl-m06","s":"pl-cr4","type":"multi","a":[1,3]}
+   WHY: Tema dosyası `dataColors` ile renk paletini, `visualStyles` ile görsellerin varsayılan biçimini belirler. Güvenlik, ölçü formülleri ve sayfa sırası modelin ya da raporun parçasıdır, temanın değil.
+
+## pl-m07 pl300 pl-cr5 mc [Görselleştir ve analiz et] Renk kodu döndüren bir ölçü yazdın (ör. `"#17855A"`). Tablodaki hücre arka planını bu ölçüyle renklendirmek için koşullu biçimlendirmede hangi biçim stilini seçersin?
+    0) Gradyan (Gradient)
+    1) Kurallar (Rules)
+   *2) Alan değeri (Field value)
+    3) Simgeler (Icons)
+   meta:{"id":"pl-m07","s":"pl-cr5","type":"mc","a":2}
+   WHY: “Alan değeri” stili, rengi doğrudan bir alanın ya da ölçünün döndürdüğü renk kodundan alır. Gradyan ve kurallar sayısal bir değeri eşiklere göre renge çevirir.
+
+## pl-m08 pl300 pl-cr6 mc [Görselleştir ve analiz et] Raporun bütün sayfaları yalnızca durumu “Tamamlandı” olan siparişleri göstermeli ve kullanıcılar bu filtreyi değiştirememeli. En uygun yöntem hangisi?
+    0) Her sayfaya “Tamamlandı” seçili bir dilimleyici koyup dilimleyicileri eşitlemek
+   *1) Tüm sayfalar düzeyinde filtre ekleyip kilitlemek
+    2) Her görsele ayrı ayrı görsel düzeyi filtre ekleyip değerini “Tamamlandı” yapmak
+    3) Yer işaretiyle filtreyi kaydetmek
+   meta:{"id":"pl-m08","s":"pl-cr6","type":"mc","a":1}
+   WHY: Rapor düzeyindeki filtre bütün sayfalara uygulanır; kilitlenen ya da gizlenen filtreyi okuyucu değiştiremez. Dilimleyici ve yer işareti kullanıcı tarafından değiştirilebilir, görsel düzeyi filtre ise bakımı zorlaştırır.
+
+## pl-m09 pl300 pl-cr8 yesno [Görselleştir ve analiz et] Rapor sayfası ayarlarını (Format page) yapılandırıyorsun. Her ifade için Evet ya da Hayır seç.
+   [E] Tuval boyutu 16:9 ve 4:3 dışında piksel cinsinden özel bir boyuta ayarlanabilir.
+   [H] Gizlenen bir sayfa, detaylandırma (drillthrough) hedefi olarak artık kullanılamaz.
+   [E] Sayfanın “Tuval arka planı” ile “Duvar kâğıdı” (wallpaper) farklı alanları renklendirir.
+   meta:{"id":"pl-m09","s":"pl-cr8","type":"yesno"}
+   WHY: Özel tuval boyutu tanımlanabilir. Gizli sayfalar gezinmede görünmez ama detaylandırma ve araç ipucu sayfası olarak çalışmaya devam eder; bu yüzden detaylandırma sayfaları genellikle gizlenir. Tuval arka planı sayfanın kendisini, duvar kâğıdı sayfanın dışındaki alanı boyar.
+
+## pl-m10 pl300 pl-cr9 mc [Görselleştir ve analiz et] Muhasebe, her ay her bayi için tüm sipariş satırlarını listeleyen, sayfa üst ve alt bilgili, yazdırmaya hazır PDF belgeleri istiyor. Bazı bayilerin listesi 30 sayfayı buluyor. Hangisi uygun?
+   *0) Sayfalandırılmış rapor (paginated report)
+    1) Detaylandırma sayfalı bir Power BI raporu
+    2) Pano (dashboard)
+    3) Excel’de Çözümle (Analyze in Excel)
+   meta:{"id":"pl-m10","s":"pl-cr9","type":"mc","a":0}
+   WHY: Sayfalandırılmış raporlar her satırı sayfalara bölerek basar, üst/alt bilgi ve sayfa düzeni sunar ve PDF’e çıkarılmak için tasarlanmıştır. Etkileşimli raporlar ekrana sığan özet içindir; uzun tablolar kaydırma çubuğunda kalır.
+
+## pl-m11 pl300 pl-us2 order [Görselleştir ve analiz et] Bir sütun grafiğin üzerine gelindiğinde ayrıntıları gösteren özel bir araç ipucu sayfası (report page tooltip) oluşturacaksın. Gerekli adımları doğru sıraya diz.
+   meta:{"id":"pl-m11","s":"pl-us2","type":"order","items":["Yeni bir rapor sayfası ekle","Sayfa bilgilerinde “Araç ipucu olarak kullan” (Allow use as tooltip) ayarını aç","Tuval boyutunu “Araç ipucu” yap ve gösterilecek görselleri ekle","Sütun grafiğin araç ipucu ayarında türü “Rapor sayfası” seçip bu sayfayı belirt"],"extra":["Sayfayı bir yer işaretine ekle"]}
+   WHY: Araç ipucu sayfası önce araç ipucu olarak işaretlenir ve küçük tuvalde tasarlanır; ardından hedef görselin araç ipucu ayarında bu sayfa seçilir. Yer işareti gerekmez.
+
+## pl-m12 pl300 pl-ws1 mc [Yönet ve güvenli hâle getir] Yeni bir çalışma alanı açıyorsun. Bu alandaki uygulamayı, Pro lisansı olmayan (ücretsiz lisanslı) çalışanların da görüntüleyebilmesi gerekiyor. Çalışma alanında neyi yapılandırırsın?
+    0) Çalışma alanının iletişim listesine bütün çalışanları içeren bir güvenlik grubu eklemek
+   *1) Lisans modunu uygun bir Premium ya da Fabric kapasitesine atamak
+    2) Çalışma alanını bir OneDrive klasörüne bağlamak
+    3) Bütün çalışanlara çalışma alanında Katkıda bulunan rolü vermek
+   meta:{"id":"pl-m12","s":"pl-ws1","type":"mc","a":1}
+   WHY: Paylaşılan kapasitede (Pro) içeriği görüntülemek için de Pro gerekir. Çalışma alanı uygun bir kapasiteye atandığında ücretsiz lisanslı kullanıcılar uygulamayı görüntüleyebilir. Katkıda bulunan rolü gereğinden fazla yetki verir.
+
+## pl-m13 pl300 pl-ws5 multi [Yönet ve güvenli hâle getir] Kuruluşta güvenilir anlam modellerini öne çıkarmak için onaylamayı (endorsement) kullanacaksın. Hangi iki ifade doğrudur? İki tane seç.
+    0) Sertifikalı içerik otomatik olarak bütün kuruluşla paylaşılır.
+   *1) Tanıtma (Promoted) etiketini öğe üzerinde yazma izni olan kişiler verebilir.
+   *2) Sertifikalı (Certified) etiketini yalnızca yöneticinin yetkilendirdiği kişiler verebilir.
+    3) Onaylanan bir anlam modelinde satır düzeyi güvenlik devre dışı kalır.
+    4) Tanıtılan bir öğe artık düzenlenemez.
+   meta:{"id":"pl-m13","s":"pl-ws5","type":"multi","a":[1,2]}
+   WHY: Tanıtma, içeriğin sahibi ve yazma izni olanlar tarafından yapılır. Sertifikalandırma ise Power BI yöneticisinin izin verdiği kişilerle sınırlıdır. Onaylama erişim izni vermez, güvenliği de değiştirmez.
+
+## dp-n01 dp600 dp-lc2 mc [Analitik çözümü yönet] Ekip bir raporu Power BI Desktop projesi (.pbip) olarak kaydedip Git deposuna koyuyor. Power BI Desktop’un oluşturduğu varsayılan `.gitignore` hangi dosyanın depoya girmesini engeller?
+   *0) `cache.abf` yerel veri önbelleği
+    1) Modelin `definition` klasöründeki TMDL dosyaları
+    2) Raporun sayfa tanımları
+    3) Projeyi açan `.pbip` işaretçi dosyası
+   meta:{"id":"dp-n01","s":"dp-lc2","type":"mc","a":0}
+   WHY: Varsayılan `.gitignore`, `.pbi/cache.abf` ve `.pbi/localSettings.json` dosyalarını dışarıda bırakır; önbellek veridir, sürüm denetimine girmez. TMDL ve rapor tanımları ise tam da Git’te izlenmesi istenen metin dosyalarıdır.
+
+## dp-n02 dp600 dp-lc6 mc [Analitik çözümü yönet] Yeni rapor yazarlarının şirketin SQL veritabanına doğru sunucu ve veritabanı adıyla bağlanmasını kolaylaştırmak istiyorsun. Kimlik bilgisi girişi ve tablo seçimi kullanıcıda kalmalı. Ne dağıtırsın?
+    0) Verisiyle birlikte kaydedilmiş bir .pbix dosyası
+    1) Bağlantı dizesini içeren bir Excel çalışma kitabı
+   *2) Bir .pbids dosyası
+    3) Kimlik bilgileri gömülü bir .pbit şablonu
+   meta:{"id":"dp-n02","s":"dp-lc6","type":"mc","a":2}
+   WHY: .pbids, tek bir veri kaynağının bağlantı ayrıntılarını JSON olarak taşır; kimlik bilgisi ve tablo bilgisi içermez, açan kişiye kimlik bilgisi sorulur ve Gezgin açılır. .pbit kimlik bilgisi gömmez; rapor ve model yapısını taşır.
+
+## dp-n03 dp600 dp-lc6 yesno [Analitik çözümü yönet] Yeniden kullanılabilir Power BI varlıkları hakkında her ifade için Evet ya da Hayır seç.
+   [E] Bir .pbit şablonu rapor sayfalarını, model yapısını, ölçüleri ve sorguları içerir ama içe aktarılmış veriyi içermez.
+   [H] Tek bir .pbids dosyası birden çok veri kaynağını ve bunların kimlik bilgilerini taşıyabilir.
+   [E] Raporları paylaşılan tek bir anlam modeline bağlamak, aynı ölçüleri her raporda yeniden yazmayı önler.
+   meta:{"id":"dp-n03","s":"dp-lc6","type":"yesno"}
+   WHY: .pbit veri olmadan yapıyı taşır; açılınca veri yeniden yüklenir. .pbids yalnızca tek veri kaynağını destekler ve kimlik bilgisi içermez. Paylaşılan anlam modeli tek doğruluk kaynağıdır.
+
+## dp-n04 dp600 dp-sg2 multi [Analitik çözümü yönet] Bir Fabric ambarında (warehouse) İK analistleri `dbo.Calisan` tablosunu T-SQL ile sorguluyor. `Maas` sütununu analistlerden gizlemek ve her analistin yalnızca kendi bölgesinin satırlarını görmesini sağlamak istiyorsun. Hangi iki ambar özelliğini kullanırsın? İki tane seç.
+   *0) Maas hariç sütun listesiyle `GRANT SELECT ON dbo.Calisan(...)` (sütun düzeyi güvenlik)
+   *1) Satır filtresi fonksiyonu ve `CREATE SECURITY POLICY` (satır düzeyi güvenlik)
+    2) Analistlere çalışma alanında Görüntüleyici (Viewer) rolü vermek
+    3) Ambara Gizli (Confidential) duyarlılık etiketi uygulamak
+    4) Ambarı Tanıtılmış (Promoted) olarak onaylamak
+   meta:{"id":"dp-n04","s":"dp-sg2","type":"multi","a":[0,1]}
+   WHY: Ambarda sütun düzeyi güvenlik sütun listeli `GRANT` ile, satır düzeyi güvenlik bir filtre fonksiyonu ve güvenlik ilkesiyle uygulanır; ikisi de veritabanı katmanında her sorguda zorlanır. Rol, etiket ve onay satır ya da sütun kısıtlamaz.
+
+## dp-n05 dp600 dp-sg2 mc [Analitik çözümü yönet] Ambarda müşteri destek ekibi `Telefon` sütununu sorgulayabilmeli ama değerin yalnızca son dört hanesini görmeli; yöneticiler tam değeri görmeli. Ne kullanırsın?
+    0) Sütun düzeyi güvenlikle sütunu tamamen kapatmak
+   *1) Dinamik veri maskeleme
+    2) Anlam modelinde nesne düzeyi güvenlik (OLS)
+    3) Telefonu ayrı bir tabloya taşıyıp RLS uygulamak
+   meta:{"id":"dp-n05","s":"dp-sg2","type":"mc","a":1}
+   WHY: Dinamik veri maskeleme sütunu sorgulanabilir bırakır ama değeri kısmi maskeyle gösterir; `UNMASK` izni olan yöneticiler tam değeri görür. Sütun düzeyi güvenlik ise sütunu hiç sorgulatmaz, bu da “son dört haneyi görsün” isteğini karşılamaz.
+
+## dp-n06 dp600 dp-lc1 order [Analitik çözümü yönet] Bir Fabric çalışma alanını Azure DevOps deposuna bağlayıp ilk değişikliği depoya göndermek için adımları sırala.
+   meta:{"id":"dp-n06","s":"dp-lc1","type":"order","items":["Çalışma alanı ayarlarında Git tümleştirmesi bölümünü aç ve sağlayıcıyı seç","Kuruluşu, projeyi, depoyu, dalı ve klasörü seçip bağlan ve eşitle","Çalışma alanında bir rapor ya da anlam modelini değiştir","Kaynak denetimi (Source control) bölmesinde değişikliği seçip commit et"],"extra":["Değişikliği dağıtım işlem hattıyla Üretim aşamasına dağıt"]}
+   WHY: Önce çalışma alanı bir depo dalına bağlanıp eşitlenir; sonra çalışma alanında yapılan değişiklikler Kaynak denetimi bölmesinde görünür ve commit edilir. Dağıtım işlem hattı Git bağlantısının bir adımı değildir.
+
+## dp-n07 dp600 dp-lc3 yesno [Analitik çözümü yönet] Fabric dağıtım işlem hatları (deployment pipelines) hakkında her ifade için Evet ya da Hayır seç.
+   [E] Dağıtım kuralları, kuralın uygulanacağı hedef aşamada tanımlanır ve o aşamaya yapılan sonraki dağıtımda etkinleşir.
+   [H] Dağıtım anlam modelinin verisini de kopyalar; hedef aşamada ilk dağıtımdan sonra yenileme gerekmez.
+   [E] Bir aşamadaki öğelerin tamamı yerine yalnızca seçilen öğeler bir sonraki aşamaya dağıtılabilir.
+   meta:{"id":"dp-n07","s":"dp-lc3","type":"yesno"}
+   WHY: Kurallar hedef aşamada tanımlanır ve bir sonraki dağıtımda uygulanır. İşlem hattı meta veriyi taşır, veriyi taşımaz; yeni dağıtılan model hedefte yenilenmelidir. Seçmeli dağıtım desteklenir.
+
+## dp-n08 dp600 dp-sg1 mc [Analitik çözümü yönet] Analistler bir anlam modeli üzerinde kendi raporlarını oluşturabilmeli ama modelin bulunduğu çalışma alanına üye olmamalı. Ne verirsin?
+    0) Çalışma alanında Katkıda Bulunan (Contributor) rolü
+    1) Çalışma alanında Görüntüleyici (Viewer) rolü
+    2) Yazma (Write) izni
+   *3) Modelde Derleme (Build) izni
+   meta:{"id":"dp-n08","s":"dp-sg1","type":"mc","a":3}
+   WHY: Derleme (Build) izni, öğe düzeyinde verilir ve kullanıcının çalışma alanı rolü olmadan o model üzerinde rapor oluşturmasını sağlar. Çalışma alanı rolleri istenmeyen çalışma alanı erişimi verir; Yazma izni modeli düzenleme yetkisidir.
+
+## dp-n09 dp600 dp-lc2 multi [Analitik çözümü yönet] Bir Power BI Desktop projesi (.pbip) hakkında hangi iki ifade doğrudur? İki tane seç.
+   *0) Rapor ve anlam modeli, `.Report` ve `.SemanticModel` adlı ayrı klasörlerde metin dosyaları olarak saklanır
+   *1) Model tanımı `definition` klasöründe TMDL olarak bir metin düzenleyicide değiştirilebilir
+    2) Yerel veri önbelleği `cache.abf`, satır karşılaştırması için depoya commit edilmelidir
+    3) Proje yalnızca Fabric hizmetinde açılabilir; Power BI Desktop’ta açılamaz
+    4) .pbix’ten .pbip’e geçmek için ayrı bir dönüştürme aracı kurmak gerekir
+   meta:{"id":"dp-n09","s":"dp-lc2","type":"multi","a":[0,1]}
+   WHY: .pbip, rapor ve modeli ayrı klasörlerde metin olarak tutar; model tanımı TMDL’dir. Dönüşüm Power BI Desktop’ta Dosya > Farklı kaydet ile yapılır ve `cache.abf` Git dışında tutulur.
+
+## dp-n10 dp600 dp-gd2 mc [Veriyi hazırla] Farklı çalışma alanlarındaki onaylanmış lakehouse ve anlam modellerini tek yerden aramak, sahiplerini ve ayrıntılarını görmek istiyorsun. Hangi deneyimi açarsın?
+    0) Kapasite Ölçümleri uygulaması
+   *1) OneLake kataloğu (OneLake catalog)
+    2) Real-Time hub
+    3) Çalışma alanının Git tümleştirmesi bölmesi
+   meta:{"id":"dp-n10","s":"dp-gd2","type":"mc","a":1}
+   WHY: OneLake kataloğunun Keşfet (Explore) sekmesi, erişebildiğin Fabric öğelerini filtrelerle listeler ve ayrıntılarını gösterir. Real-Time hub akış verisi içindir; Kapasite Ölçümleri tüketimi izler.
+
+## dp-n11 dp600 dp-gd2 mc [Veriyi hazırla] Kuruluştaki Azure Event Hubs akışlarını, çalışan eventstream çıktılarını ve Fabric çalışma alanı olaylarını kiracı genelinde tek listede görüp bağlanmak istiyorsun. Nereye gidersin?
+   *0) Real-Time hub
+    1) OneLake kataloğunun Yönet (Govern) sekmesi
+    2) Lakehouse gezgini (Lakehouse explorer)
+    3) Veri akışı Gen2 bağlayıcı listesi
+   meta:{"id":"dp-n11","s":"dp-gd2","type":"mc","a":0}
+   WHY: Real-Time hub, her kiracıda hazır gelen ve akış verisi için tek, kiracı geneli yerdir: veri akışlarını, Microsoft kaynaklarını ve Fabric/Azure olaylarını listeler. OneLake kataloğunun Yönet sekmesi yönetişim sağlığı içindir.
+
+## dp-n12 dp600 dp-gd4 mc [Veriyi hazırla] Fabrika sensörleri saniyede binlerce olay gönderiyor. Analistler son dakikaların verisini zaman serisi fonksiyonlarıyla, düşük gecikmeyle sorgulamak istiyor. Hangi veri deposu en uygundur?
+    0) Lakehouse ve saatlik çalışan Spark işi
+    1) Ambar (warehouse) ve COPY INTO ile yükleme
+    2) Import modlu anlam modeli ve artımlı yenileme
+   *3) Eventhouse
+   meta:{"id":"dp-n12","s":"dp-gd4","type":"mc","a":3}
+   WHY: Eventhouse, akış ve zaman serisi verisi için tasarlanmıştır; KQL ile hızlı alım ve zaman serisi analizi sunar. Saatlik Spark işi ya da toplu `COPY INTO` “son dakikalar” gecikme isteğini karşılamaz.
+
+## dp-n13 dp600 dp-gd4 multi [Veriyi hazırla] Hangi iki gereksinim, bir Fabric ambarını (warehouse) lakehouse’a göre daha uygun seçim yapar? İki tane seç.
+   *0) Ekip yalnızca T-SQL biliyor ve çok tablolu işlemler (transaction) gerekiyor
+   *1) Tablolara T-SQL ile `INSERT`, `UPDATE`, `DELETE` yazılacak
+    2) Görüntü ve JSON gibi yapılandırılmamış dosyalar saklanacak
+    3) Veri mühendisleri PySpark not defterleriyle çalışıyor
+    4) Saniyelik telemetri KQL ile sorgulanacak
+   meta:{"id":"dp-n13","s":"dp-gd4","type":"multi","a":[0,1]}
+   WHY: Ambar tam T-SQL işlem ve DML desteği sunar; lakehouse’un SQL analitik uç noktası salt okunurdur. Yapılandırılmamış dosyalar ve Spark lakehouse’a, akış telemetrisi eventhouse’a işaret eder.
+
+## dp-n14 dp600 dp-gd5 mc [Veriyi hazırla] Eventhouse’taki `Telemetri` tablosunu ayrı bir kopyalama işi yazmadan lakehouse’tan kısayolla ve Direct Lake modelinden okumak istiyorsun. KQL veritabanında neyi açarsın?
+    0) Tablo için satır düzeyi güvenlik ilkesi
+    1) Güncelleme ilkesi (update policy)
+   *2) OneLake erişilebilirliği
+    3) Veri saklama süresini sınırsız yapan ilke
+   meta:{"id":"dp-n14","s":"dp-gd5","type":"mc","a":2}
+   WHY: OneLake erişilebilirliği (OneLake availability) KQL verisinin Delta biçiminde mantıksal bir kopyasını OneLake’e yazar; lakehouse kısayolu, not defterleri ve Direct Lake bunu okuyabilir. Açıkken tabloya RLS uygulanamaz.
+
+## dp-n15 dp600 dp-gd5 yesno [Veriyi hazırla] Anlam modelleri için OneLake tümleştirmesi (OneLake integration) hakkında her ifade için Evet ya da Hayır seç.
+   [E] Modelin Import modundaki tabloları OneLake’e Delta tabloları olarak yazılır.
+   [H] DirectQuery tabloları ve ölçüler de Delta tablosu olarak dışa aktarılır.
+   [E] Verinin OneLake’e yazılması için tümleştirme açıldıktan sonra en az bir yenileme çalışmalıdır.
+   meta:{"id":"dp-n15","s":"dp-gd5","type":"yesno"}
+   WHY: Yalnızca içe aktarılmış tablolar dışa aktarılır; ölçüler, DirectQuery ve hibrit tablolar, hesaplama grupları aktarılmaz. Dışa aktarma yenilemeyle tetiklenir; tüketiciler lakehouse’tan kısayolla okur.
+
+## dp-n16 dp600 dp-gd3 mc [Veriyi hazırla] Azure SQL Database’deki işlem tablolarının neredeyse gerçek zamanlı bir kopyasını, ETL işlem hattı kurmadan OneLake’te Delta olarak tutmak istiyorsun. Hangi özellik?
+    0) Günlük kopyalama etkinliği olan bir işlem hattı
+   *1) Yansıtma (Mirroring)
+    2) Azure SQL veritabanına işaret eden OneLake kısayolu
+    3) Zamanlanmış yenilemeli bir veri akışı Gen2
+   meta:{"id":"dp-n16","s":"dp-gd3","type":"mc","a":1}
+   WHY: Yansıtma, kaynak veritabanındaki değişiklikleri sürekli olarak OneLake’e Delta biçiminde çoğaltır. OneLake kısayolları depolama konumlarına (ör. ADLS Gen2, S3) işaret eder, bir Azure SQL veritabanına değil.
+
+## dp-n17 dp600 dp-gd1 mc [Veriyi hazırla] Bir veri akışı Gen2’nin (Dataflow Gen2) şirket içi ağdaki bir SQL Server’dan veri alması gerekiyor. Bağlantıyı oluşturabilmek için önce ne gerekir?
+   *0) Şirket içi veri ağ geçidi (on-premises data gateway)
+    1) Sunucuya işaret eden bir OneLake kısayolu
+    2) Çalışma alanı için Git tümleştirmesi
+    3) XMLA uç noktası
+   meta:{"id":"dp-n17","s":"dp-gd1","type":"mc","a":0}
+   WHY: Bulut hizmetinin şirket içi kaynaklara erişmesi için şirket içi veri ağ geçidi gerekir; bağlantı ağ geçidi üzerinden tanımlanır. Kısayollar şirket içi SQL Server’a işaret etmez; XMLA anlam modelleri içindir.
+
+## dp-n18 dp600 dp-qa1 mc [Veriyi hazırla] Ambarın Görsel sorgu düzenleyicisinde (Visual query editor) iki tabloyu birleştirip gruplayan bir sorgu oluşturdun. Sonucu başkalarının T-SQL’den kullanabileceği kalıcı bir nesne yapmak istiyorsun ama verinin ayrı bir kopyası oluşmamalı. Ne seçersin?
+    0) Sonuçları Excel’e indirmek
+    1) Tablo olarak kaydet (Save as table)
+    2) Sorguyu Sorgularım (My queries) altında saklamak
+   *3) Görünüm olarak kaydet (Save as view)
+   meta:{"id":"dp-n18","s":"dp-qa1","type":"mc","a":3}
+   WHY: Görünüm olarak kaydet, sorguyu ambarda bir görünüm olarak oluşturur; veri kopyalanmaz. Tablo olarak kaydet `CREATE TABLE AS SELECT` kullanır ve sonucu ayrı bir tabloya yazar.
+
+## dp-n19 dp600 dp-qa2 hot [Veriyi hazırla] Ambarda 2026 siparişleri için bölge cirosunu hesaplayıp yalnızca cirosu 100.000’i aşan bölgeleri listelemek istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n19","s":"dp-qa2","type":"hot","code":"SELECT Bolge, SUM(Tutar) AS Ciro\nFROM dbo.Satislar\n{0} YEAR(SiparisTarihi) = 2026\n{1} Bolge\n{2} SUM(Tutar) > 100000\nORDER BY Ciro DESC;","slots":[{"o":["WHERE","HAVING","ON","FILTER"],"a":0},{"o":["ORDER BY","PARTITION BY","GROUP BY","SUMMARIZE BY"],"a":2},{"o":["WHERE","AND","QUALIFY","HAVING"],"a":3}]}
+   WHY: `WHERE` satırları gruplamadan önce süzer, `GROUP BY` bölge başına grup oluşturur, `HAVING` toplama sonucuna göre grupları süzer. Toplama fonksiyonu `WHERE` içinde kullanılamaz.
+
+## dp-n20 dp600 dp-qa2 yesno [Veriyi hazırla] Fabric’te SQL ile sorgulama hakkında her ifade için Evet ya da Hayır seç.
+   [E] `WHERE` satırları gruplamadan önce, `HAVING` ise `GROUP BY` sonrasında grupları süzer.
+   [H] Lakehouse’un SQL analitik uç noktasında `UPDATE` ile bir Delta tablosundaki satırı değiştirebilirsin.
+   [E] `SELECT TOP 10 ... ORDER BY Ciro DESC` en yüksek ciroya sahip 10 satırı döndürür.
+   meta:{"id":"dp-n20","s":"dp-qa2","type":"yesno"}
+   WHY: SQL analitik uç noktası salt okunurdur; Delta tablosunu değiştirmek için Spark ya da ambar kullanılır. `TOP` ile `ORDER BY DESC` birlikte en yüksek değerleri verir.
+
+## dp-n21 dp600 dp-qa2 multi [Veriyi hazırla] `dbo.Satis` tablosundan 2026 yılı siparişlerinin bölge bazında toplam tutarını almak istiyorsun. Hangi iki sorgu doğru sonucu verir? İki tane seç.
+   *0) `SELECT Bolge, SUM(Tutar) FROM dbo.Satis WHERE YEAR(Tarih) = 2026 GROUP BY Bolge`
+   *1) `SELECT Bolge, SUM(Tutar) FROM dbo.Satis WHERE Tarih >= '2026-01-01' AND Tarih < '2027-01-01' GROUP BY Bolge`
+    2) `SELECT Bolge, SUM(Tutar) FROM dbo.Satis GROUP BY Bolge HAVING YEAR(Tarih) = 2026`
+    3) `SELECT Bolge, Tutar FROM dbo.Satis WHERE YEAR(Tarih) = 2026 GROUP BY Bolge`
+   meta:{"id":"dp-n21","s":"dp-qa2","type":"multi","a":[0,1]}
+   WHY: İlk iki sorgu yılı satır düzeyinde süzüp bölgeye göre toplar; tarih aralığı yazımı da aynı sonucu verir. `HAVING` içinde gruplanmamış `Tarih` kullanılamaz; dördüncü sorguda `Tutar` toplanmadığı için hata alınır.
+
+## dp-n22 dp600 dp-qa3 hot [Veriyi hazırla] Eventhouse’taki `Telemetri` tablosunda son bir saatte sıcaklığı 80’i aşan olayları cihaz başına 5 dakikalık aralıklarla saymak istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n22","s":"dp-qa3","type":"hot","code":"Telemetri\n| where Zaman > ago(1h)\n| {0} Sicaklik > 80\n| {1} OlaySayisi = count() {2} CihazNo, bin(Zaman, 5m)","slots":[{"o":["having","where","filter by","project"],"a":1},{"o":["extend","project","summarize","top"],"a":2},{"o":["by","on","group by","over"],"a":0}]}
+   WHY: KQL’de satırları `where` süzer; `summarize ... by` gruplayarak toplar, `bin()` zamanı eşit aralıklara böler. `group by` ve `having` SQL sözdizimidir.
+
+## dp-n23 dp600 dp-qa3 mc [Veriyi hazırla] KQL’de `Telemetri` tablosundan en yüksek `Sicaklik` değerine sahip 10 olayı almak için hangi sorguyu yazarsın?
+    0) `Telemetri | take 10`
+    1) `Telemetri | limit 10 | sort by Sicaklik`
+   *2) `Telemetri | top 10 by Sicaklik desc`
+    3) `Telemetri | summarize max(Sicaklik) by 10`
+   meta:{"id":"dp-n23","s":"dp-qa3","type":"mc","a":2}
+   WHY: `top 10 by Sicaklik desc` tabloyu sıralayıp ilk 10 satırı alır. `take` ve `limit` rastgele 10 satır döndürür; sonradan sıralamak en yüksekleri garanti etmez.
+
+## dp-n24 dp600 dp-qa3 order [Veriyi hazırla] Son 24 saatte ortalama sıcaklığı en yüksek 5 cihazı bulan bir KQL sorgusunun satırlarını doğru sıraya koy.
+   meta:{"id":"dp-n24","s":"dp-qa3","type":"order","items":["`Telemetri`","`| where Zaman > ago(1d)`","`| summarize OrtSicaklik = avg(Sicaklik) by CihazNo`","`| top 5 by OrtSicaklik desc`"],"extra":["`GROUP BY CihazNo`"]}
+   WHY: KQL sorgusu tablo adıyla başlar ve her `|` bir önceki adımın sonucunu işler: önce süz, sonra topla, sonra en yüksekleri al. `GROUP BY` KQL’de yoktur; gruplama `summarize ... by` ile yapılır.
+
+## dp-n25 dp600 dp-qa4 hot [Veriyi hazırla] DAX sorgu görünümünde 2025 yılı için kategori başına net satışı, büyükten küçüğe sıralı bir tablo olarak döndürmek istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n25","s":"dp-qa4","type":"hot","code":"EVALUATE\n{0}(\n    Urunler[Kategori],\n    {1},\n    \"Net Satış\", [Net Satış]\n)\n{2} [Net Satış] DESC","slots":[{"o":["ADDCOLUMNS","SUMMARIZECOLUMNS","SELECTCOLUMNS","GROUPBY"],"a":1},{"o":["WHERE Tarih[Yil] = 2025","TREATAS({2025}, Tarih[Yil])","HAVING Tarih[Yil] = 2025"],"a":1},{"o":["SORT BY","GROUP BY","ORDER BY","TOPN"],"a":2}]}
+   WHY: `SUMMARIZECOLUMNS` gruplama sütunu, filtre tablosu ve ad-ifade çiftleri alır; `TREATAS` 2025 değerini `Tarih[Yil]` üzerinde filtre tablosu yapar. DAX sorgusunda sıralama `ORDER BY` ile yapılır; `WHERE`/`HAVING` DAX’ta yoktur.
+
+## dp-n26 dp600 dp-qa4 multi [Veriyi hazırla] Bir anlam modeline karşı `EVALUATE` ile başlayan DAX sorgularını hangi iki yerde çalıştırabilirsin? İki tane seç.
+   *0) Power BI Desktop’taki DAX sorgu görünümü (DAX query view)
+   *1) XMLA uç noktası üzerinden DAX Studio ya da SSMS
+    2) Lakehouse’un SQL analitik uç noktasındaki sorgu düzenleyicisi
+    3) Eventhouse’taki KQL sorgu kümesi (KQL queryset)
+   meta:{"id":"dp-n26","s":"dp-qa4","type":"multi","a":[0,1]}
+   WHY: DAX sorguları anlam modelinin motorunda çalışır: Desktop’taki DAX sorgu görünümü ya da XMLA uç noktasına bağlanan araçlar bunu yapar. SQL uç noktası T-SQL, KQL sorgu kümesi KQL çalıştırır.
+
+## dp-n27 dp600 dp-tr1 hot [Veriyi hazırla] Ambarda bir günün satırlarını hazırlık tablosundan olgu tablosuna yeniden yükleyen, parametreli bir saklı yordam yazıp çalıştırmak istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n27","s":"dp-tr1","type":"hot","code":"CREATE {0} dbo.usp_GunlukYukle\n    @Gun DATE\nAS\nBEGIN\n    DELETE FROM dbo.FactSatis WHERE SatisTarihi = @Gun;\n    {1} dbo.FactSatis (SatisTarihi, MagazaKey, Tutar)\n    SELECT SatisTarihi, MagazaKey, Tutar\n    FROM dbo.StgSatis WHERE SatisTarihi = @Gun;\nEND;\n\n{2} dbo.usp_GunlukYukle @Gun = '2026-10-26';","slots":[{"o":["VIEW","FUNCTION","PROCEDURE","TABLE"],"a":2},{"o":["INSERT INTO","SELECT INTO","UPDATE","COPY INTO"],"a":0},{"o":["CALL","EXEC","RUN","SELECT"],"a":1}]}
+   WHY: Parametre alıp `DELETE` ve `INSERT` gibi DML çalıştıran nesne saklı yordamdır (`CREATE PROCEDURE`) ve `EXEC` ile çağrılır. Görünüm ve fonksiyon veri değiştiremez; `COPY INTO` dosyadan yükler, tablodan değil.
+
+## dp-n28 dp600 dp-tr1 mc [Veriyi hazırla] Ambarda bölge kodunu parametre olarak alıp o bölgenin satırlarını tablo olarak döndüren ve bir sorgunun `FROM` yan tümcesinde kullanılabilen bir nesne gerekiyor. Hangisini oluşturursun?
+   *0) Satır içi tablo değerli fonksiyon
+    1) Görünüm (view)
+    2) Saklı yordam (stored procedure)
+    3) Bölge başına geçici tablo
+   meta:{"id":"dp-n28","s":"dp-tr1","type":"mc","a":0}
+   WHY: Satır içi tablo değerli fonksiyon (`RETURNS TABLE`) parametre alır ve `FROM` içinde tablo gibi kullanılır. Görünüm parametre almaz; saklı yordamın sonucu `FROM` içinde kullanılamaz.
+
+## dp-n29 dp600 dp-tr6 hot [Veriyi hazırla] Bir not defterinde ham satış DataFrame’ini temizliyorsun: aynı `SiparisNo` tekrarlarını at, boş `Indirim` değerlerini 0 yap, `MusteriNo` boş olan satırları sil. Boşlukları doldur.
+   meta:{"id":"dp-n29","s":"dp-tr6","type":"hot","code":"df_temiz = (df\n    .{0}([\"SiparisNo\"])\n    .{1}({\"Indirim\": 0})\n    .{2}(subset=[\"MusteriNo\"]))\n\ndf_temiz.write.format(\"delta\").mode(\"overwrite\").saveAsTable(\"silver_satislar\")","slots":[{"o":["distinct","dropDuplicates","groupBy","dropna"],"a":1},{"o":["fillna","replace","coalesce","withColumn"],"a":0},{"o":["isNull","drop","coalesce","dropna"],"a":3}]}
+   WHY: `dropDuplicates` verilen sütunlara göre tekrarları atar (`distinct` sütun almaz), `fillna` boş değerleri doldurur, `dropna(subset=...)` belirtilen sütunu boş satırları siler. `replace` var olan bir değeri başka bir değerle değiştirir, null’ları doldurmaz.
+
+## dp-n30 dp600 dp-tr6 mc [Veriyi hazırla] Ambardaki `StgMusteri` tablosunda aynı `MusteriNo` için birden çok satır var. Her müşteri için yalnızca `GuncellemeTarihi` en yeni olan satırı, tüm sütunlarıyla tutmak istiyorsun. Hangi yaklaşımı kullanırsın?
+    0) `SELECT DISTINCT *` ile tekrarları atmak
+   *1) `ROW_NUMBER() OVER (PARTITION BY MusteriNo ORDER BY GuncellemeTarihi DESC)` değeri 1 olan satırları seçmek
+    2) `GROUP BY MusteriNo` ile `MAX(GuncellemeTarihi)` almak
+    3) `COUNT(*) > 1` olan müşterileri silmek
+   meta:{"id":"dp-n30","s":"dp-tr6","type":"mc","a":1}
+   WHY: `ROW_NUMBER` her müşterinin satırlarını tarihe göre numaralar; 1 numaralı satır en yenisidir ve tüm sütunlar korunur. Tarihler farklı olduğu için `DISTINCT *` tekrarı atmaz; `GROUP BY` diğer sütunları kaybeder.
+
+## dp-n31 dp600 dp-tr4 order [Veriyi hazırla] Kar tanesi biçimindeki Ürün → Alt kategori → Kategori tablolarını veri akışı Gen2’de tek bir `DimUrun` boyutuna dönüştürüp (normalleştirmeyi kaldırma) lakehouse’a yazmak için adımları sırala.
+   meta:{"id":"dp-n31","s":"dp-tr4","type":"order","items":["Ürün sorgusunu Alt kategori sorgusuyla `AltKategoriKey` üzerinden birleştir (Merge queries)","Birleşen sütunu genişletip alt kategori adını ve `KategoriKey`’i al","Sonucu Kategori sorgusuyla `KategoriKey` üzerinden birleştirip kategori adını genişlet","Gereksiz anahtar sütunlarını kaldırıp sorguyu lakehouse’a `DimUrun` olarak yaz"],"extra":["Kategori sorgusunu Ürün sorgusunun altına ekle (Append queries)"]}
+   WHY: Normalleştirmeyi kaldırmak, ilişkili tabloları birleştirip (merge) sütunları tek tabloya genişletmektir. Ekleme (append) satırları alt alta koyar, sütun kazandırmaz.
+
+## dp-n32 dp600 dp-tr2 hot [Veriyi hazırla] Bir not defterinde siparişlere yıl sütunu ve tutara göre segment sütunu ekleyip sonucu her çalıştırmada baştan yazılan bir Delta tablosuna kaydetmek istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n32","s":"dp-tr2","type":"hot","code":"from pyspark.sql.functions import col, year, when\n\ndf2 = (df\n    .{0}(\"Yil\", year(col(\"SiparisTarihi\")))\n    .withColumn(\"Segment\", {1}(col(\"Tutar\") >= 10000, \"Büyük\").otherwise(\"Standart\")))\n\ndf2.write.format(\"delta\").mode(\"{2}\").saveAsTable(\"gold_siparis\")","slots":[{"o":["withColumnRenamed","withColumn","select","alias"],"a":1},{"o":["iff","case","when","if_"],"a":2},{"o":["append","ignore","overwrite","merge"],"a":2}]}
+   WHY: `withColumn` yeni sütun ekler; koşullu değer `when(...).otherwise(...)` ile yazılır. `overwrite` tabloyu her çalıştırmada yeniden yazar, `append` ise satır ekler.
+
+## dp-n33 dp600 dp-tr5 hot [Veriyi hazırla] Ambarda müşteri boyutunda karşılığı olmayan (yetim) siparişleri bulmak istiyorsun. Boşlukları doldur.
+   meta:{"id":"dp-n33","s":"dp-tr5","type":"hot","code":"SELECT s.SiparisNo, s.MusteriKey\nFROM dbo.FactSatis AS s\n{0} dbo.DimMusteri AS m\n    {1} s.MusteriKey = m.MusteriKey\nWHERE m.MusteriKey {2};","slots":[{"o":["INNER JOIN","LEFT JOIN","CROSS JOIN","UNION"],"a":1},{"o":["USING","WHERE","ON","BY"],"a":2},{"o":["= NULL","IS NOT NULL","<> NULL","IS NULL"],"a":3}]}
+   WHY: `LEFT JOIN` tüm siparişleri korur; eşleşmeyenlerde boyut sütunları NULL olur ve `IS NULL` ile yakalanır. `INNER JOIN` yetim satırları baştan atar; NULL karşılaştırması `= NULL` ile yapılamaz.
+
+## dp-n34 dp600 dp-sm5 mc [Anlam modelini uygula] Bir anlam modeli 3 GB ve büyümüyor, ama ekip Tabular Editor ile XMLA uç noktası üzerinden sık sık değişiklik dağıtıyor. Hangi ayar bu yazma işlemlerinin performansını iyileştirebilir?
+    0) Modeli DirectQuery depolama moduna çevirmek
+    1) Tablolar için artımlı yenileme ilkesi tanımlamak
+    2) Sorgu önbelleğini kapatmak
+   *3) Büyük anlam modeli depolama biçimi
+   meta:{"id":"dp-n34","s":"dp-sm5","type":"mc","a":3}
+   WHY: Büyük anlam modeli depolama biçimi yalnızca 10 GB’ı aşan modeller için değil, XMLA ile yazma yapılan modellerde de önerilir; yazma performansını iyileştirebilir. Diğer seçenekler XMLA yazma işlemini hızlandırmaz.
+
+## dp-n35 dp600 dp-op3 mc [Anlam modelini uygula] Yeni bir Direct Lake modeli iki farklı lakehouse’taki Delta tablolarını birlikte kullanmalı ve hiçbir sorgu DirectQuery’ye düşmemeli. Hangisini seçersin?
+    0) Direct Lake on SQL analitik uç noktası
+    1) Lakehouse SQL uç noktalarında görünümler
+   *2) Direct Lake on OneLake
+    3) Import modu ve günlük zamanlanmış yenileme
+   meta:{"id":"dp-n35","s":"dp-op3","type":"mc","a":2}
+   WHY: Direct Lake on OneLake birden fazla Fabric öğesindeki Delta tablolarını kullanabilir ve DirectQuery’ye geri dönmez. Direct Lake on SQL tek bir kaynağa bağlanır ve görünümlerde DirectQuery’ye düşer.
+
+## dp-n36 dp600 dp-op3 yesno [Anlam modelini uygula] Direct Lake on OneLake ile Direct Lake on SQL analitik uç noktası arasındaki farklar için her ifadeye Evet ya da Hayır seç.
+   [E] Direct Lake on OneLake, aynı modelde birden fazla Fabric öğesindeki Delta tablolarını kullanabilir.
+   [H] Direct Lake on OneLake, okuyamadığı bir sorguda SQL analitik uç noktası üzerinden DirectQuery’ye geri döner.
+   [E] Direct Lake on SQL, kaynak tablo bir SQL görünümü olduğunda DirectQuery’ye geri döner.
+   meta:{"id":"dp-n36","s":"dp-op3","type":"yesno"}
+   WHY: OneLake türü dosyaları doğrudan okur, çok kaynaklıdır ve DirectQuery’ye düşmez; kısıt aşılırsa sorgu hata verir. SQL türü tek kaynaklıdır ve görünüm ya da SQL tabanlı ayrıntılı erişim denetimi varsa DirectQuery’ye düşer.
+
+## dp-n37 dp600 dp-op2 mc [Anlam modelini uygula] SQL uç noktası üzerindeki bir Direct Lake modelinde, Direct Lake ile yanıtlanamayan bir sorgunun DirectQuery’ye geçmek yerine hata vermesini istiyorsun. Ne yaparsın?
+   *0) `DirectLakeBehavior` özelliğini `DirectLakeOnly` yap
+    1) Modelde otomatik sayfa yenilemeyi kapat
+    2) SQL uç noktasındaki tüm görünümleri sil
+    3) Delta tablolarında V-Order yazma iyileştirmesini kapat
+   meta:{"id":"dp-n37","s":"dp-op2","type":"mc","a":0}
+   WHY: Direct Lake davranışı (Direct Lake behavior) özelliği geri dönüşü denetler: `Automatic` geri dönüşe izin verir, `DirectLakeOnly` geri dönüşü kapatır ve sorgu hata verir. Görünümleri silmek yalnızca bir geri dönüş nedenini ortadan kaldırır.
+
+## dp-n38 dp600 dp-sm3 multi [Anlam modelini uygula] Bir ölçüde aynı ara sonucu `VAR` ile değişkene atamanın iki faydası nedir? İki tane seç.
+   *0) Aynı ifadenin ölçü içinde birden çok kez hesaplanmasını önler
+   *1) Ara sonuçları `RETURN` ile tek tek döndürerek hata ayıklamayı kolaylaştırır
+    2) Değişken, sonradan bir `CALCULATE` içinde filtre bağlamı değişince yeniden hesaplanır
+    3) Değişkenin değeri modelde kalıcı olarak saklanır ve diğer ölçülerde kullanılır
+   meta:{"id":"dp-n38","s":"dp-sm3","type":"multi","a":[0,1]}
+   WHY: Değişken tanımlandığı bağlamda bir kez hesaplanır ve sabit kalır; bu hem performans hem okunabilirlik sağlar. Sonraki `CALCULATE` değişkeni yeniden hesaplamaz ve değişken yalnızca o ölçünün içinde yaşar.
+
+## dp-n39 dp600 dp-sm2 multi [Anlam modelini uygula] Bir bankada bir hesabın birden çok sahibi, bir müşterinin birden çok hesabı olabilir. Müşteri seçildiğinde o müşterinin hesaplarının bakiyesini doğru göstermek için hangi iki adımı uygularsın? İki tane seç.
+   *0) Müşteri ve hesap anahtarlarını içeren bir köprü tablo oluşturmak
+   *1) Köprü tablo ile Hesap boyutu arasındaki ilişkide çapraz filtre yönünü iki yönlü yapmak
+    2) Müşteri adını olgu tablosuna kopyalayıp her hesap satırını sahip sayısı kadar çoğaltmak
+    3) Müşteri ile olgu tablosu arasında doğrudan çoka çok ilişki kurup toplamları ikiye bölmek
+   meta:{"id":"dp-n39","s":"dp-sm2","type":"multi","a":[0,1]}
+   WHY: Köprü tablo çoka çok ilişkiyi iki bire çok ilişkiye böler; filtrenin Müşteri’den köprü üzerinden Hesap’a, oradan olguya ulaşması için köprü ile Hesap arasındaki ilişki iki yönlü olmalıdır. Satırları çoğaltmak toplamları şişirir.
+
+## dp-n40 dp600 dp-op1 order [Anlam modelini uygula] Yavaş açılan bir rapor sayfasındaki sorunlu görseli bulup DAX’ını iyileştirmek için adımları sırala.
+   meta:{"id":"dp-n40","s":"dp-op1","type":"order","items":["Performans çözümleyicisini (Performance analyzer) açıp kaydı başlat","Görselleri yenile","En uzun süren görselde DAX sorgusu ve görsel görüntüleme sürelerini karşılaştır","Görselin DAX sorgusunu kopyalayıp DAX sorgu görünümünde ya da DAX Studio’da çalıştırarak iyileştir"],"extra":["Raporu .pbit şablonu olarak kaydet"]}
+   WHY: Performans çözümleyicisi kayıt sırasında yenilenen her görselin süresini bileşenlerine ayırır; DAX sorgusu uzun ise sorgu kopyalanıp ayrı bir araçta denenir. Şablon kaydetmek performansla ilgili değildir.
+

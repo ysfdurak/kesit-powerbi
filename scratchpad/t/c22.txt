@@ -1,0 +1,335 @@
+/* PBIPatika — c22: Özel takvimler (mali yıl, ISO hafta, 4-4-5, takvim tabanlı zaman zekâsı) ve büyük modeller (artımlı yenileme, hibrit tablo, toplamalar, bileşik model) */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O && !O.includes(lesson.id)) { const i = O.indexOf(after); O.splice(i “Zaman zekâsı” ve “Gelişmiş zaman hesapları” derslerinde her şey ocakta başlayan Gregoryen takvimle çalıştı. Şirketlerde bu nadiren yeterlidir. Finans ekibi yılı temmuzda başlatır, mağaza ekibi haftayla yaşar, satın alma ekibi 4-4-5 dönemleriyle plan yapar. Bu derste aynı Tarih tablosunu üç takvime çevirecek ve hazır fonksiyonların nerede yanlış sayı ürettiğini göreceksin.
+Üç ekip, üç takvim
+Anadolu Market’te pazartesi sabahı üç ayrı istek geliyor:
+Finans: “Mali yılımız 1 Temmuz’da başlıyor. Mart 2024 satırında mali yılbaşından bugüne satışı görmek istiyorum.”
+Mağaza operasyonu: “Geçen haftayı, geçen yılın aynı haftasıyla karşılaştır. Pazartesiyi pazartesiyle karşılaştırmalıyız.”
+Satın alma: “Dönemlerimiz 4-4-5 haftalık. Her dönem pazartesi başlayıp pazar bitiyor. Dönem 3’ün toplamı lazım.”
+Takvim | Yıl nasıl başlar? | En küçük birim | Hazır fonksiyonlar çalışır mı? | 
+Gregoryen | 1 Ocak | Gün → ay | Evet | 
+Kaydırılmış Gregoryen (mali yıl) | Sabit bir tarih (1 Temmuz) | Gün → ay | Büyük ölçüde evet, yıl sonu parametresiyle | 
+Hafta tabanlı (ISO, 4-4-5) | Bir pazartesi; tarihi her yıl değişir | Gün → hafta → dönem | Hayır; aylar ve yıllar tutmaz | 
+Modeldeki Tarih[HaftaNo] ISO 8601 hafta numarası, Tarih[GunNo] haftanın günüdür (1 = Pazartesi).
+Mali yıl: Temmuz başlangıçlı yıl
+Hazır yol: yıl sonu parametresi
+DATESYTD ve TOTALYTD, isteğe bağlı bir yıl sonu tarihi (year_end_date) alır. Microsoft Learn’e göre bu bir metin sabitidir, yıl kısmı yok sayılır ve biçimi raporu oluşturan istemcinin yerel ayarına bağlıdır: bir makinede "6-30", diğerinde "30-6" olabilir. Varsayılan 31 Aralık’tır.
+Mali YTD (hazır) =
+TOTALYTD([Net Satış], Tarih[Tarih], "6-30")
+Mali YTD (DATESYTD) =
+CALCULATE([Net Satış], DATESYTD(Tarih[Tarih], "6-30"))
+Stüdyoda deneİki ölçü de Mart 2024 için 401.796,75 ₺ döner; takvim yılı YTD’si 155.390,75 ₺’dir. Yine de yıl sonu dizesi bölgesel ayara bağlı olduğu için ekip modellerinde aşağıdaki açık kalıp daha güvenlidir; her iki yerde de aynı sonucu verir.
+Sütun ve tarih aritmetiğiyle aynı hesap
+Mali YTD =
+VAR son = MAX(Tarih[Tarih])
+VAR bas = IF(MONTH(son) >= 7, DATE(YEAR(son), 7, 1), DATE(YEAR(son) - 1, 7, 1))
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))
+Mali YTD GY =
+CALCULATE([Mali YTD], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+Motor görünen dönemin son gününü (son) okur, mali yılın ilk gününü (bas) hesaplar, sonra DATESBETWEEN Tarih[Tarih] filtresini bu aralıkla değiştirir; işaretli tarih tablosunda Yıl ve Ay filtreleri de kalkar. Sonuçlar:
+Satır | Takvim YTD | Mali YTD | Mali YTD GY | 
+Mart 2024 | 155.390,75 | 401.796,75 (Tem 2023–Mar 2024) | 169.796,10 (Tem 2022–Mar 2023) | 
+Temmuz 2024 | — | 60.948,00 (yeni mali yılın ilk ayı) | — | 
+Tam mali yıllar: MY2023 256.705,75; MY2024 546.898,75; MY2025 henüz yarım, 446.572,95.
+Mali yıl sütunları
+Ölçülerin yanında rapor da mali yılı göstermeli. Tarih tablosuna üç sütun eklenir. Aşağıdaki sorgu bu sütunları üretip her ayın ilk gününde gösterir:
+EVALUATE
+ADDCOLUMNS(
+    FILTER(Tarih, Tarih[Gun] = 1),
+    "MaliYil", Tarih[Yil] + IF(Tarih[AyNo] >= 7, 1, 0),
+    "MaliAyNo", MOD(Tarih[AyNo] + 5, 12) + 1,
+    "MaliCeyrek", "MÇ" & (INT(MOD(Tarih[AyNo] + 5, 12) / 3) + 1)
+)
+Adlandırma: Mali yıl bittiği yılla adlandırılır (Tem 2023–Haz 2024 = MY2024). Bu bir şirket kararıdır; belgele.
+Sıralama: Mali raporda ayları MaliAyNo’ya göre sırala.
+Toplam satırı: Toplamda son gün 31 Aralık 2024’tür; Mali YTD 446.572,95 gösterir, bu bütün yılların toplamı değildir. Gizle ya da ISINSCOPE ile boş döndür.
+ISO hafta ve hafta tabanlı yıl
+ISO 8601’e göre hafta pazartesi başlar. Yılın ilk haftası, o yılın ilk perşembesini içeren haftadır. Bu yüzden bir yıl 52 ya da 53 hafta sürer. Yılın ilk birkaç günü önceki yılın son haftasına, son birkaç günü sonraki yılın ilk haftasına düşebilir. DAX’ta WEEKNUM(tarih, 21) ISO hafta numarasını verir.
+Modelde bunu görmek kolay: 1–2 Ocak 2022’nin HaftaNo değeri 52, 30–31 Aralık 2024’ün değeri 1’dir.
+Anti-kalıp: Yıl × HaftaNo
+Mağaza müdürü bir matrise Tarih[Yil] ve Tarih[HaftaNo] koyuyor. 2024 / Hafta 1 hücresinde 27.516,05 görünüyor. Oysa ISO 2024’ün ilk haftası (1–7 Ocak) 16.728,05’tir. Aradaki 10.788,00, 30–31 Aralık 2024’e aittir. O iki gün ISO 2025’in ilk haftasıdır ama Gregoryen yıl 2024 olduğu için aynı hücreye girer. Yani hafta 1 iki ayrı haftanın toplamıdır.
+EVALUATE
+ROW(
+    "Yanlis", CALCULATE([Net Satış], Tarih[Yil] = 2024, Tarih[HaftaNo] = 1),
+    "Dogru", CALCULATE([Net Satış],
+        FILTER(ALL(Tarih), YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024 && Tarih[HaftaNo] = 1))
+)
+Çözüm, haftayla birlikte hafta tabanlı yılı da saklamaktır. Kural basit: bir günün ISO yılı, o haftanın perşembesinin yılıdır. Perşembe = Tarih - GunNo + 4. Haftanın başlangıcı = Tarih - GunNo + 1.
+EVALUATE
+ADDCOLUMNS(
+    FILTER(Tarih, Tarih[Tarih] >= DATE(2024, 12, 28)),
+    "ISOYil", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4),
+    "HaftaBaslangic", Tarih[Tarih] - Tarih[GunNo] + 1,
+    "HaftaAnahtari", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) & "-H" & IF(Tarih[HaftaNo] < 10, "0", "") & Tarih[HaftaNo]
+)
+28–29 Aralık “2024-H52”, 30–31 Aralık “2025-H01” çıkar. Görselde ve dilimleyicide Yıl × HaftaNo yerine HaftaAnahtari (ya da ISOYil × HaftaNo) kullan.
+Perakende 4-4-5 takvimi
+Perakendede aylar karşılaştırılabilir değildir: bir ayda beş, diğerinde dört cumartesi olur. 4-4-5 takviminde yıl 52 haftadır, her çeyrek 13 haftadır ve çeyrek 4 + 4 + 5 haftalık üç döneme bölünür. Her dönem aynı gün başlar ve biter. 4-5-4 ve 5-4-4 de yaygındır.
+Bedeli: Gregoryen yılla her yıl bir gün (artık yılda iki) kayma birikir ve 5–6 yılda bir 53. hafta eklenir. Bu haftanın hangi döneme gireceği bir iş kararıdır. 2026, 53 haftalık bir ISO yılıdır.
+ISO haftayı perakende haftası olarak kabul edersek dönem numarası haftadan hesaplanır:
+EVALUATE
+VAR g =
+    ADDCOLUMNS(
+        FILTER(Tarih, YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024),
+        "Donem",
+            VAR hw = Tarih[HaftaNo]
+            VAR c = MIN(4, INT((hw - 1) / 13) + 1)
+            VAR wq = hw - (c - 1) * 13
+            RETURN (c - 1) * 3 + IF(wq <= 4, 1, IF(wq <= 8, 2, 3)),
+        "S", [Net Satış]
+    )
+RETURN GROUPBY(g, [Donem], "SatisliGun", COUNTX(CURRENTGROUP(), [S]), "Satis", SUMX(CURRENTGROUP(), [S]))
+MIN(4, …) 53. haftayı dördüncü çeyreğe, wq 14 olduğu için de son döneme (D12) koyar. 2024 perakende yılının sonuçlarından birkaçı: D1 (4 hafta) 43.545,85; D3 (5 hafta) 63.251,60; D12 (5 hafta) 105.592,25. Beş haftalık dönemi dört haftalıkla doğrudan karşılaştırma; haftalık ortalamaya bak.
+Hafta bazlı karşılaştırma: 364 gün geri
+Mağaza ekibinin sorusuna dönelim: ISO 2024’ün 10. haftası (4–10 Mart 2024) net satışı 23.869,65. Geçen yılın karşılığı ne?
+Yöntem | Karşılaştırılan günler | Sonuç | 
+SAMEPERIODLASTYEAR | 4–10 Mart 2023 (Cumartesi–Cuma) | 7.998,30 | 
+DATEADD(Tarih[Tarih], -364, DAY) | 6–12 Mart 2023 (Pazartesi–Pazar) | 7.126,30 | 
+SAMEPERIODLASTYEAR takvim tarihini korur, haftanın gününü değil. “Zaman serisi analizi” dersindeki gün etkisi yüzünden farklı gün karışımlı iki pencereyi karşılaştırmak büyüme oranını bozar. 364 = 52 × 7 olduğu için DATEADD(…, -364, DAY) her günü haftanın aynı gününe taşır.
+Satış GY Hafta Hizalı =
+CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -364, DAY))
+Kenar durumlar
+Yıl düzeyi: 2024 satırında 364 gün kaydırma 2 Ocak 2023–2 Ocak 2024 penceresini verir: 402.716,95; [Satış GY] ise 400.869,55. Hizalı ölçüyü yalnızca hafta ve gün kırılımlarında kullan.
+53 haftalık yıl: 53. haftanın geçen yılda karşılığı yoktur. Boş mu bırakılacak, 52. haftayla mı karşılaştırılacak? Kararı iş birimiyle ver ve ölçü açıklamasına yaz.
+Eksik veri: Satışlar 22 Haziran 2022’de başlıyor; 2022’de hizalı geçen yıl boştur, büyüme için DIVIDE kullan.
+Hazır fonksiyonlar nerede bozulur?
+Fonksiyon | Mali yıl (kaydırılmış) | Hafta tabanlı / 4-4-5 | 
+TOTALYTD, DATESYTD | Yıl sonu parametresiyle doğru | Yanlış: yıl başı sabit bir tarih değil | 
+SAMEPERIODLASTYEAR, DATEADD(…, YEAR) | Doğru (12 ay kaydırma) | Haftanın günü kayar | 
+TOTALMTD, PREVIOUSMONTH | Doğru (aylar aynı) | Yanlış: dönem ay değildir | 
+PARALLELPERIOD(…, QUARTER) | Takvim çeyreği döner, mali çeyrek değil | 13 haftalık çeyrek değil | 
+STARTOFYEAR, ENDOFYEAR | Yıl sonu parametresi alır | Gregoryen yıl sınırları | 
+Hazır fonksiyonlar takvimi tarih aritmetiğiyle bilir; mantık sütunlarda yaşıyorsa (ISOYil, Donem, HaftaSira) bunu göremez.
+Sütun tabanlı özel zaman zekâsı
+Hazır fonksiyonların yerine üç adımlı bir kalıp kullanılır:
+Görünen bağlamdan konumu oku: MAX(Tarih[Tarih]), MAX(Tarih[HaftaSira]).
+Tarih tablosundaki filtreleri kaldır: REMOVEFILTERS(Tarih) ya da ALL(Tarih).
+Yeni dönemi sütunlarla tarif et: Tarih[ISOYil] = y && Tarih[Tarih] <= son.
+Örneğin hafta başından bugüne (WTD) yalnızca tarih aritmetiğiyle yazılabilir:
+Hafta Başından Satış =
+VAR son = MAX(Tarih[Tarih])
+VAR bas = son - WEEKDAY(son, 2) + 1
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))
+Üretim modelinde ise sütunlar fiziksel olarak Tarih tablosunda (Power Query ya da kaynakta) bulunur. HaftaSira, ilk haftadan itibaren 1, 2, 3… diye artan bir sıradır. “Önceki hafta” için HaftaNo - 1 yeterli değildir, çünkü 1. haftanın öncesi 0 değil, geçen yılın 52. ya da 53. haftasıdır:
+Önceki Hafta (sütunla) =
+VAR s = MAX(Tarih[HaftaSira])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[HaftaSira] = s - 1)
+Perakende YTD (sütunla) =
+VAR y = MAX(Tarih[ISOYil])
+VAR son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[ISOYil] = y, Tarih[Tarih] <= son)
+Yol | Ne zaman? | Performans | Bakım | 
+Tarih aritmetiği (DATESBETWEEN, DATEADD … DAY) | Kural sabit gün sayısıyla anlatılabiliyorsa | İyi | Kolay ama kural kodda gizli | 
+FILTER(ALL(Tarih), ifade) | Hızlı deneme, sütun eklenemiyorsa | Her satırda ifade hesaplanır; büyük takvimde yavaşlar | Zor: aynı ifade her ölçüde tekrar eder | 
+Fiziksel sütunlar + REMOVEFILTERS | Kalıcı model, ekip çalışması | En iyi: basit sütun filtreleri depolama motoruna gider | Kolay: kural tek yerde, Tarih tablosunda | 
+“DAX optimizasyonu” dersinde gördüğün gibi basit sütun eşitlikleri depolama motorunda çözülür; satır satır ifade hesaplayan FILTER formül motoruna iş bırakır.
+REMOVEFILTERS’ı unutmaTarih[Tarih] üzerine filtre koyan hazır fonksiyonlar, işaretli tarih tablosunda diğer Tarih filtrelerini kendiliğinden kaldırır. Sütun filtresi (Tarih[ISOYil]) bunu yapmaz. REMOVEFILTERS(Tarih) olmadan, rapordaki Gregoryen Yıl = 2024 dilimleyicisi 2025-H01’in 30–31 Aralık günleriyle kesişir ve hafta yarım görünür.
+Test: Her özel ölçüyü DAX sorgu görünümünde bilinen bir haftayla (2024-H10 = 23.869,65) ve yılın ilk/son haftasıyla dene.
+Takvim tabanlı zaman zekâsı (önizleme)
+Power BI 2025’te bu sorunu doğrudan çözen bir özellik getirdi: takvim tabanlı zaman zekâsı (calendar-based time intelligence). Tarih tablosunda bir ya da birkaç takvim tanımlarsın; zaman zekâsı fonksiyonlarına tarih sütunu yerine takvimin adını verirsin. Microsoft Learn sayfası özelliği Ekim 2026 itibarıyla hâlâ önizleme olarak etiketliyor.
+Nasıl açılır, nasıl tanımlanır?
+Dosya → Seçenekler ve ayarlar → Seçenekler → Önizleme özellikleri altında “Enhanced DAX Time Intelligence” seçeneğini işaretle ve Desktop’ı yeniden başlat.
+Tarih tablosuna sağ tıkla → Takvim seçenekleri (Calendar options) → Yeni takvim.
+Kategori ekle ile sütunları kategorilere bağla: Yıl, Çeyrek, Ay, Hafta, Tarih ve “yılın haftası”, “haftanın günü” gibi kısmi kategoriler. Her kategorinin bir birincil sütunu, isteğe bağlı ilişkili sütunları olur. “Tam” (complete) kategoriler bir dönemi tek başına tanımlar (2024-H10); “kısmi” kategoriler tanımlamaz (H10).
+table Tarih
+    calendar 'Perakende 445'
+        calendarColumnGroup = year
+            primaryColumn: ISOYil
+        calendarColumnGroup = month
+            primaryColumn: DonemAnahtari
+        calendarColumnGroup = week
+            primaryColumn: HaftaAnahtari
+        calendarColumnGroup = date
+            primaryColumn: Tarih
+Perakende YTD = TOTALYTD([Net Satış], 'Perakende 445')
+Perakende WTD = TOTALWTD([Net Satış], 'Perakende 445')
+Perakende GY  = CALCULATE([Net Satış], DATEADD('Perakende 445', -1, YEAR))
+Böylece TOTALWTD gibi hafta fonksiyonları kullanılabilir, “geçen yıl” takvimin kendi yılına göre hesaplanır. DATEADD ve SAMEPERIODLASTYEAR “sabit” fonksiyonlardır: yalnızca yana doğru kaydırır. Diğerleri esnektir. Bir takvim sütununa bağlam koymak, o kategorinin üstündeki ve altındaki kategorilerdeki bağlamı temizler.
+ | Klasik | Takvim tabanlı (önizleme) | 
+Takvim türü | Gregoryen ya da kaydırılmış Gregoryen | Her türlü takvim | 
+Hafta hesapları | Yok | Var | 
+Yazım | SAMEPERIODLASTYEAR(Tarih[Tarih]) | TOTALYTD([Net Satış], 'Mali') | 
+Sınırlamalar (Learn’e göre)
+Canlı bağlantılı ve bileşik (composite) modellerde takvim kullanılamaz.
+Takvimler henüz Power BI hizmetinde yazılamaz; Desktop ya da harici araç gerekir.
+Otomatik tarih/saat tablolarıyla birlikte kullanılmamalı.
+Takvim tanımlı ve satır düzeyi güvenliğe (RLS) tabi bir olgu tablosunda beklenmedik sonuçlar çıkabilir.
+Takvim kullanan zaman zekâsı fonksiyonları iç içe yazılamaz: PREVIOUSDAY(PREVIOUSMONTH('Takvim')) yerine CALCULATETABLE(PREVIOUSDAY('Takvim'), PREVIOUSMONTH('Takvim')).
+Bir sütun tek kategoriye bağlanır; tabloda 200’den az sütun olmalı.
+Yıl sonu parametresi ("6-30") yalnızca tarih sütunu yazımında geçerlidir; takvim yazımında mali yıl, takvim tanımının içindedir.
+Bu uygulamadaTarayıcıdaki motor takvim tanımlarını desteklemiyor; bu bölümdeki bloklar bu yüzden çalıştırılamaz. Alıştırmalar sütun tabanlı kalıpla yapılır.
+Üretim kararı: Önizleme özelliği kurumsal bir modelde ana yol olmamalı. Bugün sütun tabanlı kalıbı kur; ISOYil, HaftaAnahtari, DonemAnahtari gibi sütunları zaten hazırlamış olacağın için özellik genel kullanıma geçtiğinde takvim tanımına taşımak kolaylaşır.
+Kontrol listesi
+Mali yıl adlandırması (bittiği yıl mı, başladığı yıl mı) belgelendi mi?
+Hafta görsellerinde Yıl × HaftaNo değil, ISOYil × HaftaNo ya da HaftaAnahtari mı kullanılıyor?
+Hafta karşılaştırmaları 364 gün mü, takvim tarihi mi? 53. hafta kuralı ne?
+Sütun tabanlı ölçülerde REMOVEFILTERS(Tarih) var mı? Toplam satırı ne gösteriyor?
+`,
+  ex: [
+    { t: 'dax', name: 'Mali Yıl Başından Satış', q: 'Mali Yıl Başından Satış: mali yıl 1 Temmuz’da başlıyor. Görünen dönemin son gününe kadar, o günün ait olduğu mali yılın başından itibaren net satışı hesapla. Yıl sonu parametresi kullanma; DATESBETWEEN ile yaz.', sol: 'VAR son = MAX(Tarih[Tarih]) VAR bas = IF(MONTH(son) >= 7, DATE(YEAR(son), 7, 1), DATE(YEAR(son) - 1, 7, 1)) RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))', hint: 'Son günün ayı 7 ya da büyükse mali yıl o yılın 1 Temmuz’unda, değilse bir önceki yılın 1 Temmuz’unda başlar.' },
+    { t: 'dax', name: 'Mali Yılın Tamamı', q: 'Mali Yılın Tamamı: görünen dönemin son gününün ait olduğu mali yılın (Temmuz–Haziran) tamamındaki net satış. Mali yıl, bittiği yılla adlandırılır. Tarih tablosunda mali yıl sütunu yok; FILTER(ALL(Tarih), …) içinde ifadeyle hesapla.', sol: 'VAR son = MAX(Tarih[Tarih]) VAR my = YEAR(son) + IF(MONTH(son) >= 7, 1, 0) RETURN CALCULATE([Net Satış], FILTER(ALL(Tarih), YEAR(Tarih[Tarih]) + IF(Tarih[AyNo] >= 7, 1, 0) = my))', hint: 'Bir günün mali yılı = Yıl + (Ay ≥ 7 ise 1, değilse 0). Aynı ifadeyi hem son gün için hem FILTER içinde her satır için kullan.' },
+    { t: 'dax', name: 'Geçen Yıl Aynı Hafta Günü', q: 'Geçen Yıl Aynı Hafta Günü: her günü geçen yılın haftanın aynı gününe taşıyarak net satışı hesapla (pazartesi pazartesiyle karşılaştırılsın).', sol: 'CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -364, DAY))', hint: '52 hafta × 7 gün. DATEADD gün birimiyle kaydırabilir.' },
+    { t: 'dax', name: 'Hafta Başından Satış', q: 'Hafta Başından Satış: görünen dönemin son gününün haftasının pazartesisinden o güne kadar net satış (WTD).', sol: 'VAR son = MAX(Tarih[Tarih]) VAR bas = son - WEEKDAY(son, 2) + 1 RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))', hint: 'WEEKDAY(tarih, 2) pazartesiye 1, pazara 7 verir. Pazartesi = son − WEEKDAY + 1.' },
+    { t: 'query', q: 'Tarih tablosundan 2024 Aralık’ın son dört gününü getir ve her satıra ISO yılını gösteren ISOYil ve haftanın pazartesisini gösteren HaftaBaslangic sütunlarını ekle. 30–31 Aralık hangi ISO yılına düşüyor?', start: 'EVALUATE\n', sol: 'EVALUATE\nADDCOLUMNS(FILTER(Tarih, Tarih[Tarih] >= DATE(2024, 12, 28)), "ISOYil", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4), "HaftaBaslangic", Tarih[Tarih] - Tarih[GunNo] + 1)', hint: 'ISO yılı, o haftanın perşembesinin yılıdır: Tarih − GunNo + 4.' },
+    { t: 'query', q: 'Matristeki “2024 / Hafta 1” hücresinin neden şiştiğini kanıtla: tek satırlık bir sonuçta Yanlis (Yil = 2024 ve HaftaNo = 1) ile Dogru (ISO yılı 2024 olan 1. hafta) net satışlarını yan yana döndür.', start: 'EVALUATE\nROW(\n', sol: 'EVALUATE\nROW("Yanlis", CALCULATE([Net Satış], Tarih[Yil] = 2024, Tarih[HaftaNo] = 1), "Dogru", CALCULATE([Net Satış], FILTER(ALL(Tarih), YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024 && Tarih[HaftaNo] = 1)))', hint: 'Doğru sürümde ISO yılını FILTER(ALL(Tarih), …) içinde ifadeyle hesapla.' },
+    { t: 'query', q: 'ISO 2024 yılını 4-4-5 dönemlerine böl: her gün için dönem numarasını (1–12) hesapla ve dönem başına net satışı döndür. Çeyrek 13 haftadır; çeyrek içindeki ilk 4 hafta 1. dönem, sonraki 4 hafta 2. dönem, son 5 hafta 3. dönemdir.', start: 'EVALUATE\nVAR g =\n', sol: 'EVALUATE\nVAR g = ADDCOLUMNS(FILTER(Tarih, YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024), "Donem", VAR hw = Tarih[HaftaNo] VAR c = MIN(4, INT((hw - 1) / 13) + 1) VAR wq = hw - (c - 1) * 13 RETURN (c - 1) * 3 + IF(wq SAMEPERIODLASTYEAR ile yazılmış; geçen yılın penceresi cumartesi başlıyor. Ne yaparsın?', o: ['DATEADD(Tarih[Tarih], -364, DAY) ile karşılaştır', 'PARALLELPERIOD(…, -1, YEAR) ile yeniden yaz', 'Tarih tablosu işaretini kaldırıp yeniden işaretle', 'Hafta sonu günlerini iki dönemden de çıkar'], a: 0, why: 'SAMEPERIODLASTYEAR takvim tarihini korur, haftanın gününü kaydırır; 364 gün (52 hafta) geri gitmek pazartesiyi pazartesiye eşler. PARALLELPERIOD geçen yılın tamamını verir. İşaretleme bu sorunu değiştirmez. Hafta sonlarını atmak gün etkisini gizler ama soruyu çözmez.' },
+    { t: 'mc', q: 'Finans, mali yıl için TOTALYTD([Net Satış], Tarih[Tarih], "30-6") yazdı. Kendi bilgisayarında doğru, Amerika’daki meslektaşının dosyasında yanlış çalışıyor. En olası neden?', o: ['TOTALYTD mali yılı hiç desteklemez', 'Yıl sonu metni yerel ayarla okunur', 'Tarih tablosu iki yıldan kısa kalmış', 'Ölçüde SAMEPERIODLASTYEAR eksik kalmış'], a: 1, why: 'Learn’e göre yıl sonu parametresi, dosyanın oluşturulduğu istemcinin yerel ayarındaki bir tarih metnidir; "30-6" ile "6-30" bölgeye göre farklı okunabilir. TOTALYTD mali yılı destekler; tablo uzunluğu ve SAMEPERIODLASTYEAR ilgisizdir.' },
+    { t: 'mc', q: 'Ekip, önizlemedeki takvim tabanlı zaman zekâsını kullanmak istiyor. Model, büyük bir DirectQuery olgu tablosu ve Import boyutlardan oluşan bileşik bir model. Ne söylersin?', o: ['Takvimi hizmette tanımlayıp yayımlamak yeterli', 'Önce otomatik tarih/saat açılmalı', 'Bileşik modelde takvim kullanılamaz', 'Takvim yalnızca DirectQuery olgu tablosunda çalışır'], a: 2, why: 'Learn’in sınırlamalar listesine göre takvimler canlı bağlantılı ve bileşik modellerde kullanılamaz; ayrıca hizmette takvim yazılamaz ve otomatik tarih/saat tablolarıyla kullanılmamalıdır. Bu modelde sütun tabanlı kalıp kalır.' },
+    { t: 'mc', q: 'Perakende takviminde 2026 yılı 53 hafta sürüyor. Satın alma müdürü 53. haftanın geçen yıl karşılaştırmasını soruyor. Doğru yaklaşım hangisi?', o: ['364 gün kaydırma bu haftayı kendiliğinden eşler', '53. haftayı modelden silip 52 haftaya indir', 'Eşi yok; kuralı iş birimiyle belirle', 'Karşılaştırmayı SAMEPERIODLASTYEAR ile yap'], a: 2, why: '53 haftalık yılın son haftasının önceki yılda eşi yoktur. Boş bırakmak ya da 52. haftayla karşılaştırmak bir iş kararıdır ve belgelenmelidir. 364 gün kaydırma bir hafta getirir ama bu “aynı hafta” değildir; veriyi silmek ve takvim tarihine dönmek yeni hatalar üretir.' },
+    { t: 'mc', q: 'Sütun tabanlı bir “Perakende YTD” ölçüsü yazdın: CALCULATE([Net Satış], Tarih[ISOYil] = y, Tarih[Tarih] <= son). Raporda Gregoryen Yıl dilimleyicisi 2024 seçiliyken 2025-H01 haftası yarım görünüyor. Neden?', o: ['ISOYil sütununun türü metin olmalıydı', 'Tarih tablosu işaretli olmadığı için hata var', 'Yil filtresi kalıyor; REMOVEFILTERS eksik', 'CALCULATE yerine CALCULATETABLE gerekir'], a: 2, why: 'Sütun eşitliği yalnızca o sütunun filtresinin üzerine yazar; Tarih[Yil] = 2024 dilimleyicisi kalır ve 2025-H01’in yalnızca 30–31 Aralık günleriyle kesişir. Hazır fonksiyonların aksine REMOVEFILTERS(Tarih) ile tablo filtrelerini kendin temizlemelisin.' }
+  ]
+});
+add('kurumsal-model', {
+  id: 'buyuk-model', lv: 'C2', mod: 'İleri Modelleme', min: 45,
+  title: 'Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller',
+  sum: 'RangeStart/RangeEnd ve katlama şartı, artımlı yenileme politikası, gerçek zamanlı DirectQuery bölümüyle hibrit tablo, kullanıcı tanımlı ve otomatik toplamalar, isabet kontrolü, Dual ve bileşik model, büyük model depolama biçimi, XMLA ile bölüm yenileme, Direct Lake karşılaştırması ve lisans gereksinimleri.',
+  body: `
+“Kurumsal model” dersinde depolama modlarını, toplamaları ve artımlı yenilemeyi kısaca tanıdın; “Veri bağlantıları” dersinde katlamanın neden önemli olduğunu gördün. Bu ders o başlıkları bir üretim projesi gibi ele alıyor: mekanizma, sayılar, tuzaklar ve lisans gerçekleri.
+Senaryo: Anadolu Market büyüdü
+Bu uygulamadaki Satislar tablosu 1.620 satırdır. Şimdi şirketin beş yılda 900 milyon satış satırına ulaştığını düşün. Üç şikâyet var:
+Gece yenilemesi dört saat sürüyor ve bazen zaman aşımına düşüyor.
+Model belleğe sığmıyor; kapasite yöneticisi uyarı gönderiyor.
+Satış direktörü bugünün satışlarını canlı görmek istiyor.
+Her şikâyetin ayrı bir aracı var: artımlı yenileme süreyi, büyük model biçimi ve toplamalar belleği ve sorgu hızını, hibrit tablo tazeliği çözer. Yanlış araç seçmek, bir sorunu çözerken diğerini büyütür.
+Artımlı yenileme: mekanizma
+Power Query’de tam olarak RangeStart ve RangeEnd adlı iki Tarih/Saat parametresi oluşturulur. Adlar ayrılmıştır ve büyük-küçük harfe duyarlıdır. Olgu tablosu bunlarla filtrelenir:
+let
+    Kaynak = Sql.Database("sql-anadolu", "SatisDW"),
+    Satis = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data],
+    Filtre = Table.SelectRows(Satis, each [Tarih] >= RangeStart and [Tarih] < RangeEnd)
+in
+    Filtre
+Yayımladıktan sonra hizmet bu parametrelere kendi değerlerini verir ve her bölüm (partition) için ayrı bir sorgu gönderir. Filtre kaynağa katlanırsa her bölüm sorgusu yalnızca kendi satırlarını çeker. Katlanmazsa her bölüm tüm tabloyu indirir ve filtreyi ağ geçidinde ya da hizmette uygular. Learn bunun yenilemeyi yavaşlattığını ve kaynakları tükettiğini, yani artımlı yenilemenin amacını boşa çıkardığını söyler.
+Sınır kuralı: büyük-eşit ve küçük
+Başta >=, sonda < kullanılır. İki uçta da <= kullanırsan gece yarısındaki bir satır iki komşu bölüme birden girer ve çift sayılır. Bu hata toplamı yalnızca biraz şişirdiği için uzun süre fark edilmez.
+Politika ve bölümler
+Tabloya sağ tık → Artımlı yenileme. Örnek politika: “Son 3 yılı arşivle, son 10 günü artımlı yenile, yalnızca tam günler”. Hizmet eski dönemleri yıl bölümlerinde, yakın dönemleri daha küçük bölümlerde tutar; her yenilemede yalnızca son 10 günün bölümleri yeniden yüklenir.
+Bu uygulamanın verisiyle bir benzetim: yenileme 1 Ocak 2025 sabahı çalışıyor ve “yalnızca tam günler” açık. Pencere 22–31 Aralık 2024’tür. Motorla sayınca bu pencerede 31 satır ve 25.897,20 net satış var; dokunulmayan arşivde 1.589 satır kalıyor. Yani her gece verinin yaklaşık %1,9’u işleniyor. 900 milyon satırlık modelde oran benzer kalırsa dört saatlik yenileme dakikalara iner.
+Ayar | Ne yapar? | Dikkat | 
+Arşivle | Tutulacak geçmiş dönem | Daha eskisi modelden düşer | 
+Artımlı yenile | Her seferinde yeniden yüklenen dönem | Geriye dönük düzeltmeler (iade, iptal) bu pencereye sığmalı | 
+Yalnızca tam günler | Bugünün yarım gününü yüklemez | Gerçek zamanlı bölüm için zorunlu; saat dilimi varsayılan UTC | 
+Veri değişikliklerini algıla | Değişmemiş bölümleri atlar | Bölümleme sütunundan farklı bir “son güncelleme” sütunu ister | 
+Anadolu Market’te iadeler satıştan 30 gün sonra kaydediliyorsa 10 günlük pencere yetmez: iade edilen satır arşiv bölümünde eski hâliyle kalır. Pencereyi iş kuralına göre seç.
+Sık hatalar
+Tür uyuşmazlığı: Kaynak sütun tarih, parametreler tarih/saat. Kaynak tamsayı anahtar (20241231) ise parametreyi yyyyMMdd biçimli tamsayıya çevirmek gerekir.
+Filtre sırası: Filtre, kaynak adımından hemen sonra gelmeli. Önce Table.Buffer, birleştirme ya da özel sütun eklemek katlamayı bozabilir.
+Yerel SQL sorgusu: Yalnızca saf Import politikasında EnableFolding=false ile mümkündür; gerçek zamanlı bölümle olmaz.
+Desktop’tan yeniden yayımlamak: Var olan bölümleri ve veriyi siler. Yayımladıktan sonra modeli .pbix olarak geri indiremezsin. Şema değişikliklerini ALM Toolkit gibi araçlarla yalnızca meta veri olarak dağıt.
+İlk yenileme: Bütün geçmişi yükler, uzun sürer; elle başlat ve izle.
+Hibrit tablo: gerçek zamanlı son bölüm
+Politikadaki “En son verileri DirectQuery ile gerçek zamanlı al” seçeneği, yenileme penceresinden sonraki dönem için bir DirectQuery bölümü ekler. Tablo artık hibrittir: geçmiş bellekte, bugün kaynakta. Satış direktörünün “bugünü canlı göster” isteği böyle karşılanır.
+“Yalnızca tam günler” açık olmalıdır.
+Katlanmayan dönüşümlere izin verilmez; bütün bölümler tek bir veri kaynağını kullanmalıdır.
+Learn’e göre yalnızca Premium, Kullanıcı Başına Premium (PPU) ve Embedded’da vardır; Pro’da yoktur. Bu tür bir model yalnızca Premium çalışma alanına yayımlanabilir.
+Mekanizma: “Bu yıl” toplamını isteyen bir görsel için motor bellekteki bölümleri tarar, bugünün bölümü için kaynağa SQL gönderir ve sonuçları birleştirir. Yani her görsel sorgusu kaynağa da gider. Kaynak veritabanı bu yükü kaldırmalı; Dual boyutlar ve toplama tabloları bu yükü azaltır.
+Kullanıcı tanımlı toplama tabloları
+Toplama tablosu (aggregation), ayrıntı olgu tablosunun daha kaba bir özetidir. Kullanıcı yalnızca ayrıntı tablosunu görür; motor sorguyu özetle cevaplayabiliyorsa özete gider (isabet, hit), cevaplayamıyorsa ayrıntıya düşer (ıska, miss).
+Kurulum (Learn’e göre)
+Veri bölmesinde özet tabloya sağ tık → Toplamaları yönet (Manage aggregations). Her sütun için özetleme (Sum, Count, Count table rows, GroupBy), ayrıntı tablosu ve ayrıntı sütunu seçilir.
+Ayrıntı tablosu DirectQuery olmalıdır, Import olamaz. Özet tablo en hızlı Import’tadır; Import’a alındıktan sonra geri çevrilemez.
+Özet Import olunca Power BI ilişkili boyutları Dual yapmayı önerir. İlişki tabanlı isabet için ilişkiler “normal” (regular) olmalıdır.
+Birden çok özet varsa öncelik (precedence) değeri yüksek olan önce denenir. Zincirleme toplama (özetin özeti) yoktur; ayrıntı tablosu her zaman temel tablodur.
+İlişki tabanlı toplamalar yıldız şemaya, GroupBy tabanlı toplamalar ilişkisi olmayan düz büyük tablolara uygundur.
+Motorla bir benzetim
+Ay × kategori düzeyinde bir özet tablo:
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[YilAy], Kategoriler[Kategori],
+    "Tutar", SUM(Satislar[Tutar]),
+    "Satir", COUNTROWS(Satislar)
+)
+Sonuç 199 satırdır; ayrıntı 1.620 satır. Gerçek modelde oran çok daha çarpıcıdır: 900 milyon satır birkaç bin satıra iner. Özet ile ayrıntı aynı sonucu vermeli; bunu sorguyla doğrularsın:
+EVALUATE
+VAR o = SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], "Tutar", SUM(Satislar[Tutar]))
+RETURN ROW("OzetTutar", SUMX(o, [Tutar]), "AyrintiTutar", SUM(Satislar[Tutar]), "OzetSatir", COUNTROWS(o))
+İki tutar da 1.346.189,85 çıkar. Bu toplamı [Toplam Satış] ölçüsüne aittir.
+Anti-kalıp: ölçünün filtresi özette yok
+Raporlar ise [Net Satış] kullanıyor ve bu ölçü Satislar[Durum] <> "İptal" filtresi uygular. Özet tabloda Durum sütunu yoksa motor bu filtreyi özetle cevaplayamaz ve her sorgu ayrıntıya düşer. Toplama tablosu vardır ama hiç kullanılmaz. Çözüm Durum’u özetin GroupBy sütunlarına eklemektir: özet 431 satıra çıkar, iptaller dışarıda bırakılınca 1.250.772,45 verir, yani [Net Satış] ile aynı. Kural: özetin taneciği (grain), raporlardaki ölçülerin kullandığı bütün sütunları kapsamalı.
+Toplanamayan ölçüler
+Ortalama: Learn’e göre AVERAGE toplam / sayıya katlanır, bu yüzden özette hem Sum hem “Count table rows” bulunmalı. Ortalamayı DIVIDE(SUM(…), COUNTROWS(…)) diye yazmak niyeti açık eder.
+Tekil sayım: 2024’te tekil müşteri 123, ama aylık tekil müşterileri toplarsan 509 çıkar. Tekil sayım özetten toplanamaz; isabet için sayılan sütun (MusteriNo) özette GroupBy olmalıdır. Bu da özeti büyütür.
+Güvenlik ve tazelik
+RLS ifadesi hem özeti hem ayrıntıyı filtrelemeli. Yalnızca özeti filtreleyen RLS’ye izin verilmez; yalnızca ayrıntıyı filtreleyen RLS çalışır ama sorgular isabet almaz.
+Özet Import, ayrıntı DirectQuery olduğu için özet bayatlarsa aynı soru iki farklı sayı verebilir. Özetin yenilemesini kaynağın yükleme zamanına bağla.
+İsabeti nasıl ölçersin?
+Learn, SQL Server Profiler’da Query Processing → Aggregate Table Rewrite Query olayını önerir. Olayın JSON çıktısındaki matchingResult isabeti, dataRequest istenen sütunları, mapping eşlenen özet sütunlarını gösterir.
+Pratik ilk kontrol: Performans Analizi’nde (Performance Analyzer) görselin satırında DirectQuery süresi görünüyorsa sorgu kaynağa gitmiştir.
+Test listesi: her rapor sayfasındaki her görseli bir kez çalıştır, ıskaları yaz, özet taneciğini ya da ölçüyü düzelt.
+Otomatik toplamalar
+Otomatik toplamalar, son 7 günün sorgu günlüğünden öğrenerek System özet tablolarını kendisi oluşturur ve günceller. Ayarı anlam modelinin hizmetteki Ayarlar sayfasındadır; bir kaydırıcıyla önbellekten cevaplanacak sorgu yüzdesi seçilir.
+Premium kapasite, PPU ve Embedded gerekir; Pro’da yoktur. Yalnızca hizmette çalışır, Desktop’ta yoktur.
+DirectQuery modelleri ve bileşik modellerin DirectQuery kısmı içindir. Kaynaklar arasında Azure SQL Database, SQL Server 2019 ve sonrası, Snowflake, Databricks, BigQuery ve Redshift sayılır.
+Eğitim günün ilk zamanlanmış yenilemesinde çalışır ve 60 dakika sınırı vardır. Yüzde arttıkça kaynağa giden eğitim sorguları da artar.
+Hesaplanmış sütunlar dikkate alınmaz; yalnızca hibrit tablolardan oluşan modellerde açılmamalıdır; özellik açıkken .pbix indirilemez.
+Ne zaman hangisi? Sorgu kalıpları belli ve az sayıdaysa kullanıcı tanımlı özet daha öngörülebilirdir. Kullanıcılar çok farklı açılardan sorguluyorsa otomatik toplama emek kazandırır.
+Bileşik model ve depolama modu seçimi
+Toplamaların isabet alması, ilişkilerin normal kalmasına bağlıdır. Learn’in tek kaynaklı model için verdiği kural:
+Çok tarafı | Bir tarafı normal ilişki için | 
+Dual | Dual | 
+Import | Import ya da Dual | 
+DirectQuery | DirectQuery ya da Dual | 
+Yani boyutlar hem Import özete hem DirectQuery ayrıntıya bağlanacaksa tek doğru seçim Dual’dır. Boyut Import kalırsa DirectQuery ayrıntıyla ilişkisi sınırlı (limited) olur. Çoka çok ilişkiler her zaman sınırlıdır; farklı kaynaklar arasındaki ilişki yalnızca iki taraf da Import ise normaldir.
+Tablo | Mod | Neden | 
+Satislar (900 M satır) | DirectQuery (hibritse son bölüm) | Belleğe alınmaz; ayrıntı sorguları için | 
+Satış özeti (ay × kategori × durum) | Import, gizli | Raporların çoğu buradan cevaplanır | 
+Tarih, Urunler, Kategoriler, Musteriler | Dual | İki tarafa da normal ilişki | 
+Küçük bağımsız arama tabloları | Import | DirectQuery tabloya bağlı değilse | 
+Büyük model biçimi ve XMLA ile bölüm yenileme
+Büyük anlam modeli depolama biçimi (Large semantic model storage format), modelin varsayılan 1 GB sınırını aşıp kapasitenin izin verdiği boyuta kadar büyümesini sağlar. Learn’e göre Fabric F, Premium P, Embedded A SKU’larında ve PPU’da vardır; ayrılmış kapasitedeki Pro çalışma alanlarında 1 GB ile sınırlıdır. Hizmette modelin Ayarlar → Büyük anlam modeli depolama biçimi anahtarıyla açılır; Premium çalışma alanı bunu yeni modeller için varsayılan yapabilir. 1 GB’ı aşacak artımlı yenileme modellerinde ilk yenilemeden önce açılmalıdır. Ayrıca XMLA yazma performansını iyileştirdiği için küçük modellerde de önerilir.
+Bellek gerçeği: yenileme sırasında model geçici olarak daha fazla bellek ister. Kapasitenin yarısına yaklaşan bir model tam yenilemede belleği aşabilir; tek tek bölüm yenilemek bu yüzden önemlidir.
+XMLA uç noktası varsayılan olarak salt okunurdur; yazma işlemleri için kapasite ayarından Okuma Yazma açılır. SQL Server Management Studio’da TMSL ile tek bir bölüm yenilenebilir:
+{
+  "refresh": {
+    "type": "full",
+    "objects": [
+      { "database": "AnadoluSatis", "table": "Satislar", "partition": "2024Q4" }
+    ]
+  }
+}
+Yenileme yolu | Süre sınırı (Learn) | 
+Pro, zamanlanmış | 2 saat | 
+Premium, zamanlanmış | 5 saat | 
+XMLA uç noktası | Sınır yok; günlük 48 yenileme sınırına da sayılmaz | 
+Çok büyük modellerde “önyükleme” (bootstrapping) yapılır: nesneler veri yüklenmeden oluşturulur, sonra geçmiş bölümler tek tek doldurulur. Eski bir bölümü (ör. düzeltilmiş 2022 verisi) yeniden yüklemek de yalnızca XMLA ile mümkündür. Unutma: Desktop’ta yazılmış bir modelde XMLA ile yazma yapılınca model artık .pbix olarak indirilemez; kaynak dosyanı sakla.
+Direct Lake ile karşılaştırma ve karar tablosu
+Veri Fabric’te Delta tablolarındaysa “Kurumsal model” dersindeki Direct Lake seçeneği çoğu artımlı yenileme işini ortadan kaldırır: veri kopyalanmaz, “yenileme” tablonun yeni sürümüne bakmaktır (çerçeveleme). Bedeli, verinin önce bir göl evine ya da ambara taşınmış olmasıdır.
+Seçenek | Tazelik | Sorgu hızı | Kaynak yükü | Ne zaman? | 
+Import + artımlı yenileme | Son yenileme | En iyi | Yenilemede düşük | Gecelik tazelik yeterli, kaynak ilişkisel | 
+Hibrit tablo | Bugün canlı | Geçmiş hızlı, bugün kaynağa bağlı | Her sorguda biraz | “Bugünü göster” isteği, Premium/PPU | 
+Bileşik + toplama | Ayrıntı canlı, özet son yenileme | İsabette hızlı, ıskada yavaş | Iskalarda yüksek | Veri belleğe sığmıyor, sorgular çoğunlukla özet | 
+Direct Lake | Delta’nın son sürümü | Import’a yakın | Yok (OneLake okunur) | Veri zaten Fabric’te | 
+Saf DirectQuery | Canlı | Kaynağa bağlı | Her sorguda | Saniyeler önemli, kaynak çok güçlü | 
+Lisans özeti (Learn’e göre)
+Özellik | Pro | PPU | Premium / Fabric kapasitesi | 
+Artımlı yenileme | Var | Var | Var | 
+Gerçek zamanlı DirectQuery bölümü | Yok | Var | Var | 
+Büyük model biçimi | Yalnızca ayrılmış kapasitede, 1 GB | Var | Var | 
+XMLA okuma-yazma | Yok | Var | Var | 
+Otomatik toplamalar | Yok | Var | Var | 
+Kontrol listesi
+RangeStart/RangeEnd tarih/saat mi, filtre kaynak adımından hemen sonra mı, katlandığı doğrulandı mı?
+Filtre >= ve < mı? Yenileme penceresi geriye dönük düzeltmeleri kapsıyor mu?
+1 GB’ı aşacak modelde büyük model biçimi ilk yenilemeden önce açıldı mı?
+Özet tablonun taneciği raporlardaki ölçülerin bütün filtre sütunlarını kapsıyor mu? İsabet Profiler ya da Performans Analizi ile ölçüldü mü?
+Boyutlar Dual mı? RLS hem özeti hem ayrıntıyı filtreliyor mu?
+Şema değişikliği yayımlamayla değil, meta veri dağıtımıyla mı yapılıyor? Kaynak .pbix saklanıyor mu?
+Veri Fabric’teyse Direct Lake değerlendirildi mi?
+`,
+  ex: [
+    { t: 'query', q: 'Bir toplama tablosunun içeriğini benzet: ay (Tarih[YilAy]) × kategori düzeyinde Tutar (Satislar[Tutar] toplamı) ve Satir (satır sayısı) sütunlarını döndür.', start: 'EVALUATE\nSUMMARIZECOLUMNS(\n', sol: 'EVALUATE\nSUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], "Tutar", SUM(Satislar[Tutar]), "Satir", COUNTROWS(Satislar))', hint: 'SUMMARIZECOLUMNS(gruplama sütunları, "Ad", ifade, …).' },
+    { t: 'query', q: 'Özet tablo ile ayrıntının aynı sonucu verdiğini kanıtla: ay × kategori × durum düzeyinde bir özeti bir değişkende tut; tek satırlık sonuçta özetten iptaller hariç toplanan OzetNet ile [Net Satış] ölçüsünün değerini (AyrintiNet) yan yana döndür.', start: 'EVALUATE\nVAR o =\n', sol: 'EVALUATE\nVAR o = SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], Satislar[Durum], "Tutar", SUM(Satislar[Tutar]))\nRETURN ROW("OzetNet", SUMX(FILTER(o, Satislar[Durum] <> "İptal"), [Tutar]), "AyrintiNet", [Net Satış])', hint: 'Durum’u gruplama sütunlarına ekle; ROW içinde SUMX(FILTER(o, Satislar[Durum] <> "İptal"), [Tutar]).' },
+    { t: 'query', q: 'Artımlı yenileme benzetimi: yenileme 1 Ocak 2025’te çalışıyor, politika “son 10 tam günü yenile”. Tek satırda pencere içindeki satır sayısını (PencereSatir), penceredeki net satışı (PencereNet) ve pencere öncesindeki arşiv satır sayısını (ArsivSatir) döndür.', start: 'EVALUATE\nROW(\n', sol: 'EVALUATE\nROW("PencereSatir", CALCULATE(COUNTROWS(Satislar), DATESBETWEEN(Tarih[Tarih], DATE(2024, 12, 22), DATE(2024, 12, 31))), "PencereNet", CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024, 12, 22), DATE(2024, 12, 31))), "ArsivSatir", CALCULATE(COUNTROWS(Satislar), Tarih[Tarih] Özet Dostu Ortalama Tutar: satır başına ortalama tutarı, bir toplama tablosunun Sum ve Count table rows sütunlarıyla cevaplanabilecek biçimde (toplam bölü satır sayısı) yaz.', sol: 'DIVIDE(SUM(Satislar[Tutar]), COUNTROWS(Satislar))', hint: 'AVERAGE özette toplam / sayıya katlanır; bunu açıkça DIVIDE ile yaz.' },
+    { t: 'dax', name: 'Yenileme Penceresi Satışı', q: 'Yenileme Penceresi Satışı: görünen dönemin son gününden geriye 10 günlük penceredeki net satış. Bu ölçü, son yenilemede değişebilecek tutarı izlemek için kullanılacak.', sol: 'CALCULATE([Net Satış], DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -10, DAY))', hint: 'DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -10, DAY).' },
+    { t: 'mc', q: 'Özet tabloyu (ay × kategori, Tutar toplamı) kurdun ve eşledin. Ama Performans Analizi her görselde DirectQuery süresi gösteriyor. Raporlar [Net Satış] kullanıyor. En olası neden?', o: ['Ölçünün Durum filtresi özette yok', 'Özet tablo Import yerine Dual moda alınmalıydı', 'Ayrıntı tablosu da Import moduna alınmalıydı', 'Öncelik değeri 0 kaldığı için özet atlanıyor'], a: 0, why: '[Net Satış] Satislar[Durum] üzerine filtre koyar; özette Durum sütunu yoksa motor bu filtreyi özetle cevaplayamaz ve ayrıntıya gider. Durum’u GroupBy olarak ekle. Ayrıntı tablosu DirectQuery olmak zorundadır; tek özet varken öncelik sorun değildir.' },
+    { t: 'mc', q: 'Gece yenilemesi artımlı yenilemeye rağmen hâlâ saatler sürüyor. Power Query’de RangeStart filtresinden önce bir Table.Buffer adımı ve bir birleştirme var. Ne yaparsın?', o: ['Yenileme penceresini 10 günden 1 güne indir', 'Veri değişikliklerini algıla seçeneğini kapat', 'Filtreyi kaynak adımından hemen sonraya taşı', 'Parametrelerin türünü metne çevir'], a: 2, why: 'Filtre katlanmazsa her bölüm sorgusu bütün tabloyu indirir; artımlı yenilemenin kazancı kaybolur. Filtreyi kaynak adımının hemen arkasına koyup katlandığını doğrula. Pencereyi küçültmek sorunu gizler; parametreler tarih/saat olmak zorundadır.' },
+    { t: 'mc', q: 'Satış direktörü bugünün satışlarını canlı istiyor. Çalışma alanı Pro lisanslı ve model 600 MB. En dürüst cevap hangisi?', o: ['Politikaya DirectQuery bölümünü eklemek yeter', 'Büyük model biçimini açınca canlı veri gelir', 'Hibrit tablo Pro’da yok; Premium/PPU gerekir', 'Otomatik toplamaları açmak bugünü getirir'], a: 2, why: 'Learn’e göre artımlı yenileme Pro’da vardır ama gerçek zamanlı DirectQuery bölümü (hibrit tablo) yalnızca Premium, PPU ve Embedded’dadır. Büyük model biçimi boyutla, otomatik toplamalar sorgu hızıyla ilgilidir ve ikisi de Pro’da yoktur.' },
+    { t: 'mc', q: 'Bileşik modelde Satislar DirectQuery, özet tablo Import. Urunler boyutunu hangi moda almalısın ki hem özetle hem ayrıntıyla normal ilişki kursun?', o: ['Import', 'DirectQuery', 'Direct Lake', 'Dual'], a: 3, why: 'Learn’in kuralına göre Import çok tarafına Import ya da Dual, DirectQuery çok tarafına DirectQuery ya da Dual bir taraf normal ilişki verir. İkisini birden karşılayan tek mod Dual’dır.' },
+    { t: 'mc', q: 'Yönetim “aylık tekil müşteri” görselini toplama tablosundan hızlandırmak istiyor. Özet ay × kategori düzeyinde ve MusteriNo içermiyor. Ne olur?', o: ['Özet tekil sayıyı ay toplamlarından üretir', 'Count table rows eşlemesi tekil sayımı karşılar', 'Tekil sayım her durumda ayrıntıdan okunur', 'Iska olur; MusteriNo GroupBy olmalı'], a: 3, why: 'Tekil sayım toplanamaz: 2024’te tekil müşteri 123 iken aylık tekilleri toplamak 509 verir. Learn’e göre DISTINCTCOUNT, sayılan sütun özette GroupBy olarak varsa isabet alır; bu özeti büyütür ve 2–5 milyon tekil değerden sonra performans düşebilir.' },
+    { t: 'mc', q: 'Model hizmette artımlı yenilemeyle bölümlendi ve iki yıllık geçmiş yüklendi. Bir geliştirici Desktop’ta yeni bir ölçü ekleyip aynı dosyayı yeniden yayımlamak istiyor. Uyarın ne olur?', o: ['Yalnızca yeni ölçü yüklenir, bölümler korunur', 'Ölçü eklemek sonraki yenilemeyi tama çevirir', 'Yayımlamadan sonra .pbix hizmetten geri indirilir', 'Bölümler silinir; meta veri dağıtımı kullan'], a: 3, why: 'Learn’e göre Desktop’tan yeniden yayımlamak var olan bölümleri ve veriyi kaldırır; artımlı yenilemeli model .pbix olarak geri de indirilemez. Değişiklik ALM Toolkit ya da TMSL gibi araçlarla yalnızca meta veri olarak dağıtılmalı.' },
+    { t: 'mc', q: 'Kapasite yöneticisi bir RLS kuralının yalnızca özet tabloya yazıldığını görüyor; ayrıntı tablosunda kural yok. Doğru değerlendirme hangisi?', o: ['Doğru kurulum; özet zaten ayrıntıyı temsil eder', 'Ayrıntı DirectQuery olduğu için RLS gerekmez', 'Yalnızca özeti filtreleyen RLS’ye izin verilmez', 'Kural yalnızca Dual boyutlara yazılabilir'], a: 2, why: 'Learn’e göre RLS hem özeti hem ayrıntıyı filtrelemeli; yalnızca özet tabloyu filtreleyen kurala izin verilmez. Yalnızca ayrıntıyı filtrelemek çalışır ama isabet alınmaz. Iska olduğunda sorgu ayrıntıya gider; orada kural yoksa veri sızar.' }
+  ]
+});
+})(window);

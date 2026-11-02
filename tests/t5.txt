@@ -1,0 +1,513 @@
+<chat url="https://claude.ai/chat/67af05f2-0333-45bf-8844-bdec1725d9e7" updated_at="2026-10-26T13:04:04.803298+00:00" total_turns="10" turns="5-5" prev_page_token="b5" next_page_token="t6"><​title>Power BI dashboard ve DAX formülleri<​/title>
+
+<turn n="5">Assistant: Bu kapsamlı bir genişletme. Önce sertifika programlarının ve popüler eğitimlerin güncel içeriklerine bakıyorum, sonra planı netleştirip işe başlayacağım.
+&lt;tool name="WebSearch"&gt;
+&lt;parameter name="mode"&gt;standard&lt;/parameter&gt;
+&lt;parameter name="query"&gt;PL-300 study guide skills measured 2026 Power BI Data Analyst&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebSearch"&gt;
+&lt;parameter name="mode"&gt;standard&lt;/parameter&gt;
+&lt;parameter name="query"&gt;DP-600 Fabric Analytics Engineer skills measured study guide semantic model&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebSearch"&gt;
+&lt;parameter name="mode"&gt;standard&lt;/parameter&gt;
+&lt;parameter name="query"&gt;Maven Analytics Power BI Desktop for Business Intelligence course curriculum sections&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebSearch"&gt;
+&lt;parameter name="mode"&gt;standard&lt;/parameter&gt;
+&lt;parameter name="query"&gt;Microsoft Power BI Data Analyst Professional Certificate Coursera courses list&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebSearch"&gt;
+&lt;parameter name="mode"&gt;standard&lt;/parameter&gt;
+&lt;parameter name="query"&gt;SQLBI Mastering DAX course outline modules&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebFetch"&gt;
+&lt;parameter name="prompt"&gt;List the complete skills measured outline with all domains, percentages, and every bullet point (sub-skills) verbatim. Also note the date of the last update.&lt;/parameter&gt;
+&lt;parameter name="url"&gt;https://learn.microsoft.com/certifications/resources/study-guides/pl-300&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebFetch"&gt;
+&lt;parameter name="prompt"&gt;List the complete skills measured outline with domains, percentages, and every bullet verbatim, especially semantic model and DAX related items.&lt;/parameter&gt;
+&lt;parameter name="url"&gt;https://learn.microsoft.com/credentials/certifications/resources/study-guides/dp-600&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebFetch"&gt;
+&lt;parameter name="prompt"&gt;List the course curriculum: all sections and the lessons/topics in each section, and any course projects.&lt;/parameter&gt;
+&lt;parameter name="url"&gt;https://mavenanalytics.io/course/microsoft-power-bi-desktop&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebFetch"&gt;
+&lt;parameter name="prompt"&gt;List the courses in this professional certificate in order with their key topics/skills, and any capstone project details.&lt;/parameter&gt;
+&lt;parameter name="url"&gt;https://www.coursera.org/professional-certificates/microsoft-power-bi-data-analyst&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="WebFetch"&gt;
+&lt;parameter name="prompt"&gt;List all modules and topics of the Mastering DAX course outline.&lt;/parameter&gt;
+&lt;parameter name="url"&gt;https://www.sqlbi.com/wp-content/uploads/Mastering-DAX-Course-Outline.pdf&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Veri modeli genişletiliyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Teslim tarihi + pasif ilişki, satış temsilcisi, çalışanlar (ebeveyn-çocuk), departmanlar, aylık stok görüntüsü, web olayları, döviz kurları, parametre ve bağlantısız tablolar, kohort sütunları&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Veri modelini genişlet&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;DAX motoru genişletiliyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;USERELATIONSHIP, CROSSFILTER, TREATAS, EXCEPT/INTERSECT/GENERATE, WINDOW/OFFSET/INDEX, PATH ailesi, LASTNONBLANK, istatistik fonksiyonları, DATATABLE&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;DAX motorunu genişlet&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Müfredat yazılıyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;CEFR gibi A1→C2 seviyeler, her seviyede yapabilirlik tanımları; PL-300 ve DP-600 konularını kapsayan yeni dersler; üst seviyelerde uzun ölçü alıştırmaları&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;6 seviyeli müfredat (A1–C2) ve yeni dersler&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Uzun ölçüler yazılıyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;B1→C2 artan zorlukta 25+ uzun ölçü, adım adım mantık açıklaması, çalıştırılabilir sonuç&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Ölçü Laboratuvarı: uzun DAX kalıpları&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Biçim bölmesi kuruluyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Her görselde Oluştur / Biçim / Analiz bölmeleri; her seçeneğin ne yaptığı ve ne zaman kullanılacağı; seçenekler canlı grafiği değiştirsin; detay tıklayınca aşağı kaymasın&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Görseller: Biçim bölmesi simülatörü&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Menü başvurusu yazılıyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Şerit sekmeleri, Power Query menüleri, bölmeler ve Service komutlarının etkileşimli başvurusu; 30+ püf noktası (araç ipucu sayfası, yer imi, SVG ölçü, Top N + Diğer…) ve canlı demolar&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Power BI Menüleri ve Püf Noktaları&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Dashboardlar kuruluyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Her dashboard için rapor, 'Nasıl yapıldı' aşamaları, görsel inceleme yan paneli, detaya inme, rapor sayfası araç ipucu&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;13 dashboard + adım adım yapım&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Final projesi yazılıyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Tüm Power BI menülerini kullanan bitirme projesi; her uygulama bölümüne açıklama kartı; seviye testi ve sözlük genişletme&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Final Projesi ve sayfa açıklamaları&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskCreate"&gt;
+&lt;parameter name="activeForm"&gt;Doğrulanıyor&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Tüm alıştırma ve ölçüleri motorda çalıştır, performansı ölç, tarayıcıda kontrol et, aynı adrese yayınla&lt;/parameter&gt;
+&lt;parameter name="subject"&gt;Doğrula ve yayınla&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="SendUserMessage"&gt;
+&lt;parameter name="message"&gt;Geri bildirimleri aldım; uygulamayı baştan büyütüyorum. Plan şöyle:
+
+- **6 seviye (A1→C2):** İngilizce seviyeleri gibi kademeli ilerleyecek. Her seviyenin “bu seviyede şunları yapabilirsin” tanımı olacak. Ölçüler A1'de tek satırken C2'de 30–50 satıra çıkacak ve her birinin mantığı adım adım anlatılacak.
+- **Müfredat:** PL-300 (Nisan 2026) ve DP-600 (Ekim 2026) konu listelerinin her maddesi, ayrıca Coursera Microsoft sertifikası ve SQLBI Mastering DAX içerikleri kapsanacak.
+- **Ölçü Laboratuvarı (yeni bölüm):** 25'ten fazla uzun ölçü. Örnekler: Pareto/ABC, RFM, kohort, sepet analizi, Top N + Diğer, para birimi dönüşümü, eğilim çizgisi, SVG mini grafik.
+- **Görseller:** Her görselin yanında Power BI'daki gibi bir **Oluştur / Biçim / Analiz** bölmesi olacak. Her seçeneği açıp kapattığında grafik anında değişecek; yanında ne yaptığı ve ne zaman kullanılacağı yazacak. Seçtiğin görselin ayrıntısı artık aşağıda açılmayacak, olduğu yerde görünecek.
+- **Power BI Menüleri (yeni):** Desktop şerit sekmeleri, Power Query menüleri, bölmeler ve Service komutları tek tek açıklanacak.
+- **Püf Noktaları (yeni):** 30'dan fazla püf noktası. Örnekler: rapor sayfası araç ipucu, yer imi, dinamik başlık, SVG ölçü. Bir kısmı canlı demo olacak.
+- **13 dashboard:** Her birinde “Nasıl yapıldı” sekmesi aşama aşama anlatacak. Bir görselin “İncele” düğmesi, kullanılan alanları, DAX'ı ve biçim ayarlarını sağda açılan bir panelde gösterecek. Detaya inme ve araç ipucu sayfası da olacak.
+- **Final Projesi:** Sıfırdan yayına kadar her Power BI menüsünü kullanan bir bitirme projesi.
+- **Bölüm açıklamaları:** Uygulamanın her bölümünün başında ne işe yaradığını ve nasıl kullanılacağını anlatan bir kart olacak.
+
+Bu büyük bir iş; bitince aynı bağlantıdan yayınlayacağım.&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="TaskUpdate"&gt;
+&lt;parameter name="status"&gt;in_progress&lt;/parameter&gt;
+&lt;parameter name="taskId"&gt;5&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Read"&gt;
+&lt;parameter name="file_path"&gt;/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/gen_tail.js&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Write"&gt;
+&lt;parameter name="content"&gt;  /* ---------- Power BI yıldız şeması ---------- */
+  const D = s =&gt; s instanceof Date ? s : new Date(s + 'T00:00:00Z');
+  const R2 = rng(77031); const int2 = (a, b) =&gt; a + Math.floor(R2() * (b - a + 1));
+  const ST = { delivered: 'Teslim Edildi', shipped: 'Kargoda', cancelled: 'İptal', returned: 'İade' };
+  const CH = { web: 'Web', mobile: 'Mobil', store: 'Mağaza' };
+  const AYLAR = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  const GUNLER = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  const BOLGE = { 'İstanbul': 'Marmara', 'Bursa': 'Marmara', 'Eskişehir': 'İç Anadolu', 'Ankara': 'İç Anadolu', 'Konya': 'İç Anadolu', 'Kayseri': 'İç Anadolu', 'İzmir': 'Ege', 'Antalya': 'Akdeniz', 'Adana': 'Akdeniz', 'Gaziantep': 'Güneydoğu Anadolu', 'Trabzon': 'Karadeniz', 'Samsun': 'Karadeniz' };
+  const prodById = {}; prodRows.forEach(p =&gt; prodById[p[0]] = p);
+  const ordById = {}; orders.forEach(o =&gt; ordById[o[0]] = o);
+  const ym = d =&gt; d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1);
+  const mIndex = d =&gt; d.getUTCFullYear() * 12 + d.getUTCMonth();
+
+  /* Çalışanlar ve departmanlar (ebeveyn-çocuk hiyerarşisi) */
+  const Departmanlar = depts.map(d =&gt; ({ DepartmanNo: d[0], Departman: d[1], Sehir: d[2] }));
+  const empById = {}; emps.forEach(e =&gt; empById[e[0]] = e);
+  const pathOf = id =&gt; { const p = []; let cur = empById[id]; while (cur) { p.unshift(cur[0]); cur = cur[4] ? empById[cur[4]] : null; } return p.join('|'); };
+  const Calisanlar = emps.map(e =&gt; ({ CalisanNo: e[0], AdSoyad: e[1] + ' ' + e[2], DepartmanNo: e[3] || 0, YoneticiNo: e[4], Unvan: e[5], Maas: e[6], IseGiris: D(e[7]), Eposta: e[8], Yol: pathOf(e[0]), Seviye: pathOf(e[0]).split('|').length, KidemYil: Math.floor((Date.UTC(2024, 11, 31) - D(e[7]).getTime()) / (365.25 * 86400000)) }));
+  if (!Departmanlar.some(d =&gt; d.DepartmanNo === 0)) Departmanlar.push({ DepartmanNo: 0, Departman: 'Genel Müdürlük', Sehir: 'İstanbul' });
+  const reps = emps.filter(e =&gt; e[3] === 1).map(e =&gt; e[0]);
+
+  /* Müşteriler */
+  const Urunler = prodRows.map(p =&gt; ({ UrunNo: p[0], Urun: p[1], Kategori: p[2], Fiyat: p[3], BirimMaliyet: p[4], Stok: p[5] }));
+  const Kategoriler = [...new Set(prodRows.map(p =&gt; p[2]))].map(k =&gt; ({ Kategori: k }));
+  const yasGrubu = y =&gt; { const a = 2024 - y; return a &lt; 25 ? '18-24' : a &lt; 35 ? '25-34' : a &lt; 45 ? '35-44' : a &lt; 55 ? '45-54' : '55+'; };
+  const repOfCust = {}; custs.forEach(c =&gt; repOfCust[c[0]] = reps[(c[0] * 7) % reps.length]);
+  // sipariş düzeyinde teslim süresi
+  const shipDays = {}; orders.forEach(o =&gt; { shipDays[o[0]] = o[3] === 'cancelled' ? null : o[4] === 'store' ? 0 : int2(1, o[4] === 'mobile' ? 6 : 5) + (R2() &lt; .08 ? int2(3, 7) : 0); });
+  const firstBuy = {}; orders.forEach(o =&gt; { if (o[3] === 'cancelled') return; const d = D(o[2]); if (!firstBuy[o[1]] || d &lt; firstBuy[o[1]]) firstBuy[o[1]] = d; });
+  const Musteriler = custs.map(c =&gt; ({ MusteriNo: c[0], Musteri: c[1] + ' ' + c[2], Cinsiyet: c[3] === 'K' ? 'Kadın' : 'Erkek', DogumYili: c[4], YasGrubu: yasGrubu(c[4]), Sehir: c[5], Bolge: c[5] ? BOLGE[c[5]] : null, Segment: c[8], KayitTarihi: D(c[7]), IlkSiparis: firstBuy[c[0]] || null, KohortAy: firstBuy[c[0]] ? ym(firstBuy[c[0]]) : null, TemsilciNo: repOfCust[c[0]] }));
+  const bandOf = x =&gt; x === 0 ? 'İndirimsiz' : x &lt;= 0.1 ? '%5–10' : '%15–20';
+  const Satislar = items.map(it =&gt; {
+    const o = ordById[it[1]], p = prodById[it[2]]; const d = D(o[2]); const sd = shipDays[o[0]];
+    const tutar = Math.round(it[3] * it[4] * (1 - it[5]) * 100) / 100;
+    return { SatirNo: it[0], SiparisNo: it[1], Tarih: d, TeslimTarihi: sd === null ? null : new Date(d.getTime() + sd * 86400000), KargoGun: sd, MusteriNo: o[1], UrunNo: it[2], TemsilciNo: repOfCust[o[1]], Kanal: CH[o[4]], Durum: ST[o[3]], Adet: it[3], BirimFiyat: it[4], Indirim: it[5], IndirimBandi: bandOf(it[5]), Tutar: tutar, Maliyet: it[3] * p[4], KohortAyFarki: firstBuy[o[1]] ? mIndex(d) - mIndex(firstBuy[o[1]]) : null };
+  });
+  // teslim tarihi 2024 sonunu aşan satırlar tarih tablosunda yok: veri kesimi
+  Satislar.forEach(s =&gt; { if (s.TeslimTarihi &amp;&amp; s.TeslimTarihi &gt; new Date(Date.UTC(2024, 11, 31))) { s.TeslimTarihi = null; s.KargoGun = null; s.Durum = s.Durum === 'Teslim Edildi' ? 'Kargoda' : s.Durum; } });
+
+  /* Tarih tablosu */
+  const isoWeek = d =&gt; { const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 86400000 + 1) / 7); };
+  const Tarih = [];
+  for (let t = Date.UTC(2022, 0, 1); t &lt;= Date.UTC(2024, 11, 31); t += 86400000) {
+    const d = new Date(t), y = d.getUTCFullYear(), m = d.getUTCMonth(), wd = d.getUTCDay();
+    Tarih.push({ Tarih: d, Yil: y, CeyrekNo: Math.floor(m / 3) + 1, Ceyrek: 'Ç' + (Math.floor(m / 3) + 1), YilCeyrek: y + '-Ç' + (Math.floor(m / 3) + 1), AyNo: m + 1, Ay: AYLAR[m], YilAy: y + '-' + pad(m + 1), AySonu: new Date(Date.UTC(y, m + 1, 0)), Gun: d.getUTCDate(), HaftaNo: isoWeek(d), GunNo: wd === 0 ? 7 : wd, HaftaninGunu: GUNLER[wd], HaftaSonu: (wd === 0 || wd === 6) ? 'Evet' : 'Hayır' });
+  }
+  // Hedefler
+  const act = {};
+  Satislar.forEach(s =&gt; { if (s.Durum === 'İptal') return; const p = prodById[s.UrunNo]; const k = s.Tarih.getUTCFullYear() + '|' + s.Tarih.getUTCMonth() + '|' + p[2]; act[k] = (act[k] || 0) + s.Tutar; });
+  const Hedefler = [];
+  for (let y = 2022; y &lt;= 2024; y++) for (let m = 0; m &lt; 12; m++) for (const k of Kategoriler) {
+    const prev = act[(y - 1) + '|' + m + '|' + k.Kategori], cur = act[y + '|' + m + '|' + k.Kategori] || 0;
+    const base = cur * (0.86 + R() * 0.3) + (prev || 0) * 0.04;
+    Hedefler.push({ Tarih: new Date(Date.UTC(y, m, 1)), Kategori: k.Kategori, Hedef: Math.max(500, Math.round(base / 100) * 100) });
+  }
+  /* Aylık stok görüntüsü (yarı toplanabilir) */
+  const soldM = {}; Satislar.forEach(s =&gt; { if (s.Durum === 'İptal') return; const k = s.UrunNo + '|' + mIndex(s.Tarih); soldM[k] = (soldM[k] || 0) + s.Adet; });
+  const StokGorunum = [];
+  Urunler.forEach(u =&gt; {
+    let st = int2(40, 160); const reorder = u.Fiyat &gt; 3000 ? 6 : u.Fiyat &gt; 800 ? 15 : 30; const lot = u.Fiyat &gt; 3000 ? int2(10, 20) : u.Fiyat &gt; 800 ? int2(30, 60) : int2(60, 140);
+    for (let y = 2022; y &lt;= 2024; y++) for (let m = 0; m &lt; 12; m++) {
+      st -= soldM[u.UrunNo + '|' + (y * 12 + m)] || 0; let gelen = 0;
+      while (st &lt; reorder) { st += lot; gelen += lot; }
+      if (R2() &lt; 0.05) st = Math.max(0, st - int2(1, 5)); // fire / sayım farkı
+      StokGorunum.push({ Tarih: new Date(Date.UTC(y, m + 1, 0)), UrunNo: u.UrunNo, StokAdet: st, GelenAdet: gelen, StokDegeri: st * u.BirimMaliyet });
+    }
+    u.Stok = st;
+  });
+  /* Web olayları: dönüşüm hunisi (Ekim–Kasım 2024) */
+  const ADIM = ['Ziyaret', 'Ürün görüntüleme', 'Sepete ekleme', 'Ödeme', 'Satın alma'];
+  const KAYNAK = ['Organik arama', 'Organik arama', 'Reklam', 'Reklam', 'Sosyal medya', 'E-posta', 'Doğrudan'];
+  const WebOlaylari = []; let evid = 1;
+  for (let u = 1001; u &lt;= 1900; u++) {
+    const dev = R2() &lt; .6 ? 'Mobil' : 'Masaüstü'; const src = KAYNAK[int2(0, KAYNAK.length - 1)];
+    let t = Date.UTC(2024, 9, 1) + int2(0, 60 * 24 * 3600) * 1000;
+    const pr = dev === 'Mobil' ? [1, .72, .38, .55, .62] : [1, .78, .45, .62, .74];
+    const boost = src === 'E-posta' ? 1.12 : src === 'Reklam' ? .9 : 1;
+    for (let s = 0; s &lt; ADIM.length; s++) {
+      if (R2() &gt; Math.min(1, pr[s] * (s ? boost : 1))) break;
+      const d = new Date(t);
+      WebOlaylari.push({ OlayNo: evid++, ZiyaretciNo: u, Tarih: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())), Saat: d.getUTCHours(), AdimNo: s + 1, Adim: ADIM[s], Cihaz: dev, Kaynak: src });
+      t += int2(20, 900) * 1000;
+    }
+  }
+  /* Döviz kurları (aylık ortalama, yaklaşık) */
+  const DovizKurlari = []; const usdPath = [13.6, 14.6, 14.4, 14.7, 15.4, 16.6, 17.4, 18.0, 18.3, 18.5, 18.6, 18.7, 18.8, 18.9, 19.0, 19.3, 19.8, 23.5, 26.0, 26.9, 26.9, 27.8, 28.6, 29.1, 29.6, 30.6, 31.7, 32.3, 32.3, 32.6, 33.0, 33.7, 34.0, 34.2, 34.4, 35.0];
+  usdPath.forEach((v, i) =&gt; { const d = new Date(Date.UTC(2022 + Math.floor(i / 12), i % 12, 1)); DovizKurlari.push({ Tarih: d, ParaBirimi: 'USD', Kur: v }); DovizKurlari.push({ Tarih: d, ParaBirimi: 'EUR', Kur: Math.round(v * (i &lt; 10 ? 1.08 : i &lt; 20 ? 1.04 : 1.08) * 100) / 100 }); });
+  const ParaBirimleri = [{ ParaBirimi: 'TRY', Sembol: '₺', Sira: 1 }, { ParaBirimi: 'USD', Sembol: '$', Sira: 2 }, { ParaBirimi: 'EUR', Sembol: '€', Sira: 3 }];
+  /* Bağlantısız parametre tabloları */
+  const FiyatSenaryosu = []; for (let x = -20; x &lt;= 20; x += 5) FiyatSenaryosu.push({ FiyatDegisimi: x / 100 });
+  const TopNSecim = []; for (let n = 3; n &lt;= 15; n++) TopNSecim.push({ N: n });
+  const MusteriDilimleri = [{ Dilim: 'Küçük', Min: 0, Max: 2000, Sira: 1 }, { Dilim: 'Orta', Min: 2000, Max: 6000, Sira: 2 }, { Dilim: 'Büyük', Min: 6000, Max: 15000, Sira: 3 }, { Dilim: 'VIP', Min: 15000, Max: 1e9, Sira: 4 }];
+  const UrunlerVeDiger = Urunler.map((u, i) =&gt; ({ Urun: u.Urun, Sira: i + 1 })).concat([{ Urun: 'Diğer', Sira: 999 }]);
+  const KarsiUrunler = Urunler.map(u =&gt; ({ KarsiUrunNo: u.UrunNo, KarsiUrun: u.Urun, KarsiKategori: u.Kategori }));
+  const OlcuSecimi = [{ Olcu: 'Net Satış', Sira: 1 }, { Olcu: 'Brüt Kâr', Sira: 2 }, { Olcu: 'Sipariş Sayısı', Sira: 3 }, { Olcu: 'Müşteri Sayısı', Sira: 4 }];
+  const Gorunum = [{ Gorunum: 'Cari', Sira: 1 }, { Gorunum: 'Geçen yıl', Sira: 2 }, { Gorunum: 'YTD', Sira: 3 }, { Gorunum: 'YoY %', Sira: 4 }];
+
+  root.PBI_MODEL = {
+    tables: {
+      Satislar: { rows: Satislar, cols: ['SatirNo','SiparisNo','Tarih','TeslimTarihi','KargoGun','MusteriNo','UrunNo','TemsilciNo','Kanal','Durum','Adet','BirimFiyat','Indirim','IndirimBandi','Tutar','Maliyet','KohortAyFarki'], kind: 'fact', calc: { IndirimBandi: 'SWITCH(TRUE(), Satislar[Indirim] = 0, "İndirimsiz", Satislar[Indirim] &lt;= 0.1, "%5–10", "%15–20")', KohortAyFarki: 'VAR Ilk = RELATED(Musteriler[IlkSiparis])\nRETURN DATEDIFF(Ilk, Satislar[Tarih], MONTH)' } },
+      Urunler: { rows: Urunler, cols: ['UrunNo','Urun','Kategori','Fiyat','BirimMaliyet','Stok'], kind: 'dim' },
+      Musteriler: { rows: Musteriler, cols: ['MusteriNo','Musteri','Cinsiyet','DogumYili','YasGrubu','Sehir','Bolge','Segment','KayitTarihi','IlkSiparis','KohortAy','TemsilciNo'], kind: 'dim', calc: { IlkSiparis: 'CALCULATE(MIN(Satislar[Tarih]), Satislar[Durum] &lt;&gt; "İptal")', KohortAy: 'FORMAT(Musteriler[IlkSiparis], "yyyy-MM")', YasGrubu: 'VAR Yas = 2024 - Musteriler[DogumYili]\nRETURN SWITCH(TRUE(), Yas &lt; 25, "18-24", Yas &lt; 35, "25-34", Yas &lt; 45, "35-44", Yas &lt; 55, "45-54", "55+")' } },
+      Tarih: { rows: Tarih, cols: ['Tarih','Yil','CeyrekNo','Ceyrek','YilCeyrek','AyNo','Ay','YilAy','AySonu','Gun','HaftaNo','GunNo','HaftaninGunu','HaftaSonu'], kind: 'dim', dateTable: 'Tarih', sortBy: { Ay: 'AyNo', HaftaninGunu: 'GunNo', Ceyrek: 'CeyrekNo' } },
+      Kategoriler: { rows: Kategoriler, cols: ['Kategori'], kind: 'dim' },
+      Hedefler: { rows: Hedefler, cols: ['Tarih','Kategori','Hedef'], kind: 'fact' },
+      Calisanlar: { rows: Calisanlar, cols: ['CalisanNo','AdSoyad','DepartmanNo','YoneticiNo','Unvan','Maas','IseGiris','Eposta','Yol','Seviye','KidemYil'], kind: 'dim', calc: { Yol: 'PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo])', Seviye: 'PATHLENGTH(Calisanlar[Yol])' } },
+      Departmanlar: { rows: Departmanlar, cols: ['DepartmanNo','Departman','Sehir'], kind: 'dim' },
+      StokGorunum: { rows: StokGorunum, cols: ['Tarih','UrunNo','StokAdet','GelenAdet','StokDegeri'], kind: 'fact' },
+      WebOlaylari: { rows: WebOlaylari, cols: ['OlayNo','ZiyaretciNo','Tarih','Saat','AdimNo','Adim','Cihaz','Kaynak'], kind: 'fact', sortBy: { Adim: 'AdimNo' } },
+      DovizKurlari: { rows: DovizKurlari, cols: ['Tarih','ParaBirimi','Kur'], kind: 'param' },
+      ParaBirimleri: { rows: ParaBirimleri, cols: ['ParaBirimi','Sembol','Sira'], kind: 'param', sortBy: { ParaBirimi: 'Sira' } },
+      FiyatSenaryosu: { rows: FiyatSenaryosu, cols: ['FiyatDegisimi'], kind: 'param', calc: { _table: 'GENERATESERIES(-0.2, 0.2, 0.05)' } },
+      TopNSecim: { rows: TopNSecim, cols: ['N'], kind: 'param', calc: { _table: 'GENERATESERIES(3, 15, 1)' } },
+      MusteriDilimleri: { rows: MusteriDilimleri, cols: ['Dilim','Min','Max','Sira'], kind: 'param', sortBy: { Dilim: 'Sira' } },
+      UrunlerVeDiger: { rows: UrunlerVeDiger, cols: ['Urun','Sira'], kind: 'param', sortBy: { Urun: 'Sira' }, calc: { _table: 'UNION(SELECTCOLUMNS(Urunler, "Urun", Urunler[Urun]), ROW("Urun", "Diğer"))' } },
+      KarsiUrunler: { rows: KarsiUrunler, cols: ['KarsiUrunNo','KarsiUrun','KarsiKategori'], kind: 'param' },
+      OlcuSecimi: { rows: OlcuSecimi, cols: ['Olcu','Sira'], kind: 'param', sortBy: { Olcu: 'Sira' } },
+      Gorunum: { rows: Gorunum, cols: ['Gorunum','Sira'], kind: 'param', sortBy: { Gorunum: 'Sira' } }
+    },
+    rels: [
+      { from: 'Satislar', fromCol: 'UrunNo', to: 'Urunler', toCol: 'UrunNo' },
+      { from: 'Satislar', fromCol: 'MusteriNo', to: 'Musteriler', toCol: 'MusteriNo' },
+      { from: 'Satislar', fromCol: 'Tarih', to: 'Tarih', toCol: 'Tarih' },
+      { from: 'Satislar', fromCol: 'TeslimTarihi', to: 'Tarih', toCol: 'Tarih', inactive: true },
+      { from: 'Satislar', fromCol: 'TemsilciNo', to: 'Calisanlar', toCol: 'CalisanNo' },
+      { from: 'Calisanlar', fromCol: 'DepartmanNo', to: 'Departmanlar', toCol: 'DepartmanNo' },
+      { from: 'Urunler', fromCol: 'Kategori', to: 'Kategoriler', toCol: 'Kategori' },
+      { from: 'Hedefler', fromCol: 'Kategori', to: 'Kategoriler', toCol: 'Kategori' },
+      { from: 'Hedefler', fromCol: 'Tarih', to: 'Tarih', toCol: 'Tarih' },
+      { from: 'StokGorunum', fromCol: 'UrunNo', to: 'Urunler', toCol: 'UrunNo' },
+      { from: 'StokGorunum', fromCol: 'Tarih', to: 'Tarih', toCol: 'Tarih' },
+      { from: 'WebOlaylari', fromCol: 'Tarih', to: 'Tarih', toCol: 'Tarih' }
+    ],
+    notes: {
+      Satislar: 'Olgu tablosu: her satır bir sipariş satırı (tanecik). Tutar = Adet × BirimFiyat × (1 − Indirim). TeslimTarihi, Tarih tablosuna PASİF bir ilişkiyle bağlı (USERELATIONSHIP dersleri). IndirimBandi ve KohortAyFarki hesaplanmış sütunlardır.',
+      Urunler: 'Boyut: 40 ürün, 7 kategori. Stok, son ay sonundaki stok adedidir.',
+      Musteriler: 'Boyut: 150 müşteri. Bazı Sehir değerleri boş. IlkSiparis ve KohortAy hesaplanmış sütunlar (kohort analizi için).',
+      Tarih: 'Tarih tablosu (2022–2024, her gün bir satır), tarih tablosu olarak işaretli. Satislar[Tarih] ile etkin, Satislar[TeslimTarihi] ile pasif ilişkisi var: rol oynayan boyut.',
+      Kategoriler: 'Paylaşılan boyut: hem Urunler hem Hedefler bu tabloya bağlı. Hedef ile gerçekleşeni birlikte göstermek için kategoriyi buradan alın.',
+      Hedefler: 'Aylık kategori hedefi (bütçe). Ayın ilk gününe bağlı; tanecik ay × kategori.',
+      Calisanlar: 'Çalışanlar. YoneticiNo aynı tablodaki yöneticiyi gösterir (ebeveyn-çocuk). Yol = PATH(...) ile hesaplanır. Satış ekibi Satislar[TemsilciNo] üzerinden bağlı; dinamik RLS için Eposta sütunu kullanılır.',
+      Departmanlar: 'Kar tanesi (snowflake) örneği: Calisanlar → Departmanlar.',
+      StokGorunum: 'Aylık stok görüntüsü (ay sonu). Yarı toplanabilir: ürünler arasında toplanır, aylar arasında toplanmaz; dönem sonu değeri alınır.',
+      WebOlaylari: 'Web sitesi olayları (Ekim–Kasım 2024): Ziyaret → Ürün görüntüleme → Sepete ekleme → Ödeme → Satın alma. Dönüşüm hunisi dashboardu için.',
+      DovizKurlari: 'Aylık ortalama döviz kurları (yaklaşık değerler, eğitim amaçlı). Bağlantısız; para birimi dönüşümü kalıbında kullanılır.',
+      ParaBirimleri: 'Bağlantısız seçim tablosu: TRY / USD / EUR.',
+      FiyatSenaryosu: 'Ne olur (what-if) parametresi: −%20 … +%20 fiyat değişimi. Modelleme → Yeni parametre ile oluşturulur.',
+      TopNSecim: 'Ne olur parametresi: dinamik İlk N için 3–15.',
+      MusteriDilimleri: 'Dinamik segmentasyon tablosu: müşterinin net satışı hangi aralıktaysa o dilime düşer.',
+      UrunlerVeDiger: 'Top N + Diğer kalıbı için ürün adları ve ek bir “Diğer” satırı (bağlantısız).',
+      KarsiUrunler: 'Sepet analizi için Urunler\'in bağlantısız kopyası: “A ürününü alanlar B\'yi de aldı mı?”',
+      OlcuSecimi: 'Alan parametresi benzetimi: dilimleyiciden ölçü seçtirmek için.',
+      Gorunum: 'Hesaplama grubu benzetimi: Cari / Geçen yıl / YTD / YoY % görünümlerini SWITCH ile seçmek için.'
+    },
+    colDesc: {
+      'Satislar[SatirNo]': 'Sipariş satırı numarası', 'Satislar[SiparisNo]': 'Sipariş numarası (bir siparişte birden çok satır olabilir)', 'Satislar[Tarih]': 'Sipariş tarihi (Tarih tablosuna etkin ilişki)', 'Satislar[TeslimTarihi]': 'Teslim tarihi; iptallerde boş (Tarih tablosuna pasif ilişki)', 'Satislar[KargoGun]': 'Sipariş ile teslim arası gün', 'Satislar[MusteriNo]': 'Müşteri anahtarı', 'Satislar[UrunNo]': 'Ürün anahtarı', 'Satislar[TemsilciNo]': 'Müşterinin satış temsilcisi', 'Satislar[Kanal]': 'Web / Mobil / Mağaza', 'Satislar[Durum]': 'Teslim Edildi / Kargoda / İptal / İade', 'Satislar[Adet]': 'Satılan adet', 'Satislar[BirimFiyat]': 'Satış anındaki birim fiyat (TL)', 'Satislar[Indirim]': 'İndirim oranı (0,10 = %10)', 'Satislar[IndirimBandi]': 'Hesaplanmış sütun: indirim aralığı', 'Satislar[Tutar]': 'Net satış tutarı (TL)', 'Satislar[Maliyet]': 'Satırın toplam maliyeti (TL)', 'Satislar[KohortAyFarki]': 'Hesaplanmış sütun: müşterinin ilk siparişinden bu yana geçen ay',
+      'Urunler[Fiyat]': 'Liste fiyatı (TL)', 'Urunler[BirimMaliyet]': 'Bir adedin maliyeti (TL)', 'Urunler[Stok]': 'Son ay sonu stok adedi', 'Musteriler[YasGrubu]': 'Hesaplanmış sütun: 2024 itibarıyla yaş aralığı', 'Musteriler[Bolge]': 'Coğrafi bölge (Bölge → Şehir hiyerarşisi)', 'Musteriler[IlkSiparis]': 'Hesaplanmış sütun: ilk iptal edilmemiş sipariş', 'Musteriler[KohortAy]': 'Hesaplanmış sütun: ilk siparişin ayı', 'Musteriler[TemsilciNo]': 'Müşteriden sorumlu temsilci',
+      'Tarih[Ceyrek]': 'Ç1–Ç4 (CeyrekNo ile sıralanır)', 'Tarih[YilAy]': 'Sıralanabilir ay etiketi', 'Tarih[Ay]': 'Kısa ay adı (AyNo ile sıralanır)', 'Tarih[HaftaNo]': 'ISO hafta numarası', 'Tarih[GunNo]': '1 = Pazartesi … 7 = Pazar', 'Tarih[AySonu]': 'Ayın son günü',
+      'Hedefler[Hedef]': 'Aylık hedef tutar (TL)', 'Calisanlar[YoneticiNo]': 'Yöneticinin CalisanNo değeri (Genel Müdür için boş)', 'Calisanlar[Yol]': 'Hesaplanmış sütun: kökten çalışana yöneticiler zinciri', 'Calisanlar[Seviye]': 'Hiyerarşi derinliği (1 = Genel Müdür)', 'Calisanlar[Maas]': 'Aylık brüt maaş (TL)', 'Calisanlar[KidemYil]': 'Yıl olarak kıdem',
+      'StokGorunum[StokAdet]': 'Ay sonu stok adedi', 'StokGorunum[GelenAdet]': 'O ay depoya giren adet', 'StokGorunum[StokDegeri]': 'Stok adedi × birim maliyet', 'WebOlaylari[AdimNo]': '1 = Ziyaret … 5 = Satın alma', 'WebOlaylari[Saat]': 'Olayın saati (0–23)', 'DovizKurlari[Kur]': '1 birim döviz kaç TL (aylık ortalama, yaklaşık)'
+    },
+    geo: { 'İstanbul': [41.01, 28.98], 'Ankara': [39.93, 32.86], 'İzmir': [38.42, 27.14], 'Bursa': [40.19, 29.06], 'Antalya': [36.9, 30.7], 'Adana': [37.0, 35.32], 'Konya': [37.87, 32.48], 'Gaziantep': [37.07, 37.38], 'Eskişehir': [39.78, 30.52], 'Trabzon': [41.0, 39.72], 'Kayseri': [38.73, 35.48], 'Samsun': [41.29, 36.33] }
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+&lt;/parameter&gt;
+&lt;parameter name="file_path"&gt;/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/gen_tail.js&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Bash"&gt;
+&lt;parameter name="command"&gt;cd /home/claude/pbi &amp;&amp; S=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad &amp;&amp; cat $S/gen_head.js $S/gen_tail.js &gt; data.js &amp;&amp; node -e "
+require('./data.js'); const M=globalThis.PBI_MODEL; for (const t in M.tables) console.log(t.padEnd(16), M.tables[t].rows.length, JSON.stringify(M.tables[t].rows[0]).slice(0,170));
+const s=M.tables.Satislar.rows; console.log('null teslim', s.filter(x=&gt;!x.TeslimTarihi).length, 'kohort null', s.filter(x=&gt;x.KohortAyFarki==null).length);
+console.log(M.tables.Calisanlar.rows.map(c=&gt;c.CalisanNo+':'+c.Yol+':'+c.DepartmanNo).join(' '));
+"; wc -c data.js&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Build and inspect extended data&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Bash"&gt;
+&lt;parameter name="command"&gt;grep -n "relsFrom\|function mkCtx\|function tableFiltered\|function visible\|USERELATIONSHIP\|CROSSFILTER\|const KW\|TIME_UNITS = \|function applyMod\|function calcCtx" dax.js | cut -c1-180&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Locate engine sections to modify&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Read"&gt;
+&lt;parameter name="file_path"&gt;/home/claude/pbi/dax.js&lt;/parameter&gt;
+&lt;parameter name="limit"&gt;45&lt;/parameter&gt;
+&lt;parameter name="offset"&gt;128&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Bash"&gt;
+&lt;parameter name="command"&gt;python3 - &lt;&lt;'EOF'
+p='dax.js'; s=open(p).read()
+s=s.replace("const relsFrom = {}; TNAMES.forEach(t =&gt; relsFrom[t] = M.rels.filter(r =&gt; r.from === t));",
+"const relsFrom = {}; TNAMES.forEach(t =&gt; relsFrom[t] = M.rels.filter(r =&gt; r.from === t &amp;&amp; !r.inactive));\n  const ALLRELS = M.rels;")
+old=s[s.index("  function mkCtx(filters, base)"):s.index("  function removeFilters(")]
+new='''  function mkCtx(filters, base) { return { filters, shadow: base ? base.shadow : filters, scope: base ? base.scope : [], user: base ? base.user : null, relOn: base ? base.relOn : [], relOff: base ? base.relOff : [], bidir: base ? base.bidir : [], _vis: new Map() }; }
+  const affects = (f, t, c) =&gt; f.t === t &amp;&amp; (c === undefined || f.c === c || (f.c === '*' &amp;&amp; (!f.cols || f.cols.includes(c))));
+  // bağlamdaki etkin ilişkiler (USERELATIONSHIP / CROSSFILTER NONE ile değişebilir)
+  function rels(ctx, t) {
+    if (!ctx.relOn.length &amp;&amp; !ctx.relOff.length) return relsFrom[t];
+    let out = relsFrom[t].filter(r =&gt; !ctx.relOff.includes(r) &amp;&amp; !ctx.relOn.some(o =&gt; o.from === r.from &amp;&amp; o.to === r.to &amp;&amp; o !== r));
+    ctx.relOn.forEach(o =&gt; { if (o.from === t &amp;&amp; !out.includes(o)) out = out.concat([o]); });
+    return out;
+  }
+  function tableFiltered(ctx, t, depth) {
+    depth = depth || 0; if (depth &gt; 12) return false;
+    if (ctx.filters.some(f =&gt; f.t === t)) return true;
+    for (const r of rels(ctx, t)) if (tableFiltered(ctx, r.to, depth + 1)) return true;
+    for (const b of ctx.bidir) if (b.to === t &amp;&amp; tableFiltered(ctxWithout(ctx, b), b.from, depth + 1)) return true;
+    return false;
+  }
+  function ctxWithout(ctx, b) { if (!ctx._wo) ctx._wo = new Map(); if (!ctx._wo.has(b)) { const c = mkCtx(ctx.filters, ctx); c.bidir = ctx.bidir.filter(x =&gt; x !== b); ctx._wo.set(b, c); } return ctx._wo.get(b); }
+  function visible(ctx, t) {
+    if (ctx._vis.has(t)) return ctx._vis.get(t);
+    const rows = T[t].rows; let idx = allIdx[t];
+    const own = ctx.filters.filter(f =&gt; f.t === t);
+    if (own.length) idx = idx.filter(i =&gt; own.every(f =&gt; f.c === '*' ? f.rows.has(i) : f.keys.has(keyOf(rows[i][f.c]))));
+    for (const r of rels(ctx, t)) {
+      if (!tableFiltered(ctx, r.to)) continue;
+      const tr = T[r.to].rows; const ks = new Set(visible(ctx, r.to).map(i =&gt; keyOf(tr[i][r.toCol])));
+      idx = idx.filter(i =&gt; ks.has(keyOf(rows[i][r.fromCol])));
+    }
+    for (const b of ctx.bidir) {
+      if (b.to !== t) continue; const c2 = ctxWithout(ctx, b);
+      if (!tableFiltered(c2, b.from)) continue;
+      const fr = T[b.from].rows; const ks = new Set(visible(c2, b.from).map(i =&gt; keyOf(fr[i][b.fromCol])));
+      idx = idx.filter(i =&gt; ks.has(keyOf(rows[i][b.toCol])));
+    }
+    ctx._vis.set(t, idx);
+    return idx;
+  }
+  function findRel(c1, c2) { return ALLRELS.find(r =&gt; (r.from === c1.t &amp;&amp; r.fromCol === c1.c &amp;&amp; r.to === c2.t &amp;&amp; r.toCol === c2.c) || (r.from === c2.t &amp;&amp; r.fromCol === c2.c &amp;&amp; r.to === c1.t &amp;&amp; r.toCol === c1.c)); }
+'''
+s=s.replace(old,new)
+# filterArg handling
+old2="""      if (a.fn === 'USERELATIONSHIP' || a.fn === 'CROSSFILTER') err(a.fn + ' bu oyun alanının modelinde kullanılamıyor: modelde pasif ilişki yok. Kavramı derste okuyabilirsin.');
+"""
+assert old2 in s
+s=s.replace(old2,"")
+# applyMod: add rel handling at top
+i=s.index("  function applyMod(eng, mod, ctx, st) {")
+j=s.index("\n",i)
+s=s[:j+1]+"""    if (mod.mod === 'USERELATIONSHIP' || mod.mod === 'CROSSFILTER') {
+      if (mod.args.length &lt; 2 || mod.args[0].type !== 'col' || mod.args[1].type !== 'col') err(mod.mod + ' iki sütun ister: ' + mod.mod + '(Tablo1[Sütun], Tablo2[Sütun]' + (mod.mod === 'CROSSFILTER' ? ', BOTH|NONE|ONEWAY' : '') + ')');
+      const r = findRel(resolveCol(mod.args[0]), resolveCol(mod.args[1])); if (!r) err('Bu iki sütun arasında modelde ilişki yok. ' + mod.mod + ' yalnızca var olan (etkin ya da pasif) bir ilişkiyle çalışır.');
+      const c = mkCtx(ctx.filters, ctx);
+      if (mod.mod === 'USERELATIONSHIP') { c.relOn = ctx.relOn.filter(x =&gt; !(x.from === r.from &amp;&amp; x.to === r.to)).concat([r]); }
+      else { const dirv = mod.args[2] ? E(eng, mod.args[2], st) : null; const dir = dirv &amp;&amp; dirv.kind === 'kw' ? dirv.v : String(dirv || '').toUpperCase();
+        if (dir === 'NONE') c.relOff = ctx.relOff.concat([r]);
+        else if (dir === 'BOTH') { c.bidir = ctx.bidir.concat([r]); if (r.inactive) c.relOn = ctx.relOn.concat([r]); }
+        else if (dir !== 'ONEWAY') err('CROSSFILTER yönü BOTH, NONE ya da ONEWAY olmalı.'); }
+      return c;
+    }
+"""+s[j+1:]
+s=s.replace("FN.USERELATIONSHIP = () =&gt; err('USERELATIONSHIP bu modelde kullanılamaz: pasif ilişki yok.');","FN.USERELATIONSHIP = () =&gt; err('USERELATIONSHIP yalnızca CALCULATE / CALCULATETABLE içinde filtre bağımsız değişkeni olarak kullanılır.');\n  FN.CROSSFILTER = () =&gt; err('CROSSFILTER yalnızca CALCULATE / CALCULATETABLE içinde kullanılır.');")
+s=s.replace("const KW = new Set(['ASC', 'DESC', 'SKIP', 'DENSE', ...TIME_UNITS]);","const KW = new Set(['ASC', 'DESC', 'SKIP', 'DENSE', 'BOTH', 'NONE', 'ONEWAY', 'REL', 'ABS', 'STRING', 'INTEGER', 'DOUBLE', 'CURRENCY', 'DATETIME', 'BOOLEAN', 'KEEP', 'PARTIAL', ...TIME_UNITS]);")
+open(p,'w').write(s)
+EOF
+grep -n "mod.mod === 'ALL' ||" dax.js | head -2; sed -n "$(grep -n 'function applyMod' dax.js | cut -d: -f1),+3p" dax.js | cut -c1-120&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Add relationship-aware context to engine&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Bash"&gt;
+&lt;parameter name="command"&gt;python3 - &lt;&lt;'EOF'
+p='dax.js'; s=open(p).read()
+add = r'''
+  /* ---------- Ek fonksiyonlar (ileri seviye) ---------- */
+  const rowKey = r =&gt; r.map(keyOf).join('␟');
+  function tableRows(tb) { const out = []; for (let i = 0; i &lt; tLen(tb); i++) out.push(tRow(tb, i)); return out; }
+  FN.TREATAS = (eng, a, st) =&gt; {
+    need(a, 2, 'TREATAS', 'TREATAS(Tablo, Sütun1, [Sütun2], …)'); const tb = evT(eng, a[0], st, 'TREATAS');
+    const lins = a.slice(1).map(x =&gt; colArg(x, 'TREATAS')); if (tCols(tb).length !== lins.length) err('TREATAS: tablodaki sütun sayısı (' + tCols(tb).length + ') verilen sütun sayısıyla (' + lins.length + ') aynı olmalı.');
+    return colTable(lins, tableRows(tb));
+  };
+  FN.EXCEPT = (eng, a, st) =&gt; { const t1 = evT(eng, a[0], st, 'EXCEPT'), t2 = evT(eng, a[1], st, 'EXCEPT'); if (tCols(t1).length !== tCols(t2).length) err('EXCEPT: iki tablonun sütun sayısı aynı olmalı.'); const ks = new Set(tableRows(t2).map(rowKey)); const seen = new Set(); return { kind: 'table', cols: tCols(t1), rows: tableRows(t1).filter(r =&gt; { const k = rowKey(r); if (ks.has(k) || seen.has(k)) return false; seen.add(k); return true; }) }; };
+  FN.INTERSECT = (eng, a, st) =&gt; { const t1 = evT(eng, a[0], st, 'INTERSECT'), t2 = evT(eng, a[1], st, 'INTERSECT'); if (tCols(t1).length !== tCols(t2).length) err('INTERSECT: iki tablonun sütun sayısı aynı olmalı.'); const ks = new Set(tableRows(t2).map(rowKey)); return { kind: 'table', cols: tCols(t1), rows: tableRows(t1).filter(r =&gt; ks.has(rowKey(r))) }; };
+  FN.GENERATE = (eng, a, st) =&gt; {
+    const t1 = evT(eng, a[0], st, 'GENERATE'); const c1 = tCols(t1); let c2 = null; const rows = [];
+    for (let i = 0; i &lt; tLen(t1); i++) { const s2 = Object.assign({}, st, { frames: st.frames.concat([tFrame(t1, i)]) }); const t2 = evT(eng, a[1], s2, 'GENERATE'); if (!c2) c2 = tCols(t2); const r1 = tRow(t1, i); for (let j = 0; j &lt; tLen(t2); j++) rows.push(r1.concat(tRow(t2, j))); }
+    return { kind: 'table', cols: c1.concat(c2 || []), rows };
+  };
+  FN.NATURALINNERJOIN = (eng, a, st) =&gt; { const t1 = evT(eng, a[0], st), t2 = evT(eng, a[1], st); const c1 = tCols(t1), c2 = tCols(t2); const common = c1.map((c, i) =&gt; [i, c2.findIndex(d =&gt; d.name === c.name)]).filter(x =&gt; x[1] &gt;= 0); if (!common.length) err('NATURALINNERJOIN: ortak sütun yok.'); const rows = []; tableRows(t1).forEach(r1 =&gt; tableRows(t2).forEach(r2 =&gt; { if (common.every(([i, j]) =&gt; keyOf(r1[i]) === keyOf(r2[j]))) rows.push(r1.concat(r2.filter((v, j) =&gt; !common.some(x =&gt; x[1] === j)))); })); return { kind: 'table', cols: c1.concat(c2.filter((c, j) =&gt; !common.some(x =&gt; x[1] === j))), rows }; };
+  FN.CONTAINS = (eng, a, st) =&gt; { const tb = evT(eng, a[0], st, 'CONTAINS'); const cs = tCols(tb); const pairs = []; for (let i = 1; i + 1 &lt; a.length; i += 2) { const rc = colArg(a[i], 'CONTAINS'); const j = cs.findIndex(c =&gt; c.lin &amp;&amp; c.lin.t === rc.t &amp;&amp; c.lin.c === rc.c); if (j &lt; 0) err('CONTAINS: ' + rc.t + '[' + rc.c + '] tabloda yok.'); pairs.push([j, evS(eng, a[i + 1], st)]); } return tableRows(tb).some(r =&gt; pairs.every(([j, v]) =&gt; cmpVals(r[j], v) === 0 &amp;&amp; isBlank(r[j]) === isBlank(v))); };
+  FN.ISEMPTY = (eng, a, st) =&gt; tLen(evT(eng, a[0], st, 'ISEMPTY')) === 0;
+  FN.COUNTAX = (eng, a, st) =&gt; { const tb = evT(eng, a[0], st, 'COUNTAX'); const v = iterate(eng, tb, st, s =&gt; evS(eng, a[1], s)).filter(x =&gt; !isBlank(x) &amp;&amp; x !== ''); return v.length || null; };
+  FN.HASONEFILTER = (eng, a, st) =&gt; { const { t, c } = colArg(a[0], 'HASONEFILTER'); return st.ctx.filters.some(f =&gt; affects(f, t, c)) &amp;&amp; distinctCol(visible(st.ctx, t), t, c).length === 1; };
+  function pctl(arr, k) { const v = nums(arr).sort((x, y) =&gt; x - y); if (!v.length) return null; if (k &lt; 0 || k &gt; 1) err('Yüzdebirlik değeri 0 ile 1 arasında olmalı.'); const h = (v.length - 1) * k; const lo = Math.floor(h); return v[lo] + (h - lo) * ((v[lo + 1] !== undefined ? v[lo + 1] : v[lo]) - v[lo]); }
+  FN['PERCENTILE.INC'] = (eng, a, st) =&gt; pctl(colVals(eng, a[0], st, 'PERCENTILE.INC'), num(evS(eng, a[1], st)));
+  FN['PERCENTILEX.INC'] = (eng, a, st) =&gt; { const tb = evT(eng, a[0], st, 'PERCENTILEX.INC'); return pctl(iterate(eng, tb, st, s =&gt; evS(eng, a[1], s)), num(evS(eng, a[2], st))); };
+  const varOf = (arr, samp) =&gt; { const v = nums(arr); if (v.length &lt; (samp ? 2 : 1)) return null; const m = v.reduce((x, y) =&gt; x + y, 0) / v.length; return v.reduce((x, y) =&gt; x + (y - m) ** 2, 0) / (v.length - (samp ? 1 : 0)); };
+  FN['VAR.S'] = (eng, a, st) =&gt; varOf(colVals(eng, a[0], st, 'VAR.S'), true); FN['VAR.P'] = (eng, a, st) =&gt; varOf(colVals(eng, a[0], st, 'VAR.P'), false);
+  FN['VARX.S'] = (eng, a, st) =&gt; varOf(iterate(eng, evT(eng, a[0], st), st, s =&gt; evS(eng, a[1], s)), true); FN['VARX.P'] = (eng, a, st) =&gt; varOf(iterate(eng, evT(eng, a[0], st), st, s =&gt; evS(eng, a[1], s)), false);
+  FN['STDEVX.S'] = (eng, a, st) =&gt; { const v = FN['VARX.S'](eng, a, st); return v === null ? null : Math.sqrt(v); }; FN['STDEVX.P'] = (eng, a, st) =&gt; { const v = FN['VARX.P'](eng, a, st); return v === null ? null : Math.sqrt(v); };
+  FN.GEOMEAN = (eng, a, st) =&gt; { const v = nums(colVals(eng, a[0], st, 'GEOMEAN')); return v.length ? Math.exp(v.reduce((x, y) =&gt; x + Math.log(y), 0) / v.length) : null; };
+  function nonBlank(eng, a, st, last) {
+    const { t, c } = colArg(a[0], last ? 'LASTNONBLANK' : 'FIRSTNONBLANK'); const vals = distinctCol(visible(st.ctx, t), t, c).filter(v =&gt; !isBlank(v)).sort((x, y) =&gt; cmpVals(x, y));
+    if (last) vals.reverse();
+    for (const v of vals) { const fr = { cols: [{ name: t + '[' + c + ']', short: c, lin: { t, c } }], vals: [v] }; const r = evS(eng, a[1], Object.assign({}, st, { frames: st.frames.concat([fr]) })); if (!isBlank(r)) return { v, r }; }
+    return null;
+  }
+  FN.LASTNONBLANK = (eng, a, st) =&gt; { const { t, c } = colArg(a[0], 'LASTNONBLANK'); const x = nonBlank(eng, a, st, true); return colTable([{ t, c }], x ? [[x.v]] : []); };
+  FN.FIRSTNONBLANK = (eng, a, st) =&gt; { const { t, c } = colArg(a[0], 'FIRSTNONBLANK'); const x = nonBlank(eng, a, st, false); return colTable([{ t, c }], x ? [[x.v]] : []); };
+  FN.LASTNONBLANKVALUE = (eng, a, st) =&gt; { const x = nonBlank(eng, a, st, true); return x ? x.r : null; };
+  FN.FIRSTNONBLANKVALUE = (eng, a, st) =&gt; { const x = nonBlank(eng, a, st, false); return x ? x.r : null; };
+  // ebeveyn-çocuk
+  FN.PATH = (eng, a, st) =&gt; {
+    const id = colArg(a[0], 'PATH'), par = colArg(a[1], 'PATH'); if (id.t !== par.t) err('PATH: iki sütun aynı tablodan olmalı.');
+    const hit = lookupFrame(st.frames, id.t, id.c); if (!hit) err('PATH satır bağlamında çalışır (hesaplanmış sütun ya da yineleyici içinde).');
+    const ix = keyIndex(id.t, id.c); const rows = T[id.t].rows; const out = []; let cur = hit.v; let guard = 0;
+    while (!isBlank(cur) &amp;&amp; guard++ &lt; 100) { out.unshift(cur); const j = ix.get(keyOf(cur)); if (j === undefined) break; cur = rows[j][par.c]; }
+    return out.join('|');
+  };
+  FN.PATHLENGTH = (eng, a, st) =&gt; { const p = str(evS(eng, a[0], st)); return p ? p.split('|').length : 0; };
+  FN.PATHITEM = (eng, a, st) =&gt; { const p = str(evS(eng, a[0], st)).split('|'); const i = num(evS(eng, a[1], st)); const v = p[i - 1]; if (v === undefined || v === '') return null; const ty = a[2] ? num(evS(eng, a[2], st)) : 0; return ty === 1 ? Number(v) : v; };
+  FN.PATHITEMREVERSE = (eng, a, st) =&gt; { const p = str(evS(eng, a[0], st)).split('|').reverse(); const v = p[num(evS(eng, a[1], st)) - 1]; if (v === undefined || v === '') return null; return a[2] &amp;&amp; num(evS(eng, a[2], st)) === 1 ? Number(v) : v; };
+  FN.PATHCONTAINS = (eng, a, st) =&gt; str(evS(eng, a[0], st)).split('|').includes(str(evS(eng, a[1], st)));
+  // DATATABLE("Ad", STRING, "Değer", INTEGER, {{"a", 1}, {"b", 2}})
+  FN.DATATABLE = (eng, a, st) =&gt; {
+    const lst = a[a.length - 1]; if (!lst || lst.type !== 'list') err('DATATABLE son bağımsız değişken olarak {{…}, {…}} satır listesi ister.');
+    const cols = []; for (let i = 0; i + 1 &lt; a.length - 1; i += 2) { if (a[i].type !== 'lit') err('DATATABLE: sütun adı tırnak içinde olmalı.'); cols.push({ name: '[' + a[i].v + ']', short: a[i].v, lin: null }); }
+    const rows = lst.items.map(tp =&gt; { if (tp.length === 1 &amp;&amp; tp[0].type === 'list') tp = tp[0].items[0]; return tp.map(e =&gt; E(eng, e, st)); });
+    return { kind: 'table', cols, rows: rows.map(r =&gt; r.slice(0, cols.length)) };
+  };
+  // pencere fonksiyonları (tek ilişki tablosu, sıralı)
+  FN.ORDERBY = (eng, a) =&gt; ({ kind: 'orderby', items: (() =&gt; { const out = []; for (let i = 0; i &lt; a.length; i++) { let desc = false; if (a[i + 1] &amp;&amp; a[i + 1].type === 'id' &amp;&amp; ['ASC', 'DESC'].includes(a[i + 1].name.toUpperCase())) { desc = a[i + 1].name.toUpperCase() === 'DESC'; out.push({ e: a[i], desc }); i++; } else out.push({ e: a[i], desc }); } return out; })() });
+  FN.PARTITIONBY = (eng, a) =&gt; ({ kind: 'partitionby', cols: a.map(x =&gt; colArg(x, 'PARTITIONBY')) });
+  function winSetup(eng, args, st, fn) {
+    let rel = null, ob = null, pb = null;
+    args.forEach(x =&gt; { if (x.type === 'call' &amp;&amp; x.fn === 'ORDERBY') ob = E(eng, x, st); else if (x.type === 'call' &amp;&amp; x.fn === 'PARTITIONBY') pb = E(eng, x, st); else if (x.type !== 'empty' &amp;&amp; !(x.type === 'id' &amp;&amp; ['KEEP', 'PARTIAL'].includes(x.name.toUpperCase()))) { const v = E(eng, x, st); if (isTable(v)) rel = v; } });
+    if (!rel) err(fn + ' bir ilişki tablosu ister (ör. ALLSELECTED(Tarih[YilAy])).');
+    const cs = tCols(rel); let rows = tableRows(rel).map((r, i) =&gt; ({ r, f: tFrame(rel, i) }));
+    if (!ob) ob = { items: cs.map(c =&gt; ({ e: { type: 'col', t: c.lin ? c.lin.t : '', c: c.lin ? c.lin.c : c.short }, desc: false })) };
+    const keyed = rows.map(x =&gt; ({ x, k: ob.items.map(o =&gt; evS(eng, o.e, Object.assign({}, st, { frames: st.frames.concat([x.f]) }))) }));
+    keyed.sort((p, q) =&gt; { for (let i = 0; i &lt; ob.items.length; i++) { const c = rankCompare(p.k[i], q.k[i]); if (c) return ob.items[i].desc ? -c : c; } return 0; });
+    // geçerli satır
+    const curVals = cs.map(c =&gt; { if (!c.lin) return undefined; const h = lookupFrame(st.frames, c.lin.t, c.lin.c); if (h) return h.v; const d = distinctCol(visible(st.ctx, c.lin.t), c.lin.t, c.lin.c); return d.length === 1 ? d[0] : undefined; });
+    let part = keyed;
+    if (pb) { const pIdx = pb.cols.map(pc =&gt; cs.findIndex(c =&gt; c.lin &amp;&amp; c.lin.t === pc.t &amp;&amp; c.lin.c === pc.c)); part = keyed.filter(k =&gt; pIdx.every((j, n) =&gt; j &gt;= 0 &amp;&amp; curVals[j] !== undefined &amp;&amp; keyOf(k.x.r[j]) === keyOf(curVals[j]))); }
+    const known = curVals.map((v, j) =&gt; [v, j]).filter(x =&gt; x[0] !== undefined);
+    const cur = known.length ? part.findIndex(k =&gt; known.every(([v, j]) =&gt; keyOf(k.x.r[j]) === keyOf(v))) : -1;
+    return { rel, cs, part, cur };
+  }
+  const winOut = (w, list) =&gt; w.rel.base ? baseTable(w.rel.base, list.map(k =&gt; w.rel.idx[k.x.f.i] !== undefined ? k.x.f.i : k.x.f.i)) : { kind: 'table', cols: w.cs, rows: list.map(k =&gt; k.x.r) };
+  FN.OFFSET = (eng, a, st) =&gt; { const d = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'OFFSET'); if (w.cur &lt; 0) return winOut(w, []); const k = w.part[w.cur + d]; return winOut(w, k ? [k] : []); };
+  FN.INDEX = (eng, a, st) =&gt; { const n = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'INDEX'); const k = n &gt; 0 ? w.part[n - 1] : w.part[w.part.length + n]; return winOut(w, k ? [k] : []); };
+  FN.WINDOW = (eng, a, st) =&gt; {
+    need(a, 5, 'WINDOW', 'WINDOW(Başlangıç, REL|ABS, Bitiş, REL|ABS, İlişki, ORDERBY(...))');
+    const from = num(evS(eng, a[0], st)), fT = E(eng, a[1], st), to = num(evS(eng, a[2], st)), tT = E(eng, a[3], st);
+    const w = winSetup(eng, a.slice(4), st, 'WINDOW'); const n = w.part.length;
+    const pos = (v, ty) =&gt; (ty &amp;&amp; ty.v === 'ABS') ? (v &gt; 0 ? v - 1 : n + v) : w.cur + v;
+    if (((!fT || fT.v !== 'ABS') || (!tT || tT.v !== 'ABS')) &amp;&amp; w.cur &lt; 0) return winOut(w, []);
+    const s0 = Math.max(0, pos(from, fT)), e0 = Math.min(n - 1, pos(to, tT));
+    return winOut(w, s0 &lt;= e0 ? w.part.slice(s0, e0 + 1) : []);
+  };
+  FN.RANK = (eng, a, st) =&gt; { const w = winSetup(eng, a.filter(x =&gt; !(x.type === 'id' &amp;&amp; ['DENSE', 'SKIP'].includes(x.name.toUpperCase()))), st, 'RANK'); return w.cur &lt; 0 ? null : w.cur + 1; };
+  FN.ROWNUMBER = (eng, a, st) =&gt; { const w = winSetup(eng, a, st, 'ROWNUMBER'); return w.cur &lt; 0 ? null : w.cur + 1; };
+  // tarih ekleri
+  FN.WEEKNUM = (eng, a, st) =&gt; { const d = dateArg(eng, a[0], st, 'WEEKNUM'); if (!d) return null; const ty = a[1] ? num(evS(eng, a[1], st)) : 1; if (ty === 21) { const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 86400000 + 1) / 7); } const y0 = dUTC(d.getUTCFullYear(), 0, 1); const off = ty === 2 ? (y0.getUTCDay() + 6) % 7 : y0.getUTCDay(); return Math.floor((Math.round((d - y0) / 86400000) + off) / 7) + 1; };
+  FN.STARTOFQUARTER = (eng, a, st) =&gt; { const { t, c, dates } = datesArg(eng, a[0], st, 'STARTOFQUARTER'); return dtab(t, c, dates.length ? [qStart(dates[0])] : []); };
+  FN.ENDOFQUARTER = (eng, a, st) =&gt; { const { t, c, dates } = datesArg(eng, a[0], st, 'ENDOFQUARTER'); if (!dates.length) return dtab(t, c, []); const l = dates[dates.length - 1]; return dtab(t, c, [dUTC(l.getUTCFullYear(), Math.floor(l.getUTCMonth() / 3) * 3 + 3, 0)]); };
+  FN.CLOSINGBALANCEQUARTER = (eng, a, st) =&gt; FN.CALCULATE(eng, [a[0], { type: 'call', fn: 'ENDOFQUARTER', args: [a[1]] }], st);
+  FN.CLOSINGBALANCEYEAR = (eng, a, st) =&gt; FN.CALCULATE(eng, [a[0], { type: 'call', fn: 'ENDOFYEAR', args: [a[1]] }], st);
+  FN.NETWORKDAYS = (eng, a, st) =&gt; { const s = dateArg(eng, a[0], st, 'NETWORKDAYS'), e = dateArg(eng, a[1], st, 'NETWORKDAYS'); if (!s || !e) return null; let n = 0; const sg = s &lt;= e ? 1 : -1; for (let d = s; sg &gt; 0 ? d &lt;= e : d &gt;= e; d = dUTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + sg)) { const w = d.getUTCDay(); if (w !== 0 &amp;&amp; w !== 6) n++; } return n * sg; };
+  FN.FIND = (eng, a, st) =&gt; { const i = str(evS(eng, a[1], st)).indexOf(str(evS(eng, a[0], st)), a[2] ? num(evS(eng, a[2], st)) - 1 : 0); if (i &lt; 0) { if (a[3]) return evS(eng, a[3], st); err('FIND aranan metni bulamadı.'); } return i + 1; };
+  FN.REPLACE = (eng, a, st) =&gt; { const s0 = str(evS(eng, a[0], st)); const i = num(evS(eng, a[1], st)) - 1, n = num(evS(eng, a[2], st)); return s0.slice(0, i) + str(evS(eng, a[3], st)) + s0.slice(i + n); };
+  FN.COMBINEVALUES = (eng, a, st) =&gt; a.slice(1).map(x =&gt; str(evS(eng, x, st))).join(str(evS(eng, a[0], st)));
+  FN.CONVERT = (eng, a, st) =&gt; { const v = evS(eng, a[0], st); const ty = E(eng, a[1], st); const t = ty &amp;&amp; ty.kind === 'kw' ? ty.v : ''; if (t === 'STRING') return str(v); if (t === 'INTEGER') return Math.round(num(v)); if (t === 'DOUBLE' || t === 'CURRENCY') return num(v); if (t === 'BOOLEAN') return truthy(v); return v; };
+  FN.EVEN = m1(v =&gt; { const r = Math.ceil(Math.abs(v)); return Math.sign(v) * (r % 2 ? r + 1 : r); }); FN.ODD = m1(v =&gt; { const r = Math.ceil(Math.abs(v)); return Math.sign(v || 1) * (r % 2 ? r : r + 1); });
+  FN.CEILING = (eng, a, st) =&gt; { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.ceil(v / s0) * s0; };
+  FN.FLOOR = (eng, a, st) =&gt; { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.floor(v / s0) * s0; };
+  FN.MROUND = (eng, a, st) =&gt; { const v = num(evS(eng, a[0], st)), s0 = num(evS(eng, a[1], st)); return Math.round(v / s0) * s0; };
+  FN.LOG = (eng, a, st) =&gt; Math.log(num(evS(eng, a[0], st))) / Math.log(a[1] ? num(evS(eng, a[1], st)) : 10);
+  FN.PI = () =&gt; Math.PI; FN.RAND = () =&gt; 0.5;
+  FN.ALLCROSSFILTERED = FN.ALL;
+  FN.SELECTEDMEASURE = () =&gt; err('SELECTEDMEASURE yalnızca hesaplama grubu öğelerinde kullanılır; bu oyun alanında hesaplama grubu tanımlanamaz.');
+'''
+k=s.index("  /* ---------- Genel arayüz ---------- */")
+s=s[:k]+add+s[k:]
+# expose dateArg/m1 used before definition? they are const defined earlier in file: check order
+open(p,'w').write(s)
+EOF
+node -e "global.window=global;require('./data.js');require('./dax.js');console.log(Object.keys(PBI_DAX.FN).length)"&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Add advanced DAX functions&lt;/parameter&gt;
+&lt;/tool&gt;
+&lt;tool name="Bash"&gt;
+&lt;parameter name="command"&gt;sed -i "s#const winOut = (w, list) =&gt; w.rel.base ? baseTable(w.rel.base, list.map(k =&gt; w.rel.idx\[k.x.f.i\] !== undefined ? k.x.f.i : k.x.f.i)) :#const winOut = (w, list) =&gt; w.rel.base ? baseTable(w.rel.base, list.map(k =&gt; k.x.f.i)) :#" dax.js &amp;&amp; grep -c "list.map(k =&gt; k.x.f.i))" dax.js &amp;&amp; cat &gt; /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/t3.js &lt;&lt;'EOF'
+globalThis.window = globalThis;
+for (const f of ['data','dax','measures']) require('/home/claude/pbi/'+f+'.js');
+const X = PBI_DAX; const ms = {}; PBI_MEASURES.forEach(m =&gt; ms[m.name] = { name: m.name, expr: m.expr });
+const t = (lbl, e, f) =&gt; { const t0 = Date.now(); try { console.log(lbl.padEnd(18), JSON.stringify(X.evalMeasure(ms, e, f || [])), (Date.now()-t0)+'ms'); } catch (er) { console.log(lbl, 'ERR', er.message); } };
+const q = (lbl, src) =&gt; { const t0 = Date.now(); try { const r = X.runQuery(ms, src); console.log(lbl, r.cols, JSON.stringify(r.rows.slice(0,6)), (Date.now()-t0)+'ms'); } catch (er) { console.log(lbl, 'ERR', er.message); } };
+const Y = [{t:'Tarih',c:'Yil',values:[2024]}];
+t('order date', '[Net Satış]', Y);
+t('ship date', 'CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))', Y);
+t('bidir', 'CALCULATE(COUNTROWS(Urunler), CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH))', [{t:'Satislar',c:'Kanal',values:['Mağaza']},...Y]);
+t('treatas', 'CALCULATE([Net Satış], TREATAS({"Kitap","Spor"}, Kategoriler[Kategori]))');
+t('except', 'COUNTROWS(EXCEPT(VALUES(Musteriler[MusteriNo]), CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2024)))');
+t('path', 'MAXX(Calisanlar, PATHLENGTH(PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo])))');
+t('lastnonblank', 'CALCULATE(SUM(StokGorunum[StokAdet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum))))', Y);
+t('pctl', 'PERCENTILEX.INC(VALUES(Musteriler[MusteriNo]), [Net Satış], 0.8)');
+t('datatable', 'COUNTROWS(DATATABLE("Ad", STRING, "N", INTEGER, {{"a", 1}, {"b", 2}}))');
+t('generate', 'COUNTROWS(GENERATE(VALUES(Satislar[Kanal]), VALUES(Tarih[Yil])))');
+q('offset', 'EVALUATE ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış], "Önceki", CALCULATE([Net Satış], OFFSET(-1, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy]))), "Pencere3", CALCULATE([Net Satış], WINDOW(-2, REL, 0, REL, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy])))) ORDER BY Tarih[YilAy]');
+q('rank', 'EVALUATE ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "S", [Net Satış], "Sıra", RANK(ALL(Kategoriler[Kategori]), ORDERBY([Net Satış], DESC)))');
+EOF
+node /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/t3.js&lt;/parameter&gt;
+&lt;parameter name="description"&gt;Test new DAX functions&lt;/parameter&gt;
+&lt;/tool&gt;</turn></chat>

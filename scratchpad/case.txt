@@ -1,0 +1,148 @@
+#### CASE {"ex":"pl300","id":"case-pl-1","title":"Kuzey Tekstil A.Ş. (kurgusal): bölgesel satış ve stok raporlaması","tabs":[["Genel bakış","Kuzey Tekstil, Bursa merkezli bir hazır giyim üreticisi ve perakendecisidir. Altı satış bölgesinde 140 mağazası ve bir e-ticaret sitesi vardır.\nŞirket, bölge müdürlerinin haftalık performans toplantılarında kullandığı Excel raporlarını Power BI ile değiştirmek istiyor."],["Mevcut ortam","- Satış verisi, Bursa’daki veri merkezinde çalışan şirket içi bir SQL Server ERP veritabanındadır. Tablo gün, mağaza ve ürün düzeyindedir.\n- Aylık bölge hedefleri, finans ekibinin SharePoint Online’daki bir Excel dosyasında tutulur. İlk sütun Bolge’dir, sonraki sütunlar ayları (Oca, Şub, …) gösterir; yıl ilerledikçe yeni ay sütunları eklenir.\n- Depo yönetim sistemi her ayın son günü, her mağaza ve ürün için eldeki stok adedini bir Stok tablosuna yazar.\n- Microsoft Entra ID’de her bölge için bir güvenlik grubu vardır (ör. SG-Bolge-Marmara). Bölge müdürü değiştiğinde İK yalnızca grup üyeliğini günceller.\n- Raporlar “Satış Analitiği” çalışma alanında yayımlanacak. Bölge müdürleri bu alanda İzleyici, finans analistleri Katkıda bulunan rolünde olacak."],["Gereksinimler","- Model her gece 02:00’de otomatik olarak yenilenmelidir.\n- Bölge müdürleri yalnızca kendi bölgelerinin satış, hedef ve stok verisini görmelidir. Müdür değiştiğinde rapor ya da model değiştirilmemelidir.\n- Hedef sorgusu, dosyaya yeni ay sütunları eklendiğinde değişiklik gerektirmemelidir.\n- Stok raporu yıl ve çeyrek düzeyinde, dönemin son ayındaki stoku göstermelidir; ayların stokları toplanmamalıdır.\n- Finans analistleri tüm bölgelerin verisini görebilmelidir."]]}
+## case-pl-1#0 pl-ws6 mc Gece 02:00 zamanlanmış yenilemesinin çalışması için ne gereklidir?
+    0) SharePoint dosyasını OneDrive’a taşımak
+    1) Anlam modelini DirectQuery’ye çevirmek
+   *2) SQL Server için şirket içi veri ağ geçidi
+    3) Satış tablosu için artımlı yenilemeyi kapatmak
+   meta:{"id":"case-pl-1-q1","s":"pl-ws6","type":"mc","a":2}
+   WHY: Satış verisi şirket içi bir SQL Server’da olduğu için hizmetin bu kaynağa ulaşması şirket içi veri ağ geçidi ister. SharePoint Online bir bulut kaynağıdır, ağ geçidi gerekmez. DirectQuery’ye geçmek de şirket içi kaynak için ağ geçidi ihtiyacını ortadan kaldırmaz.
+
+## case-pl-1#1 pl-tl4 mc Hedef dosyası için hangi Power Query dönüşümü gereksinimi karşılar?
+    0) Ay sütunlarını tek tek seçip Yalnızca seçili sütunların özetini kaldır (Unpivot only selected columns)
+    1) Bolge sütununda Özet sütun (Pivot column) uygulamak
+    2) Tabloyu devrik (Transpose) yapıp ilk satırı başlık yapmak
+   *3) Bolge sütununu seçip Diğer sütunların özetini kaldır
+   meta:{"id":"case-pl-1-q2","s":"pl-tl4","type":"mc","a":3}
+   WHY: Diğer sütunların özetini kaldır, seçili Bolge dışındaki tüm sütunları satıra çevirir; yeni ay sütunu eklendiğinde de çalışır. Yalnızca seçili sütunlar seçeneği ay adlarını koda sabitler ve yeni ayı kaçırır; pivot ve devrik tabloyu uzun biçime getirmez.
+
+## case-pl-1#2 pl-dx5 yesno Stok gereksinimini değerlendiriyorsun. Her ifade için Evet ya da Hayır seç.
+   [E] `SUM(Stok[Adet])` ölçüsü çeyrek düzeyinde üç ayın stokunu toplar ve gereksinimi karşılamaz.
+   [E] `CALCULATE(SUM(Stok[Adet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(Stok))))` çeyrek düzeyinde son kayıtlı ayın stokunu verir.
+   [H] Stok tablosu ay sonu anlık görüntüsü olduğu için ölçüde `AVERAGE` kullanmak dönem sonu stokunu verir.
+   meta:{"id":"case-pl-1-q3","s":"pl-dx5","type":"yesno"}
+   WHY: Stok yarı toplanabilir bir değerdir: ürün ve mağaza boyunca toplanır, zaman boyunca toplanmaz. `LASTNONBLANK` dönemde kaydı olan son tarihi seçer. Ortalama, dönem sonu değil dönem ortalaması stoku verir.
+
+## case-pl-1#3 pl-sg3 multi Bölge güvenliği gereksinimini karşılamak için hangi iki işlem gerekir? İki tane seç.
+    0) Finans analistlerini de tüm bölge rollerine ayrıca eklemek
+    1) Bölge müdürlerini çalışma alanında Katkıda bulunan yapmak
+    2) Her müdürün e-posta adresini rol filtresine sabit metin olarak yazmak
+   *3) Desktop’ta her bölge için `[Bolge] = "Marmara"` gibi filtreli bir rol tanımlamak
+   *4) Service’te her role ilgili Entra bölge güvenlik grubunu üye olarak eklemek
+   meta:{"id":"case-pl-1-q4","s":"pl-sg3","type":"multi","a":[3,4]}
+   WHY: Bölge başına rol ve role atanmış güvenlik grubu, müdür değiştiğinde yalnızca grup üyeliğinin güncellenmesini yeterli kılar. Finans analistleri Katkıda bulunan oldukları için RLS’ye takılmaz ve zaten tüm veriyi görür. Müdürleri Katkıda bulunan yapmak RLS’yi devre dışı bırakır; e-postayı filtreye yazmak her değişiklikte model düzenlemesi ister.
+
+## case-pl-1#4 pl-sg3 order Bölge rollerini devreye almak için adımları doğru sıraya koy.
+   meta:{"id":"case-pl-1-q5","s":"pl-sg3","type":"order","items":["Desktop’ta Rolleri yönet (Manage roles) ile bölge rollerini ve DAX filtrelerini oluştur","Desktop’ta Rol olarak görüntüle (View as) ile filtreleri dene","Raporu “Satış Analitiği” çalışma alanına yayımla","Anlam modelinin Güvenlik sayfasında her role ilgili Entra grubunu ekle","Service’te Rol olarak test et (Test as role) ile bir müdürün görünümünü doğrula"],"extra":["Bölge müdürlerini çalışma alanında Üye rolüne al"]}
+   WHY: Roller Desktop’ta tanımlanıp denenir, model yayımlanır; üyeler Service’te atanır ve sonuç Test as role ile doğrulanır. Müdürleri Üye yapmak RLS’nin uygulanmamasına yol açar.
+
+#### CASE {"ex":"pl300","id":"case-pl-2","title":"Ege Lojistik (kurgusal): filo operasyonları ve yönetici raporları","tabs":[["Genel bakış","Ege Lojistik, İzmir merkezli bir kara taşımacılığı şirketidir. 900 araçlık bir filosu ve 12 aktarma merkezi vardır.\nŞirket Microsoft Fabric’e geçti; analiz içeriği bir Fabric kapasitesine atanmış “Operasyon” çalışma alanında tutuluyor."],["Mevcut ortam","- Araçlardan gelen GPS ve sensör olayları bir Azure SQL Database tablosuna yazılır; tabloya dakikada birkaç yüz satır eklenir.\n- Veri mühendisleri beş yıllık sevkiyat geçmişini bir Fabric lakehouse’ta Delta tabloları olarak tutar ve saatte bir günceller. Tablolar milyarlarca satırdır.\n- Kontrol merkezinde 40 operatör “Canlı Filo” rapor sayfasını vardiya boyunca açık tutar.\n- “Sevkiyat” anlam modeli Operasyon çalışma alanında yayımlıdır ve sertifikalıdır.\n- Bölge planlamacıları “Planlama” adlı ayrı bir çalışma alanında çalışır ve Operasyon çalışma alanında rolleri yoktur."],["Gereksinimler","- Canlı Filo sayfası yeni olay geldiğinde güncellenmeli; Azure SQL’e giden sorgu yükü en az olmalıdır.\n- Sevkiyat geçmişi raporları Import kadar hızlı olmalı; veri ikinci kez kopyalanmamalı ve uzun yenilemeler olmamalıdır.\n- Bölge planlamacıları Sevkiyat modelini kullanarak Planlama çalışma alanında kendi raporlarını oluşturabilmeli; Operasyon çalışma alanındaki içerikleri düzenleyememelidir.\n- Yönetim raporunun ilk sayfasında, sayfadaki görselleri özetleyen bir metin olmalıdır; yöneticiler bu metni kendileri yazmak istemiyor.\n- Aktarma merkezi şefleri raporu telefonda kullanacak; aralarında renk körlüğü olan ve ekran okuyucu kullanan kişiler var."]]}
+## case-pl-2#0 pl-us9 mc Canlı Filo sayfası için en uygun yapılandırma hangisi?
+    0) Import + saatlik zamanlanmış yenileme
+   *1) DirectQuery + değişiklik algılamalı sayfa yenileme
+    2) DirectQuery + 1 sn sabit aralıklı sayfa yenileme
+    3) Olay tablosunu lakehouse’a kopyalayıp Direct Lake + değişiklik algılama
+   meta:{"id":"case-pl-2-q1","s":"pl-us9","type":"mc","a":1}
+   WHY: Olaylar Azure SQL’de; DirectQuery ile değişiklik algılama, 40 açık oturuma rağmen kaynağa tek bir algılama sorgusu gönderir ve yalnızca veri değişince görselleri yeniler. Sabit 1 sn aralık her görselden sürekli sorgu üretir. Direct Lake değişiklik algılamayı desteklemez; Import ise güncel kalmaz.
+
+## case-pl-2#1 pl-gc3 mc Sevkiyat geçmişi tabloları için hangi depolama modunu seçersin?
+   *0) Direct Lake
+    1) Import
+    2) DirectQuery
+    3) Çift (Dual)
+   meta:{"id":"case-pl-2-q2","s":"pl-gc3","type":"mc","a":0}
+   WHY: Veri zaten lakehouse’ta Delta tablolarıdır ve çalışma alanı Fabric kapasitesindedir; Direct Lake kopyalamadan Import’a yakın hız verir ve yenileme yalnızca meta veriyi günceller. Import veriyi kopyalar ve milyarlarca satırda uzun yenileme ister; DirectQuery daha yavaştır.
+
+## case-pl-2#2 pl-sg2 mc Bölge planlamacılarına hangi erişimi verirsin?
+   *0) Sevkiyat modelinde Derleme (Build) izni
+    1) Operasyon alanında Katkıda bulunan rolü
+    2) Operasyon alanında Üye rolü
+    3) Planlama alanına modelin bir kopyasını yayımlamak
+   meta:{"id":"case-pl-2-q3","s":"pl-sg2","type":"mc","a":0}
+   WHY: Derleme izni, planlamacıların sertifikalı modele bağlanıp kendi çalışma alanlarında rapor oluşturmasını sağlar ve Operasyon alanında düzenleme hakkı vermez. Katkıda bulunan ve Üye rolleri içerik düzenletir; model kopyası ise tek doğru kaynak ilkesini bozar.
+
+## case-pl-2#3 pl-cr3 yesno Yönetim raporundaki özeti Copilot ile anlatı görseli (Narrative with Copilot) olarak ekleyeceksin. Her ifade için Evet ya da Hayır seç.
+   [E] Anlatı görseli tüm raporu, belirli sayfaları ya da seçili görselleri özetleyecek şekilde ayarlanabilir.
+   [H] Yöneticiler oluşan özet metnini görselin içinde doğrudan düzenleyebilir.
+   [E] Özetteki dipnotlar, bilginin geldiği görsele işaret eder.
+   meta:{"id":"case-pl-2-q4","s":"pl-cr3","type":"yesno"}
+   WHY: Copilot anlatısının kapsamı rapor, sayfa ya da görsel olarak seçilir; dipnotlar ilgili görseli vurgular. Metin doğrudan düzenlenemez; Copilot’a yeni bir istemle değiştirtilir ya da kopyalanıp akıllı anlatı görseline taşınır. Fabric kapasitesi gereksinimi bu vakada karşılanır.
+
+## case-pl-2#4 pl-us8 multi Aktarma merkezi şefleriyle ilgili gereksinimleri hangi iki işlem karşılar? İki tane seç.
+    0) Durumları kırmızı-yeşil renk çiftiyle ayırmak
+   *1) Mobil düzen (Mobile layout) görünümünde telefon yerleşimini hazırlamak
+   *2) Görsellere alternatif metin girip durumları yalnızca renkle değil simge ya da etiketle de göstermek
+    3) Sayfa arka planına marka renklerinde yoğun bir görsel koymak
+    4) Tüm sayfayı tek bir resim olarak dışa aktarıp rapora yerleştirmek
+   meta:{"id":"case-pl-2-q5","s":"pl-us8","type":"multi","a":[1,2]}
+   WHY: Mobil düzen telefona özel yerleşim sağlar. Alternatif metin ekran okuyuculara bilgi verir; anlamı renge ek olarak simge ya da etiketle taşımak renk körü kullanıcıları korur. Kırmızı-yeşil ayrımı ve yoğun arka plan erişilebilirliği düşürür; resim olarak dışa aktarma etkileşimi ve ekran okuyucu desteğini yok eder.
+
+#### CASE {"ex":"dp600","id":"case-dp-1","title":"Anadolu Lojistik: filo telemetrisi ve sefer analitiği","tabs":[["Genel bakış","Anadolu Lojistik, İstanbul merkezli kurgusal bir karayolu taşımacılığı şirketidir. Filodaki her araçta bulunan cihaz, birkaç saniyede bir konum, hız ve motor sıcaklığı gönderir. Şirket, operasyon ve finans raporlamasını Microsoft Fabric’e taşıyor.\n- Operasyon ekibi araçları anlık izlemek istiyor.\n- Finans ekibi sefer maliyetlerini aylık raporlarda görmek istiyor."],["Mevcut ortam","- Şirketin bir Fabric F kapasitesi ve üç çalışma alanı var: AL-Gelistirme, AL-Test, AL-Uretim.\n- Araç telemetrisi şu an Azure Event Hubs’a geliyor.\n- ERP’deki sefer ve sürücü verileri her gece Parquet dosyası olarak bir ADLS Gen2 hesabına yazılıyor; bu hesabı başka ekipler de kullanıyor.\n- Operasyon analistleri KQL biliyor.\n- Veri mühendisleri PySpark not defterleriyle çalışıyor.\n- Finans ekibi yalnızca Power BI raporlarını tüketiyor."],["Gereksinimler","- Telemetri saniyeler içinde sorgulanabilir olmalı; operasyon ekibi son bir saatte hız sınırını (90 km/s) aşan araçları KQL ile izlemeli.\n- ERP dosyaları ADLS Gen2’den Fabric’e kopyalanmamalı.\n- Telemetri tablosu, veri mühendislerinin lakehouse not defterlerinden ek bir kopyalama işi olmadan okunabilmeli.\n- Finans ekibi AL-Uretim’deki raporları görebilmeli ama hiçbir öğeyi düzenleyememeli.\n- Veri mühendisleri AL-Gelistirme’de öğe oluşturup düzenleyebilmeli ama çalışma alanı erişimini yönetememeli.\n- İçerik Geliştirme → Test → Üretim sırasıyla taşınmalı; Üretim’deki anlam modeli Üretim lakehouse’una bağlanmalı."]]}
+## case-dp-1#0 dp-gd4 mc Araç telemetrisi hangi veri deposuna alınmalıdır?
+    0) Ambar (warehouse)
+   *1) Eventhouse (KQL veritabanı)
+    2) Lakehouse’un Files klasörü
+    3) Import modlu bir anlam modeli
+   meta:{"s":"dp-gd4","type":"mc","a":1}
+   WHY: Saniyeler içinde sorgulama ve KQL bilen operasyon ekibi gereksinimi, akış verisi için tasarlanmış eventhouse’u gösterir. Ambar ve lakehouse toplu yükleme odaklıdır; Import modeli yenilemeye bağlıdır.
+
+## case-dp-1#1 dp-gd3 multi ERP ve telemetri gereksinimlerini karşılamak için hangi iki eylemi uygularsın? İki tane seç.
+   *0) Lakehouse’ta ERP’nin ADLS Gen2 klasörüne işaret eden bir OneLake kısayolu oluşturmak
+   *1) KQL veritabanında OneLake erişilebilirliğini açıp telemetri tablosuna lakehouse’ta kısayol oluşturmak
+    2) ERP dosyalarını her gece bir kopyalama etkinliğiyle lakehouse’a taşımak
+    3) Telemetriyi saatlik çalışan bir not defteriyle lakehouse Delta tablosuna kopyalamak
+    4) ERP dosyalarını `COPY INTO` ile bir ambara yüklemek
+   meta:{"s":"dp-gd3","type":"multi","a":[0,1]}
+   WHY: Kısayol, ERP dosyalarını kopyalamadan lakehouse’ta kullanılabilir yapar. OneLake erişilebilirliği telemetriyi Delta biçiminde OneLake’e açar; not defterleri ek kopyalama işi olmadan okur. Diğer seçenekler kopya oluşturur.
+
+## case-dp-1#2 dp-qa3 hot Operasyon ekibinin hız ihlali sorgusunu tamamla: son bir saatte 90 km/s’i aşan olayları araç başına say ve çoktan aza sırala.
+   meta:{"s":"dp-qa3","type":"hot","code":"AracTelemetri\n| where Zaman > {0}(1h) and Hiz > 90\n| {1} IhlalSayisi = count() by AracNo\n| {2} IhlalSayisi desc","slots":[{"o":["ago","now","datetime","between"],"a":0},{"o":["extend","summarize","project","distinct"],"a":1},{"o":["group by","having","order by","where"],"a":2}]}
+   WHY: `ago(1h)` şimdiden bir saat öncesini verir; `summarize count() by AracNo` araç başına sayar, `order by ... desc` büyükten küçüğe sıralar. `extend` satır başına sütun ekler, toplamaz.
+
+## case-dp-1#3 dp-sg1 yesno Erişim gereksinimleri için her rol ataması gereksinimi karşılıyor mu?
+   [E] Finans ekibine AL-Uretim’de Görüntüleyici (Viewer) rolü vermek gereksinimi karşılar.
+   [H] Veri mühendislerine AL-Gelistirme’de Üye (Member) rolü vermek gereksinimi karşılar.
+   [E] Veri mühendislerine AL-Gelistirme’de Katkıda Bulunan (Contributor) rolü vermek gereksinimi karşılar.
+   meta:{"s":"dp-sg1","type":"yesno"}
+   WHY: Görüntüleyici içeriği görür ama düzenleyemez. Katkıda Bulunan öğe oluşturup düzenleyebilir ama erişim yönetemez; Üye ise başkalarını çalışma alanına ekleyebildiği için “erişimi yönetememeli” şartını bozar.
+
+## case-dp-1#4 dp-lc3 order İçeriği gereksinimlere uygun biçimde Üretim’e taşımak ve Üretim modelini Üretim lakehouse’una bağlamak için adımları sırala.
+   meta:{"s":"dp-lc3","type":"order","items":["Bir dağıtım işlem hattı oluşturup AL-Gelistirme, AL-Test ve AL-Uretim’i aşamalara ata","İçeriği Geliştirme’den Test’e dağıtıp doğrula","Test’teki içeriği Üretim’e dağıt","Üretim aşamasında anlam modeli için Üretim lakehouse’una işaret eden bir dağıtım kuralı tanımla","Kuralın etkinleşmesi için Test’ten Üretim’e yeniden dağıtıp modeli yenile"],"extra":["AL-Uretim’i AL-Gelistirme ile aynı Git dalına bağla"]}
+   WHY: İşlem hattı aşamaları sırayla ilerler. Kural hedef aşamada tanımlanır ve o aşamaya yapılan sonraki dağıtımda uygulanır; dağıtım veri taşımadığı için model yenilenir.
+
+#### CASE {"ex":"dp600","id":"case-dp-2","title":"Ege Perakende: mağaza satış analitiği","tabs":[["Genel bakış","Ege Perakende, İzmir merkezli kurgusal bir mağaza zinciridir. Şirket satış ve kampanya analitiğini Microsoft Fabric’te tek bir anlam modelinde toplamak istiyor.\n- Bölge müdürleri günlük satış raporlarını kullanıyor.\n- BI ekibi raporları ve modeli birlikte geliştiriyor."],["Mevcut ortam","- Bir Fabric F kapasitesi ve iki çalışma alanı var: EP-Veri (ambar ve lakehouse) ve EP-Rapor.\n- POS satışları her gece CSV olarak lakehouse’un Files klasörüne geliyor; veri mühendisleri bunları Spark ile Delta tablolarına yazıyor.\n- `EP_Ambar` ambarında `FactSatis`, `DimMagaza` ve `DimUrun` tabloları var; BI ekibi T-SQL biliyor.\n- Pazarlamanın `Kampanya` tablosu lakehouse’ta bir Delta tablosu.\n- Mağaza kodları `00417` gibi baştaki sıfırlarla tutuluyor; CSV’de `Tutar` sütunu “1.250,40” gibi Türkçe biçimli metin olarak geliyor.\n- Rapor geliştiricileri değişiklikleri e-postayla .pbix dosyası olarak paylaşıyor."],["Gereksinimler","- Tek bir anlam modeli hem ambardaki tabloları hem lakehouse’taki `Kampanya` tablosunu Direct Lake ile okumalı; sorgular DirectQuery’ye düşmemeli.\n- Bölge müdürleri raporlarda yalnızca kendi bölgelerinin satışlarını görmeli.\n- Ambarda `FactSatis[Maliyet]` sütununu yalnızca Finans rolü sorgulayabilmeli.\n- Analistler için ambarda bölge ve ay bazında satış toplamı veren yeniden kullanılabilir bir görünüm olmalı.\n- Rapor ve model değişiklikleri Git’te satır satır karşılaştırılabilir biçimde tutulmalı."]]}
+## case-dp-2#0 dp-op3 mc Anlam modeli hangi yaklaşımla kurulmalıdır?
+    0) Ambarın SQL analitik uç noktası üzerinde Direct Lake on SQL
+    1) Ambara DirectQuery ile bağlanan bir model
+    2) Kampanya’yı ambara kopyalayıp Direct Lake on SQL kullanmak
+   *3) Direct Lake on OneLake
+   meta:{"s":"dp-op3","type":"mc","a":3}
+   WHY: Model iki ayrı öğeden (ambar ve lakehouse) okuyacak ve DirectQuery’ye düşmemeli: bunu Direct Lake on OneLake karşılar. Direct Lake on SQL tek kaynaklıdır ve ambarda sütun düzeyi güvenlik olduğunda DirectQuery’ye düşer.
+
+## case-dp-2#1 dp-sg2 multi Güvenlik gereksinimlerini karşılamak için hangi iki eylemi uygularsın? İki tane seç.
+   *0) Anlam modelinde `USERPRINCIPALNAME()` ile bölge filtreleyen dinamik satır düzeyi güvenlik rolü tanımlamak
+   *1) Ambarda `FactSatis` için Maliyet hariç sütun listeli `GRANT SELECT` vermek, Finans rolüne tüm sütunları açmak
+    2) Bölge müdürlerine EP-Rapor’da Katkıda Bulunan (Contributor) rolü vermek
+    3) Maliyet sütununa Gizli duyarlılık etiketi uygulamak
+    4) Her bölge için raporun ayrı bir kopyasını yayımlamak
+   meta:{"s":"dp-sg2","type":"multi","a":[0,1]}
+   WHY: Bölge kısıtı raporlarda olduğu için anlam modeli RLS’i ile, Maliyet kısıtı ambarda olduğu için sütun düzeyi güvenlikle karşılanır. Direct Lake on OneLake ambarın SQL güvenliğini uygulamaz; bu yüzden rapor tarafı model RLS’ine dayanır.
+
+## case-dp-2#2 dp-tr1 hot Analistler için istenen görünümü tamamla.
+   meta:{"s":"dp-tr1","type":"hot","code":"CREATE VIEW dbo.vw_BolgeAySatis\nAS\nSELECT m.Bolge, YEAR(s.Tarih) AS Yil, MONTH(s.Tarih) AS Ay,\n       {0}(s.Tutar) AS Ciro\nFROM dbo.FactSatis AS s\n{1} dbo.DimMagaza AS m ON s.MagazaKey = m.MagazaKey\n{2} m.Bolge, YEAR(s.Tarih), MONTH(s.Tarih);","slots":[{"o":["COUNT","SUM","MAX","AVG"],"a":1},{"o":["UNION","CROSS APPLY","INNER JOIN","INTO"],"a":2},{"o":["GROUP BY","ORDER BY","PARTITION BY","HAVING"],"a":0}]}
+   WHY: İstenen “satış toplamı” `SUM` ile, bölge bilgisi `DimMagaza` ile `INNER JOIN` yapılarak alınır ve sonuç bölge-yıl-ay düzeyinde `GROUP BY` ile toplanır. Görünüm içinde `TOP` olmadan `ORDER BY` kullanılamaz.
+
+## case-dp-2#3 dp-tr7 mc POS CSV’lerini Delta tablosuna yazarken mağaza kodu ve `Tutar` sütunları için hangi tür dönüşümü doğrudur?
+    0) Mağaza kodunu tamsayıya, `Tutar`’ı ondalığa çevirmek
+    1) İki sütunu da metin olarak bırakmak
+   *2) Kodu metin tutmak, `Tutar`’ı tr-TR kültürüyle ondalığa çevirmek
+    3) Mağaza kodunu ondalığa, `Tutar`’ı tamsayıya yuvarlayarak çevirmek
+   meta:{"s":"dp-tr7","type":"mc","a":2}
+   WHY: Baştaki sıfırlar bir tanımlayıcının parçasıdır; tamsayıya çevirmek `00417`’yi 417 yapar. Tutar ise hesaplamada kullanılacağı için ondalığa çevrilmeli; virgüllü Türkçe biçim kültür belirtilmeden yanlış ayrıştırılır.
+
+## case-dp-2#4 dp-lc2 yesno Git gereksinimi için her ifade için Evet ya da Hayır seç.
+   [E] Raporu .pbip olarak kaydedip proje klasörünü Git deposuna koymak, model ve rapor değişikliklerinin satır satır karşılaştırılmasını sağlar.
+   [H] .pbix dosyasını doğrudan Git’e koymak da aynı satır düzeyi karşılaştırmayı sağlar.
+   [H] Proje klasöründeki `cache.abf` dosyası, karşılaştırma için depoya eklenmelidir.
+   meta:{"s":"dp-lc2","type":"yesno"}
+   WHY: .pbip rapor ve modeli metin dosyaları (model için TMDL) olarak saklar; Git farkları satır satır gösterir. .pbix ikili bir dosyadır. `cache.abf` veri önbelleğidir ve varsayılan `.gitignore` onu dışarıda bırakır.
+

@@ -1,0 +1,18 @@
+require('./h.js');
+const p=(...x)=>console.log(JSON.stringify(x));
+const q=(rows,vals,sl)=>{const r=X.query({rows,measures:ms,values:vals,slicers:sl||[],totals:true});return {rows:r.rows.map(x=>[x.keys.join('/'),...x.vals.map(v=>typeof v!=='number'?v:Math.round(v*10000)/10000)]),total:r.total}};
+p(q([{t:'Satislar',c:'Kanal'}],['[Seçime Göre Pay %]','AVERAGEX(VALUES(Kategoriler[Kategori]), [Seçime Göre Pay %])','SUMX(VALUES(Kategoriler[Kategori]), [Seçime Göre Pay %])']));
+p(q([{t:'Calisanlar',c:'AdSoyad'}],['VAR Yonetici = SELECTEDVALUE(Calisanlar[YoneticiNo]) RETURN IF(ISINSCOPE(Calisanlar[AdSoyad]) && NOT ISBLANK(Yonetici), DIVIDE([Net Satış], CALCULATE([Net Satış], FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], Yonetici)))))']).rows.filter(r=>r[1]));
+const st='VAR Bas = MIN(Tarih[Tarih]) VAR Kapanis = CALCULATE(SUM(StokGorunum[StokAdet]), LASTDATE(Tarih[Tarih])) VAR Acilis = CALCULATE(SUM(StokGorunum[StokAdet]), REMOVEFILTERS(Tarih), Tarih[Tarih] = Bas - 1) RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)';
+p(q([{t:'Tarih',c:'YilAy'}],[st]).rows.slice(0,5));
+p(M('VAR T = FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S])) RETURN PERCENTILEX.INC(T, [S], 0.75) - PERCENTILEX.INC(T, [S], 0.25)'));
+p(Q('EVALUATE ADDCOLUMNS(VALUES(Musteriler[Sehir]), "Almayan", COUNTROWS(FILTER(CALCULATETABLE(Musteriler), ISEMPTY(RELATEDTABLE(Satislar)))))',20));
+p(Q('EVALUATE FILTER(VALUES(Urunler[Urun]), ISEMPTY(CALCULATETABLE(Satislar)))'));
+p(Q('EVALUATE FILTER(ADDCOLUMNS(VALUES(Urunler[Urun]), "Satır", CALCULATE(COUNTROWS(Satislar))), ISBLANK([Satır]))'));
+p(Q(`EVALUATE ROW("Model", [Net Satış], "Kategoriler", SUMX(VALUES(Kategoriler[Kategori]), [Net Satış]), "Fark", [Net Satış] - SUMX(VALUES(Kategoriler[Kategori]), [Net Satış]))`));
+p(Q(`DEFINE MEASURE Satislar[Web Mobil Marj] = DIVIDE([Brüt Kâr], [Net Satış]) EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], TREATAS({2024}, Tarih[Yil]), TREATAS({"Web", "Mobil"}, Satislar[Kanal]), "Satış", [Net Satış], "Marj", [Web Mobil Marj]) ORDER BY [Satış] DESC`));
+p(Q('EVALUATE ADDCOLUMNS(VALUES(Talepler[Kanal]), "CSAT", [CSAT %], "N", COUNT(Talepler[Memnuniyet]), "Hata Payı", VAR P = [CSAT %] VAR N = COUNT(Talepler[Memnuniyet]) RETURN 1.96 * SQRT(P * (1 - P) / N))'));
+p(Q('EVALUATE ADDCOLUMNS(CALCULATETABLE(VALUES(Calisanlar[AdSoyad]), Calisanlar[Seviye] = 2), "Ekip Satışı", VAR K = CALCULATE(SELECTEDVALUE(Calisanlar[CalisanNo])) RETURN CALCULATE([Net Satış], FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], K))), "Kişi", VAR K = CALCULATE(SELECTEDVALUE(Calisanlar[CalisanNo])) RETURN COUNTROWS(FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], K))))'));
+p(Q('EVALUATE ROW("Bahar 2024", CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024, 3, 1), DATE(2024, 5, 31))), "Bahar 2023", CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2023, 3, 1), DATE(2023, 5, 31))))'));
+p(Q('EVALUATE ADDCOLUMNS(CALCULATETABLE(VALUES(Tarih[YilAy]), Tarih[Yil] = 2024), "Satış", [Net Satış], "Değişim", [Net Satış] - CALCULATE([Net Satış], OFFSET(-1, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC))))',3));
+p(Q('EVALUATE ADDCOLUMNS(CROSSJOIN(VALUES(Urunler[Urun]), VALUES(Satislar[Kanal])), "Satış", [Net Satış] + 0)',3));

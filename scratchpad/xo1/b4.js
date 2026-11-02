@@ -1,0 +1,12 @@
+require('./e.js');
+p('agirlikli fiyat', ev('CALCULATE(DIVIDE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]), SUM(Satislar[Adet])), Satislar[Durum] <> "İptal")'));
+const sl=[{t:'Kategoriler',c:'Kategori',values:['Elektronik','Kitap','Spor']}];
+p(g([{t:'Kategoriler',c:'Kategori'}],['[Net Satış]','[Kategori Payı %]','[Seçime Göre Pay %]','DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Kategoriler)))'],sl));
+p('tot',ev('[Kategori Payı %]',sl),ev('[Seçime Göre Pay %]',sl),ev('[Net Satış]',sl));
+const sl2=[{t:'Satislar',c:'Kanal',values:['Web']}];
+p(g([{t:'Kategoriler',c:'Kategori'}],['[Net Satış]','DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))','DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Satislar)))'],sl2));
+p(g([{t:'Tarih',c:'YilAy'}],['DIVIDE([Net Satış], CALCULATE([Net Satış], ALLEXCEPT(Tarih, Tarih[Yil])))','DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Tarih[YilAy])))']).slice(28,36));
+p(g([{t:'Tarih',c:'Yil'}],['DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Tarih)))']));
+const e='SWITCH(TRUE(), ISINSCOPE(Urunler[Urun]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun]))), ISINSCOPE(Kategoriler[Kategori]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler))))';
+p(g([{t:'Kategoriler',c:'Kategori'},{t:'Urunler',c:'Urun'}],[e,'[Net Satış]']).slice(0,8));
+p(g([{t:'Kategoriler',c:'Kategori'}],[e]),g([{t:'Tarih',c:'Yil'}],[e]));

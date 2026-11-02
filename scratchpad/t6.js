@@ -1,0 +1,15 @@
+const p=(...x)=>console.log(...x.map(v=>JSON.stringify(v)));
+const g=(e,t,c)=>X.query({rows:[{t,c}],measures:ms,values:[e],totals:true,keepBlank:true}).rows.map(r=>r.keys[0]+'='+r.vals[0]);
+const T='VAR Son = MAX(Satislar[Tarih])\nRETURN IF(DATEDIFF(Son, DATE(2024, 12, 31), DAY) <= 7, "Güncel", "Gecikmeli")';
+p(ev(T),g(T,'Kategoriler','Kategori'),g(T,'Tarih','Yil'));
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], "Son Satış", MAX(Satislar[Tarih]), "Gecikme (gün)", DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY))').rows);
+const E='COUNTROWS(Satislar) - DISTINCTCOUNT(Satislar[SiparisNo])';p(ev(E),g(E,'Kategoriler','Kategori'),g(E,'Tarih','Yil'));
+const B='CALCULATE([Net Satış], ISBLANK(Musteriler[Bolge]))';p(ev(B),g(B,'Kategoriler','Kategori'),g(B,'Tarih','Yil'));
+const R='VAR Yetkiler = DATATABLE("Eposta", STRING, "Bolge", STRING, {{"ayse.kaya@anadolumarket.com", "Ege"}, {"ayse.kaya@anadolumarket.com", "Akdeniz"}, {"selim.aksoy@anadolumarket.com", "Marmara"}})\nVAR Bolgelerim = SELECTCOLUMNS(FILTER(Yetkiler, [Eposta] = USERPRINCIPALNAME()), "Bolge", [Bolge])\nRETURN CALCULATE([Net Satış], TREATAS(Bolgelerim, Musteriler[Bolge]))';p(ev(R),g(R,'Kategoriler','Kategori'),g(R,'Tarih','Yil'));
+const K='DIVIDE([Brüt Kâr], [Sipariş Sayısı])';p(g(K,'Kategoriler','Kategori'));
+const F='DIVIDE(CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 5), CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 4))';p(g(F,'WebOlaylari','Cihaz'),g(F,'WebOlaylari','Kaynak'));
+p(Q('EVALUATE\nVAR Gecmis = DATATABLE("Model", STRING, "Durum", STRING, "Dakika", INTEGER, {{"Satış", "Completed", 12}, {"Satış", "Completed", 14}, {"Satış", "Failed", 3}, {"Stok", "Completed", 25}, {"Stok", "Completed", 31}, {"Web", "Failed", 1}, {"Web", "Completed", 6}, {"Web", "Completed", 5}})\nVAR Basarili = FILTER(Gecmis, [Durum] = "Completed")\nRETURN ROW("Deneme", COUNTROWS(Gecmis), "Başarılı", COUNTROWS(Basarili), "Başarı %", DIVIDE(COUNTROWS(Basarili), COUNTROWS(Gecmis)), "Ort. süre (dk)", AVERAGEX(Basarili, [Dakika]))').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Tarih[YilAy], WebOlaylari[Cihaz], "Olay", COUNTROWS(WebOlaylari), "Ziyaretçi", [Ziyaretçi])').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], Urunler[Kategori], "Net Satış", [Net Satış], "Adet", [Satılan Adet])').rows.slice(0,3));
+p(Q('EVALUATE\nROW("Satır", COUNTROWS(Satislar), "Sipariş", DISTINCTCOUNT(Satislar[SiparisNo]), "Satır no", DISTINCTCOUNT(Satislar[SatirNo]))').rows);
+p(Q('EVALUATE\nROW("Kayıt", COUNTROWS(Musteriler), "Farklı ad", DISTINCTCOUNT(Musteriler[Musteri]), "Farklı no", DISTINCTCOUNT(Musteriler[MusteriNo]), "Bölgesiz", COUNTBLANK(Musteriler[Bolge]))').rows);

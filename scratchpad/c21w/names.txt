@@ -1,0 +1,197 @@
+Toplam Satış
+Toplam Adet
+Toplam Kâr
+Sipariş Sayısı
+Satır Sayısı
+Ortalama Sepet
+Son Sipariş Tarihi
+Ortalama Birim Fiyat
+En Küçük Satır
+En Büyük Satır
+Brüt Tutar
+Web Satışı
+Net Satış
+Mobil Elektronik
+Premium Satış
+Kitap ve Spor
+Liste Fiyatından Ciro
+İndirim Tutarı
+Ortalama Satır Kârı
+En Pahalı Satılan
+Kategori Payı %
+Büyük Satır Satışı
+Kanal Payı %
+Çok Satan Ürün Sayısı
+Satış YTD
+Satış GY
+YoY %
+Satış Önceki Çeyrek
+Hedef Durumu
+Performans
+Seçili Yıl Metni
+Kategori Sırası
+İlk 5 Ürün Satışı
+Ürün Sırası
+Hedef
+Hedef Gerçekleşme %
+Durum Rengi
+Marj Rengi
+Müşteri Ortalaması
+Değerli Müşteri
+En İyi Ay Satışı
+Son 3 Ay Satış
+Kümülatif Satış
+Geçen Yıl Tamamı
+Satış QTD
+Toplam Maliyet
+Grafik Başlığı
+Seçili Kanal Sayısı
+Medyan Maaş
+Maaş Değişkenliği
+Üst %20 Eşiği
+Satış YoY (DATEADD)
+Teslime Göre Satış
+Teslim Edilen Sipariş
+Satılan Ürün Sayısı
+Stok Adedi (Kapanış)
+Ortalama Stok
+Detay Düğmesi Metni
+Hedef Çizgisi
+Alternatif Metin
+Sadık Müşteri
+Kaybedilen Müşteri (Yıl)
+Karşı Ürün Satışı
+Önceki Satır Satışı
+3 Ay Pencere Ort.
+Kanal Sırası
+Geri Dönen Müşteri
+Kayıp Müşteri
+Kohort Tutma %
+Son Alımdan Bu Yana Gün
+Dilimdeki Müşteri
+Kümülatif Pay %
+Senaryo Satışı
+Satış (Top N + Diğer)
+Birlikte Alma Oranı %
+LFL Büyüme %
+Satış (Seçili Para)
+Ekip Satışı
+Ebeveyne Göre Pay %
+Hiyerarşi Derinliği
+Eğilim Eğimi
+Z-Skoru
+Aylık Satış Std. Sapma
+İndirimli Satış (Hızlı)
+Satış Değişimi
+Net Satış (0'lı)
+Şehri Bilinmeyen Satış
+Web Payı %
+İlk 3 Ürün Satışı
+Tekrar Eden Müşteri
+İade Hariç Sepet
+Mobil Kanal Payı
+Müşteri Başına Adet
+Satır Ortalaması İndirim
+Ürün Başına Ortalama Satış
+Aylık Değişim Etiketi
+Kategori Düğmesi Metni
+Düğme Dolgu Rengi
+Ortalama Alım Yaşı
+Satışsız Ürün Sayısı
+Elektronik Satışı (Zincir)
+Kategori İçi Pay %
+Ortalama Teslim Süresi
+Boş Kargo Günü
+Seçili Ay Başlığı
+Hafta Sonu Satırı
+Tutar Üst Sınırı
+Aykırı Satır Sayısı
+Kırpılmış Ortalama Tutar
+Kategori İçi Fiyat Adet r
+Gün Başına Satış
+Yarıyıl CAGR
+Ay Endeksi Tam Yıl
+Naif Tahmin 3 Ay
+Bütçe Sapma Yüzdesi
+Marj Sapması Puan
+İade Sonrası Brüt Kâr
+Mobil Satış Payı %
+YoY Fark (Düzeltilmiş)
+Brüt Ciro
+Web Payı %
+Hedef Aşımı (Ay-Kategori)
+Bölgesi Eksik Satır
+İndirim-Adet Korelasyonu
+Okula Dönüş Satışı
+Premium Satış (Tarihsel)
+Kaybedilen Müşteri (180+)
+Kayıp Oranı (180+) %
+Kaybedilen Müşteri Cirosu
+Maaş 3. Çeyreği
+Doğrudan Bağlı Sayısı
+İşe Alım Sayısı
+Ortalama Stok (Ay Sonu)
+Stok Devir Katsayısı
+Stokta Bekleme Günü
+Stoksuz Ay Sayısı
+Sepetten Satın Almaya %
+Web ve Mobil Kargo Günü
+Geç Teslim İade Oranı %
+YTD Hedef Gerçekleşme %
+YTD Hedef Açığı
+Kategori Büyüme Sırası
+Hedefi Tutan Kategori
+En Güçlü Kanal Satışı
+Hedef Durum Kodu
+Sepete Ekleme Oranı
+Kadın Satışı (Sol)
+Geçen Yıla Göre Fark
+Gösterge Maksimumu
+Diğer Segmentlerde İade %
+İade Olasılık Katı
+Kurumsal İade Farkı
+En Büyük Kategori Payı
+Toplam Adet (Tümü)
+Müşteri Başına Adet
+İade Oranı (Tutar)
+Uyarı Bayrağı
+Akış Özeti
+Akış Kayıt Notu
+İade Payı (UDF açılımı)
+Sipariş YoY (UDF açılımı)
+Web Payı (UDF açılımı)
+Aylık Ortalama (UDF açılımı)
+Asit-Test Oranı
+Özkaynak Kârlılığı
+Stokta Kalma Günü
+Şehir Sepet Endeksi
+Bölge Sıklık Endeksi
+Mağazasız Teslim Farkı
+Karmaya Göre Beklenen İade %
+Pazar Payı 2024 %
+Pay Değişimi 2024 (puan)
+Bakım Hattı Maliyeti
+Kendi Üretim Toplamı
+Üretim Başabaş Adedi
+Geçen Aya Göre %
+Dijital Satış
+Sipariş Toplam Testi
+Kargo Günü Eksik Satır
+Mağaza Kanalı Net Satış
+Beş Siparişli Müşteri
+Hedef Durum Etiketi
+Yıl İçi Hedef Gerçekleşme
+Medyan Sipariş Tutarı
+Kâr Marjı Puan Farkı
+Kurumsal İade Oranı
+Hedef Sapma Etiketi
+Hedef Cümlesi
+Web İptal Oranı
+Veri Tazeliği (Gün)
+Kargo Günü Eksik Payı
+Sipariş Başı Kâr
+Tazelik Durumu
+Ek Sipariş Satırı
+Bölgesiz Müşteri Satışı
+Ödemeden Satışa %
+Benim Bölgelerim Satışı

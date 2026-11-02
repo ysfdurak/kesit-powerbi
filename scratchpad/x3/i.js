@@ -1,0 +1,13 @@
+require('./h.js');
+console.log(Q('EVALUATE TOPN(5, SUMMARIZECOLUMNS(StokGorunum[Tarih], "N", COUNTROWS(StokGorunum)), StokGorunum[Tarih], DESC)'));
+console.log(Q('EVALUATE TOPN(3, SUMMARIZECOLUMNS(StokGorunum[Tarih], "N", COUNTROWS(StokGorunum)), StokGorunum[Tarih], ASC)'));
+def('Dönem Sonu Stok Adedi', `CALCULATE(SUM(StokGorunum[StokAdet]), LASTDATE(Tarih[Tarih]))`);
+def('Dönem Sonu Stok (Son Kayıt)', `CALCULATE(SUM(StokGorunum[StokAdet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum))))`);
+const r=[{t:'Tarih',c:'Yil'}];
+console.log(G(r, ['[Dönem Sonu Stok Adedi]','[Dönem Sonu Stok (Son Kayıt)]','SUM(StokGorunum[StokAdet])']));
+console.log(G([{t:'Tarih',c:'YilAy'}], ['[Dönem Sonu Stok Adedi]','[Dönem Sonu Stok (Son Kayıt)]']).slice(-3));
+console.log(G([{t:'Kategoriler',c:'Kategori'}], ['[Dönem Sonu Stok Adedi]','[Dönem Sonu Stok (Son Kayıt)]']));
+console.log(G([{t:'Tarih',c:'HaftaninGunu'}], ['[Dönem Sonu Stok Adedi]','[Dönem Sonu Stok (Son Kayıt)]']));
+def('Kategori İçi Ürün Payı %', `DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Urunler[Urun])))`);
+console.log(G([{t:'Urunler',c:'Urun'}], ['[Kategori İçi Ürün Payı %]','[Kategori Payı %]']).slice(0,5));
+console.log(Q('EVALUATE SUMMARIZECOLUMNS(Urunler[Kategori], "n", COUNTROWS(Urunler))'));

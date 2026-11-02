@@ -1,0 +1,5 @@
+const T = PBI_MODEL.tables; const d = (t, c) => { const m = {}; T[t].rows.forEach(r => { const k = r[c] instanceof Date ? 'date' : r[c]; m[k] = (m[k]||0)+1; }); return JSON.stringify(m).slice(0, 300); };
+for (const [t,c] of [['Musteriler','Cinsiyet'],['Musteriler','YasGrubu'],['Musteriler','Segment'],['Musteriler','Bolge'],['Musteriler','Sehir'],['Satislar','Durum'],['Satislar','IndirimBandi'],['Satislar','Kanal'],['Satislar','KargoGun'],['WebOlaylari','Adim'],['WebOlaylari','Cihaz'],['WebOlaylari','Kaynak']]) console.log(t, c, d(t, c));
+console.log('rows', T.Satislar.rows.length, 'web', T.WebOlaylari.rows.length, 'must', T.Musteriler.rows.length);
+const mm = (t,c) => { const v = T[t].rows.map(r=>r[c]).filter(x=>x!=null); const s = v.map(x=>x instanceof Date? x.toISOString().slice(0,10): x).sort(); return t+'.'+c+' '+typeof v[0]+' '+(v[0] instanceof Date)+' '+s[0]+' .. '+s[s.length-1]; };
+for (const [t,c] of [['Musteriler','KayitTarihi'],['Musteriler','IlkSiparis'],['Calisanlar','IseGiris'],['Satislar','TeslimTarihi'],['Hedefler','Tarih'],['StokGorunum','Tarih'],['DovizKurlari','Tarih'],['WebOlaylari','Tarih'],['Musteriler','DogumYili']]) console.log(mm(t,c));

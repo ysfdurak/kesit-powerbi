@@ -1,0 +1,13 @@
+q('EVALUATE ROW("Satir", COUNTROWS(Satislar), "Toplam", [Toplam Satış], "Net", [Net Satış], "Iptal", CALCULATE([Toplam Satış], Satislar[Durum]="İptal"))');
+q('EVALUATE VAR o = SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], "Tutar", SUM(Satislar[Tutar]), "Satir", COUNTROWS(Satislar)) RETURN ROW("OzetSatir", COUNTROWS(o), "OzetTutar", SUMX(o, [Tutar]), "AyrintiTutar", SUM(Satislar[Tutar]), "OzetAdet", SUMX(o,[Satir]))');
+q('EVALUATE VAR o = SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], Satislar[Durum], "Tutar", SUM(Satislar[Tutar])) RETURN ROW("n", COUNTROWS(o), "net", SUMX(FILTER(o, Satislar[Durum] <> "İptal"), [Tutar]))');
+q('EVALUATE VALUES(Satislar[Durum])');
+q('EVALUATE ROW("Pencere", CALCULATE(COUNTROWS(Satislar), DATESBETWEEN(Tarih[Tarih], DATE(2024,12,22), DATE(2024,12,31))), "PencereTutar", CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024,12,22), DATE(2024,12,31))), "Arsiv", CALCULATE(COUNTROWS(Satislar), Tarih[Tarih] < DATE(2024,12,22)))');
+q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "Satir", COUNTROWS(Satislar))');
+m('CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Tarih[Yil]=2024)');
+m('CALCULATE(SUMX(VALUES(Tarih[YilAy]), CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]))), Tarih[Yil]=2024)');
+m('DIVIDE(SUM(Satislar[Tutar]), COUNTROWS(Satislar))'); m('AVERAGE(Satislar[Tutar])');
+q('EVALUATE TOPN(3, SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], "Tutar", SUM(Satislar[Tutar]), "Satir", COUNTROWS(Satislar)), [Tutar], DESC)');
+console.log(X.query({ rows: [{ t: 'Tarih', c: 'Yil' }], measures: ms, values: ['CALCULATE([Net Satış], DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -10, DAY))','DIVIDE(SUM(Satislar[Tutar]), COUNTROWS(Satislar))'], slicers: [], totals: true }).rows);
+q('EVALUATE ROW("k", FORMAT(3, "00"), "s", "2025-H" & FORMAT(1, "00"))');
+m('VAR son = MAX(Tarih[Tarih]) VAR my = YEAR(son) + IF(MONTH(son) >= 7, 1, 0) RETURN CALCULATE([Net Satış], FILTER(ALL(Tarih), YEAR(Tarih[Tarih]) + IF(Tarih[AyNo] >= 7, 1, 0) = my))');

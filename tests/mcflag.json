@@ -1,0 +1,134 @@
+[
+ {
+  "id": "model-temel#2",
+  "q": "Hangisi tipik bir boyut tablosu sütunudur?",
+  "o": [
+   "Tutar",
+   "Adet",
+   "Segment",
+   "Maliyet"
+  ],
+  "a": 2
+ },
+ {
+  "id": "hesaplama-gruplari#0",
+  "q": "Hesaplama grubu öğesinde, görseldeki ölçüyü temsil eden fonksiyon hangisidir?",
+  "o": [
+   "SELECTEDVALUE()",
+   "SELECTEDMEASURE()",
+   "ISINSCOPE()",
+   "VALUES()"
+  ],
+  "a": 1
+ },
+ {
+  "id": "menuler-turu#2",
+  "q": "Rapor yavaş; hangi görselin ne kadar sürdüğünü görmek istiyorsun. Hangi bölme?",
+  "o": [
+   "Seçim bölmesi",
+   "Yer imleri bölmesi",
+   "Performans Analizi",
+   "Filtreler bölmesi"
+  ],
+  "a": 2
+ },
+ {
+  "id": "kurumsal-model#0",
+  "q": "Milyar satırlık olgu tablosu DirectQuery'de; yöneticiler çoğunlukla aylık kategori toplamlarına bakıyor ve rapor yavaş. Kullanıcıyı değiştirmeden çözüm?",
+  "o": [
+   "Tüm modeli Import moduna çevirmek",
+   "Import toplama tablosu + Toplamaları yönet",
+   "Yavaş görselleri sayfadan kaldırmak",
+   "Kategori bazında RLS tanımlamak"
+  ],
+  "a": 1
+ },
+ {
+  "id": "kurumsal-model#2",
+  "q": "Artımlı yenileme için Power Query'de gereken iki parametrenin adı ve türü?",
+  "o": [
+   "Baslangic ve Bitis, Metin",
+   "RangeStart, RangeEnd: Tarih/Saat",
+   "MinDate ve MaxDate, Tarih",
+   "Start ve End, Tam sayı"
+  ],
+  "a": 1
+ },
+ {
+  "id": "blank-hata#5",
+  "q": "“Birden çok değer içeren bir tablo, tek bir değer beklenen yerde kullanıldı” hatası <code>Başlık = \"Yıl: \" &amp; VALUES(Tarih[Yil])</code> ölçüsünde çıkıyor. En doğru düzeltme hangisi?",
+  "o": [
+   "İfadeyi IFERROR ile sarmak",
+   "SELECTEDVALUE(Tarih[Yil], \"Tüm yıllar\")",
+   "Ölçüyü hesaplanmış sütuna çevirmek",
+   "Tarih tablosunu tek bir yıla indirmek"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#0",
+  "q": "Power BI Desktop’ta bir görsel seçiliyken alanları (X ekseni, Y ekseni…) hangi bölmede kutulara koyarsın?",
+  "o": [
+   "Filtreler bölmesi",
+   "Görselleştirmeler → Oluştur",
+   "Yer imleri bölmesi",
+   "Seçim bölmesi"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#6",
+  "q": "Bir siparişte birden çok satır olabiliyorsa sipariş sayısını hangisi verir?",
+  "o": [
+   "COUNTROWS(Satislar)",
+   "DISTINCTCOUNT(Satislar[SiparisNo])",
+   "SUM(Satislar[SiparisNo])",
+   "COUNT(Satislar[Adet])"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#10",
+  "q": "Geçen yılın aynı dönemindeki satışı hangi formül verir?",
+  "o": [
+   "CALCULATE([Satış], PREVIOUSYEAR(Tarih[Tarih]))",
+   "CALCULATE([Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))",
+   "CALCULATE([Satış], DATEADD(Tarih[Yil], -1, YEAR))",
+   "TOTALYTD([Satış], Tarih[Tarih], -1)"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#12",
+  "q": "Dilimleyici seçimini koruyup yalnızca görselin satır filtresini kaldıran fonksiyon?",
+  "o": [
+   "ALL",
+   "ALLSELECTED",
+   "ALLEXCEPT",
+   "KEEPFILTERS"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#13",
+  "q": "Teslim tarihine göre satış için pasif ilişkiyi ölçü içinde etkinleştiren fonksiyon?",
+  "o": [
+   "CROSSFILTER",
+   "USERELATIONSHIP",
+   "TREATAS",
+   "RELATED"
+  ],
+  "a": 1
+ },
+ {
+  "id": "test#17",
+  "q": "İlişkisi olmayan bir parametre tablosundaki seçimi Urunler[Kategori] filtresi gibi uygulamanın en doğru yolu?",
+  "o": [
+   "FILTER(ALL(Urunler), Urunler[Kategori] = …)",
+   "TREATAS(VALUES(Param[Kategori]), Urunler[Kategori])",
+   "RELATED(Param[Kategori]) ile satır bazında eşleme",
+   "USERELATIONSHIP(Param[Kategori], Urunler[Kategori])"
+  ],
+  "a": 1
+ }
+]

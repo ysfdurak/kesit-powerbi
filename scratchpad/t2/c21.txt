@@ -1,0 +1,475 @@
+/* PBIPatika — c21: Uzman DAX ve ileri modelleme: genişletilmiş tablolar ve veri soyu, çoka çok ilişkiler ve köprü tablolar, uzman kalıplar (devam eden olaylar, karşılaştırılabilir dönem, döviz, bütçe taneciği) */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O && !O.includes(lesson.id)) { const i = O.indexOf(after); O.splice(i < 0 ? O.length : i + 1, 0, lesson.id); } };
+/* ---------- 1. Genişletilmiş tablolar, veri soyu, keyfi biçimli filtreler (C2 · Uzman DAX) ---------- */
+add('baglam-gecisi', {
+  id: 'genisletilmis-tablolar', lv: 'C2', mod: 'Uzman DAX', min: 40,
+  title: 'DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler',
+  sum: 'Bir tabloyu filtrelemenin aslında genişletilmiş tablosunu filtrelemek olduğu, ALL(Satislar) ve REMOVEFILTERS(Urunler) neyi siler, tablo filtresinin gizli etkisi, veri soyu (lineage) ve TREATAS, keyfi biçimli filtre ve KEEPFILTERS, ALLSELECTED ve gölge filtre bağlamı, CALCULATE argümanlarının değerlendirme sırası.',
+  body: `
+“CALCULATE: filtre bağlamını değiştirmek” ve “FILTER, ALL, ALLEXCEPT, ALLSELECTED” derslerinde kuralları öğrendin. “Bağlam geçişi” dersinde satır bağlamının filtreye nasıl dönüştüğünü gördün. Bu ders, o kuralların altındaki mekanizmayı anlatıyor. Bir ölçü “bazen” yanlış sonuç veriyorsa, sebep çoğu zaman bu derste anlatılan beş şeyden biridir: genişletilmiş tablo, tablo filtresi, veri soyu, keyfi biçimli filtre ya da argüman sırası.
+Anadolu Market’in finans ekibinden gelen üç gerçek soru ile başlayalım:
+“Kategori matrisinde ‘tüm ürünler’ toplamını istedim, REMOVEFILTERS(Urunler) yazdım. Kategori filtresi de gitti. Neden? Kategori ayrı bir tabloda.”
+“İade ve iptal hariç satış ölçüsü yazdım. Sonuç net satışla aynı çıktı; iadeler hâlâ içeride.”
+“Kullanıcı matriste Aralık 2023 ile Ocak 2024’ü birlikte seçti. ‘2024 satışı’ ölçüm Aralık 2024’ü de getirdi.”
+1 · Genişletilmiş tablo: bir tablo, bağlı olduğu boyutları da içerir
+DAX motoru her tabloyu genişletilmiş (expanded) hâliyle düşünür. Bir tablonun genişletilmiş hâli, kendi sütunları artı çoka-bir ilişkilerle bir tarafına doğru ulaşabildiği bütün tabloların sütunlarıdır. Genişleme yalnızca çok taraftan bir tarafa doğru olur; tersine olmaz.
+ | Tablo |  | Genişletilmiş hâli şunları da içerir |
+ | Satislar |  | Urunler, Kategoriler, Musteriler, Tarih, Calisanlar, Departmanlar |
+ | Urunler |  | Kategoriler |
+ | Calisanlar |  | Departmanlar |
+ | Hedefler |  | Kategoriler, Tarih |
+ | Giderler |  | Tarih, GiderTurleri, Departmanlar |
+ | Kategoriler, Tarih, Musteriler |  | Hiçbir şey (zincirin ucundaki boyutlar) |
+Microsoft Learn’e göre iki ayrıntı önemli: pasif ilişkiler de genişler (Satislar[TeslimTarihi] → Tarih bağı kullanılmasa bile) ve çift yönlü filtre genişlemeyi değiştirmez. Çoka-çok kardinaliteli (sınırlı) ilişkilerde ise genişleme hiç olmaz; bunu “Çoka çok ilişkiler” dersinde göreceksin.
+Altın kural: Bir tabloyu filtrelemek, onun genişletilmiş tablosunu filtrelemektir. Kategoriler[Kategori] = "Elektronik" filtresi Satislar’ı süzer, çünkü Kategoriler[Kategori] genişletilmiş Satislar’ın bir sütunudur. Aynı mantık ters yönde de geçerlidir: bir filtreyi kaldıran fonksiyon, genişletilmiş tablodaki filtreleri de kaldırır.
+Sayılarla: hangi kaldırma neyi siler?
+Matriste satırlarda Kategoriler[Kategori] var. Elektronik satırında beş ölçünün sonucu:
+Tüm Satış (Olgu) =
+CALCULATE([Net Satış], ALL(Satislar))
+Tüm Satış (Ürün Boyutu) =
+CALCULATE([Net Satış], REMOVEFILTERS(Urunler))
+Tüm Satış (Kategori Boyutu) =
+CALCULATE([Net Satış], REMOVEFILTERS(Kategoriler))
+Yanlış Sütun =
+CALCULATE([Net Satış], REMOVEFILTERS(Urunler[Kategori]))
+ | Ölçü |  | Elektronik satırı |  | Neden? |
+ | [Net Satış] |  | 339.304 ₺ |  | Kategori filtresi Satislar’a ulaşır. |
+ | ALL(Satislar) |  | 1.250.772 ₺ |  | Kategoriler genişletilmiş Satislar’ın içinde; filtre kalkar. |
+ | REMOVEFILTERS(Urunler) |  | 1.250.772 ₺ |  | Urunler’in genişletilmiş hâli Kategoriler’i içerir; kategori filtresi de kalkar. |
+ | REMOVEFILTERS(Kategoriler) |  | 1.250.772 ₺ |  | Filtre doğrudan bu tabloda. |
+ | REMOVEFILTERS(Urunler[Kategori]) |  | 339.304 ₺ |  | Görselin filtresi Kategoriler’de, bu sütunda değil; hiçbir şey kalkmaz. |
+Ters yönü de dene: satırlarda Urunler[Urun] varken REMOVEFILTERS(Kategoriler) ürün filtresini kaldırmaz; 27" Monitör satırı 101.986 ₺ olarak kalır. Çünkü Kategoriler’in genişletilmiş tablosunda Urunler yoktur. Satislar[Kanal] kırılımında da REMOVEFILTERS(Urunler) kanal filtresine dokunmaz: Mağaza satırı 193.600 ₺ kalır, oysa ALL(Satislar) orada da 1.250.772 ₺ verir.
+Pratik kuralKaldırmak istediğin filtreyi, görselin filtrelediği sütunu ya da boyut tablosunu adıyla anarak kaldır. Olgu tablosunu (ALL(Satislar)) hedeflemek, istemediğin bütün boyut filtrelerini de siler.
+2 · Tablo filtresi: görünmeyen sütunlar da filtredir
+Finans ekibinin ikinci sorusu. Hedef: iptal ve iade hariç satış. [Net Satış] zaten iptalleri çıkarıyor; üzerine iade filtresi eklemek yeterli gibi görünür.
+İadesiz (Deneme A) =
+CALCULATE([Net Satış], Satislar[Durum] <> "İade")
+İadesiz (Deneme B) =
+CALCULATE([Net Satış], FILTER(Satislar, Satislar[Durum] <> "İade"))
+İadesiz (Deneme C) =
+CALCULATE([Net Satış], FILTER(ALL(Satislar), Satislar[Durum] <> "İade"))
+İadesiz (Doğru) =
+CALCULATE([Toplam Satış], Satislar[Durum] <> "İptal", Satislar[Durum] <> "İade")
+ | Deneme |  | Toplam |  | Elektronik satırı |  | Ne oldu? |
+ | A · sütun filtresi |  | 1.250.772 ₺ |  | 339.304 ₺ |  | [Net Satış] içindeki CALCULATE, Durum sütununa kendi filtresini yazar ve dıştaki “İade değil” filtresinin üzerine yazar. İadeler geri gelir. |
+ | B · FILTER(Satislar) |  | 1.169.937 ₺ |  | 323.108 ₺ |  | Doğru ama yavaş. Tablo filtresi Satislar’ın bütün sütunlarını (SatirNo dahil) taşır. İçteki CALCULATE yalnızca Durum’u değiştirebilir; iade satırları SatirNo filtresiyle dışarıda kalır. |
+ | C · FILTER(ALL(Satislar)) |  | 1.169.937 ₺ |  | 1.169.937 ₺ |  | Toplam doğru, kırılım bozuk. ALL(Satislar) genişletilmiş tabloyu, yani kategori filtresini de siler. |
+ | Doğru · iki koşul tek CALCULATE’te |  | 1.169.937 ₺ |  | 323.108 ₺ |  | Aynı sütuna iki ayrı filtre argümanı VE ile kesişir. Hızlı ve okunur. |
+B ile C’nin farkı tam olarak genişletilmiş tablodur. B, o anki bağlamda görünen Satislar satırlarını alır; bu satırlar zaten kategoriye göre süzülmüştür ve tablo filtresi olarak verildiğinde Kategoriler sütunları da filtrede kalır. C ise önce bütün filtreleri kaldırır, sonra satırları döndürür. Diğer yol [Net Satış] - [İade Tutarı] da aynı sonucu verir ve ekipte en kolay okunan yazımdır.
+Anti-kalıp: olgu tablosunu FILTER’a vermekFILTER(Satislar, …) bütün olgu tablosunu satır satır dolaşır ve sonucu genişletilmiş tablo filtresi olarak taşır. Bir milyon satırlık modelde yavaştır ve filtre bağlamına gereksiz sütunlar ekler. Koşul tek sütundaysa sütun filtresi, birkaç sütundaysa FILTER(ALL(Satislar[Durum], Satislar[Kanal]), …) gibi yalnızca gereken sütunları al.
+3 · Veri soyu (lineage): filtre hangi sütunu süzeceğini nereden bilir?
+“Tablo fonksiyonları” dersinde soy bağını tanıdın. Uzman düzeyinde bilmen gereken, soyun ne zaman korunduğu, ne zaman koptuğudur.
+ | Soy korunur |  | Soy kopar |
+ | VALUES, DISTINCT, ALL, FILTER, TOPN, CALCULATETABLE, INTERSECT, EXCEPT sonucu: sütunlar modeldeki sütunu “hatırlar”. |  | ADDCOLUMNS ile eklenen yeni sütun, elle yazılan tablo ({"Web", "Mobil"}), DATATABLE ve bir sütun üzerinde işlem yapan ifade (Urunler[Urun] & ""). |
+Pazarlama sorusu: “Web’den alışveriş yapan müşteriler mağazada ne kadar harcıyor?” Önce Web müşterilerinin kümesini bul, sonra bu kümeyi filtre olarak ver:
+Web Müşterilerinin Mağaza Satışı =
+VAR WebMusterileri =
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Web", Satislar[Durum] <> "İptal")
+RETURN
+    CALCULATE([Net Satış], WebMusterileri, Satislar[Kanal] = "Mağaza")
+Sonuç 158.614 ₺; tüm mağaza satışı ise 193.600 ₺. Yani mağaza cirosunun yaklaşık %82’si Web’i de kullanan müşterilerden geliyor. WebMusterileri değişkeninin soyu Satislar[MusteriNo]’yu gösterdiği için CALCULATE doğru sütunu süzer; kanal filtresi ise ayrı bir argümanla Mağaza’ya çevrilir. Filtre olgu sütununda durur. Aynı kümeyi TREATAS(WebMusterileri, Musteriler[MusteriNo]) ile boyuta taşırsan sonuç aynı kalır, ama filtre artık Musteriler üzerinden Talepler gibi diğer olgulara da ulaşır. Hangisini istediğine bilerek karar ver.
+Soy koptuğunda motor tabloyu filtre olarak kullanamaz. Aşağıdaki ilk ifade ürün adlarını metne çevirdiği için soyu kaybeder; ikincisi TREATAS ile soyu geri verir ve ilk 3 ürünün satışını (217.706 ₺) döndürür:
+-- Soy kopar: & "" ifadesi yeni, bağımsız bir metin sütunu üretir
+CALCULATE([Net Satış], SELECTCOLUMNS(TOPN(3, VALUES(Urunler[Urun]), [Net Satış]), "U", Urunler[Urun] & ""))
+İlk 3 Ürün (Soy Geri Verildi) =
+CALCULATE(
+    [Net Satış],
+    TREATAS(SELECTCOLUMNS(TOPN(3, VALUES(Urunler[Urun]), [Net Satış]), "U", Urunler[Urun] & ""), Urunler[Urun])
+)
+Soy kopunca filtre ya hiçbir şeyi süzmez ya da hata verir. Teşhis için tabloyu DAX sorgu görünümünde EVALUATE ile döndür, sonra TREATAS ile hedef sütunu açıkça yaz.
+4 · Keyfi biçimli filtre ve KEEPFILTERS
+Kullanıcı Yıl → Ay hiyerarşisinde, Ctrl ile Aralık 2023 ve Ocak 2024’ü seçti. Bu seçim iki ayrı sütun filtresi değildir; (Yıl, Ay) çiftlerinden oluşan tek bir filtredir: {(2023, 12), (2024, 1)}. Böyle, sütunların bağımsız listelerine ayrıştırılamayan filtreye keyfi biçimli filtre (arbitrarily shaped filter) denir. Seçimin net satışı 43.560 + 47.433 = 90.993 ₺’dir.
+Şimdi seçim varken şu ölçü çalışsın:
+2024 Satışı = CALCULATE([Net Satış], Tarih[Yil] = 2024)
+2024 Satışı (Kesişim) = CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024))
+ | Durum |  | Filtre sonunda ne olur? |  | Sonuç |
+ | Seçim (keyfi biçim) |  | {(2023, 12), (2024, 1)} |  | 90.993 ₺ |
+ | 2024 Satışı (üzerine yazma) |  | Yil sütunu çiftlerden çıkarılır, geriye Ay {12, 1} kalır; yeni filtre Yil = 2024. Sonuç Aralık 2024 + Ocak 2024. |  | 141.434 ₺ |
+ | 2024 Satışı (Kesişim) |  | Çiftler korunur ve Yil = 2024 ile kesişir: yalnızca (2024, 1). |  | 47.433 ₺ |
+ | Biçim kaybolsaydı (iki ayrı dilimleyici) |  | Yil {2023, 2024} × Ay {12, 1}: dört ay. |  | 198.531 ₺ |
+Üzerine yazma sürümü, kullanıcının hiç seçmediği Aralık 2024’ü raporlar. Testte görünmez, çünkü test eden genelde tek ay seçer. Hiyerarşi seçimini Stüdyoda TREATAS ile kurup üç sonucu kendin görebilirsin:
+Seçim (Çiftler) =
+CALCULATE([Net Satış], TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
+Seçimde 2024 (Üzerine Yazma) =
+CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
+Seçimde 2024 (Kesişim) =
+CALCULATE(CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024)), TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
+Sırasıyla 90.993 ₺, 141.434 ₺ ve 47.433 ₺ döner.
+İki savunma yolu var. Birincisi, kullanıcı seçimiyle kesişmesi gereken filtrelerde KEEPFILTERS. İkincisi, biçimi tek sütunda tutmak: dilimleyiciye ya da hiyerarşiye Tarih[YilAy] gibi birleşik bir sütun koymak. Tek sütundaki filtre başka bir sütunun filtresiyle birlikte yaşar:
+Seçimde 2024 (Tek Sütun) =
+CALCULATE(
+    CALCULATE([Net Satış], Tarih[Yil] = 2024),
+    Tarih[YilAy] IN {"2023-12", "2024-01"}
+)
+Sonuç 47.433 ₺: Yil filtresi YilAy filtresini silemez, çünkü ikisi farklı sütunlardır.
+5 · ALLSELECTED ve gölge filtre bağlamı
+Power BI bir görseli çizerken bir sorgu üretir. Dilimleyiciler ve filtre bölmesi dış filtreyi kurar; görselin satırları (gruplama) her hücre için ayrı bir filtre ekler. Motor, gruplamaya başlamadan önceki filtreyi bir kenarda saklar. Buna gölge filtre bağlamı (shadow filter context) denir: etkin değildir, hiçbir şeyi süzmez, ama ALLSELECTED onu geri çağırabilir. ALLSELECTED “seçimi” değil, son gölge filtre bağlamını geri yükler.
+Dilimleyicide Elektronik, Kitap ve Spor seçili, satırlarda Kategoriler[Kategori]:
+ | Elektronik satırı |  | Payda |  | Sonuç |
+ | [Seçime Göre Pay %] (ALLSELECTED) |  | Üç kategorinin toplamı: 675.417 ₺ |  | %50,2 |
+ | ALL(Kategoriler) ile pay |  | Bütün kategoriler: 1.250.772 ₺ |  | %27,1 |
+ | Toplam satırı |  | ALLSELECTED %100, ALL ile %54,0 |  |  |
+Sorun, iteratörlerin de gölge bağlam kurmasıdır. ALLSELECTED kullanan bir ölçüyü SUMX, AVERAGEX ya da FILTER içinden çağırırsan, ALLSELECTED görselin değil iteratörün dolaştığı kümenin bağlamını geri yükleyebilir. Sonuç görseldeki sayıyla tutmaz ve hata ayıklaması zordur.
+-- Kaçın: ALLSELECTED kullanan ölçüyü iteratör içinden çağırmak
+Ortalama Seçim Payı = AVERAGEX(VALUES(Urunler[Urun]), [Seçime Göre Pay %])
+ALLSELECTED’ı yalnızca görsele doğrudan konan ölçülerde kullan.
+Paydayı bir VAR’da, iteratörden önce hesapla; iteratörün içinde ALLSELECTED çağırma.
+Argümanlı yazımı (ALLSELECTED(Kategoriler)) argümansız ALLSELECTED()’a tercih et; neyi geri yüklediğin belli olsun.
+6 · CALCULATE argümanları hangi sırayla değerlendirilir?
+CALCULATE argümanlarını yazıldığı sırayla değil, sabit bir sırayla işler:
+Filtre argümanları dış bağlamda hesaplanır. VALUES, MAX, FILTER gibi ifadeler, CALCULATE’in değiştireceği bağlamı değil, çağrıldığı bağlamı görür.
+Bağlam geçişi olur (satır bağlamı varsa).
+Değiştiriciler uygulanır: ALL / REMOVEFILTERS / ALLEXCEPT, USERELATIONSHIP, CROSSFILTER.
+Filtre argümanları uygulanır: KEEPFILTERS ile sarılı olanlar kesişir, diğerleri aynı sütundaki filtrenin üzerine yazar.
+İfade yeni bağlamda hesaplanır.
+Sonuç 1: sıra yazımdan bağımsızdır. Aşağıdaki iki ölçü her yıl satırında aynı sayıyı, 747.066 ₺’yi verir; REMOVEFILTERS sonra yazılsa da önce çalışır ve Yil = 2024 filtresini silemez.
+2024 Sabit A = CALCULATE([Net Satış], Tarih[Yil] = 2024, REMOVEFILTERS(Tarih))
+2024 Sabit B = CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2024)
+Sonuç 2: iteratör içindeki filtre argümanı satırı görmez. Aşağıdaki hatalı ölçüde VALUES(Tarih[YilAy]) bağlam geçişinden önce, dış bağlamda hesaplanır ve yılın bütün aylarını döndürür. Her ay için yılın tamamı toplanır: 2024 satırında 747.066 ₺ yerine 12 katı, 8.964.788 ₺ çıkar.
+Ay Ay Toplam (Hatalı) =
+SUMX(VALUES(Tarih[YilAy]), CALCULATE([Net Satış], REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy])))
+Ay Ay Toplam (Doğru) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR Ay = Tarih[YilAy]
+    RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+)
+Düzeltme, satırın değerini önce bir VAR’a almaktır. “Uzman kalıplar” dersinde aylık hedefi güne dağıtırken aynı hatanın çok daha sinsi bir sürümünü göreceksin: yıllık ve aylık toplamlar doğru çıkar, yalnızca hafta düzeyinde bozulur.
+Üretimde test ve kontrol listesi
+Bu hatalar toplam satırında ya da tek seçimde doğru görünür. Ölçüyü DAX sorgu görünümünde en az üç bağlamda dene: toplam, tek kırılım, çoklu seçim (iki ay, iki kanal). Performans Analizi’nden sorguyu DAX Studio’ya kopyalayıp sunucu zamanlamalarına bakmak, gereksiz tablo filtresini hemen ele verir.
+Kaldırdığım filtre görselin filtrelediği sütun ya da boyut mu, yoksa olgu tablosunun tamamı mı?
+FILTER’a bir tablo veriyorsam, o tablonun genişletilmiş hâli hangi filtreleri taşıyor?
+İç ölçü (ör. [Net Satış]) aynı sütuna kendi filtresini yazıyor mu? Dıştaki filtrem eziliyor mu?
+Filtre olarak verdiğim tablonun soyu doğru model sütununu gösteriyor mu? Emin değilsem TREATAS.
+Kullanıcı hiyerarşide çoklu seçim yapabilir mi? Evet ise sabit filtrelerde KEEPFILTERS.
+ALLSELECTED kullanan ölçü bir iteratörün içinden çağrılıyor mu?
+İteratör içindeki CALCULATE’in filtre argümanı satırın değerini mi kullanıyor? Kullanıyorsa değeri önce VAR’a al.
+Ekip için belgeÖlçünün açıklamasına (Description) “hangi filtreleri korur, hangilerini kaldırır” cümlesini yaz: “Kanal ve tarih filtresini korur; ürün ve kategori filtresini kaldırır.” Kod incelemesinde ilk sorulan soru budur ve Copilot da bu açıklamayı okur.
+`,
+  ex: [
+    { t: 'dax', name: 'Ürün Filtresiz Satış (Kanal Korunur)', q: 'Ürün Filtresiz Satış (Kanal Korunur): Kanal ve kategori kırılımlarında, ürün tablosundan gelen bütün filtreler (ürün ve kategori dahil) kalksın ama kanal ve tarih filtreleri korunsun. [Net Satış] üzerinden yaz. Kontrol tablosu Satislar[Kanal] ve Kategoriler[Kategori] ile kırar.', sol: 'CALCULATE([Net Satış], REMOVEFILTERS(Urunler))', hint: 'Urunler’in genişletilmiş tablosu Kategoriler’i de içerir. Olgu tablosunu (ALL(Satislar)) hedeflersen kanal filtresi de gider.', grid: [{ t: 'Satislar', c: 'Kanal' }, { t: 'Kategoriler', c: 'Kategori' }] },
+    { t: 'dax', name: 'İade ve İptal Hariç Satış', q: 'İade ve İptal Hariç Satış: Durumu “İptal” ya da “İade” olan satırlar hariç satış tutarı. Kategori ve yıl kırılımında doğru çalışmalı. Dikkat: [Net Satış]’ı dıştan Durum filtresiyle sarmak işe yaramaz.', sol: 'CALCULATE([Toplam Satış], Satislar[Durum] <> "İptal", Satislar[Durum] <> "İade")', hint: '[Net Satış] içindeki CALCULATE Durum sütununa kendi filtresini yazar. [Toplam Satış]’tan başla ve iki koşulu aynı CALCULATE’e ayrı argüman olarak ver (ya da [Net Satış] - [İade Tutarı]).' },
+    { t: 'dax', name: 'Mobil Alıcılarının Web Satışı', q: 'Mobil Alıcılarının Web Satışı: Mobil kanaldan en az bir iptal edilmemiş satırı olan müşterilerin, Web kanalındaki net satışı. Önce müşteri kümesini VAR’da CALCULATETABLE + VALUES(Satislar[MusteriNo]) ile bul, sonra filtre olarak kullan.', sol: 'VAR MobilMusteriler = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Mobil", Satislar[Durum] <> "İptal") RETURN CALCULATE([Net Satış], MobilMusteriler, Satislar[Kanal] = "Web")', hint: 'Kümenin soyu Satislar[MusteriNo]’yu gösterir; CALCULATE onu doğru sütuna uygular. Kanal filtresi ikinci argümanla Web’e çevrilir.' },
+    { t: 'dax', name: 'Sabit 2023 Satışı', q: 'Sabit 2023 Satışı: Hangi yıl satırında olursa olsun 2023 yılının net satışını göster; kategori filtresi korunsun. Tarih tablosundaki bütün filtreleri kaldır ve Yil = 2023 uygula.', sol: 'CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2023)', hint: 'Değiştiriciler (REMOVEFILTERS) filtre argümanlarından önce uygulanır; yazım sırası sonucu değiştirmez.' },
+    { t: 'query', q: 'Satışa göre ilk 5 müşteriyi (tüm dönem) bir VAR’da TOPN(5, VALUES(Musteriler[MusteriNo]), [Net Satış]) ile bul. Sonra SUMMARIZECOLUMNS ile Satislar[Kanal] başına bu 5 müşterinin net satışını "İlk 5 Müşteri" sütununda döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR Ilk5 = TOPN(5, VALUES(Musteriler[MusteriNo]), [Net Satış])\nRETURN\n    SUMMARIZECOLUMNS(Satislar[Kanal], "İlk 5 Müşteri", CALCULATE([Net Satış], Ilk5))', hint: 'TOPN, VALUES’tan gelen soyu korur; tablo değişkeni CALCULATE’e filtre olarak verilebilir.' },
+    { t: 'query', q: 'Keyfi biçimli seçimi tek sütunla taklit et: ROW ile iki sütun döndür. "Seçim": Tarih[YilAy] IN {"2023-12", "2024-01"} filtresiyle net satış. "Seçimde 2024": aynı YilAy filtresi dışta, içte Tarih[Yil] = 2024 olan iç içe CALCULATE.', start: 'EVALUATE\n', sol: 'EVALUATE\nROW(\n    "Seçim", CALCULATE([Net Satış], Tarih[YilAy] IN {"2023-12", "2024-01"}),\n    "Seçimde 2024", CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), Tarih[YilAy] IN {"2023-12", "2024-01"})\n)', hint: 'Yil ve YilAy farklı sütunlardır; içteki filtre dıştakini silmez. İkinci değer yalnızca Ocak 2024 olmalı.' },
+    { t: 'mc', q: 'Kullanıcı hiyerarşide Aralık 2023 ile Ocak 2024’ü birlikte seçti. Ekrandaki CALCULATE([Net Satış], Tarih[Yil] = 2024) ölçüsü Aralık 2024’ü de topluyor. Ölçüyü en az değişiklikle nasıl düzeltirsin?', o: ['Filtreyi KEEPFILTERS(Tarih[Yil] = 2024) ile sararım; seçim çiftleri korunur ve kesişir', 'Filtreyi FILTER(ALL(Tarih), Tarih[Yil] = 2024) biçiminde yazarım; tablo filtresi daha güçlüdür', 'Ölçüye REMOVEFILTERS(Tarih[AyNo]) eklerim; ay filtresi kalkınca yıl doğru süzülür', 'Yil filtresini Tarih[Yil] IN {2024} yazarım; IN listesi seçimle kesişir'], a: 0, why: 'Seçim (Yıl, Ay) çiftlerinden oluşan keyfi biçimli bir filtredir. Sütun filtresi Yil’in üzerine yazar ve geriye Ay {12, 1} kalır. KEEPFILTERS üzerine yazmak yerine kesiştirir: yalnızca (2024, 1) kalır. FILTER(ALL(Tarih)) bütün tarih filtresini siler; AyNo’yu kaldırmak yılın tamamını getirir; IN {2024} de bir sütun filtresidir ve aynı şekilde üzerine yazar.' },
+    { t: 'mc', q: 'Bir analist kategori matrisine CALCULATE([Net Satış], REMOVEFILTERS(Urunler)) koydu ve her satırda genel toplamı gördü. “Kategori ayrı tabloda, neden kalktı?” diye soruyor. Doğru açıklama hangisi?', o: ['Kategoriler, Urunler’den sonra yüklendiği için REMOVEFILTERS onu da kapsar', 'Genişletilmiş Urunler, Kategoriler’i içerir; onun filtresi de kalkar', 'REMOVEFILTERS her zaman modeldeki bütün boyutların filtresini kaldırır', 'İlişki çift yönlü olmadığı için kategori filtresi Urunler’e hiç ulaşmamıştır'], a: 1, why: 'Urunler çoka-bir ilişkiyle Kategoriler’e bağlı; genişletilmiş Urunler, Kategoriler sütunlarını içerir. Urunler’i hedefleyen REMOVEFILTERS bu sütunlardaki filtreyi de siler. Yükleme sırasının etkisi yoktur; REMOVEFILTERS yalnızca verilen tablonun (genişletilmiş) filtrelerini kaldırır, kanal filtresi örneğin kalır; ilişki yönü tek yönlü olsa da filtre Kategoriler’den Satislar’a zaten akar.' },
+    { t: 'mc', q: 'Ekip arkadaşın şunu yazdı: Pay = AVERAGEX(VALUES(Urunler[Urun]), [Seçime Göre Pay %]). Görseldeki sayı, ürün satırlarındaki payların elle alınan ortalamasıyla tutmuyor. En olası sebep ne?', o: ['AVERAGEX boş değerleri sıfır sayıyor ve ortalamayı aşağı çekiyor', 'VALUES(Urunler[Urun]) soyu kaybettiği için paylar yanlış hesaplanıyor', 'İteratörün gölge bağlamı geri yükleniyor; payda görselinki değil', 'Seçime Göre Pay % içinde DIVIDE kullanıldığı için ortalama bozuluyor'], a: 2, why: 'İteratörler de gölge filtre bağlamı kurar. İteratör içinden çağrılan ALLSELECTED, görselin değil iteratörün bağlamını geri yükleyebilir; payda değişir. AVERAGEX boşları atlar, sıfır saymaz; VALUES soyu korur; DIVIDE yalnızca sıfıra bölmeyi yönetir. Çözüm: paydayı iteratörden önce bir VAR’da hesaplamak.' },
+    { t: 'mc', q: 'SUMX(VALUES(Tarih[YilAy]), CALCULATE([Net Satış], REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy]))) ölçüsü 2024 satırında 747.066 ₺ yerine 8.964.788 ₺ veriyor. Neden?', o: ['REMOVEFILTERS(Tarih) bağlam geçişini iptal ediyor ve SUMX satırları birden çok kez sayıyor', 'İçteki VALUES dış bağlamda, geçişten önce hesaplanıyor ve her satırda yılın 12 ayını döndürüyor', 'VALUES(Tarih[YilAy]) soyu kaybettiği için filtre hiçbir şeyi süzmüyor ve bütün yıllar toplanıyor', 'SUMX ay sayısını otomatik olarak çarpan alır; AVERAGEX kullanılmalıydı'], a: 1, why: 'Filtre argümanları CALCULATE’in çağrıldığı dış bağlamda hesaplanır. Satır bağlamı filtre değildir; VALUES yılın 12 ayını döndürür. Her ay satırında yılın tamamı toplanır: 12 × 747.066. REMOVEFILTERS geçişi iptal etmez, soy da korunur; SUMX çarpan almaz. Çözüm: VAR Ay = Tarih[YilAy] ve Tarih[YilAy] = Ay.' }
+  ]
+});
+/* ---------- 2. Çoka çok ilişkiler, köprü tablolar ve ilişki türleri (C1 · İleri Modelleme) ---------- */
+add('model-ileri', {
+  id: 'coka-cok', lv: 'C1', mod: 'İleri Modelleme', min: 38,
+  title: 'Çoka çok ilişkiler, köprü tablolar ve ilişki türleri',
+  sum: 'Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift yönlü filtrenin riskleri ve belirsiz yollar, sınırlı (limited) ilişkiler, CROSSFILTER ve TREATAS ile ölçü içinde çözüm, toplam satırı ve çift sayma.',
+  body: `
+Yıldız şemada her ilişki çoka-birdir: bir satış satırı tek bir ürüne, tek bir müşteriye bağlanır. Gerçek iş hayatı bu kadar düzenli değildir. “Model tasarımı II” dersinde ayrıntı düzeyini (grain), “Rol oynayan boyutlar” dersinde CROSSFILTER’ı, “Tablo fonksiyonları” dersinde köprü tablonun kısa tanımını gördün. Bu ders, çoka-çok (many-to-many) durumları tanımayı, modelde ve ölçüde çözmeyi ve toplam satırını kullanıcıya doğru anlatmayı öğretiyor.
+Anadolu Market’te bu hafta gelen üç talep:
+Proje yönetim ofisi: “Fabric veri platformu geçişi, Veri Analitiği ile Yazılım’ın ortak projesi. Departman raporunda bütçe iki departmanda da görünmeli, ama şirket toplamı şişmemeli.”
+Pazarlama: “Elektronik alan müşterilerimizin toplam cirosu, yani bütün kategorilerdeki harcaması ne?”
+Satış planlama: “Hedefler kategori ve ay düzeyinde. Ürün tablosundaki kategori sütunuyla rapor yapınca hedef her satırda aynı.”
+1 · Çoka-çok’un üç yüzü
+ | Tür |  | Örnek |  | Tipik çözüm |
+ | İki boyut arasında çok değerli ilişki |  | Bir proje birden çok departmanda, bir departmanın birden çok projesi var |  | Köprü tablo (ProjeDepartman), gerekirse ağırlık sütunu |
+ | Olgu üzerinden iki boyut |  | Bir müşteri birden çok kategoriden alır, bir kategoriden birçok müşteri alır |  | Olgu tablosu zaten köprüdür; ölçüde küme filtresi ya da CROSSFILTER |
+ | Farklı taneciklikte olgu |  | Hedefler kategori × ay, satış ürün × gün |  | Ortak boyut (Kategoriler); olmazsa TREATAS ya da çoka-çok kardinalite |
+Hepsinin ortak sonucu aynıdır: satırların toplamı, toplam satırına eşit değildir. Bir proje iki departmanda görünür, toplamda bir kez sayılır. Bu bir hata değil, çoka-çok’un doğasıdır; hata, bunu kullanıcıya söylememektir.
+2 · Köprü tablo: proje ↔ departman
+Modelde Projeler[DepartmanNo] tek bir departman tutuyor. Ortak projeleri göstermek için bir köprü tablo gerekir: her satırı “bu proje, bu departmana, şu payla aittir” cümlesidir. Modelde şöyle kurulur:
+Departmanlar[DepartmanNo]  1 ──> *  ProjeDepartman[DepartmanNo]
+Projeler[ProjeNo]          1 <─> *  ProjeDepartman[ProjeNo]     (çift yönlü)
+ProjeDepartman: ProjeNo | DepartmanNo | Pay
+                5       | 2 (Pazarlama)      | 0,7
+                5       | 1 (Satış)          | 0,3
+                7       | 3 (Veri Analitiği) | 0,6
+                7       | 4 (Yazılım)        | 0,4
+               12       | 3 (Veri Analitiği) | 0,5
+               12       | 1 (Satış)          | 0,3
+               12       | 2 (Pazarlama)      | 0,2
+Filtrenin Departmanlar’dan Projeler’e ulaşması için köprü ile Projeler arasındaki ilişkinin çift yönlü olması gerekir: filtre Departmanlar → köprü yönünde doğal akar, köprü → Projeler yönünde ise “çoktan bire” geri gitmesi gerekir. Bu uygulamanın modelinde köprü tablo yok; aynı mantığı ölçünün içinde, sanal bir köprüyle deneyebilirsin. Önce ağırlıklı (paylaştırılmış) bütçe:
+Paylaştırılmış Bütçe =
+VAR Kopru =
+    DATATABLE(
+        "ProjeNo", INTEGER, "DepartmanNo", INTEGER, "Pay", DOUBLE,
+        {
+            {5, 2, 0.7}, {5, 1, 0.3},
+            {7, 3, 0.6}, {7, 4, 0.4},
+            {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}
+        }
+    )
+VAR Gorunen = FILTER(Kopru, [DepartmanNo] IN VALUES(Departmanlar[DepartmanNo]))
+RETURN
+    SUMX(Gorunen, [Pay] * LOOKUPVALUE(Projeler[Butce], Projeler[ProjeNo], [ProjeNo]))
+Sonra ağırlıksız, “dokunduğu projelerin tam bütçesi”:
+Katıldığı Projelerin Bütçesi =
+VAR Kopru =
+    DATATABLE(
+        "ProjeNo", INTEGER, "DepartmanNo", INTEGER, "Pay", DOUBLE,
+        {
+            {5, 2, 0.7}, {5, 1, 0.3},
+            {7, 3, 0.6}, {7, 4, 0.4},
+            {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}
+        }
+    )
+VAR Projeler_ = SELECTCOLUMNS(FILTER(Kopru, [DepartmanNo] IN VALUES(Departmanlar[DepartmanNo])), "P", [ProjeNo])
+RETURN
+    CALCULATE([Proje Bütçesi], REMOVEFILTERS(Departmanlar), TREATAS(Projeler_, Projeler[ProjeNo]))
+ | Departman |  | Paylaştırılmış |  | Tam bütçe |
+ | Pazarlama |  | 165.000 ₺ |  | 450.000 ₺ |
+ | Satış |  | 135.000 ₺ |  | 450.000 ₺ |
+ | Veri Analitiği |  | 402.000 ₺ |  | 720.000 ₺ |
+ | Yazılım |  | 168.000 ₺ |  | 420.000 ₺ |
+ | Satırların toplamı |  | 870.000 ₺ |  | 2.040.000 ₺ |
+ | Toplam satırı |  | 870.000 ₺ |  | 870.000 ₺ |
+Üç projenin gerçek bütçesi 870.000 ₺. Paylaştırılmış ölçü toplanabilir: satırlar toplama eşittir. Tam bütçe ölçüsü toplanamaz: her departman “benim projem” der, satırlar 2.040.000 ₺ eder. İkisi de doğrudur, ama farklı soruları cevaplar. Departman müdürü “sorumlu olduğum işlerin büyüklüğü”nü, finans “maliyetin kime yazılacağı”nı sorar. Raporda ikisini aynı ada koyma.
+Üretimde köprüDATATABLE yalnızca deneme ve öğretim içindir. Gerçek köprü tablo kaynakta ya da Power Query’de üretilir; payların her proje için 1’e tamamlandığını yenilemeden sonra bir sorguyla doğrula. Fiziksel tasarımı (vekil anahtar, köprünün ambarda nasıl tutulduğu) “Fabric’te yıldız şema” dersi anlatıyor.
+3 · Olgu tablosu bir köprüdür: müşteri ↔ kategori
+Pazarlamanın sorusu: “Elektronik alanların toplam cirosu.” Burada köprü tablo kurmana gerek yok; Satislar zaten her müşteriyi aldığı kategorilere bağlıyor. Yapılacak iş, iki adımlı bir filtre:
+Görünen kategoride alışveriş yapan müşterilerin kümesini bul.
+Kategori filtresini kaldır, bu müşterilerin tüm satışını hesapla.
+Alıcıların Toplam Satışı =
+VAR Alicilar = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")
+RETURN
+    CALCULATE([Net Satış], Alicilar, REMOVEFILTERS(Kategoriler), REMOVEFILTERS(Urunler))
+ | Kategori |  | Alıcı sayısı |  | Kategorideki satış |  | Alıcıların toplam satışı |
+ | Elektronik |  | 95 |  | 339.304 ₺ |  | 1.104.856 ₺ |
+ | Kitap |  | 113 |  | 151.882 ₺ |  | 1.153.184 ₺ |
+ | Hediye |  | 30 |  | 17.370 ₺ |  | 328.027 ₺ |
+ | Toplam satırı |  | 136 |  | 1.250.772 ₺ |  | 1.250.772 ₺ |
+Kitap alıcıları, şirket cirosunun %92’sini yapıyor: Kitap küçük bir kategori ama çok geniş bir müşteri kitlesine dokunuyor. Bu bilgi kategori satışından görünmez. Yedi kategorinin alıcı sayılarını toplarsan 628 eder, oysa tekil müşteri 136’dır. Bir müşteri ortalama 4,6 kategoride görünür.
+Tek yönlü filtrenin tuzağı
+“En az 4 kategoriden alan müşteri” sorusunda çoğu kişi CALCULATE(DISTINCTCOUNT(Urunler[Kategori])) yazar ve her müşteride 7 bulur. Sebep: filtre Satislar’dan Urunler’e akmaz. Müşteri filtresi Satislar’ı süzer ama Urunler tablosunun bütün satırları görünür kalır. Çözüm ya ölçü içinde CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH) ya da olgu üzerinden saymak: COUNTROWS(SUMMARIZE(Satislar, Urunler[Kategori])). İkisiyle de dağılım şöyle çıkar: 7 kategoride 13, 6’da 40, 5’te 22, 4’te 28 müşteri; yani 136 müşterinin 103’ü en az 4 kategoriden almış.
+4 · Çift yönlü filtre: ne zaman, neden riskli?
+Çift yönlü (both) ilişki, filtrenin bir taraftan çok tarafa olduğu gibi çok taraftan bir tarafa da akmasını sağlar. Kolay görünür; üç bedeli vardır.
+Bedel 1: anlam sessizce değişir
+Kanal kırılımında CALCULATE([Kayıtlı Müşteri], CROSSFILTER(Satislar[MusteriNo], Musteriler[MusteriNo], BOTH)) Mağaza’da 73 verir. [Müşteri Sayısı] ise 70. Fark, bu kanaldaki siparişlerinin hepsi iptal olan 3 müşteri: çift yönlü filtre “bu kanalda satırı olan” müşteriyi sayar, iş kuralını (iptal hariç) bilmez. Kullanıcı modelde ilişkiyi çift yönlü görünce bütün müşteri sayılarının bu yolla geldiğini varsayar.
+Bedel 2: belirsiz yollar
+Modelde Talepler hem Tarih’e hem Musteriler’e bağlı. Satislar–Musteriler ilişkisini çift yönlü yaparsan, Tarih’ten Talepler’e iki yol oluşur: doğrudan Tarih → Talepler ve Tarih → Satislar → Musteriler → Talepler.
+Yol 1: Tarih ──> Talepler
+Yol 2: Tarih ──> Satislar ──(çift yönlü)──> Musteriler ──> Talepler
+Microsoft Learn’e göre Power BI bu durumda yolları önceliğe göre sıralar (önce doğrudan bire-çok yollar), eşit öncelik ve ağırlıkta birden çok yol kalırsa “belirsiz yol” hatası verir. Desktop çift yönlü değişikliği kaydetmeyi reddedebilir ya da belirsizliğe izin verip bir yolu seçebilir. Her iki durumda da [Talep Sayısı] gibi masum bir ölçünün anlamı, modeli kimin ne zaman değiştirdiğine bağlı hâle gelir.
+Bedel 3: performans ve güvenlik
+Çift yönlü ilişki her sorguda ek filtre yayılımı demektir ve büyük modellerde belirgin biçimde yavaştır. Satır düzeyi güvenlikte (RLS) güvenlik filtresi varsayılan olarak tek yönde akar; ilişki özelliklerindeki “Güvenlik filtresini her iki yönde de uygula” seçeneği açılmadıkça çift yönlü ilişki RLS’yi taşımaz. Bu seçeneği açmak ise rol tasarımını karmaşıklaştırır.
+KuralModeldeki ilişkiler tek yönlü kalsın. Çift yönlü davranışa ihtiyaç duyan her ölçü bunu CROSSFILTER(…, BOTH) ile, açıkça ve yalnızca kendi içinde istesin. İstisna: köprü tablo ile ona bağlı boyut arasındaki ilişki; orada çift yön desenin parçasıdır ve belgelenmelidir.
+5 · Farklı taneciklik: hedef kategori düzeyinde, rapor ürün tablosundan
+Satış planlamanın sorunu: görselde kategoriyi Urunler[Kategori]’den kullanınca [Hedef] her satırda 1.299.300 ₺ gösteriyor. Hedefler, Urunler’e bağlı değil; Kategoriler üzerinden bağlı. Üç çözüm var:
+ | Yol |  | Nasıl? |  | Artı |  | Eksi |
+ | Ortak boyut |  | Görselde Kategoriler[Kategori]; Urunler[Kategori] gizlenir |  | Hızlı, düzenli ilişki, ölçü değişmez |  | Kullanıcıyı doğru alana yönlendirmek gerekir |
+ | TREATAS (sanal ilişki) |  | Ölçü içinde Urunler[Kategori] değerleri Hedefler[Kategori]’ye uygulanır |  | Modele dokunmaz, hangi ölçüde geçerli olduğu açık |  | Her ölçüye ayrı yazılır, bakım yükü |
+ | Çoka-çok kardinalite |  | Hedefler[Kategori] *—* Urunler[Kategori] ilişkisi |  | Kodsuz, sürükle-bırak |  | Sınırlı ilişki: yavaş, RELATED yok, boş satır yok |
+Hedef (Ürün Kategorisinden) =
+CALCULATE([Hedef], TREATAS(VALUES(Urunler[Kategori]), Hedefler[Kategori]))
+Urunler[Kategori] kırılımında artık Elektronik 351.800 ₺, Kitap 156.200 ₺ gösterir; toplam 1.299.300 ₺.
+Sınırlı (limited) ilişki ne demek?
+Learn’e göre bir ilişki, motor “bir” tarafını garanti edemediğinde sınırlıdır: çoka-çok kardinalite (sütunlar benzersiz olsa bile) ve bileşik modellerde farklı kaynak grupları arasındaki ilişkiler. Sınırlı ilişkinin davranışı düzenli ilişkiden farklıdır:
+Birleşme iç birleşme (inner join) mantığıyla yapılır; eşleşmeyen satırlar için boş sanal satır eklenmez. Hedefte olup ürün tablosunda olmayan bir kategori raporda “(Boş)” satırı olarak görünmez, sessizce kaybolur.
+RELATED ile “bir” taraftaki değer alınamaz.
+Tablo genişlemesi olmaz; birinci derste gördüğün “ALL(Hedefler) Kategoriler filtresini de kaldırır” kuralı burada işlemez.
+İçe aktarma modelinde ilişki için yapı önceden oluşturulmaz, birleşme sorgu anında çözülür; daha yavaştır.
+-- Model görünümünde (bu uygulamanın motorunda kurulamaz)
+Hedefler[Kategori]  *  ──  *  Urunler[Kategori]
+Çapraz filtre yönü: Tek (Urunler filtreler Hedefler’i)
+6 · Ortak boyut mu, çift yönlü mü, TREATAS mı? Toplam satırındaki fark
+Gider türüne göre proje bütçesini görmek isteyelim. Giderler ve Projeler, Departmanlar üzerinden birbirine dokunuyor; ama gider türü filtresinin projelere ulaşması için filtrenin Giderler’den Departmanlar’a geri akması gerekir.
+Gider Türü Proje Bütçesi (CROSSFILTER) =
+CALCULATE([Proje Bütçesi], CROSSFILTER(Giderler[DepartmanNo], Departmanlar[DepartmanNo], BOTH))
+Gider Türü Proje Bütçesi (TREATAS) =
+CALCULATE([Proje Bütçesi], TREATAS(VALUES(Giderler[DepartmanNo]), Departmanlar[DepartmanNo]))
+ | Gider türü |  | Gideri yapan departman |  | İki ölçü de |
+ | Personel |  | Satış |  | 45.000 ₺ |
+ | Lojistik ve kargo |  | Satış |  | 45.000 ₺ |
+ | Pazarlama ve reklam |  | Pazarlama |  | 240.000 ₺ |
+ | Teknoloji |  | Yazılım |  | 1.140.000 ₺ |
+ | Kira ve tesis, Genel yönetim |  | Genel Müdürlük (projesi yok) |  | BLANK |
+ | Toplam satırı |  |  |  | CROSSFILTER: 3.040.000 ₺ · TREATAS: 1.425.000 ₺ |
+Satırlarda iki ölçü aynı. Toplamda ayrılıyorlar: CROSSFILTER’da Giderler hiç filtrelenmemişse Departmanlar’a yayılacak bir filtre yoktur ve bütün projeler (3.040.000 ₺) gelir. TREATAS ise her zaman “gideri olan departmanlar” kümesini uygular ve Veri Analitiği, Finans, İK, Hukuk projelerini dışarıda bırakır (1.425.000 ₺). Satırların toplamı ise 1.470.000 ₺’dir, çünkü Satış departmanının 45.000 ₺’lik projesi iki gider türünde görünür. Üç farklı “toplam” var; hangisinin doğru olduğunu iş sorusu belirler, DAX değil.
+Karar listesi ve test
+Gerçekten çoka-çok mu? Önce ortak bir boyut ara. Hedef–satış sorununun %90’ı ortak boyutla çözülür.
+Köprü gerekiyorsa payların toplamını doğrula, köprü–boyut ilişkisini çift yönlü yap ve bunu ilişki açıklamasına yaz.
+Ölçü içinde çöz: Model tek yönlü kalsın; CROSSFILTER ya da TREATAS yalnızca gereken ölçüde.
+Toplanabilir mi? Paylaştırılmış ölçü toplanır, tam değer ölçüsü toplanmaz. Ölçü adına ve araç ipucuna bunu yaz: “Toplam satırı tekil projeleri bir kez sayar.”
+Test: DAX sorgu görünümünde SUMX(VALUES(Boyut[Anahtar]), [Ölçü]) ile toplam satırını yan yana koy. Fark beklediğin fark mı?
+RLS: Köprü ya da çift yönlü ilişki varsa, güvenlik filtresinin hangi yönde aktığını rol görünümüyle (Farklı görüntüle) kontrol et.
+Performans: Performans Analizi’nde çift yönlü ilişkili görselin süresini, CROSSFILTER’lı ölçü sürümüyle karşılaştır.
+`,
+  ex: [
+    { t: 'dax', name: 'Hedef (Ürün Kategorisi Kırılımı)', q: 'Hedef (Ürün Kategorisi Kırılımı): Kontrol tablosu satırlarda Urunler[Kategori] kullanıyor ve [Hedef] her satırda aynı çıkıyor. Hedefler’le Urunler arasında ilişki yok. Urunler[Kategori] değerlerini Hedefler[Kategori]’ye sanal ilişkiyle uygula.', sol: 'CALCULATE([Hedef], TREATAS(VALUES(Urunler[Kategori]), Hedefler[Kategori]))', hint: 'TREATAS(VALUES(kaynak sütun), hedef sütun). Tarih filtresi zaten Hedefler’e ulaşıyor.', grid: [{ t: 'Urunler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }] },
+    { t: 'dax', name: 'Gider Türüne Göre Proje Bütçesi', q: 'Gider Türüne Göre Proje Bütçesi: Gider türü kırılımında, o türde gideri olan departmanların proje bütçesi ([Proje Bütçesi]). Filtrenin Giderler’den Departmanlar’a, oradan Projeler’e akması gerekiyor; modeli değiştirmeden, yalnızca bu ölçüde ilişkiyi çift yönlü yap. (Toplam satırı karşılaştırılmaz.)', sol: 'CALCULATE([Proje Bütçesi], CROSSFILTER(Giderler[DepartmanNo], Departmanlar[DepartmanNo], BOTH))', hint: 'CROSSFILTER(çok taraf sütunu, bir taraf sütunu, BOTH). Teknoloji satırında Yazılım’ın projeleri, 1.140.000 ₺ görünmeli.', grid: [{ t: 'GiderTurleri', c: 'GiderTuru' }, { t: 'Tarih', c: 'Yil' }], noTotal: true },
+    { t: 'dax', name: 'Kategori Alıcılarının Talep Sayısı', q: 'Kategori Alıcılarının Talep Sayısı: Görünen kategoriden iptal edilmemiş alışverişi olan müşterilerin açtığı destek talebi sayısı ([Talep Sayısı]). Kategori filtresi Talepler’e ulaşmaz; alıcı kümesini Musteriler[MusteriNo]’ya taşı.', sol: 'CALCULATE([Talep Sayısı], TREATAS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), Musteriler[MusteriNo]))', hint: 'Satislar olgu tablosu müşteri ile kategori arasında köprüdür. CALCULATETABLE(VALUES(Satislar[MusteriNo]), …) kümeyi verir, TREATAS onu Musteriler’e uygular; Musteriler de Talepler’i süzer.' },
+    { t: 'dax', name: 'Çok Kategorili Alıcı', q: 'Çok Kategorili Alıcı: Görünen bağlamda iptal edilmemiş alışverişi olan müşterilerden, (kategori filtresinden bağımsız olarak) en az 4 farklı kategoriden alanların sayısı. Müşteri kümesini FILTER ile dolaş; kategori sayısında Satislar’dan Urunler’e filtre akmadığını unutma.', sol: 'COUNTROWS(FILTER(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), CALCULATE(DISTINCTCOUNT(Urunler[Kategori]), REMOVEFILTERS(Kategoriler), Satislar[Durum] <> "İptal", CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH)) >= 4))', hint: 'CROSSFILTER olmadan DISTINCTCOUNT(Urunler[Kategori]) her müşteride 7 verir. REMOVEFILTERS(Kategoriler) satırdaki kategori filtresini iç hesaptan kaldırır. Toplamda 103 bulmalısın.' },
+    { t: 'dax', name: 'Ortak Proje Sayısı (Köprü)', q: 'Ortak Proje Sayısı (Köprü): Departman kırılımında, departmanın yer aldığı ortak proje sayısı. Köprüyü ölçü içinde DATATABLE ile kur: ProjeNo, DepartmanNo, Pay sütunları; satırlar {5, 2, 0.7}, {5, 1, 0.3}, {7, 3, 0.6}, {7, 4, 0.4}, {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}. Toplam satırında projeler bir kez sayılsın (3), köprü satırı sayısı (7) değil.', sol: 'VAR Kopru = DATATABLE("ProjeNo", INTEGER, "DepartmanNo", INTEGER, "Pay", DOUBLE, {{5, 2, 0.7}, {5, 1, 0.3}, {7, 3, 0.6}, {7, 4, 0.4}, {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}}) VAR Gorunen = FILTER(Kopru, [DepartmanNo] IN VALUES(Departmanlar[DepartmanNo])) RETURN COUNTROWS(DISTINCT(SELECTCOLUMNS(Gorunen, "P", [ProjeNo])))', hint: 'Görünen departmanların köprü satırlarını FILTER ile al; proje numaralarını SELECTCOLUMNS ile çek ve DISTINCT ile tekilleştir.', grid: [{ t: 'Departmanlar', c: 'Departman' }] },
+    { t: 'query', q: 'Çift saymayı ölç: ROW ile iki sütun döndür. "Satırların toplamı": kategori başına [Müşteri Sayısı] değerlerinin toplamı (SUMX + VALUES(Kategoriler[Kategori])). "Tekil": genel [Müşteri Sayısı].', start: 'EVALUATE\n', sol: 'EVALUATE\nROW(\n    "Satırların toplamı", SUMX(VALUES(Kategoriler[Kategori]), [Müşteri Sayısı]),\n    "Tekil", [Müşteri Sayısı]\n)', hint: 'SUMX her kategori satırında ölçüyü bağlam geçişiyle hesaplar. 628 ile 136 arasındaki fark, müşterilerin birden çok kategoride görünmesidir.' },
+    { t: 'mc', q: 'Bir geliştirici Satislar–Musteriler ilişkisini çift yönlü yapmak istiyor; Talepler hem Tarih’e hem Musteriler’e bağlı. Power BI değişikliği kaydetmiyor ya da [Talep Sayısı] yıl kırılımında farklı sonuç vermeye başlıyor. Ne olmuştur?', o: ['Tarih’ten Talepler’e iki filtre yolu oluşmuştur; belirsizlik vardır', 'Talepler tablosunun kardinalitesi bire-bir olmuş, sayımlar ikiye bölünmüştür', 'Çift yönlü ilişki Musteriler’deki RLS rolünü otomatik olarak silmiştir', 'Tarih tablosu artık tarih tablosu olarak işaretli sayılmaz, zaman zekâsı bozulur'], a: 0, why: 'Çift yön, Tarih → Satislar → Musteriler → Talepler yolunu açar; doğrudan Tarih → Talepler yolu zaten var. Eşit öncelikli yollar belirsiz yol hatası doğurur ya da Desktop değişikliği reddeder. Kardinalite değişmez, RLS rolü silinmez, tarih tablosu işareti etkilenmez. Çözüm: ilişkiyi tek yönlü bırakıp gereken ölçüde CROSSFILTER kullanmak.' },
+    { t: 'mc', q: 'Hedefler[Kategori] ile Urunler[Kategori] arasına çoka-çok kardinaliteli bir ilişki kurdun. Hedefte olan ama ürün tablosunda henüz ürünü olmayan “Bahçe” kategorisinin hedefi raporda görünmüyor. Neden?', o: ['Çoka-çok ilişkiler yalnızca DirectQuery modundaki tablolarda çalışır', 'Sınırlı ilişkide eşleşmeyen satır için boş satır eklenmez', 'Kategori sütunu metin olduğu için ilişki büyük-küçük harfe duyarlıdır', 'Çapraz filtre yönü tek olduğu için hedefler hiç filtrelenmez'], a: 1, why: 'Çoka-çok kardinalite sınırlı bir ilişkidir: birleşme iç birleşme mantığıyla yapılır ve bütünlük ihlalleri için boş sanal satır eklenmez; eşleşmeyen hedef sessizce kaybolur. İçe aktarmada da çalışır; Power BI metin karşılaştırmasında büyük-küçük harfe duyarsızdır; tek yön Urunler’den Hedefler’e filtreyi zaten taşır. Ortak Kategoriler boyutu bu sorunu yaşamaz.' },
+    { t: 'mc', q: 'PMO, departman raporunda ortak projelerin bütçesini “tam” göstermek istiyor; finans ise toplam satırının şirket bütçesine eşit olmasını şart koşuyor. En iyi tasarım hangisi?', o: ['Tek ölçü yeter: toplam satırı zaten tekil projeleri sayar, satırlar da tam görünür', 'Köprüye pay sütunu ekleyip tam bütçeyi kaldırır, yalnızca paylaştırılmış ölçüyü bırakırım', 'İki ayrı ölçü: tam bütçe (toplanmaz) ve paylaştırılmış bütçe (toplanır); adlarında ve ipucunda belirtirim', 'Toplam satırını görselden kapatır, kullanıcıların satırları elle toplamasını isterim'], a: 2, why: 'İki soru farklıdır: sorumluluk büyüklüğü (tam, toplanamaz) ve maliyet dağılımı (paylı, toplanır). İkisini ayrı adlarla vermek iki tarafı da karşılar. Tek ölçüde satırlar toplamla tutmaz ve kullanıcı bunu hata sanar; yalnızca paylı ölçü PMO’nun ihtiyacını karşılamaz; toplamı kapatmak sorunu gizler.' }
+  ]
+});
+/* ---------- 3. Uzman kalıplar (C2 · Uzman DAX) ---------- */
+add('ileri-kaliplar', {
+  id: 'uzman-kaliplar', lv: 'C2', mod: 'Uzman DAX', min: 42,
+  title: 'Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe',
+  sum: 'Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı, işlem kuru / dönem sonu kuru / sabit kur ayrımı ve eksik kur, aylık hedefi güne dağıtmak ve taneciklik koruması.',
+  body: `
+“İleri iş kalıpları” dersinde Top N + Diğer, sepet analizi, ürün düzeyinde LFL ve aylık kurla dönüşümün iskeletini kurdun; Ölçü Laboratuvarı’nda [Yoldaki Sipariş] kalıbını gördün. Bu ders o kalıpları üretime taşıyor: gerçek verinin kenar durumları, aynı sorunun iki farklı doğru tanımı ve raporu sessizce bozan tanecik farkları. Her bölümde önce mevcut çözümün nerede yanlış sayı verdiğini motorla göreceğiz.
+1 · Devam eden olaylar: açık siparişleri doğru saymak
+Lojistik müdürü yılbaşı sabahı soruyor: “31 Aralık 2024 akşamı depoda kaç açık sipariş vardı?” Ölçü Laboratuvarı’ndaki [Yoldaki Sipariş], ay satırlarında 2024 boyunca 1 ile 5 arasında değerler veriyor. Aralık 2024 satırı ise BLANK.
+Sebep veride: Aralık’ın son günlerinde verilmiş 6 sipariş (10 satır) hâlâ “Kargoda” ve TeslimTarihi boş. Kalıp Satislar[TeslimTarihi] > Gun koşulunu kullanıyor; DAX’ta BLANK bir tarihle karşılaştırılınca sıfır gibi davranır ve koşul yanlış olur. Yani “henüz teslim edilmemiş” siparişler, tam da sayılması gerekenler, dışarıda kalıyor. Öte yandan iptal edilen 121 satırın da teslim tarihi boş; onları açık saymamalıyız.
+Açık Sipariş =
+VAR Gun = MAX(Tarih[Tarih])
+RETURN
+    CALCULATE(
+        DISTINCTCOUNT(Satislar[SiparisNo]),
+        REMOVEFILTERS(Tarih),
+        Satislar[Tarih] <= Gun,
+        Satislar[Durum] <> "İptal",
+        FILTER(
+            ALL(Satislar[TeslimTarihi]),
+            ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun
+        )
+    )
+ | Ay sonu |  | [Yoldaki Sipariş] |  | [Açık Sipariş] |
+ | 2024-10 |  | 5 |  | 5 |
+ | 2024-11 |  | 3 |  | 3 |
+ | 2024-12 |  | BLANK |  | 6 |
+Geçmiş aylar aynı, çünkü o siparişlerin teslim tarihi artık dolu. Hata yalnızca en güncel dönemde, yani yöneticinin en çok baktığı yerde görünür. Devam eden olay kalıbının genel kuralı: bitiş tarihi boşsa olay hâlâ sürüyordur; iptal gibi “hiç başlamamış” durumları ayrıca dışla.
+Aynı kalıptan türeyen üç soru
+ | Soru |  | Değişiklik |  | 31.12.2024 |
+ | Açık sipariş tutarı |  | DISTINCTCOUNT yerine SUM(Satislar[Tutar]) |  | 11.063 ₺ |
+ | 3 günden uzun açık (yaşlandırma) |  | Satislar[Tarih] <= Gun - 3 |  | 2 sipariş |
+ | Ay içinde ortalama günlük açık sipariş |  | AVERAGEX(VALUES(Tarih[Tarih]), [Açık Sipariş]) |  | Aralık: 6,2 · en yüksek gün: 10 |
+Ay sonu değeri (6) ile ayın günlük ortalaması (6,2) ve zirvesi (10) farklı kararlar doğurur: ay sonu bilanço içindir, ortalama kapasite planı içindir, zirve ise vardiya planı içindir. Raporda hangisini gösterdiğini başlıkta yaz.
+Performans: dinamik ölçü mü, fotoğraf tablosu mu?
+ | Yol |  | Ne zaman? |  | Bedel |
+ | Dinamik ölçü (yukarıdaki) |  | Ay ya da gün düzeyinde, orta büyüklükte olgu |  | Her hücrede tarih filtresi yeniden kurulur; günlük ortalamada gün sayısı × sorgu |
+ | Günlük fotoğraf tablosu (Tarih × açık sipariş sayısı) |  | Milyonlarca satır, günlük trend sık kullanılıyor |  | Yenilemede hesaplanır (Power Query ya da ambar); geçmişe dönük düzeltmelerde yeniden üretmek gerekir |
+StokGorunum tablosu da bir fotoğraf tablosudur; “Model tasarımı II” dersinde gördüğün gibi aylar boyunca toplanmaz, son değeri alınır. Açık sipariş de aynı türde, yarı toplanabilir bir ölçüdür: yıl satırında 12 ayın toplamı değil, yıl sonu değeri gösterilir.
+2 · Karşılaştırılabilir dönem: hangi müşteriler “aynı”?
+“İleri iş kalıpları” dersinde LFL’yi ürün kümesiyle kurdun: her iki dönemde de satılan ürünler. Aynı fikri müşteriye uyguladığında, ürün analizinde göze batmayan bir tuzak ortaya çıkar. Yönetim kurulu soruyor: “2024’teki %86 büyümenin ne kadarı yeni müşteriden, ne kadarı mevcut müşterinin daha çok harcamasından?”
+ | Tanım |  | Küme |  | 2024 / 2023 |  | Büyüme |
+ | Tüm müşteriler |  | Herkes |  | 747.066 / 400.870 ₺ |  | +%86,4 |
+ | Etkinliğe göre (her iki yılda alan) |  | 64 müşteri |  | — |  | +%27,3 |
+ | Kohorta göre (ilk siparişi 2023’ten önce) |  | 46 müşteri |  | 194.668 / 202.047 ₺ |  | −%3,7 |
+İki “karşılaştırılabilir” tanım, işareti bile farklı iki sonuç veriyor. Etkinliğe dayalı tanım, 2024’te alışverişi bırakan müşterileri tanım gereği dışarıda bırakır: yalnızca “hayatta kalanlar” kalır. Bu hayatta kalan yanlılığı (survivorship bias) mevcut müşteri büyümesini olduğundan iyi gösterir. Kohort tanımı ise kümeyi dönem başında, sonuca bakmadan sabitler; kayıpları da içerir. Eski müşteri tabanı aslında küçülmüş; büyümenin tamamı yeni müşterilerden geliyor.
+Eski Kohort Satışı =
+VAR DonemBasi = MIN(Tarih[Tarih])
+VAR KarsilastirmaBasi = EDATE(DonemBasi, -12)
+VAR EskiMusteriler =
+    CALCULATETABLE(
+        VALUES(Musteriler[MusteriNo]),
+        REMOVEFILTERS(Tarih),
+        Musteriler[IlkSiparis] < KarsilastirmaBasi
+    )
+RETURN
+    CALCULATE([Net Satış], EskiMusteriler)
+Eski Kohort Satışı GY =
+VAR DonemBasi = MIN(Tarih[Tarih])
+VAR KarsilastirmaBasi = EDATE(DonemBasi, -12)
+VAR EskiMusteriler =
+    CALCULATETABLE(
+        VALUES(Musteriler[MusteriNo]),
+        REMOVEFILTERS(Tarih),
+        Musteriler[IlkSiparis] < KarsilastirmaBasi
+    )
+RETURN
+    CALCULATE([Net Satış], EskiMusteriler, SAMEPERIODLASTYEAR(Tarih[Tarih]))
+Küme, karşılaştırma döneminin başına göre kurulur: 2024 satırında “ilk siparişi 1 Ocak 2023’ten önce olanlar”. Böylece aynı 46 müşteri iki yılda da ölçülür.
+Kenar durumlar
+Eksik taban yılı: Veri Haziran 2022’de başlıyor. 2023’ün 2022’ye göre büyümesi (+%290) yarım yılı tam yılla karşılaştırır; 2023 satırında LFL’yi gizle ya da yalnızca ortak aylarla hesapla.
+Bölme biçimi: DIVIDE(A, B) - 1 taban boşken BLANK − 1 = −1 verir; 2022 satırı “−%100” görünür. DIVIDE(A - B, B) boş döner.
+Tanımı belgele: Ölçü adına tanımı koy (“Eski Kohort Büyümesi”), açıklamaya kümenin nasıl seçildiğini yaz. “LFL” kısaltması tek başına iki ayrı ekipte iki ayrı şey demektir.
+Üretimde bayrakPerakendede karşılaştırılabilir mağaza listesi genelde iş kuralıyla (en az 13 ay açık, tadilat yok) belirlenir ve kaynakta ya da Power Query’de dönem başına bir bayrak sütunu olarak tutulur. Dinamik DAX kümesi keşif için iyidir; resmî raporda bayrak, denetlenebilir ve hızlıdır.
+3 · Döviz çevirme: hangi kur, hangi sayı?
+Ortaklara dolar bazlı rapor hazırlanıyor. Kur tablosu DovizKurlari ayda bir satır tutuyor (ayın ilk günü, USD ve EUR) ve Tarih’e bağlı değil. Aylık kurla satış dönüşümünü Ölçü Laboratuvarı’ndaki [Satış (Seçili Para)] yapıyor. Uzman sorusu şu: her sayı aynı kurla mı çevrilir?
+ | Sayı türü |  | Örnek |  | Doğru kur |
+ | Akış (dönem boyunca oluşur) |  | Satış, gider, satın alma |  | İşlem tarihinin kuru (burada ay kuru); ay ay çevrilip toplanır |
+ | Bakiye (bir andaki fotoğraf) |  | Stok değeri, açık sipariş tutarı, alacak |  | Dönem sonu kuru |
+ | Performans karşılaştırması |  | Büyüme, hedef sapması |  | Sabit kur (iki dönem aynı kurla) |
+Akış ve bakiye
+2024 net satışı 747.066 ₺. Aylık kurlarla 22.614 $; tüm yılı Aralık kuruyla (35,00) çevirirsen 21.345 $; yıl ortalama kuruyla (32,78) 22.788 $. Akış için doğru olan ilkidir. Stok değeri ise yıl sonu fotoğrafıdır: 163.465 ₺, dönem sonu kuruyla 4.670 $. Ortalama kurla çevirmek 4.986 $ verir ve bilançoda olmayan bir değeri raporlar.
+Stok Değeri (USD, Dönem Sonu) =
+VAR SonAyBasi = EOMONTH(MAX(Tarih[Tarih]), -1) + 1
+VAR Kur =
+    LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], SonAyBasi, DovizKurlari[ParaBirimi], "USD")
+RETURN
+    DIVIDE([Stok Değeri], Kur)
+Sabit kur: büyümenin ne kadarı kurdan?
+Dolar bazında 2024 büyümesi 22.614 / 16.613 → +%36,1. TL bazında +%86,4. Hangisi “gerçek” performans? İkisini ayırmak için 2024’ün her ayını, 2023’ün aynı ayının kuruyla çevir:
+Satış USD (GY Kuruyla) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR GecenYilAyBasi = EDATE(DATEVALUE(Tarih[YilAy] & "-01"), -12)
+    VAR Kur =
+        LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], GecenYilAyBasi, DovizKurlari[ParaBirimi], "USD")
+    RETURN DIVIDE([Net Satış], Kur)
+)
+2024 sabit kurla 31.204 $; 2023’e göre +%87,8. Yani iş hacmi neredeyse ikiye katlanmış, TL’nin değer kaybı dolar büyümesini %36’ya indirmiş. Kur etkisi: 22.614 − 31.204 = −8.590 $. Bu ayrıştırma, “dolar büyümesi düşük, ekip başarısız” yanlış sonucunu önler.
+Eksik kur: sessiz kayıp
+Yukarıdaki ölçü 2022 satırında BLANK verir; kur tablosunda 2021 yok. Asıl tehlike toplam satırında: 54.948 $, 2022’yi hiç içermiyor ve hiçbir uyarı yok. Üretimde iki koruma kur:
+Kontrol ölçüsü: görünen aylardan kuru bulunamayanları say; sıfırdan büyükse kartta uyarı göster.
+Son bilinen kur: kur tablosu bir gün geç yükleniyorsa, “o tarihe kadar bilinen en son kur” mantığı (MAX(DovizKurlari[Tarih]) ≤ gün) boş ay yerine bir önceki ayın kurunu kullanır. Bunu yalnızca iş birimi onaylarsa yap ve açıklamaya yaz.
+Kuru Eksik Ay =
+COUNTROWS(
+    FILTER(
+        VALUES(Tarih[YilAy]),
+        ISBLANK(
+            LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], EDATE(DATEVALUE(Tarih[YilAy] & "-01"), -12), DovizKurlari[ParaBirimi], "USD")
+        )
+    )
+)
+2022 satırında 12, diğer yıllarda BLANK döner. Toplam satırında da 12: rapor kullanıcısına “bu toplamın 12 ayı eksik” demenin tek yolu budur.
+4 · Farklı taneciklikte bütçe: aylık hedefi güne dağıtmak
+Satış direktörü haftalık toplantı için “haftalık satış ve hedef” tablosu istiyor. Hedefler ay düzeyinde ve her ayın hedefi ayın 1. gününe yazılı. Hafta kırılımında [Hedef] şöyle görünür:
+ | 2024 haftası |  | Net satış |  | [Hedef] |  | Günlük dağıtım |
+ | 1 (1–7 Ocak, 30–31 Aralık) |  | 27.516 ₺ |  | 48.500 ₺ |  | 16.655 ₺ |
+ | 2 |  | 6.921 ₺ |  | BLANK |  | 10.952 ₺ |
+ | 5 (29 Ocak–4 Şubat) |  | 5.682 ₺ |  | 46.000 ₺ |  | 11.038 ₺ |
+Ayın 1’ini içeren hafta ayın bütün hedefini alıyor, diğer haftalar hedefsiz. Aynı sorun ay içi “bugüne kadar” raporunda daha da tehlikeli: 1–15 Aralık 2024 satışı 60.134 ₺, [Hedef] 88.400 ₺ gösteriyor ve ekip “%68’deyiz” diye alarm veriyor. Günlük dağıtımla hedef 42.774 ₺, gerçekleşme %141. 2–31 Aralık seçilirse hedef BLANK olur.
+Hedef (Günlük Dağıtım) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR Ay = Tarih[YilAy]
+    VAR AyHedefi = CALCULATE([Hedef], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+    VAR AyGunSayisi = CALCULATE(COUNTROWS(Tarih), REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+    VAR GorunenGun = CALCULATE(COUNTROWS(Tarih))
+    RETURN DIVIDE(AyHedefi * GorunenGun, AyGunSayisi)
+)
+Her görünen ay için: ayın tam hedefi × (görünen gün / ayın gün sayısı). GorunenGun, bağlam geçişiyle o ayın görünen günlerini sayar; hafta 1’de Ocak için 7, Aralık için 2. Ay ve yıl satırlarında sonuç [Hedef] ile birebir aynıdır (2024: 763.200 ₺), yani ölçü mevcut raporları bozmaz.
+Anti-kalıp: VAR yerine VALUESTarih[YilAy] = Ay yerine VALUES(Tarih[YilAy]) yazarsan, “Genişletilmiş tablolar” dersinde gördüğün gibi filtre argümanı dış bağlamda hesaplanır ve hafta 1’de iki ayı birden döndürür. Sonuç 16.655 ₺ yerine 19.873 ₺ olur. Ay, çeyrek ve yıl satırlarında ise iki sürüm aynı sayıyı verir; hata yalnızca ay sınırını kesen kırılımlarda görünür. Testte mutlaka hafta ve “1–15 Aralık” gibi kısmi bir aralık dene.
+Üç strateji
+ | Strateji |  | Ne yapar? |  | Ne zaman? |
+ | Dağıt (yukarıdaki) |  | Ay hedefini görünen günlere orantılar |  | Haftalık ve ay içi takip isteniyorsa |
+ | Gizle |  | Görünen gün sayısı, görünen ayların tam gün sayısına eşit değilse BLANK |  | Hedef ancak ay düzeyinde anlamlıysa; yanlış sayı göstermektense boş |
+ | Önceden dağıt |  | Power Query’de ya da ambarda gün düzeyinde hedef tablosu |  | Büyük model, ağırlıklı dağıtım (iş günü, mevsimsellik) |
+Hedef (Yalnızca Tam Ay) =
+VAR GorunenGun = COUNTROWS(Tarih)
+VAR TamAyGun = CALCULATE(COUNTROWS(Tarih), REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy]))
+RETURN IF(GorunenGun = TamAyGun, [Hedef])
+Burada VALUES doğru kullanım: ölçü iteratör içinde değil, dış bağlamda tek bir kez hesaplanıyor. Eşit dağıtım bir varsayımdır: hafta sonu satışı yüksek bir perakendecide günlere eşit pay vermek hafta içini hep “geride” gösterir. “Zaman serisi analizi” dersindeki haftanın günü endeksiyle ağırlıklandırmak bir sonraki adımdır; bu durumda önceden dağıtılmış gün tablosu daha bakımı kolay olur. Aynı kalıp GiderButce için de geçerlidir: gider bütçesi gider türü × ay düzeyinde, günlük dağıtım ölçüsü gider türü kırılımında [Gider Bütçe] ile aynı sayıyı verir.
+Uzman kalıp kontrol listesi
+Bitiş tarihi boş olabilir mi? Devam eden olaylarda boş bitiş “sürüyor” demektir; iptal gibi başlamamış durumları ayrıca dışla.
+Ölçü toplanabilir mi? Açık sipariş ve stok gibi bakiyeler yıl boyunca toplanmaz; dönem sonu ya da ortalama göster, hangisi olduğunu başlığa yaz.
+Karşılaştırılabilir küme sonuca bakmadan mı seçildi? Etkinliğe dayalı küme hayatta kalan yanlılığı taşır.
+Sayı akış mı, bakiye mi? Akış işlem kuruyla, bakiye dönem sonu kuruyla; büyüme yorumu sabit kurla.
+Kur eksik mi? Kontrol ölçüsü toplam satırında da uyarmalı.
+Bütçe hangi tanecikte? Ay sınırını kesen her kırılımda (hafta, tarih aralığı) hedefin ne gösterdiğini test et; dağıt, gizle ya da önceden dağıt.
+Belgele: Her uzman ölçünün açıklamasına tanımı, kenar durumu ve test edilen kırılımları yaz. Bu ölçüler ekipte en çok “neden bu sayı?” sorusu alanlardır.
+`,
+  ex: [
+    { t: 'dax', name: 'Açık Sipariş Tutarı', q: 'Açık Sipariş Tutarı: Görünen dönemin son gününde açık olan siparişlerin satış tutarı (SUM(Satislar[Tutar])). Açık: sipariş tarihi o gün ya da önce, durumu “İptal” değil ve teslim tarihi boş ya da o günden sonra. Tarih tablosundaki filtreyi kaldırmayı unutma.', sol: 'VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE(SUM(Satislar[Tutar]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun, Satislar[Durum] <> "İptal", FILTER(ALL(Satislar[TeslimTarihi]), ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun))', hint: 'BLANK > tarih yanlıştır; boş teslim tarihini ISBLANK ile ayrıca kabul et. Teslim tarihi koşulu VEYA içerdiği için FILTER(ALL(Satislar[TeslimTarihi]), …) kullan. 2024 satırında 11.063 ₺ çıkmalı.' },
+    { t: 'dax', name: 'Üç Günden Uzun Açık Sipariş', q: 'Üç Günden Uzun Açık Sipariş: Görünen dönemin son gününde açık olan ve en az 3 gün önce (Gun - 3 ya da daha önce) verilmiş siparişlerin sayısı (DISTINCTCOUNT(Satislar[SiparisNo])). İptaller hariç; teslim tarihi boş ya da o günden sonra.', sol: 'VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun - 3, Satislar[Durum] <> "İptal", FILTER(ALL(Satislar[TeslimTarihi]), ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun))', hint: 'Açık sipariş kalıbında tek değişiklik sipariş tarihi koşulu: Satislar[Tarih] <= Gun - 3. Tarihten gün çıkarmak DAX’ta doğrudan çalışır.', grid: [{ t: 'Tarih', c: 'YilAy' }, { t: 'Kategoriler', c: 'Kategori' }] },
+    { t: 'dax', name: 'Eski Kohort Büyümesi %', q: 'Eski Kohort Büyümesi %: İlk siparişi (Musteriler[IlkSiparis]) görünen dönemin başlangıcından 12 ay önceki tarihten önce olan müşterilerin, bu dönem ile geçen yılın aynı dönemi arasındaki net satış büyümesi. Kümeyi REMOVEFILTERS(Tarih) ile kur; bölmeyi DIVIDE(Bu - Önceki, Önceki) biçiminde yap.', sol: 'VAR DonemBasi = MIN(Tarih[Tarih]) VAR KarsilastirmaBasi = EDATE(DonemBasi, -12) VAR EskiMusteriler = CALCULATETABLE(VALUES(Musteriler[MusteriNo]), REMOVEFILTERS(Tarih), Musteriler[IlkSiparis] < KarsilastirmaBasi) VAR Bu = CALCULATE([Net Satış], EskiMusteriler) VAR Onceki = CALCULATE([Net Satış], EskiMusteriler, SAMEPERIODLASTYEAR(Tarih[Tarih])) RETURN DIVIDE(Bu - Onceki, Onceki)', hint: 'EDATE(MIN(Tarih[Tarih]), -12) karşılaştırma döneminin başıdır. Küme her iki hesapta aynı kalmalı; yalnızca ikinci CALCULATE’e SAMEPERIODLASTYEAR ekle. 2024’te yaklaşık −%3,7.' },
+    { t: 'dax', name: 'Stok Değeri (USD, Dönem Sonu)', q: 'Stok Değeri (USD, Dönem Sonu): [Stok Değeri] ölçüsünü, görünen dönemin son ayının USD kuruyla çevir. Son ayın ilk günü: EOMONTH(MAX(Tarih[Tarih]), -1) + 1. Kuru DovizKurlari’ndan iki koşullu LOOKUPVALUE ile bul.', sol: 'VAR SonAyBasi = EOMONTH(MAX(Tarih[Tarih]), -1) + 1 VAR Kur = LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], SonAyBasi, DovizKurlari[ParaBirimi], "USD") RETURN DIVIDE([Stok Değeri], Kur)', hint: 'Stok bir bakiyedir; ortalama kur değil dönem sonu kuru kullanılır. 2024 satırında 163.465 ₺ / 35,00.' },
+    { t: 'dax', name: 'Satış USD (Sabit Kur)', q: 'Satış USD (Sabit Kur): Görünen her ayın net satışını, bir önceki yılın aynı ayının USD kuruyla çevir ve topla (SUMX + VALUES(Tarih[YilAy])). Ayın ilk günü: DATEVALUE(Tarih[YilAy] & "-01"); bir yıl öncesi: EDATE(…, -12).', sol: 'SUMX(VALUES(Tarih[YilAy]), VAR GecenYilAyBasi = EDATE(DATEVALUE(Tarih[YilAy] & "-01"), -12) VAR Kur = LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], GecenYilAyBasi, DovizKurlari[ParaBirimi], "USD") RETURN DIVIDE([Net Satış], Kur))', hint: 'VAR’ları SUMX’in içinde tanımla; her ay için yeniden hesaplanır. 2022 satırı BLANK çıkar, çünkü 2021 kuru yok.' },
+    { t: 'dax', name: 'Gider Bütçesi (Günlük Dağıtım)', q: 'Gider Bütçesi (Günlük Dağıtım): [Gider Bütçe] ay düzeyinde, ayın ilk gününe yazılı. Görünen her ay için ayın tam bütçesini, ayın görünen gün sayısı / ayın toplam gün sayısı oranında dağıt ve topla. Ayın değerini önce VAR’a al.', sol: 'SUMX(VALUES(Tarih[YilAy]), VAR Ay = Tarih[YilAy] VAR AyButcesi = CALCULATE([Gider Bütçe], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay) VAR AyGunSayisi = CALCULATE(COUNTROWS(Tarih), REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay) VAR GorunenGun = CALCULATE(COUNTROWS(Tarih)) RETURN DIVIDE(AyButcesi * GorunenGun, AyGunSayisi))', hint: 'VALUES(Tarih[YilAy]) filtre argümanı olarak yazılırsa dış bağlamda hesaplanır ve hafta kırılımında yanlış sonuç verir. VAR Ay = Tarih[YilAy] ve Tarih[YilAy] = Ay kullan.', grid: [{ t: 'Tarih', c: 'HaftaNo' }, { t: 'GiderTurleri', c: 'GiderTuru' }] },
+    { t: 'query', q: 'Ay içi hedef tuzağını sayılarla göster: ROW ile üç sütun döndür. "Satış": 1–15 Aralık 2024 net satışı (DATESBETWEEN). "Ay hedefi": Tarih[YilAy] = "2024-12" için [Hedef]. "Gün payı": DIVIDE(15, 31).', start: 'EVALUATE\n', sol: 'EVALUATE\nROW(\n    "Satış", CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024, 12, 1), DATE(2024, 12, 15))),\n    "Ay hedefi", CALCULATE([Hedef], Tarih[YilAy] = "2024-12"),\n    "Gün payı", DIVIDE(15, 31)\n)', hint: 'DATESBETWEEN(Tarih[Tarih], başlangıç, bitiş). Ay hedefi × gün payı, dağıtılmış hedefi verir (yaklaşık 42.774 ₺).' },
+    { t: 'mc', q: 'Lojistik panosunda “ay sonu açık sipariş” kartı yalnızca içinde bulunulan ayda BLANK gösteriyor; geçmiş aylar dolu. Ölçü Satislar[TeslimTarihi] > Gun koşulunu kullanıyor. En olası sebep ve çözüm?', o: ['Tarih tablosu bugünden sonrasını içermiyor; tabloyu gelecek yılın sonuna uzatırım', 'Teslim edilmemişlerde teslim tarihi boş; boşu kabul eder, iptali dışlarım', 'Pasif teslim ilişkisi etkin değil; ölçüye USERELATIONSHIP eklerim', 'DISTINCTCOUNT boş sipariş numaralarını sayıyor; COUNTROWS kullanırım'], a: 1, why: 'Açık siparişlerin bitiş tarihi henüz yok; BLANK > tarih yanlış döner ve tam sayılması gerekenler düşer. Geçmiş aylarda teslim tarihleri dolduğu için sorun yalnızca güncel dönemde görünür. Tarih tablosu son günü zaten içeriyor; ölçü ilişki kullanmıyor, sütunları doğrudan karşılaştırıyor; sipariş numaraları boş değil.' },
+    { t: 'mc', q: 'CFO, dolar bazlı yönetim raporunda yıl sonu stok değerini ve yıllık satışı birlikte gösterecek. Hangi kur seçimi doğru?', o: ['İkisini de yıl ortalama kuruyla çeviririm; tek kur karşılaştırmayı kolaylaştırır', 'İkisini de yıl sonu kuruyla çeviririm; rapor tarihindeki değer en güncel olandır', 'Satışı ay ay işlem kuruyla, stoku dönem sonu kuruyla çeviririm', 'Satışı yıl sonu, stoku yıl ortalama kuruyla çeviririm; dalgalanma dengelenir'], a: 2, why: 'Satış bir akıştır, yıl boyunca farklı kurlarda oluşur; ay ay çevrilip toplanır. Stok bir bakiyedir, bir andaki fotoğraftır; dönem sonu kuruyla çevrilir. Tek kurla çevirmek akışı ya da bakiyeyi yanlış gösterir; ters eşleştirme ikisini birden bozar.' },
+    { t: 'mc', q: 'Pazarlama “mevcut müşteri büyümesi”ni, her iki yılda da alışveriş yapan müşterilerle hesapladı: +%27. Finans, ilk siparişi önceki yıldan eski olan müşterilerle hesapladı: −%4. Yönetim kuruluna hangisini, neden sunarsın?', o: ['Pazarlamanınkini; alışveriş yapmayan müşteri zaten mevcut sayılmaz', 'Finansınkini; küme sonuca bakmadan seçilmiş, kayıpları da içeriyor', 'İkisinin ortalamasını; iki ekibin görüşü dengelenmiş olur', 'Hiçbirini; toplam büyüme (+%86) tek doğru göstergedir'], a: 1, why: 'Etkinliğe dayalı küme, alışverişi bırakanları tanım gereği dışlar (hayatta kalan yanlılığı) ve büyümeyi olduğundan iyi gösterir. Kohort kümesi dönem başında sabitlenir, kayıpları da sayar. Ortalama anlamsızdır; toplam büyüme yeni ve mevcut müşteri katkısını ayırmaz. Sunarken iki tanımı ve farkın sebebini de göstermek iyi pratiktir.' }
+  ]
+});
+})(window);

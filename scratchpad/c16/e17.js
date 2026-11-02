@@ -1,0 +1,10 @@
+require('./h.js');
+const L = `Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"}`;
+const g = (e, t, c) => console.log(X.query({rows:[{t,c}], measures: ms, values:[e], totals:true}).rows.map(r=>r.keys+'='+(typeof r.vals[0]=='number'?Math.round(r.vals[0]*100)/100:r.vals[0])).join('  '));
+const K = `VAR Alim = CALCULATE([Net Maliyet], ${L}) VAR Ay = DISTINCTCOUNT(Tarih[YilAy]) RETURN IF(NOT ISBLANK(Alim), 1500 * Ay + 0.55 * Alim)`;
+g(K,'Tarih','Yil'); g(K,'Kategoriler','Kategori');
+g(`VAR Alim = CALCULATE([Net Maliyet], ${L}) VAR Ay = DISTINCTCOUNT(Tarih[YilAy]) RETURN IF(NOT ISBLANK(Alim), Alim - (1500 * Ay + 0.55 * Alim))`,'Tarih','Yil');
+g(`VAR Birim = DIVIDE(CALCULATE([Net Maliyet], ${L}), CALCULATE([Satılan Adet], ${L})) RETURN DIVIDE(18000, 0.45 * Birim)`,'Tarih','Yil');
+g(`VAR Birim = DIVIDE(CALCULATE([Net Maliyet], ${L}), CALCULATE([Satılan Adet], ${L})) RETURN DIVIDE(18000, 0.45 * Birim)`,'Tarih','Ceyrek');
+g(`CALCULATE([Net Maliyet], ${L})`,'Tarih','Yil');
+g(`DISTINCTCOUNT(Tarih[YilAy])`,'Tarih','Yil');

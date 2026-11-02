@@ -1,0 +1,4 @@
+const { chromium } = require('playwright');
+(async () => { const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell' });
+for (const [w, h, f] of [[1360, 'ders-var-mantik', 'deep1360.png'], [400, 'ders-mulakat', 'mk400.png'], [1360, 'patika-mulakat', 'pmk.png']]) { const p = await b.newPage({ viewport: { width: w, height: 900 } }); await p.goto('http://localhost:8765/index.html#' + h); await p.waitForTimeout(600); if (h === 'ders-var-mantik') await p.evaluate(() => document.querySelector('.deep').scrollIntoView()); if (h === 'ders-mulakat') { await p.click('details.faq summary'); await p.evaluate(() => document.querySelector('details.faq').scrollIntoView()); } await p.screenshot({ path: f }); await p.close(); }
+await b.close(); })();

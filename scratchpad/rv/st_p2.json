@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8765",
+      "localStorage": [
+        {
+          "name": "pbipatika.v1",
+          "value": "{\"weak\":{},\"skillStat\":{},\"rv\":{},\"rvc\":0,\"reports\":[],\"exams\":{},\"arena\":null,\"theme\":\"auto\",\"done\":{},\"ex\":{},\"xp\":0,\"days\":{},\"placement\":\"orta\",\"drafts\":{},\"last\":null,\"seen\":{},\"mine\":[],\"studio\":null,\"gclosed\":{\"test\":false},\"final\":{},\"labSeen\":{},\"trickSeen\":{},\"pq\":{},\"pqFree\":{},\"ivr\":{},\"cap\":{},\"ready\":{},\"cert\":{},\"navc\":{\"Başvuru\":true}}"
+        }
+      ]
+    }
+  ]
+}

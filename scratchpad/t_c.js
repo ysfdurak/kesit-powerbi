@@ -1,0 +1,15 @@
+console.log('--- L1');
+qq('EVALUATE\nADDCOLUMNS(GENERATESERIES(1, 7, 1), "Oran", VAR Esik = [Value] RETURN DIVIDE(CALCULATE(COUNTROWS(Satislar), Satislar[KargoGun] <= Esik, NOT ISBLANK(Satislar[KargoGun])), CALCULATE(COUNTROWS(Satislar), NOT ISBLANK(Satislar[KargoGun]))))');
+console.log('zt', ev('[Zamanında Teslim %]'));
+qq('EVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], FILTER(ALL(Tarih[Yil]), Tarih[Yil] = 2024), "Satış", [Net Satış], "Hedef", [Hedef], "Gerçekleşme", [Hedef Gerçekleşme %])');
+qq('EVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], TREATAS({2024}, Tarih[Yil]), "Satış", [Net Satış])');
+console.log('days', ev('COUNTROWS(CALENDAR(DATE(2015,1,1), DATE(2024,12,31)))'), ev('COUNTROWS(CALENDAR(DATE(2022,1,1), DATE(2024,12,31)))'));
+qq('EVALUATE\nADDCOLUMNS(DATATABLE("Kanal", STRING, "Sira", INTEGER, {{"Mağaza", 1}, {"Web", 2}, {"Mobil", 3}}), "Satış", VAR K = [Kanal] RETURN CALCULATE([Net Satış], Satislar[Kanal] = K))');
+qq('EVALUATE\nADDCOLUMNS(SELECTCOLUMNS({ ("Mağaza", 1), ("Web", 2), ("Mobil", 3) }, "Kanal", [Value1], "Sira", [Value2]), "Satış", VAR K = [Kanal] RETURN CALCULATE([Net Satış], Satislar[Kanal] = K))');
+console.log('hedef tutan', g('COUNTROWS(FILTER(ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "G", [Hedef Gerçekleşme %]), [G] >= 1))', 'Tarih', 'Yil'));
+console.log('max kanal', g('MAXX(ADDCOLUMNS(VALUES(Satislar[Kanal]), "S", [Net Satış]), [S])', 'Kategoriler', 'Kategori'), g('MAXX(ADDCOLUMNS(VALUES(Satislar[Kanal]), "S", [Net Satış]), [S])', 'Tarih', 'Yil'));
+console.log('ortalama kategori', g('AVERAGEX(VALUES(Kategoriler[Kategori]), [Net Satış])', 'Tarih','Yil'));
+qq('EVALUATE\nVAR T = SUMMARIZECOLUMNS(Tarih[Yil], "Satış", [Net Satış]) RETURN FILTER(T, [Satış] > 500000)');
+console.log('--- monthly 2024 count above 60000');
+console.log(ev('COUNTROWS(FILTER(ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış]), [S] > 60000))', [{t:'Tarih', c:'Yil', v:[2024]}]));
+qq('EVALUATE\nCALCULATETABLE(ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış]), Tarih[Yil] = 2024)', 12);

@@ -1,0 +1,16 @@
+global.window=global;['data','data2','dax','measures'].forEach(f=>require('/home/claude/pbi/'+f+'.js'));const X=PBI_DAX,ms={};PBI_MEASURES.forEach(m=>ms[m.name]={name:m.name,expr:m.expr});
+const t=(e,sl)=>{try{console.log(e.slice(0,90),'=>',X.evalMeasure(ms,e,sl||[]))}catch(x){console.log(e.slice(0,90),'ERR',x.message)}};
+t('CALCULATE([Net Satış], FILTER(SUMMARIZE(Satislar, Satislar[Kanal], Urunler[Kategori]), Satislar[Kanal]="Web" || Urunler[Kategori]="Kitap"))');
+t('CALCULATE([Net Satış], FILTER(Satislar, Satislar[Kanal]="Web" || RELATED(Urunler[Kategori])="Kitap"))');
+t('CALCULATE([Net Satış], FILTER(CROSSJOIN(VALUES(Satislar[Kanal]), VALUES(Urunler[Kategori])), Satislar[Kanal]="Web" || Urunler[Kategori]="Kitap"))');
+t('AVERAGEX(KEEPFILTERS(VALUES(Urunler[Kategori])), [Net Satış])');
+t('CALCULATE([Net Satış], KEEPFILTERS(Urunler[Kategori]="Kitap"))');
+t('CALCULATE([Net Satış], TREATAS({(2023,"Ara"),(2024,"Oca")}, Tarih[Yil], Tarih[Ay]))');
+t('CALCULATE([Net Satış], Tarih[YilAy]="2023-12") + CALCULATE([Net Satış], Tarih[YilAy]="2024-01")');
+t('CALCULATE(CALCULATE([Net Satış], Tarih[Yil]=2024), TREATAS({(2023,"Ara"),(2024,"Oca")}, Tarih[Yil], Tarih[Ay]))');
+t('CALCULATE([Net Satış], Tarih[YilAy]="2024-12") + CALCULATE([Net Satış], Tarih[YilAy]="2024-01")');
+t('CALCULATE(CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil]=2024)), TREATAS({(2023,"Ara"),(2024,"Oca")}, Tarih[Yil], Tarih[Ay]))');
+t('CALCULATE(CALCULATE([Net Satış], ALL(Urunler[Kategori])), FILTER(SUMMARIZE(Satislar, Satislar[Kanal], Urunler[Kategori]), Satislar[Kanal]="Web" && Urunler[Kategori]="Kitap"))');
+t('CALCULATE([Net Satış], Satislar[Kanal]="Web")');
+t('COUNTROWS(SELECTCOLUMNS(Urunler, "K", Urunler[Kategori]))');
+t('CALCULATE([Net Satış], SELECTCOLUMNS(FILTER(Urunler, Urunler[Kategori]="Kitap"), "K", Urunler[Kategori]))');

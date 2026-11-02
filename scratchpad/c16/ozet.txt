@@ -1,0 +1,9 @@
+ADDCOLUMNS(
+        Krediler,
+        "Durum", SWITCH(TRUE(), [GecikmeGun] >= 90, "Takipte", [GecikmeGun] >= 30, "Gecikmede", "Düzenli"),
+        "Odenen", VAR k = [KrediNo] RETURN COUNTROWS(FILTER(Plan, [KrediNo] = k && [OdemeTarihi] <= Rapor)) + 0,
+        "Bakiye", VAR k = [KrediNo] VAR t = [Tutar] VAR p = FILTER(Plan, [KrediNo] = k && [OdemeTarihi] <= Rapor) RETURN IF(ISEMPTY(p), t, MINX(p, [Kalan])),
+        "Faiz2024", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k && YEAR([OdemeTarihi]) = 2024), [Faiz]),
+        "Anapara2024", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k && YEAR([OdemeTarihi]) = 2024), [Taksit] - [Faiz]),
+        "Tahsilat2025", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k && YEAR([OdemeTarihi]) = 2025), [Taksit])
+    )

@@ -1,0 +1,552 @@
+## PBI_PL300#0 [Veriyi hazırla] Bir SQL Server kaynağından gelen sorguda adımların kaynağa katlanıp katlanmadığını Power Query’de en hızlı nasıl anlarsın?
+   *0) “Yerel sorguyu görüntüle” etkin mi diye bakmak
+    1) Sorgu adını değiştirip yenilemeyi yeniden başlatmak
+    2) Gelişmiş Düzenleyici’de toplam satır sayısını saymak
+    3) Sorgu bağımlılıkları görünümünde okların rengine bakmak
+   meta:{"a":0}
+   WHY: “Yerel sorguyu görüntüle” etkinse adım kaynağa SQL olarak gönderiliyordur; gri ise katlama o adımda kırılmıştır.
+
+## PBI_PL300#1 [Veriyi hazırla] Bir Excel dosyası her hafta farklı bir klasöre kaydediliyor ve sorgunun kaynağı elle değiştiriliyor. Kalıcı çözüm hangisi?
+   *0) Dosya yolunu bir Power Query parametresine almak
+    1) Her hafta yeni bir .pbix dosyası oluşturmak
+    2) Dosyayı her hafta aynı adla masaüstüne kopyalamak
+    3) Sorguyu DirectQuery moduna çevirmek
+   meta:{"a":0}
+   WHY: Parametre, yolu tek yerden değiştirmeyi sağlar; Service’te de anlam modeli ayarlarından güncellenebilir.
+
+## PBI_PL300#2 [Veriyi hazırla] Sütun kalitesi bir sütunda %3 hata gösteriyor. Hataların nedenini görmek için ilk ne yaparsın?
+    0) Sütunu kaldırıp aynı adla yeniden eklemek
+   *1) Hata hücresine tıklayıp ayrıntıyı okumak
+    2) Hataları hemen 0 ile değiştirip devam etmek
+    3) Tüm sorguyu baştan, yeni bir kaynakla kurmak
+   meta:{"a":1}
+   WHY: Önce neden: hücreye tıklayınca “DataFormat.Error” gibi mesaj ve değer görünür. Değiştirmek ya da kaldırmak nedeni öğrendikten sonra gelir.
+
+## PBI_PL300#3 [Veriyi hazırla] Varsayılan veri önizlemesi yalnızca ilk 1.000 satırı inceliyor. Sütun profilini tüm veriye göre görmek için?
+   *0) Profil ayarını “Tüm veri kümesi” yapmak
+    1) Sorguyu modele yükleyip DAX ile satırları saymak
+    2) Önizlemede satır sayısını 1.000 ile sınırlamak
+    3) Önizlemeyi kapatıp Power Query’yi yeniden açmak
+   meta:{"a":0}
+   WHY: Durum çubuğundaki “İlk 1000 satıra göre sütun profili oluşturma” bağlantısı “Tüm veri kümesi” olarak değiştirilebilir.
+
+## PBI_PL300#4 [Veriyi hazırla] İki tablo arasında Birleştir (Merge) yaparken Musteriler’deki her satırın korunmasını, Siparisler’den yalnızca eşleşenlerin gelmesini istiyorsun.
+    0) İç birleştirme
+   *1) Sol dış birleştirme
+    2) Sağ karşıt birleştirme
+    3) Tam dış birleştirme
+   meta:{"a":1}
+   WHY: Sol dış birleştirme sol tablonun tüm satırlarını korur, sağdan eşleşenleri getirir.
+
+## PBI_PL300#5 [Veriyi hazırla] Ad ve soyadı bir arada tutan “Ayşe Yılmaz Kaya” değerlerinde soyadı son sözcük. Doğru bölme seçeneği?
+    0) En soldaki boşlukta, iki parçaya böl
+   *1) En sağdaki sınırlayıcıda böl
+    2) Her sınırlayıcıda böl ve birleştir
+    3) Karakter sayısına göre böl
+   meta:{"a":1}
+   WHY: Soyadı son sözcükse en sağdaki boşluktan bölmek ad kısmındaki ikinci adı korur.
+
+## PBI_PL300#6 [Veriyi hazırla] Bir CSV’de tarih sütunu “03/04/2024” biçiminde ve ay/gün sırası ABD biçiminde. Doğru okumak için?
+    0) Türü Tarih yapıp bölgesel ayarı değiştirmeden bırakmak
+   *1) Türü değiştir → Yerel ayarla kullan: İngilizce (ABD)
+    2) Sütunu metin bırakıp DAX ile çevirmek
+    3) Tarih sütununu üçe bölüp yeniden birleştirmek
+   meta:{"a":1}
+   WHY: “Yerel ayarla kullan” dönüşümü kaynağın kültürüyle okur; raporun kendi bölge ayarı değişmez.
+
+## PBI_PL300#7 [Veriyi hazırla] Bir sorgunun yalnızca diğer sorgular tarafından kullanılan bir ara adım olduğunu ve yenileme süresini artırdığını düşünüyorsun. Hangisi doğrudur?
+    0) Yüklemesi kapalı sorgular yenilemede hiç çalışmaz
+   *1) Başvuran sorgular için yine değerlendirilir
+    2) Yüklemesi kapalı sorgular yalnızca Service’te çalışır
+    3) Ara sorgular her zaman sorgu katlamayı bozar
+   meta:{"a":1}
+   WHY: Yüklemeyi kapatmak tabloyu modele koymaz ama başvuran sorgular onu kullandıkça değerlendirilir.
+
+## PBI_PL300#8 [Veriyi hazırla] Kaynakta 120 sütun var ama raporda 15’i kullanılıyor. Modele en iyi etkisi olan adım?
+    0) Kullanılmayan sütunları rapor görünümünde gizlemek
+   *1) Power Query’de yalnızca gereken sütunları seçmek
+    2) Kullanılmayan sütunları bir görüntü klasörüne taşımak
+    3) Tüm sütunların türünü Metin yapmak
+   meta:{"a":1}
+   WHY: Gizlemek boyutu küçültmez. Sütunu Power Query’de seçmemek hem modeli hem yenilemeyi küçültür.
+
+## PBI_PL300#9 [Veriyi hazırla] Bir web API’sinden gelen JSON’da her kayıt bir “kayıt (record)” olarak geliyor. Alanları sütun yapmak için?
+   *0) Kayıt sütununu genişletmek
+    1) Sütunun özetini kaldırmak (Unpivot)
+    2) Satırları kayda göre gruplandırmak
+    3) Sütunu Metin türüne çevirmek
+   meta:{"a":0}
+   WHY: Kayıt sütununun başlığındaki genişlet düğmesi alanları ayrı sütunlar hâlinde açar.
+
+## PBI_PL300#10 [Veriyi hazırla] Şirket içi bir Oracle kaynağını Import modunda kullanan anlam modeli Service’te zamanlanmış yenileme yapacak. Ne gerekir?
+   *0) Standart modda veri ağ geçidi ve bağlantı
+    1) Fabric kapasitesi ve Direct Lake bağlantısı
+    2) Power BI Report Server ve zamanlanmış görev
+    3) Kaynak verinin her gün Excel’e aktarılması
+   meta:{"a":0}
+   WHY: Şirket içi kaynaklar için ağ geçidi gerekir; standart mod birden çok kullanıcı ve zamanlanmış yenileme için uygundur.
+
+## PBI_PL300#11 [Veriyi hazırla] Bir tablo “Bölge” ve “Ay” bazında satış hedeflerini içeriyor ama satış gün ve ürün bazında. Modele almadan önce yapılacak en doğru iş?
+    0) Hedefleri günlere eşit bölüp satışla birleştirmek
+   *1) Kendi ayrıntı düzeyinde bırakıp ortak boyutlara bağlamak
+    2) Hedefleri satış tablosuna yeni sütun olarak eklemek
+    3) İki tabloyu birleştirip tek bir olgu tablosu yapmak
+   meta:{"a":1}
+   WHY: Farklı ayrıntı düzeyindeki olgular ortak boyutlar üzerinden ilişkilendirilir; hedefi günlere dağıtmak yapay veri üretir.
+
+## PBI_PL300#12 [Modelle] Tarih tablosunu “tarih tablosu olarak işaretle” ne sağlar?
+   *0) Zaman zekâsının bu tabloyu doğru kullanması
+    1) Tablonun Service’te kullanıcılardan gizlenmesi
+    2) Tablonun her yenilemede baştan oluşturulması
+    3) Tarih sütununun metin türüne dönüşmesi
+   meta:{"a":0}
+   WHY: İşaretleme, zaman zekâsının doğru tarih sütununu kullanmasını ve kesintisiz tarih aralığının doğrulanmasını sağlar.
+
+## PBI_PL300#13 [Modelle] Bir ürün birden çok kampanyada, bir kampanya da birden çok üründe yer alıyor. Önerilen modelleme?
+    0) Ürün ve Kampanya arasında doğrudan çoka-çok ilişki
+   *1) Ürün–Kampanya köprü tablosu ve iki bire-çok ilişki
+    2) Kampanya adlarını ürün tablosunda virgülle birleştirmek
+    3) İki tabloyu tek tabloda birleştirmek
+   meta:{"a":1}
+   WHY: Köprü tablo, çoka-çok ilişkiyi iki bire-çok ilişkiye böler; filtre yönünü ve toplamları denetlenebilir kılar.
+
+## PBI_PL300#14 [Modelle] Satislar tablosunda SiparisTarihi ve TeslimTarihi var; ikisi de aynı Tarih tablosuna bağlanmalı. Doğru yaklaşım?
+    0) İki ayrı etkin ilişki kurmak
+   *1) Biri etkin, diğeri pasif + USERELATIONSHIP
+    2) Tarih tablosunu iki kez yüklemek zorunludur
+    3) TeslimTarihi sütununu modelden silmek
+   meta:{"a":1}
+   WHY: İki tablo arasında yalnızca bir etkin ilişki olabilir. Pasif ilişki ölçü içinde USERELATIONSHIP ile etkinleştirilir; alternatif olarak rol oynayan ikinci bir tarih tablosu da kullanılabilir.
+
+## PBI_PL300#15 [Modelle] Bir hesaplamayı ölçü yerine hesaplanmış sütun olarak yazmanın doğru olduğu durum hangisi?
+   *0) Satır başına sabit, dilimleyicide kullanılacak değer
+    1) Seçili yıla göre değişen bir büyüme oranı
+    2) Görselin filtresine göre değişen bir toplam
+    3) Dilimleyici seçimini yansıtan dinamik metin
+   meta:{"a":0}
+   WHY: Hesaplanmış sütun yenilemede satır başına bir kez hesaplanır ve filtre bağlamına tepki vermez; eksen ve dilimleyici için uygundur.
+
+## PBI_PL300#16 [Modelle] Bir ilişkide çapraz filtre yönünü “Her ikisi” yapmanın en büyük riski nedir?
+    0) Model boyutunun iki katına çıkması
+   *1) Belirsiz filtre yolları, beklenmedik sonuç
+    2) RLS kurallarının tamamen devre dışı kalması
+    3) Ölçülerin hesaplanmış sütuna dönüşmesi
+   meta:{"a":1}
+   WHY: Çift yönlü ilişkiler birden çok filtre yolu açabilir ve sonuçları öngörülemez kılar; gerektiğinde ölçü içinde CROSSFILTER tercih edilir.
+
+## PBI_PL300#17 [Modelle] Kullanıcıların rapor oluştururken ürün kodu, ürün anahtarı gibi teknik sütunları görmemesi için?
+    0) Sütunları kullanılmayan bir sayfaya taşımak
+   *1) Sütunları rapor görünümünde gizlemek
+    2) Sütunları Power Query’de metin türüne çevirmek
+    3) Sütun adlarının başına alt çizgi eklemek
+   meta:{"a":1}
+   WHY: Gizlenen sütunlar ilişkilerde çalışmaya devam eder ama Veri bölmesinde görünmez.
+
+## PBI_PL300#18 [Modelle] Bir boyut tablosunda Ülke → Şehir → Mahalle hiyerarşisi kuruldu. Bunun rapor kullanıcısına faydası?
+   *0) Görsellerde hazır bir detaya inme yolu
+    1) Model boyutunun belirgin biçimde küçülmesi
+    2) RLS kurallarının hiyerarşiden otomatik oluşması
+    3) Üç sütunun tek bir sütunda birleşmesi
+   meta:{"a":0}
+   WHY: Hiyerarşi, görsele tek alan olarak sürüklenip detaya inme ve yukarı çıkma için kullanılabilir.
+
+## PBI_PL300#19 [Modelle] Bir ölçünün biçimini (para birimi, ondalık) tüm görsellerde aynı yapmanın en sürdürülebilir yolu?
+    0) Her görselin biçim bölmesinden ayrı ayrı ayarlamak
+   *1) Ölçünün biçim dizesini model düzeyinde tanımlamak
+    2) Tema dosyasına sayı biçimi eklemek
+    3) Görselin veri etiketlerini kapatmak
+   meta:{"a":1}
+   WHY: Model düzeyindeki biçim dizesi ölçüyle birlikte her yerde geçerlidir.
+
+## PBI_PL300#20 [Modelle] Kâr marjı ölçüsü toplam satırında satır yüzdelerinin toplamını gösteriyor (ör. %260). En olası neden?
+    0) Ölçü DIVIDE(SUM(Kâr), SUM(Satış)) olarak yazılmış
+   *1) Ölçü SUMX ile satır satır marjları topluyor
+    2) Tarih tablosu işaretli değil
+    3) İlişki tek yönlü
+   meta:{"a":1}
+   WHY: Oranlar toplanmaz. Toplamda doğru sonuç için oran, toplam bağlamında DIVIDE ile yeniden hesaplanmalıdır.
+
+## PBI_PL300#21 [Modelle] Rapor sayfasında hiç kullanılmayan, ama modelin büyük kısmını oluşturan yüksek kardinaliteli bir GUID sütunu var. En iyi adım?
+    0) Sütunu gizlemek
+   *1) Sütunu kaldırmak (ya da hiç yüklememek)
+    2) Sütunu metinden tam sayıya çevirmek
+    3) Sütunu bir hiyerarşiye eklemek
+   meta:{"a":1}
+   WHY: Kullanılmayan yüksek kardinaliteli sütunlar sıkıştırılamaz ve modeli şişirir; kaldırmak en etkili iyileştirmedir.
+
+## PBI_PL300#22 [Modelle] Hangi DAX ifadesi seçili tarih aralığının sonundaki stok bakiyesini verir (stok her ay sonunda kaydediliyor)?
+    0) CALCULATE(SUM(Stok[Adet]), FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih])))
+   *1) CALCULATE(SUM(Stok[Adet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(Stok))))
+    2) AVERAGEX(VALUES(Tarih[YilAy]), SUM(Stok[Adet]))
+    3) CALCULATE(SUM(Stok[Adet]), DATESYTD(Tarih[Tarih]))
+   meta:{"a":1}
+   WHY: Yarı toplanabilir ölçüler zamanda toplanmaz; kaydı olan son tarih alınır.
+
+## PBI_PL300#23 [Modelle] Rol oynayan boyut için ikinci bir tarih tablosu kullanmak yerine USERELATIONSHIP tercih etmenin avantajı?
+   *0) Tek tarih tablosuyla model küçük kalır
+    1) Dilimleyicide iki tarih aynı anda seçilebilir
+    2) RLS kuralları daha hızlı değerlendirilir
+    3) Hesaplanmış sütunlara hiç gerek kalmaz
+   meta:{"a":0}
+   WHY: USERELATIONSHIP tek tarih tablosuyla birden çok tarih rolünü ölçü bazında kullanmayı sağlar; iki tarihle aynı anda süzme gerekiyorsa ikinci tablo daha uygundur.
+
+## PBI_PL300#24 [Görselleştir ve analiz et] Yönetici, kategori satışlarının hedefe göre durumunu tek görselde, az yerde görmek istiyor. En uygun görsel?
+    0) Pasta grafik (hedef ayrı dilim)
+   *1) Hedef işaretli madde grafiği
+    2) Fiyat ile satış dağılım grafiği
+    3) Kategori ağaç haritası
+   meta:{"a":1}
+   WHY: Gerçekleşen ve hedefi aynı eksende karşılaştırmak için hedef işaretli çubuk/madde grafiği en okunur seçimdir.
+
+## PBI_PL300#25 [Görselleştir ve analiz et] Bir görselde “Diğer” kategorisini sona almak ve sıralamanın değere göre olmasını istiyorsun. Ne gerekir?
+   *0) Ayrı bir sıra sütunu ve ölçüyle “Diğer”i sona almak
+    1) Ekseni kategori adına göre alfabetik sıralamak
+    2) “Diğer” kategorisini görsel filtresiyle gizlemek
+    3) Görseli tablo görseline çevirip elle sıralamak
+   meta:{"a":0}
+   WHY: Varsayılan sıralama “Diğer”i değerine göre ortaya yerleştirir; ayrı bir sıra sütunu ya da ölçü mantığı gerekir.
+
+## PBI_PL300#26 [Görselleştir ve analiz et] Bir sayfadaki dilimleyicinin bir grafiği süzmemesi, diğer görselleri süzmesi istenirse?
+    0) Dilimleyiciyi kilitlemek
+   *1) Etkileşimleri düzenle → “Yok”
+    2) Grafiğe ayrı bir görsel filtresi eklemek
+    3) Dilimleyiciyi başka sayfalarla eşitlemek
+   meta:{"a":1}
+   WHY: Etkileşimleri düzenle, her görsel çiftinin birbirini nasıl etkileyeceğini belirler.
+
+## PBI_PL300#27 [Görselleştir ve analiz et] Satış ekibi ürün listesini kendi isteğine göre (ürün adı, kategori, marj) sütun seçerek incelemek istiyor ama yeni rapor yazmamalı. Hangi özellik?
+   *0) Görselleri kişiselleştir
+    1) Web’de yayımla
+    2) Yer imi grubu oluşturmak
+    3) Sayfaları gizleyip göstermek
+   meta:{"a":0}
+   WHY: “Görselleri kişiselleştir” okuyucunun alanları ve görsel türünü kendi görünümünde değiştirmesine izin verir, raporu bozmaz.
+
+## PBI_PL300#28 [Görselleştir ve analiz et] Aylık satış çizgisinde “Analiz” bölmesinden eklenebilecekler hangisidir?
+   *0) Sabit çizgi, ortalama, eğilim, tahmin
+    1) Dilimleyici, yer imi ve sayfa gezgini düğmesi
+    2) RLS rolü ve duyarlılık etiketi
+    3) Hesaplama grubu ve alan parametresi
+   meta:{"a":0}
+   WHY: Analiz bölmesi referans çizgileri, eğilim, tahmin ve hata çubukları gibi analitik katmanları ekler.
+
+## PBI_PL300#29 [Görselleştir ve analiz et] Bir KPI’ın neden düştüğünü kullanıcının kendisinin bölge, ürün ve kanal boyunca keşfetmesini istiyorsun. En uygun yapay zekâ görseli?
+    0) Anahtar etkileyiciler
+   *1) Ayrıştırma ağacı
+    2) Akıllı anlatı
+    3) Soru-Cevap
+   meta:{"a":1}
+   WHY: Ayrıştırma ağacı bir ölçüyü boyutlar boyunca dallara ayırır; kullanıcı hangi boyuta ineceğini kendisi seçer.
+
+## PBI_PL300#30 [Görselleştir ve analiz et] Raporun ekran okuyucularla kullanılabilmesi için görsel düzeyinde girilmesi gereken bilgi?
+   *0) Alternatif metin
+    1) Görsel başlığı rengi
+    2) Araç ipucu sayfası
+    3) Yer imi adı
+   meta:{"a":0}
+   WHY: Alternatif metin, ekran okuyucunun görseli tarif etmesini sağlar; ayrıca sekme sırası da ayarlanmalıdır.
+
+## PBI_PL300#31 [Görselleştir ve analiz et] Kullanıcı bir tabloyu Excel’e aktardığında yalnızca özet satırları alabilmeli. Ayar nerede?
+   *0) Dışa aktarma: “Yalnızca özetlenmiş veri”
+    1) Görselin başlık biçimini değiştirerek
+    2) Power Query’de satırları gruplayarak
+    3) RLS rolüne dışa aktarma kuralı ekleyerek
+   meta:{"a":0}
+   WHY: Dışa aktarma seçenekleri rapor (ve kiracı) düzeyinde kısıtlanabilir.
+
+## PBI_PL300#32 [Görselleştir ve analiz et] Bir sayfa iki farklı hikâye anlatıyor: “Bu yıl” ve “Geçen yılla karşılaştırma”. Düğmeyle geçişi sağlamak için?
+   *0) Her durum için yer imi + düğme
+    1) İki ayrı rapor yayımlamak
+    2) Her görsele ayrı dilimleyici koymak
+    3) Sayfayı iki kez kopyalayıp gizlemek
+   meta:{"a":0}
+   WHY: Yer imleri görünürlük ve filtre durumunu saklar; düğme eylemiyle çağrılır.
+
+## PBI_PL300#33 [Görselleştir ve analiz et] Rapor sayfası 1 sn’de açılıyor ama bir tablo görseli 6 sn sürüyor. Performans Analizi’nde süre çoğunlukla “DAX sorgusu”nda. İlk inceleme?
+   *0) Görselin DAX sorgusunu kopyalayıp ölçmek
+    1) Görselin renklerini ve temasını değiştirmek
+    2) Sayfa arka plan görselini kaldırmak
+    3) Tema dosyasını yeniden yüklemek
+   meta:{"a":0}
+   WHY: Süre DAX sorgusundaysa sorun ölçüde ya da modeldedir; sorgu kopyalanıp ayrıntılı ölçülür.
+
+## PBI_PL300#34 [Görselleştir ve analiz et] Bir kart görselinde “Seçili yıl: 2024” gibi dinamik bir başlık göstermek için?
+   *0) fx ile başlığa metin ölçüsü bağlamak
+    1) Başlığa elle “2024” yazmak
+    2) Dilimleyicinin başlığını karta kopyalamak
+    3) Her yıl için ayrı bir yer imi oluşturmak
+   meta:{"a":0}
+   WHY: Koşullu biçimlendirme (fx) ile başlık, SELECTEDVALUE kullanan bir metin ölçüsüne bağlanır.
+
+## PBI_PL300#35 [Yönet ve güvenli hâle getir] Kullanıcılara içerik dağıtmak için çalışma alanı yerine uygulama (app) yayımlamanın avantajı?
+   *0) Seçilmiş içerik ve gezinme; hedef kitleler
+    1) Uygulamalar hiçbir lisans gerektirmez
+    2) Uygulamalarda RLS kuralları çalışmaz
+    3) Uygulama içeriği herkese açık olur
+   meta:{"a":0}
+   WHY: Uygulama, tüketicilere düzenli ve sürüm denetimli bir paket sunar; farklı kitlelere farklı içerik gösterilebilir.
+
+## PBI_PL300#36 [Yönet ve güvenli hâle getir] Statik bir RLS rolü tanımladın. Service’te kullanıcıları role nerede eklersin?
+   *0) Anlam modelinin Güvenlik sayfasında
+    1) Raporun biçim bölmesinde, rol listesinde
+    2) Çalışma alanı ayarlarının tema bölümünde
+    3) Power Query’de kullanıcı tablosunda
+   meta:{"a":0}
+   WHY: Roller Desktop’ta tanımlanır, üyeler Service’te anlam modelinin Güvenlik sayfasından atanır.
+
+## PBI_PL300#37 [Yönet ve güvenli hâle getir] Çalışma alanında rapor yazabilmesi ama başkalarının erişimini yönetememesi gereken bir analist için doğru rol?
+    0) Yönetici
+    1) Üye
+   *2) Katkıda bulunan
+    3) Görüntüleyici
+   meta:{"a":2}
+   WHY: Katkıda bulunan içerik oluşturup düzenleyebilir; kullanıcı ekleme ve uygulama yayımlama Üye ve Yönetici rollerindedir.
+
+## PBI_PL300#38 [Yönet ve güvenli hâle getir] Bir anlam modeli günde 8 kez yenilenmeli. Paylaşılan (Pro) kapasitede en fazla kaç zamanlanmış yenileme yapılabilir?
+    0) 4
+   *1) 8
+    2) 48
+    3) Sınırsız
+   meta:{"a":1}
+   WHY: Paylaşılan kapasitede günde 8, Premium/Fabric kapasitesinde 48 zamanlanmış yenileme yapılabilir.
+
+## PBI_PL300#39 [Yönet ve güvenli hâle getir] Hassas verilere duyarlılık etiketi uygulanan bir rapor Excel’e aktarıldığında ne olur?
+    0) Etiket dosyadan düşer
+   *1) Etiket ve koruma dosyaya taşınır
+    2) Dışa aktarma her zaman engellenir
+    3) Dosya parolasız ve etiketsiz açılır
+   meta:{"a":1}
+   WHY: Microsoft Purview duyarlılık etiketleri desteklenen dışa aktarmalarda dosyayla birlikte gider.
+
+## PBI_PL300#40 [Yönet ve güvenli hâle getir] Bir anlam modelinin hangi raporlar ve panolar tarafından kullanıldığını görmek için?
+   *0) Köken görünümü ya da etki analizi
+    1) Raporun Performans Analizi bölmesi
+    2) Power Query sorgu bağımlılıkları
+    3) DAX Studio’daki sunucu zamanlamaları
+   meta:{"a":0}
+   WHY: Köken görünümü ve etki analizi, bir modeldeki değişikliğin hangi içerikleri etkileyeceğini gösterir.
+
+## PBI_PL300#41 [Yönet ve güvenli hâle getir] Kullanıcının dinamik RLS’de kim olduğunu DAX içinde veren fonksiyon?
+   *0) USERPRINCIPALNAME()
+    1) SELECTEDVALUE(Kullanici[Ad])
+    2) ISFILTERED(Kullanici[Eposta])
+    3) LOOKUPVALUE(Yetki[Bolge])
+   meta:{"a":0}
+   WHY: USERPRINCIPALNAME() Service’te kullanıcının UPN’ini (e-posta biçimi) döndürür; yetki tablosuyla karşılaştırılır.
+
+## PBI_PL300#42 [Yönet ve güvenli hâle getir] Bir rapora her pazartesi sabahı ekiplerin e-postasına anlık görüntü göndermek için?
+   *0) Rapor aboneliği oluşturmak
+    1) Veri uyarısı kurmak
+    2) Web’de yayımlamak
+    3) Uygulamayı yeniden yayımlamak
+   meta:{"a":0}
+   WHY: Abonelikler belirli bir zamanda rapor sayfasının görüntüsünü ve bağlantısını e-postayla gönderir.
+
+## PBI_PL300#43 [Yönet ve güvenli hâle getir] Ağ geçidi üzerinden yenilenen bir modelde “kimlik bilgileri geçersiz” hatası alınıyor. Düzeltme nerede yapılır?
+   *0) Veri kaynağı bağlantısında kimlik bilgisini güncellemek
+    1) Desktop’ta temayı değiştirip yeniden yayımlamak
+    2) RLS rollerini silip yeniden tanımlamak
+    3) Raporu yeniden adlandırıp yenilemek
+   meta:{"a":0}
+   WHY: Kimlik bilgileri Service’teki veri kaynağı/bağlantı ayarlarında tutulur.
+
+## PBI_DP600#0 [Analitik çözümü yönet] Fabric’te geliştirme, test ve üretim aşamaları arasında içeriği taşıyıp her aşamada farklı veri kaynağına bağlamak için?
+   *0) Dağıtım işlem hatları ve kuralları
+    1) Web’de yayımla ve ortam başına bağlantı
+    2) Her aşama için kişisel çalışma alanı
+    3) Paylaşılan kapasite ve elle yeniden bağlama
+   meta:{"a":0}
+   WHY: Dağıtım işlem hatları aşamalar arası taşımayı, dağıtım kuralları da aşamaya özgü bağlantıları yönetir.
+
+## PBI_DP600#1 [Analitik çözümü yönet] Bir çalışma alanını Azure DevOps ya da GitHub deposuna bağlamak hangi özelliğin işidir?
+   *0) Git tümleştirmesi
+    1) OneLake kısayolu
+    2) Veri akışı Gen2 ile dışa aktarma
+    3) XMLA uç noktası yedeği
+   meta:{"a":0}
+   WHY: Çalışma alanı Git tümleştirmesi öğeleri depodaki bir dala eşitler; anlam modelleri TMDL olarak saklanır.
+
+## PBI_DP600#2 [Analitik çözümü yönet] Bir kapasitenin hangi öğeler tarafından ne kadar tüketildiğini izlemek için?
+   *0) Kapasite Ölçümleri uygulaması
+    1) Raporun Performans Analizi
+    2) Power Query sorgu bağımlılıkları
+    3) Ayrıştırma ağacı görseli
+   meta:{"a":0}
+   WHY: Kapasite Ölçümleri uygulaması CU kullanımını, yavaşlatma ve öğe bazında tüketimi gösterir.
+
+## PBI_DP600#3 [Analitik çözümü yönet] Bir anlam modelinin “onaylı” olduğunu kuruluşa göstermek için hangi onay türü yalnızca yetkili kişilerce verilebilir?
+    0) Tanıtılmış (Promoted)
+   *1) Sertifikalı (Certified)
+    2) Öne çıkarılmış (Featured)
+    3) Paylaşılan (Shared)
+   meta:{"a":1}
+   WHY: Sertifikalama kiracı ayarlarında yetkilendirilmiş kişilerle sınırlıdır; tanıtma her içerik sahibine açıktır.
+
+## PBI_DP600#4 [Analitik çözümü yönet] Bir anlam modelinde yapılacak değişikliğin hangi raporları bozacağını önceden görmek için?
+   *0) Etki analizi
+    1) Performans Analizi
+    2) Dağıtım kuralı
+    3) Duyarlılık etiketi
+   meta:{"a":0}
+   WHY: Etki analizi bağımlı öğeleri ve kullanıcı sayılarını listeler.
+
+## PBI_DP600#5 [Analitik çözümü yönet] Harici bir araçla (Tabular Editor, SSMS) Fabric’teki bir anlam modeline okuma-yazma bağlanmak için?
+   *0) XMLA uç noktası okuma-yazma
+    1) Web’de yayımla bağlantısı
+    2) Sorgu katlama ve ağ geçidi
+    3) Veri uyarısı ve e-posta aboneliği
+   meta:{"a":0}
+   WHY: XMLA uç noktası kapasite ayarlarında okuma-yazma olarak etkinleştirilir.
+
+## PBI_DP600#6 [Veriyi hazırla] Başka bir lakehouse’taki ya da ADLS Gen2’deki veriyi kopyalamadan lakehouse’ta tablo gibi kullanmak için?
+   *0) OneLake kısayolu
+    1) Veri akışı Gen2 ile kopyalamak
+    2) CSV’yi elle yüklemek
+    3) DirectQuery
+   meta:{"a":0}
+   WHY: Kısayollar veriyi taşımadan OneLake’te başvuru oluşturur.
+
+## PBI_DP600#7 [Veriyi hazırla] Lakehouse’ta T-SQL ile yalnızca okuma sorgusu yazmak için kullanılan uç nokta?
+   *0) SQL analitik uç noktası
+    1) XMLA uç noktası
+    2) Power Query Düzenleyicisi
+    3) KQL sorgu kümesi
+   meta:{"a":0}
+   WHY: Her lakehouse’un salt okunur bir SQL analitik uç noktası vardır; yazma işlemi için ambar (warehouse) kullanılır.
+
+## PBI_DP600#8 [Veriyi hazırla] Delta tablolarının Power BI tarafından daha hızlı okunmasını sağlayan yazma iyileştirmesi?
+   *0) V-Order
+    1) Satır düzeyinde güvenlik
+    2) Artımlı yenileme
+    3) Sorgu önbelleği
+   meta:{"a":0}
+   WHY: V-Order, Parquet dosyalarını VertiPaq’ın hızlı okuyacağı biçimde sıralar ve sıkıştırır.
+
+## PBI_DP600#9 [Veriyi hazırla] Kodsuz, Power Query tabanlı dönüşümle veriyi bir lakehouse ya da ambara yazmak için hangi Fabric öğesi?
+   *0) Veri akışı Gen2
+    1) Not defteri (PySpark)
+    2) Olay akışı (Eventstream)
+    3) Anlam modeli
+   meta:{"a":0}
+   WHY: Dataflow Gen2, Power Query dönüşümlerini çalıştırıp çıktıyı hedef depoya yazar.
+
+## PBI_DP600#10 [Veriyi hazırla] Ambarda (warehouse) T-SQL ile bir tabloya veri eklemek, güncellemek mümkün müdür?
+   *0) Evet; ambar T-SQL DML’i destekler
+    1) Hayır; ambar yalnızca okuma yapar
+    2) Yalnızca Spark not defteriyle yapılır
+    3) Yalnızca Veri akışı Gen2 ile yapılır
+   meta:{"a":0}
+   WHY: Fabric ambarı INSERT/UPDATE/DELETE gibi T-SQL işlemlerini destekler; lakehouse SQL uç noktası salt okunurdur.
+
+## PBI_DP600#11 [Veriyi hazırla] Yıldız şemada müşteri adresinin geçmiş değerlerini de saklamak (SCD Tür 2) için boyuta ne eklenir?
+   *0) Geçerlilik tarihleri ve vekil anahtar
+    1) Yalnızca güncel adres sütunu
+    2) Adresin JSON biçiminde geçmişi
+    3) Adres değişimini sayan bir ölçü
+   meta:{"a":0}
+   WHY: Tür 2 boyut, her değişiklik için yeni satır, vekil anahtar ve geçerlilik aralığı tutar.
+
+## PBI_DP600#12 [Veriyi hazırla] Bir not defterinde PySpark ile hazırlanan DataFrame’i lakehouse’ta Delta tablosu olarak kaydetmek için?
+   *0) df.write.format("delta").saveAsTable("tablo")
+    1) df.to_csv("Files/tablo.csv", index=False)
+    2) spark.sql("EVALUATE tablo").show()
+    3) df.write.mode("overwrite").parquet("tablo")
+   meta:{"a":0}
+   WHY: saveAsTable ile Delta tablosu lakehouse’un Tables bölümünde oluşur.
+
+## PBI_DP600#13 [Anlam modelini uygula] Direct Lake modunda bir sorgu desteklenmeyen bir özellik (ör. SQL uç noktasında tanımlı görünüm) kullanırsa varsayılan davranış nedir?
+   *0) DirectQuery’ye geri dönüş
+    1) Sorgu hata verir, rapor açılmaz
+    2) Veri Import’a kopyalanır
+    3) Sorgu önbellekten yanıtlanır
+   meta:{"a":0}
+   WHY: Varsayılan “Otomatik” davranışta DirectQuery’ye düşülür; DirectLakeBehavior ile bu engellenebilir.
+
+## PBI_DP600#14 [Anlam modelini uygula] Direct Lake’te “çerçeveleme (framing)” ne demektir?
+   *0) Modelin okuyacağı Delta sürümünün güncellenmesi
+    1) Raporun sayfa düzeninin dondurulması
+    2) Verinin Import belleğine kopyalanması
+    3) RLS kurallarının önbelleğe alınması
+   meta:{"a":0}
+   WHY: Yenileme, Direct Lake’te veriyi kopyalamaz; modelin hangi Delta sürümünü okuyacağını belirleyen hafif bir işlemdir.
+
+## PBI_DP600#15 [Anlam modelini uygula] Bir hesaplama grubu öğesinde “Geçen yıl” mantığı yazmak için hangi ifade doğrudur?
+   *0) CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+    1) SELECTEDVALUE(Olcu[Ad]) - 1
+    2) SUMX(Tarih, SELECTEDMEASURE() * 1)
+    3) CALCULATE(SELECTEDMEASURE(), ALL(Tarih), Tarih[Yil] = YEAR(TODAY()) - 1)
+   meta:{"a":0}
+   WHY: SELECTEDMEASURE() görseldeki ölçüyü temsil eder; öğe her ölçüye aynı zaman mantığını uygular.
+
+## PBI_DP600#16 [Anlam modelini uygula] Model boyutu 10 GB’ı aşacak bir anlam modeli Premium/Fabric kapasitesinde nasıl desteklenir?
+   *0) Büyük model biçimini etkinleştirmek
+    1) Modeli iki ayrı modele bölmek zorunludur
+    2) DirectQuery’ye çevirmek zorunludur
+    3) Desktop’ta sıkıştırmayı kapatmak
+   meta:{"a":0}
+   WHY: Büyük model biçimi, modelin boyutunu kapasite belleğiyle sınırlar ve XMLA yazma işlemlerini iyileştirir.
+
+## PBI_DP600#17 [Anlam modelini uygula] Artımlı yenileme ilkesinde “son 5 yılı sakla, son 10 günü yenile” ayarı neyi sağlar?
+   *0) Yalnızca son 10 günün bölümleri yenilenir
+    1) Her yenilemede 5 yılın tamamı yüklenir
+    2) Model 10 günde bir kez yenilenir
+    3) Son 5 yıldan eski tüm bölümler hemen silinir
+   meta:{"a":0}
+   WHY: Artımlı yenileme tabloyu tarih bölümlerine ayırır ve yalnızca belirlenen yakın dönemi yeniden işler.
+
+## PBI_DP600#18 [Anlam modelini uygula] Bir ölçünün biçimini seçilen para birimine göre dinamik değiştirmek için?
+   *0) Dinamik biçim dizesi
+    1) Para birimi için hesaplanmış sütun
+    2) Tema dosyasında sayı biçimi
+    3) Power Query’de para birimi parametresi
+   meta:{"a":0}
+   WHY: Ölçüler için dinamik biçim dizesi, biçimi bir DAX ifadesiyle belirler.
+
+## PBI_DP600#19 [Anlam modelini uygula] Bir modeldeki en çok belleği tüketen sütunları bulmak için hangi araç kullanılır?
+   *0) DAX Studio’daki VertiPaq Analyzer
+    1) Raporun Performans Analizi bölmesi
+    2) Power Query sorgu bağımlılıkları
+    3) Tema oluşturucu
+   meta:{"a":0}
+   WHY: VertiPaq Analyzer tablo ve sütun boyutlarını, kardinaliteyi ve sözlük boyutunu gösterir.
+
+## PBI_DP600#20 [Anlam modelini uygula] Bir tablonun belirli sütunlarını (ör. Maaş) bazı kullanıcılardan tamamen gizlemek için?
+   *0) Nesne düzeyinde güvenlik (OLS)
+    1) Satır düzeyinde güvenlik kuralı (RLS)
+    2) Rapor sayfasını gizlemek
+    3) Duyarlılık etiketi uygulamak
+   meta:{"a":0}
+   WHY: OLS tablo ya da sütunu yetkisiz kullanıcı için meta veriden kaldırır; RLS satırları süzer.
+
+## PBI_DP600#21 [Anlam modelini uygula] Bileşik modelde DirectQuery olgu tablosuyla Import boyut tablosu arasındaki ilişkinin türü?
+   *0) Sınırlı ilişki; bazı davranışlar farklı
+    1) Her zaman normal bire-çok ilişkidir
+    2) Çoka-çok ilişki olmak zorundadır
+    3) İki tablo arasında ilişki kurulamaz
+   meta:{"a":0}
+   WHY: Farklı kaynak gruplarındaki tablolar arasındaki ilişkiler sınırlı ilişkidir; örneğin boş satır davranışı farklıdır.
+
+## PBI_DP600#22 [Anlam modelini uygula] Toplamalar (aggregations) için oluşturulan Import tablo, DirectQuery ayrıntı tablosunun yerine ne zaman kullanılır?
+   *0) Sorgu toplama düzeyinde yanıtlanabiliyorsa
+    1) Her sorguda, istenen ayrıntı düzeyinden bağımsız
+    2) Yalnızca RLS kapalı olduğunda
+    3) Yalnızca Service’te, Desktop’ta değil
+   meta:{"a":0}
+   WHY: Toplamaları yönet ile eşlenen sorgular toplama tablosundan, daha ayrıntılı olanlar DirectQuery’den yanıtlanır.
+
+## PBI_DP600#23 [Anlam modelini uygula] Tabular Editor’daki Best Practice Analyzer ne işe yarar?
+   *0) Modeli kurallara göre tarayıp sorunları listeler
+    1) Raporun görsel tasarımını puanlar
+    2) Veriyi kaynaktan yeniler ve doğrular
+    3) RLS rollerini otomatik oluşturur
+   meta:{"a":0}
+   WHY: BPA, modelleme ve performans kurallarını otomatik denetler; kurallar özelleştirilebilir.
+
+## PBI_DP600#24 [Anlam modelini uygula] TMDL nedir?
+   *0) Modeli metin dosyaları olarak tanımlayan dil
+    1) Yeni bir DAX fonksiyon ailesi
+    2) Power Query M dilinin yeni adı
+    3) Sayfalandırılmış rapor görsel türü
+   meta:{"a":0}
+   WHY: Tabular Model Definition Language, modelleri Git ile karşılaştırılabilir metin dosyaları olarak saklar.
+

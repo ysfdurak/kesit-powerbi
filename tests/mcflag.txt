@@ -1,0 +1,515 @@
+#0 tarih#0 :: DAX dili ilk olarak hangi ürünle kullanıcılara ulaştı?
+    0 Power BI Desktop (2015)
+   *1 PowerPivot for Excel 2010
+    2 SQL Server 2000
+    3 Power View
+#1 tarih#2 :: Microsoft Fabric ile birlikte Power BI’daki “dataset” kavramının adı ne oldu?
+    0 Veri akışı
+   *1 Anlam modeli (semantic model)
+    2 Lakehouse
+    3 Rapor
+#2 aile#0 :: Bir analist raporu Desktop'ta hazırladı ve 5 meslektaşıyla Service üzerinden paylaşmak istiyor. Kurumda kapasite yok. Neye ihtiyaç var?
+    0 Hiçbir şeye, Desktop ücretsiz
+    1 Sadece analistin Pro lisansı
+   *2 Analistin ve 5 meslektaşın her birinin Pro (ya da PPU) lisansı
+    3 Report Server kurulumu
+#3 aile#2 :: Bir rapor, Premium ya da Fabric F64 ve üstü bir kapasitedeki çalışma alanında yayımlandı. Raporu yalnızca görüntüleyecek çalışanlar için ne gerekir?
+    0 Her birine Pro lisansı
+   *1 Ücretsiz (Fabric Free) lisans yeterli; içeriği kapasite karşılar
+    2 Power BI Desktop kurulumu
+    3 Report Server lisansı
+#4 arayuz#2 :: Tarih[Ay] sütunu görsellerde “Ağu, Ara, Eki…” diye alfabetik sıralanıyor. Ay numarasına göre sıralamayı nerede ayarlarsın?
+    0 Rapor görünümünde görselin sıralama menüsünden
+   *1 Tablo görünümünde Ay sütununu seçip Sütuna göre sırala → AyNo
+    2 Model görünümünde ilişki ekleyerek
+    3 Power Query’de sütunu yeniden adlandırarak
+#5 veri-alma#2 :: Şirket içi SQL Server'dan Import edilen bir raporun Service'te her sabah otomatik yenilenmesi için ne gerekir?
+    0 Power BI Mobile
+   *1 Şirket içi veri ağ geçidi
+    2 DAX Studio
+    3 Report Server
+#6 pq-temel#0 :: Şehir sütununda “ Ankara”, “ankara” ve “Ankara” değerleri var. Dilimleyicide tek “Ankara” görmek için en doğru adım sırası hangisi?
+    0 Yinelenenleri kaldır
+   *1 Kırp → Her Sözcüğün İlk Harfi Büyük
+    2 DAX ile UPPER kullan
+    3 Sütunu sil
+#7 pq-temel#6 :: Bayi tablosunda Tutar sütununu önce sayıya çevirip sonra “-” işaretini null yapmaya çalışırsan ne olur?
+    0 Sorun olmaz, sonuç aynıdır
+   *1 “-” hücresi tür değişiminde Error olur; artık “-” diye bir metin kalmadığı için Değerleri değiştir onu bulamaz
+    2 Power Query “-” işaretini kendiliğinden null yapar
+    3 Tüm sütun metin olarak kalır
+#8 model-temel#0 :: Bu modelde Urunler ile Satislar arasındaki ilişkinin kardinalitesi nedir?
+    0 Bire-bir
+   *1 Bire-çok (Urunler 1 → Satislar *)
+    2 Çoka-çok
+    3 İlişki yok
+#9 model-temel#1 :: Dilimleyicide “Mobil” kanalı seçildiğinde Urunler tablosu kendiliğinden süzülür mü? (İlişki tek yönlü)
+    0 Evet, her zaman
+   *1 Hayır; filtre boyuttan olguya akar, olgudan boyuta akmaz
+    2 Yalnızca DirectQuery'de
+    3 Yalnızca hesaplanmış sütunlarda
+#10 model-temel#2 :: Hangisi tipik bir boyut tablosu sütunudur?
+    0 Tutar
+    1 Adet
+   *2 Segment
+    3 Maliyet
+#11 tarih-tablosu#2 :: Bir matriste aylar “Ağu, Ara, Eki, Eyl…” diye alfabetik diziliyor. Çözüm nedir?
+    0 Ay sütununu silmek
+   *1 Ay sütununu AyNo sütununa göre sıralamak
+    2 Otomatik tarih/saati açmak
+    3 Görseli tabloya çevirmek
+#12 dax-giris#3 :: Müşterileri doğum yılına göre “Genç / Orta / Olgun” diye sınıflayıp bunu bir dilimleyicide kullanmak istiyorsun. Ne yazmalısın?
+    0 Ölçü
+   *1 Hesaplanmış sütun (ya da Power Query'de sütun)
+    2 Hesaplanmış tablo
+    3 Rapor filtresi
+#13 ilk-rapor#1 :: Ölçünün para birimi biçimini nerede ayarlamak en verimlidir?
+    0 Her görselin biçim bölmesinde ayrı ayrı
+   *1 Ölçünün kendisinde (Ölçü araçları → Biçim)
+    2 Power Query'de
+    3 Temada
+#14 baglam#0 :: Bir matriste satırlarda Kategori var, değer [Toplam Satış]. “Toplam” satırı neden tüm kategorilerin toplamına eşit?
+    0 Power BI hücreleri ayrıca toplar
+   *1 Toplam satırında kategori filtresi yoktur; ölçü tüm satırlarda yeniden hesaplanır
+    2 Toplam satırı her zaman SUM kullanır
+    3 Önbellekten gelir
+#15 baglam#2 :: [Kâr Marjı %] ölçüsü kategorilerde %40,5, %38,2, %34,4… gösteriyor. Toplam satırında ne görmeyi beklersin?
+    0 Yüzdelerin toplamını
+    1 Yüzdelerin basit ortalamasını
+   *2 Toplam kârın toplam satışa oranını
+    3 Boş
+#16 pq-orta#0 :: Hiç sipariş vermemiş müşterileri bulmak için Musteriler (sol) ile Siparisler (sağ) arasında hangi birleştirme?
+    0 İç birleştirme
+   *1 Sol karşıt (anti) birleştirme
+    2 Tam dış birleştirme
+    3 Ekleme (Append)
+#17 pq-orta#1 :: Her ay “Satis_2024_01.xlsx” gibi yeni bir dosya geliyor. En sürdürülebilir yöntem?
+    0 Her ay elle yeni sorgu ekleyip Append
+   *1 Klasör bağlayıcısı ile klasördeki tüm dosyaları birleştirmek
+    2 Dosyaları kopyalayıp yapıştırmak
+    3 DirectQuery
+#18 pq-orta#2 :: Bütçe tablosunda her ay ayrı bir sütun. Modele uygun hâle getirmek için hangi dönüşüm?
+    0 Özet (Pivot)
+   *1 Özetten çıkar (Unpivot)
+    2 Devrik (Transpose)
+    3 Gruplandır
+#19 pq-orta#3 :: Sorgu katlama (query folding) neden önemlidir?
+    0 Raporu daha renkli yapar
+   *1 Dönüşümleri kaynak veritabanına yaptırarak yenilemeyi hızlandırır
+    2 DAX'ı hızlandırır
+    3 RLS için gereklidir
+#20 gorsel-ilkeler#1 :: Hedefin altında kalan kategorileri işaretlemek istiyorsun. Renk körü kullanıcılar için en iyi yaklaşım?
+    0 Yalnızca kırmızı/yeşil renk
+   *1 Renk + ▲/▼ simgesi ya da metin
+    2 Yanıp sönen animasyon
+    3 Kalın kenarlık
+#21 gorsel-ilkeler#2 :: Web, Mobil, Mağaza kanalları bir sayfada mavi/turuncu/yeşil, diğer sayfada yeşil/mavi/turuncu. Sorun ne?
+    0 Sorun yok
+   *1 Renk kimliği tutarsız; okuyucu her sayfada yeniden öğrenmek zorunda
+    2 Çok az renk var
+    3 Tema yüklenmemiş
+#22 etkilesim#0 :: Kullanıcılar herhangi bir sayfada bir müşteriye sağ tıklayıp o müşterinin tüm ayrıntılarını tek sayfada görmek istiyor. Hangi özellik?
+    0 Detaya inme (drill-down)
+   *1 Detay sayfası (drill-through)
+    2 Yer imi
+    3 Senkron dilimleyici
+#23 etkilesim#2 :: Kanal grafiğine tıklandığında yanındaki KPI kartının hiç değişmemesini istiyorsun. Ne yaparsın?
+    0 Kartı silmek
+   *1 Etkileşimleri düzenle → kart için “Yok”
+    2 Kartı başka sayfaya taşımak
+    3 RLS tanımlamak
+#24 hedef#2 :: Bir matriste satıra Urunler[Kategori], değere [Net Satış] ve [Hedef] koydun. Hedef her satırda aynı. Neden?
+    0 Hedef ölçüsü yanlış yazılmış
+   *1 Urunler'deki filtre Hedefler tablosuna ulaşamıyor; Kategoriler[Kategori] kullanılmalı
+    2 Hedefler tablosu boş
+    3 İlişki çift yönlü olmalı
+#25 baglam-gecisi#3 :: SUMX(Urunler, SUM(Satislar[Tutar])) ifadesi kategori satırında ne döndürür?
+    0 Kategorinin satışı
+   *1 Kategorideki ürün sayısı × kategorinin toplam satışı
+    2 Boş
+    3 Hata
+#26 hesaplama-gruplari#0 :: Hesaplama grubu öğesinde, görseldeki ölçüyü temsil eden fonksiyon hangisidir?
+    0 SELECTEDVALUE()
+   *1 SELECTEDMEASURE()
+    2 ISINSCOPE()
+    3 VALUES()
+#27 hesaplama-gruplari#1 :: Kullanıcının bir dilimleyiciyle grafiğin eksenini Kategori, Kanal ya da Segment arasında değiştirebilmesi için ne kullanılır?
+    0 Hesaplama grubu
+   *1 Alan parametresi
+    2 Yer imi
+    3 RLS
+#28 performans#0 :: Bir sütunun model boyutunu en çok ne belirler?
+    0 Sütun adının uzunluğu
+   *1 Kardinalitesi (farklı değer sayısı)
+    2 Veri türünün adı
+    3 Görsellerde kaç kez kullanıldığı
+#29 performans#1 :: Bir sayfadaki görsellerden hangisinin yavaş olduğunu bulmak için ilk adım?
+    0 DAX Studio'yu kurmak
+   *1 Görünüm → Performans Analizi ile kaydı başlatıp görselleri yenilemek
+    2 Modeli DirectQuery'ye çevirmek
+    3 Tüm ölçüleri silmek
+#30 performans#3 :: “2024-03-15 14:32:07” biçiminde 5 milyon satırlık bir sütun var. Saat bilgisi raporlarda kullanılmıyor. Ne yaparsın?
+    0 Olduğu gibi bırak
+   *1 Sütunu yalnızca Tarih türüne çevir
+    2 Metne çevir
+    3 Hesaplanmış sütunla kopyala
+#31 guvenlik#0 :: 200 bölge müdürünün her biri yalnızca kendi bölgesini görmeli ve kadro sık değişiyor. En sürdürülebilir çözüm?
+    0 200 ayrı statik rol
+   *1 Yetkiler tablosu + USERPRINCIPALNAME() ile tek dinamik rol
+    2 Her müdüre ayrı rapor
+    3 Sayfa gizleme
+#32 guvenlik#1 :: Çalışma alanında “Üye” rolündeki bir kullanıcı için RLS uygulanır mı?
+    0 Evet, her zaman
+   *1 Hayır; RLS yalnızca Görüntüleyici rolündekilere uygulanır
+    2 Yalnızca mobilde
+    3 Yalnızca DirectQuery'de
+#33 yayinlama#2 :: Hangisi kurumsal veriler için asla kullanılmamalıdır?
+    0 Uygulama
+   *1 Web'de yayımla
+    2 Teams'e ekleme
+    3 Abonelik
+#34 m-dili#0 :: M dilinde each [Adet] * [Fiyat] ifadesi neye denktir?
+   *0 (_) => _[Adet] * _[Fiyat]
+    1 SUMX(Adet, Fiyat)
+    2 Bir liste
+    3 Bir hata
+#35 m-dili#1 :: Karışık biçimli bir tarih sütununda hatalı satırlarda boş değer üretmek için?
+   *0 try ... otherwise null
+    1 IFERROR
+    2 Table.Distinct
+    3 Text.Trim
+#36 m-dili#2 :: table.selectrows(...) yazdın ve “tanınmıyor” hatası aldın. Neden?
+   *0 M büyük/küçük harfe duyarlıdır; Table.SelectRows olmalı
+    1 Fonksiyon kaldırıldı
+    2 Parantez eksik
+    3 Sorgu katlama kapalı
+#37 dashboard-tasarim#0 :: Genel müdür için hazırlanan özet sayfasında en üst şeride ne konmalı?
+    0 Ürün bazında 40 satırlık tablo
+   *1 4–5 KPI kartı (hedef ve geçen yıl karşılaştırmasıyla)
+    2 Dağılım grafiği
+    3 Filtreler bölmesi
+#38 dashboard-tasarim#1 :: “Net Satış 747 B ₺” kartını daha anlamlı yapmanın en iyi yolu?
+    0 Yazı tipini büyütmek
+   *1 Hedefe ve geçen yıla göre farkı eklemek
+    2 Kartı kırmızıya boyamak
+    3 Animasyon eklemek
+#39 dashboard-tasarim#2 :: Bir yönetici sayfasında 14 görsel var ve sayfa 6 saniyede açılıyor. İlk ne yaparsın?
+    0 Daha güçlü bir kapasiteye geçmek
+   *1 Sayfanın ana sorusunu yazıp ona hizmet etmeyen görselleri ayrıntı sayfasına ya da araç ipucuna taşımak; ardından Performans Analizi ile en yavaş görsele bakmak
+    2 Tüm görselleri tabloya çevirmek
+    3 Renkleri azaltmak
+#40 pl300#2 :: Kullanıcılar raporda Kategori → Ürün hiyerarşisinde aynı görsel içinde ilerlemek istiyor. Ne yapılandırılır?
+    0 Drill-through sayfası
+   *1 Eksende iki alanlı hiyerarşi ve detaya inme
+    2 Yer imi
+    3 Araç ipucu sayfası
+#41 pl300#3 :: Bir CSV'deki “Tutar” sütunu metin olarak geliyor ve bazı satırlarda “-” var. Modelde sayısal toplam gerekiyor. Ne yaparsın?
+    0 DAX'ta VALUE kullanmak
+   *1 Power Query'de “-”i null ile değiştirip türü Ondalık Sayı yapmak
+    2 Sütunu silmek
+    3 Görselde örtük ölçü kullanmak
+#42 menuler-turu#0 :: Bir sütunun aylarını alfabetik değil takvim sırasıyla göstermek istiyorsun. Komut hangi sekmede?
+    0 Giriş
+   *1 Sütun araçları (Sütuna göre sırala)
+    2 Görünüm
+    3 Yardım
+#43 menuler-turu#1 :: Dilimleyici ve sayı ne olur (what-if) parametresi oluşturmak için hangi sekme?
+    0 Ekle
+   *1 Modelleme (Yeni parametre)
+    2 Dosya
+    3 İyileştir
+#44 menuler-turu#2 :: Rapor yavaş; hangi görselin ne kadar sürdüğünü görmek istiyorsun. Hangi bölme?
+    0 Seçim
+    1 Yer imleri
+   *2 Performans Analizi
+    3 Filtreler
+#45 gorsel-temel#1 :: Dağılım grafiğine X: [Net Satış], Y: [Kâr Marjı %] koydun ama tek bir nokta görüyorsun. Neden?
+    0 Veri yok
+   *1 “Değerler” kutusu boş; nokta başına hangi öğenin çizileceği belirtilmemiş
+    2 Eksen sıfırdan başlamıyor
+    3 Gösterge eksik
+#46 bicim-temel#0 :: Sütun grafiğinde fark küçük ama abartılı görünüyor. Biçim bölmesinde neye bakarsın?
+   *0 Y ekseni → Aralık → Minimum
+    1 Gösterge → Konum
+    2 Başlık → Metin
+    3 Kılavuz çizgileri → Renk
+#47 bicim-temel#1 :: Tek serili bir çubuk grafikte gösterge kutusu “Net Satış” yazıyor ve yer kaplıyor. Ne yaparsın?
+   *0 Göstergeyi kapat; başlık zaten ölçüyü söylüyor
+    1 Göstergeyi büyüt
+    2 Her çubuğa ayrı renk ver
+    3 Logaritmik ölçek
+#48 bicim-temel#2 :: Veri etiketinde gerçekleşen tutarın yanında büyüme oranını da göstermek istiyorsun.
+   *0 Veri etiketleri → Özel etiket (fx) ile büyüme ölçüsünü bağlamak
+    1 İkinci bir grafik
+    2 Görüntü birimini değiştirmek
+    3 Alternatif metin
+#49 filtreler#0 :: Bir tablo görselinde yalnızca net satışa göre ilk 10 ürünü göstermek istiyorsun; sayfadaki diğer görseller etkilenmesin.
+    0 Sayfa filtresi: temel
+   *1 Görsel filtresi: İlk N = 10, Değere göre: Net Satış
+    2 Dilimleyici
+    3 Rapor filtresi
+#50 filtreler#1 :: Rapordaki hiçbir sayfada test müşterileri görünmemeli ve kullanıcı bunu değiştirememeli.
+   *0 Tüm sayfalardaki filtreler + Kilitle (ve isteğe bağlı Gizle)
+    1 Her sayfaya dilimleyici
+    2 Görsel filtresi
+    3 Yer imi
+#51 istatistik#3 :: Maaşların dağılımını gösteren bir histogram için en kısa yol?
+   *0 Maaş sütununa sağ tık → Yeni grup → Kutu; kutuyu eksene, çalışan sayısını değere koymak
+    1 Pasta grafik
+    2 Maaşı X eksenine doğrudan koymak
+    3 Ortalama çizgisi
+#52 hizli-olcu#0 :: Hızlı ölçüyle oluşturduğun YoY ölçüsü iptal edilen siparişleri de sayıyor. En doğru düzeltme?
+    0 Hızlı ölçüyü silip tekrar oluşturmak
+   *1 Üretilen DAX'ta temel ölçüyü [Net Satış] yapmak
+    2 Görsele filtre eklemek
+    3 Copilot'a tekrar sormak
+#53 hizli-olcu#2 :: Copilot’tan “kategori payı” ölçüsü istedin ve bir formül geldi. Modele eklemeden önce en önemli adım hangisi?
+    0 Formülü hemen kullanmak; Copilot hata yapmaz
+   *1 Formülü bilinen bir toplamla karşılaştırmak: tüm kategorilerin payı %100 ediyor mu, dilimleyici seçimi doğru davranıyor mu?
+    2 Ölçünün adını İngilizce yapmak
+    3 Formülü hesaplanmış sütuna çevirmek
+#54 tema-sayfa#0 :: Şirketin 30 raporunun aynı renk paletini ve yazı tipini kullanmasını sağlamanın en sürdürülebilir yolu?
+    0 Her görselde renkleri elle seçmek
+   *1 Bir JSON tema dosyası hazırlayıp tüm raporlara uygulamak
+    2 Arka plan görseli
+    3 Koşullu biçimlendirme
+#55 tema-sayfa#1 :: Tema JSON'unda “good”, “neutral”, “bad” renkleri ne için kullanılır?
+    0 Seri renkleri
+   *1 KPI ve koşullu biçimdeki durum (iyi/nötr/kötü) renkleri
+    2 Arka plan
+    3 Yazı tipi
+#56 tema-sayfa#2 :: Rapor tuvalini 1280 × 720 yerine 1920 × 1080 yapmanın riski nedir?
+    0 Hiçbir risk yoktur
+   *1 Her şey orantılı ölçeklenir; küçük ekranlarda ve Teams’te yazılar okunmaz hâle gelebilir
+    2 Rapor yayımlanamaz
+    3 Mobil düzen silinir
+#57 pq-model#1 :: Ara bir sorgunun modelde tablo olarak görünmesini istemiyorsun ama diğer sorgular onu kullanıyor.
+    0 Sorguyu silmek
+   *1 Yüklemeyi etkinleştir seçeneğini kapatmak
+    2 Rapor yenilemeye dahil etmemek
+    3 Gizlilik düzeyini Özel yapmak
+#58 pq-model#2 :: Bir sipariş JSON'unda her siparişin içinde “satirlar” listesi var. Her satırın ayrı bir satır olması için?
+   *0 Yeni satırlara genişlet
+    1 Değerleri ayıklamak
+    2 Özetten çıkar
+    3 Devrik
+#59 pq-model#3 :: Bir özel (Private) kaynakla bir genel (Public) kaynağı birleştirirken “Formula.Firewall” hatası alıyorsun. Neden?
+    0 İnternet yok
+   *1 Gizlilik düzeyleri, özel verinin genel kaynağa sızmasını önlemek için birleştirmeyi kısıtlıyor
+    2 M kodu büyük/küçük harf hatalı
+    3 DAX hatası
+#60 yari-toplanabilir#2 :: Bir bankanın “müşteri mevduat bakiyesi” ölçüsü için hangisi doğru?
+    0 SUM(Bakiye) her düzeyde doğrudur
+   *1 Müşteriler arasında toplanır, zamanda dönem sonu değeri alınır
+    2 Hiç toplanmaz
+    3 Ortalama alınır
+#61 hikaye#0 :: Grafik/Tablo geçişi yapan bir yer imi, kullanıcının seçtiği yıl filtresini sıfırlıyor. Ne yapmalısın?
+   *0 Yer iminde “Veri” seçeneğini kapatmak
+    1 Yer imini silmek
+    2 Dilimleyiciyi kilitlemek
+    3 Sayfayı gizlemek
+#62 hikaye#1 :: Bir çubuğun üzerine gelince o kategorinin aylık eğilimini gösteren küçük bir grafik açılsın istiyorsun.
+    0 Detay sayfası
+   *1 Rapor sayfası araç ipucu
+    2 Yer imi
+    3 Sayfa gezgini
+#63 hikaye#2 :: Bir sayfadaki Yıl dilimleyicisi seçiminin diğer 4 sayfaya da taşınmasını istiyorsun ama diğer sayfalarda dilimleyici görünmesin.
+   *0 Dilimleyicileri eşitle: eşitle açık, görünür kapalı
+    1 Her sayfaya ayrı dilimleyici
+    2 Rapor filtresi
+    3 Yer imi
+#64 analiz-ozellikleri#0 :: Aylık satış çizgisinde gelecek 6 ayın tahminini ve güven aralığını göstermek için?
+   *0 Analiz bölmesi → Tahmin (sürekli tarih ekseni gerekli)
+    1 Ayrıştırma ağacı
+    2 Sabit çizgi
+    3 Soru-Cevap
+#65 analiz-ozellikleri#1 :: “İadeleri en çok hangi faktörler artırıyor?” sorusu için en uygun görsel?
+   *0 Anahtar etkileyiciler
+    1 Huni
+    2 Kart
+    3 Şelale
+#66 mobil-erisilebilirlik#0 :: Hassas müşteri verisi içeren raporda kullanıcıların satır düzeyinde veriyi Excel'e aktarmasını engellemek istiyorsun.
+   *0 Verileri dışa aktar: Yalnızca özetlenmiş veri (ya da Yok)
+    1 Mobil düzen
+    2 Kişiselleştirmeyi açmak
+    3 Otomatik sayfa yenileme
+#67 yonetisim#0 :: Rapor yazarlarının şirketin onaylı satış modeli üzerinde kendi raporlarını yapabilmesini, ama modeli değiştirememesini istiyorsun.
+    0 Çalışma alanı Üye rolü
+   *1 Anlam modelinde Derleme (Build) izni
+    2 Web'de yayımla
+    3 Görüntüleyici rolü yeterli
+#68 yonetisim#1 :: Net satış kartı belirli bir değerin altına düşünce yöneticiye bildirim gitmeli.
+   *0 Pano kutucuğunda veri uyarısı
+    1 Yer imi
+    2 RLS
+    3 Duyarlılık etiketi
+#69 yonetisim#2 :: Kuruluşta kalite onayından geçmiş tek bir satış modeli olduğunu herkese göstermek için?
+    0 Tanıtmak (Promoted)
+   *1 Sertifikalamak (Certified)
+    2 Gizlemek
+    3 Etiketlemek
+#70 sayfalandirilmis#0 :: Muhasebe her ay 8.000 satırlık fatura listesini logolu, sayfa numaralı PDF olarak istiyor.
+    0 Etkileşimli rapor
+   *1 Sayfalandırılmış rapor
+    2 Pano
+    3 Soru-Cevap
+#71 sayfalandirilmis#1 :: Sayfalandırılmış raporlar hangi araçla tasarlanır?
+    0 Power BI Desktop
+   *1 Power BI Report Builder
+    2 DAX Studio
+    3 Tabular Editor
+#72 sayfalandirilmis#3 :: Bir sayfalandırılmış raporda kullanıcı “Yıl” parametresini seçiyor. DAX sorgusunda bu parametre nasıl kullanılır?
+   *0 Sorguya @Yil gibi bir sorgu parametresi eklenir ve rapor parametresine bağlanır
+    1 Parametre kullanılamaz
+    2 Her yıl için ayrı rapor yapılır
+    3 Dilimleyici eklenir
+#73 dax-opt#0 :: DAX Studio'da bir ölçünün 2.000 küçük depolama motoru sorgusu ürettiğini görüyorsun. En olası neden?
+    0 Tarih tablosu işaretli değil
+   *1 Büyük bir tabloda yineleyicinin içinde ölçü çağrısı (her satırda bağlam geçişi)
+    2 Tema dosyası
+    3 Çok fazla görsel
+#74 kurumsal-model#0 :: Milyar satırlık olgu tablosu DirectQuery'de; yöneticiler çoğunlukla aylık kategori toplamlarına bakıyor ve rapor yavaş. Kullanıcıyı değiştirmeden çözüm?
+    0 Tüm modeli Import yapmak
+   *1 Ay × kategori düzeyinde Import toplama tablosu oluşturup Toplamaları yönet ile eşlemek
+    2 Görselleri silmek
+    3 RLS
+#75 kurumsal-model#1 :: Direct Lake modelinde bazı sorguların beklenmedik şekilde yavaşladığını ve DirectQuery'ye düştüğünü görüyorsun. Bunu sistematik olarak engellemek için?
+   *0 DirectLakeBehavior = Yalnızca Direct Lake
+    1 Artımlı yenileme
+    2 Tema
+    3 Büyük model biçimini kapatmak
+#76 kurumsal-model#2 :: Artımlı yenileme için Power Query'de gereken iki parametrenin adı ve türü?
+    0 Baslangic ve Bitis, metin
+   *1 RangeStart ve RangeEnd, Tarih/Saat
+    2 MinDate ve MaxDate, Tarih
+    3 Start ve End, sayı
+#77 yasam-dongusu#0 :: İki geliştirici aynı modelde farklı ölçüler üzerinde çalışıyor ve değişikliklerini incelemek istiyorlar. Doğru başlangıç?
+    0 Aynı .pbix dosyasını e-postayla göndermek
+   *1 Projeyi .pbip olarak kaydedip Git deposunda dallarla çalışmak
+    2 Web'de yayımla
+    3 Her şeyi tek bir ölçüye yazmak
+#78 yasam-dongusu#1 :: Test aşamasında test veritabanına, Üretim'de canlı veritabanına bağlanmayı otomatik yapan özellik?
+   *0 Dağıtım kuralları
+    1 RLS
+    2 Yer imi
+    3 Sertifikalama
+#79 yasam-dongusu#2 :: Kullanıcının dosyayı açınca doğrudan şirket SQL veritabanına bağlanmış boş bir rapor görmesi için hangi dosya?
+    0 .pbit
+   *1 .pbids
+    2 .pbip
+    3 .rdl
+#80 dp600#2 :: DP-600'de “windowing functions” ifadesi hangi DAX fonksiyonlarını kasteder?
+   *0 WINDOW, OFFSET, INDEX
+    1 TOTALYTD, DATEADD
+    2 SUMX, AVERAGEX
+    3 PATH, PATHITEM
+#81 final-hazirlik#0 :: Bir KPI kartında yalnızca “Net Satış 747 B ₺” yazıyor. Değerlendirmede neden puan kaybeder?
+    0 Sayı çok büyük
+   *1 Karşılaştırma (hedef, geçen yıl) olmadan sayı yorumlanamaz
+    2 Kart görseli yasak
+    3 Biçim yanlış
+#82 final-hazirlik#1 :: Final projesinde “Toplam satırları doğru” ölçütü ne anlama gelir?
+    0 Toplam satırı her zaman gizlenir
+   *1 Oran ve ortalama ölçüleri toplamda satırların toplamı değil, toplam bağlamında yeniden hesaplanır; gerekirse SUMX(VALUES(...)) ile bilinçli olarak satır toplamı alınır
+    2 Toplam satırı kırmızı yazılır
+    3 Toplamlar Excel’de kontrol edilir
+#83 final-hazirlik#2 :: Raporu yayımlamadan önce RLS’i nasıl doğrularsın?
+    0 Yayımladıktan sonra kullanıcılara sormak
+   *1 Desktop’ta Modelleme → Rol olarak görüntüle ile ve Service’te Rol olarak test et ile en az iki farklı kullanıcıyı denemek
+    2 Rolleri silmek
+    3 Yalnızca yönetici hesabıyla bakmak
+#84 blank-hata#0 :: [Net Satış] - [Satış GY] ölçüsü 2022 yılında (öncesinde veri yok) ne gösterir?
+    0 BLANK
+   *1 2022’nin tüm net satışı; çünkü çıkarmada BLANK 0 gibi davranır
+    2 Hata
+    3 0
+#85 blank-hata#4 :: IFERROR(1/0, 0) ne döndürür?
+    0 0
+    1 BLANK
+   *2 Sonsuz (∞); çünkü 1/0 hata değildir
+    3 Hata mesajı
+#86 blank-hata#5 :: “Birden çok değer içeren bir tablo, tek bir değer beklenen yerde kullanıldı” hatası Başlık = "Yıl: " & VALUES(Tarih[Yil]) ölçüsünde çıkıyor. En doğru düzeltme hangisi?
+    0 IFERROR ile sarmak
+   *1 VALUES yerine SELECTEDVALUE(Tarih[Yil], "Tüm yıllar") kullanmak
+    2 Ölçüyü hesaplanmış sütuna çevirmek
+    3 Tarih tablosunu tek yıla indirmek
+#87 blank-hata#6 :: Uzun bir ölçü beklenenden büyük sonuç veriyor. İçindeki VAR Musteriler2024 = FILTER(...) değişkeninin doğru olup olmadığını en hızlı nasıl anlarsın?
+    0 Ölçüyü baştan yazmak
+   *1 RETURN COUNTROWS(Musteriler2024) yazıp görsele bakmak ya da DAX sorgu görünümünde EVALUATE ile listelemek
+    2 IFERROR eklemek
+    3 Görseli yeniden oluşturmak
+#88 test#0 :: Power BI Desktop’ta bir görsel seçiliyken alanları (X ekseni, Y ekseni…) hangi bölmede kutulara koyarsın?
+    0 Filtreler bölmesi
+   *1 Görselleştirmeler → Oluştur
+    2 Yer imleri bölmesi
+    3 Seçim bölmesi
+#89 test#5 :: Yıldız şemada filtreler varsayılan olarak hangi yöne akar?
+    0 Olgudan boyuta
+   *1 Boyuttan olguya (bir → çok)
+    2 Her iki yöne
+    3 Hiçbir yöne
+#90 test#6 :: Bir siparişte birden çok satır olabiliyorsa sipariş sayısını hangisi verir?
+    0 COUNTROWS(Satislar)
+   *1 DISTINCTCOUNT(Satislar[SiparisNo])
+    2 SUM(Satislar[SiparisNo])
+    3 COUNT(Satislar[Adet])
+#91 test#7 :: Ay adlarının Ocak, Şubat… sırasıyla görünmesi için ne yapılır?
+    0 Ay sütununu metne çevir
+   *1 Sütun araçları → Sütuna göre sırala → AyNo
+    2 Görseli alfabetik sırala
+    3 Ay adlarını numaralandır
+#92 test#10 :: Geçen yılın aynı dönemindeki satışı hangi formül verir?
+    0 CALCULATE([Satış], PREVIOUSYEAR(Tarih[Tarih]))
+   *1 CALCULATE([Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+    2 [Satış] - 1
+    3 TOTALYTD([Satış], -1)
+#93 test#11 :: VAR X = [Net Satış] tanımlandıktan sonra CALCULATE(X, Tarih[Yil] = 2023) ne döndürür?
+    0 2023 satışı
+   *1 X’in tanımlandığı bağlamdaki değer (değişmez)
+    2 Hata
+    3 Boş
+#94 test#12 :: Dilimleyici seçimini koruyup yalnızca görselin satır filtresini kaldıran fonksiyon?
+    0 ALL
+   *1 ALLSELECTED
+    2 ALLEXCEPT
+    3 KEEPFILTERS
+#95 test#13 :: Teslim tarihine göre satış için pasif ilişkiyi ölçü içinde etkinleştiren fonksiyon?
+    0 CROSSFILTER
+   *1 USERELATIONSHIP
+    2 TREATAS
+    3 RELATED
+#96 test#14 :: Stok adedini yıllar boyunca toplamak neden yanlıştır?
+    0 Stok metin olduğu için
+   *1 Stok yarı toplanabilir bir bakiyedir; dönem sonu değeri alınır
+    2 DAX stok toplayamaz
+    3 Yanlış değildir
+#97 test#15 :: Fareyle üzerine gelince küçük bir rapor sayfası göstermek için ne yapılır?
+    0 Yer imi ekle
+   *1 Sayfayı araç ipucu olarak işaretle ve görselin araç ipucu türünü Rapor sayfası yap
+    2 Detay sayfası kur
+    3 Seçim bölmesini aç
+#98 test#16 :: SUMX(Musteriler, [Toplam Satış]) neden her müşteri için o müşterinin satışını hesaplar?
+   *0 Ölçü çağrısı gizli bir CALCULATE ile bağlam geçişi yapar
+    1 SUMX her zaman filtre uygular
+    2 Musteriler ilişkisi iki yönlüdür
+    3 Hesaplanmış sütun gibi çalışır
+#99 test#17 :: İlişkisi olmayan bir parametre tablosundaki seçimi Urunler[Kategori] filtresi gibi uygulamanın en doğru yolu?
+    0 FILTER(ALL(Urunler), ...) ile karşılaştırma
+   *1 TREATAS(VALUES(Param[Kategori]), Urunler[Kategori])
+    2 RELATED
+    3 USERELATIONSHIP
+#100 test#21 :: DAX Studio’da bir sorgunun süresinin çoğu “FE” (formül motoru) tarafındaysa en olası neden?
+    0 Çok büyük sütunlar
+   *1 Satır satır çalışan, depolama motoruna itilemeyen karmaşık yineleyiciler/koşullar
+    2 Ağ gecikmesi
+    3 Görsel sayısı
+#101 test#22 :: Raporu Git ile sürüm kontrolünde tutmak için hangi kayıt biçimi uygundur?
+    0 .pbix
+    1 .pbit
+   *2 Power BI Projesi (.pbip) + TMDL
+    3 .xlsx
+#102 test#23 :: “İlk N ürün tek tek, kalanlar tek çubukta: Diğer” görseli için modelde ne gerekir?
+    0 Yalnızca görsel filtresi İlk N
+   *1 Ürün adlarına ek olarak “Diğer” satırı içeren bağlantısız bir eksen tablosu ve ona göre dallanan ölçü
+    2 İki yönlü ilişki
+    3 Hesaplanmış sütun

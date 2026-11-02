@@ -1,0 +1,10 @@
+global.window = global; const P = '/home/claude/pbi/';
+for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'pqdata','extra','tricks','dashboards','final']) require(P + f + '.js');
+const plain = s => String(s).replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
+const out = [];
+const scan = (where, txt) => { const t = plain(txt); const re = /[^.!?]*?(\d[\d.,]*\s?(B|bin|milyon)?\s?(₺|TL)|%\s?\d[\d,]*|\d[\d,]*\s?%)[^.!?]*[.!?]?/g; let m; while ((m = re.exec(t))) { const s = m[0].trim(); if (/\d/.test(s) && !/(%(10|20|5|15|25|30|50|80|95|100)\b)/.test(s.replace(/\s/g,''))) out.push(where + ' | ' + s.slice(0, 180)); } };
+PBI_LESSONS.forEach(l => { scan('ders ' + l.id, l.body); (l.ex || []).forEach((e, i) => scan('ex ' + l.id + '#' + i, (e.q || '') + ' ' + (e.why || '') + ' ' + (e.o || []).join(' '))); });
+PBI_DASHES.forEach(d => { scan('dash ' + d.id, JSON.stringify(d.how || '') + ' ' + (d.q || '') ); (d.tiles || []).forEach(t => scan('tile ' + d.id + '/' + t.id, (t.why || '') + ' ' + (t.format || []).join(' '))); });
+PBI_TRICKS.forEach(t => scan('püf ' + t.id, t.problem + ' ' + (t.why || '') + ' ' + (t.steps || []).join(' ')));
+PBI_PATTERNS.forEach(p => scan('kalıp ' + p.id, (p.problem || '') + ' ' + (p.pitfall || '') + ' ' + JSON.stringify(p.steps || '')));
+console.log(out.length); console.log(out.join('\n'));

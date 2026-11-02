@@ -1,0 +1,18 @@
+create temp view v as select t.*, substr(t.txn_time,1,10) d, cast(substr(txn_time,12,2) as int) h, cast(substr(txn_time,6,2) as int) m, a.currency cur, a.account_type, a.customer_id, a.closed_date, a.opened_date, a.credit_limit, c.segment, c.branch_id, amount * (case when a.currency='TRY' then 1 else (select try_rate from bank_fx f where f.currency=a.currency and f.rate_date <= substr(t.txn_time,1,10) order by rate_date desc limit 1) end) tl from bank_txns t join bank_accounts a using(account_id) join bank_customers c using(customer_id);
+select segment, sum(tl), count(distinct customer_id), count(*) from v group by segment;
+select channel, count(*) from v group by channel;
+select 'fraud tl', -sum(tl) from v where h<6;
+select 'fraud closed', count(*) from v where h<6 and closed_date is not null and d > closed_date;
+select 'kvkk', kvkk_consent, count(*) from bank_customers group by kvkk_consent;
+select 'cust no acct', count(*) from bank_customers c where not exists (select 1 from bank_accounts a where a.customer_id=c.customer_id);
+select 'fx no exact', count(*) from v where cur<>'TRY' and not exists (select 1 from bank_fx f where f.currency=v.cur and f.rate_date=v.d);
+select 'tl naive exact', sum(amount * coalesce((select try_rate from bank_fx f where f.currency=v.cur and f.rate_date=v.d),0)) from v where cur<>'TRY';
+select 'fx tl', sum(tl), sum(amount) from v where cur<>'TRY';
+select 'per acct activity', sum(n>=100), sum(n between 40 and 99), sum(n<40) from (select account_id, count(*) n from v group by 1);
+select 'acct txn dist', min(n), max(n), avg(n) from (select account_id, count(*) n from v group by 1);
+select 'dec ktx', count(*) from v where m=12;
+select 'branch 12 cust', count(*) from bank_customers where branch_id=12;
+select 'ist cust', count(*) from bank_customers where city='İstanbul';
+select 'opened 2024', count(*) from bank_accounts where opened_date >= '2024-01-01';
+select 'closed<open', account_id, opened_date, closed_date from bank_accounts where closed_date < opened_date;
+select 'salary month dec', count(*), sum(amount) from v where txn_type='maas' and m=12;

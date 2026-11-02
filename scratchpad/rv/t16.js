@@ -1,0 +1,10 @@
+const C=require('./common.js');
+(async()=>{const {b,ctx,p,errs}=await C.open();
+await p.goto('http://localhost:8765/index.html#patika-karar'); await p.waitForTimeout(300);
+await p.screenshot({path:C.SS+'40_karar.png'});
+console.log((await p.innerText('#main')).slice(0,1600).replace(/\n+/g,' | '));
+let t0=Date.now(); await p.goto('http://localhost:8765/index.html#dashboard'); await p.waitForTimeout(100); console.log('dash list ms',Date.now()-t0);
+await p.screenshot({path:C.SS+'41_dash_list.png'});
+console.log((await p.innerText('#main')).slice(0,1500).replace(/\n+/g,' | '));
+console.log((await p.$$eval('#main button',els=>els.slice(0,40).map(e=>JSON.stringify(e.dataset)+e.textContent.trim().slice(0,40)))).join('\n'));
+console.log(errs);await b.close();})();

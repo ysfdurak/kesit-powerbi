@@ -1,0 +1,31 @@
+const fs = require('fs'); const f = '/home/claude/pbi/c9.js'; let s = fs.readFileSync(f, 'utf8');
+const R = [
+["o: ['Grafiği Odak modunda büyütürsün', 'Çubuğa sağ tık → Veri noktasını tablo olarak göster', 'Raporu Varsayılana sıfırla ile yenilersin', 'Kişisel yer işareti ekleyip açarsın']",
+ "o: ['Grafiği Odak modunda açıp tam ekrana büyütürsün', 'Sağ tık → Veri noktasını tablo olarak göster', 'Raporu Varsayılana sıfırla düğmesiyle yenilersin', 'Kişisel bir yer işareti ekleyip yeniden açarsın']"],
+["o: ['Yazardan yeni bir sayfa istemek', 'Raporu indirip Desktop’ta düzenlemek', 'Kişisel yer işareti ekleyip Varsayılan yapmak', 'Sayfayı her gün Excel’e aktarmak']",
+ "o: ['Yazardan bu seçimle ayrı bir sayfa eklemesini istemek', 'Raporu indirip Desktop’ta kendi kopyanı düzenlemek', 'Kişisel yer işareti ekleyip Varsayılan yapmak', 'Sayfayı her sabah Excel’e aktarıp süzmek']"],
+["o: ['Uyarılar yalnızca tablo görsellerinde çalışır', 'Uyarı için rapor sahibi olmak gerekir', 'Kart görseli yalnızca Desktop’ta uyarı verir', 'Uyarılar pano kutucuklarında kurulur, raporda değil']",
+ "o: ['Uyarılar yalnızca tablo görsellerinde çalışır', 'Uyarı kurmak için rapor sahibi olmak gerekir', 'Kart görseli yalnızca Desktop’ta uyarı verir', 'Uyarı yalnızca pano kutucuklarında kurulur']"],
+["o: ['Raporda yeterince sayfa yok', 'Alan ücretli Fabric/Premium kapasitede değil', 'Kullanıcılar Okuma görünümünde', 'Raporda dilimleyici kullanılmış']",
+ "o: ['Raporda Copilot için yeterli sayfa bulunmuyor', 'Alan ücretli Fabric/Premium kapasitede değil', 'Kullanıcılar raporu Okuma görünümünde açıyor', 'Raporun sayfalarında dilimleyici kullanılmış']"],
+["o: ['Detaya inme', 'Odak modu', 'Vurgulama', 'Kalıcı filtre']", "o: ['Detaya inme', 'Odak görünümü', 'Vurgulama', 'Kalıcı filtre']"],
+["o: ['Raporda hangi renkler kullanılsın?', 'Bu raporla hangi kararı vereceksin?', 'Kaç sayfa olsun ve hangi tema?', 'Pasta mı çubuk grafik mi seversin?']",
+ "o: ['Raporda hangi kurumsal renkler kullanılsın?', 'Bu raporla hangi kararı vereceksin?', 'Kaç sayfa olsun ve hangi temayı seçelim?', 'Pasta grafiği mi çubuk grafiği mi seversin?']"],
+["o: ['Kart görseli metin alanı istemez', 'İptal, iade, indirim seçimine göre farklı sayılar çıkar', 'Ölçü adı en az iki kelime olmalıdır', 'Tanımsız ölçü Power BI’da hata verir']",
+ "o: ['Kart görseli tanım metnini kabul etmez', 'İptal/iade seçimine göre sayı değişir', 'Ölçü adı en az iki kelimeden oluşmalıdır', 'Tanımsız ölçü Power BI’da hata verir']"],
+["o: ['Rapor kullanıcı dostu ve modern olmalı', 'Sayılar mümkün olduğunca doğru olmalı', 'Sayfa hızlı açılmalı ve güzel görünmeli', 'Sayfa Performans Analizi’nde 3 sn altında açılır']",
+ "o: ['Rapor kullanıcı dostu, modern ve sade görünmeli', 'Sayılar her zaman mümkün olduğunca doğru olmalı', 'Sayfa hızlı açılmalı ve göze güzel görünmeli', 'Sayfa 3 sn altında açılır (Performans Analizi)']"],
+["o: ['Çizginin rengini daha açık yapmak', 'İkincil eksenin başlangıcını 0’a sabitlemek', 'Sütunları yığılmış sütuna çevirmek', 'Veri etiketlerini her iki seride açmak']",
+ "o: ['Çizginin rengini daha açık bir tona çekmek', 'İkincil eksenin alt sınırını 0 yapmak', 'Sütunları yığılmış sütun grafiğine çevirmek', 'Veri etiketlerini her iki seride de açmak']"],
+["o: ['Her çubuğa farklı renk ve gösterge', 'Gri çubuklar, Kitap vurgulu, bulgu başlığı', 'Pasta grafikte Kitap dilimini ayırmak', 'Tüm çubuklar yeşil, Kitap kalın kenarlı']",
+ "o: ['Her çubuğa farklı renk ve ayrıntılı gösterge', 'Gri çubuklar, Kitap vurgulu, bulgu başlığı', 'Pasta grafikte Kitap dilimini dışarı çekmek', 'Tüm çubuklar yeşil, Kitap kalın kenarlı']"],
+["o: ['Çizgileri kalınlaştırırsın', 'Küçük katlar ile kanal başına panel', 'İkincil eksene bir kanalı taşırsın', 'Grafiği huni grafiğe çevirirsin']",
+ "o: ['Çizgileri kalınlaştırıp renkleri koyulaştırırsın', 'Küçük katlar ile kanal başına panel', 'Bir kanalı ikincil y eksenine taşırsın', 'Grafiği huni grafiğine dönüştürürsün']"],
+["o: ['Yer imlerinde Veri seçeneğini kapat', 'Panel grubunu çözüp tek tek gizle', 'Dilimleyicileri eşitlemeyi aç', 'Paneli ayrı bir sayfaya taşı']",
+ "o: ['Yer imlerinde Veri seçeneğini kapat', 'Panel grubunu çözüp nesneleri tek tek gizle', 'Görünüm menüsünden dilimleyicileri eşitle', 'Paneli ayrı bir rapor sayfasına taşı']"],
+["o: ['Düğmenin üzerine gelince rengini değiştir', 'Sayfaya uzun bir yardım metni ekle', 'Devre dışı durumunu gri yap, metni ölçüyle yönlendir', 'Düğmeyi seçim yapılana kadar sayfadan kaldır']",
+ "o: ['Düğmenin üzerine gelince rengini değiştir', 'Sayfanın üstüne uzun bir yardım metni ekle', 'Gri devre dışı durumu ve yönlendiren metin', 'Seçim yapılana kadar düğmeyi sayfadan kaldır']"],
+["o: ['textClasses içinde label', 'dataColors dizisinin ilk rengi',", "o: ['textClasses içinde label', 'dataColors dizisinin ilk rengi',"],
+];
+for (const [a, b] of R) { if (!s.includes(a)) { console.log('YOK', a.slice(0, 60)); continue; } s = s.replace(a, b); }
+fs.writeFileSync(f, s);

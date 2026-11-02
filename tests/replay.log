@@ -1,0 +1,1268 @@
+#63 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/gen_tail.js 19254
+#64 BASH [Build and inspect extended data] code=0 cwd=/home/claude/pbi
+2 {"Tarih":"2022-01-01T00:00:00.000Z","Kategori":"Elektronik","Hedef":500}
+Calisanlar       27 {"CalisanNo":1,"AdSoyad":"Selim Aksoy","DepartmanNo":0,"YoneticiNo":null,"Unvan":"Genel Müdür","Maas":145000,"IseGiris":"2015-03-01T00:00:00.000Z","Eposta":"selim.aksoy@a
+Departmanlar     8 {"DepartmanNo":1,"Departman":"Satış","Sehir":"İstanbul"}
+StokGorunum      1440 {"Tarih":"2022-01-31T00:00:00.000Z","UrunNo":1,"StokAdet":54,"GelenAdet":0,"StokDegeri":33804}
+WebOlaylari      2019 {"OlayNo":1,"ZiyaretciNo":1001,"Tarih":"2024-10-18T00:00:00.000Z","Saat":10,"AdimNo":1,"Adim":"Ziyaret","Cihaz":"Masaüstü","Kaynak":"Sosyal medya"}
+DovizKurlari     72 {"Tarih":"2022-01-01T00:00:00.000Z","ParaBirimi":"USD","Kur":13.6}
+ParaBirimleri    3 {"ParaBirimi":"TRY","Sembol":"₺","Sira":1}
+FiyatSenaryosu   9 {"FiyatDegisimi":-0.2}
+TopNSecim        13 {"N":3}
+MusteriDilimleri 4 {"Dilim":"Küçük","Min":0,"Max":2000,"Sira":1}
+UrunlerVeDiger   41 {"Urun":"Kablosuz Kulaklık","Sira":1}
+KarsiUrunler     40 {"KarsiUrunNo":1,"KarsiUrun":"Kablosuz Kulaklık","KarsiKategori":"Elektronik"}
+OlcuSecimi       4 {"Olcu":"Net Satış","Sira":1}
+Gorunum          4 {"Gorunum":"Cari","Sira":1}
+null teslim 131 kohort null 0
+1:1:0 2:1|2:1 3:1|3:2 4:1|4:3 5:1|5:4 6:1|6:5 7:1|7:6 8:1|2|8:1 9:1|2|9:1 10:1|2|10:1 11:1|2|11:1 12:1|2|12:1 13:1|3|13:2 14:1|3|14:2 15:1|3|15:2 16:1|4|16:3 17:1|4|17:3 18:1|4|18:3 19:1|4|19:3 20:1|5|20:4 21:1|5|21:4 22:1|5|22:4 23:1|5|23:4 24:1|6|24:5 25:1|6|25:5 26:1|7|26:6 27:1|7|27:6
+29670 data.js
+
+#65 BASH [Locate engine sections to modify] code=0 cwd=/home/claude/pbi
+gth) { const x = st.pop(); relsFrom[x].forEach(r => { if (!out.has(r.to)) { out.add(r.to); st.pu
+138:    while (q.length) { const [x, path] = q.shift(); if (x === to) return path; for (const r of relsFrom[x]) if (!seen.has(r.to)) { seen.add(r.to); q.push([r.to, path.concat(r)]
+146:  function mkCtx(filters, base) { return { filters, shadow: base ? base.shadow : filters, scope: base ? base.scope : [], user: base ? base.user : null, _vis: new Map() }; }
+148:  function tableFiltered(ctx, t, seen) {
+150:    for (const r of relsFrom[t]) if (tableFiltered(ctx, r.to)) return true;
+153:  function visible(ctx, t) {
+158:    for (const r of relsFrom[t]) {
+186:  const TIME_UNITS = ['YEAR', 'QUARTER', 'MONTH', 'DAY', 'WEEK'];
+187:  const KW = new Set(['ASC', 'DESC', 'SKIP', 'DENSE', ...TIME_UNITS]);
+338:    if (a.type === 'call' && ['ALL', 'REMOVEFILTERS', 'ALLEXCEPT', 'ALLSELECTED', 'ALLNOBLANKROW', 'CROSSFILTER', 'USERELATIONSHIP'].includes(a.fn)) {
+339:      if (a.fn === 'USERELATIONSHIP' || a.fn === 'CROSSFILTER') err(a.fn + ' bu oyun alanının modelinde kullanılamıyor: modelde pasif ilişki yok. Kavramı derste okuyabili
+370:  function applyMod(eng, mod, ctx, st) {
+386:  function calcCtx(eng, args, st, fname) {
+490:  FN.USERELATIONSHIP = () => err('USERELATIONSHIP bu modelde kullanılamaz: pasif ilişki yok.');
+500:  FN.ISCROSSFILTERED = (eng, a, st) => { const { t, c } = colArg(a[0], 'ISCROSSFILTERED'); return visible(st.ctx, t).length < allIdx[t].length || st.ctx.filters.some(f => affec
+
+#67 BASH [Add relationship-aware context to engine] code=0 cwd=/home/claude/pbi
+401:    if (mod.mod === 'ALL' || mod.mod === 'REMOVEFILTERS') {
+  function applyMod(eng, mod, ctx, st) {
+    if (mod.mod === 'USERELATIONSHIP' || mod.mod === 'CROSSFILTER') {
+      if (mod.args.length < 2 || mod.args[0].type !== 'col' || mod.args[1].type !== 'col') err(mod.mod + ' iki sütun is
+      const r = findRel(resolveCol(mod.args[0]), resolveCol(mod.args[1])); if (!r) err('Bu iki sütun arasında modelde 
+
+#68 BASH [Add advanced DAX functions] code=0 cwd=/home/claude/pbi
+195
+
+#69 BASH [Test new DAX functions] code=0 cwd=/home/claude/pbi
+1
+order date         747065.6999999998 13ms
+ship date          738303.65 5ms
+bidir              37 3ms
+treatas            336113.50000000006 4ms
+except             27 3ms
+path               3 1ms
+lastnonblank       2988 5ms
+pctl               15941.35 193ms
+datatable          2 0ms
+generate           9 1ms
+offset [ 'Tarih[YilAy]', 'S', 'Önceki', 'Pencere3' ] [["2022-01",null,null,null],["2022-02",null,null,null],["2022-03",null,null,null],["2022-04",null,null,null],["2022-05",null,null,null],["2022-06",595,null,595]] 214ms
+rank [ 'Kategoriler[Kategori]', 'S', 'Sıra' ] [["Elektronik",339303.65000000014,1],["Kitap",151882.4,5],["Ev & Yaşam",234252.75000000006,2],["Giyim",190168.59999999995,3],["Spor",184231.10000000006,4],["Kozmetik",133563.94999999998,6]] 86ms
+
+#70 BASH [Check workspace files still exist] code=0 cwd=/home/claude/pbi
+total 500
+drwxr-xr-x  2 root   root    4096 Oct 26 18:29 .
+drwxr-xr-x 12 claude claude  4096 Oct 26 18:28 ..
+-rw-r--r--  1 root   root   94130 Oct 26 18:28 app.js
+-rw-r--r--  1 root   root   27868 Oct 26 18:29 base.css
+-rw-r--r--  1 root   root   40503 Oct 26 18:28 c1.js
+-rw-r--r--  1 root   root   41312 Oct 26 18:28 c2.js
+-rw-r--r--  1 root   root   37012 Oct 26 18:28 c3.js
+-rw-r--r--  1 root   root   29670 Oct 26 18:29 data.js
+-rw-r--r--  1 root   root   85810 Oct 26 18:29 dax.js
+-rw-r--r--  1 root   root   13758 Oct 26 18:29 extra.css
+-rw-r--r--  1 root   root   28626 Oct 26 18:28 extra.js
+-rw-r--r--  1 root   root   43242 Oct 26 18:29 index.html
+-rw-r--r--  1 root   root    4968 Oct 26 18:28 measures.js
+-rw-r--r--  1 root   root   34425 Oct 26 18:28 viz.js
+gen_head.js
+gen_tail.js
+t3.js
+
+#70 BASH [Check workspace files still exist] code=0 cwd=/home/claude/pbi
+total 500
+drwxr-xr-x  2 root   root    4096 Oct 26 18:29 .
+drwxr-xr-x 12 claude claude  4096 Oct 26 18:28 ..
+-rw-r--r--  1 root   root   94130 Oct 26 18:28 app.js
+-rw-r--r--  1 root   root   27868 Oct 26 18:29 base.css
+-rw-r--r--  1 root   root   40503 Oct 26 18:28 c1.js
+-rw-r--r--  1 root   root   41312 Oct 26 18:28 c2.js
+-rw-r--r--  1 root   root   37012 Oct 26 18:28 c3.js
+-rw-r--r--  1 root   root   29670 Oct 26 18:29 data.js
+-rw-r--r--  1 root   root   85810 Oct 26 18:29 dax.js
+-rw-r--r--  1 root   root   13758 Oct 26 18:29 extra.css
+-rw-r--r--  1 root   root   28626 Oct 26 18:28 extra.js
+-rw-r--r--  1 root   root   43242 Oct 26 18:29 index.html
+-rw-r--r--  1 root   root    4968 Oct 26 18:28 measures.js
+-rw-r--r--  1 root   root   34425 Oct 26 18:28 viz.js
+gen_head.js
+gen_tail.js
+t3.js
+
+#74 BASH [Add RFM segment table and date-table filter rule] code=0 cwd=/home/claude/pbi
+20
+
+#75 WRITE /home/claude/pbi/measures.js 9608
+#76 WRITE /home/claude/pbi/patterns.js 45208
+#77 BASH [Run all library measures and patterns with timing] code=0 cwd=/home/claude/pbi
+99954]] tot 288561.69999999984 30ms
+P C1 doviz          3 rows [["2022",5589.760352128024],["2023",16613.481455184472],["2024",22613.908466627872]] tot 44817.15027394036 67ms
+P C1 stok-gun       7 rows [["Elektronik",2658.865609654802],["Ev & Yaşam",2181.272702817817],["Giyim",1171.0347163420831]] tot 2427.8958962190077 14ms
+P C1 pencere        11 rows [["2024-02",47432.85],["2024-03",44706.299999999996],["2024-04",63251.600000000006]] tot null 18ms
+P C1 mevsim         12 rows [["Oca",1],["Şub",1],["Mar",1]] tot null 269ms
+PERR topn-diger [Satış (Top N + Diğer)] ölçüsünde hata: VAR tanımlarından sonra RETURN gelmeli, “ISEMPTY” civarında.
+P C2 sepet          7 rows [["Elektronik",1],["Ev & Yaşam",0.8421052631578947],["Giyim",0.7684210526315789]] tot 1 13ms
+P C2 lfl            7 rows [["Elektronik",0.9447720030429428],["Ev & Yaşam",1.149648482717626],["Giyim",0.6070979943053126]] tot 0.8636129883150258 56ms
+P C2 svg            7 rows [["Elektronik","data:image/svg+xml;utf8,<svg xmlns='http"],["Ev & Yaşam","data:image/svg+xml;utf8,<svg xmlns='http"],["Giyim","data:image/svg+xml;utf8,<svg xmlns='http"]] tot data:image/svg+xml;utf8,<svg x 136ms
+PERR egilim [Eğilim Çizgisi] ölçüsünde hata: “)” bekleniyordu, “ISBLANK” civarında.
+PERR anomali [Z-Skoru] ölçüsünde hata: “)” bekleniyordu, “ISBLANK” civarında.
+PERR ekip [Ekip Satışı] ölçüsünde hata: “)” bekleniyordu, “ISBLANK” civarında.
+PERR secili-gorunum [Görünüm (Dinamik Biçim)] ölçüsünde hata: “)” bekleniyordu, “ISBLANK” civarında.
+
+#78 BASH [Fix NOT parsing, stock sim, seasonality pattern; retest] code=0 cwd=/home/claude/pbi
+l sadık",75],["Yeni",3]] tot 136 5724ms
+P C1 stok-gun       7 rows [["Elektronik",104.93973077956662],["Ev & Yaşam",112.49767984039096],["Giyim",90.61785284549222]] tot 130.48564461814945 17ms
+P C1 mevsim         12 rows [["Oca",0.6373509307254047],["Şub",0.775353487925386],["Mar",0.9178589123384794]] tot null 313ms
+P C2 topn-diger     7 rows [["Akıllı Saat",37789.2],["27\" Monitör",59992],["Türk Kahvesi Makinesi",34744.2]] tot 747065.6999999998 1548ms
+P C2 sepet          7 rows [["Elektronik",1],["Ev & Yaşam",0.8421052631578947],["Giyim",0.7684210526315789]] tot 1 12ms
+P C2 lfl            7 rows [["Elektronik",0.9447720030429428],["Ev & Yaşam",1.149648482717626],["Giyim",0.6070979943053126]] tot 0.8636129883150258 51ms
+P C2 svg            7 rows [["Elektronik","data:image/svg+xml;utf8,<svg xmlns='http"],["Ev & Yaşam","data:image/svg+xml;utf8,<svg xmlns='http"],["Giyim","data:image/svg+xml;utf8,<svg xmlns='http"]] tot data:image/svg+xml;utf8,<svg x 97ms
+P C2 egilim         24 rows [["2023-01",17210.02416666668],["2023-02",19872.686014492767],["2023-03",22535.34786231885]] tot null 795ms
+P C2 anomali        24 rows [["2023-01",-1.6603986491157445],["2023-02",-0.8892096566898999],["2023-03",-1.127084982246876]] tot null 652ms
+P C2 ekip           7 rows [["Can Aydın",138653.34999999998],["Ece Kurt",109373.84999999996],["Elif Doğan",747065.6999999998]] tot null 35ms
+P C2 secili-gorunum 4 rows [["Cari","747.066 ₺"],["Geçen yıl","400.870 ₺"],["YTD","747.066 ₺"]] tot 747.066 ₺ 16ms
+
+#79 BASH [Add measure/context caches and re-time patterns] code=127 cwd=/home/claude/pbi
+4
+/home/claude/recover/cur.sh: line 84: column: command not found
+
+#80 BASH [Re-time patterns and re-run lesson exercise check] code=0 cwd=/home/claude/pbi
+B1 yoy-var 7 34ms
+B1 hedef-metin 7 9ms
+B1 dinamik-baslik 3 3ms
+B2 akilli-etiket 7 7ms
+B2 dinamik-topn 3 146ms
+B2 secime-sira 8 9ms
+B2 stok-son 12 17ms
+B2 stok-deger 7 5ms
+B2 teslim-satis 11 30ms
+C1 geri-donen 10 39ms
+C1 yeni-musteri2 11 38ms
+C1 kayip 1 14ms
+C1 abc 38 79ms
+C1 pareto 38 76ms
+C1 segment 4 335ms
+C1 segment-satis 4 297ms
+C1 rfm 117 482ms
+C1 rfm-segment 117 441ms
+C1 rfm-sayi 6 3569ms
+C1 kohort 377 931ms
+C1 senaryo 7 6ms
+C1 senaryo-kar 9 22ms
+C1 doviz 3 65ms
+C1 stok-gun 7 10ms
+C1 pencere 11 11ms
+C1 mevsim 12 148ms
+C2 topn-diger 7 768ms
+C2 sepet 7 7ms
+C2 lfl 7 33ms
+C2 svg 7 14ms
+C2 egilim 24 140ms
+C2 anomali 24 29ms
+C2 ekip 7 16ms
+C2 secili-gorunum 4 7ms
+
+Node.js v22.23.4
+
+#81 BASH [Add dependency-aware cache keys and re-time] code=0 cwd=/home/claude/pbi
+B2 dinamik-topn 3 71ms
+C1 segment 4 134ms
+C1 segment-satis 4 119ms
+C1 rfm 117 403ms
+C1 rfm-segment 117 405ms
+C1 rfm-sayi 6 916ms
+C1 kohort 377 904ms
+C2 topn-diger 7 65ms
+
+#82 WRITE /home/claude/pbi/levels.js 5010
+#83 WRITE /home/claude/pbi/c4.js 32965
+#84 WRITE /home/claude/pbi/c5.js 28014
+#85 WRITE /home/claude/pbi/c6.js 29768
+#86 WRITE /home/claude/pbi/c7.js 36845
+#87 BASH [Fix hierarchy snippet, extend calc groups lesson] code=0 cwd=/home/claude/pbi
+1
+
+#88 BASH [Validate all lesson exercises across 6 levels] code=0 cwd=/home/claude/pbi
+lessons 60 missing in content [] not ordered []
+ALLBLANK pencere 0 Önceki Satır Satışı
+ALLBLANK istatistik-ileri 1 Z-Skoru
+A1 DAX ex 1 avg lines 1.0 max 1
+A2 DAX ex 12 avg lines 1.2 max 2
+B1 DAX ex 22 avg lines 1.1 max 2
+B2 DAX ex 17 avg lines 1.1 max 2
+C1 DAX ex 24 avg lines 2.6 max 10
+C2 DAX ex 10 avg lines 7.4 max 16
+dax ex 86 bad 2 total ex 193
+
+#89 BASH [Fix ALLSELECTED shadow default and retest] code=0 cwd=/home/claude/pbi
+908:    const f = buildFilters(filterSpec); const base = mkCtx(f); base.shadow = buildFilters(opts && opts.shadow) .length ? buildFilters(opts.shadow) : f; base.scope = (opts && opts.scope) || []; bas
+C1 DAX ex 24 avg lines 2.6 max 10
+C2 DAX ex 10 avg lines 7.4 max 16
+dax ex 86 bad 0 total ex 193
+P B2 secime-sira    8 rows [["27\" Monitör",1],["Akıllı Saat",2],["Bluetooth Hoparlör",5]] tot null 4ms
+P C1 abc            38 rows [["27\" Monitör","A"],["Akıllı Saat","A"],["Bakır Cezve","A"]] tot null 58ms
+P C1 pareto         38 rows [["27\" Monitör",0.08030351279679955],["Akıllı Saat",0.13088701569353273],["Bakır Cezve",0.60695331079984]] tot null 66ms
+P C1 pencere        11 rows [["2024-02",47432.85],["2024-03",44706.299999999996],["2024-04",63251.600000000006]] tot null 9ms
+P C2 egilim         24 rows [["2023-01",17210.02416666668],["2023-02",19872.686014492767],["2023-03",22535.34786231885]] tot null 185ms
+P C2 anomali        24 rows [["2023-01",-1.6603986491157445],["2023-02",-0.8892096566898999],["2023-03",-1.127084982246876]] tot null 34ms
+
+#93 BASH [Extract thumbnail code for reuse] code=0 cwd=/home/claude/pbi
+7666
+
+#94 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/viz_core.js 47076
+#95 BASH [Assemble new viz library and smoke test] code=0 cwd=/home/claude/pbi
+column 2258
+bar 2063
+line 3123
+donut 2513
+waterfall 2594
+funnel 1778
+treemap 1219
+1793 840 1086 931 448
+
+#96 WRITE /home/claude/pbi/formatpane.js 26887
+#97 WRITE /home/claude/pbi/menus.js 25523
+#98 WRITE /home/claude/pbi/tricks.js 15891
+#99 BASH [Add salary bin column and batch cache export] code=0 cwd=/home/claude/pbi
+140000,80000,80000,80000,80000,80000,80000,40000,40000,60000,40000,20000,40000,40000,40000,60000,60000,60000,40000,60000,40000,60000,60000,60000,60000,60000,60000 function
+
+#100 BASH [Make cache keys scope/shadow-aware per measure] code=0 cwd=/home/claude/pbi
+  function refTables(eng, m, seen) {
+    if (m._refs) return m._refs; seen = seen || new Set(); seen.add(m);
+    const out = new Set(); let ast; try { ast = eng.ast(m); } catch (e) { return out; }
+    (function w(n) { if (!n || typeof n !== 'object') return; if (Array.isArray(n)) { n.forEach(w); return; }
+      if (n.type === 'col') { const tn = T[n.t] ? n.t : TLOW[(n.t || '').toLowerCase()]; if (tn) out.add(tn); }
+      else if (n.type === 'id') { const tn = T[n.name] ? n.name : TLOW[(n.name || '').toLowerCase()]; if (tn) out.add(tn); }
+      else if (n.type === 'call' && (n.fn === 'ISINSCOPE')) out.add('#scope');
+      else if (n.type === 'call' && (n.fn === 'ALLSELECTED' || n.fn === 'OFFSET' || n.fn === 'WINDOW' || n.fn === 'INDEX' || n.fn === 'RANK' || n.fn === 'ROWNUMBER')) out.add('#shadow');
+      else if (n.type === 'mref') { const mm = eng.resolveMeasure(n.name); if (mm && !seen.has(mm)) refTables(eng, mm, seen).forEach(x => out.add(x)); else if (mm && seen.has(mm) && !mm._refs) out.add
+      for (const key in n) if (key !== 'type') { const v = n[key]; if (v && typeof v === 'object') w(v); } })(ast);
+    if (!out.has('*')) m._refs = out; return out;
+  }
+  function msig(ctx, refs) {
+dax ex 86 bad 0 total ex 193
+
+#101 WRITE /home/claude/pbi/dashboards.js 84060
+#102 BASH [List project files and sizes] code=0 cwd=/home/claude/pbi
+oot   root   40503 Oct 26 18:28 c1.js
+-rw-r--r--  1 root   root   41312 Oct 26 18:28 c2.js
+-rw-r--r--  1 root   root   38682 Oct 26 18:30 c3.js
+-rw-r--r--  1 root   root   35431 Oct 26 18:30 c4.js
+-rw-r--r--  1 root   root   30091 Oct 26 18:30 c5.js
+-rw-r--r--  1 root   root   31584 Oct 26 18:30 c6.js
+-rw-r--r--  1 root   root   39548 Oct 26 18:30 c7.js
+-rw-r--r--  1 root   root   88767 Oct 26 18:30 dashboards.js
+-rw-r--r--  1 root   root   31353 Oct 26 18:30 data.js
+-rw-r--r--  1 root   root   91620 Oct 26 18:30 dax.js
+-rw-r--r--  1 root   root   13758 Oct 26 18:29 extra.css
+-rw-r--r--  1 root   root   28626 Oct 26 18:28 extra.js
+-rw-r--r--  1 root   root   28503 Oct 26 18:30 formatpane.js
+-rw-r--r--  1 root   root   43242 Oct 26 18:29 index.html
+-rw-r--r--  1 root   root    5280 Oct 26 18:30 levels.js
+-rw-r--r--  1 root   root   10231 Oct 26 18:29 measures.js
+-rw-r--r--  1 root   root   27382 Oct 26 18:30 menus.js
+-rw-r--r--  1 root   root   48038 Oct 26 18:29 patterns.js
+-rw-r--r--  1 root   root   17427 Oct 26 18:30 tricks.js
+-rw-r--r--  1 root   root   57920 Oct 26 18:30 viz.js
+   742 app.js
+   401 c1.js
+   435 c2.js
+   422 c3.js
+   311 c4.js
+   293 c5.js
+   298 c6.js
+   353 c7.js
+   380 dashboards.js
+   371 data.js
+   973 dax.js
+   185 extra.js
+    99 formatpane.js
+    40 levels.js
+    66 measures.js
+   232 menus.js
+   856 patterns.js
+   135 tricks.js
+   366 viz.js
+   539 index.html
+  7497 total
+gen_head.js
+gen_tail.js
+t3.js
+t4.js
+t5.js
+thumb.js
+viz_core.js
+viz_tail.js
+
+#108 BASH [Inspect levels.js and extra.js structure] code=0 cwd=/home/claude/pbi
+'rol-oynayan', 'yari-toplanabilir', 'hedef', 'gorsel-ilkeler', 'etkilesim', 'hikaye', 'analiz-ozellikleri', 'mobil-erisilebilirlik', 'dashboard-tasarim',
+  'baglam-gecisi', 'tablo-fonk', 'zaman-ileri', 'pencere', 'musteri-analitigi', 'segmentasyon', 'dax-sorgu', 'm-dili', 'performans', 'guvenlik', 'yayinlama', 'yonetisim', 'sayfalandirilmis', 'pl300',
+  'hesaplama-gruplari', 'ileri-kaliplar', 'hiyerarsi', 'istatistik-ileri', 'dax-opt', 'kurumsal-model', 'yasam-dongusu', 'dp600', 'final-hazirlik'
+];
+})(window);
+
+----
+3:W.PBI_PATHS = [
+17:W.PBI_CATALOG = [
+90:W.PBI_PLACEMENT = [
+106:W.PBI_GLOSSARY = [
+161:W.PBI_VISUALS = [
+12
+91:  { lv: 'temel', q: 'Dilimleyiciye ya da grafik eksenine hangisi konabilir?', o: ['Ölçü', 'Sütun', 'Yalnızca hesaplanmış tablo', 'Hiçbiri'], a: 1 },
+92:  { lv: 'temel', q: 'Power Query\'deki dönüşümlerin arkasındaki dil hangisidir?', o: ['DAX', 'M', 'SQL', 'Python'], a: 1 },
+93:  { lv: 'temel', q: 'Yıldız şemada filtreler varsayılan olarak hangi yöne akar?', o: ['Olgudan boyuta', 'Boyuttan olguya (bir → çok)', 'Her iki yöne', 'Hiçbir yöne'], a: 1 },
+94:  { lv: 'temel', q: 'Bir siparişte birden çok satır olabiliyorsa sipariş sayısını hangisi verir?', o: ['COUNTROWS(Satislar)', 'DISTINCTCOUNT(Satislar[SiparisNo])', 'SUM(Satislar[SiparisNo])', 'COUNT(Satislar[Adet])'], a: 1 },
+95:  { lv: 'orta', q: 'CALCULATE([Satış], Satislar[Kanal] = "Web") formülü, dilimleyicide “Mobil” seçiliyken ne döndürür?', o: ['Boş', 'Mobil satışı', 'Web satışı', 'Hata'], a: 2 },
+
+#109 BASH [Inspect formatpane, menus, tricks structure] code=0 cwd=/home/claude/pbi
+x: 'Dinamik Başlık =\nVAR Yil = IF(HASONEVALUE(Tarih[Yil]), FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"), "Tüm yıllar")\nVAR Kanallar = IF(ISFILTERED(Satislar[Kanal]), CONCATENATEX(VALUES(Satislar[Kanal]), Satislar[Kanal], ", "), "Tüm kanallar")\nRETURN "Net satış · " & Yil & " · " & Kanallar',
+    why: 'Ekran görüntüsü alınıp paylaşılan raporlarda bağlam kaybolmaz.' },
+  { id: 'bookmark-toggle', cat: 'Etkileşim', lv: 'B2', title: 'Yer imiyle grafik ↔ tablo geçişi', demo: 'bookmark',
+    problem: 'Aynı alanda kullanıcı isterse grafiği, isterse tabloyu görsün.',
+    steps: ['Grafiği ve tabloyu aynı konuma, aynı boyutta yerleştir.', 'Seçim bölmesinde tabloyu gizle → Yer imleri → Ekle → “Grafik”. Yer iminin “…” menüsünde Veri\'yi kapat (kullanıcının filtreleri korunsun).', 'Grafiği gizle, tabloyu göster → “Tablo” yer imi.', 'İki düğme ekle; her birinin Eylem → Tür: Yer imi.', 'Daha şık: iki yer imini gruplayıp Ekle → Düğmeler → Gezgin → Yer imi gezgini.'],
+    why: 'Analist tabloyu, yönetici grafiği sever; sayfa sayısı artmaz.' },
+  { id: 'svg-measure', cat: 'DAX', lv: 'C2', title: 'SVG ölçüsüyle tabloda mini grafik', demo: 'svg',
+    problem: 'Tablonun her satırına küçük bir eğilim grafiği koy.',
+    steps: ['SVG metni döndüren bir ölçü yaz (Ölçü Laboratuvarı: Trend Mini Grafik).', 'Ölçüyü seç → Ölçü araçları → Veri kategorisi: Görüntü URL\'si.', 'Ölçüyü tabloya ekle; Biçim → Görüntü boyutu ile yüksekliği ayarla.'],
+    why: 'Yerleşik mini grafiklerin (sparkline) yetmediği durumlarda
+#110 BASH [Inspect formatpane visuals and patterns head] code=0 cwd=/home/claude/pbi
+r ve sabit kalır.'],
+    ['GecenYil', 'Aynı bağlamın tarihleri bir yıl geri kaydırılır. Kategori filtresi korunur, yalnızca tarih değişir.'],
+    ['Fark', 'İki değişkenin farkı. Ara adımı adlandırmak hem okunurluğu hem hata ayıklamayı kolaylaştırır: geçici olarak RETURN Fark yazıp sonucu görebilirsin.'],
+    ['RETURN', 'Geçen yıl boşsa (verinin ilk yılı) büyüme anlamsızdır; IF ile boş bırakılır. DIVIDE ayrıca sıfıra bölmeye karşı korur.']
+  ],
+  pitfall: 'CALCULATE(BuYil, SAMEPERIODLASTYEAR(...)) yazmak işe yaramaz: değişken tanımlandığı yerde hesaplanmıştır, CALCULATE onu yeniden hesaplamaz.',
+  uses: ['zaman', 'urun'] },
+
+{ id: 'hedef-metin', lv: 'B1', name: 'Hedef Durumu', fmt: null, group: 'Hedef', axis: 'Kategoriler[Kategori]', slicers: [['Tarih', 'Yil', [2024]]], chart: 'table',
+  title: 'Durumu simge ve metinle anlatmak',
+  problem: 'Her kategori için hedefe göre durumu “▲ Hedefin üstünde (+%4,2)” gibi okunur bir metin olarak göster. Renk körü kullanıcılar için simge de olsun.',
+  expr: `VAR Oran = DIVIDE([Net Satış], [Hedef])
+VAR Sapma = Oran - 1
+VAR Etiket = FORMAT(Sapma, "+0.0%;-0.0%")
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Oran), "Hedef yok",
+        Oran >= 1.05, "▲ Hedefin çok üstünde (" & Etiket & ")",
+        Oran >= 1, "▲ Hedefte (" & Etiket & ")",
+        Oran >= 0.95, "■ Hedefe yakın (" & Etiket & ")",
+        "▼ Hedefin altında (" & Etiket & ")"
+    )`,
+  steps: [
+    ['Oran', 'Ger�
+854:const lib = root.PBI_MEASURES || (root.PBI_MEASURES = []);
+
+#111 BASH [List viz.js function signatures and tricks demos] code=0 cwd=/home/claude/pbi
+dynamic-title', cat: 'DAX', lv: 'B1', title: 'Seçime göre değişen başlık', demo: 'dynTitle',
+13:  { id: 'bookmark-toggle', cat: 'Etkileşim', lv: 'B2', title: 'Yer imiyle grafik ↔ tablo geçişi', demo: 'bookmar
+17:  { id: 'svg-measure', cat: 'DAX', lv: 'C2', title: 'SVG ölçüsüyle tabloda mini grafik', demo: 'svg',
+21:  { id: 'native-sparkline', cat: 'Görsel', lv: 'B1', title: 'Tablo ve matriste yerleşik mini grafik', demo: 'sparkT
+25:  { id: 'topn-other', cat: 'DAX', lv: 'C2', title: 'Top N + Diğer', demo: 'topnOther',
+29:  { id: 'field-param', cat: 'Etkileşim', lv: 'B2', title: 'Alan parametresiyle ölçü seçici', demo: 'fieldParam',
+33:  { id: 'drill', cat: 'Etkileşim', lv: 'B1', title: 'Detaya inme (drill-down) ile hiyerarşide gezinme', demo: 'dril
+37:  { id: 'drillthrough', cat: 'Etkileşim', lv: 'B2', title: 'Detay sayfası düğmesi', demo: 'drillthrough',
+41:  { id: 'cond-color', cat: 'Görsel', lv: 'B1', title: 'Ölçüyle renk: koşullu sütun rengi', demo: 'condColor',
+46:  { id: 'custom-label', cat: 'Görsel', lv: 'B2', title: 'Veri etiketinde iki bilgi', demo: 'customLabel',
+51:  { id: 'small-multiples', cat: 'Görsel', lv: 'B1', title: 'Küçük katlar', demo: 'smallMult',
+55:  { id: 'bullet', cat: 'Görsel', lv: 'B2', title: 'Gösterge yerine madde grafiği', demo: 'bullet',
+59:  { id: 'pareto', cat: 'Görsel', lv: 'C1', title: 'Pareto grafiği (sütun + birikimli çizgi)', demo: 'pareto',
+63:  { id: 'binning', cat: 'Analiz', lv: 'B1', title: 'Kutulama ile histogram', demo: 'histogram',
+
+#112 BASH [Read viz.js key parts] code=0 cwd=/home/claude/pbi
+h;
+  }
+  function bindTips(rootEl) {
+    if (!tipEl) { tipEl = document.createElement('div'); tipEl.className = 'vtip'; tipEl.hidden = true; document.body.appendChild(tipEl); }
+    const show = (el, x, y) => { let d; try { d = JSON.parse(el.getAttribute('data-tip')); } catch (e) { return; } tipEl.innerHTML = tipHTML(d); tipEl.classList.toggle('wide', !!d.x); tipEl.hidden = false; const w = tipEl.offsetWidth, hh = tipEl.offsetHeight; tipEl.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, x + 14)) + 'px'; tipEl.style.top = Math.max(8, y - hh - 12 < 8 ? y + 18 : y - hh - 12) + 'px'; };
+    rootEl.addEventListener('pointermove', e => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el && rootEl.contains(el)) show(el, e.clientX, e.clientY); else tipEl.hidden = true; });
+    rootEl.addEventListener('pointerleave', () => { tipEl.hidden = true; });
+    rootEl.addEventListener('focusin', e => { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) { const r = el.getBoundingClientRect(); show(el, r.left + r.width / 2, r.top); } });
+    rootEl.addEventListener('focusout', () => { tipEl.hidden = true; });
+    window.addEventListener('scroll', () => { if (tipEl) tipEl.hidden = true; }, { passive: true });
+  }
+  root.PBIViz = { column, bar, line, donut, card, kpi, gauge, bullet, waterfall, funnel, treemap, scatter, map, decomp, table, slicer, spark, thumb, fmt, bindTips, esc, stats };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+#113 BASH [Collect API usage in dashboards.js] code=0 cwd=/home/claude/pbi
+      5 a.
+     70 a.M
+     10 a.P
+     62 a.Q
+     91 a.V
+      3 a.dcol
+      2 a.dspec
+     15 a.fmt
+      3 a.level
+     12 a.sel
+      2 a.slicerVals
+      4 a.timeAxis
+      1 a.tipx
+      1 a.vals
+      2 a.yearLabel
+     13 a.V.bar
+      1 a.V.bullet
+     26 a.V.card
+     15 a.V.column
+      1 a.V.donut
+      2 a.V.funnel
+      1 a.V.gauge
+     12 a.V.kpi
+      5 a.V.line
+      1 a.V.map
+      3 a.V.scatter
+     10 a.V.table
+      1 a.V.treemap
+      1 slicers: ['cihaz', 'kaynak']
+      1 slicers: ['departman']
+      1 slicers: ['kanal']
+      1 slicers: ['yil', 'fiyat', 'para']
+      3 slicers: ['yil', 'kanal']
+      1 slicers: ['yil', 'kategori', 'topn']
+      1 slicers: ['yil', 'kategori']
+      1 slicers: ['yil', 'viewAs']
+      1 slicers: ['yilMulti', 'kanal']
+      1 except: [['Calisanlar', 'AdSoyad']]
+      1 except: [['Departmanlar', 'Departman']]
+      1 except: [['FiyatSenaryosu', 'FiyatDegisimi']]
+      4 except: [['Kategoriler', 'Kategori']]
+      1 except: [['Musteriler', 'Sehir']]
+      1 except: [['Musteriler', 'YasGrubu']]
+      1 except: [['Satislar', 'Kanal']]
+      4 except: [['Tarih', 'Yil']]
+      2 except: [['Urunler', 'Urun']]
+      1 except: [['WebOlaylari', 'Adim']]
+      1 except: [['WebOlaylari', 'Cihaz']]
+      1 except: [['WebOlaylari', 'Kaynak']]
+      5 extraMeasures
+      1 noRls
+      3 a.P.fiyat
+      4 a.P.para
+      3 a.P.view
+      1 slicerVals('departman')
+      1 slicerVals('kategori')
+
+#114 BASH [Find special API usage lines] code=0 cwd=/home/claude/pbi
+(r, 0) }], fmt: a.P.para === 'TRY' ? 'para' : null }, { label
+282:  slicers: ['yil', 'kategori'],
+293:      render: a => { const r = a.Q(['Urunler[Urun]'], ['Stok Adedi', 'Satılan Adet', 'Ay Sayısı'], { extraMeasures: { 'Ay Sayısı': 'COUNTROWS(VALUES(Tarih[YilAy]))' }, totals: false }); const rows = r.rows.filter(x => x.vals[1]).map(x => { const ort =
+307:  slicers: ['yil', 'viewAs'],
+310:      render: a => a.P.viewAs ? '<div class="rlsbar">🔒 <b>' + a.P.viewAs + '</b> olarak görüntüleniyor. Rol filtresi: <code>Calisanlar[Eposta] = USERPRINCIPALNAME()</code>. Filtre Calisanlar → Satislar ilişkisiyle tüm ölçülere yayılır.</div>
+311:    { id: 'k1', span: 4, title: 'Ekip net satışı', type: 'Kart', wells: { 'Alanlar': '[Net Satış]' }, measures: ['Net Satış'], format: [], why: 'RLS altında bu sayı temsilcinin kendi satışı olur.', render: a => a.V.card(a.M('[Net Satış]'), a.
+319:      render: a => { const rows = W.PBI_MODEL.tables.Calisanlar.rows.filter(c => c.DepartmanNo === 1 || c.DepartmanNo === 0).sort((x, y) => x.Yol.localeCompare(y.Yol, undefined, { numeric: true })); const vals = rows.map(c => a.M('[Ekip Satışı]', { add:
+332:  slicers: ['cihaz', 'kaynak'],
+356:  slicers: ['departman'],
+367:      render: a => { const r = a.Q(['Calisanlar[AdSoyad]', 'Departmanlar[Departman]'], ['Kıdem', 'Maaş'], { extraMeasures: { 'Kıdem': 'MAX(Calisanlar[KidemYil])', 'Maaş': 'MAX(Calisanlar[Maas])' }, totals: false }); return a.V.scatter(r.rows.map(x => (
+379:W.PBI_DASHES = D;
+380:})(window);
+
+#115 BASH [Inspect RLS and param dashboards] code=0 cwd=/home/claude/pbi
+rt((x, y) => x.Yol.localeCompare(y.Yol, undefined, { numeric: true })); const vals = rows.map(c => a.M('[Ekip Satışı]', { add: [{ t: 'Calisanlar', c: 'CalisanNo', values: [c.CalisanNo] }], noRls: true })); const mx = Math.max(...vals.filter(v => v != null), 1); return '<div class="vtable compact"><table><thead><tr><th>Çalışan</th><th>Unvan</th><th class="nc">Ekip satışı</th></tr></thead><tbody>' + rows.map((c, i) => '<tr><td style="padding-left:' + (8 + (c.Sev
+  ],
+  build: [
+    ['Soru ve kitle', 'Satış müdürü tüm ekibi, temsilci yalnızca kendini görmeli. Aynı rapor, iki farklı görünüm: satır düzeyinde güvenlik.', []],
+    ['Model', 'Satislar[TemsilciNo] → Calisanlar[CalisanNo] → Departmanlar. Calisanlar\'da ebeveyn-çocuk hiyerarşisi (YoneticiNo) ve Yol = PATH(...) sütunu.', []],
+    ['RLS rolü', 'Modelleme → Rolleri yönet → “Temsilci” rolü, Calisanlar tablosu: [Eposta] = USERPRINCIPALNAME(). Satış müdürleri için ayrı “Yönetici” rolü filtresiz (ya da PATHCONTAINS ile ekibini gören dinamik kural).', []],
+    ['Ölçüler', 'Temsilci sırası ALLSELECTED kullanır; böylece RLS altında başka temsilcilerin verisi sızmaz.', ['Net Satış', 'Temsilci Sırası', 'Ekip Satışı']],
+    ['Test', 'Modelleme → Farklı görüntüle → rol + kullanıcı e-postası. Service\'te anlam modeli → Güvenlik → Rol olarak test et.', []],
+    ['Yayın', 'Temsilciler çalışma alanında Görüntüleyici olmalı; Üye/Katkıda bulunan rolleri RLS\'yi atlar. Uygulama ile dağıtılır.', []]
+  ] });
+
+/* 12 ─────────── Web Dönüşüm */
+
+#116 BASH [Inspect model tables and param values] code=0 cwd=/home/claude/pbi
+
+    Seviye: 1,
+    KidemYil: 9,
+    MaasKutusu: 140000
+  },
+  {
+    CalisanNo: 2,
+    AdSoyad: 'Elif Doğan',
+    DepartmanNo: 1,
+    YoneticiNo: 1,
+    Unvan: 'Satış Müdürü',
+    Maas: 96000,
+    IseGiris: 2016-09-21T00:00:00.000Z,
+    Eposta: 'elif.dogan@anadolumarket.com',
+    Yol: '1|2',
+    Seviye: 2,
+    KidemYil: 8,
+    MaasKutusu: 80000
+  },
+  {
+    CalisanNo: 3,
+    AdSoyad: 'Derya Öztürk',
+    DepartmanNo: 2,
+    YoneticiNo: 1,
+    Unvan: 'Pazarlama Müdürü',
+    Maas: 83000,
+    IseGiris: 2016-06-21T00:00:00.000Z,
+    Eposta: 'derya.ozturk@anadolumarket.com',
+    Yol: '1|3',
+    Seviye: 2,
+    KidemYil: 8,
+    MaasKutusu: 80000
+  },
+  {
+    CalisanNo: 4,
+    AdSoyad: 'Serkan Özdemir',
+    DepartmanNo: 3,
+    YoneticiNo: 1,
+    Unvan: 'Analitik Müdürü',
+    Maas: 97000,
+    IseGiris: 2017-11-08T00:00:00.000Z,
+    Eposta: 'serkan.ozdemir@anadolumarket.com',
+    Yol: '1|4',
+    Seviye: 2,
+    KidemYil: 7,
+    MaasKutusu: 80000
+  }
+]
+Satislar.UrunNo->Urunler.UrunNo
+Satislar.MusteriNo->Musteriler.MusteriNo
+Satislar.Tarih->Tarih.Tarih
+Satislar.TeslimTarihi->Tarih.Tarih (pasif)
+Satislar.TemsilciNo->Calisanlar.CalisanNo
+Calisanlar.DepartmanNo->Departmanlar.DepartmanNo
+Urunler.Kategori->Kategoriler.Kategori
+Hedefler.Kategori->Kategoriler.Kategori
+Hedefler.Tarih->Tarih.Tarih
+StokGorunum.UrunNo->Urunler.UrunNo
+StokGorunum.Tarih->Tarih.Tarih
+WebOlaylari.Tarih->Tarih.Tarih
+[ 'rows', 'cols', 'kind', 'dateTable', 'sortBy' ] {"Ay":"AyNo","HaftaninGunu":"GunNo","Ceyrek":"CeyrekNo"}
+
+#117 BASH [Check DAX engine query/RLS options] code=0 cwd=/home/claude/pbi
+ base ? base.b
+469:      const sh = ctx.shadow || [];
+576:  FN.ALLSELECTED = (eng, a, st) => { if (!a.length) err('ALLSELECTED tablo ifadesi olarak kullanılırken bir tablo ya da sütun ister.'); return allTable(eng, a, st, mkCtx(st.ctx.shadow || [], st.ctx)); };
+703:  FN.USERPRINCIPALNAME = (eng, a, st) => (st.ctx.user || 'ayse.kaya@anadolumarket.com');
+704:  FN.USERNAME = FN.USERPRINCIPALNAME;
+906:  function evalMeasure(measures, exprSrc, filterSpec, opts) { return withCache(() => evalMeasure0(measures, exprSrc, filterSpec, opts)); }
+907:  function evalMeasure0(measures, exprSrc, filterSpec, opts) {
+910:    const f = buildFilters(filterSpec); const base = mkCtx(f); base.shadow = opts && opts.shadow ? buildFilters(opts.shadow) : f; base.scope = (opts && opts.scope) || []; base.user = opts && opts.user;
+934:  function query(opts) { return withCache(() => query0(opts)); }
+935:  function query0(opts) {
+938:    const combos = axisValues(rows, sl.concat(opts.extra || []), ms);
+942:      const spec = sl.concat(opts.extra || []).filter(s => !rows.some(r => r.t === s.t && r.c === s.c)).concat(rows.map((r, i) => ({ t: r.t, c: r.c, values: [cb[i]] })));
+943:      const sameAxis = sl.concat(opts.extra || []).filter(s => rows.some(r => r.t === s.t && r.c === s.c));
+945:      const vals = asts.map(a => evalMeasure(ms, a, spec, { shadow: sl, scope: rows }));
+949:    if (opts.totals !== false) total = asts.map(a => evalMeasure(ms, a, sl.concat(opts.extra || []), { shadow: sl, scope: [] }));
+
+#118 BASH [Read query0 and evalMeasure0] code=0 cwd=/home/claude/pbi
+sortCompare(col, a, b) {
+    const sb = T[col.t].sortBy && T[col.t].sortBy[col.c];
+    if (sb) { const ix = keyIndex(col.t, col.c); const ra = T[col.t].rows[ix.get(keyOf(a))], rb = T[col.t].rows[ix.get(keyOf(b))]; if (ra && rb) return ra[sb] - rb[sb]; }
+    if (col.c === 'HaftaninGunu') { const o = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']; return o.indexOf(a) - o.indexOf(b); }
+    if (col.c === 'Durum') { const o = ['Teslim Edildi', 'Kargoda', 'İade', 'İptal']; return o.indexOf(a) - o.indexOf(b); }
+    return rankCompare(a, b);
+  }
+915:  function axisValues(colRefs, slicerSpec, measures) {
+916-    if (!colRefs.length) return [[]];
+917-    const eng = new Engine(measures); const ctx = mkCtx(buildFilters(slicerSpec));
+918-    const byT = {}; colRefs.forEach(c => (byT[c.t] = byT[c.t] || []).push(c));
+919-    let combos = [[]]; const order = [];
+920-    for (const t in byT) { const vals = groupBy(eng, { ctx, frames: [] }, t, byT[t]); order.push(...byT[t]); const nc = []; combos.forEach(cb => vals.forEach(v => nc.push(cb.concat(v)))); combos = nc; }
+921-    // asıl sıraya göre yeniden diz
+922-    const pos = colRefs.map(c => order.findIndex(o => o.t === c.t && o.c === c.c));
+923-    combos = combos.map(cb => pos.map(p => cb[p]));
+924-    combos.sort((x, y) => { for (let i = 0; i < x.length; i++) { const r = sortCompare(colRefs[i], x[i], y[i]); if (r) return r; } return 0; });
+925-    return combos;
+926-  }
+927-  function sortCompare(col, a, b) {
+
+#119 BASH [Read rest of formatpane option definitions] code=0 cwd=/home/claude/pbi
+, d: true, does: 'Görselin arka plan rengini açar. Kapalıyken tuval (ya da arka plan görseli) görünür.', when: 'Tuval arka planı tasarımlı görselse kapat (saydam).' },
+  { k: 'tooltip', l: 'Araç ipuçları → Tür', t: 'select', d: 'default', o: [['default', 'Varsayılan'], ['page', 'Rapor sayfası']], does: 'Fareyle üzerine gelince ne açılacağı. Rapor sayfası türü, araç ipucu olarak işaretlenmiş küçük bir sayfayı o veri noktasının filtresiyle gösterir (burada: son 12 ayın
+  { k: 'alt', l: 'Alternatif metin', t: 'info', does: 'Ekran okuyucunun okuduğu açıklama. fx ile ölçüye bağlanabilir.', when: 'Her görselde doldur (erişilebilirlik).' },
+  { k: 'header', l: 'Başlık simgeleri', t: 'info', does: 'Görselin sağ üstündeki odak modu, filtre, “…” simgeleri.', when: 'Sunum raporlarında sadeleştirmek için bazılarını kapat.' }
+];
+const BAR_FMT = [{ s: 'X ekseni', i: [F.sort] }, { s: 'Y ekseni', i: [F.yMin, F.units] }, { s: 'Kılavuz çizgileri', i: [F.grid] }, { s: 'Sütunlar', i: [F.colorMode, F.gap] }, { s: 'Veri etiketleri', i: [F.labels] }, { s: 'Gösterge', i: [F.legend] }];
+const BAR_AN = [A.const, A.avg, A.median, A.minmax, A.trend];
+const LINE_FMT = [{ s: 'Y ekseni', i: [F.yMin, F.units] }, { s: 'Kılavuz çizgileri', i: [F.grid] }, { s: 'Çizgiler', i: [F.width, F.interp, F.area] }, { s: 'İşaretçiler', i: [F.markers] }, { s: 'Veri etiketleri', i: [F.labels] }, { s: 'Gösterge', i: [F.legend] }];
+const LINE_AN = [A.const, A.avg, A.minmax, A.trend, A.forecast];
+
+W.PBI_FORMAT = {
+  F, A, G,
+
+#120 BASH [Check PBI_VISUALS, thumbs, paths] code=0 cwd=/home/claude/pbi
+olor: 'var(--s3)', desc: 'Pivot tablo bilen raporlama ve finans ekipleri için hızlı geçiş.', long: 'Excel\'de pivot tablo ve grafiklerle rapor hazırlayanlar için. Excel alışkanlıklarını Power BI\'ın model, ölçü ve dash
+    lessons: ['tarih', 'aile', 'arayuz', 'pq-temel', 'model-temel', 'dax-giris', 'toplama', 'ilk-rapor', 'gorsel-secimi', 'calculate', 'zaman', 'pq-orta', 'gorsel-ilkeler', 'etkilesim', 'hedef', 'kosullu-bicim', 'dashboard-tasarim'] },
+  { id: 'pl300', name: 'PL-300 Sınavı', short: 'PL', color: 'var(--s2)', desc: 'Microsoft Power BI Data Analyst sertifikasının tüm alanları.', long: 'Sertifika sınavının dört alanını (hazırlama, modelleme, görselleştirme, yönetim) sırayla kapsar. Sonunda sınav taktikleri ve örnek 
+    lessons: ['aile', 'arayuz', 'veri-alma', 'pq-temel', 'pq-orta', 'm-dili', 'model-temel', 'tarih-tablosu', 'dax-giris', 'toplama', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'var-mantik', 'siralama', 'hedef', 'performans', 'ilk-rapor', 'gorsel-secimi', 'gorsel-ilkeler', 'etkiles
+  { id: 'hizli', name: 'Bir Günde Başla', short: '1G', color: 'var(--s4)', desc: 'Sekiz derste ilk ölçünden ilk dashboarduna.', long: 'Zamanı kısıtlı olanlar için en kısa yol: arayüz, model, ilk ölçüler, CALCULATE, zaman zekâsı ve iyi bir ilk sayfa.', skills: ['Arayüz', 'Model', '�
+    lessons: ['aile', 'arayuz', 'model-temel', 'dax-giris', 'toplama', 'ilk-rapor', 'calculate', 'zaman'] }
+];
+
+/* Formül kataloğu: [ad, kategori, söz dizimi, açıklama, örnek] */
+
+#121 BASH [Check thumb types] code=0 cwd=/home/claude/pbi
+  function thumb(type) {
+    const g = 'var(--s1)', o2 = 'var(--s2)', a3 = 'var(--s3)';
+    const b = (s) => '<svg viewBox="0 0 80 50" class="vthumb" aria-hidden="true">' + s + '</svg>';
+    switch (type) {
+      case 'column': return b('<rect x="8" y="22" width="10" height="24" rx="2" fill="' + g + '"/><rect x="24" y="12" width="10" height="34" rx="2" fill="' + g + '"/><rect x="40" y="28" width="10" height="18" rx="2" fill="' + g + '"/><rect x="56" y="6" width="10" height="40" rx="2" fill="' + g + '"/>');
+      case 'bar': return b('<rect x="6" y="6" width="62" height="8" rx="2" fill="' + g + '"/><rect x="6" y="18" width="46" height="8" rx="2" fill="' + g + '"/><rect x="6" y="30" width="30" height="8" rx="2" fill="' + g + '"/><rect x="6" y="42" width="16" height="6" rx="2" fill="' + g + '"/>');
+
+#122 BASH [List thumb cases] code=0 cwd=/home/claude/pbi
+case 'column' case 'bar' case 'line' case 'area' case 'donut' case 'card' case 'kpi' case 'gauge' case 'combo' case 'stacked' case 'pct' case 'waterfall' case 'funnel' case 'treemap' case 'scatter' case 'table' case 'matrix' case 'slicer' case 'map' case 'ribbon' case 'decomp' case 'bullet' case 'pareto' case 'qa' 
+#123 BASH [List trick demos and measure names] code=0 cwd=/home/claude/pbi
+nü | Zamanında Teslim % | Ürün Sırası | Müşteri Sırası | Temsilci Sırası | Yeni Müşteri | Stok Değeri (Toplam) | Gelen Adet | Ziyaretçi | Satın Alan Ziyaretçi | Dönüşüm Oranı % | İlk Adıma Göre % | Önceki Adıma Göre % | Çalışan Sayısı | Ortalama Maaş | Toplam Maaş | Ortalama Kıdem | Medyan Maaş | Maaş Std. Sapma | Seçili Ölçü | Seçili Görünüm | YoY % (VAR) | Hedef Durumu | Dinamik Başlık | Akıllı Etiket | İlk N Satışı | Seçime Göre Sıra | Stok Adedi | Stok Değeri | Yoldaki Sipariş | Geri Dönen Müşteri | Yeni Müşteri (Küme) | Kayıp Müşteri | ABC Sınıfı | Kümülatif Pay % | Dilimdeki Müşteri | Dilim Satışı | RFM Skoru | RFM Segmenti | Segmentteki Müşteri | Kohort Tutma % | Senaryo Satışı | Senaryo Kârı | Satış (Seçili Para) | Stok Gün Sayısı | Önceki Ay (OFFSET) | Mevsim Endeksi | Satış (Top N + Diğer) | Birlikte Alma Oranı % | LFL Büyüme % | Trend Mini Grafik | Eğilim Çizgisi | Z-Skoru | Ekip Satışı | Görünüm (Dinamik Biçim)
+/* PBIPatika — hazır ölçü kütüphanesi (kısa ölçüler). Uzun kalıplar patterns.js içinde ve bu listeye eklenir. */
+(function (root) {
+  const L = [
+    // [ad, ifade, grup, biçim, açıklama, seviye]
+    ['Toplam Satış', 'SUM(Satislar[Tutar])', 'Temel', 'para', 'Tüm sipariş satırlarının tutar toplamı (iptaller dahil).', 'A1'],
+    ['Toplam Maliyet', 'SUM(Satislar[Maliyet])', 'Temel', 'para', 'Satılan ürünlerin toplam maliyeti.', 'A1'],
+    ['Net Satış', 'CALCULATE([Toplam Satış], Satislar[Durum] <> "İptal")', 'Temel', 'para', 'İptal edilen siparişler hariç satı
+#124 BASH [Check sales reps and param defaults] code=0 cwd=/home/claude/pbi
+[
+  'Gamze Özkan / Satış Uzmanı',
+  'Ece Kurt / Satış Temsilcisi',
+  'Can Aydın / Satış Temsilcisi',
+  'Yusuf Kara / Satış Temsilcisi',
+  'Oğuz Demir / Satış Uzmanı',
+  'Elif Doğan / Satış Müdürü'
+]
+patterns.js:101:{ id: 'dinamik-topn', lv: 'B2', name: 'İlk N Satışı', fmt: 'para', group: 'Sıralama', axis: 'Tarih[Yil]', slicers: [['TopNSecim', 'N', [5]]], chart: 'column',
+patterns.js:104:  expr: `VAR N = SELECTEDVALUE(TopNSecim[N], 5)
+patterns.js:490:  expr: `VAR Degisim = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)
+patterns.js:511:{ id: 'senaryo-kar', lv: 'C1', name: 'Senaryo Kârı', fmt: 'para', group: 'Parametre', axis: 'FiyatSenaryosu[FiyatDegisimi]', slicers: [['Tarih', 'Yil', [2024]]], chart: 'line',
+patterns.js:514:  expr: `VAR Degisim = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)
+patterns.js:528:    ['RETURN', 'Kâr. Eksende FiyatSenaryosu[FiyatDegisimi] olunca her senaryo ayrı hesaplanır.']
+patterns.js:536:  expr: `VAR Para = SELECTEDVALUE(ParaBirimleri[ParaBirimi], "TRY")
+patterns.js:630:{ id: 'topn-diger', lv: 'C2', name: 'Satış (Top N + Diğer)', fmt: 'para', group: 'Sıralama', axis: 'UrunlerVeDiger[Urun]', slicers: [['Tarih', 'Yil', [2024]], ['TopNSecim', 'N', [6
+patterns.js:633:  expr: `VAR N = SELECTEDVALUE(TopNSecim[N], 5)
+
+#125 WRITE /home/claude/pbi/dashcore.js 7775
+#126 EDIT ok /home/claude/pbi/dashcore.js n=1
+#127 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/t6.js 2232
+#128 BASH [Run dashboard smoke test] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+ozet       default   496ms
+ozet       allyears  504ms
+ozet       cross     475ms
+zaman      default   295ms
+zaman      cross     239ms
+urun       default   342ms
+urun       kat       101ms
+urun       allyears  400ms
+urun       cross     299ms
+musteri    default   358ms
+musteri    allyears  252ms
+musteri    cross     307ms
+slow rfm default k1 563ms
+rfm        default   847ms
+slow rfm allyears k1 451ms
+rfm        allyears  792ms
+slow rfm cross k1 499ms
+rfm        cross     766ms
+kohort     default   319ms
+kohort     cross     437ms
+hedef      default   32ms
+hedef      allyears  45ms
+hedef      cross     17ms
+operasyon  default   39ms
+operasyon  allyears  77ms
+operasyon  cross     40ms
+fiyat      default   50ms
+fiyat      usd       77ms
+fiyat      allyears  56ms
+fiyat      cross     23ms
+stok       default   70ms
+stok       kat       24ms
+stok       allyears  96ms
+stok       cross     94ms
+ekip       default   150ms
+ekip       rls       7ms
+ekip       allyears  109ms
+ekip       cross     79ms
+web        default   15ms
+web        cross     13ms
+ik         default   17ms
+ik         cross     20ms
+missing measures: []
+tiles 98 bad 0
+
+#129 BASH [Check dashboard tile output for blanks/NaN] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+ozet k3 short:288,6 B ₺  Kâr marjı 38,6%
+ozet k4 short:493  Ortalama sepet 1.515 ₺
+zaman enb short:94,0 B ₺  En iyi ay: 2024-12
+urun tablo 6 boş
+urun sepet empty
+musteri k1 short:123  Kayıtlıların %82'i
+musteri k2 short:59  İlk kez alışveriş yapan
+musteri k3 short:64  Daha önce de alışveriş yapmış
+musteri k4 short:6,1 B ₺  Müşteri başı 4,01 sipariş
+musteri yeni 1 boş
+rfm k1 short:27  Yakın zamanda, sık ve çok alıyor
+rfm k3 short:31.12.2024  RFM bu tarihe göre
+rfm eylem 1 boş
+hedef fark short:−16,1 B ₺  ■ Hedefe yakın (-2,1%)
+fiyat k1 short:3,3%  Ağırlıklı ortalama indirim
+fiyat k2 short:25,7 B ₺  İndirim tutarı
+fiyat k4 short:747,1 B ₺  TRY (aylık kurla)
+stok k1 short:311  Dönem sonu, tüm ürünler
+stok k2 short:163,5 B ₺  Maliyet üzerinden
+stok k4 short:1.489  Dönemde giren adet
+ekip k1 short:150,0 B ₺  Kendi satışın
+ekip k2 short:20  Aktif müşteri
+web k1 short:900  Ekim–Kasım 2024
+web k2 short:88  Huninin sonuna ulaşan
+ik k1 short:27  Aktif çalışan
+ik k2 short:68,7 B ₺  Medyan 67.000 ₺
+ik k3 short:31,9%  Değişim katsayısı
+ik k4 short:3,85  Yıl
+
+#130 BASH [List menu tabs, tricks, geo, treemap/bullet signatures] code=0 cwd=/home/claude/pbi
+; const W = o.W || 420, H = o.H || 240; const items = d.cats.map((c, i) => ({ c, v: d.series[0].vals[i], i, g: d.groups ? d.groups[i] : null })).filter(x => isNum(x.v) && x.v > 0).sort((a, b) => b.v - a.v);
+248-    const tot = items.reduce((a, b) => a + b.v, 0) || 1; const rects = []; const gcol = {}; let gi = 0; items.forEach(it => { if (it.g != null && gcol[it.g] == null) gcol[it.g] = gi++; });
+249-    (function sq(list, x, y, w, h) { if (!list.length) return; if (list.length === 1) { rects.push([list[0], x, y, w, h]); return; } const sum = list.reduce((a, b) => a + b.v, 0); let half = 0, k = 0; while (k < list.length - 1 && half + list[k].v < sum / 2) { half += list[k].v; k++; } if (k === 0) { half = list[0].v; k = 1; } const a = list.slice(0, k), b = list.slice(k); const f = half / sum
+219:  function bullet(rows, o) { o = o || {}; const W = o.W || 420, rowH = 30, padL = 120, padR = 70, H = rows.length * rowH + 8; const mx = Math.max(...rows.flatMap(r => [r.v || 0, r.t || 0])) * 1.1 || 1; const X = v => padL + v / mx * (W - padL - padR); let h = svgOpen(W, H, o.label); rows.forEach((r, i) => { const y = 4 + i * rowH; h += '<g class="vmark" data-i="' + i + '"' + tip(r.c, [['Gerçekleşen', fmt(r.v, o.fmt)], ['Hedef', fmt(r.t, o.fmt)], ['Oran', fmt(r.t ? r.v / r.t : null, 'yuzde')]]) + ' tabindex="0">' + txt(padL - 8, y + rowH / 2 + 3, trunc(r.c, 16), 'vt vcat', 'end') + '<rect x="' + padL + '" y="' + (y + 5) + '" width="' + (W - padL - padR) + '" height="' + (rowH - 10) + '"
+
+#131 BASH [List all menu commands] code=0 cwd=/home/claude/pbi
+k) ; Ayıkla (uzunluk, ilk/son karakterler, sınırlayıcılar arasında) ; İstatistikler / Standart / Bilimsel / Trigonometri / Yuvarlama ; Tarih / Saat / Süre ; Yapılandırılmış sütun: Genişlet / Topla / Değerleri ayıkla ; R / Python betiği çalıştır
+pq-sutun: Örneklerden sütun ; Özel sütun ; Koşullu sütun ; Dizin sütunu ; Sütunu çoğalt ; Özel işlev çağır ; Biçim / Ayıkla / İstatistik / Tarih / Saat
+pq-gorunum: Formül çubuğu ; Sütun kalitesi / dağılımı / profili ; Tüm veri kümesine göre profil oluştur ; Sorgu bağımlılıkları ; Sütuna git / Boşlukları göster
+pq-araclar: Sorgu tanılaması ; Yerel sorguyu görüntüle (adıma sağ tık) ; Yüklemeyi etkinleştir / Rapor yenilemeye dahil et (sorguya sağ tık) ; Başvuru / Çoğalt (sorguya sağ tık) ; Grupla (sorgular bölmesi)
+srv-calisma: Yeni öğe ; Erişimi yönet ; Çalışma alanı ayarları ; Uygulama oluştur / güncelle ; Dağıtım işlem hattı oluştur ; Soy görünümü
+srv-model: Ağ geçidi ve bulut bağlantıları ; Veri kaynağı kimlik bilgileri ; Parametreler ; Zamanlanmış yenileme ; Satır düzeyi güvenlik ; Onaylama ; Büyük anlam modeli depolama biçimi ; Derleme izni / Yönet izinleri
+srv-rapor: Dosya → Kopyasını kaydet / İndir (.pbix) / Yazdır ; Dışa aktar → PowerPoint / PDF / Excel'de analiz et ; Paylaş / Sohbet (Teams) / Bağlantı kopyala ; Abone ol ; Düzenle ; Görünüm → Kişisel yer imleri / Odak modu / Sayfayı tam ekran ; Sabitle (görselde iğne) ; Uyarı ayarla (pano kutucuğu)
+srv-yonetici: Kiracı ayarları ; Kapasite ayarları ; Denetim ve kullanım ölçümleri
+
+#132 WRITE /home/claude/pbi/final.js 14639
+#133 BASH [Inspect catalog and glossary content] code=0 cwd=/home/claude/pbi
+UNT(Satislar[Adet])'], a: 1 },
+  { lv: 'orta', q: 'CALCULATE([Satış], Satislar[Kanal] = "Web") formülü, dilimleyicide “Mobil” seçiliyken ne döndürür?', o: ['Boş', 'Mobil satışı', 'Web satışı', 'Hata'], a: 2 },
+  { lv: 'orta', q: 'Bir yineleyicide ilişkili boyut tablosundaki bir sütunu okumak için hangisi?', o: ['LOOKUPVALUE zorunlu', 'RELATED', 'VALUES', 'EARLIER'], a: 1 },
+  { lv: 'orta', q: 'Dilimleyici seçimini koruyup yalnızca görselin satır filtresini kaldıran fonksiyon?', o: ['ALL', 'ALLSELECTED', 'ALLEXCEPT', 'KEEPFILTERS'], a: 1 },
+  { lv: 'orta', q: 'Geçen yılın aynı dönemindeki satışı hangi formül verir?', o: ['CALCULATE([Satış], PREVIOUSYEAR(Tarih[Tarih]))', 'CALCULATE([Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))', '[Satış] - 1', 'TOTALYTD([Satış], -1)'], a: 1
+  { lv: 'ileri', q: 'SUMX(Musteriler, [Toplam Satış]) neden her müşteri için o müşterinin satışını hesaplar?', o: ['Ölçü çağrısı gizli bir CALCULATE ile bağlam geçişi yapar', 'SUMX her zaman filtre uygular', 'Musteriler ilişkisi
+  { lv: 'ileri', q: 'VertiPaq\'te bir sütunun bellek boyutunu en çok ne belirler?', o: ['Satır sayısı', 'Kardinalite', 'Sütun adı', 'Görsel sayısı'], a: 1 },
+  { lv: 'ileri', q: 'Hesaplama grubu öğesinde görseldeki ölçünün yerini tutan fonksiyon?', o: ['SELECTEDVALUE', 'SELECTEDMEASURE', 'ISSELECTEDMEASURE', 'CURRENTMEASURE'], a: 1 },
+  { lv: 'ileri', q: 'Çalışma alanında hangi roldeki kullanıcılara RLS uygulanır?', o: ['Yönetici', 'Üye', 'Katkıda bulunan', 'Görüntüleyici'], a: 3 }
+];
+
+
+#134 BASH [Locate extra.js block boundaries] code=0 cwd=/home/claude/pbi
+3:W.PBI_PATHS = [
+14:];
+17:W.PBI_CATALOG = [
+87:];
+90:W.PBI_PLACEMENT = [
+103:];
+106:W.PBI_GLOSSARY = [
+158:];
+161:W.PBI_VISUALS = [
+184:];
+W.PBI_PATHS = [
+  { id: 'analist', name: 'Veri Analisti', short: 'VA', color: 'var(--s1)', desc: 'Veriyi al, temizle, ölçüleri yaz, okunur raporlar kur.', long: 'Power BI ile iş sorularına cevap veren analistler için. Power Query temizliği, yıldız şema, temel ve orta DAX, görselleştirme ilkeleri ve etkileşimli raporlar.', skills: ['Power Query', 'Yıldız şema', 'CALCULATE', 'Zaman zekâsı', 'Görsel seçimi', 'Koşullu biçim'],
+
+/* Formül kataloğu: [ad, kategori, söz dizimi, açıklama, örnek] */
+
+#135 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/extra_new.js 5470
+#136 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/extra_new2.js 4775
+#137 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/extra_new3.js 9897
+#138 BASH [Splice new extra.js sections and verify catalog examples] code=1 cwd=/home/claude/pbi
+/home/claude/pbi/extra.js:256
+  { id: 'bullet', name: 'Madde grafiği (bullet)', cat: 'Tek sayı', when: 'Birden çok kalemin hedefe göre durumunu az yerde, kolay karşılaştırılır biçimde göstermek.', avoid: 'Hedefi olmayan ölçüler.', fields: 'Kategori: Kategoriler[Kategori] · Değer: [Net Satış] · Hedef: [Hedef]' },
+  ^
+
+SyntaxError: Unexpected token '{'
+    at wrapSafe (node:internal/modules/cjs/loader:1713:18)
+    at Module._compile (node:internal/modules/cjs/loader:1755:20)
+    at Object..js (node:internal/modules/cjs/loader:1913:10)
+    at Module.load (node:internal/modules/cjs/loader:1505:32)
+    at Function._load (node:internal/modules/cjs/loader:1309:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+    at Module.require (node:internal/modules/cjs/loader:1527:12)
+    at require (node:internal/modules/helpers:147:16)
+    at [eval]:2:88
+    at Array.forEach (<anonymous>)
+
+Node.js v22.23.4
+
+#139 BASH [Fix comma and verify catalog examples] code=0 cwd=/home/claude/pbi
+ge: Kategori', noLive: true }
+7 60 24 96 76 24
+BAD USERELATIONSHIP İfade eksik görünüyor: bir değer, sütun ya da fonksiyon bekleniyordu.
+BAD PATHITEM / PATHLENGTH “[object Object]” metni sayıya çevrilemedi.
+catalog bad 2
+
+#140 BASH [Inspect failing catalog examples] code=0 cwd=/home/claude/pbi
+52:  ['USERELATIONSHIP', 'İlişki', 'USERELATIONSHIP(Sütun1, Sütun2)', 'CALCULATE içinde pasif bir ilişkiyi etkinleştirir. (Bu modelde pasif ilişki yok.)', '-- CALCULATE([Satış], USERELATIONSHIP(Tarih[Tarih], Satislar[TeslimTarihi]))'],
+108:  { lv: 'B2', q: 'Teslim tarihine göre satış için pasif ilişkiyi ölçü içinde etkinleştiren fonksiyon?', o: ['CROSSFILTER', 'USERELATIONSHIP', 'TREATAS', 'RELATED'], a: 1 },
+112:  { lv: 'C1', q: 'İlişkisi olmayan bir parametre tablosundaki seçimi Urunler[Kategori] filtresi gibi uygulamanın en doğru yolu?', o: ['FILTER(ALL(Urunler), ...) ile karşılaştırma', 'TREATAS(VALUES(Param[Kategori]), Urunler[Kategori])', 'RELATED', 'USERELATIONSHIP'], a: 1 },
+835:  FN.PATHITEM = (eng, a, st) => { const p = str(evS(eng, a[0], st)).split('|'); const i = num(evS(eng, a[1], st)); const v = p[i - 1]; if (v === undefined || v === '') return null; const ty = a[2] ? num(evS(eng, a[2], st)) : 0; return ty === 1 ? Number(v) : v; };
+836:  FN.PATHITEMREVERSE = (eng, a, st) => { const p = str(evS(eng, a[0], st)).split('|').reverse(); const v = p[num(evS(eng, a[1], st)) - 1]; if (v === undefined || v === '') return null; return a[2] && num(evS(eng, a[2], st)) === 1 ? Number(v) : v; };
+
+#141 BASH [Patch PATHITEM type arg and USERELATIONSHIP example] code=0 cwd=/home/claude/pbi
+catalog bad 0 [
+  [ 'Selim Aksoy', 1, 1 ],
+  [ 'Elif Doğan', 2, 1 ],
+  [ 'Derya Öztürk', 2, 1 ]
+]
+
+#142 BASH [Inspect index.html structure] code=0 cwd=/home/claude/pbi
+iv class="mini"><span id="miniStats"></span></div></header>
+527:    <main id="main" tabindex="-1"></main>
+529:  <nav class="tabbar" id="tabbar" aria-label="Alt menü"></nav>
+531:<script charset="utf-8" src="data.js"></script>
+532:<script charset="utf-8" src="dax.js"></script>
+533:<script charset="utf-8" src="measures.js"></script>
+534:<script charset="utf-8" src="viz.js"></script>
+535:<script charset="utf-8" src="c1.js"></script>
+536:<script charset="utf-8" src="c2.js"></script>
+537:<script charset="utf-8" src="c3.js"></script>
+538:<script charset="utf-8" src="extra.js"></script>
+539:<script charset="utf-8" src="app.js"></script>
+.lv
+.lv-ileri
+.lv-orta
+.lv-temel
+.lvl-block
+.lvl-head
+9::root{
+12:  --ok:#17855A; --ok-soft:#E1F3EA; --warn:#A86A12; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
+15:  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
+25:  --ok:#45C08A; --ok-soft:#14302A; --warn:#E3A84B; --warn-soft:#352A16; --err:#FF7B6E; --err-soft:#3A1F1E;
+28:  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+31::root[data-theme="dark"]{
+34:  --ok:#45C08A; --ok-soft:#14302A; --warn:#E3A84B; --warn-soft:#352A16; --err:#FF7B6E; --err-soft:#3A1F1E;
+37:  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+455:.cfbar i{display:block; height:100%; background:var(--s1); border-radius:0 2px 2px 0}
+
+#143 BASH [Read CSS tokens and key selectors] code=0 cwd=/home/claude/pbi
+ms:center; gap:6px}
+436:.vlegend i{width:10px; height:10px; border-radius:2px; display:inline-block}
+437:.vtip{position:fixed; z-index:60; background:var(--surface); color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:8px; pa
+438:.vtip b{font-weight:600; margin-bottom:2px}
+439:.vtip span{display:flex; justify-content:space-between; gap:14px; font-variant-numeric:tabular-nums}
+440:.vtip i{font-style:normal; color:var(--muted)}
+453:.dtile[data-cross] tr.vmark{cursor:pointer}
+475:.fgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px}
+490:.dgrid2{display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:12px}
+491:.dtile{background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; min-wid
+492:.dt-head{display:flex; justify-content:space-between; gap:8px; align-items:baseline; flex-wrap:wrap}
+493:.dt-head h3{font-family:var(--f-body); font-size:.86rem; font-weight:600}
+494:.dt-head span{font-size:.75rem}
+504:@media (max-width: 1080px){ .s3{grid-column:span 6} .s4,.s5,.s7,.s8{grid-column:span 12} .s6{grid-column:span 12} }
+505:@media (max-width: 980px){ .studio{grid-template-columns:1fr} .fields{position:static; max-height:300px; order:2} .vis-layout{grid-template-columns:1fr} .vg
+506:@media (max-width: 760px){
+507:  .dgrid2{grid-template-columns:1fr} .dgrid2 > .dtile{grid-column:auto}
+513:  .fgrid{grid-template-columns:1fr}
+
+#144 BASH [Check which viz CSS classes exist] code=0 cwd=/home/claude/pbi
+ref-avg:0 ref-const:0 fband:0 vbreak:0 vlabin:0 vspark:0 kspark:0 vmap:0 dnode:0 sl-dd:0 sl-list:0 svgm:0 tpage:0 tcards:0 tsl:0 vtip.wide:0 vlegend.top:0 muted-mark:0 vcard.sm:0 heat:0 coh:0 narr:0 tsub:0 rlsbar:0 vcross:2 vcol:1 cfi:1 vkpi:0 vbig:1 vt:20 vax:1 vcat:1 vlab:1 vtm:2 
+ cfbar cfi dlink dnode empty eyebrow fband kspark nc pill ref ref-avg ref-fc ref-trend sl-dd sl-list sl-opts slicer svgm tcards tot tpage tpage-h tsl vax vbreak vcard vcol vcross vgrid viz vkpi vlegend vmap vmark vspark vt vtable vthumb 
+#145 WRITE /home/claude/pbi/app.js 80574
+#146 BASH [Check viz option handling for column/line/donut/funnel] code=0 cwd=/home/claude/pbi
+= Object.assign({ inner: 0.6, labelMode: 'pct', legend: 'right' }, o || {});
+    const compact = (o.W || 420) < 380 || o.legend === 'bottom'; const n = d.cats.length;
+    const W = compact ? Math.min(o.W || 320, 340) : (o.W || 420), lhC = 20, Rr = compact ? Math.min(92, W / 2 - 24) : 90;
+  function funnel(d, o) {
+    o = Object.assign({ conv: 'first' }, o || {}); const vals = d.series[0].vals.map(v => isNum(v) ? v : 0); const mx = Math.max(...vals, 1); const W = o.W || 420, rowH = 36, H = rowH * vals.length + 6; const lw = Math.min(140, W * 0.3);
+    let h = svgOpen(W, H, o.label);
+    vals.forEach((v, i) => { const w = Math.max(4, v / mx * (W - lw - 90)); const x = lw + 8 + (W - lw - 90 - w) / 2; const y = 3 + i * rowH; const conv = o.conv === 'prev' ? (i ? v / (vals[i - 1] || 1) : 1) : v / (vals[0] || 1);
+      h += '<g class="vmark' + selCls(o, i) + '" data-i="' + i + '"' + tip(d.cats[i], [[d.series[0].name, fmt(v, d.fmt)], ['İlk adıma oran', fmt(v / (vals[0] || 1), 'yuzde')], ['Önceki adıma oran', i ? fmt(v / (vals[i - 1] || 1), 'yuzde') : '—']]) + ' tabindex="0"><rect x="' + x.toFixed(1) + '" y="' + y + '" width="' + w.toFixed(1) + '" height="' + (rowH - 5) + '" rx="3" fill="var(--s1)" opacity="' + (1 - i * 0.11).toFixed(2) + '"/>' + txt(lw, y + rowH / 2 + 2, trunc(d.cats[i], Math.floor(
+    return h + '</svg>';
+  }
+  /* ---------- Ağaç haritası ---------- */
+{ Adim: 'AdimNo' } [
+  'Ziyaret',
+  'Ürün görüntüleme',
+  'Sepete ekleme',
+  'Ödeme',
+  'Satın alma'
+]
+undefined
+
+#147 BASH [Check param tables and some measures] code=0 cwd=/home/claude/pbi
+ 'Brüt Kâr', Sira: 2 },
+  { Olcu: 'Sipariş Sayısı', Sira: 3 },
+  { Olcu: 'Müşteri Sayısı', Sira: 4 }
+] [ 'Cari', 'Geçen yıl', 'YTD', 'YoY %' ]
+Seçili Ölçü null SWITCH(SELECTEDVALUE(OlcuSecimi[Olcu], "Net Satış"),
+    "Net Satış", [Net Satış],
+    "Brüt Kâr", [Brüt Kâr],
+    "Sipariş Sayısı", [Sipariş Sayısı],
+    "Müşteri Sayısı", [Müşteri Sayısı])
+Dinamik Başlık null VAR Yil =
+    IF(
+        HASONEVALUE(Tarih[Yil]),
+        FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"),
+        "Tüm yıllar"
+    )
+VAR Kanallar =
+    IF(
+        ISFILTERED(Satislar[Kanal]),
+        CONCAT
+Trend Mini Grafik null VAR Seri =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Tarih[AyNo]), REMOVEFILTERS(Tarih), Tarih[Yil] = 2024),
+        "S", CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2024)
+    )
+VAR 
+Akıllı Etiket null VAR V = [Net Satış]
+VAR Mutlak = ABS(V)
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(V), BLANK(),
+        Mutlak >= 1000000, FORMAT(V / 1000000, "#,0.0") & " Mn ₺",
+        Mutlak >= 1000, FORMA
+[ [ 'Tarih', 'Yil', [ 2024 ] ] ] bar: table: card: table: column: table: column: bar: line: column: column: column: table: pareto: column: bar: table: table: bar: matrix:Satislar[KohortAyFarki] bar: line: column: bar: line: column: bar: bar: bar: table: trend: column: table: table:
+194:  function spark(vals, o) { o = o || {}; const W = o.W || 120, H = o.H || 28; const v = vals.map(x => isNum(x) ? x : null); const nn = v.filter(isNum); if (nn.length < 2) return ''; const mn = Mat
+
+#148 WRITE /home/claude/pbi/pages.js 73430
+#149 BASH [Apply small fixes and syntax-check] code=0 cwd=/home/claude/pbi
+syntax ok
+
+#150 BASH [Check existing CSS for viz and dash classes] code=0 cwd=/home/claude/pbi
+.p-bad{background:var(--err-soft); color:var(--err)}
+447:.vtable{overflow-x:auto}
+448:.vtable table{border-collapse:collapse; width:100%; font-size:.84rem}
+449:.vtable th{text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap}
+450:.vtable td{padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap}
+451:.vtable .nc{text-align:right; font-variant-numeric:tabular-nums}
+452:.vtable tr.tot td{font-weight:700; border-top:2px solid var(--ink); border-bottom:0}
+457:.slicer{display:flex; flex-direction:column; gap:5px}
+458:.sl-opts{display:flex; flex-wrap:wrap; gap:4px}
+459:.sl-opts button{border:1px solid var(--line); background:var(--surface); border-radius:6px; padding:4px 10px; font-size:.82rem; color:var(--ink)}
+460:.sl-opts button[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+486:.dash-frame{background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:16px; display:flex; flex-direction:column; gap:14px}
+487:.dash-head{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-end}
+488:.dash-head p{margin:4px 0 0; font-size:.9rem}
+497:.crossbar{display:flex; gap:10px; align-items:center; justify-content:space-between; background:var(--accent-soft); border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius:8px; padding:6px 
+
+#151 BASH [See how viz uses new classes] code=0 cwd=/home/claude/pbi
+class="dlink"/
+class="fband"/
+class="kspark"
+class="ref ' + r.cls + '"/
+class="ref ref-avg"/
+class="ref ref-fc"/
+class="ref ref-trend"/
+class="svgm" alt="" src="' + v.replace(/"/g, '&quot;') + '"
+class="vbreak"/
+class="vcross"/
+class="vmap"/
+class="vmark dnode' + (it.open ? ' sel' : '') + '" data-lvl="' + li + '" data-k="' + k + '" tabindex="0"' + tip(it.c, [['Değer', f
+class="vmark vcol' + selCls(o, i) + '" data-i="' + i + '"' + tip(c, d.series.map(s =
+class="vspark" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" aria-hid
+'value' 'vbase' 'vgrid' 'vt vax' 'vt vbig' 'vt vcat' 'vt vlab' 'vt vlabin' 'vt vref' 'vt vtm' 'vt vtm2' 'vt' 'vtip' 
+#152 BASH [Check existing viz text and ER CSS] code=0 cwd=/home/claude/pbi
+eight:600}
+280:.er .tbox{cursor:pointer}
+281:.er .tbox.sel rect{stroke:var(--accent); stroke-width:2}
+282:.er path{fill:none; stroke:var(--muted); stroke-width:1.3}
+283:.er .dot2{fill:var(--muted)}
+415:svg.viz{display:block; width:100%; height:auto; overflow:visible}
+416:.vt{fill:var(--muted); font-family:var(--f-body); font-size:11px}
+417:.vax{font-size:10.5px; font-variant-numeric:tabular-nums}
+418:.vcat{fill:var(--ink); font-size:11px}
+419:.vlab{fill:var(--ink); font-size:10.5px; font-weight:600; font-variant-numeric:tabular-nums}
+420:.vbig{fill:var(--ink); font-family:var(--f-display); font-size:22px; font-weight:800}
+421:.vtm{fill:#fff; font-size:11.5px; font-weight:600}
+422:.vtm2{fill:#fff; font-size:10.5px; opacity:.9}
+423:.vgrid{stroke:var(--grid); stroke-width:1}
+424:.vbase{stroke:var(--axis); stroke-width:1}
+425:.vcross{stroke:var(--axis); stroke-width:1; stroke-dasharray:3 3; opacity:0}
+426:.vcol:hover .vcross{opacity:1}
+427:.vmark{cursor:default; outline:none}
+428:.dtile[data-cross] .vmark{cursor:pointer}
+429:g.vmark:hover rect:not([fill="transparent"]), g.vmark:hover path, path.vmark:hover, circle.vmark:hover{filter:brightness(1.08)}
+430:g.vmark:focus-visible rect:not([fill="transparent"]), path.vmark:focus-visible, circle.vmark:focus-visible{stroke:var(--ink); stroke-width:2}
+431:.vmark.dim{opacity:.32}
+432:tr.vmark.dim td{opacity:.45}
+433:tr.vmark.sel td{background:var(--accent-soft)}
+453:.dtile[data-cross] tr.vmark{cursor:pointer}
+vmark
+vmark dnode
+vmark vcol
+
+#153 WRITE /home/claude/pbi/app.css 25171
+#154 BASH [View index.html head and body] code=0 cwd=/home/claude/pbi
+href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+</style>
+<div class="app">
+  <aside class="side" aria-label="Ana menü">
+    <a class="brand" href="#" data-go="home"><span class="marker" aria-hidden="true"><i></i><i></i><i></i></span><b>PBI<span>Patika</span></b></a>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-stats" id="sideStats"></div>
+  </aside>
+  <div class="grow" style="min-width:0">
+    <header class="topbar"><a class="brand" href="#" data-go="home" style="padding:0"><span class="marker" aria-hidden="true"><i></i><i></i><i></i></span><b>PBI<span>Patika</span></b></a><div class="mini"><span id="miniStats"></span></div></header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <nav class="tabbar" id="tabbar" aria-label="Alt menü"></nav>
+</div>
+<script charset="utf-8" src="data.js"></script>
+<script charset="utf-8" src="dax.js"></script>
+<script charset="utf-8" src="measures.js"></script>
+<script charset="utf-8" src="viz.js"></script>
+<script charset="utf-8" src="c1.js"></script>
+<script charset="utf-8" src="c2.js"></script>
+<script charset="utf-8" src="c3.js"></script>
+<script charset="utf-8" src="extra.js"></script>
+<script charset="utf-8" src="app.js"></script>
+
+#155 BASH [Create build script and rebuild index.html] code=0 cwd=/home/claude/pbi
+874 index.html
+  </div>
+  <nav class="tabbar" id="tabbar" aria-label="Alt menü"></nav>
+</div>
+<script charset="utf-8" src="data.js"></script>
+<script charset="utf-8" src="dax.js"></script>
+22
+<title>PBIPatika</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+22
+
+#156 BASH [Inspect screenshot script and start server] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+cat: shot.js: No such file or directory
+200
+
+#157 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/shot2.js 1953
+#158 BASH [Run desktop screenshots of all pages] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/shot2.js:3:28
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/shot2.js:25:3) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+
+#160 BASH [Escape non-ASCII CSS content and rebuild] code=0 cwd=/home/claude/pbi
+21:.guide summary::after{content:"▾"; margin-left:auto; color:var(--muted); transition:transform .15s}
+41:.cando li::before{content:"✓"; position:absolute; left:2px; color:var(--ok); font-weight:700}
+0
+21:.guide summary::after{content:"\25BE"; margin-left:auto; color:var(--muted); transition:transform .15s}
+41:.cando li::before{content:"\2713"; position:absolute; left:2px; color:var(--ok); font-weight:700}
+
+#162 BASH [Debug Trend Mini Grafik measure output] code=0 cwd=/home/claude/pbi
+VAR Seri =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Tarih[AyNo]), REMOVEFILTERS(Tarih), Tarih[Yil] = 2024),
+        "S", CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2024)
+    )
+VAR EnAz = MINX(Seri, [S])
+VAR EnCok = MAXX(Seri, [S])
+VAR Noktalar =
+    CONCATENATEX(
+        Seri,
+        FORMAT((Tarih[AyNo] - 1) * 10, "0") & ","
+            & FORMAT(28 - DIVIDE([S] - EnAz, EnCok - EnAz, 0) * 24, "0.0"),
+        " ",
+        Tarih[AyNo], ASC
+    )
+VAR SonY = 28 - DIVIDE(MAXX(FILTER(Seri, Tarih[AyNo] = 12), [S]) - EnAz, EnCok - EnAz, 0) * 24
+RETURN
+    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 114 32'>"
+        & "<polyline fill='none' stroke='%232a78d6' stroke-width='2' points='" & Noktalar & "'/>"
+        & "<circle cx='110' cy='" & FORMAT(SonY, "0.0") & "' r='2.5' fill='%232a78d6'/></svg>"
+data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 114 32'><polyline fill='none' stroke='#2a78d6' stroke-width='2' points='0,28,0 10,28,0 20,28,0 30,28,0 40,28,0 50,28,0 60,28,0 70,28,0 80,28,0 90,28,0 100,28,0 110,28,0'/><circle cx='110' cy='28,0' r='2.5' fill='#2a78d6'/></svg>
+
+#163 BASH [Locate Trend Mini Grafik pattern] code=0 cwd=/home/claude/pbi
+717:{ id: 'svg', lv: 'C2', name: 'Trend Mini Grafik', fmt: 'svg', group: 'Görsel', axis: 'Kategoriler[Kategori]', slicers: [], chart: 'table',
+722:        CALCULATETABLE(VALUES(Tarih[AyNo]), REMOVEFILTERS(Tarih), Tarih[Yil] = 2024),
+723:        "S", CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2024)
+
+#165 BASH [Fix Trend Mini Grafik measure] code=0 cwd=/home/claude/pbi
+data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 114 32'><polyline fill='none' stroke='#2a78d6' stroke-width='2' points='0,44 10,44 20,44 30,4 40,44 50,4 60,24 70,4 80,28 90,4 100,24 110,44'/><circle cx='110' cy='44' r='2.5' fill='#2a78d6'/></svg>
+
+#166 BASH [Treat blank months as zero and re-test] code=0 cwd=/home/claude/pbi
+data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 114 32'><polyline fill='none' stroke='#2a78d6' stroke-width='2' points='0,28 10,28 20,28 30,4 40,28 50,4 60,16 70,4 80,18 90,4 100,16 110,28'/><circle cx='110' cy='28' r='2.5' fill='#2a78d6'/></svg>
+data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 0 114 32'><polyline fill='none' stroke='#2a78d6' stroke-width='2' points='0,26 10,23 20,26 30,19 40,28 50,13 60,15 70,20 80,22 90,4 100,5 110,19'/><circle cx='110' cy='19' r='2.5' fill='#2a78d6'/></svg>
+
+#169 BASH [Find code join and pattern line ranges] code=0 cwd=/home/claude/pbi
+238:  const code = p.expr.split('\n').map((ln, k) => '<span class="ln" data-ln="' + k + '"><em>' + (k + 1) + '</em>' + (C.hl(ln) || ' ') + '</span>').join('\n');
+B1 12,12,14
+B2 7,8,9,9,10,12
+C1 6,8,8,10,11,12,12,13,14,14,15,16,16,17,17,19,24
+C2 11,12,13,16,17,17,18,21
+
+#170 BASH [Fix code join; locate end of patterns array] code=0 cwd=/home/claude/pbi
+5
+852:];
+  steps: [
+    ['Secim', 'Bağlantısız Gorunum tablosundaki seçim; eksende kullanılırsa satırın değeri.'],
+    ['Deger', 'Seçime göre ilgili ölçü. Bu, hesaplama grubu öncesi “ölçü değiştirici” kalıbıdır.'],
+    ['Bicim / RETURN', 'Biçime göre metin. Gerçek modelde FORMAT yerine dinamik biçim dizesi kullanılır; böylece sonuç sayı olarak kalır ve grafiklerd
+  ],
+  pitfall: 'Hesaplama grubu bu kalıbın kurumsal hâlidir: her ölçüye ayrı ayrı uygulanır, biçim dizesini öğe düzeyinde tanımlar ve SWITCH bakımın
+  uses: ['final'] }
+];
+
+root.PBI_PATTERNS = P;
+const lib = root.PBI_MEASURES || (root.PBI_MEASURES = []);
+P.forEach(p => { if (!lib.some(m => m.name === p.name)) lib.push({ name: p.name, expr: p.expr, group: p.group, fmt: p.fmt === 'svg' ? null : p.fmt, desc: p.titl
+})(typeof window !== 'undefined' ? window : globalThis);
+
+#171 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/longpat.js 11738
+#172 BASH [Insert long C2 patterns and test them] code=0 cwd=/home/claude/pbi
+Kayıp 0  = +4.030
+   Kitap | Fiyat +9.147 · Hacim +37.079 · Karışım +4.226 · Yeni 0 · Kayıp 0  = +50.452
+   Kozmetik | Fiyat +7.929 · Hacim +41.079 · Karışım -4.373 · Yeni 0 · Kayıp 0  = +44.635
+   Spor | Fiyat +10.311 · Hacim +42.719 · Karışım -24.991 · Yeni 0 · Kayıp 0  = +28.039
+  TOTAL Fiyat +71.733 · Hacim +295.403 · Karışım -20.940 · Yeni 0 · Kayıp 0  = +346.196
+musteri-hareketi 37 lines 20ms
+   Bireysel | Sadık 37 · Yeni 34 · Geri kazanılan 0 · Kayıp 6 · Net +28 · Tutma 86%
+   Kurumsal | Sadık 14 · Yeni 14 · Geri kazanılan 0 · Kayıp 1 · Net +13 · Tutma 93%
+   Premium | Sadık 13 · Yeni 11 · Geri kazanılan 0 · Kayıp 6 · Net +5 · Tutma 68%
+  TOTAL Sadık 64 · Yeni 59 · Geri kazanılan 0 · Kayıp 13 · Net +46 · Tutma 83%
+yonetici-metni 46 lines 95ms
+   Bireysel | Net satış 243.689 ₺, geçen yıla göre +90%. Hedefin gerisinde (32%). En büyük kategori Elektronik, en hızlı büyüyen Hediye (+278%), en zayıf Giyim. Öne çıkan kanal: Mobil.
+   Kurumsal | Net satış 217.167 ₺, geçen yıla göre +101%. Hedefin gerisinde (28%). En büyük kategori Elektronik, en hızlı büyüyen Elektronik (+161%), en zayıf Hediye. Öne çıkan kanal: Web.
+   Premium | Net satış 286.209 ₺, geçen yıla göre +74%. Hedefin gerisinde (38%). En büyük kategori Elektronik, en hızlı büyüyen Ev & Yaşam (+188%), en zayıf Spor. Öne çıkan kanal: Mobil.
+  TOTAL Net satış 747.066 ₺, geçen yıla göre +86%. Hedefe çok yakın (98%). En büyük kategori Elektronik, en hızlı büyüyen Kozmetik (+117%), en zayıf Spor. Öne çıkan kanal: Mobil.
+
+#173 BASH [Change axes for long patterns and retest] code=0 cwd=/home/claude/pbi
+   2022-Ç2 | Sadık 0 · Yeni 2 · Geri kazanılan 0 · Kayıp 0 · Net +2
+   2022-Ç3 | Sadık 2 · Yeni 10 · Geri kazanılan 0 · Kayıp 0 · Net +10 · Tutma 100%
+   2022-Ç4 | Sadık 8 · Yeni 20 · Geri kazanılan 0 · Kayıp 4 · Net +16 · Tutma 67%
+   2023-Ç1 | Sadık 23 · Yeni 8 · Geri kazanılan 0 · Kayıp 9 · Net -1 · Tutma 72%
+   2023-Ç2 | Sadık 32 · Yeni 13 · Geri kazanılan 0 · Kayıp 8 · Net +5 · Tutma 80%
+   2023-Ç3 | Sadık 39 · Yeni 9 · Geri kazanılan 0 · Kayıp 14 · Net -5 · Tutma 74%
+   2023-Ç4 | Sadık 40 · Yeni 15 · Geri kazanılan 0 · Kayıp 22 · Net -7 · Tutma 65%
+   2024-Ç1 | Sadık 52 · Yeni 25 · Geri kazanılan 0 · Kayıp 25 · Net 0 · Tutma 68%
+   2024-Ç2 | Sadık 66 · Yeni 11 · Geri kazanılan 0 · Kayıp 35 · Net -24 · Tutma 65%
+   2024-Ç3 | Sadık 65 · Yeni 16 · Geri kazanılan 0 · Kayıp 42 · Net -26 · Tutma 61%
+   2024-Ç4 | Sadık 83 · Yeni 7 · Geri kazanılan 0 · Kayıp 36 · Net -29 · Tutma 70%
+   2022 | Net satış 102.837 ₺. Hedefin gerisinde (77%). En büyük kategori Elektronik, en hızlı büyüyen  (), en zayıf . Öne çıkan kanal: Mobil.
+   2023 | Net satış 400.870 ₺, geçen yıla göre +290%. Hedefe çok yakın (100%). En büyük kategori Elektronik, en hızlı büyüyen Giyim (+492%), en zayıf Hediye. Öne çıkan kanal: Mobil.
+   2024 | Net satış 747.066 ₺, geçen yıla göre +86%. Hedefe çok yakın (98%). En büyük kategori Elektronik, en hızlı büyüyen Kozmetik (+117%), en zayıf Spor. Öne çıkan kanal: Mobil.
+
+#174 BASH [Debug DahaEski set] code=0 cwd=/home/claude/pbi
+53
+53
+53
+17
+
+#175 BASH [Check customer purchase gaps in data] code=0 cwd=/home/claude/pbi
+customers with >365d gap 0 max gap 199
+
+#176 BASH [Switch to 6-month window and retest] code=0 cwd=/home/claude/pbi
+271:  pitfall: 'Kayıp tanımı işe göre değişir (90 gün, 6 ay, 12 ay). Pencere uzunluğunu bir parametreye bağlam
+2023-Ç4 Sadık 40 · Yeni 15 · Geri kazanılan 0 · Kayıp 21 · Net -6 · Tutma 66%
+2024-Ç1 Sadık 51 · Yeni 25 · Geri kazanılan 1 · Kayıp 19 · Net +7 · Tutma 73%
+2024-Ç2 Sadık 65 · Yeni 11 · Geri kazanılan 1 · Kayıp 25 · Net -13 · Tutma 72%
+2024-Ç3 Sadık 63 · Yeni 16 · Geri kazanılan 2 · Kayıp 35 · Net -17 · Tutma 64%
+2024-Ç4 Sadık 81 · Yeni 7 · Geri kazanılan 2 · Kayıp 28 · Net -19 · Tutma 74%
+
+#177 BASH [Handle empty growth set; align level DAX descriptors] code=0 cwd=/home/claude/pbi
+4:  { id: 'A1', name: 'Başlangıç', c: 'lv1', dax: 'Tek satır: SUM, COUNTROWS',
+7:  { id: 'A2', name: 'Temel', c: 'lv2', dax: '1–2 satır: DIVIDE, DISTINCTCOUNT, ölçü çağırma',
+10:  { id: 'B1', name: 'Orta', c: 'lv3', dax: '3–14 satır: CALCULATE, SUMX, VAR, zaman zekâsı',
+13:  { id: 'B2', name: 'Orta üstü', c: 'lv4', dax: '6–12 satır: ALL ailesi, RANKX, USERELATIONSHIP, yarı
+16:  { id: 'C1', name: 'İleri', c: 'lv5', dax: '10–25 satır: bağlam geçişi, tablo fonksiyonları, küme
+19:  { id: 'C2', name: 'Uzman', c: 'lv6', dax: '15–45 satır: kurumsal kalıplar, köprüler, dinamik metin'
+
+#178 BASH [Update guide text and rerun exercise/pattern tests] code=0 cwd=/home/claude/pbi
+1
+C2 DAX ex 10 avg lines 7.4 max 16
+dax ex 86 bad 0 total ex 193
+P C2 secili-gorunum 4 rows [["Cari","747.066 ₺"],["Geçen yıl","400.870 ₺"],["YTD","747.066 ₺"]] tot 747.066 ₺ 4ms
+P C2 pvm            7 rows [["Elektronik","Fiyat +22.402 · Hacim +78.284 · Karışım "],["Ev & Yaşam","Fiyat +11.269 · Hacim +38.356 · Karışım "],["Giyim","Fiyat +9.697 · Hacim +30.505 · Karışım +"]] tot Fiyat +71.733 · Hacim +295.403 404ms
+P C2 musteri-hareketi 11 rows [["2022-Ç2","Sadık 0 · Yeni 2 · Geri kazanılan 0 · Ka"],["2022-Ç3","Sadık 2 · Yeni 10 · Geri kazanılan 0 · K"],["2022-Ç4","Sadık 8 · Yeni 20 · Geri kazanılan 0 · K"]] tot Sadık 0 · Yeni 136 · Geri kaza 41ms
+P C2 yonetici-metni 3 rows [["2022","Net satış 102.837 ₺. Hedefin gerisinde ("],["2023","Net satış 400.870 ₺, geçen yıla göre +29"],["2024","Net satış 747.066 ₺, geçen yıla göre +86"]] tot Net satış 1.250.772 ₺, geçen y 81ms
+
+#179 WRITE /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/inter.js 6058
+#180 BASH [Run interaction tests] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/inter.js:4:28
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/inter.js:61:3) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+
+#181 BASH [Make SVG text click-through and rerun tests] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/inter.js:4:28
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/inter.js:61:3) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+
+#184 BASH [Crop final page screenshot] code=1 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+    from PIL import Image; im=Image.open('sh3/i_final.png'); print(im.size); im.crop((0,0,1360,2600)).resize((680,1300)).save('sh3/final_a.png')
+                              ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/PIL/Image.py", line 3639, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: 'sh3/i_final.png'
+
+#186 BASH [Run mobile screenshots] code=0 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/shot2.js:3:28
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/shot2.js:25:3) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+
+#187 BASH [Find overflowing element on mobile final page] code=1 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/ov.js:2:41
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/ov.js:6:21) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+
+#188 BASH [Allow chips to wrap and recheck overflow] code=1 cwd=/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+browserType.launch: Failed to launch chromium because executable doesn't exist at /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
+    at /tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/ov.js:2:41
+    at Object.<anonymous> (/tmp/claude-0/-home-claude/8d15e87e-21b9-51fd-9b9d-27135d77cfc3/scratchpad/ov.js:6:21) {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v22.23.4
+

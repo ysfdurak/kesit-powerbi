@@ -1,0 +1,11 @@
+require('./h.js');
+const Y=[{t:'Tarih',c:'Yil'}], K=[{t:'Kategoriler',c:'Kategori'}];
+const kur = (dt,p='"USD"') => `LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], ${dt}, DovizKurlari[ParaBirimi], ${p})`;
+def('USD Aylık', `SUMX(VALUES(Tarih[YilAy]), VAR AyBasi = DATEVALUE(Tarih[YilAy] & "-01") RETURN DIVIDE([Net Satış], ${kur('AyBasi')}))`);
+def('USD DonemSonu', `VAR SonAy = EOMONTH(MAX(Tarih[Tarih]), -1) + 1 RETURN DIVIDE([Net Satış], ${kur('SonAy')})`);
+def('USD YilOrt', `VAR Ort = CALCULATE(AVERAGE(DovizKurlari[Kur]), DovizKurlari[ParaBirimi] = "USD", FILTER(ALL(DovizKurlari[Tarih]), YEAR(DovizKurlari[Tarih]) = MAX(Tarih[Yil]))) RETURN DIVIDE([Net Satış], Ort)`);
+def('USD GYKur', `SUMX(VALUES(Tarih[YilAy]), VAR AyBasi = EDATE(DATEVALUE(Tarih[YilAy] & "-01"), -12) RETURN DIVIDE([Net Satış], ${kur('AyBasi')}))`);
+console.log(G(Y,['[Net Satış]','[USD Aylık]','[USD DonemSonu]','[USD YilOrt]','[USD GYKur]','[Stok Değeri]']).join('\n'));
+console.log(Q('EVALUATE FILTER(DovizKurlari, MONTH(DovizKurlari[Tarih]) = 12 && DovizKurlari[ParaBirimi]="USD")'));
+console.log(Q('EVALUATE ROW("ort23", CALCULATE(AVERAGE(DovizKurlari[Kur]), DovizKurlari[ParaBirimi]="USD", YEAR(DovizKurlari[Tarih])=2023), "ort24", CALCULATE(AVERAGE(DovizKurlari[Kur]), DovizKurlari[ParaBirimi]="USD", YEAR(DovizKurlari[Tarih])=2024))'));
+console.log(G(K,['[Stok Değeri]']).join('\n'));

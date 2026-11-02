@@ -1,0 +1,15 @@
+const f=[{t:'Tarih',c:'Yil',values:[2024]}];
+const ms = Object.fromEntries(PBI_MEASURES.map(m=>[m.name,{name:m.name,expr:m.expr}]));
+const g=(e,t,c)=>console.log(c, JSON.stringify(PBI_DAX.query({ rows:[{t,c}], measures: ms, values:[e], slicers: f, totals:false }).rows.map(x=>[x.keys[0], Math.round(x.vals[0]*10000)/10000])));
+g('DIVIDE(CALCULATE([Satın Alma Tutarı], Tedarikciler[Ulke] = "Türkiye"), [Satın Alma Tutarı])','Tedarikciler','Ulke');
+M('DIVIDE(CALCULATE(COUNTROWS(Talepler), Talepler[Memnuniyet] >= 4), COUNTROWS(Talepler))', f);
+M('VAR GY = CALCULATE([Satın Alma Tutarı], SAMEPERIODLASTYEAR(Tarih[Tarih])) RETURN IF(NOT ISBLANK(GY), DIVIDE([Satın Alma Tutarı] - GY, GY))', f);
+M('AVERAGEX(VALUES(Tedarikciler[Tedarikci]), [Tedarikte Zamanında %])', f);
+M('[Tedarikte Zamanında %]', f);
+M('AVERAGEX(SatinAlmalar, DIVIDE(SatinAlmalar[Kusurlu], SatinAlmalar[Adet]))', f);
+M('VAR GY = CALCULATE([Faaliyet Kâr Marjı %], SAMEPERIODLASTYEAR(Tarih[Tarih])) RETURN IF(NOT ISBLANK(GY), [Faaliyet Kâr Marjı %] - GY)', f);
+M('[Gider] - CALCULATE([Gider Bütçe], TREATAS(VALUES(Departmanlar[DepartmanNo]), GiderTurleri[DepartmanNo]))', f);
+g('[Gider] - CALCULATE([Gider Bütçe], TREATAS(VALUES(Departmanlar[DepartmanNo]), GiderTurleri[DepartmanNo]))','Departmanlar','Departman');
+g('[Faaliyet Kârı]','GiderTurleri','GiderTuru');
+M('DISTINCTCOUNT(Talepler[MusteriNo])', f);
+M('SUM(SatinAlmalar[Adet])', f);

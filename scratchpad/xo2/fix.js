@@ -1,0 +1,36 @@
+const fs=require('fs'); const F='/home/claude/pbi/x_orta2.js'; let s=fs.readFileSync(F,'utf8');
+const R=[
+["'Çizgi eğimi okutur; veriye yakın başlamak burada kabul edilir'","'Çizgide kabul edilir; göz eğimi okur'"],
+["'Eksik ayı ayırmak ya da işaretlemek'","'Eksik ayı işaretlemek'"],
+["'Kaldır; sadelik her şeyden önemlidir'","'Kaldır; sadelik her zaman bağlamdan önce gelir'"],
+["'Hedef çizgisini kalın ve kırmızı yap'","'Hedef çizgisini kalın ve kırmızı yaparak öne çıkar'"],
+["'Kalsın; karşılaştırmayı taşıyan öğe süs değildir'","'Kalsın; karşılaştırmayı taşıyan öğe süs değil'"],
+["'Kartları detay sayfasına taşı'","'Kartları ayrı bir detay sayfasına taşıyıp bağla'"],
+["'İkisine Gelişmiş seçeneklerden aynı grup adını vermek'","'İkisine aynı eşitleme grubu adını vermek'"],
+["'Kategoriyi rapor düzeyi filtreye taşımak'","'Kategoriyi rapor düzeyi filtreye taşıyıp kilitlemek'"],
+["o: ['Tüm dilimleyicileri uygula', 'Sayfa gezintisi', 'Yer imi gezgini', 'Detaya git']","o: ['Tüm dilimleyicileri uygula', 'Sayfa gezintisi düğmesi', 'Yer imi gezgini ile sekmeler', 'Detaya git düğmesi']"],
+["o: ['Kural toplam satırına uygulanmıyor', 'Ölçü DIVIDE ile yazılmamış', 'Kurallar en fazla üç adım alabilir', 'Yüzde birimi aralıktaki konumdur; 0,95 ve Sayı seçilmeli']","o: ['Kural toplam ve ara toplam satırlarına uygulanmıyor', 'Ölçü DIVIDE yerine bölme işaretiyle yazılmış', 'Kurallar en fazla üç adım alabildiği için kesiliyor', 'Yüzde aralıktaki konumdur; 0,95 ve Sayı seç']"],
+["'Tema JSON’unda good/bad renklerini değiştir'","'Tema JSON’unda good ve bad renklerini değiştirmek'"],
+["o: ['Sıfırlama yalnızca yazı tiplerini değiştirir', 'Sıfırlama temayı da kaldırır', 'Sıfırlama koşullu biçim ve eylemleri de siler', 'Sıfırlama yalnızca Service’te çalışır']","o: ['Sıfırlama yalnızca yazı tiplerini değiştirir', 'Sıfırlama raporun temasını da kaldırır', 'Koşullu biçimleri de siler', 'Sıfırlama yalnızca Service’te çalışır']"],
+["o: ['dataColors listesini', 'tableAccent rengini', 'textClasses içindeki label sınıfını', 'minimum, center ve maximum renklerini']","o: ['dataColors listesindeki ilk üç rengi', 'tableAccent ve background renklerini', 'textClasses içindeki label sınıfının rengini', 'minimum, center ve maximum renklerini']"],
+["o: ['Tema şemaya göre doğrulanır; bilinmeyen alan reddedilir', 'Tema dosyası 1 MB’ı aşmış'","o: ['Şemada olmayan alan reddedilir', 'Tema dosyası izin verilen boyutu aşmış'"],
+["'Temayı, düzeni ve ölçüleri içeren bir .pbit şablonu'","'Tema, düzen ve ölçüleri taşıyan .pbit şablonu'"],
+["o: ['Kartı ayrı bir sayfaya taşımak', 'Yer imini Seçili görseller kapsamıyla yeniden kaydetmek', 'Yer iminde Veri seçeneğini açmak', 'Kartı gruplayıp kilitlemek']","o: ['Kartı ayrı bir sayfaya taşıyıp gizlemek', 'Seçili görsellerle yeniden kaydetmek', 'Yer iminde Veri seçeneğini de açmak', 'Kartı diğerleriyle gruplayıp kilitlemek']"],
+["'Ölçü seçimini alan parametresi ya da ölçü seçici tabloya taşımak'","'Ölçü seçimini alan parametresine taşımak'"],
+["o: ['Başlığı fx ile bir metin ölçüsüne bağlarım', 'Başlığı kaldırıp göstergeyi açarım', 'Sayfaya 2022 için ayrı bir yer imi eklerim', 'Yıl dilimleyicisini kaldırırım']","o: ['Başlığı fx ile ölçüye bağlarım', 'Başlığı kaldırıp göstergeyi açarım', 'Sayfaya 2022 için ayrı bir yer imi eklerim', 'Yıl dilimleyicisini sayfadan kaldırırım']"],
+["'Sayfaya kısa bir tanım notu ya da bilgi düğmesi koymak'","'Sayfaya kısa bir tanım notu koymak'"],
+["'Araç ipucu sayfaları mobilde hiç çalışmaz'","'Araç ipucu sayfaları mobil uygulamada hiç çalışmaz'"],
+["'Hayır; çarpık dağılımda ortalamanın üstü azınlıktır'","'Hayır; ortalamanın üstü azınlıkta kalır'"],
+["'Gösterge varken çalışmaz; kanalı filtrele ya da küçük katlar kullan'","'Gösterge engeller; tek seri kullan'"],
+["o: ['Kapasitenin boyutu', 'Anlatının dil ayarı', 'Raporun tema dosyası', 'Görsel, eksen ve ölçü adları']","o: ['Fabric kapasitesinin boyutu', 'Anlatının dil ve bölge ayarı', 'Raporun tema dosyası ve renkleri', 'Görsel, eksen ve ölçü adları']"],
+["'Ekleme sütunları adına göre eşler; iki ayrı sütun oluşur'","'Sütunlar adla eşlenir; iki ayrı sütun oluşur'"],
+["'Koşullar sırayla denenir; ilk eşleşende durulur'","'İlk doğru koşulda durulur'"],
+["'Başvuru sorgusunda Hataları koru ile denetim listesi'","'Başvuru sorgusunda Hataları koru'"],
+["'Yanlış; her başvuran zincirini ayrıca çalıştırabilir'","'Yanlış; başvuranlar onu yeniden çalıştırır'"],
+["'Metin türünde, önerilen değerler: değer listesi'","'Metin türü, değer listesiyle'"],
+// erişilebilir durum: veride tüm oranlar 1'in altında; eşik 0,97
+["    [Hedef Gerçekleşme %] &gt;= 1,\n    \"▲ Hedefin üstünde\",\n    \"▼ Hedefin altında\"","    [Hedef Gerçekleşme %] &gt;= 0.97,\n    \"▲ Hedefe yakın\",\n    \"▼ Hedefin gerisinde\""],
+["q: '<b>Erişilebilir Durum</b>: Hedef gerçekleşme 1 ya da üstündeyse <code>\"▲ Hedefin üstünde\"</code>, değilse <code>\"▼ Hedefin altında\"</code> döndür. Durum renk görmeyen biri için de okunur olsun.', sol: 'IF([Hedef Gerçekleşme %] >= 1, \"▲ Hedefin üstünde\", \"▼ Hedefin altında\")', hint: '[Hedef Gerçekleşme %] hazır ölçüsünü IF içinde 1 ile karşılaştır.","q: '<b>Erişilebilir Durum</b>: Hedef gerçekleşme 0,97 ya da üstündeyse <code>\"▲ Hedefe yakın\"</code>, değilse <code>\"▼ Hedefin gerisinde\"</code> döndür. Durum renk görmeyen biri için de okunur olsun.', sol: 'IF([Hedef Gerçekleşme %] >= 0.97, \"▲ Hedefe yakın\", \"▼ Hedefin gerisinde\")', hint: '[Hedef Gerçekleşme %] hazır ölçüsünü IF içinde 0.97 ile karşılaştır."],
+];
+R.forEach(([a,b])=>{ const n=s.split(a).length-1; if(n!==1) console.log('MISS',n,a.slice(0,60)); s=s.split(a).join(b); });
+fs.writeFileSync(F,s);

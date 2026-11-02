@@ -1,0 +1,15 @@
+const p=(...x)=>console.log(...x.map(v=>JSON.stringify(v)));
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Musteriler[Bolge], "Net", [Net Satış], "Müşteri", COUNTROWS(Musteriler))').rows);
+p('blank bolge musteri', M.tables.Musteriler.rows.filter(r=>r.Bolge==null).map(r=>[r.MusteriNo,r.Musteri,r.Sehir,r.IlkSiparis]));
+p('netblank',ev('CALCULATE([Net Satış], ISBLANK(Musteriler[Bolge]))'));
+const mn=M.tables.Musteriler.rows.map(r=>r.Musteri);p('dup musteri names',mn.length,new Set(mn).size);
+p('dc musteri',ev('DISTINCTCOUNT(Musteriler[Musteri])'),ev('COUNTROWS(Musteriler)'));
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(WebOlaylari[Cihaz], "Ziy", [Ziyaretçi], "Satin", [Satın Alan Ziyaretçi], "Olay", COUNTROWS(WebOlaylari))').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(WebOlaylari[Kaynak], "Ziy", [Ziyaretçi], "Odeme", CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 4), "Satin", CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 5))').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Tarih[YilAy], "Olay", COUNTROWS(WebOlaylari), "Ziy", [Ziyaretçi])').rows);
+p('5/4',ev('DIVIDE(CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 5), CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 4))'));
+p('2/1',ev('DIVIDE(CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 2), CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 1))'));
+const W=M.tables.WebOlaylari.rows;const byDay={};W.forEach(r=>{const k=r.Tarih.toISOString().slice(0,10);byDay[k]=(byDay[k]||0)+1});const v=Object.entries(byDay).sort((a,b)=>b[1]-a[1]);p('days',v.length,v.slice(0,3),v.slice(-2));
+p(Q('EVALUATE\nTOPN(3, SUMMARIZECOLUMNS(Tarih[Tarih], "Olay", COUNTROWS(WebOlaylari)), [Olay], DESC)').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(Tarih[HaftaninGunu], "Olay", COUNTROWS(WebOlaylari))').rows);
+p(Q('EVALUATE\nSUMMARIZECOLUMNS(WebOlaylari[Saat], "Olay", COUNTROWS(WebOlaylari))').rows);

@@ -1,0 +1,10 @@
+const C=require('./common.js');
+(async()=>{const {b,p,errs}=await C.open();
+await p.goto('http://localhost:8765/index.html');
+await p.click('text=Hedefimi seç'); await p.waitForTimeout(400);
+console.log('URL',p.url());
+await p.screenshot({path:C.SS+'02_hedef.png',fullPage:true});
+console.log((await p.innerText('main, #main')).slice(0,3000));
+const btns=await p.$$eval('#main button',els=>els.map(e=>(e.dataset?JSON.stringify(e.dataset):'')+' '+e.textContent.trim().slice(0,50)));
+console.log(btns.slice(0,80).join('\n'));
+console.log(errs);await b.close();})();

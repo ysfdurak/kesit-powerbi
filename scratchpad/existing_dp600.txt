@@ -1,0 +1,25 @@
+0 | Analitik çözümü yönet | Fabric’te geliştirme, test ve üretim aşamaları arasında içeriği taşıyıp her aşamada farklı veri kaynağına bağlamak için? | doğru: Dağıtım işlem hatları ve kuralları
+1 | Analitik çözümü yönet | Bir çalışma alanını Azure DevOps ya da GitHub deposuna bağlamak hangi özelliğin işidir? | doğru: Git tümleştirmesi
+2 | Analitik çözümü yönet | Bir kapasitenin hangi öğeler tarafından ne kadar tüketildiğini izlemek için? | doğru: Kapasite Ölçümleri uygulaması
+3 | Analitik çözümü yönet | Bir anlam modelinin “onaylı” olduğunu kuruluşa göstermek için hangi onay türü yalnızca yetkili kişilerce verilebilir? | doğru: Sertifikalı (Certified)
+4 | Analitik çözümü yönet | Bir anlam modelinde yapılacak değişikliğin hangi raporları bozacağını önceden görmek için? | doğru: Etki analizi
+5 | Analitik çözümü yönet | Harici bir araçla (Tabular Editor, SSMS) Fabric’teki bir anlam modeline okuma-yazma bağlanmak için? | doğru: XMLA uç noktası okuma-yazma
+6 | Veriyi hazırla | Başka bir lakehouse’taki ya da ADLS Gen2’deki veriyi kopyalamadan lakehouse’ta tablo gibi kullanmak için? | doğru: OneLake kısayolu
+7 | Veriyi hazırla | Lakehouse’ta T-SQL ile yalnızca okuma sorgusu yazmak için kullanılan uç nokta? | doğru: SQL analitik uç noktası
+8 | Veriyi hazırla | Delta tablolarının Power BI tarafından daha hızlı okunmasını sağlayan yazma iyileştirmesi? | doğru: V-Order
+9 | Veriyi hazırla | Kodsuz, Power Query tabanlı dönüşümle veriyi bir lakehouse ya da ambara yazmak için hangi Fabric öğesi? | doğru: Veri akışı Gen2
+10 | Veriyi hazırla | Ambarda (warehouse) T-SQL ile bir tabloya veri eklemek, güncellemek mümkün müdür? | doğru: Evet; ambar T-SQL DML’i destekler
+11 | Veriyi hazırla | Yıldız şemada müşteri adresinin geçmiş değerlerini de saklamak (SCD Tür 2) için boyuta ne eklenir? | doğru: Geçerlilik tarihleri ve vekil anahtar
+12 | Veriyi hazırla | Bir not defterinde PySpark ile hazırlanan DataFrame’i lakehouse’ta Delta tablosu olarak kaydetmek için? | doğru: df.write.format("delta").saveAsTable("tablo")
+13 | Anlam modelini uygula | Direct Lake modunda bir sorgu desteklenmeyen bir özellik (ör. SQL uç noktasında tanımlı görünüm) kullanırsa varsayılan davranış nedir? | doğru: DirectQuery’ye geri dönüş
+14 | Anlam modelini uygula | Direct Lake’te “çerçeveleme (framing)” ne demektir? | doğru: Modelin okuyacağı Delta sürümünün güncellenmesi
+15 | Anlam modelini uygula | Bir hesaplama grubu öğesinde “Geçen yıl” mantığı yazmak için hangi ifade doğrudur? | doğru: CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+16 | Anlam modelini uygula | Model boyutu 10 GB’ı aşacak bir anlam modeli Premium/Fabric kapasitesinde nasıl desteklenir? | doğru: Büyük model biçimini etkinleştirmek
+17 | Anlam modelini uygula | Artımlı yenileme ilkesinde “son 5 yılı sakla, son 10 günü yenile” ayarı neyi sağlar? | doğru: Yalnızca son 10 günün bölümleri yenilenir
+18 | Anlam modelini uygula | Bir ölçünün biçimini seçilen para birimine göre dinamik değiştirmek için? | doğru: Dinamik biçim dizesi
+19 | Anlam modelini uygula | Bir modeldeki en çok belleği tüketen sütunları bulmak için hangi araç kullanılır? | doğru: DAX Studio’daki VertiPaq Analyzer
+20 | Anlam modelini uygula | Bir tablonun belirli sütunlarını (ör. Maaş) bazı kullanıcılardan tamamen gizlemek için? | doğru: Nesne düzeyinde güvenlik (OLS)
+21 | Anlam modelini uygula | Bileşik modelde DirectQuery olgu tablosuyla Import boyut tablosu arasındaki ilişkinin türü? | doğru: Sınırlı ilişki; bazı davranışlar farklı
+22 | Anlam modelini uygula | Toplamalar (aggregations) için oluşturulan Import tablo, DirectQuery ayrıntı tablosunun yerine ne zaman kullanılır? | doğru: Sorgu toplama düzeyinde yanıtlanabiliyorsa
+23 | Anlam modelini uygula | Tabular Editor’daki Best Practice Analyzer ne işe yarar? | doğru: Modeli kurallara göre tarayıp sorunları listeler
+24 | Anlam modelini uygula | TMDL nedir? | doğru: Modeli metin dosyaları olarak tanımlayan dil

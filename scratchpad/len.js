@@ -1,0 +1,2 @@
+global.window=global;const P='/home/claude/pbi/';['data','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep','c9','c10','c11','c12','c13','c14','c15','c16','c19'].forEach(f=>require(P+f+'.js'));
+PBI_LESSONS.slice(-4).forEach(l=>{const c={};l.ex.forEach(e=>c[e.t]=(c[e.t]||0)+1);const i=PBI_ORDER.indexOf(l.id);console.log(l.id,l.lv,l.body.replace(/<[^>]+>/g,'').length,JSON.stringify(c),'after:',PBI_ORDER[i-1])});

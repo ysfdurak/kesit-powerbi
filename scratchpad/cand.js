@@ -1,0 +1,17 @@
+module.exports=[
+['iptal','SUM(Satislar[Tutar])','CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] <> "İptal")'],
+['sifir','[Net Satış] + 0','[Net Satış]',[{t:'Tarih',c:'YilAy'}]],
+['sifir2','[Net Satış] + 0','[Net Satış]',[{t:'Musteriler',c:'Musteri'}]],
+['count','CALCULATE(COUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")','CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")'],
+['mali','TOTALYTD([Net Satış], Tarih[Tarih])','TOTALYTD([Net Satış], Tarih[Tarih], "6-30")'],
+['sply','CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))','CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))'],
+['calcmeas','CALCULATE([Net Satış], [Net Satış] > 20000)','CALCULATE([Net Satış], FILTER(VALUES(Urunler[Urun]), [Net Satış] > 20000))'],
+['switch','SWITCH(TRUE(), [Kâr Marjı %] >= 0.3, "Orta", [Kâr Marjı %] >= 0.4, "Yüksek", "Düşük")','SWITCH(TRUE(), [Kâr Marjı %] >= 0.4, "Yüksek", [Kâr Marjı %] >= 0.3, "Orta", "Düşük")'],
+['marj','[Kâr Marjı %]','[Kâr Marjı %]'],
+['andor','COUNTROWS(FILTER(Satislar, Satislar[Kanal] = "Web" || Satislar[Kanal] = "Mobil" && Satislar[Durum] = "İade"))','COUNTROWS(FILTER(Satislar, (Satislar[Kanal] = "Web" || Satislar[Kanal] = "Mobil") && Satislar[Durum] = "İade"))'],
+['gunluk','AVERAGEX(VALUES(Tarih[Tarih]), [Net Satış])','DIVIDE([Net Satış], COUNTROWS(Tarih))'],
+['topn','VAR N = SELECTEDVALUE(TopNSecim[N]) RETURN CALCULATE([Net Satış], TOPN(N, ALL(Urunler[Urun]), [Net Satış]))','VAR N = SELECTEDVALUE(TopNSecim[N], 5) RETURN CALCULATE([Net Satış], TOPN(N, ALL(Urunler[Urun]), [Net Satış]))'],
+['yuzde','[Kâr Marjı %] * 100','[Kâr Marjı %]'],
+['urun','COUNTROWS(Urunler)','CALCULATE(DISTINCTCOUNT(Satislar[UrunNo]), Satislar[Durum] <> "İptal")'],
+['yilmetin','CALCULATE([Net Satış], Tarih[Yil] = "2024")','CALCULATE([Net Satış], Tarih[Yil] = 2024)'],
+];

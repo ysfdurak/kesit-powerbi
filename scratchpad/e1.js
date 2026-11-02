@@ -1,0 +1,17 @@
+Q('EVALUATE GiderTurleri');
+Q('EVALUATE FILTER(Giderler, Giderler[GiderNo] <= 8)');
+Q('EVALUATE FILTER(GiderButce, GiderButce[Tarih] <= DATE(2022,8,31))');
+Q('EVALUATE Projeler');
+Q('EVALUATE FILTER(Talepler, Talepler[TalepNo] <= 4)');
+Q('EVALUATE Departmanlar');
+Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Kanal], "n", COUNTROWS(Satislar))');
+Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Durum], "n", COUNTROWS(Satislar))');
+Q('EVALUATE SUMMARIZECOLUMNS(Musteriler[Segment], "n", COUNTROWS(Musteriler))');
+Q('EVALUATE SUMMARIZECOLUMNS(Musteriler[Bolge], "n", COUNTROWS(Musteriler))');
+Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "n", [Net Satış], "g",[Gider],"gb",[Gider Bütçe],"sa",[Satın Alma Tutarı],"t",[Talep Sayısı])');
+Q('EVALUATE SUMMARIZECOLUMNS(Talepler[Konu], "n", COUNTROWS(Talepler))');
+Q('EVALUATE SUMMARIZECOLUMNS(Talepler[Kanal], "n", COUNTROWS(Talepler))');
+Q('EVALUATE SUMMARIZECOLUMNS(Talepler[Oncelik], "n", COUNTROWS(Talepler))');
+Q('EVALUATE SUMMARIZECOLUMNS(Talepler[Cozuldu], "n", COUNTROWS(Talepler))');
+Q('EVALUATE FILTER(Calisanlar, Calisanlar[CalisanNo] <= 4)');
+Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "n", [Net Satış])');

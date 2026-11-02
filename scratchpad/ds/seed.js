@@ -1,0 +1,2 @@
+const fs=require('fs'); const D=process.argv[2];
+for (const f of ['db','hv','lk','ik','bk']) { const g={}; globalThis.SQLP_SEED=''; delete globalThis.SQLP_SCHEMA_NOTES; delete globalThis.SQLP_COLMETA; require(D+'/'+f+'.js'); fs.writeFileSync(f+'.sql', globalThis.SQLP_SEED); fs.writeFileSync(f+'.meta.json', JSON.stringify({notes:globalThis.SQLP_SCHEMA_NOTES||{}, cols:globalThis.SQLP_COLMETA||{}})); console.log(f, (globalThis.SQLP_SEED||'').length); }

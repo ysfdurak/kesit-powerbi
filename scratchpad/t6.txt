@@ -1,0 +1,5 @@
+q('CALCULATE([Toplam Satış], FILTER(ALL(Satislar), Satislar[Kanal] = "Web"))','Urunler','Kategori')
+q('CALCULATE([Toplam Satış], Satislar[Kanal] = "Web")','Urunler','Kategori')
+ev('CALCULATE([Toplam Satış], Satislar[Kanal] = "Web")')
+q('IF(NOT ISFILTERED(Satislar[Kanal]), [Hedef])','Satislar','Kanal')
+M.tables.Satislar.rows.filter(r=>r.KargoGun==null && r.Durum!=='İptal').length

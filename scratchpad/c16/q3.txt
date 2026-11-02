@@ -1,0 +1,24 @@
+EVALUATE
+VAR Teklifler = DATATABLE(
+        "Secenek", STRING, "YillikSabit", CURRENCY, "BirimOran", DOUBLE, "MinAdet", INTEGER,
+        {
+            {"Mevcut tedarikçi", 0, 1.00, 0},
+            {"Yeni tedarikçi", 3000, 0.88, 250},
+            {"Kendi üretim", 18000, 0.55, 0}
+        }
+    )
+VAR Birim =
+    CALCULATE(
+        DIVIDE([Net Maliyet], [Satılan Adet]),
+        Tarih[Yil] = 2024,
+        Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"}
+    )
+VAR Senaryolar =
+    DATATABLE("Senaryo", STRING, "Adet", INTEGER,
+        {{"Durgun", 299}, {"Temel (+%25)", 374}, {"İyimser (+%50)", 449}})
+RETURN
+    ADDCOLUMNS(
+        GENERATE(Senaryolar, Teklifler),
+        "Uygun", IF([Adet] >= [MinAdet], "Evet", "Hayır"),
+        "Toplam Maliyet", [YillikSabit] + [BirimOran] * [Adet] * Birim
+    )

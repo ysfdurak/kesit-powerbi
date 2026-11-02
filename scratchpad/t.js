@@ -1,0 +1,11 @@
+process.argv[2]='/home/claude/pbi/vd_kanat.js';
+require('/tmp/claude-0/-home-claude/53cd9548-0d28-57c3-99dc-de41d98193f5/scratchpad/vdx.js');
+const X=__X(), ms=__ms(); const spec=window.PBI_DATASETS[0];
+const k13=spec.tasks.find(t=>t.id==='k13'); console.log(JSON.stringify(X.runQuery(ms,k13.query).rows));
+console.log(X.evalMeasure(ms,'CALCULATE([Rezervasyon Sayısı], USERELATIONSHIP(hv_bookings[BookTarih], Takvim[Tarih]))',[{t:'Takvim',c:'AyNo',values:[11]}]));
+console.log(X.evalMeasure(ms,'[Rezervasyon Sayısı]',[{t:'Takvim',c:'AyNo',values:[11]}]));
+console.log(X.evalMeasure(ms,'CALCULATE([Toplam Yolcu], hv_delays[reason] = "hava")',[]));
+console.log(X.evalMeasure(ms,'[İptal Oranı]',[{t:'Takvim',c:'AyNo',values:[12]}]));
+console.log(X.evalMeasure(ms,'[Zamanında Kalkış Oranı]',[{t:'Takvim',c:'AyNo',values:[9]}]));
+console.log(X.evalMeasure(ms,'CALCULATE([Zamanında Kalkış Oranı], hv_flights[KalkisSaat] >= 18)',[]), X.evalMeasure(ms,'CALCULATE([Zamanında Kalkış Oranı], hv_flights[KalkisSaat] < 18)',[]));
+console.log(X.evalMeasure(ms,'[Toplam Yolcu]',[{t:'hv_airports',c:'airport_code',values:['ESB']}]));

@@ -1,0 +1,12 @@
+const {ev,q,run,def}=require('./h.js');
+console.log(q(['[Ziyaretçi]','[İlk Adıma Göre %]','[Önceki Adıma Göre %]'],[{t:'WebOlaylari',c:'AdimNo'}]));
+console.log(ev('[Dönüşüm Oranı %]'), ev('[Ziyaretçi]'), ev('[Satın Alan Ziyaretçi]'));
+console.log(q(['CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 1)','[Satın Alan Ziyaretçi]','[Dönüşüm Oranı %]'],[{t:'WebOlaylari',c:'Cihaz'}]));
+console.log(q(['CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 1)','[Satın Alan Ziyaretçi]','[Dönüşüm Oranı %]'],[{t:'WebOlaylari',c:'Kaynak'}]));
+console.log(q(['[Ziyaretçi]','[Önceki Adıma Göre %]'],[{t:'WebOlaylari',c:'Cihaz'},{t:'WebOlaylari',c:'AdimNo'}]));
+console.log(q(['[Net Satış]','[Sipariş Sayısı]','[Ortalama Sepet]','[İade Oranı %]','[İptal Oranı %]','[Ortalama Kargo Günü]','[Zamanında Teslim %]','[Müşteri Sayısı]'],[{t:'Satislar',c:'Kanal'}]));
+console.log(ev('[Ortalama Kargo Günü]'), ev('[Zamanında Teslim %]'), ev('[İade Oranı %]'));
+console.log(q(['COUNTROWS(Satislar)','[İade Oranı %]'],[{t:'Satislar',c:'KargoGun'}]));
+console.log(q(['[Ortalama Kargo Günü]','[Zamanında Teslim %]'],[{t:'Tarih',c:'Yil'}]));
+console.log(q(['[Ortalama Kargo Günü]','[Zamanında Teslim %]','[İade Oranı %]'],[{t:'Kategoriler',c:'Kategori'}]));
+console.log(q(['COUNTROWS(Satislar)'],[{t:'Satislar',c:'Kanal'},{t:'Satislar',c:'Durum'}]));

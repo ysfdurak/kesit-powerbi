@@ -1,0 +1,18 @@
+global.window = global; const P = '/home/claude/pbi/';
+['data','data2','dax','measures','pqdata'].forEach(f => require(P + f + '.js'));
+const X = PBI_DAX, ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
+const e = s => { try { console.log(X.evalMeasure(ms, s, [])); } catch(x) { console.log('ERR', x.message); } };
+e('VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) VAR Ad = CONCATENATEX(Lider, Kategoriler[Kategori], ", ") VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış]) RETURN Ad & " satışın " & FORMAT(Pay, "0%") & " kadarını taşıyor"');
+e('CALCULATE(AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış]), REMOVEFILTERS(Tarih))');
+e('VAR Aylar = VALUES(Tarih[YilAy]) RETURN AVERAGEX(Aylar, [Net Satış]) + 2 * STDEVX.P(Aylar, [Net Satış])');
+console.log(X.query({ rows: [{ t: 'Tarih', c: 'Yil' }], measures: ms, values: ['VAR B = [YoY %] RETURN SWITCH(TRUE(), ISBLANK(B), "#8A8780", B >= 0, "#2A78D6", "#D9622B")','IF(ISINSCOPE(Kategoriler[Kategori]), SWITCH(TRUE(), [Kâr Marjı %] >= 0.37, "#17855A", [Kâr Marjı %] >= 0.35, "#A86A12", "#C0392B"))'], slicers: [], totals: true }).rows.map(r=>JSON.stringify(r.vals)).join('\n'));
+console.log(X.query({ rows: [{ t: 'Kategoriler', c: 'Kategori' }], measures: ms, values: ['IF(ISINSCOPE(Kategoriler[Kategori]), SWITCH(TRUE(), [Kâr Marjı %] >= 0.37, "#17855A", [Kâr Marjı %] >= 0.35, "#A86A12", "#C0392B"))','VAR Bu = [Net Satış] VAR EnYuksek = MAXX(ALLSELECTED(Kategoriler[Kategori]), [Net Satış]) RETURN IF(Bu = EnYuksek, "#2A78D6", "#B8B5AD")'], slicers: [], totals: true }).rows.map(r=>JSON.stringify(r)).join('\n'));
+const Sx=(op,cols,extra)=>Object.assign({op,cols:cols||[]},extra||{});
+const BA=[Sx('removeTop',[],{n:1}),Sx('promote'),Sx('removeCols',['Not'])],BB=[Sx('trim',['Şehir']),Sx('proper',['Şehir']),Sx('replace',['Tutar'],{find:'-',repl:'null',whole:true}),Sx('type',['Tutar'],{to:'number'})],BC=[Sx('removeBlank'),Sx('distinct'),Sx('type',['Tarih'],{to:'date'}),Sx('removeErrors',['Tarih'])];
+const HA=[Sx('unpivot',['Kategori']),Sx('rename',['Öznitelik'],{to:'Ay'}),Sx('rename',['Değer'],{to:'Hedef'})];
+const MA=[Sx('promote'),Sx('type',['MusteriNo'],{to:'int'}),Sx('lower',['E-posta']),Sx('proper',['Ad Soyad']),Sx('distinct',['MusteriNo'])];
+const show=(src,pre,sol)=>{ const r=PBI_PQ.run(PBI_PQ.exSource({src,pre}),sol); console.log(r.error? 'ERR '+r.error.msg : JSON.stringify(r.table.cols.map(c=>c.name+':'+c.type))+' '+JSON.stringify(r.table.rows)); };
+show('bayi',BA.concat(BB,BC),[Sx('group',['Şehir'],{name:'Kayıt Sayısı',agg:'count'})]);
+show('musteri',MA,[Sx('type',['KayitTarihi'],{to:'date'}),Sx('replaceErr',['KayitTarihi'],{v:'null'})]);
+show('hedef',HA,[Sx('keepCols',['Kategori']),Sx('distinct',['Kategori'])]);
+show('bayi',BA.concat(BB,BC),[Sx('keepCols',['Bayi','Şehir']),Sx('distinct',['Bayi'])]);

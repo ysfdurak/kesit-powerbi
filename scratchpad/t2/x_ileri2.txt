@@ -1,0 +1,714 @@
+/* PBIPatika — İleri dersler genişletmesi (2): hesaplama grupları, performans, DAX optimizasyonu, kurumsal model,
+   güvenlik, yayımlama, yönetişim, sayfalandırılmış raporlar, yaşam döngüsü, M dili. */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const ext = (id, o) => { const l = L.find(x => x.id === id); if (!l) { if (W.console) console.warn('ext: ders yok', id); return; } if (o.html) l.body += '
+Uzmanlaş' + o.html + '
+'; if (o.ex) l.ex = (l.ex || []).concat(o.ex); if (o.min) l.min += o.min; (W.PBI_EXT = W.PBI_EXT || []).push({ id, html: o.html || '', ex: o.ex || [] }); };
+/* ===================================================================== 1. HESAPLAMA GRUPLARI */
+ext('hesaplama-gruplari', { min: 22, html: `
+Birden çok hesaplama grubu: öncelik (precedence)
+Finans müdürü iki şey istiyor: her ölçüyü YTD görmek ve her ölçüyü gün başına görmek. Ekip iki ayrı hesaplama grubu kurar: Zaman (Cari, GY, YTD) ve Ölçek (Toplam, Gün Başına). Matriste ikisinden birer öğe seçilince motor iki öğeyi iç içe uygular. Hangisinin içte, hangisinin dışta olacağını grubun Öncelik (Precedence) özelliği belirler.
+Kural şudur: düşük öncelikli grup içte, yüksek öncelikli grup dışta çalışır. Motor en yüksek öncelikli öğeden başlar; o öğedeki SELECTEDMEASURE() yerine bir alttaki öğeyi koyar; en sonda gerçek ölçüye ulaşır. Ölçek grubu 10, Zaman grubu 20 ise “Gün Başına + YTD” şuna dönüşür:
+Günlük Ort. YTD (Zaman dışta) =
+CALCULATE(DIVIDE([Net Satış], COUNTROWS(Tarih)), DATESYTD(Tarih[Tarih]))
+Günlük Ort. YTD (Ortalama dışta) =
+DIVIDE(CALCULATE([Net Satış], DATESYTD(Tarih[Tarih])), COUNTROWS(Tarih))
+Mart 2024 hücresinde ilk yazım 1.707,59 ₺ verir: Ocak–Mart toplamı, Ocak–Mart gün sayısına bölünür. Öncelikler ters verilirse ikinci yazım çalışır ve 5.012,60 ₺ çıkar: üç aylık toplam yalnızca Mart'ın 31 gününe bölünür. İki sayı da “doğru hesaplanmış” görünür; yalnızca biri iş sorusunun cevabıdır. Öncelik bir teknik ayrıntı değil, iş kuralıdır.
+ | Grup türü |  | Önerilen yer |  | Neden |
+ | Para birimi çevirisi, ölçek (bin/milyon), gün başına |  | Düşük öncelik (içte) |  | Önce tek tek değerler dönüşür, sonra zaman penceresi uygulanır |
+ | Zaman zekâsı (YTD, GY, YoY %) |  | Yüksek öncelik (dışta) |  | Pencere, dönüşmüş değerin tamamını sarmalı |
+ | Yalnızca biçim değiştiren grup |  | En yüksek |  | Biçim dizesinde en yüksek öncelikli grubun ifadesi kazanır |
+Biçim dizeleri de öncelikle yarışır: en yüksek öncelikli grubun dinamik biçim dizesi geçerli olur; ölçünün kendi biçimi her hesaplama grubunun altında kalır. “YoY % neden ₺ ile görünüyor?” sorusunun cevabı çoğu zaman budur.
+ISSELECTEDMEASURE: öğeyi her ölçüye uygulama
+Zaman grubundaki YoY % öğesi [Net Satış] için anlamlıdır. Ama [Kâr Marjı %] için “marjın yüzde değişimi” çıkar: %20'den %22'ye çıkan marj “%10 büyüme” olarak görünür. Finans ise “2 puan arttı” demek ister. Metin döndüren ölçülerde (ör. [Hedef Durumu], [Dinamik Başlık]) durum daha kötüdür: öğedeki aritmetik “metin sayıya çevrilemiyor” hatası verir.
+-- Zaman grubu, "YoY" öğesi
+VAR Simdi = SELECTEDMEASURE()
+VAR Once  = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+RETURN
+SWITCH(TRUE(),
+    NOT ISNUMBER(Simdi), BLANK(),                              -- metin ölçüleri: dokunma
+    ISSELECTEDMEASURE([Kâr Marjı %], [Ortalama İndirim %]), (Simdi - Once) * 100,   -- oranlar: puan farkı
+    DIVIDE(Simdi - Once, Once))                                 -- tutarlar: yüzde değişim
+-- Aynı öğenin dinamik biçim dizesi
+IF(ISSELECTEDMEASURE([Kâr Marjı %], [Ortalama İndirim %]), "+0.0"" puan"";-0.0"" puan""", "+0.0%;-0.0%")
+ISSELECTEDMEASURE ölçüye başvuru alır; ölçü yeniden adlandırılınca başvuru da güncellenir. SELECTEDMEASURENAME() = "Kâr Marjı %" gibi metin karşılaştırması da çalışır, ama ilk yeniden adlandırmada sessizce bozulur. SELECTEDMEASUREFORMATSTRING() ise “ölçünün kendi biçimini koru” demenin yoludur; Cari ve GY öğelerinin biçim dizesine bunu yazarsan ₺ ölçüler ₺, adet ölçüleri adet kalır.
+Seçim ifadeleri: çoklu ya da boş seçim
+Bir dilimleyiciden aynı gruptan iki öğe seçildiğinde ne olur? Hesaplama öğesi yalnızca bağlamda tek öğe varken uygulanır. Varsayılan davranışta iki öğe seçilirse grup hiç uygulanmaz ve ölçü olduğu gibi görünür. Kullanıcı “YTD ve GY” seçtiğini sanırken çıplak cari değeri görür. Bunu iki isteğe bağlı grup özelliği yönetir:
+ | Durum |  | İfade tanımlı değilse |  | Tanımlıysa |
+ | Tek öğe seçili |  | Öğe uygulanır |  | Öğe uygulanır |
+ | Birden çok öğe ya da çakışan seçim |  | Grup uygulanmaz |  | multipleOrEmptySelectionExpression sonucu |
+ | Grup hiç filtrelenmemiş |  | Grup uygulanmaz |  | noSelectionExpression sonucu |
+Para birimi grubunda tipik kullanım: hiçbir şey seçilmemişse TL göster (noSelectionExpression), iki para birimi seçilmişse sayı yerine BLANK döndür ve biçim dizesinde “Tek para birimi seç” yaz. Yanlış rakam göstermek, boş göstermekten her zaman daha pahalıdır.
+Yan etkiler: grup eklenince neler değişir?
+Örtük ölçüler kapanır. Modelde “örtük ölçüleri engelle” (Discourage implicit measures) açılır; sütunların yanındaki Σ kaybolur, Satislar[Tutar] artık değer alanına sürüklenemez. Var olan görseller çalışmaya devam eder, ama rapor yazarları için her toplam açık bir ölçü olmalıdır.
+Tüm ölçüler “variant” türüne geçer. Rapor tarafında ölçünün veri türü sabit değildir. Bir ölçünün dinamik biçim dizesini başka yerde yeniden kullanıyorsan hata görebilirsin; ifadeyi FORMAT(…, "") ile sarmak çözüm yoludur.
+Güvenlik: Hesaplama grubu tablosuna RLS ya da OLS tanımlanamaz. Güvenlik diğer tablolarda kalır (Satır ve nesne düzeyinde güvenlik dersi).
+Aynı gruptan iki öğe birleşmez. “GY'nin YTD'si” tek gruptan iki öğeyle yapılamaz; ya iki ayrı grup ya da öğe içinde yan özyineleme (sideways recursion): öğe, CALCULATE(SELECTEDMEASURE(), Zaman[Hesap] = "GY") ile kardeş öğeyi çağırabilir.
+Ölçü içinden çağırma: CALCULATE([Net Satış], Zaman[Hesap] = "YTD") geçerlidir. Bu, “YTD Satış” ölçüsünü ayrıca yazmadan bir kart görseline koymanın yoludur.
+Alan parametresiyle birlikte kullanmak
+Yönetim panosunda kullanıcı bir dilimleyiciden ölçüyü seçer (Net Satış, Brüt Kâr, Sipariş Sayısı); matrisin sütunlarında Zaman grubunun öğeleri durur. Ölçü seçiciyi alan parametresi (field parameter), varyasyonları hesaplama grubu sağlar: 3 ölçü × 3 öğe için tek ölçü yazmazsın. Dikkat edilecekler:
+Alan parametresinde örtük ölçü kullanılamaz; zaten hesaplama grubu da bunu istemez.
+Alan parametresi dilimleyicisinde hiçbir şey seçmemek “hepsi seçili” demektir; görsel birden çok ölçüyle dolar. Dilimleyiciyi “tek seçim” yap.
+Biçim: Zaman grubunun YoY öğesi biçimi ezer; kart başlığında ölçü adını göstermek için parametre tablosunun görünen ad sütununu kullan.
+ | Yol |  | Ne zaman? |  | Bakım |  | Dikkat |
+ | Hesaplama grubu |  | Aynı dönüşüm birçok ölçüye uygulanacaksa |  | Tek yerde; yeni ölçü kendiliğinden kapsanır |  | Öncelik, variant tür, örtük ölçüler |
+ | Alan parametresi |  | Kullanıcı ölçü ya da eksen seçecekse |  | Kolay; Desktop arayüzü |  | Boş seçim = hepsi |
+ | SWITCH ölçüsü ([Seçili Görünüm]) |  | Az sayıda, özel mantık |  | Her ölçü için ayrı dal |  | Dallar çoğaldıkça okunmaz olur |
+ | Görsel hesaplama |  | Tek görsele özel kümülatif/fark |  | Yalnızca o görselde |  | Başka görselde yeniden kullanılamaz |
+Test etmek: önce sorguyla, sonra görselle
+Hesaplama grubunu yayımlamadan önce DAX sorgu görünümünde (DAX query view) yıl × öğe ızgarası çıkar ve bilinen sayılarla karşılaştır. Bu oyun alanında aynı fikri Gorunum tablosu ve [Seçili Görünüm] ölçüsüyle deneyebilirsin:
+EVALUATE
+SUMMARIZECOLUMNS(Tarih[Yil], Gorunum[Gorunum], "Değer", [Seçili Görünüm])
+Sonuçta iki sağlama hemen görünür. Yıl düzeyinde YTD = Cari olmalı: 2024 için ikisi de 747.065,70 ₺. 2024'ün GY'si = 2023'ün Carisi olmalı: 400.869,55 ₺. 2022'de GY ve YoY % satırı hiç gelmez, çünkü önceki yıl yok; BLANK olan satırı SUMMARIZECOLUMNS atar. Bu üç kural tutmuyorsa öğede ya da tarih tablosunda sorun vardır.
+Kontrol listesiHer grup için öncelik yazılı mı ve gerekçesi belgelendi mi? · Oran ve metin ölçüleri ISSELECTEDMEASURE / ISNUMBER ile korunuyor mu? · Çoklu seçim ve boş seçim ifadeleri tanımlı mı? · Yıl düzeyinde YTD = Cari, GY = önceki yılın Carisi sağlaması yapıldı mı? · Rapor yazarlarına “Σ artık yok, açık ölçü kullan” notu iletildi mi?
+`, ex: [
+  { t: 'mc', q: `İki hesaplama grubu var: Ölçek (öncelik 20, “Gün Başına” öğesi) ve Zaman (öncelik 10, “YTD” öğesi). Mart 2024 hücresinde “Gün Başına + YTD” 5.012,60 ₺ çıkıyor; finans Ocak–Mart günlük ortalamasını, 1.707,59 ₺'yi bekliyor. Ne yaparsın?`,
+    o: [`Ölçek grubunun önceliğini Zaman'ın üstüne bir kat daha çıkarırım`, `Zaman grubunun önceliğini Ölçek'ten yüksek yaparım`, `Gün Başına öğesinde COUNTROWS yerine DISTINCTCOUNT kullanırım`, `İki öğeyi aynı grupta toplayıp birlikte seçtiririm`], a: 1,
+    why: `Yüksek öncelikli grup dışta çalışır. YTD'nin bölmeyi sarması için Zaman grubu daha yüksek öncelikte olmalı; şu an Ölçek dışta olduğu için üç aylık toplam Mart'ın gün sayısına bölünüyor. Ölçeği daha da yükseltmek sorunu büyütür; DISTINCTCOUNT gün sayısını değiştirmez; aynı gruptan iki öğe birlikte uygulanmaz.` },
+  { t: 'mc', q: `Zaman grubundaki YoY öğesi [Kâr Marjı %] için %20 → %22 değişimini “%10” gösteriyor. Finans “+2 puan” görmek istiyor ve ölçü adları sık değişiyor. En sağlam çözüm hangisi?`,
+    o: [`Öğede SELECTEDMEASURENAME() sonucunu "Kâr Marjı %" metniyle karşılaştırmak`, `Kâr Marjı % ölçüsünün biçim dizesini yüzde yerine ondalık sayıya çevirmek`, `Öğede ISSELECTEDMEASURE([Kâr Marjı %]) ile oranları ayırıp fark döndürmek`, `Oran ölçüleri için önceliği 0 olan ikinci bir zaman grubu kurmak`], a: 2,
+    why: `ISSELECTEDMEASURE ölçüye başvuru aldığı için yeniden adlandırmaya dayanıklıdır ve oranlarda puan farkını, tutarlarda yüzde değişimi döndürmeyi sağlar. Ad metniyle karşılaştırma ilk yeniden adlandırmada bozulur. Biçimi değiştirmek hesabı düzeltmez. İkinci grup aynı ölçüye iki kez uygulanır ve sorunu çözmez.` },
+  { t: 'mc', q: `Modele hesaplama grubu eklendikten sonra bir rapor yazarı, Satislar[Adet] sütununu tablo görseline değer olarak sürükleyemediğini söylüyor. Eski görseller ise çalışıyor. Ne yaparsın?`,
+    o: [`Hesaplama grubunu silip örtük ölçülere izin veririm`, `Adet sütununun veri türünü ondalık sayıya çeviririm`, `Açık bir adet ölçüsü yazıp onu kullandırırım`, `Sütunun “Özetleme” özelliğini Toplam olarak yeniden ayarlarım`], a: 2,
+    why: `Hesaplama grubu örtük ölçüleri kapatır; Σ kaybolur ama eski görseller çalışır. Kalıcı çözüm açık ölçüdür (modelde [Satılan Adet] zaten var). Grubu silmek tüm varyasyonları kaybettirir; veri türü ya da özetleme ayarı örtük ölçü engelini kaldırmaz.` },
+  { t: 'mc', q: `Kullanıcılar para birimi hesaplama grubunun dilimleyicisinde hem USD hem EUR seçince tablonun sessizce TL tutarlara döndüğünü fark ediyor. Kimse bunu fark etmeden sunum yapılmış. Kalıcı çözüm?`,
+    o: [`Çoklu seçim ifadesi tanımlayıp BLANK ve uyarı döndürmek`, `Dilimleyiciyi “Tümünü seç” seçeneği kapalı olacak şekilde ayarlamak`, `Para birimi öğelerinin önceliğini Zaman grubundan düşük tutmak`, `Raporun üstüne “tek para birimi seçin” metin kutusu eklemek`], a: 0,
+    why: `İki öğe seçilince grup uygulanmaz ve çıplak TL değeri görünür. multipleOrEmptySelectionExpression bu durumda ne döneceğini belirler; yanlış sayı yerine boş ve açıklayıcı biçim göstermek en güvenlisidir. “Tümünü seç”i kapatmak çoklu seçimi engellemez; öncelik başka bir konudur; metin kutusu kuralı uygulatmaz.` },
+  { t: 'dax', name: 'Brüt Kâr GY (Öğe Benzetimi)', q: `Brüt Kâr GY (Öğe Benzetimi): Zaman grubundaki “GY” öğesi [Brüt Kâr] ölçüsüne uygulandığında ne döndürürse onu veren bir ölçü yaz. SELECTEDMEASURE() yerine ölçünün kendisini koy.`,
+    sol: `CALCULATE([Brüt Kâr], SAMEPERIODLASTYEAR(Tarih[Tarih]))`, hint: `Öğe: CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih])). SELECTEDMEASURE() yerine [Brüt Kâr] yaz.` },
+  { t: 'dax', name: 'Günlük Ort. Satış YTD', q: `Günlük Ort. Satış YTD: “Gün Başına” grubu içte, Zaman grubu dışta çalıştığında oluşan ifadeyi yaz: yılbaşından bugüne net satışın, yılbaşından bugüne gün sayısına bölümü.`,
+    sol: `CALCULATE(DIVIDE([Net Satış], COUNTROWS(Tarih)), DATESYTD(Tarih[Tarih]))`, hint: `Dıştaki öğe (YTD) içteki öğenin (DIVIDE(…, COUNTROWS(Tarih))) tamamını sarar: CALCULATE(DIVIDE(...), DATESYTD(...)).` },
+  { t: 'query', q: `Hesaplama grubu testi gibi düşün: yalnızca 2024 yılı için Gorunum[Gorunum] öğelerini ve her öğede [Seçili Görünüm] değerini “Değer” sütununda döndüren bir sorgu yaz. YTD ile Cari aynı çıkmalı.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nCALCULATETABLE(\n    SUMMARIZECOLUMNS(Gorunum[Gorunum], "Değer", [Seçili Görünüm]),\n    Tarih[Yil] = 2024\n)`, hint: `SUMMARIZECOLUMNS(Gorunum[Gorunum], "Değer", [Seçili Görünüm]) ifadesini CALCULATETABLE(..., Tarih[Yil] = 2024) ile sar.` }
+] });
+/* ===================================================================== 2. PERFORMANS */
+ext('performans', { min: 22, html: `
+Bir sütunun bedelini ölçmek: kardinalite
+Anadolu Market'in modeli büyüdükçe dosya şişiyor ve yenileme uzuyor. İlk soru “hangi tablo büyük?” değil, “hangi sütun pahalı?” olmalı. VertiPaq her sütunu ayrı sıkıştırır; bir sütunun boyutunu en çok farklı değer sayısı (kardinalite) belirler. Bunu ölçmenin en hızlı yolu tek satırlık bir sorgudur:
+EVALUATE
+ROW(
+    "SatirNo",   DISTINCTCOUNT(Satislar[SatirNo]),
+    "SiparisNo", DISTINCTCOUNT(Satislar[SiparisNo]),
+    "Tarih",     DISTINCTCOUNT(Satislar[Tarih]),
+    "Tutar",     DISTINCTCOUNT(Satislar[Tutar]),
+    "MusteriNo", DISTINCTCOUNT(Satislar[MusteriNo]),
+    "UrunNo",    DISTINCTCOUNT(Satislar[UrunNo]),
+    "Durum",     DISTINCTCOUNT(Satislar[Durum]),
+    "Kanal",     DISTINCTCOUNT(Satislar[Kanal])
+)
+1.620 satırlık Satislar tablosunda sonuç: SatirNo 1.620, SiparisNo 910, Tarih 533, Tutar 357, MusteriNo 136, UrunNo 38, Durum 4, Kanal 3. SatirNo her satırda farklıdır: sözlüğü tablo kadar büyüktür ve art arda tekrar olmadığı için tekrar uzunluğu kodlaması (RLE) hiçbir şey kazandırmaz. Kanal ise 3 değerle neredeyse bedavadır. Gerçek bir modelde aynı oranlar milyonlarca satırla çarpılır.
+ | Sütun tipi |  | Tipik kardinalite |  | Karar |
+ | Satır kimliği, GUID, açıklama metni |  | Satır sayısı kadar |  | Raporda kullanılmıyorsa kaldır; detay gerekiyorsa ayrı bir detay sorgusu/sayfalandırılmış rapor |
+ | Sipariş no, fatura no |  | Yüksek |  | Sayım için gerekliyse tut ([Sipariş Sayısı]), metin değil tam sayı olsun |
+ | Tarih-saat |  | Çok yüksek |  | Tarih ve saat olarak böl, saniyeyi at |
+ | Tutar, fiyat |  | Orta-yüksek |  | Gereksiz ondalığı azalt; satırda hesaplanabiliyorsa (Adet × Fiyat) iki ucu tut, sonucu ölçüde hesapla |
+ | Kanal, durum, kategori |  | Çok düşük |  | Sorun değil |
+Tam sayı sütunları sözlük yerine değer kodlaması (value encoding) ile de saklanabilir; metin anahtar yerine tam sayı anahtar bu yüzden ucuzdur. Satır sırası da önemlidir: aynı değerler art arda geldikçe RLE daha iyi çalışır. VertiPaq sıralamayı kendisi seçer; sen kardinaliteyi düşürmeye odaklan.
+Tarih-saat ve ondalık: kardinaliteyi kırmak
+Saniye hassasiyetindeki bir zaman damgası bir yılda 31.536.000 farklı değer alabilir. Aynı bilgi tarih (365 değer) ve dakika düzeyinde saat (1.440 değer) olarak iki sütuna bölünürse toplam farklı değer 1.805'e iner. Bu oyun alanının WebOlaylari tablosu bu yüzden Tarih ve Saat sütunlarını ayrı tutar. Bölmeyi Power Query'de yap; DAX hesaplanmış sütunuyla bölersen orijinal sütun modelde kalır ve kazanç olmaz.
+Ondalık sayılarda da benzer bir kazanç vardır. Kuruş hassasiyeti yeten bir tutarı “Sabit ondalık sayı” (Fixed decimal) türüne almak hem boyutu hem kayan nokta yuvarlama sürprizlerini azaltır. Oran sütunlarını (ör. 0,1537291) iki-dört basamağa yuvarlamak kardinaliteyi ciddi düşürür; ama yuvarlamayı iş biriminin onayıyla yap.
+Otomatik tarih/saat: görünmeyen tablolar
+Otomatik tarih/saat açıkken Power BI modeldeki her tarih sütunu için gizli bir tarih tablosu oluşturur. Bu modelde Satislar[Tarih], Satislar[TeslimTarihi], Musteriler[KayitTarihi], Musteriler[IlkSiparis], Calisanlar[IseGiris], projelerin üç tarih sütunu… her biri ayrı bir gizli tablo demektir. Her gizli tablo, sütundaki en eski ve en yeni yılı tam yıllarla kapsar; 1950 doğumlu bir kayıt varsa 70 yıllık bir tablo oluşur.
+Kapatma yolu: Dosya → Seçenekler ve ayarlar → Seçenekler → Geçerli Dosya → Veri Yükü → Otomatik tarih/saat. Yeni dosyalar için Genel bölümündeki aynı ayarı da kapat.
+Önce: kendi Tarih tablon “Tarih tablosu olarak işaretle” (Mark as date table) ile işaretlenmiş olmalı.
+Yan etki: otomatik hiyerarşiyi (Tarih.Yıl, Tarih.Ay) kullanan görseller bozulur; bunları Tarih tablosunun sütunlarıyla yeniden kur. Hızlı ölçüler de otomatik hiyerarşiye yazılmışsa gözden geçir.
+Performans Analizi'ni okumak
+Performans Analizi (Performance analyzer) her görsel için üç süre verir. Kaydı başlat, Görselleri yenile de ve yavaş görseli aç:
+ | Yüksek olan |  | Anlamı |  | İlk bakılacak yer |
+ | DAX sorgusu |  | Model ya da ölçü yavaş |  | Sorguyu kopyala, DAX Studio'da Server Timings (DAX optimizasyonu dersi) |
+ | Görsel görüntüleme |  | Çizim yavaş: çok nokta, ağır özel görsel, çok satırlı tablo |  | Nokta sayısını azalt, ilk N, özet görsel + detay sayfası |
+ | Diğer |  | Görsel sırasını bekliyor; sayfadaki başka görseller önce çalışıyor |  | Sayfadaki görsel sayısını azalt |
+İlk ölçüm soğuk önbellekle yapılmadıysa sayılar yanıltır: ikinci yenilemede DAX süresi önbellekten gelir. Yavaş görselin süresini en az iki kez, aynı koşulla ölç.
+Sayfa ve görsel sayısı
+Her görsel en az bir sorgu gönderir; dilimleyiciler, kartlar ve metin kutusundaki dinamik başlıklar dahil. 30 görselli bir sayfada her biri 80 ms bile sürse sorgular sırayla beklediği için kullanıcı birkaç saniye bekler; Performans Analizi'nde bu bekleme “Diğer” sütununda birikir. Altı ayrı kart yerine çok değerli tek bir kart, on dilimleyici yerine filtre bölmesi, ayrıntı için ikinci bir sayfa kullan. Çapraz filtreleme her tıklamada sayfadaki tüm görselleri yeniden sorgulatır: gereksiz etkileşimleri “Etkileşimleri düzenle” ile kapat. Dilimleyicileri “Uygula” düğmesine bağlamak için Seçenekler → Geçerli Dosya → Sorgu azaltma (Query reduction) ayarlarını kullan.
+Anti-kalıp: her soruya hesaplanmış sütun
+“Hafta sonu satışı” istenince sık görülen çözüm, Satislar'a HaftaSonuMu hesaplanmış sütunu eklemektir. Bu sütun her yenilemede yeniden hesaplanır, olgu tablosunda yer kaplar ve Tarih tablosunda zaten olan bilgiyi kopyalar.
+-- Kaçın: olgu tablosunda hesaplanmış sütun
+HaftaSonuMu = RELATED(Tarih[HaftaSonu])
+Doğru yer boyut tablosudur: Tarih[HaftaSonu] 1.096 satırda yaşar, filtre ilişki üzerinden Satislar'a iner. Ölçüde yalnızca bir sütun filtresi yazılır ve sonuç (bu modelde hafta sonları 341.997,65 ₺ net satış) aynı çıkar. Kural: Satır başına bilgi boyuttan geliyorsa boyutta kalsın; olguda yalnızca anahtarlar ve sayılar dursun.
+Kontrol listesi (sırayla)1. Kullanılmayan sütunları kaldır (en büyük kazanç). 2. Yüksek kardinaliteli sütunları böl ya da yuvarla. 3. Otomatik tarih/saati kapat. 4. Olgu tablosundaki hesaplanmış sütunları boyuta, Power Query'ye ya da ölçüye taşı. 5. Sayfadaki görsel sayısını ve etkileşimleri azalt. 6. Ancak bundan sonra tek tek ölçüleri optimize et.
+`, ex: [
+  { t: 'mc', q: `Performans Analizi'nde 1.600 noktalı bir dağılım grafiği için DAX sorgusu 60 ms, Görsel görüntüleme 2.300 ms, Diğer 40 ms görünüyor. Ekip ölçüyü yeniden yazmayı öneriyor. Ne dersin?`,
+    o: [`Ölçü yavaş; değişkenlerle yeniden yazmak gerekir`, `Sorun çizimde; nokta sayısını ya da görseli değiştir`, `Sayfadaki diğer görseller bu görseli bekletiyor`, `Önbellek soğuk; ikinci ölçüm gereksiz`], a: 1,
+    why: `Sürenin neredeyse tamamı görsel görüntülemede; DAX yalnızca 60 ms. Ölçüyü yeniden yazmak bir şey kazandırmaz. Bekleme olsaydı “Diğer” yüksek olurdu. Nokta sayısını azaltmak (özetleme, örnekleme, farklı görsel) doğru adımdır.` },
+  { t: 'mc', q: `Yönetim sayfasında 28 görsel var: 12 kart, 8 dilimleyici, 8 grafik. Her görselin DAX süresi 100 ms'nin altında ama sayfa 4 saniyede açılıyor ve çoğu görselde “Diğer” süresi yüksek. İlk ne yaparsın?`,
+    o: [`Görsel sayısını azaltır, kartları birleştiririm`, `Bütün ölçüleri VAR kullanacak şekilde yeniden yazarım`, `Modeli DirectQuery'den Import'a geçiririm`, `Dilimleyicileri hiyerarşik dilimleyiciye çeviririm`], a: 0,
+    why: `“Diğer” süresi, görselin sırasını beklediği zamandır; sorun ölçüler değil, sorgu sayısıdır. Görsel sayısını azaltmak doğrudan bekleme süresini düşürür. Ölçüler zaten hızlı; depolama modu bilgisi soruda yok; hiyerarşik dilimleyici sorgu sayısını anlamlı azaltmaz.` },
+  { t: 'mc', q: `Otomatik tarih/saati kapatmak istiyorsun. Model kendi Tarih tablosuna sahip ve işaretli. Kapatmadan önce neyi kontrol etmelisin?`,
+    o: [`Tarih tablosunun Import modunda olup olmadığını`, `Bütün tarih sütunlarının metne çevrilmiş olduğunu`, `Otomatik Yıl/Ay hiyerarşisini kullanan görselleri`, `Tarih tablosunun 1900 yılından başlayıp başlamadığını`], a: 2,
+    why: `Ayar kapanınca gizli tarih tabloları ve otomatik hiyerarşi kaybolur; onları kullanan görseller ve hızlı ölçüler bozulur, Tarih tablosunun sütunlarıyla yeniden kurulmalıdır. Depolama modu, metne çevirme ya da 1900 başlangıcı bu kararla ilgili değildir.` },
+  { t: 'mc', q: `Olgu tablosunda her satırda farklı olan SatirNo sütunu var. Raporlarda hiçbir görselde, ölçüde ya da ilişkide kullanılmıyor; denetim ekibi nadiren tek bir satırı arıyor. Ne yaparsın?`,
+    o: [`Sütunu gizlerim; gizli sütun yer kaplamaz`, `Sütunu metin türüne çeviririm; sözlükte daha iyi sıkışır`, `Sütunu tutar ama tabloyu SatirNo'ya göre sıralarım`, `Modelden kaldırır, denetime ayrıntı raporu sunarım`], a: 3,
+    why: `Benzersiz bir sütun modelde en pahalı sütunlardandır ve gizlemek yer kazandırmaz. Metin türü daha da pahalıdır. Sıralama tek başına sözlük boyutunu küçültmez. Kullanılmıyorsa kaldırmak, nadir ihtiyaç için kaynağa giden ayrıntı raporu sunmak doğru dengedir.` },
+  { t: 'dax', name: 'Hafta İçi Net Satışı', q: `Hafta İçi Net Satışı: Olgu tablosuna hesaplanmış sütun eklemeden, hafta içi günlerinin net satışını veren ölçüyü yaz. Tarih[HaftaSonu] sütunu "Evet" / "Hayır" değerleri alır.`,
+    sol: `CALCULATE([Net Satış], Tarih[HaftaSonu] = "Hayır")`, hint: `Bilgi boyut tablosunda: CALCULATE([Net Satış], Tarih[HaftaSonu] = "Hayır"). Filtre ilişki üzerinden Satislar'a iner.` },
+  { t: 'dax', name: 'Uzun Kargolu Net Satış', q: `Uzun Kargolu Net Satış: Kargo süresi 5 günden uzun olan satırların net satışı. “GecikmeliMi” diye hesaplanmış sütun yazmadan, var olan Satislar[KargoGun] sütunuyla yaz.`,
+    sol: `CALCULATE([Net Satış], Satislar[KargoGun] > 5)`, hint: `Sayısal sütun üzerinde doğrudan filtre: CALCULATE([Net Satış], Satislar[KargoGun] > 5).` },
+  { t: 'query', q: `Boyut tablosunun maliyetini ölç: Musteriler tablosundaki MusteriNo, Sehir ve Segment sütunlarının farklı değer sayılarını tek satırda döndür.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nROW(\n    "MusteriNo", DISTINCTCOUNT(Musteriler[MusteriNo]),\n    "Sehir", DISTINCTCOUNT(Musteriler[Sehir]),\n    "Segment", DISTINCTCOUNT(Musteriler[Segment])\n)`, hint: `ROW("Ad", ifade, "Ad2", ifade2, ...) tek satırlık tablo üretir; her sütun için DISTINCTCOUNT(Musteriler[...]).` }
+] });
+/* ===================================================================== 3. DAX OPTİMİZASYONU */
+ext('dax-opt', { min: 24, html: `
+Server Timings'i okumak: bir ekranı adım adım yorumla
+Bir matris 3 saniyede açılıyor. Performans Analizi'nden sorguyu kopyaladın, DAX Studio'da Clear Cache sonrası Server Timings açıkken çalıştırdın. Aşağıdaki değerler örnek bir ekrandır (bu modelden ölçülmüş değil); amaç okumayı öğrenmek:
+ | Alan |  | Örnek değer |  | Nasıl okunur? |
+ | Total |  | 3.050 ms |  | Sorgunun toplam süresi |
+ | FE |  | 2.700 ms (%89) |  | Formül motoru tek iş parçacığında çalışıyor; asıl yük burada |
+ | SE |  | 350 ms (%11) |  | Depolama motorunda geçen süre |
+ | SE CPU |  | 1.400 ms |  | SE CPU / SE ≈ 4: tarama paralel çalışmış, SE sağlıklı |
+ | SE Queries |  | 612 |  | Çok sayıda küçük SE sorgusu: yineleyici içinde bağlam geçişi |
+ | SE Cache |  | 540 |  | Sorguların çoğu önbellekten geldi; aynı veri tekrar tekrar isteniyor |
+Bu tablo tek başına bir teşhis koyar: işin çoğu FE'de, SE sorguları çok ve küçük. Neden genellikle bir yineleyicinin her satırında ölçü çağrılmasıdır. Sonraki adım sorgu listesine bakmaktır: her xmSQL satırında döndürülen satır sayısı (Rows) ve boyut (KB) yazar. Tek bir sorgu 1,6 milyon satır döndürüyorsa sorun materyalizasyondur: SE büyük bir ara tabloyu FE'ye taşımıştır. xmSQL metninde CallbackDataID görüyorsan SE satır satır FE'ye geri çağırma yapıyordur.
+Query Plan sekmesinde mantıksal ve fiziksel plan vardır. Fiziksel planda büyük “Records” sayılı Spool satırları, FE'nin bellekte tuttuğu ara sonuçlardır. Hedef: az sayıda SE sorgusu, küçük ara sonuçlar, callback yok.
+Sütun filtresi, KEEPFILTERS ve FILTER(tablo): hız ve anlam birlikte
+Pazarlama bir “Web Satışı” ölçüsü istiyor ve onu Kanal satırlı bir matrise koyacak. Üç yazımın hızı ve sonucu farklıdır:
+EVALUATE
+SUMMARIZECOLUMNS(
+    Satislar[Kanal],
+    "Net Satış", [Net Satış],
+    "Sütun filtresi", CALCULATE([Net Satış], Satislar[Kanal] = "Web"),
+    "KEEPFILTERS", CALCULATE([Net Satış], KEEPFILTERS(Satislar[Kanal] = "Web"))
+)
+Web satırında üçü de 457.330,90 ₺ verir. Mobil satırında ise sütun filtresi yine 457.330,90 ₺ gösterir: Satislar[Kanal] = "Web", satırdan gelen “Kanal = Mobil” filtresinin üzerine yazar. KEEPFILTERS iki filtreyi kesiştirir; Mobil ve Mağaza satırları boş kalır. İkisi de SE'de çözülür, hız aynıdır; fark tamamen anlamdadır.
+Üçüncü yol FILTER(Satislar, Satislar[Kanal] = "Web") yazmaktır. Bu, olgu tablosunu satır satır dolaşıp tüm sütunlarıyla bir tablo filtresi üretir. Büyük tabloda materyalizasyon demektir ve filtre genişletilmiş tablonun bütün sütunlarına uygulanır; sonucu tahmin etmek zorlaşır. Kural: tek sütun koşulu → sütun filtresi; mevcut seçime saygı → KEEPFILTERS; FILTER yalnızca ölçüye dayalı koşulda ve küçük bir tablo üzerinde (ör. FILTER(VALUES(Urunler[UrunNo]), [Net Satış] > 5000)).
+Modeldeki örnekHazır [Net Satış] ölçüsü Satislar[Durum] <> "İptal" sütun filtresiyle yazılmıştır. Bu yüzden Durum satırlı bir tabloda her satırda 1.250.772,45 ₺ görünür; İptal satırı dahil. Aynı ölçü KEEPFILTERS ile yazılsaydı İptal satırı boş, Teslim Edildi 1.049.627,00 ₺ olurdu. Ölçüyü hangi sütunlarla kesileceğini düşünerek yaz.
+IF, SWITCH ve kısa devre
+Motor, IF ve SWITCH'te çoğu zaman yalnızca gereken dalı hesaplar. Ama koşul satıra bağlıysa ve bir yineleyicinin içindeyse, SE her iki dalın verisini önceden toplayabilir. Bu bir hata değildir; bazen tek bir geniş SE sorgusu, satır başına küçük sorgulardan hızlıdır. IF.EAGER bu davranışı bilerek ister. Kendi tarafında yapabileceğin iki şey var:
+Ucuz kontrolü öne al: IF(ISBLANK([Net Satış]), BLANK(), <pahalı ifade>). Satışı olmayan hücrelerde pahalı kısım hesaplanmaz; ayrıca boş satırlar matristen düşer.
+SWITCH(TRUE(), …) sırası: En sık doğru olan koşulu ilk sıraya koy; koşullarda ölçü değil, değişken kullan.
+Tersi de bir anti-kalıptır: IF([Net Satış] > 0, [Net Satış], 0) gibi “boş yerine 0” yazımları, satışı olmayan her ürün-gün bileşimini görünür kılar. Matris 40 ürün × 1.096 gün = 43.840 satıra çıkabilir ve yavaşlık DAX'tan değil, sıfırların kendisinden gelir.
+DISTINCTCOUNT'un bedeli
+[Müşteri Sayısı] ve [Sipariş Sayısı] DISTINCTCOUNT kullanır. Farklı sayım toplanamaz: ayların müşteri sayılarını toplayıp yıl bulamazsın, çünkü aynı müşteri birden çok ayda alışveriş yapar. Bu yüzden motor her hücre için sütunun sözlüğünü yeniden tarar; kardinalite yükseldikçe maliyet artar. Toplama tabloları da çoğu zaman farklı sayımı karşılayamaz.
+COUNTROWS(VALUES(Satislar[MusteriNo])) aynı sonucu (bu modelde 136) verir ve çoğu zaman aynı planı üretir; tek başına hızlandırmaz.
+Asıl kazanç kardinaliteden gelir: birleştirilmiş metin anahtar (“Musteri-Urun”) üzerinde farklı sayım yerine iki tam sayı sütun ya da önceden hesaplanmış bir anahtar kullan.
+DirectQuery'de yaklaşık sayım (APPROXIMATEDISTINCTCOUNT) kaynağa itilebilir; “yaklaşık” olduğu raporda belirtilmeli. Bu oyun alanının motorunda yoktur.
+Değişken: bir kez hesapla, ama doğru yerde
+Değişken tanımlandığı yerdeki bağlamda bir kez hesaplanır ve sonra sabittir. Bu hem hız kazandırır hem de sık bir hataya yol açar:
+Yanlış 2023 Satışı =
+VAR s = [Net Satış]
+RETURN CALCULATE(s, Tarih[Yil] = 2023)
+Doğru 2023 Satışı =
+CALCULATE([Net Satış], Tarih[Yil] = 2023)
+Toplamda yanlış ölçü 1.250.772,45 ₺ (bütün yıllar), doğru ölçü 400.869,55 ₺ verir; 2024 satırında yanlış ölçü 747.065,70 ₺ gösterir. CALCULATE bir sabitin bağlamını değiştiremez. Kural: değişkeni, değerini istediğin bağlamda tanımla; CALCULATE ile değiştirilecek bir şeyse değişkene ölçünün kendisini değil, sonucu kullanılacak tabloyu ya da filtreyi koy.
+Karar ağacı
+Önce ölç: Clear Cache + Server Timings. FE mi SE mi baskın?
+SE baskın ve sorgu az ama büyükse: model sorunu (kardinalite, ilişki, sütun sayısı) → Performans ve VertiPaq dersi.
+FE baskın ve SE sorgusu çoksa: yineleyiciyi boyut anahtarına taşı, bağlam geçişini azalt.
+CallbackDataID varsa: IF/koşulu CALCULATE filtresine taşı.
+Büyük materyalizasyon varsa: FILTER(olgu) yerine sütun filtresi ya da KEEPFILTERS.
+Aynı ölçü bir formülde birden çok kez geçiyorsa: VAR.
+Her değişiklikten sonra sonucu karşılaştır; hızlı ama yanlış ölçü, yavaş ve doğru ölçüden kötüdür.
+`, ex: [
+  { t: 'mc', q: `Server Timings: Total 2.900 ms, FE 2.600 ms, SE 300 ms, SE Queries 4. Sorgulardan biri 1,8 milyon satır döndürüyor; xmSQL'de CallbackDataID yok. En olası neden ve ilk deneme?`,
+    o: [`SE sorgusu çok; yineleyiciyi boyut anahtarına taşımak`, `Materyalizasyon; FILTER(olgu) yerine sütun filtresi`, `Callback; IF koşulunu CALCULATE filtresine taşımak`, `Kardinalite; tarih-saat sütununu ikiye bölmek`], a: 1,
+    why: `Az sayıda ama devasa bir SE sonucu ve baskın FE süresi materyalizasyonun işaretidir: FE milyonlarca satırı bellekte işliyor. Tipik kaynak FILTER(Satislar, …) gibi tablo filtresidir. SE sorgu sayısı az olduğu için bağlam geçişi değil; callback yok; kardinalite SE süresini büyütürdü.` },
+  { t: 'mc', q: `Bir ölçüde SUMX(Satislar, IF(Satislar[Indirim] > 0, Satislar[Tutar] * 0.9, Satislar[Tutar])) var ve xmSQL'de CallbackDataID görünüyor. Sonucu değiştirmeden ne yaparsın?`,
+    o: [`İfadeyi IFERROR ile sararım; hata yakalama hızlandırır`, `SUMX'i AVERAGEX'e çeviririm; daha az satır okunur`, `İki ayrı CALCULATE toplamına bölerim`, `IF yerine SWITCH(TRUE(), …) yazarım; SE onu anlar`], a: 2,
+    why: `Koşulu filtreye taşırsan iki saf SE toplamı kalır: CALCULATE(SUM(Tutar), Indirim > 0) * 0,9 + CALCULATE(SUM(Tutar), Indirim = 0). IFERROR yavaşlatır; AVERAGEX sonucu değiştirir; SWITCH(TRUE()) de satır satır koşuldur ve callback'i kaldırmaz.` },
+  { t: 'mc', q: `Bir analist VAR Toplam = [Net Satış] RETURN CALCULATE(Toplam, REMOVEFILTERS(Kategoriler)) yazıp kategori payının paydasını bulmaya çalışıyor; her kategoride pay %100 çıkıyor. Neden?`,
+    o: [`REMOVEFILTERS ilişki üzerinden çalışmaz`, `Kategoriler tablosu Satislar ile bağlı değil`, `DIVIDE yerine bölme işareti kullanıldığı için`, `Değişken bir kez hesaplanmış; CALCULATE onu değiştiremez`], a: 3,
+    why: `Değişken kategori bağlamında hesaplanıp sabitlenir; CALCULATE sabit bir değerin bağlamını değiştiremez, bu yüzden pay = kendisi / kendisi. Doğrusu CALCULATE([Net Satış], REMOVEFILTERS(Kategoriler)) yazmaktır. REMOVEFILTERS ve ilişki doğru çalışıyor; bölme işareti sonucu %100 yapmaz.` },
+  { t: 'dax', name: 'Web Satışı (Kesişim)', q: `Web Satışı (Kesişim): Web kanalının net satışı; ama Kanal satırlı bir matriste Mobil ve Mağaza satırları boş kalmalı (mevcut kanal seçimine saygı).`,
+    sol: `CALCULATE([Net Satış], KEEPFILTERS(Satislar[Kanal] = "Web"))`, hint: `Sütun filtresi mevcut Kanal filtresinin üzerine yazar. KEEPFILTERS(Satislar[Kanal] = "Web") ile kesişim al.`, grid: [{ t: 'Satislar', c: 'Kanal' }, { t: 'Tarih', c: 'Yil' }] },
+  { t: 'dax', name: 'Sepet Farkı GY (VAR)', q: `Sepet Farkı GY (VAR): [Ortalama Sepet] ile geçen yılın ortalama sepeti arasındaki fark. Her ifadeyi bir kez hesapla; geçen yıl yoksa BLANK döndür.`,
+    sol: `VAR s = [Ortalama Sepet]\nVAR g = CALCULATE([Ortalama Sepet], SAMEPERIODLASTYEAR(Tarih[Tarih]))\nRETURN IF(NOT ISBLANK(g), s - g)`, hint: `İki değişken (bu yıl, geçen yıl), sonra IF(NOT ISBLANK(g), s - g).` },
+  { t: 'dax', name: 'Büyük Sepetli Sipariş', q: `Büyük Sepetli Sipariş: Toplam tutarı 2.000 ₺'yi aşan iptal edilmemiş sipariş sayısı. Olgu tablosunun satırlarında değil, sipariş numaraları üzerinde dolaş.`,
+    sol: `CALCULATE(\n    COUNTROWS(FILTER(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])) > 2000)),\n    Satislar[Durum] <> "İptal"\n)`, hint: `FILTER(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])) > 2000) siparişleri süzer; COUNTROWS sayar; dıştaki CALCULATE iptalleri çıkarır.` },
+  { t: 'query', q: `DAX Studio'da Server Timings ile ölçeceğin bir test sorgusu yaz: Tarih[YilAy] satırlarında “Net Satış” ve “Sipariş” ([Sipariş Sayısı]) sütunlarını döndür.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[YilAy],\n    "Net Satış", [Net Satış],\n    "Sipariş", [Sipariş Sayısı]\n)`, hint: `SUMMARIZECOLUMNS(Tarih[YilAy], "Net Satış", [Net Satış], "Sipariş", [Sipariş Sayısı]) — görselin gönderdiği sorgunun sade hâli.` }
+] });
+/* ===================================================================== 4. KURUMSAL MODEL */
+ext('kurumsal-model', { min: 22, html: `
+Bileşik model: tablo tablo karar vermek
+Senaryo: Anadolu Market'in satış satırları şirket içindeki bir SQL veritabanında yüz milyonlarca satıra ulaştı. Yönetim aylık kategori özetine bakıyor; mağaza müdürleri ise gün içi satışları görmek istiyor. Tek bir depolama modu herkese uymaz; bileşik model (composite model) her tabloya ayrı mod vermeyi sağlar:
+ | Tablo |  | Mod |  | Gerekçe |
+ | Satislar (ayrıntı) |  | DirectQuery |  | Belleğe sığmıyor, gün içi güncellik gerekli |
+ | Tarih, Urunler, Kategoriler, Musteriler |  | Dual |  | Dilimleyiciler bellekten açılır; DirectQuery olguyla birleşince sorguya kaynakta katılır |
+ | Hedefler |  | Import |  | Excel'den gelir, ayda bir değişir |
+ | Aylık özet tablo |  | Import (gizli) |  | Yönetim sorgularını bellekten karşılar |
+Boyutlar Import olsaydı, DirectQuery olgu ile aralarındaki ilişki sınırlı ilişki (limited relationship) olurdu: farklı kaynak grupları arasında motor ilişkiyi tam bir birleşim gibi kuramaz. Sonuçları: RELATED çalışmaz, eşleşmeyen satırlar için boş satır (blank row) oluşmaz, her sorgu iki dünya arasında veri taşır. Dual bu yüzden boyutların varsayılanıdır.
+Yayımlanmış modele bağlanıp genişletmek
+Finans ekibi onaylı satış modelini kullanmak, ama kendi gider bütçesi tablosunu eklemek istiyor. Canlı bağlantıyı “yerel model”e çevirmek (Power BI anlam modellerine DirectQuery) bunu sağlar. Dikkat: kullanıcının kaynak modelde Derleme (Build) izni olmalı, kaynak modeldeki RLS geçerliliğini korur ve kiracıda “Power BI anlam modellerine DirectQuery bağlantılarına izin ver” ayarı açık olmalı. Zincir uzadıkça (model üstüne model üstüne model) sorgular yavaşlar ve hata ayıklamak zorlaşır; iki halkadan uzun zincirden kaçın.
+DirectQuery'e geri dönüş ve Direct Lake davranışı
+Direct Lake'in iki biçimi farklı davranır; karar verirken bu farkı bilmek gerekir:
+ |  |  | Direct Lake on OneLake |  | Direct Lake on SQL (SQL analiz uç noktası) |
+ | Kaynak |  | Bir ya da birden çok Fabric öğesinin Delta tabloları |  | Tek bir lakehouse/warehouse'un SQL uç noktası |
+ | DirectQuery'e geri dönüş |  | Yok |  | Var: SQL görünümü (view), SQL tarafı ayrıntılı erişim denetimi ya da RLS, işlenmemiş tablo, sınır aşımı |
+ | Sınır (guardrail) aşılırsa |  | Yenileme başarısız olur; Delta tabloları iyileştirilene kadar model sorgulanamaz |  | Geri dönüş açıksa sorgu DirectQuery ile çalışır, yenileme uyarıyla tamamlanır |
+ | Import tablolarla bileşik |  | Desteklenir |  | Aynı modelde karıştırılamaz; Desktop'ta üstüne bileşik model kurulabilir |
+Kapasiteye göre sınırlardan örnekler: F2–F8'de tablo başına 1.000 Parquet dosyası/satır grubu, 300 milyon satır ve diskte 10 GB model; F64'te tablo başına 5.000 dosya/satır grubu ve 1,5 milyar satır, belleğe alınabilecek veri için 25 GB üst sınır. Sınırın altında kalmanın yolu çoğu zaman SKU büyütmek değil, Delta tablolarını bakımlı tutmaktır: küçük dosyaları birleştirmek (compaction), V-Order ile yazmak.
+İlk sorgu yavaşsa: Direct Lake sütunları ihtiyaç oldukça belleğe alır (transcoding). Sabah ilk açılış soğuktur; çerçeveleme (framing) sonrası bir ısınma sorgusu planlamak yaygın bir çözümdür.
+Bellek dolarsa: sütunlar bellekten atılıp yeniden yüklenir (paging); her şey çalışır ama yavaşlar.
+Geri dönüşü izle: “Direct Lake davranışı” (Direct Lake behavior) özelliğiyle geri dönüşü kapatırsan sorun sessiz yavaşlık yerine açık hata olarak görünür; Fabric kapasite ölçümleri uygulamasında geri dönüşleri takip et.
+SQL görünümü yerine: lakehouse'ta somutlaştırılmış görünüm (materialized view) ya da dönüşümü yapılmış bir Delta tablosu kullan.
+Toplama tabloları ve artımlı yenileme: kısa hatırlatma
+Bu iki konunun ayrıntısını ayrı bir ders işliyor; burada yalnızca karar ölçütü. Toplama tablosunun değeri, tanesine (grain) bağlıdır. Bu modelde Satislar 1.620 satırdır; ay × kategori düzeyinde özet 199 satıra iner. Ürün düzeyinde bir soru gelirse bu özet cevap veremez ve sorgu ayrıntıya düşer. Özet tabloyu, panoların gerçekten sorduğu soruların tanesinde kur; Performans Analizi ile “özet kullanıldı mı?” diye doğrula. Artımlı yenileme ise yenileme süresinin sınırlarını (paylaşılan kapasitede 2 saat, Premium/Fabric'te 5 saat) aşan tablolar için ilk adaydır.
+Modeli kullanıcıya anlatmak: klasörler, açıklamalar, çeviriler
+119 ölçülük bir model, alan listesinde düz bir liste olarak kullanılamaz. Kurumsal bir modelde şu üç meta veri en az ölçü kadar önemlidir:
+Görüntüleme klasörü (Display folder): Satış\\Temel, Satış\\Zaman Zekâsı, Müşteri\\RFM. Ters eğik çizgi alt klasör, noktalı virgül aynı ölçüyü iki klasörde gösterir. Klasör adları da çevrilebilir.
+Açıklama (Description): alan listesinde araç ipucu olarak çıkar. “İptal hariç, iade dahil net satış; Tarih tablosuyla aktif ilişki” gibi tanımlar yazılmalı. Copilot ve “Yapay zekâ için verileri hazırla” (Prep data for AI) ayarları da bu açıklamalardan yararlanır.
+Gizleme ve özetleme: anahtar sütunlar (UrunNo, MusteriNo) olgu tablosunda gizli olmalı; sayısal kimlikler “Özetleme: Hiçbiri” olmalı ki kimse SatirNo toplamı almasın.
+Meta veri çevirileri (translations)
+Almanya'daki ortak şirket aynı modeli kullanacak. Üç ayrı çeviri türü vardır ve zorlukları farklıdır:
+ | Tür |  | Neyi çevirir? |  | Nasıl? |
+ | Meta veri çevirisi |  | Tablo, sütun, ölçü, hiyerarşi adları; açıklamalar; görüntüleme klasörleri |  | Modelin içinde, dil (culture) başına; Translations Builder gibi araçlarla |
+ | Rapor etiketi çevirisi |  | Başlıklar, düğme metinleri |  | Yerleşik özellik yok; etiketleri ölçü olarak tutan gizli bir tablo kalıbı |
+ | Veri çevirisi |  | “Elektronik” → “Elektronik”, “Ev & Yaşam” → “Haus & Wohnen” |  | Kaynakta çevrilmiş sütunlar + seçim mekanizması |
+Sayfa sekmesi adları ve metin kutularındaki sabit yazılar çevrilemez; çok dilli raporlar Web'de yayımla ile desteklenmez. Ölçü adlarını çevirmek DAX'ı bozmaz: formüller nesneye başvurur, görünen ada değil.
+Nesne düzeyinde güvenlik (OLS) de kurumsal modelin parçasıdır; ayrıntısı Satır ve nesne düzeyinde güvenlik dersindedir.
+Ölçek kararları
+ | Belirti |  | Önce dene |  | Sonra |
+ | Pro'da model boyutu 1 GB sınırına yaklaştı |  | Gereksiz sütun, kardinalite, otomatik tarih/saat |  | PPU ya da Fabric kapasitesi; büyük model biçimi |
+ | Yenileme 2 saati aşıyor |  | Sorgu katlama, artımlı yenileme |  | Kapasite (5 saat), XMLA ile bölüm bölüm yenileme |
+ | Günde 8'den fazla yenileme gerekiyor |  | Gerçekten gerekli mi? Hangi tablo? |  | Kapasitede 48'e kadar zamanlanmış; Direct Lake ya da DirectQuery |
+ | Birden çok ekip aynı tanımları yeniden yazıyor |  | Tek onaylı model + Derleme izni |  | Bileşik modelle ekip tablolarını ekleme |
+Kontrol listesiHer tablonun modu ve gerekçesi yazılı mı? · Boyutlar Dual mı? · Direct Lake'te geri dönüş davranışı bilinçli seçildi mi, izleniyor mu? · Toplama tablosunun tanesi gerçek sorulara uyuyor mu? · Her ölçünün açıklaması ve klasörü var mı? · Anahtar sütunlar gizli mi?
+`, ex: [
+  { t: 'mc', q: `Direct Lake on SQL modelinde satış tablosu, lakehouse'taki bir SQL görünümüne (view) bağlı. Kullanıcılar bazı sayfaların diğerlerinden çok yavaş olduğunu söylüyor. Kalıcı çözüm?`,
+    o: [`Modeli Import moduna alıp her saat yenilemek`, `Kapasiteyi bir üst SKU'ya yükseltmek`, `Görünümü bir Delta tablosuna dönüştürmek`, `Görünüm tablosunu Dual depolama moduna almak`], a: 2,
+    why: `SQL görünümleri Direct Lake on SQL'de DirectQuery'e geri dönüşe yol açar. Mantığı bir Delta tablosuna (ya da somutlaştırılmış görünüme) taşımak sorguyu Direct Lake'te tutar. SKU büyütmek görünüm kaynaklı geri dönüşü kaldırmaz; Import gereksiz kopya ve gecikme yaratır; Direct Lake tablosu Dual yapılamaz.` },
+  { t: 'mc', q: `Direct Lake on OneLake modelinde bir tablo F8 kapasitesinin satır sınırını aştıktan sonra sabah yenilemesi başarısız oldu ve rapor hiç açılmıyor. Ne olmuş ve ne yaparsın?`,
+    o: [`Sorgular DirectQuery'e döndü; beklemek yeterli`, `Sınır aşıldı; Delta'yı iyileştir ya da SKU büyüt`, `Çerçeveleme bozuldu; modeli yeniden yayımlamak gerekir`, `RLS hatası; rol üyeliklerini kontrol et`], a: 1,
+    why: `Direct Lake on OneLake'te DirectQuery'e geri dönüş yoktur; sınır aşılınca yenileme başarısız olur ve tablolar iyileştirilene (ya da kapasite büyütülene) kadar model sorgulanamaz. Geri dönüş yalnızca Direct Lake on SQL'de vardır; yeniden yayımlamak ya da RLS bu sorunu açıklamaz.` },
+  { t: 'mc', q: `Alman ortaklar aynı satış modelini kullanacak. Alan listesinde “Net Satış”, “Kategori” gibi adları ve ölçü açıklamalarını Almanca görmeleri gerekiyor; kategori değerleri Türkçe kalabilir. En az çabalı doğru yol?`,
+    o: [`Her ölçünün Almanca kopyasını yazıp ayrı klasöre koymak`, `Kaynağa Almanca kategori sütunları eklemek`, `Modelde Almanca meta veri çevirisi tanımlamak`, `Raporu kopyalayıp başlıkları elle Almancaya çevirmek`], a: 2,
+    why: `İstenen yalnızca nesne adları ve açıklamalar: bu meta veri çevirisidir ve modelin içinde dil başına tutulur. Kopya ölçüler bakım yükünü ikiye katlar; Almanca kategori sütunları veri çevirisidir (istenmiyor); rapor kopyalamak alan listesini çevirmez.` },
+  { t: 'mc', q: `Finans ekibi onaylı satış modeline canlı bağlanıp kendi gider bütçesi Excel'ini eklemek istiyor. Ekip üyeleri model sahibi değil. Neyin hazır olması gerekir?`,
+    o: [`Derleme izni ve kiracıda DirectQuery izni`, `Kaynak modelin RLS rollerinin kaldırılması`, `Ekibe kaynak çalışma alanında Üye rolü verilmesi`, `Kaynak modelin Import'tan DirectQuery'ye çevrilmesi`], a: 0,
+    why: `Yayımlanmış modelin üzerine yerel tablo eklemek için kullanıcının kaynak modelde Derleme iznine ve kiracı ayarının açık olmasına ihtiyaç var. RLS kaldırılmaz, kaynak modelde geçerliliğini korur; Üye rolü gereğinden fazla yetkidir; kaynak modelin modunu değiştirmek gerekmez.` },
+  { t: 'mc', q: `Bileşik modelde boyutlar Import, satış olgusu DirectQuery. Bir analist hesaplanmış sütunda RELATED(Urunler[Kategori]) kullanamadığını ve dilimleyicilerin yavaş olduğunu söylüyor. Kök neden?`,
+    o: [`Ürünler tablosunda yinelenen anahtarlar var`, `İlişki çift yönlü olmadığı için filtre inmiyor`, `DirectQuery hesaplanmış sütunları hiç desteklemez`, `İlişki sınırlı (limited) ilişkiye dönmüş`], a: 3,
+    why: `Import boyut ile DirectQuery olgu arasındaki ilişki sınırlı (limited) ilişkidir; RELATED çalışmaz ve sorgular iki dünya arasında veri taşır. Boyutları Dual yapmak çözer. Yinelenen anahtar ya da ilişki yönü bu iki belirtiyi birlikte açıklamaz.` },
+  { t: 'query', q: `Bir toplama tablosunun içeriğini önizle: Tarih[YilAy] ve Kategoriler[Kategori] düzeyinde “Net Satış” döndüren bir sorgu yaz.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nSUMMARIZECOLUMNS(\n    Tarih[YilAy],\n    Kategoriler[Kategori],\n    "Net Satış", [Net Satış]\n)`, hint: `SUMMARIZECOLUMNS'a iki gruplama sütunu ve bir ölçü ver.` },
+  { t: 'query', q: `Toplama tablosu ne kadar küçülür? Tek satırda Satislar tablosunun satır sayısını (“Ayrıntı”) ve Satislar üzerinde Tarih[YilAy] × Urunler[Kategori] bileşimlerinin sayısını (“Özet”) döndür.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nROW(\n    "Ayrıntı", COUNTROWS(Satislar),\n    "Özet", COUNTROWS(SUMMARIZE(Satislar, Tarih[YilAy], Urunler[Kategori]))\n)`, hint: `COUNTROWS(Satislar) ve COUNTROWS(SUMMARIZE(Satislar, Tarih[YilAy], Urunler[Kategori])) ifadelerini ROW içinde iki sütun yap.` }
+] });
+/* ===================================================================== 5. GÜVENLİK */
+ext('guvenlik', { min: 22, html: `
+Dinamik RLS: kim, hangi satırı?
+Satış Müdürü Elif Doğan şunu istiyor: “Temsilcilerim yalnızca kendi satışlarını görsün. Ben ekibimin tamamını göreyim. Genel müdür her şeyi görsün.” Modelde Satislar[TemsilciNo] → Calisanlar[CalisanNo] ilişkisi ve Calisanlar[Eposta] sütunu zaten var. En basit dinamik rol tek satırlık bir tablo filtresidir:
+-- Rol: "Temsilci", tablo: Calisanlar
+Calisanlar[Eposta] = USERPRINCIPALNAME()
+Ece Kurt oturum açtığında Calisanlar tek satıra iner, filtre ilişki üzerinden Satislar'a akar. Bunu yayımlamadan önce aynı filtreyi bir ölçüyle taklit ederek doğrulayabilirsin:
+Ece Kurt Testi =
+CALCULATE([Net Satış], Calisanlar[Eposta] = "ece.kurt@anadolumarket.com")
+Sonuç 146.836,45 ₺ olmalıdır; rapor “Farklı görüntüle” ile açıldığında kart bu sayıyı göstermiyorsa rol ya da ilişki hatalıdır. Dikkat edilecek üç ayrıntı:
+Boş e-posta: Bu modelde Pınar Yıldırım, Defne Öztürk ve Kerem Yılmaz'ın Eposta değeri boş. Rolde olsalar bile hiçbir şey görmezler. Eşleşen satırı olmayan kullanıcı boş rapor görür; hata mesajı almaz.
+Biçim: USERPRINCIPALNAME() Service'te kullanıcının UPN'ini döndürür. Tabloda büyük/küçük harf ya da eski alan adı farkı varsa eşleşme kaçar. Konuk (B2B) kullanıcılarda değer #EXT# içeren bir biçimde gelebilir; gerçek bir konuk hesabıyla test et.
+Boyutlar filtrelenmez: Filtre Calisanlar → Satislar yönünde akar. Musteriler ve Urunler boyutlarının tüm satırları görünür kalır; temsilci tüm müşteri adlarını dilimleyicide görebilir. Bu kabul edilemezse müşteri tablosuna ayrı bir filtre gerekir.
+Eşleme tablosu: bir kişi, birden çok bölge
+Bölge müdürlerinin birden çok bölgesi varsa Yetkiler(Eposta, Bolge) gibi bir eşleme tablosu kurulur. İki yol vardır:
+ | Yol |  | Nasıl? |  | Artı / eksi |
+ | İlişki + iki yönlü güvenlik filtresi |  | Yetkiler → Bolge boyutu ilişkisi, “Güvenlik filtresini iki yönde uygula” |  | Görsel olarak sade; ama iki yönlü filtre performansı düşürür ve bir tabloda yalnızca bir ilişkide açılabilir |
+ | İlişkisiz tablo + filtre ifadesi |  | Musteriler rolünde: bölge, kullanıcının bölgeleri içinde mi? |  | Tek yönlü, öngörülebilir; ifade biraz daha uzun |
+-- Rol filtresi, tablo: Musteriler (Yetkiler tablosu ilişkisiz)
+Musteriler[Bolge] IN
+    CALCULATETABLE(VALUES(Yetkiler[Bolge]), Yetkiler[Eposta] = USERPRINCIPALNAME())
+Yönetici hiyerarşisi: PATHCONTAINS
+Elif'in “ekibimin tamamını göreyim” isteği hiyerarşi ister. Calisanlar[Yol] sütunu PATH(CalisanNo, YoneticiNo) ile üretilmiştir: Ece Kurt için “1|2|9”. Rol filtresi, oturum açan kişinin numarasının satırın yolunda geçip geçmediğine bakar:
+-- Rol: "Hiyerarşi", tablo: Calisanlar
+PATHCONTAINS(
+    Calisanlar[Yol],
+    LOOKUPVALUE(Calisanlar[CalisanNo], Calisanlar[Eposta], USERPRINCIPALNAME())
+)
+Analitik Müdürü Serkan Özdemir (4) için hangi satırların kalacağını bir sorguyla görebilirsin:
+EVALUATE
+FILTER(
+    SELECTCOLUMNS(Calisanlar, "Ad", Calisanlar[AdSoyad], "Unvan", Calisanlar[Unvan], "Yol", Calisanlar[Yol]),
+    PATHCONTAINS([Yol], 4)
+)
+Beş satır döner: Serkan ve dört ekip üyesi. Elif (2) için ise kendisi ve beş temsilci kalır; tüm satışlar bu ekipte olduğu için Elif 1.250.772,45 ₺'nin tamamını görür, kendi adına kayıtlı satış yalnızca 183.134,35 ₺'dir. Kenar durumlar:
+E-posta tabloda yoksa LOOKUPVALUE BLANK döner, PATHCONTAINS hiçbir satırda doğru olmaz: kullanıcı boş rapor görür.
+Aynı e-posta iki satırda varsa LOOKUPVALUE hata verir ve kullanıcının tüm görselleri bozulur. Eposta sütununda benzersizlik kontrolü yap.
+Filtre 27 satırlık küçük bir tabloda değerlendirilir; ucuzdur. Aynı ifadeyi milyonlarca satırlık olgu tablosuna yazmak pahalıdır. RLS'yi her zaman küçük boyut tablosunda tanımla.
+Birden çok rol: kesişim değil birleşim
+Ece hem “Temsilci” rolünde hem de bir kampanya için “Ege Bölgesi” rolünde olsun. Roller toplanır: Ece kendi satışlarını ve Ege bölgesinin tüm satışlarını görür, ikisinin kesişimini değil. Bu, en geniş rolün diğerlerini boşa çıkarması demektir. “Hem kendi satışları hem yalnızca Ege” gibi bir kesişim isteniyorsa iki koşul tek bir rolün ifadesinde birleştirilmelidir. Birleşim etkisini test etmek için iki temsilcinin görünümünü birlikte hesapla:
+İki Temsilci Birleşimi =
+CALCULATE([Net Satış], Calisanlar[CalisanNo] = 9 || Calisanlar[CalisanNo] = 10)
+Ece (9) ve Can Aydın (10) birlikte 385.695,65 ₺ eder. Bir diğer kural: RLS ve OLS farklı rollerden birleştirilemez. Bir kullanıcı, birinde satır filtresi, diğerinde nesne gizleme olan iki role üyeyse sorgu anında hata alır. Nesne güvenliğini ve satır güvenliğini aynı rolde tanımla.
+OLS ve ölçüler
+OLS bir sütunu gizlediğinde o sütuna başvuran ölçüler de o rol için otomatik kısıtlanır: Calisanlar[Maas] gizlenirse [Ortalama Maaş], [Toplam Maaş] ve [Medyan Maaş] da çalışmaz. Kullanıcı görselde “alan bulunamadı” türünde bir hata görür; bu yüzden OLS'li kullanıcılar için ayrı sayfa ya da rapor tasarla. OLS'yi Desktop'ta TMDL görünümünde ya da Tabular Editor gibi bir dış araçla tanımlarsın; rol üyeliği yine Service'te atanır.
+Test etmek: matrisle, kişiyle, sayıyla
+Desktop: Modelleme → Farklı görüntüle (View as): rolü seç, “Diğer kullanıcı” kutusuna e-postayı yaz. Dinamik RLS ancak böyle sınanır.
+Service: anlam modelinde … → Güvenlik (Security) → rolün yanındaki … → Rol olarak test et (Test as role). Belirli bir kişi ya da rol bileşimi seçilebilir. Panolar bu testte desteklenmez; sayfalandırılmış raporlarda ve SSO'lu DirectQuery modellerinde çalışmaz.
+ | Test kullanıcısı |  | Rol |  | Beklenen Net Satış |
+ | ece.kurt@… |  | Temsilci |  | 146.836,45 ₺ |
+ | elif.dogan@… |  | Hiyerarşi |  | 1.250.772,45 ₺ |
+ | Pınar Yıldırım (e-posta yok) |  | Temsilci |  | Boş |
+ | Rolü olmayan bir Görüntüleyici |  | — |  | Boş |
+Bu tabloyu bir test belgesi olarak modelin yanında tut; her model değişikliğinden sonra aynı kişilerle tekrar et.
+RLS'nin uygulanmadığı ve yanıltabildiği yerler
+Çalışma alanı rolleri: Yönetici, Üye ve Katkıda bulunan modeli düzenleyebildiği için RLS'den etkilenmez. Son kullanıcıları yalnızca Görüntüleyici olarak ekle ya da içerikleri uygulama ile dağıt. Derleme izni olan Görüntüleyiciler (Excel'de Çözümle dahil) RLS ile kısıtlı kalır.
+Hizmet sorumlusu: rollere eklenemez; uygulamaya gömülü senaryolarda kullanıcının kimliği yerleştirme belirtecinde (embed token) etkin kimlik olarak gönderilir (Yayımlama dersi).
+ALL RLS'yi aşmaz: [Kategori Payı %] gibi ölçülerde payda ALL ya da REMOVEFILTERS ile yazılmış olsa bile RLS filtresi geçerlidir. Ece'nin “kategori payı” kendi satışları içindeki paydır, şirket içindeki pay değil. Şirket geneli bir pay göstermek istiyorsan bu değeri ayrı ve onaylı bir yoldan (ör. RLS'siz bir özet tablo) sağlamak gerekir.
+USERELATIONSHIP: RLS açıkken beklenmedik hatalar verebilir. [Teslime Göre Satış] gibi pasif ilişki kullanan ölçüleri rol testine dahil et.
+Performans: iki yönlü güvenlik filtresi ve olgu tablosunda yazılmış karmaşık ifadeler her sorguya eklenir. Performans Analizi'ni “Farklı görüntüle” açıkken çalıştır; yönetici gözüyle hızlı olan sayfa temsilci gözüyle yavaş olabilir.
+Kontrol listesiRol filtresi küçük boyut tablosunda mı? · E-posta sütunu benzersiz ve boş değer kontrolü yapıldı mı? · Konuk kullanıcı biçimi test edildi mi? · Roller birleşim olarak düşünüldü mü; RLS ve OLS aynı rolde mi? · Test kullanıcıları ve beklenen sayılar belgelendi mi? · Son kullanıcılar Görüntüleyici mi?
+`, ex: [
+  { t: 'mc', q: `Veri Mühendisi Pınar Yıldırım “Temsilci” rolüne eklendi ama raporu açınca bütün görseller boş. Hata mesajı yok. En olası neden?`,
+    o: [`Rol ifadesinde USERNAME() yerine USERPRINCIPALNAME() kullanılmış`, `Calisanlar tablosunda Pınar'ın e-posta değeri boş`, `Pınar çalışma alanında Katkıda bulunan rolünde`, `Pınar'ın Derleme izni olmadığı için`], a: 1,
+    why: `Eşleşen satırı olmayan kullanıcı boş rapor görür; bu modelde Pınar'ın Eposta değeri boş. USERPRINCIPALNAME doğru fonksiyondur; Katkıda bulunan olsaydı RLS hiç uygulanmaz, her şeyi görürdü; Derleme izni rapor görüntülemeyi etkilemez.` },
+  { t: 'mc', q: `Ece Kurt hem “Temsilci” (yalnızca kendi satışları) hem de “Ege Bölgesi” (Ege müşterilerinin tüm satışları) rolüne üye. Satış müdürü Ece'nin yalnızca Ege'deki kendi satışlarını görmesini istiyor. Ne yaparsın?`,
+    o: [`İki rolü koruyup Ege rolüne öncelik veririm`, `Ece'yi Ege rolünden çıkarıp raporda Ege filtresi koyarım`, `Ece'ye RLS'yi aşmayan Görüntüleyici rolü veririm`, `İki koşulu tek bir rolde birleştiririm`], a: 3,
+    why: `Roller toplanır; iki rol birleşim verir, kesişim değil. Kesişim için iki koşul tek bir rolün ifadesinde olmalı. Rollerin önceliği yoktur; rapor filtresi güvenlik değildir, kullanıcı kaldırabilir; Görüntüleyici zaten RLS'ye tabidir ve sorunu çözmez.` },
+  { t: 'mc', q: `Ece raporda “Kategori Payı %” sütununda Elektronik için %21,9 görüyor; şirket genelinde bu pay %27,1. Ölçünün paydası ALL ile yazılmış. Ece neden farklı görüyor?`,
+    o: [`RLS paydada da geçerli; pay Ece'nin satışı içinde`, `ALL ilişki üzerinden çalışmadığı için payda eksik`, `Ece'nin önbelleği eski; yenileme gerekli`, `Kategori tablosunda Ece için ayrı RLS tanımlı`], a: 0,
+    why: `ALL ya da REMOVEFILTERS RLS'yi aşmaz; payda da Ece'nin görebildiği satırlarla hesaplanır. Bu bir hata değil, RLS'nin doğal sonucudur. ALL ilişki sorunu değildir; önbellek ya da kategori RLS'si bu farkı açıklamaz.` },
+  { t: 'mc', q: `Bir bölge müdürü çalışma alanına Üye olarak eklenmiş ve tüm bölgelerin satışlarını görebildiğini bildiriyor. Rol tanımı doğru. Ne yaparsın?`,
+    o: [`Rol ifadesine Üye rolünü dışlayan bir koşul eklerim`, `Modeli Direct Lake'e taşırım; orada Üye de kısıtlanır`, `Görüntüleyici yapar ya da uygulamadan erişim veririm`, `Bölge filtresini rapor düzeyinde kilitlerim`], a: 2,
+    why: `Yönetici, Üye ve Katkıda bulunan modeli düzenleyebildiği için RLS onlara uygulanmaz. Son kullanıcı Görüntüleyici olmalı ya da içeriği uygulamadan almalı. DAX ifadesi çalışma alanı rolünü bilmez; depolama modu bu kuralı değiştirmez; rapor filtresi güvenlik değildir.` },
+  { t: 'dax', name: 'Ece Kurt Görünümü (RLS Testi)', q: `Ece Kurt Görünümü (RLS Testi): “Temsilci” rolünün Ece Kurt için yapacağı filtrelemeyi taklit eden ölçüyü yaz: Calisanlar[Eposta] değeri ece.kurt@anadolumarket.com olan satırlara göre net satış.`,
+    sol: `CALCULATE([Net Satış], Calisanlar[Eposta] = "ece.kurt@anadolumarket.com")`, hint: `Rol filtresindeki USERPRINCIPALNAME() yerine e-postayı metin olarak yaz ve CALCULATE filtresi yap.` },
+  { t: 'dax', name: 'Gamze ve Oğuz Birleşimi', q: `Gamze ve Oğuz Birleşimi: Gamze Özkan (CalisanNo 8) ile Oğuz Demir (CalisanNo 12) iki ayrı role üye bir kullanıcının göreceği birleşimi hesapla: ikisinin toplam net satışı.`,
+    sol: `CALCULATE([Net Satış], Calisanlar[CalisanNo] = 8 || Calisanlar[CalisanNo] = 12)`, hint: `Roller birleşir: aynı sütunda VEYA koşulu. Calisanlar[CalisanNo] = 8 || Calisanlar[CalisanNo] = 12.` },
+  { t: 'query', q: `“Hiyerarşi” rolünü Satış Müdürü Elif Doğan (CalisanNo 2) için test et: Calisanlar tablosundan yolunda 2 geçen çalışanların adını ve unvanını döndür.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nFILTER(\n    SELECTCOLUMNS(Calisanlar, "Ad", Calisanlar[AdSoyad], "Unvan", Calisanlar[Unvan], "Yol", Calisanlar[Yol]),\n    PATHCONTAINS([Yol], 2)\n)`, hint: `SELECTCOLUMNS ile Ad, Unvan ve Yol sütunlarını seç; FILTER içinde PATHCONTAINS([Yol], 2).` }
+] });
+/* ===================================================================== 6. YAYIMLAMA */
+ext('yayinlama', { min: 20, html: `
+Çalışma alanı tasarımı
+Anadolu Market'te Satış, Finans ve İK raporları tek bir “BI” çalışma alanında toplanmış: 60 öğe, 40 Üye, kimin neyi değiştirdiği belli değil. Yeniden tasarımda iki ilke işe yarar: modeli rapordan ayır ve yetkiyi gruba ver.
+ | Çalışma alanı |  | İçerik |  | Kim, hangi rol? |
+ | Satış Modeli [Dev/Test/Prod] |  | Onaylı anlam modeli |  | BI ekibi: Üye · Rapor yazarları: modelde Derleme izni |
+ | Satış Raporları [Dev/Test/Prod] |  | Model üstüne kurulmuş raporlar |  | Rapor yazarları: Katkıda bulunan · Kimse son kullanıcı olarak eklenmez |
+ | (Uygulama) |  | Son kullanıcıya giden paket |  | Entra güvenlik grupları, kitle bazında |
+Kişi yerine Microsoft Entra güvenlik gruplarını ekle; işe giren ve ayrılanlar grupta yönetilir. Çalışma alanının lisans türü (Pro, PPU, Fabric kapasitesi) görüntüleyicilerin lisansını da belirler: PPU çalışma alanındaki içeriği görmek için görüntüleyicinin de PPU'su olmalı; F64 ve üstü kapasitedeki içeriği ücretsiz lisanslı kullanıcılar görüntüleyebilir.
+Uygulama: çalışma alanı uygulaması ve kuruluş uygulaması
+Dağıtım için iki seçenek vardır. Klasik çalışma alanı uygulaması (workspace app) her çalışma alanında bir tanedir; değişiklikler “Uygulamayı güncelle” denene kadar kullanıcıya gitmez. Daha yeni olan kuruluş uygulaması (org app) ise bir Fabric öğesidir ve genel kullanıma açıktır (GA):
+ |  |  | Çalışma alanı uygulaması |  | Kuruluş uygulaması |
+ | Çalışma alanı başına |  | Bir |  | Birden çok |
+ | Değişiklik ne zaman görünür? |  | Uygulama güncellenince |  | Uygulama kaydedilince |
+ | Model erişimi |  | Yazar elle yönetir |  | Rapora erişim, modeline (başka çalışma alanında olsa da) erişim verir |
+ | Kurulum |  | Kullanıcı yükler |  | Gerekmez; Uygulamalar ve Son kullanılanlar listesinde görünür |
+ | Kitleler |  | Var |  | Var; düzenleme moduna girmeden yönetilir |
+Kitle (audience) senaryosu: “Temsilciler” kitlesi yalnızca Satış Performansı raporunu, “Yönetim” kitlesi ek olarak Kârlılık raporunu görür. Kitle bir gezinme düzenidir, güvenlik değildir: Kârlılık raporundaki marj sütununu temsilcilerden saklamak gerekiyorsa bunu RLS/OLS yapar, kitle değil.
+Abonelikler ve veri uyarıları
+Abonelik: rapor sayfasının e-posta anlık görüntüsü; günlük, haftalık ya da veri yenilendikten sonra. Raporun tamamını ek olarak (PDF/PowerPoint) gönderebilir. Başkaları adına abonelik kurulabilir; kiracı ayarlarında dış kullanıcılara gönderim ayrıca kapatılabilir. Sayfalandırılmış raporların abonelikleri parametre değerleriyle çalışır (Sayfalandırılmış raporlar dersi).
+Veri uyarısı: klasik uyarılar yalnızca panodaki kart, KPI ve gösterge kutucuklarında kurulur; rapor görselinde değil. Her kullanıcı kendi uyarısını kurar; Power Automate ile bir iş akışı tetiklenebilir.
+Activator: Fabric'te rapor görselinden “Uyarı ayarla” ile kural tabanlı uyarılar kurulabilir: “bir kategorinin günlük satışı geçen haftanın ortalamasının %30 altına düşerse ekibe Teams mesajı”.
+Bir uyarı ya da abonelik ancak verinin güncel olduğu kadar doğrudur. Bu yüzden her raporda bir veri tazeliği göstergesi olmalı. Basit bir yol, modeldeki en son satış tarihini kartta göstermektir:
+Veri Tazeliği (gün) =
+DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), TODAY(), DAY)
+Yenileme durursa bu sayı her gün bir artar ve okur bunu fark eder; “Son yenileme” zaman damgası ise veri kaynağı güncellenmediğinde bile değişir ve yanıltabilir.
+Ağ geçidi ve yenileme sınırları
+ |  |  | Pro (paylaşılan kapasite) |  | PPU / Premium / Fabric kapasitesi |
+ | Zamanlanmış yenileme |  | Günde 8 (API ile tetiklenenler dahil) |  | Günde 48; XMLA okuma-yazma ile komut dosyası yenilemeleri sabit sayıyla sınırlı değil |
+ | Yenileme zaman aşımı |  | 2 saat |  | 5 saat (XMLA ile aşılabilir) |
+ | “Şimdi yenile” |  | Günlük sayıma dahil değil |
+Etkinlik yoksa duraklama: modele bağlı rapor ya da pano iki ay boyunca hiç açılmazsa zamanlanmış yenileme duraklatılır ve sahibine e-posta gider.
+Art arda hatalar: yenileme defalarca başarısız olursa zamanlama kapatılır. Hata e-postasını kişisel kutuya değil, ekip dağıtım listesine yönlendir.
+Ağ geçidi: şirket içi ya da doğrudan erişilemeyen her kaynak için gerekir. Bir model yalnızca bir ağ geçidi bağlantısı kullanır; aynı sorguda şirket içi SQL ile SharePoint Online birleşiyorsa bulut kaynağı da ağ geçidi üzerinden tanımlanmalıdır. Kurumsal kullanımda standart mod; kişisel mod yalnızca tek kişinin yönettiği modeller için.
+DirectQuery ve canlı bağlantı: veri yenilemesi yoktur; ama pano kutucuklarının önbelleği varsayılan olarak saatte bir yenilenir.
+Paylaşmak, uygulama ya da yerleştirme?
+ | İhtiyaç |  | Yol |  | Dikkat |
+ | Üç kişiye hızlıca göster |  | Doğrudan paylaşım bağlantısı |  | “Yeniden paylaşabilir” ve “Derleyebilir” kutularını bilinçli seç |
+ | 300 kişilik satış ekibine düzenli dağıtım |  | Uygulama + kitleler |  | Gruplarla erişim, RLS testi |
+ | Ekibin çalıştığı yerde göster |  | Teams sekmesi, SharePoint web bölümü |  | Kullanıcının rapora erişimi olmalı; RLS geçerli |
+ | Şirket içi bir portala göm |  | Kuruluşunuz için yerleştirme (kullanıcı kendi kimliğiyle) |  | Her kullanıcının lisansı ve erişimi gerekir |
+ | Müşterilere (Power BI hesabı olmayan) göster |  | Müşterileriniz için yerleştirme (uygulama verinin sahibi) |  | Hizmet sorumlusu RLS rolüne eklenemez; etkin kimlik yerleştirme belirtecinde gönderilir; kapasite gerekir |
+ | Herkese açık veri |  | Web'de yayımla |  | İnternetteki herkes görür; kurumsal veri için asla |
+Kontrol listesiModel ve raporlar ayrı çalışma alanlarında mı? · Erişim gruplarla mı veriliyor? · Son kullanıcılar uygulama ile mi geliyor, çalışma alanı rolü almadan? · Yenileme sayısı ve süresi lisans sınırına uygun mu? · Hata bildirimleri ekip listesine gidiyor mu? · Raporda veri tazeliği göstergesi var mı?
+`, ex: [
+  { t: 'mc', q: `Satış direktörü Pro çalışma alanındaki modelin günde 12 kez, iki saatte bir zamanlanmış olarak yenilenmesini istiyor. Zamanlama ekranında 8'den fazla saat eklenemiyor. Ne önerirsin?`,
+    o: [`Ek yenilemeleri Power Automate ile REST API'den tetiklemek`, `İhtiyacı doğrulayıp gerekirse PPU'ya geçmek`, `Aynı modeli kopyalayıp iki ayrı zamanlama kurmak`, `“Şimdi yenile”yi bir kullanıcıya her iki saatte bir yaptırmak`], a: 1,
+    why: `Pro'da günde 8 zamanlanmış yenileme sınırı API ile tetiklenenleri de kapsar. Önce iş ihtiyacını netleştir; gerçekten gerekiyorsa PPU/kapasite (48) ya da DirectQuery/Direct Lake. Model kopyalamak iki doğru kaynak üretir; elle yenileme sürdürülebilir değildir.` },
+  { t: 'mc', q: `Yaz tatilinden dönen analist, kampanya modelinin zamanlanmış yenilemesinin “etkinlik olmadığı için” durdurulduğunu bildiren bir e-posta görüyor. Model iki aydır kimse tarafından açılmamış. Ne olmuştur?`,
+    o: [`Kimlik bilgilerinin süresi dolduğu için yenileme durdu`, `Ağ geçidi çevrim dışı kaldığı için zamanlama silindi`, `İki ay kullanılmayan modelde yenileme duraklatıldı`, `Pro lisansının süresi dolduğu için model arşivlendi`], a: 2,
+    why: `Modele bağlı rapor ya da pano iki ay açılmazsa Power BI zamanlanmış yenilemeyi duraklatır ve sahibine e-posta gönderir; raporu açmak ya da “Şimdi yenile” zamanlamayı sürdürür. Kimlik bilgisi ve ağ geçidi sorunları ayrı hata e-postası üretir; lisans süresi bu mesajı vermez.` },
+  { t: 'mc', q: `Bir modelin tek sorgusu, şirket içindeki SQL Server'dan sipariş satırlarını ve SharePoint Online'daki bir Excel'den hedefleri birleştiriyor. Yenileme “veri kaynağı tanımlı değil” hatası veriyor. Doğru kurulum?`,
+    o: [`İki kaynağı da aynı ağ geçidinde veri kaynağı olarak tanımlamak`, `SQL'i ağ geçidine, SharePoint'i doğrudan bulut bağlantısına bırakmak`, `SharePoint dosyası için kişisel modda ikinci bir ağ geçidi kurmak`, `Hedef Excel'ini OneDrive'a taşıyıp sorgudan ayırmak`], a: 0,
+    why: `Model tek bir ağ geçidi bağlantısı kullanır; şirket içi ve bulut kaynakları aynı sorguda birleşiyorsa bulut kaynağı da o ağ geçidi üzerinden tanımlanmalıdır. İkinci ağ geçidi kullanılamaz; dosyayı OneDrive'a taşımak birleştirmeyi ortadan kaldırmaz.` },
+  { t: 'mc', q: `Tek bir “Satış” çalışma alanından üç farklı departmana, her birinin kendi menüsü, erişim listesi ve bağımsız güncelleme takvimi olan üç ayrı paket dağıtmak istiyorsun. Hangisi?`,
+    o: [`Tek çalışma alanı uygulaması ve üç kitle`, `Üç çalışma alanı açıp her birine bir uygulama`, `Raporları doğrudan paylaşım ile üç gruba göndermek`, `Aynı çalışma alanında üç ayrı kuruluş uygulaması`], a: 3,
+    why: `Kuruluş uygulamaları öğe olduğu için bir çalışma alanında birden çok tane oluşturulabilir; her birinin erişimi ve kaydetme zamanı bağımsızdır. Tek uygulama + kitle tek güncelleme akışı demektir; üç çalışma alanı içeriği gereksiz böler; doğrudan paylaşım menü ve sürüm sağlamaz.` },
+  { t: 'mc', q: `Bir yazılım şirketi, kendi portalında müşterilerine (Power BI hesabı yok) yalnızca kendi verilerini gösteren raporlar sunmak istiyor. Model RLS'li. Hangi kurgu doğru?`,
+    o: [`Web'de yayımla ile üretilen bağlantıyı portala koymak`, `Müşteriler için yerleştirme ve belirteçte etkin kimlik`, `Her müşteriye ücretsiz lisans verip doğrudan paylaşmak`, `Kuruluşunuz için yerleştirme ile kullanıcıların kendi kimliği`], a: 1,
+    why: `Hesabı olmayan dış kullanıcılar için “uygulama verinin sahibi” yerleştirmesi kullanılır; hizmet sorumlusu rollere eklenemediği için müşterinin kimliği yerleştirme belirtecinde etkin kimlik olarak gönderilir ve RLS böyle uygulanır. Web'de yayımla herkese açıktır; diğer iki yol Power BI hesabı gerektirir.` },
+  { t: 'dax', name: 'Son Veri Tarihi', q: `Son Veri Tarihi: Raporun veri tazeliği kartı için iptal edilmemiş satışların en son tarihini döndüren ölçüyü yaz. Kartta seçili yıl ya da kategoriye göre değişebilir.`,
+    sol: `CALCULATE(MAX(Satislar[Tarih]), Satislar[Durum] <> "İptal")`, hint: `MAX(Satislar[Tarih]) ifadesini CALCULATE ile iptal filtresinin içine al.` }
+] });
+/* ===================================================================== 7. YÖNETİŞİM */
+ext('yonetisim', { min: 20, html: `
+Kiracı ayarları: kim neyi yapabilir?
+Anadolu Market'in denetim ekibi soruyor: “Müşteri listesini kim CSV olarak indirebilir? Bir rapor internete açılabilir mi? Kim sertifika verebilir?” Bu soruların cevabı rapor dosyalarında değil, Yönetici portalı → Kiracı ayarları (Tenant settings) ekranındadır. Ayarların çoğu üç biçimde açılır: tüm kuruluş, belirli güvenlik grupları ya da belirli gruplar hariç herkes.
+ | Ayar grubu |  | Örnek ayarlar |  | Önerilen başlangıç |
+ | Dışa aktarma |  | Excel'e aktar, .csv'ye aktar, PDF/PowerPoint olarak aktar, rapor indirme (.pbix), yazdırma |  | Açık; ama .csv yalnızca belirli gruplara |
+ | Canlı bağlantı |  | Excel'de canlı bağlantıyla çalışma (Excel'de Çözümle) |  | Açık; RLS geçerli olduğu için güvenli |
+ | Paylaşım |  | Web'de yayımla, konuk kullanıcılar, kuruluş genelinde paylaşım bağlantısı |  | Web'de yayımla kapalı ya da çok küçük bir grup |
+ | Abonelik |  | E-posta aboneliği kurma, dış kullanıcılara gönderme |  | Dış gönderim kapalı |
+ | Onaylama |  | Sertifikalama, ana veri onayı |  | Yalnızca atanmış gözden geçirenler |
+ | Bileşik model |  | Power BI anlam modellerine DirectQuery bağlantıları |  | Açık, eğitimli yazar grubu için |
+İki pratik kural: ayarı gruba bağla (kişi listesi yönetilmez) ve her değişikliği gerekçesiyle kaydet. Kiracı ayarları değiştiği anda herkesi etkiler; değişiklik günlüğü olmayan bir kiracıda “bu ne zaman açıldı?” sorusunun cevabı yoktur. Büyük kuruluşlarda sertifikalama yetkisi etki alanı (domain) yöneticilerine devredilebilir; her iş biriminin kendi gözden geçirenleri olur.
+Onaylama: tanıtılmış, sertifikalı, ana veri
+ | Rozet |  | Anlamı |  | Kim verir? |  | Hangi öğeler? |
+ | Tanıtılmış (Promoted) |  | “Sahibi olarak bunu paylaşmaya hazır görüyorum” |  | Öğede yazma izni olan herkes |  | Panolar hariç tüm öğeler |
+ | Sertifikalı (Certified) |  | Kuruluşun kalite standardından geçti |  | Yalnızca yöneticinin atadığı gözden geçirenler; herkes talep edebilir |  | Panolar hariç tüm öğeler |
+ | Ana veri (Master data) |  | Kuruluşun temel referans verisi (ürün kodları, müşteri listesi) |  | Yalnızca yöneticinin atadığı kişiler |  | Yalnızca veri içeren öğeler: lakehouse, anlam modeli… |
+Rozet bir süreç sonucudur, süreç değildir. Sertifika vermeden önce gözden geçirenin baktığı somut bir liste olmalı. Bunun en kritik maddesi: ölçüleri kendi kırılım sütunlarında test et. Bu modelde hazır [Net Satış] ölçüsü Durum'a göre kesildiğinde ne olur?
+EVALUATE
+SUMMARIZECOLUMNS(Satislar[Durum], "Toplam Satış", [Toplam Satış], "Net Satış", [Net Satış])
+Toplam Satış her durum için farklıdır (Teslim Edildi 1.049.627,00 ₺, İptal 95.417,40 ₺…), ama Net Satış her satırda 1.250.772,45 ₺ görünür; İptal satırında bile. Ölçü sütun filtresiyle Durum filtresinin üzerine yazar (DAX optimizasyonu dersinde mekanizması var). Bu bir “hata” mı, “bilinen davranış” mı? Sertifika kararı tam olarak bunu belgelemektir: ya ölçü KEEPFILTERS ile düzeltilir ya da açıklamasına “Durum kırılımında kullanma” yazılır.
+Sertifika kontrol listesi: sahibi ve yedek sahibi belli · tüm ölçülerin açıklaması var · kırılım testleri yapılmış · RLS test kullanıcılarıyla doğrulanmış · yenileme zamanlaması ve hata bildirimi ekip listesine gidiyor · duyarlılık etiketi uygun · etki analizi ile bağlı öğeler biliniyor.
+Sertifikayı geri almak da süreçtir: model artık bakımı yapılmıyorsa rozet kaldırılmalı; aksi hâlde kullanıcılar eski modeli “güvenilir” sanar.
+Duyarlılık etiketleri: devralma ve dışa aktarma
+Etiketleri uygulamak için Microsoft Purview Information Protection lisansının yanında Power BI Pro ya da PPU gerekir; etiketin kullanıcıya bir etiket ilkesiyle yayımlanmış olması da şarttır. Uygulamada önemli olan, etiketin nereye gittiğidir:
+Aşağı yönlü devralma varsayılan olarak açıktır: “Gizli” etiketli bir anlam modelinin üzerine kurulan raporlar ve panolar etiketi devralır.
+Veri kaynağından devralma: anlam modeli etiketli bir kaynaktan (ör. etiketli bir Excel) veri alınca o etiketi alabilir.
+Zorunlu etiket ve varsayılan etiket ilkeleri Power BI öğelerinde tam desteklenir: kullanıcı etiket seçmeden kaydedemez ya da varsayılan etiket kendiliğinden atanır.
+Dışa aktarma: Excel, PDF, PowerPoint, Excel'de Çözümle ve .pbix indirme etiketi dosyaya taşır; etiket şifreleme içeriyorsa dosya korunur. .csv ve .txt dışa aktarımı etiketi taşımaz. Gizli verili modellerde .csv dışa aktarımını bu yüzden kısıtla.
+Power BI Projesi (PBIP) biçimi duyarlılık etiketlerini desteklemez; etiketli içeriği Git'e taşımadan önce bu farkı bil (Yaşam döngüsü dersi).
+Denetim: kim neyi açtı, kim neyi dışa aktardı?
+Bir müşteri listesinin dışarı sızdığı iddia ediliyor. “Son 30 günde bu raporu kim dışa aktardı?” sorusunun iki kaynağı vardır:
+ |  |  | Denetim günlüğü (Purview) |  | Etkinlik günlüğü (Power BI) |
+ | Kapsam |  | Fabric ve Power BI dahil Microsoft 365 etkinlikleri |  | Yalnızca Power BI etkinlikleri |
+ | Erişim |  | Purview portalında denetim araması |  | Yönetici REST API'si (ActivityEvents) ya da Get-PowerBIActivityEvent |
+ | Kim kullanır? |  | Uyumluluk ve güvenlik ekipleri |  | Fabric yöneticisi; otomasyonla |
+ | Not |  | Diğer Microsoft 365 olaylarıyla birlikte sorgulanır |  | Her istek tek bir günü (UTC) kapsar; olaylar genellikle 30–60 dakika içinde düşer |
+Etkinlik günlüğünün geçmişi sınırlıdır. Kurumsal uygulama, her gece önceki günün olaylarını bir betikle çekip kendi deponda (ör. bir lakehouse tablosunda) biriktirmektir. Böylece “kim, hangi raporu, ne zaman görüntüledi ya da dışa aktardı” sorusu aylar sonra da cevaplanır ve kullanılmayan raporlar da bulunur: 90 gündür görüntülenmeyen bir rapor emekliye ayrılma adayıdır.
+Etki analizi ve dışa aktarım kontrolü
+Bir sütunun adını değiştirmeden önce Soy (lineage) görünümünde öğeyi aç ve Etki analizi'ne bak: kaç model, rapor, pano, kaç görüntüleme? Etkilenen öğelerin kişilerine buradan bildirim gönderebilirsin. Dışa aktarımı ise üç katmanda yönetirsin:
+Kiracı: hangi biçimler kimlere açık (yukarıdaki tablo).
+Rapor: Desktop'ta Seçenekler → Geçerli dosya → Rapor ayarları → dışa aktarma: yalnızca özetlenmiş veri, özetlenmiş ve temel veri ya da hiç. Kiracı ayarından daha geniş olamaz.
+Model: RLS ve OLS. Dışa aktarılan veri de kullanıcının görebildiği satırlarla sınırlıdır; dışa aktarımı kapatmak, görmemesi gereken veriyi görmesinin çaresi değildir.
+Yönetişim karar ağacıVeri gizli mi? → etiket + .csv kısıtı + OLS/RLS. · Model birçok ekip tarafından kullanılıyor mu? → sertifika süreci + Derleme izni. · Dış kullanıcı var mı? → konuk ve abonelik ayarları, Web'de yayımla kapalı. · Değişiklik yapılacak mı? → etki analizi + bildirim. · Kim ne yaptı? → günlükleri her gün kendi depona al.
+`, ex: [
+  { t: 'mc', q: `“Çok gizli” etiketli müşteri modelinden kullanıcıların Excel'e aktardığı dosyalar şifreli geliyor, ama aynı veriler başka bir yerde düz metin olarak bulundu. Etiket ilkesi doğru. En olası açık nedir?`,
+    o: [`Excel'de Çözümle etiketi taşımıyor`, `Veri .csv olarak aktarılmış`, `PDF dışa aktarımı şifrelemeyi kaldırıyor`, `Aşağı yönlü devralma kapalı olduğu için`], a: 1,
+    why: `Excel, PDF, PowerPoint ve Excel'de Çözümle etiketi ve korumayı dosyaya taşır; .csv ve .txt taşımaz. Bu yüzden gizli modellerde .csv dışa aktarımı kısıtlanır. Devralma, rapor ile model arasındaki etiket aktarımıyla ilgilidir; düz metin dosyayı açıklamaz.` },
+  { t: 'mc', q: `Sertifika gözden geçireni, satış modelinde Net Satış'ın Durum tablosunda her satırda aynı tutarı gösterdiğini fark ediyor. Model sahibi “ölçü doğru, iptaller hariç” diyor. Gözden geçirenin doğru kararı?`,
+    o: [`Ölçü doğru olduğu için hemen sertifikalamak`, `Modeli tanıtılmış olarak bırakıp sertifikayı reddetmek`, `Düzeltme ya da belgeleme şartı koymak`, `Durum sütununu modelden kaldırtmak`], a: 2,
+    why: `Sertifika, davranışın bilindiği ve belgelendiği anlamına gelir. Sütun filtresi Durum kırılımının üzerine yazdığı için her satırda aynı tutar çıkar; ya KEEPFILTERS ile düzeltilmeli ya da açıklamada “Durum kırılımında kullanma” yazmalı. Olduğu gibi sertifikalamak kullanıcıyı yanıltır; reddetmek ya da sütunu kaldırmak gerekçesiz sert bir tepkidir.` },
+  { t: 'mc', q: `Güvenlik ekibi altı ay önceki bir rapor dışa aktarımının kim tarafından yapıldığını soruyor. Kimse etkinlik günlüğünü düzenli toplamamış. Gelecekte bu soruya cevap verebilmek için ne kurarsın?`,
+    o: [`Raporlara “dışa aktarmayın” uyarısı eklemek`, `Tüm kullanıcılar için dışa aktarmayı kapatmak`, `Her raporu sertifikalı yapıp sahiplerine sormak`, `Olayları her gece kendi depoda biriktirmek`], a: 3,
+    why: `Etkinlik günlüğünün geçmişi sınırlıdır ve istek başına tek gün döner; her gece önceki günü çekip bir depoda tutmak geriye dönük soruları cevaplanabilir kılar. Uyarı metni kanıt üretmez; dışa aktarmayı tamamen kapatmak iş akışını bozar ve geçmişi açıklamaz; sertifika denetim kaydı değildir.` },
+  { t: 'mc', q: `Ürün kodları ve kategori eşlemesini içeren lakehouse tablosu, şirketin tüm modellerinin referans kaynağı. Kullanıcıların bunu tek ve yetkili kaynak olarak tanıması isteniyor. Hangi onay?`,
+    o: [`Ana veri (master data) rozeti`, `Tanıtılmış rozet`, `Raporlara “resmi” başlığı eklemek`, `Panoya sabitleyip öne çıkarmak`], a: 0,
+    why: `Ana veri rozeti, veri içeren öğelerin kuruluşun yetkili temel verisi olduğunu gösterir ve yalnızca yöneticinin atadığı kişilerce verilir. Tanıtılmış rozeti herkes verebilir ve yetki ifade etmez; başlık ya da pano sabitleme bir onay mekanizması değildir.` },
+  { t: 'mc', q: `BI ekibi Musteriler[Segment] sütununu yeniden adlandırmak istiyor. Kaç rapor ve kullanıcının etkileneceğini bilmiyor. İlk adım?`,
+    o: [`Sütunu adlandırıp bozulan raporları beklemek`, `Eski adla yeni bir hesaplanmış sütun daha eklemek`, `Etki analizine bakıp sahiplere bildirmek`, `Tüm rapor yazarlarına e-posta atıp sormak`], a: 2,
+    why: `Etki analizi, bağlı model, rapor ve panoları ve görüntüleme sayılarını gösterir; ilgili kişilere oradan bildirim gönderilir. Bozulmayı beklemek kullanıcıyı mağdur eder; kopya sütun teknik borç üretir; herkese e-posta göndermek kimin etkilendiğini söylemez.` },
+  { t: 'query', q: `Sertifika öncesi kırılım testi: Satislar[Kanal] satırlarında “Toplam Satış” ve “Net Satış” değerlerini yan yana döndür; iki ölçünün kanal kırılımında nasıl davrandığını karşılaştır.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nSUMMARIZECOLUMNS(\n    Satislar[Kanal],\n    "Toplam Satış", [Toplam Satış],\n    "Net Satış", [Net Satış]\n)`, hint: `SUMMARIZECOLUMNS(Satislar[Kanal], "Toplam Satış", [Toplam Satış], "Net Satış", [Net Satış]).` }
+] });
+/* ===================================================================== 8. SAYFALANDIRILMIŞ */
+ext('sayfalandirilmis', { min: 20, html: `
+Report Builder ile ilk rapor: kaynaktan tabloya
+Muhasebe her ay sonunda mağaza kanalının sipariş satırlarını, logolu ve sayfa numaralı bir PDF olarak istiyor. Power BI Report Builder ücretsizdir ve sayfalandırılmış raporun (.rdl) ana tasarım aracıdır. RDL, raporun bütün tanımını (veri kaynağı, sorgu, parametreler, yerleşim) tutan bir XML dosyasıdır; metin olduğu için sürüm denetimine de girer.
+Veri kaynağı: Veri kaynakları → Ekle → Power BI anlam modeli. Onaylı satış modelini seçmek, aynı ölçüleri (Net Satış, Sipariş Sayısı) burada da kullanmak demektir.
+Veri kümesi: Sorgu tasarımcısında alanları sürükle ya da DAX sorgusunu kendin yaz. Veri kümesi bir DAX sorgusudur; sonucu düz bir tablodur.
+Tablix: Tablo/matris/liste aynı denetimin farklı biçimleridir. Satır grupları (ör. Tarih'e göre), grup alt toplamları, “her sayfada başlığı tekrarla” ayarı ve grup başında sayfa sonu buradan verilir.
+Üst/alt bilgi: logo, rapor adı, =Globals!PageNumber & " / " & Globals!TotalPages ifadesiyle sayfa numarası, oluşturma zamanı.
+Yayımla: Report Builder'dan doğrudan Service'e.
+Muhasebenin istediği listenin veri kümesi şöyle bir sorgudur (ay ve kanal şimdilik sabit):
+EVALUATE
+CALCULATETABLE(
+    SELECTCOLUMNS(Satislar, "Sipariş", Satislar[SiparisNo], "Tarih", Satislar[Tarih], "Durum", Satislar[Durum], "Tutar", Satislar[Tutar]),
+    Satislar[Kanal] = "Mağaza",
+    Tarih[YilAy] = "2024-12"
+)
+Parametreler: tek değer, çoklu değer, basamaklı
+Sabit “2024-12” yerine kullanıcı ayı ve kategorileri seçmeli. Report Builder'da her parametre bir ad, tür, kullanılabilir değerler (çoğu zaman ayrı bir küçük veri kümesinden) ve varsayılan değer taşır. Sorgu tasarımcısı parametreli filtreyi kendisi üretir; DAX'ı elle yazıyorsan çoklu değerli parametre sorguya tek bir metin olarak gelir. Yaygın kalıp, değerleri parametre ifadesinde birleştirip DAX'ta yola çevirmektir:
+-- Parametre ifadesi (veri kümesi özellikleri → Parametreler):
+--   @Kategoriler = Join(Parameters!Kategori.Value, "|")
+EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    FILTER(VALUES(Kategoriler[Kategori]), PATHCONTAINS(@Kategoriler, Kategoriler[Kategori])),
+    "Net Satış", [Net Satış]
+)
+Aynı mantığı sabit değerlerle, motorun çalıştırabildiği biçimde denemek için TREATAS kullanılır. “Elektronik ve Kitap” seçimi için:
+EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    TREATAS({"Elektronik", "Kitap"}, Kategoriler[Kategori]),
+    "Net Satış", [Net Satış]
+)
+Sonuç iki satırdır: Elektronik 339.303,65 ₺, Kitap 151.882,40 ₺. Basamaklı parametrede ikinci parametrenin (Ürün) kullanılabilir değerleri, birinci parametreye (Kategori) göre süzülen ayrı bir veri kümesinden gelir. Kenar durumlar: “Tümü” seçeneği için parametreye boş değer izni ver ve sorguda boşsa filtre uygulama; çok seçenekli bir listede yüzlerce ürün varsa kullanıcıya önce kategori seçtir.
+Ne zaman sayfalandırılmış rapor? Karar tablosu
+ | İhtiyaç |  | En iyi araç |  | Neden |
+ | Yönetici keşif yapacak, tıklayıp detaya inecek |  | Etkileşimli rapor |  | Çapraz filtre, araç ipucu, detaya inme |
+ | Analist kendi pivotunu kuracak |  | Excel'de Çözümle |  | Canlı bağlantı, RLS geçerli, Excel becerisi |
+ | Tüm satırlar eksiksiz, sayfa sayfa, imza alanıyla |  | Sayfalandırılmış rapor |  | Tablo kaç sayfa olursa olsun basılır |
+ | Her ay aynı belge e-postayla, ekte PDF |  | Sayfalandırılmış rapor + abonelik |  | Parametreli abonelik, sabit düzen |
+ | Etkileşimli sayfada “yazdırılabilir liste” düğmesi |  | Sayfalandırılmış rapor görseli |  | Raporun filtreleri parametre olarak geçer |
+Lisans, sınırlar ve dağıtım
+Oluşturma: Report Builder ile oluşturmak ve Çalışma alanım'a yayımlamak için Pro/PPU gerekmez. Başka bir çalışma alanına yayımlamak için Pro ya da PPU gerekir.
+Görüntüleme: Fabric F64 ya da üstü (veya Premium P1 ve üstü) kapasitedeki çalışma alanlarında ücretsiz lisanslı kullanıcılar görüntüleyebilir. Diğer durumlarda görüntüleyicinin Pro ya da PPU'su olmalı. Sayfalandırılmış raporlar Pro çalışma alanlarında da çalışır ve uygulamalara eklenebilir.
+Dışa aktarım biçimleri: Excel, Word, PowerPoint, PDF, erişilebilir PDF, CSV, XML ve MHTML.
+Web'de tasarım: Service içinde yalnızca basit, tek tablolu raporlar oluşturulabilir; ciddi tasarım için Report Builder.
+Sınırlar: SSRS'nin paylaşılan veri kaynakları (.rds) ve paylaşılan veri kümeleri (.rsd) desteklenmez; özel derlemeler (custom assemblies) yoktur; şirket içi kaynaklar ve saklı yordamlar ağ geçidi üzerinden çalışır.
+RLS: rapor anlam modeline bağlıysa kullanıcının RLS rolü geçerlidir; ama Service'teki “Rol olarak test et” sayfalandırılmış raporlarda çalışmaz. Testi gerçek bir test kullanıcısıyla yap.
+Abonelikle PDF dağıtımı
+Sayfalandırılmış raporun aboneliğinde biçim (PDF, Excel…) ve parametre değerleri seçilir: “Her ayın 1'inde, önceki ay, Mağaza kanalı, PDF ekli”. Varsayılan değeri “önceki ay” olarak hesaplayan bir parametre ifadesi kullanırsan aboneliği her ay güncellemen gerekmez. Her alıcıya kendi verisini göndermek için alıcı listesi ve parametre değerleri bir tablodan okunan dinamik abonelik kullanılır.
+Kontrol listesiVeri kaynağı onaylı anlam modeli mi? · Parametrelerin varsayılanı abonelikte elle değiştirme gerektirmiyor mu? · “Tümü” ve boş seçim davranışı test edildi mi? · Başlık her sayfada tekrar ediyor, sayfa numarası var mı? · Görüntüleyicilerin lisansı çalışma alanı kapasitesine uygun mu? · RLS gerçek bir test hesabıyla denendi mi?
+`, ex: [
+  { t: 'mc', q: `Bir analistin Pro lisansı yok. Report Builder'da bir sipariş listesi tasarlayıp ekip çalışma alanına (Pro) yayımlamak istiyor. Ne olur?`,
+    o: [`Çalışma alanım'a evet; ekip alanına Pro/PPU gerekir`, `Report Builder lisanssız açılmaz; tasarım bile yapamaz`, `Pro çalışma alanları sayfalandırılmış raporu hiç desteklemez`, `Yayımlayabilir ama raporu yalnızca kendisi açabilir`], a: 0,
+    why: `Report Builder ücretsizdir; Çalışma alanım'a yayımlamak için lisans gerekmez. Başka bir çalışma alanına yayımlamak Pro ya da PPU gerektirir. Pro çalışma alanları sayfalandırılmış raporları destekler; son şık yayımlamanın mümkün olduğunu varsayıyor, ki değil.` },
+  { t: 'mc', q: `Şirket F64 kapasitesinde. 400 mağaza çalışanının (ücretsiz lisanslı) her ay kendi mağazasının sipariş listesini görmesi gerekiyor. Rapor bir kapasite çalışma alanında. Ek lisans gerekir mi?`,
+    o: [`Evet; sayfalandırılmış rapor her zaman Pro ister`, `Evet; ücretsiz kullanıcılar yalnızca PDF eki alabilir`, `Hayır; ama yalnızca rapor Çalışma alanım'daysa`, `Hayır; F64 ve üstünde ücretsiz kullanıcılar görebilir`], a: 3,
+    why: `F64 ve üstü Fabric (ya da P1 ve üstü Premium) kapasitedeki çalışma alanlarında ücretsiz lisanslı kullanıcılar sayfalandırılmış raporları görüntüleyebilir. Pro yalnızca kapasite dışındaki alanlarda gerekir. Çalışma alanım paylaşım için doğru yer değildir.` },
+  { t: 'mc', q: `Elle yazılmış DAX veri kümesinde çoklu değerli @Kategori parametresi kullanılıyor. Kullanıcı iki kategori seçince rapor hiç satır döndürmüyor, tek kategoride çalışıyor. Neden?`,
+    o: [`Çoklu değerli parametreler DAX'ta hiç desteklenmez`, `Değerler tek metin olarak geliyor; eşitlik tutmuyor`, `Kategori tablosu ile Satislar ilişkisi tek yönlü`, `Parametrenin varsayılan değeri boş bırakılmış olduğu için`], a: 1,
+    why: `Elle yazılmış DAX'ta çoklu değer tek bir metin olarak gelir (“Elektronik,Kitap”); Kategori = @Kategori hiçbir satırda tutmaz. Değerleri birleştirip PATHCONTAINS ya da benzeri bir yöntemle ayırmak gerekir. Çoklu değer kullanılabilir; ilişki yönü ve varsayılan değer bu belirtiyi açıklamaz.` },
+  { t: 'mc', q: `Bölge müdürleri her ayın ilk günü yalnızca önceki ayın satış listesini PDF olarak almak istiyor. Abonelik geçen ay elle “2024-11” olarak kurulmuştu ve bu ay yine Kasım geldi. Kalıcı çözüm?`,
+    o: [`Her ay aboneliği açıp parametreyi elle değiştirmek`, `Raporu etkileşimli rapora çevirip pano aboneliği kurmak`, `Varsayılanı “önceki ay” ifadesiyle hesaplamak`, `Aboneliği haftalık yapıp müdürlerin doğru haftayı seçmesi`], a: 2,
+    why: `Varsayılan değeri ifadeyle hesaplanan bir parametre (bugünden bir ay önce), aboneliğin her çalışmada doğru ayı kullanmasını sağlar. Elle güncelleme unutulur; etkileşimli rapora geçmek sabit PDF ihtiyacını karşılamaz; haftalık gönderim işi kullanıcıya yükler.` },
+  { t: 'query', q: `Bir parametre seçiminin sorguya etkisini dene: Giyim, Spor ve Kozmetik kategorileri seçilmiş gibi, her kanal (Satislar[Kanal]) için “Net Satış” döndür. Kategori seçimini TREATAS ile ver.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nSUMMARIZECOLUMNS(\n    Satislar[Kanal],\n    TREATAS({"Giyim", "Spor", "Kozmetik"}, Kategoriler[Kategori]),\n    "Net Satış", [Net Satış]\n)`, hint: `SUMMARIZECOLUMNS(Satislar[Kanal], TREATAS({...}, Kategoriler[Kategori]), "Net Satış", [Net Satış]).` },
+  { t: 'query', q: `Fatura listesi veri kümesi yaz: Web kanalının 2024-11 ayındaki satış satırlarını; sipariş numarası (“Sipariş”), tarih (“Tarih”) ve tutar (“Tutar”) sütunlarıyla döndür.`,
+    start: 'EVALUATE\n', sol: `EVALUATE\nCALCULATETABLE(\n    SELECTCOLUMNS(Satislar, "Sipariş", Satislar[SiparisNo], "Tarih", Satislar[Tarih], "Tutar", Satislar[Tutar]),\n    Satislar[Kanal] = "Web",\n    Tarih[YilAy] = "2024-11"\n)`, hint: `SELECTCOLUMNS ile üç sütunu seç; CALCULATETABLE içinde Satislar[Kanal] = "Web" ve Tarih[YilAy] = "2024-11" filtrelerini ver.` }
+] });
+/* ===================================================================== 9. YAŞAM DÖNGÜSÜ */
+ext('yasam-dongusu', { min: 22, html: `
+Dal stratejisi: kim nerede çalışır?
+BI ekibi üç kişi: biri yeni RFM ölçüleri yazıyor, biri tarih tablosunu düzeltiyor, biri rapor sayfalarını yeniliyor. Hepsi aynı geliştirme çalışma alanına yayımlarsa son yayımlayan diğerlerinin işini ezer. Git tümleştirmesinde temel fikir şudur: bir çalışma alanı bir dala bağlıdır; dal değiştirmek, bağlı çalışma alanının içeriğini o dalın içeriğine göre güncellemektir.
+ | Strateji |  | Nasıl işler? |  | Ne zaman uygun? |
+ | Ana dal + Desktop'ta kısa özellik dalları |  | Geliştirici dalı yerelde açar, PBIP'i Desktop'ta düzenler, çekme isteği (pull request) açar; birleşince Dev çalışma alanı ana daldan güncellenir |  | Küçük ekipler; en yaygın başlangıç |
+ | Özellik dalı başına çalışma alanı |  | Kaynak denetimi panelinden “başka bir çalışma alanına dallan” ile dal ve ona bağlı bir çalışma alanı oluşur |  | Service'te test edilmesi gereken değişiklikler; Fabric öğeleriyle çalışan ekipler |
+ | Doğrudan ana dala işleme |  | Herkes Dev çalışma alanında çalışır, oradan işler (commit) |  | Tek kişilik ekip; kod incelemesi yok |
+Git tümleştirmesi Azure DevOps, GitHub ve GitHub Enterprise'ın bulut sürümleriyle çalışır. Raporlar, anlam modelleri ve sayfalandırılmış raporlar Git tümleştirmesinde hâlâ önizleme etiketlidir; desteklenmeyen öğeler (ör. panolar) çalışma alanında kalır ama depoya yazılmaz. Desteklenmeyen öğe yok sayılır, silinmez.
+Çekme isteğinde neye bakılır?
+TMDL farkları: ölçünün ifadesi, biçim dizesi, görüntüleme klasörü, açıklama. Bir satırlık değişiklik bir satırlık fark olarak görünmelidir.
+Gürültü: diyagram yerleşimi dosyaları sık değişir ve çakışma üretir. Belgelenmemiş dosyalarda (ör. diagramLayout.json, report.json) elle değişiklik desteklenmez.
+Yasak dosyalar: .pbi/cache.abf (yerel veri önbelleği) ve .pbi/localSettings.json depoya girmemeli; Desktop'ın oluşturduğu .gitignore bunları zaten dışlar.
+Git ve dağıtım işlem hatları birlikte
+Git geliştirme sürecini (kim neyi değiştirdi, inceleme, birleştirme), dağıtım işlem hattı ise ortamlar arası taşıma sürecini yönetir. Yaygın kurgu: Dev çalışma alanı Git'e bağlı; Test ve Prod çalışma alanları bir dağıtım işlem hattının aşamaları.
+İşlem hattı 2 ile 10 aşama arasında olabilir; varsayılan Geliştirme → Test → Üretim'dir.
+Dağıtımda kaynak aşamadaki öğe, hedefte eşleştiği öğenin üzerine yazar. Eşleşmemiş ama aynı ad ve türde bir öğe hedefte varsa üzerine yazılmaz; kopya oluşur. Kaynakta olmayan hedef öğeler dokunulmadan kalır.
+Dağıtım kuralları ile Test'te test veritabanı, Üretim'de canlı veritabanı kullanılır (veri kaynağı ya da parametre kuralı).
+Dağıtım meta veriyi taşır, veriyi değil. Import modelde yeni bir tablo eklendiyse hedefte yenileme ve kimlik bilgisi ayarı gerekir; RLS rol üyelikleri her ortamda ayrıca yönetilir.
+Tabular Editor ve Best Practice Analyzer
+Best Practice Analyzer (BPA), modeli JSON olarak yazılmış kurallara göre tarar: “her ölçünün biçim dizesi olsun”, “olgu tablosundaki anahtarlar gizli olsun”, “IFERROR kullanma”, “bölmede DIVIDE kullan”, “çift yönlü ilişkiden kaçın”, “açıklaması olmayan ölçü kalmasın”. Kuralların bir kısmı otomatik düzeltme de önerir. Ekip kuralları depoda tutar; aynı kural seti hem geliştiricinin bilgisayarında hem de çekme isteğinde komut satırından çalışır ve kural ihlali birleştirmeyi durdurur.
+Örnek bir ihlal ve düzeltilmiş hâli:
+Sipariş Başı Kâr (eski) =
+IFERROR([Brüt Kâr] / [Sipariş Sayısı], 0)
+Sipariş Başı Kâr =
+DIVIDE([Brüt Kâr], [Sipariş Sayısı])
+Bu modelde iki ölçü kategori düzeyinde aynı sayıyı verir (Elektronik 596,97 ₺, Kitap 174,84 ₺). Fark kenar durumdadır: sipariş olmayan bir hücrede eski ölçü 0 döndürür ve satır matriste kalır; yeni ölçü BLANK döndürür, satır düşer. IFERROR ayrıca gerçek bir hatayı da 0'a çevirip saklar. BPA'nın bu kuralı bu yüzden yalnızca stil değil, doğruluk kuralıdır.
+Sürüm notları ve geri alma
+Üretime çıkan her değişikliğin üç sorusu olmalı: Ne değişti? (ölçü tanımı, biçim, yeni tablo) · Kim etkileniyor? (etki analizi: hangi raporlar, kaç görüntüleme) · Nasıl test edildi? (kırılım testi, RLS test kullanıcıları). Bunlar çekme isteği açıklamasına yazılır ve sürüm notu oradan derlenir. Kullanıcıya görünen bir iz bırakmak için modelde basit bir sürüm ölçüsü tutulabilir:
+Model Sürümü =
+"2026.10-3"
+Raporun alt bilgisindeki bir kart bu değeri gösterir; destek talebinde kullanıcı “hangi sürümü görüyorum?” sorusuna cevap verir.
+Geri alma
+Hatalı değişikliği Git'te geri al (revert) ve ana dala birleştir; geçmiş silinmez, yeni bir commit oluşur.
+Dev çalışma alanını depodan güncelle (update).
+İşlem hattında Test'e, sonra Üretim'e yeniden dağıt. Gerekirse yenile.
+Bu zincir, “dünkü .pbix dosyası kimdeydi?” sorusunu ortadan kaldırır. Ama geri alma, verideki değişikliği geri almaz: yanlış bir Power Query adımı yüzünden yüklenmiş veri, düzeltilmiş tanımla yeniden yenilenmelidir.
+PBIP'in sınırları
+Duyarlılık etiketleri desteklenmez; etiketli içerik için süreci ayrıca düşün (Yönetişim dersi).
+PBIP doğrudan OneDrive ya da SharePoint'e kaydedilemez. Windows'un 260 karakterlik yol sınırına takılmamak için depo kökünü kısa tut.
+Dosyalar BOM'suz UTF-8'dir ve Desktop CRLF satır sonu kullanır; Git'te autocrlf ayarını ekipçe aynı yap.
+Desktop'tan yayımlamak yerel önbelleği (veriyi) de gönderir; Git ya da işlem hattıyla dağıtım yalnızca meta veriyi taşır.
+Kontrol listesiDev çalışma alanı Git'e, Test/Prod işlem hattına bağlı mı? · .gitignore önbelleği dışlıyor mu? · BPA kuralları depoda ve çekme isteğinde çalışıyor mu? · Dağıtım kuralları her aşamada doğru kaynağı gösteriyor mu? · Sürüm notu üç soruyu cevaplıyor mu? · Geri alma adımları denendi mi?
+`, ex: [
+  { t: 'mc', q: `İki geliştirici aynı Dev çalışma alanında çalışıyor ve sık sık birbirinin ölçülerini eziyor. Ekip Git tümleştirmesini açtı ama sorun sürüyor; ikisi de doğrudan Dev'den işleme yapıyor. Ne önerirsin?`,
+    o: [`Özellik dalları ve çekme isteğiyle çalışmak`, `Dev çalışma alanını iki ayrı çalışma alanına bölüp iki modele ayırmak`, `Git'i kapatıp yalnızca dağıtım işlem hattı kullanmak`, `Geliştiricilere sırayla yayımlamaları için takvim vermek`], a: 0,
+    why: `Çakışmanın kaynağı, iki kişinin aynı dalda doğrudan çalışması. Özellik dalları ve çekme isteği değişiklikleri ayrı tutar, incelemeyi ve birleştirmeyi Git'e bırakır. Modeli bölmek tek doğru kaynağı bozar; işlem hattı ortam taşır, eşzamanlı geliştirmeyi çözmez; takvim ölçeklenmez.` },
+  { t: 'mc', q: `Test aşamasına dağıtılan yeni modelde raporlar açılıyor ama yeni eklenen SatinAlmalar tablosu boş görünüyor. Dev'de dolu. En olası neden?`,
+    o: [`Dağıtım kuralı tabloyu filtreliyor`, `Tablo Git'te önizleme olduğu için taşınmadı`, `Dağıtım veriyi taşımaz; Test'te yenileme yapılmadı`, `RLS rolleri Test'e kopyalanmadığı için`], a: 2,
+    why: `İşlem hattı meta veriyi taşır, veriyi değil. Yeni tablonun Test'te dolması için o aşamada yenileme (ve gerekirse kimlik bilgisi) gerekir. Dağıtım kuralları kaynak/parametre değiştirir, satır filtrelemez; Git önizleme durumu işlem hattını etkilemez; rol eksikliği tabloyu boşaltmaz.` },
+  { t: 'mc', q: `Çekme isteği incelemesinde, tek bir ölçünün biçimini değiştiren bir değişiklikte 4 MB'lık cache.abf dosyasının da depoya eklendiği görülüyor. Ne yaparsın?`,
+    o: [`Dosyayı bırakırım; modeli açmak için gerekli`, `Çıkarır, .gitignore'u düzeltirim`, `Dosyayı ayrı bir dala taşırım`, `Dosyayı sıkıştırıp tekrar eklerim`], a: 1,
+    why: `cache.abf yerel veri önbelleğidir; depoya girmemelidir (hem boyut hem de veri sızıntısı riski). Desktop'ın varsayılan .gitignore'u bunu dışlar; muhtemelen silinmiş ya da değiştirilmiştir. Model meta veriden açılır, önbelleğe ihtiyaç duymaz; ayrı dal ya da sıkıştırma sorunu çözmez.` },
+  { t: 'mc', q: `Üretimdeki Net Satış tanımı dün yanlış değiştirildi ve aylık raporlar hatalı. Değişiklik Git'te tek bir commit. En güvenli geri alma sırası?`,
+    o: [`Üretim çalışma alanında ölçüyü elle düzeltmek`, `Dünkü .pbix dosyasını bulup Üretim'e yayımlamak`, `Test'ten Üretim'e eski sürümü elle kopyalamak`, `Revert, Dev'i güncelle, işlem hattıyla dağıt`], a: 3,
+    why: `Git'te revert yeni bir commit olarak izlenir; Dev güncellenir ve işlem hattıyla aynı yol izlenerek Üretim'e gider. Üretimde elle düzeltme Git ile çelişen bir durum yaratır ve bir sonraki dağıtımda ezilir; eski .pbix aradaki diğer değişiklikleri kaybettirir; elle kopyalama izlenebilir değildir.` },
+  { t: 'mc', q: `BPA çalıştırınca “IFERROR kullanmayın” kuralı 14 ölçüde ihlal veriyor. Bir geliştirici “sonuçlar aynı, kuralı kapatalım” diyor. En iyi cevap?`,
+    o: [`Haklı; IFERROR yalnızca stil sorunudur`, `Kuralı kapatmak yerine ihlalleri tek tek uyarıya çevirmek`, `IFERROR'u ISERROR ile değiştirmek yeterli`, `Kuralı tutup DIVIDE ile düzeltmek, kenarı test etmek`], a: 3,
+    why: `IFERROR satır satır hata yakalar, gerçek hataları saklar ve boş yerine 0 döndürerek fazladan satırlar üretebilir. DIVIDE ile düzeltip kenar durumu (sipariş olmayan hücre) test etmek doğrudur. ISERROR aynı maliyeti taşır; kuralı uyarıya indirmek sorunu ertelemektir.` },
+  { t: 'dax', name: 'Sipariş Başına Brüt Kâr (BPA)', q: `Sipariş Başına Brüt Kâr (BPA): Eski ölçü IFERROR([Brüt Kâr] / [Sipariş Sayısı], 0) idi. BPA kuralına uygun, sıfıra bölmede BLANK döndüren hâlini yaz.`,
+    sol: `DIVIDE([Brüt Kâr], [Sipariş Sayısı])`, hint: `DIVIDE(pay, payda) sıfıra bölmede BLANK döner; IFERROR gerekmez.` }
+] });
+/* ===================================================================== 10. M DİLİ */
+ext('m-dili', { min: 20, html: `
+Değerler: kayıt, liste, tablo
+Power Query'de her adım bir değer üretir. Gelişmiş Düzenleyici'de (Advanced Editor) kodu okuyabilmek için dört temel değer türünü ve onlara erişimi tanımak yeter:
+let
+    Liste    = {"Web", "Mobil", "Mağaza"},               // liste: sıralı değerler
+    Kayit    = [Ad = "Ece Kurt", Sehir = "İzmir"],       // kayıt: ad = değer çiftleri
+    Tablo    = #table({"Kanal", "Pay"}, {{"Web", 0.37}, {"Mobil", 0.48}}),
+    Ilk      = Liste{0},            // "Web"   — listede konum (0'dan başlar)
+    Ad       = Kayit[Ad],           // "Ece Kurt" — kayıtta alan
+    IlkSatir = Tablo{0},            // kayıt: [Kanal = "Web", Pay = 0.37]
+    Kanallar = Tablo[Kanal],        // liste: {"Web", "Mobil"}
+    Guvenli  = Kayit[Telefon]?      // alan yoksa hata yerine null
+in
+    Guvenli
+Bir tablo, aynı alanlara sahip kayıtların listesi gibi düşünülebilir: Tablo{0} bir kayıt, Tablo[Kanal] bir listedir. ? işareti erişimi “isteğe bağlı” yapar: Liste{10}? ve Kayit[Telefon]? hata yerine null döndürür. Kaynaktan gelen sütun bazen yoksa (ör. CRM dışa aktarımı yeni bir sürümde sütunu kaldırdıysa) bu küçük işaret sorgunun tamamen çökmesini önler.
+let/in: sıra değil, bağımlılık
+let içindeki adlar bir tarif listesidir; yukarıdan aşağı çalıştırılmaz. M tembel (lazy) değerlendirir: in sonrasındaki değer hangi adlara ihtiyaç duyuyorsa yalnızca onlar hesaplanır. Bunun iki pratik sonucu var:
+Hata ayıklama: in satırına ara bir adımın adını yazarak o adımın sonucunu görebilirsin. Uygulanan Adımlar bölmesinde bir adıma tıklamak da bunu yapar.
+Kullanılmayan adım çalışmaz: bir adımdaki hata, sonuca giden yolda değilse sorguyu durdurmaz. Ama aynı adımı bir sonraki adım kullanmaya başladığı anda hata ortaya çıkar.
+Boşluk ya da Türkçe karakter içeren adım adları #"Değiştirilen Tür" biçiminde yazılır. Arayüz bu adları kendisi üretir; elle yazarken kısa ve boşluksuz adlar (Turler, Filtre) kodu okunur kılar.
+each ve _: kısa fonksiyon yazımı
+each, tek parametreli bir fonksiyonun kısaltmasıdır: each [Adet] * [Fiyat] = (_) => _[Adet] * _[Fiyat]. Köşeli parantez içindeki alan adı, _ değerinin alanıdır. _ ne olduğuna göre değişir:
+ | Fonksiyon |  | _ nedir? |  | Örnek |
+ | Table.SelectRows, Table.AddColumn |  | Satırın kaydı |  | each [Kanal] = "Web" |
+ | Table.TransformColumns |  | Hücrenin değeri |  | each Text.Proper(_) |
+ | List.Transform, List.Select |  | Listenin elemanı |  | each _ * 1.2 |
+let
+    Kaynak   = Satislar,
+    Secili   = Table.SelectRows(Kaynak, each List.Contains({"Web", "Mobil"}, [Kanal])),
+    Etiketli = Table.AddColumn(Secili, "Bant",
+                 each if [Tutar] >= 2000 then "Büyük" else if [Tutar] >= 500 then "Orta" else "Küçük",
+                 type text)
+in
+    Etiketli
+İç içe each yazınca iki _ çakışır: içteki dıştakini gölgeler. Böyle durumlarda açık adlı fonksiyon yaz: (satir) => List.Select(Liste, (x) => x > satir[Esik]).
+Özel fonksiyon ve parametreli kaynak
+Satın alma ekibi her tedarikçi için ayrı Excel gönderiyor; dosyaların yapısı aynı. Aynı temizliği 8 kez yazmak yerine bir fonksiyon yazılır ve dosya listesinin her satırına uygulanır. “Klasörden birleştir” komutu bunu kendiliğinden yapar: bir örnek dosyayı dönüştür sorgusu ve ondan türetilen bir fonksiyon üretir; temizliği örnek sorguda yaptığında fonksiyon da güncellenir.
+// fxTedarikciTemizle
+(Dosya as binary, Tedarikci as text) as table =>
+let
+    Sayfa  = Excel.Workbook(Dosya, null, true){[Item = "Siparis", Kind = "Sheet"]}[Data],
+    Baslik = Table.PromoteHeaders(Sayfa, [PromoteAllScalars = true]),
+    Turler = Table.TransformColumnTypes(Baslik, {{"Tarih", type date}, {"Tutar", type number}}, "tr-TR"),
+    Etiket = Table.AddColumn(Turler, "Tedarikci", each Tedarikci, type text)
+in
+    Etiket
+Parametreli kaynak: sunucu ve veritabanı adlarını Parametreleri yönet ile SunucuAdi, VeritabaniAdi parametrelerine al: Sql.Database(SunucuAdi, VeritabaniAdi). Dağıtım işlem hattındaki parametre kuralları Test'te test sunucusunu, Üretim'de canlı sunucuyu seçer (Yaşam döngüsü dersi). Kenar durum: farklı kaynakları birleştiren sorgularda gizlilik düzeyleri uyuşmazsa Formula.Firewall hatası çıkar; kaynakları ayrı hazırlık (staging) sorgularına ayırmak ya da gizlilik düzeylerini doğru tanımlamak gerekir.
+Hata yönetimi: try, otherwise, catch
+İki tür hata vardır. Adım düzeyinde hata (dosya yok, sütun yok) sorgunun tamamını durdurur. Hücre düzeyinde hata (bir tarih çevrilemedi) yalnızca o hücreyi Error yapar; yüklemede o hücre boş gelir ve hata raporu oluşur. try her ikisini de bir kayda çevirir:
+let
+    Kaynak = Musteri,
+    Denendi = Table.AddColumn(Kaynak, "Deneme", each try Date.FromText([KayitTarihi], [Culture = "tr-TR"])),
+    // Deneme: [HasError = false, Value = ...]  ya da  [HasError = true, Error = [Reason, Message, Detail]]
+    Tarih  = Table.AddColumn(Denendi, "KayitTarihiTemiz", each if [Deneme][HasError] then null else [Deneme][Value], type nullable date),
+    Neden  = Table.AddColumn(Tarih, "HataNedeni", each if [Deneme][HasError] then [Deneme][Error][Message] else null, type nullable text),
+    Sonuc  = Table.RemoveColumns(Neden, {"Deneme"})
+in
+    Sonuc
+try … otherwise null kısa yoldur ama nedeni kaybeder. Kalite raporu gerekiyorsa yukarıdaki gibi neden sütunu tut; “2024-02-30” gibi hatalı satırlar sessizce kaybolmasın.
+try … catch (e) => … yazımı hata kaydını doğrudan bir fonksiyona verir: try Number.From([Tutar]) catch (e) => if e[Message] = "…" then 0 else null.
+Kendi hatanı da üretebilirsin: error "Beklenen Tutar sütunu yok". Kaynak beklenmedik biçimde değiştiğinde sessizce yanlış veri yüklemektense yenilemenin açık bir mesajla durması iyidir.
+Sorgu katlama ile ilişkisi
+Bir SQL kaynağında adımlar mümkün olduğunca tek bir SQL sorgusuna çevrilir (sorgu katlama, query folding). M yazım biçimin bunu doğrudan etkiler:
+ | Adım |  | Çoğu SQL kaynağında |
+ | Satır filtresi, sütun seçme/kaldırma, gruplama, aynı kaynaktaki birleştirme |  | Katlanır |
+ | Satır başına try … otherwise, özel fonksiyon çağrısı, Table.Buffer |  | Katlanmaz; sonraki adımlar da yerelde çalışır |
+ | Dizin sütunu ekleme, bazı metin fonksiyonları (ör. her sözcüğün ilk harfi) |  | Genellikle katlanmaz |
+Kural: katlanan adımları başa, katlanmayanları sona koy. Adıma sağ tıklayıp Yerel sorguyu görüntüle (View Native Query) seçeneğinin açık olması, o adıma kadar katlandığını gösterir. Artımlı yenilemedeki RangeStart/RangeEnd filtresinin katlanması özellikle kritiktir; o filtreden önce katlamayı bozan bir adım varsa her bölüm için kaynağın tamamı okunur.
+Kontrol listesiAdım adları okunur mu? · Hatalar null'a gömülmek yerine neden sütununda mı? · Kaynak adresleri parametrede mi? · Katlamayı bozan adımlar sonda mı? · Tekrarlanan temizlik fonksiyona alındı mı?
+`, ex: [
+  { t: 'mc', q: `CRM dışa aktarımının yeni sürümünde Telefon sütunu bazen gelmiyor ve sorgu “alan bulunamadı” hatasıyla tamamen duruyor. Sütun yoksa null yeterli. Hangi yazım?`,
+    o: [`Table.AddColumn(t, "Tel", each [Telefon]?)`, `Table.AddColumn(t, "Tel", each [Telefon] ?? 0)`, `Table.AddColumn(t, "Tel", each Text.From([Telefon]))`, `Table.SelectColumns(t, {"Telefon"})`], a: 0,
+    why: `Alan erişiminden sonra gelen ? işareti alanı isteğe bağlı yapar; alan yoksa hata yerine null döner. ?? birleştirme işleci yalnızca değer null olduğunda devreye girer, olmayan alan hatasını önlemez. Text.From ve SelectColumns olmayan sütunda yine hata verir.` },
+  { t: 'mc', q: `Table.TransformColumns(t, {{"Şehir", each Text.Proper([Şehir])}}) yazdın ve her hücrede hata aldın. Neden?`,
+    o: [`Text.Proper Türkçe karakterleri desteklemez`, `_ hücre değeridir; Text.Proper(_) yazılmalı`, `TransformColumns yalnızca sayısal sütunlarda çalışır`, `Sütun adında Türkçe karakter olduğu için #"Şehir" yazılmalı`], a: 1,
+    why: `TransformColumns'ta each içindeki _ satırın kaydı değil, hücrenin değeridir; değerin [Şehir] alanı olmadığı için hata çıkar. Doğrusu each Text.Proper(_). Türkçe karakter ne fonksiyonda ne sütun adında sorun değildir (sütun adı metin olarak verilmiş).` },
+  { t: 'mc', q: `Kalite ekibi, kayıt tarihi çevrilemeyen müşterilerin neden çevrilemediğini görmek istiyor. Şu an try … otherwise null kullanılıyor. Ne değiştirirsin?`,
+    o: [`otherwise null yerine otherwise #date(1900, 1, 1) yazarım`, `Hatalı satırları Hataları kaldır ile atarım`, `try kaydını tutup Error[Message]'ı sütuna açarım`, `Sütunun türünü metin bırakıp tarih dönüşümünü DAX'ta yaparım`], a: 2,
+    why: `try tek başına [HasError, Value/Error] kaydı döndürür; Error[Message] nedeni taşır. otherwise nedeni kaybeder; 1900 sahte tarihi raporu yanıltır; hataları silmek veriyi kaybettirir; DAX'a taşımak modele kirli metin taşır ve nedeni yine göstermez.` },
+  { t: 'mc', q: `SQL kaynağından gelen sorguda adımlar: Kaynak → satır başına özel fonksiyonla müşteri adı temizleme → son 2 yıl filtresi → sütun kaldırma. Yenileme çok yavaş. İlk düzeltme?`,
+    o: [`Özel fonksiyonu Table.Buffer ile sarmak`, `Filtreyi ve sütun kaldırmayı fonksiyondan önceye almak`, `Sorguyu DirectQuery moduna çevirmek`, `Gizlilik düzeyini Genel yapmak`], a: 1,
+    why: `Satır başına özel fonksiyon katlamayı bozar ve sonraki adımlar yerelde çalışır: tüm tablo indirilip sonra filtrelenir. Katlanan filtre ve sütun kaldırmayı başa almak kaynağa daha az satır ve sütun sordurur. Table.Buffer katlamayı yine bozar; DirectQuery ve gizlilik düzeyi bu sıralama sorununu çözmez.` },
+  { t: 'pq', src: 'musteri', pre: [{ op: 'promote', cols: [] }], sol: [{ op: 'type', cols: ['KayitTarihi'], to: 'date' }, { op: 'replaceErr', cols: ['KayitTarihi'], v: 'null' }],
+    q: `try … otherwise null'ı arayüzle kur. İlk satır zaten başlık yapıldı. KayitTarihi sütununu tarihe çevir; “2024-02-30” gibi geçersiz tarihte oluşan hatayı null ile değiştir. Satır sayısı değişmemeli (6 satır). Sonra Gelişmiş Düzenleyici'de üretilen Table.ReplaceErrorValues satırını oku.`,
+    hint: `KayitTarihi'ni seç → Veri türü: Tarih → Hataları değiştir: null. Hataları kaldır kullanma; satır sayısı azalır.` }
+] });
+})(window);

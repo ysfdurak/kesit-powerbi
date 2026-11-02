@@ -1,0 +1,12 @@
+const {M, ev, q, rq} = require('./h.js');
+const F = 'DATEDIFF(MAX(Satislar[Tarih]), CALCULATE(MAX(Satislar[Tarih]), ALL(Satislar)), DAY)';
+console.log(ev(F), q(F, {t:'Kategoriler',c:'Kategori'}), q(F,{t:'Tarih',c:'Yil'}), q(F,{t:'Urunler',c:'Urun'}).filter(s=>!/= 0$/.test(s)));
+const F2 = 'DATEDIFF(MAX(Satislar[Tarih]), CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), DAY)';
+console.log(q(F2,{t:'Tarih',c:'Yil'}), q(F2, {t:'Kategoriler',c:'Kategori'}));
+const B = 'DIVIDE(CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[KargoGun])), COUNTROWS(Satislar))';
+console.log(ev(B), q(B,{t:'Kategoriler',c:'Kategori'}), q(B,{t:'Tarih',c:'Yil'}), q(B,{t:'Satislar',c:'Durum'}), q(B,{t:'Satislar',c:'Kanal'}));
+console.log('blank by durum', q('CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[KargoGun]))', {t:'Satislar',c:'Durum'}));
+console.log('null bolge musteri', ev('CALCULATE(COUNTROWS(Musteriler), ISBLANK(Musteriler[Bolge]))'), ev('CALCULATE([Net Satış], ISBLANK(Musteriler[Bolge]))'));
+console.log('fmt', ev('FORMAT(1234567.891, "#,0")'), ev('FORMAT(0.9361, "0.0%")'), ev('FORMAT(-9898, "+#,0;-#,0")'), ev('CONCATENATE("a", "b")'), ev('FORMAT(DATE(2024,12,31), "dd.MM.yyyy")'));
+console.log('maxdate stok/web', ev('MAX(StokGorunum[Tarih])'), ev('MAX(WebOlaylari[Tarih])'), ev('MIN(WebOlaylari[Tarih])'), ev('MAX(Hedefler[Tarih])'));
+console.log('hedef last month', ev('CALCULATE(MAX(Satislar[Tarih]), Kategoriler[Kategori]="Hediye")'));

@@ -1,0 +1,10 @@
+const e1='CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[KargoGun]), Satislar[Durum] <> "İptal")';
+console.log(ev(e1), q(e1,{t:'Kategoriler',c:'Kategori'}), q(e1,{t:'Tarih',c:'Yil'}));
+console.log(q(e1,{t:'Tarih',c:'YilAy'}).slice(-3));
+console.log(rq(`EVALUATE UNION(ROW("Test", "Satır sayısı", "Beklenen", 1620, "Gerçek", COUNTROWS(Satislar)), ROW("Test", "Net satış", "Beklenen", 1250772.45, "Gerçek", [Net Satış]))`));
+console.log(rq(`EVALUATE ADDCOLUMNS(DATATABLE("Test", STRING, "Beklenen", DOUBLE, {{"Satır sayısı", 1620}, {"Net satış", 1250772.45}}), "Gerçek", SWITCH([Test], "Satır sayısı", COUNTROWS(Satislar), "Net satış", [Net Satış]))`));
+console.log(ev('CALCULATE([Hedef], Tarih[Yil]=2022, Tarih[AyNo]<=5)'), ev('CALCULATE([Net Satış], Tarih[YilAy]="2022-06")'), ev('CALCULATE([Net Satış], Tarih[YilAy]="2022-07")'), ev('CALCULATE([Hedef Gerçekleşme %], Tarih[Yil]=2022)'),ev('CALCULATE([Hedef], Tarih[YilAy]="2022-06")'));
+const t2 = 'IF([Sipariş Sayısı] = SUMX(VALUES(Kategoriler[Kategori]), [Sipariş Sayısı]), "OK", "FARK")';
+console.log(q(t2,{t:'Kategoriler',c:'Kategori'}), q(t2,{t:'Tarih',c:'Yil'}), q('SUMX(VALUES(Kategoriler[Kategori]), [Sipariş Sayısı])',{t:'Tarih',c:'Yil'}), q('[Sipariş Sayısı]',{t:'Tarih',c:'Yil'}));
+console.log('mus sehir blank sales', ev('CALCULATE([Net Satış], ISBLANK(Musteriler[Sehir]))'), ev('CALCULATE([Net Satış], Musteriler[Sehir] = BLANK())'));
+console.log('ort sepet bos kat', q('[Ortalama Sepet]',{t:'Kategoriler',c:'Kategori'}).length);

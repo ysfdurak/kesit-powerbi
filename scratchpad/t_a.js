@@ -1,0 +1,12 @@
+qq('EVALUATE\nCALENDAR(DATE(2024,1,1), DATE(2024,1,5))');
+qq('EVALUATE\nCALENDARAUTO()', 3);
+qq('EVALUATE\nGENERATESERIES(0, 0.3, 0.05)');
+qq('EVALUATE\n{ ("Mağaza", 1), ("Web", 2), ("Mobil", 3) }');
+qq('EVALUATE\n{ 1, 2, 3 }');
+qq('EVALUATE\nDATATABLE("Kanal", STRING, "Sira", INTEGER, {{"Mağaza", 1}, {"Web", 2}, {"Mobil", 3}})');
+qq('EVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], "Satış", [Net Satış])');
+qq('EVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], "Satış", [Net Satış], "Hedef", [Hedef])');
+qq('EVALUATE\nADDCOLUMNS(VALUES(Satislar[Kanal]), "Satış", [Net Satış])');
+qq('EVALUATE\nSELECTCOLUMNS({ ("Mağaza", 1), ("Web", 2) }, "Kanal", [Value1], "Sira", [Value2])');
+qq('EVALUATE\nFILTER(ADDCOLUMNS(VALUES(Urunler[Urun]), "S", [Net Satış]), [S] > 30000)');
+qq('EVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], Satislar[Kanal], "Satış", [Net Satış])');

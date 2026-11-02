@@ -1,0 +1,11 @@
+const C=require('./common.js');
+(async()=>{const {b,ctx,p,errs}=await C.open();
+await p.goto('http://localhost:8765/index.html#dashboard'); await p.waitForTimeout(300);
+let t0=Date.now(); await p.click('[data-dash="ozet"]'); await p.waitForTimeout(50); console.log('open ozet ms',Date.now()-t0, p.url());
+await p.waitForTimeout(400);
+await p.screenshot({path:C.SS+'42_dash_ozet.png'});
+const ds=await p.$$eval('#main [data-dpage],#main [data-dbm],#main [data-drill],#main [data-dthru],#main [data-dphone],#main [data-dview]',els=>els.map(e=>e.tagName+JSON.stringify(e.dataset)+e.textContent.trim().slice(0,30)));
+console.log(ds.join('\n'));
+const all=await p.$$eval('#main [data-act], #main button',els=>[...new Set(els.map(e=>Object.keys(e.dataset).join(',')))]);
+console.log('dataset keys',all.join(' / '));
+console.log(errs);await b.close();})();

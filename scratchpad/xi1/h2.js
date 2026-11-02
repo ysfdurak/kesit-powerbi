@@ -1,0 +1,22 @@
+require('./h.js');
+const p=(...x)=>console.log(JSON.stringify(x));
+const q=(rows,vals,sl)=>{const r=X.query({rows,measures:ms,values:vals,slicers:sl||[],totals:true});return {rows:r.rows.map(x=>[x.keys.join('/'),...x.vals.map(v=>v==null?null:Math.round(v*1000)/1000)]),total:r.total}};
+const S='FILTER(ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış]), NOT ISBLANK([S]))';
+p('months', M(`COUNTROWS(${S})`), M(`AVERAGEX(${S},[S])`), M(`MEDIANX(${S},[S])`), M(`PERCENTILEX.INC(${S},[S],0.25)`), M(`PERCENTILEX.INC(${S},[S],0.75)`), M(`STDEVX.P(${S},[S])`), M(`STDEVX.S(${S},[S])`), M(`MAXX(${S},[S])`), M(`MINX(${S},[S])`));
+const O='FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S]))';
+p('orders', M(`COUNTROWS(${O})`), M(`AVERAGEX(${O},[S])`), M(`MEDIANX(${O},[S])`), M(`PERCENTILEX.INC(${O},[S],0.25)`), M(`PERCENTILEX.INC(${O},[S],0.75)`), M(`PERCENTILEX.INC(${O},[S],0.95)`), M(`STDEVX.S(${O},[S])`), M(`MAXX(${O},[S])`));
+const iqr=`VAR T = ${O} VAR Q1 = PERCENTILEX.INC(T, [S], 0.25) VAR Q3 = PERCENTILEX.INC(T, [S], 0.75) VAR Ust = Q3 + 1.5 * (Q3 - Q1) RETURN COUNTROWS(FILTER(T, [S] > Ust))`;
+p('iqr outl', M(iqr), M(`VAR T = ${O} VAR Q1 = PERCENTILEX.INC(T, [S], 0.25) VAR Q3 = PERCENTILEX.INC(T, [S], 0.75) RETURN Q3 + 1.5 * (Q3 - Q1)`), M(`VAR T = ${O} VAR Q1 = PERCENTILEX.INC(T, [S], 0.25) VAR Q3 = PERCENTILEX.INC(T, [S], 0.75) VAR Ust = Q3 + 1.5 * (Q3 - Q1) RETURN SUMX(FILTER(T, [S] > Ust), [S])`));
+p('z>3 orders', M(`VAR T = ${O} VAR Ort = AVERAGEX(T,[S]) VAR Sd = STDEVX.S(T,[S]) RETURN COUNTROWS(FILTER(T, ABS([S]-Ort)/Sd > 3))`), M(`VAR T = ${O} VAR Ort = AVERAGEX(T,[S]) VAR Sd = STDEVX.S(T,[S]) RETURN COUNTROWS(FILTER(T, ABS([S]-Ort)/Sd > 2))`));
+p('z by year', q([{t:'Tarih',c:'Yil'}],[`COUNTROWS(${O})`,`AVERAGEX(${O},[S])`,`MEDIANX(${O},[S])`,`STDEVX.S(${O},[S])`,`VAR T = ${O} VAR N = COUNTROWS(T) VAR Ort = AVERAGEX(T,[S]) VAR Sd = STDEVX.S(T,[S]) RETURN 1.96 * Sd / SQRT(N)`]));
+// correlation discount vs qty at row level
+const corr=(T,x,y)=>`VAR T = ${T} VAR MX = AVERAGEX(T, ${x}) VAR MY = AVERAGEX(T, ${y}) VAR Kov = SUMX(T, (${x} - MX) * (${y} - MY)) VAR SX = SQRT(SUMX(T, (${x} - MX) ^ 2)) VAR SY = SQRT(SUMX(T, (${y} - MY) ^ 2)) RETURN DIVIDE(Kov, SX * SY)`;
+p('corr ind-adet', M(corr('FILTER(Satislar, Satislar[Durum] <> "İptal")','Satislar[Indirim]','Satislar[Adet]')));
+p('corr maas-satis', M(corr('ADDCOLUMNS(FILTER(Calisanlar, NOT ISBLANK([Net Satış])), "X", Calisanlar[Maas], "Y", [Net Satış])','[X]','[Y]')));
+p('corr kidem-satis', M(corr('ADDCOLUMNS(FILTER(Calisanlar, NOT ISBLANK([Net Satış])), "X", Calisanlar[KidemYil], "Y", [Net Satış])','[X]','[Y]')));
+p('corr fiyat-adet', M(corr('ADDCOLUMNS(VALUES(Urunler[Urun]), "X", CALCULATE(AVERAGE(Urunler[Fiyat])), "Y", [Satılan Adet])','[X]','[Y]')));
+p('corr month idx', M(corr(`ADDCOLUMNS(${S}, "X", RANKX(VALUES(Tarih[YilAy]), Tarih[YilAy], , ASC))`,'[X]','[S]')));
+p('corr kargo-mem?', M('COUNTROWS(Talepler)'));
+p('csat', q([{t:'Talepler',c:'Kanal'}],['[CSAT %]','COUNT(Talepler[Memnuniyet])','VAR P = [CSAT %] VAR N = COUNT(Talepler[Memnuniyet]) RETURN 1.96 * SQRT(P * (1 - P) / N)']));
+p('ret', q([{t:'Satislar',c:'Kanal'}],['[İade Oranı %]','COUNTROWS(Satislar)','VAR P = [İade Oranı %] VAR N = COUNTROWS(Satislar) RETURN 1.96 * SQRT(P * (1 - P) / N)']));
+p('ret kat', q([{t:'Kategoriler',c:'Kategori'}],['[İade Oranı %]','COUNTROWS(Satislar)','VAR P = [İade Oranı %] VAR N = COUNTROWS(Satislar) RETURN 1.96 * SQRT(P * (1 - P) / N)']));

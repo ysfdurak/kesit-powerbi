@@ -1,0 +1,4 @@
+require('./h.js');
+T(`EVALUATE ADDCOLUMNS(VALUES(Satislar[Kanal]), "Sepet", [Ortalama Sepet], "Iade", [İade Oranı %], "Sip", [Sipariş Sayısı], "Pay", [Kanal Payı %])`);
+T(`EVALUATE ADDCOLUMNS(VALUES(Musteriler[Sehir]), "SWeb", CALCULATE([Ortalama Sepet], Satislar[Kanal]="Web"), "SMob", CALCULATE([Ortalama Sepet], Satislar[Kanal]="Mobil"), "SMag", CALCULATE([Ortalama Sepet], Satislar[Kanal]="Mağaza"), "SipAdet", DIVIDE([Satılan Adet],[Sipariş Sayısı]), "Endeks", DIVIDE([Ortalama Sepet], CALCULATE([Ortalama Sepet], REMOVEFILTERS(Musteriler)))*100, "MBSEndeks", DIVIDE([Müşteri Başı Satış], CALCULATE([Müşteri Başı Satış], REMOVEFILTERS(Musteriler)))*100, "Pay", DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Musteriler))), "Rank", RANKX(ALL(Musteriler[Sehir]), [Müşteri Başı Satış]), "SipMus", [Müşteri Başı Sipariş])`);
+console.log(ev('[Müşteri Başı Sipariş]'));

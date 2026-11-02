@@ -1,0 +1,32 @@
+PBIPatika · Anadolu Market örnek veri seti
+
+Bu dosyalar uygulamadaki derslerin, vakaların ve bitirme projelerinin kullandığı modelin tablolarıdır. Tamamen kurgusaldır; portföyünde serbestçe kullanabilirsin.
+
+Biçim: UTF-8 (BOM’lu) CSV, ayraç virgül, ondalık ayırıcı nokta, tarihler YYYY-AA-GG.
+Power BI Desktop: Veri al > Metin/CSV. Dosya kaynağı 65001: Unicode (UTF-8) olsun. Sayı ve tarih türlerini değiştirirken “Yerel ayarı kullanarak” > İngilizce (Amerika Birleşik Devletleri) seç; böylece 12.5 doğru okunur.
+
+İlişkiler (1 → *):
+- Urunler[UrunNo] → Satislar[UrunNo]
+- Musteriler[MusteriNo] → Satislar[MusteriNo]
+- Tarih[Tarih] → Satislar[Tarih]
+- Tarih[Tarih] → Satislar[TeslimTarihi] (pasif)
+- Calisanlar[CalisanNo] → Satislar[TemsilciNo]
+- Departmanlar[DepartmanNo] → Calisanlar[DepartmanNo]
+- Kategoriler[Kategori] → Urunler[Kategori]
+- Kategoriler[Kategori] → Hedefler[Kategori]
+- Tarih[Tarih] → Hedefler[Tarih]
+- Urunler[UrunNo] → StokGorunum[UrunNo]
+- Tarih[Tarih] → StokGorunum[Tarih]
+- Tarih[Tarih] → WebOlaylari[Tarih]
+- Tarih[Tarih] → Giderler[Tarih]
+- GiderTurleri[GiderTuru] → Giderler[GiderTuru]
+- Departmanlar[DepartmanNo] → Giderler[DepartmanNo]
+- Tarih[Tarih] → GiderButce[Tarih]
+- GiderTurleri[GiderTuru] → GiderButce[GiderTuru]
+- Tarih[Tarih] → Talepler[Tarih]
+- Musteriler[MusteriNo] → Talepler[MusteriNo]
+- Tarih[Tarih] → SatinAlmalar[Tarih]
+- Urunler[UrunNo] → SatinAlmalar[UrunNo]
+- Tedarikciler[TedarikciNo] → SatinAlmalar[TedarikciNo]
+- Departmanlar[DepartmanNo] → Projeler[DepartmanNo]
+Tarih tablosunu “Tarih tablosu olarak işaretle”; Satislar[Tarih] ile Tarih[Tarih] arasında ilişki kur. Satislar[TeslimTarihi] ile ikinci (pasif) bir ilişki rol oynayan boyut dersinde kullanılır.

@@ -1,0 +1,15 @@
+global.window = global; const P = '/home/claude/pbi/';
+['data','data2','dax','measures'].forEach(f => require(P + f + '.js'));
+const X = PBI_DAX, ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
+const e = s => { try { console.log(s, '=>', X.evalMeasure(ms, s, [])); } catch (x) { console.log(s, 'ERR', x.message); } };
+const q = s => { try { const r = X.runQuery(ms, s); console.log(s.replace(/\n/g,' '), '=>', r.rows.length, JSON.stringify(r.rows.slice(0, 8))); } catch (x) { console.log(s, 'ERR', x.message); } };
+e('MIN(Calisanlar[IseGiris])'); e('MAX(Projeler[BitisPlan])'); e('MAX(Projeler[BitisGercek])'); e('MIN(Musteriler[KayitTarihi])');
+q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "Ort", AVERAGE(Satislar[Tutar]), "Sepet", DIVIDE(SUM(Satislar[Tutar]), DISTINCTCOUNT(Satislar[SiparisNo])))');
+q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "Mus", DISTINCTCOUNT(Satislar[MusteriNo]), "Bilgili", COUNT(Satislar[KargoGun]), "Satir", COUNTROWS(Satislar))');
+e('SUMX(VALUES(Tarih[Yil]), CALCULATE(DISTINCTCOUNT(Satislar[MusteriNo])))');
+q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "Gun", COUNTROWS(Tarih))');
+e('[Net Satış] - [Net Maliyet]');
+q('EVALUATE FILTER(ADDCOLUMNS(CALENDAR(DATE(2024,1,1), DATE(2024,12,31)), "AyNo", MONTH([Date]), "Ay", FORMAT([Date], "MMM"), "Yil", YEAR([Date])), [AyNo] = 2)');
+q('EVALUATE SELECTCOLUMNS(FILTER(Satislar, Satislar[SiparisNo] = FIRSTNONBLANK(Satislar[SiparisNo], 1)), "U", Satislar[UrunNo])');
+q('EVALUATE TOPN(3, SUMMARIZECOLUMNS(Satislar[SiparisNo], "n", COUNTROWS(Satislar)), [n], DESC)');
+q('EVALUATE SUMMARIZECOLUMNS(Satislar[Durum], "n", COUNTROWS(Satislar), "t", SUM(Satislar[Tutar]))');

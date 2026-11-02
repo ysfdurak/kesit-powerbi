@@ -1,0 +1,29 @@
+Object.keys(M.tables).map(t=>t+':'+M.tables[t].rows.length).join(' ')
+M.tables.Satislar.rows.slice(0,2)
+[...new Set(M.tables.Satislar.rows.map(r=>r.Durum))]
+M.tables.Satislar.rows.filter(r=>r.KargoGun==null).length
+M.tables.Satislar.rows.filter(r=>r.TeslimTarihi==null).length
+M.tables.Satislar.rows.filter(r=>!M.tables.Urunler.rows.find(u=>u.UrunNo===r.UrunNo)).length
+M.tables.Satislar.rows.filter(r=>!M.tables.Musteriler.rows.find(u=>u.MusteriNo===r.MusteriNo)).length
+M.tables.Satislar.rows.filter(r=>!M.tables.Calisanlar.rows.find(u=>u.CalisanNo===r.TemsilciNo)).length
+M.tables.Satislar.rows.filter(r=>r.TemsilciNo==null).length
+M.tables.Musteriler.rows.filter(r=>r.Segment==null||r.Segment==='').length
+M.tables.Calisanlar.rows.filter(r=>r.YoneticiNo==null).length
+M.tables.Calisanlar.rows.slice(0,2)
+M.tables.Urunler.rows.slice(0,3)
+[...new Set(M.tables.Urunler.rows.map(r=>r.Kategori))]
+M.tables.Kategoriler.rows
+M.tables.Hedefler.rows.slice(0,3)
+ev('COUNTROWS(Satislar)')
+ev('COUNT(Satislar[KargoGun])')
+ev('COUNTA(Satislar[KargoGun])')
+ev('COUNTBLANK(Satislar[KargoGun])')
+ev('DISTINCTCOUNT(Satislar[MusteriNo])')
+ev('COUNTROWS(VALUES(Calisanlar[AdSoyad]))')
+ev('COUNTROWS(DISTINCT(Satislar[TemsilciNo]))')
+ev('COUNTROWS(VALUES(Satislar[TemsilciNo]))')
+ev('COUNTROWS(VALUES(Calisanlar[CalisanNo]))')
+ev('COUNTROWS(DISTINCT(Calisanlar[CalisanNo]))')
+ev('COUNTROWS(VALUES(Kategoriler[Kategori]))')
+ev('COUNTROWS(DISTINCT(Kategoriler[Kategori]))')
+ev('COUNTROWS(VALUES(Urunler[Kategori]))')

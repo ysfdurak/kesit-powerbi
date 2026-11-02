@@ -1,0 +1,11 @@
+require('./h.js');
+const Y=[{t:'Tarih',c:'Yil'}], U=[{t:'Urunler',c:'Urun'}], D=[{t:'Departmanlar',c:'Departman'}], K=[{t:'Kategoriler',c:'Kategori'}];
+console.log(G(Y,['SUMX(VALUES(Tarih[YilAy]), CALCULATE([Net Satış], REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy])))','SUMX(VALUES(Tarih[YilAy]), VAR Ay = Tarih[YilAy] RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay))']).join('\n'));
+console.log(G(U,['[Net Satış]','CALCULATE([Net Satış], REMOVEFILTERS(Kategoriler))']).slice(0,3).join('\n'));
+console.log(G(D,['[Net Satış]','CALCULATE([Net Satış], ALL(Satislar))','CALCULATE([Net Satış], REMOVEFILTERS(Calisanlar))']).join('\n'));
+console.log(G(K,['[Hedef]','CALCULATE([Hedef], ALL(Hedefler))']).slice(0,2).join('\n'));
+console.log(G([{t:'Satislar',c:'Kanal'}],['[Müşteri Sayısı]','CALCULATE([Müşteri Sayısı], REMOVEFILTERS(Musteriler))','[Kayıtlı Müşteri]','CALCULATE([Kayıtlı Müşteri], CROSSFILTER(Satislar[MusteriNo], Musteriler[MusteriNo], BOTH))']).join('\n'));
+def('Web Müşterilerinin Mağaza Satışı', 'VAR WebMusterileri = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Web", Satislar[Durum] <> "İptal") RETURN CALCULATE([Net Satış], WebMusterileri, Satislar[Kanal] = "Mağaza")');
+console.log(G(K,['[Web Müşterilerinin Mağaza Satışı]','CALCULATE([Net Satış], Satislar[Kanal] = "Mağaza")']).join('\n'));
+console.log(G(Y,['[Web Müşterilerinin Mağaza Satışı]']).join('\n'));
+console.log(Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Kanal], "PK", CALCULATE([Net Satış], TREATAS({"Premium", "Kurumsal"}, Musteriler[Segment])))'));

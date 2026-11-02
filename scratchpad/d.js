@@ -1,0 +1,20 @@
+const W10 = 'DATESBETWEEN(Tarih[Tarih], DATE(2024,3,4), DATE(2024,3,10))';
+m(`CALCULATE([Net Satış], ${W10})`);
+m(`CALCULATE(CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih])), ${W10})`);
+m(`CALCULATE(CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -364, DAY)), ${W10})`);
+m(`CALCULATE(CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -7, DAY)), ${W10})`);
+q('EVALUATE FILTER(Tarih, Tarih[Tarih] >= DATE(2024,12,28))');
+m('CALCULATE([Net Satış], Tarih[Yil]=2022, Tarih[HaftaNo]=52)');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2022,12,26), DATE(2022,12,31)))');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2022,1,1), DATE(2022,1,2)))');
+m('CALCULATE([Net Satış], Tarih[Yil]=2024, Tarih[HaftaNo]=1)');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024,1,1), DATE(2024,1,7)))');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024,12,30), DATE(2024,12,31)))');
+// fiscal
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2022,7,1), DATE(2023,6,30)))');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2023,7,1), DATE(2024,6,30)))');
+m('CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024,7,1), DATE(2024,12,31)))');
+const MY = 'VAR son = MAX(Tarih[Tarih]) VAR bas = IF(MONTH(son) >= 7, DATE(YEAR(son), 7, 1), DATE(YEAR(son) - 1, 7, 1)) RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))';
+console.log(X.query({ rows: [{ t: 'Tarih', c: 'YilAy' }], measures: ms, values: [MY], slicers: [], totals: true }).rows.filter(r=>/2023-0[6-9]|2024-0[1-7]|undefined/.test(r.keys[0]+'')).map(r=>r.keys[0]+' '+r.vals[0]));
+const P445 = 'EVALUATE VAR g = ADDCOLUMNS(FILTER(Tarih, YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024), "Donem", VAR hw = Tarih[HaftaNo] VAR c = MIN(4, INT((hw - 1) / 13) + 1) VAR wq = hw - (c - 1) * 13 RETURN (c - 1) * 3 + IF(wq <= 4, 1, IF(wq <= 8, 2, 3)), "S", [Net Satış]) RETURN GROUPBY(g, [Donem], "Gun", COUNTX(CURRENTGROUP(), [S]), "Satis", SUMX(CURRENTGROUP(), [S]))';
+q(P445);

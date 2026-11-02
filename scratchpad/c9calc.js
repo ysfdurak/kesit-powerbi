@@ -1,0 +1,17 @@
+global.window = global; const P = '/home/claude/pbi/';
+for (const f of ['data','dax','measures']) require(P + f + '.js');
+const X = PBI_DAX; const ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
+const M = PBI_MODEL; const S = M.tables.Satislar.rows;
+console.log('durum', [...new Set(S.map(r=>r.Durum))], 'kanal', [...new Set(S.map(r=>r.Kanal))], 'yil', [...new Set(M.tables.Tarih.rows.map(r=>r.Yil))], 'kat', M.tables.Kategoriler.rows.map(r=>r.Kategori), 'urun', M.tables.Urunler.rows.length, 'segment', [...new Set(M.tables.Musteriler.rows.map(r=>r.Segment))], 'bolge', [...new Set(M.tables.Musteriler.rows.map(r=>r.Bolge))]);
+const ev = (e, f) => X.evalMeasure(ms, e, f || []);
+const r3 = v => typeof v==='number'?Math.round(v*1000)/1000:v;
+const q = (e, g) => X.query({ rows: [g], measures: ms, values: Array.isArray(e)?e:[e], totals: true }).rows.map(r => r.keys[0] + '=' + r.vals.map(r3).join('|'));
+const sorgu = s => X.runQuery(Object.assign({}, ms), s).rows;
+for (const e of ['[Net Satış]','[Sipariş Sayısı]','[Ortalama Sepet]','[Kâr Marjı %]','[YoY %]','[Ortalama İndirim %]','CALCULATE(AVERAGE(Satislar[Indirim]), Satislar[Durum] <> "İptal")','[İptal Oranı %]','[İade Oranı %]','[Hedef Gerçekleşme %]','[Müşteri Sayısı]']) console.log(e, r3(ev(e)));
+console.log('yil', q(['[Net Satış]','[YoY %]','[Kâr Marjı %]','[Hedef Gerçekleşme %]','[Ortalama Sepet]'], {t:'Tarih',c:'Yil'}));
+console.log('kat', q(['[Net Satış]','[YoY %]','[Kâr Marjı %]','[Ortalama İndirim %]','CALCULATE(AVERAGE(Satislar[Indirim]), Satislar[Durum] <> "İptal")'], {t:'Kategoriler',c:'Kategori'}));
+console.log('kanal', q(['[Net Satış]','[Kanal Payı %]','[Ortalama Sepet]'], {t:'Satislar',c:'Kanal'}));
+console.log('ay2024', q(['CALCULATE([Net Satış], Tarih[Yil]=2024)','CALCULATE([Kâr Marjı %], Tarih[Yil]=2024)'], {t:'Tarih',c:'AyNo'}));
+console.log(JSON.stringify(sorgu('EVALUATE\nADDCOLUMNS(VALUES(Urunler[Urun]), "S", [Net Satış], "M", [Kâr Marjı %], "I", [Ortalama İndirim %], "A", [Satılan Adet])').slice(0,50)));
+console.log('kanal x yil', JSON.stringify(sorgu('EVALUATE\nADDCOLUMNS(CROSSJOIN(VALUES(Tarih[Yil]), VALUES(Satislar[Kanal])), "S", [Net Satış], "P", DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Satislar[Kanal]))))')));
+console.log('fmt', ev('FORMAT(0.1234, "0.0%")'), ev('UNICHAR(9650) & " " & FORMAT(-0.051, "+0.0%;-0.0%")'), ev('FORMAT(1234567, "#,0")'));

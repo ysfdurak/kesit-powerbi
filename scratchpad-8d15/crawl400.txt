@@ -1,0 +1,5 @@
+4 issues
+ders blank-hata: NaN
+hatalar: NaN
+karistirilanlar-count-ailesi: NaN
+karistirilanlar-divide-bolme: NaN

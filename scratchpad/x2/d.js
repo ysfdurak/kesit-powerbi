@@ -1,0 +1,15 @@
+require('./e.js');
+const p = x => console.log(JSON.stringify(x).slice(0,700));
+p(M('VAR s = [Net Satış] RETURN CALCULATE(s, Tarih[Yil] = 2023)'));
+p(M('CALCULATE([Net Satış], Tarih[Yil] = 2023)'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "Yanlis", VAR s = [Net Satış] RETURN CALCULATE(s, Tarih[Yil] = 2023), "Dogru", CALCULATE([Net Satış], Tarih[Yil] = 2023))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Satislar[Durum], "Net", [Net Satış], "NetKeep", CALCULATE([Toplam Satış], KEEPFILTERS(Satislar[Durum] <> "İptal")))'));
+p(M('CALCULATE([Net Satış], Calisanlar[CalisanNo] = 8 || Calisanlar[CalisanNo] = 12)'));
+p(Q('EVALUATE ROW("Ayrinti", COUNTROWS(Satislar), "Ozet", COUNTROWS(SUMMARIZE(Satislar, Tarih[YilAy], Urunler[Kategori])))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "hs", CALCULATE([Net Satış], Tarih[HaftaSonu] = "Evet"), "kg", CALCULATE([Net Satış], Satislar[KargoGun] > 5))'));
+p(M('CALCULATE([Net Satış], Tarih[HaftaSonu] = "Evet")'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], Gorunum[Gorunum], "Değer", [Seçili Görünüm])'));
+p(Q('EVALUATE ROW("Sehir", DISTINCTCOUNT(Musteriler[Sehir]), "Segment", DISTINCTCOUNT(Musteriler[Segment]), "MusteriNo", DISTINCTCOUNT(Musteriler[MusteriNo]), "Eposta", COUNTROWS(Calisanlar))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "a", DIVIDE([Satılan Adet], [Sipariş Sayısı]), "b", IFERROR([Brüt Kâr] / [Sipariş Sayısı], 0), "c", DIVIDE([Brüt Kâr], [Sipariş Sayısı]))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kategoriler[Kategori], "v", VAR s = [Ortalama Sepet] VAR g = CALCULATE([Ortalama Sepet], SAMEPERIODLASTYEAR(Tarih[Tarih])) RETURN IF(NOT ISBLANK(g), s - g))'));
+p(Q('EVALUATE SUMMARIZECOLUMNS(Kanal, "x", 1)'));

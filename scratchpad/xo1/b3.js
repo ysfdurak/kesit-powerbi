@@ -1,0 +1,11 @@
+require('./e.js');
+p('avg indirim', ev('AVERAGE(Satislar[Indirim])'), 'agirlikli', ev('DIVIDE(SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]*Satislar[Indirim]), SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]))'), ev('[Ortalama İndirim %]'));
+p('tutar check', ev('SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]*(1-Satislar[Indirim]))'), ev('SUM(Satislar[Tutar])'));
+p('avg birim fiyat', ev('CALCULATE(AVERAGE(Satislar[BirimFiyat]), Satislar[Durum] <> "İptal")'), ev('[Ortalama Birim Fiyat]'));
+p(g([{t:'Kategoriler',c:'Kategori'}],['CALCULATE(AVERAGE(Satislar[BirimFiyat]), Satislar[Durum] <> "İptal")','[Ortalama Birim Fiyat]','DIVIDE(SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]*Satislar[Indirim]), SUMX(Satislar, Satislar[Adet]*Satislar[BirimFiyat]))','AVERAGE(Satislar[Indirim])']));
+p('kat marj ort', ev('AVERAGEX(VALUES(Kategoriler[Kategori]), [Kâr Marjı %])'), 'agirlikli', ev('DIVIDE(SUMX(VALUES(Kategoriler[Kategori]), [Kâr Marjı %] * [Net Satış]), [Net Satış])'));
+p('max ay', ev('MAXX(VALUES(Tarih[YilAy]), [Net Satış])'), ev('MINX(VALUES(Tarih[YilAy]), [Net Satış])'), 'avg ay', ev('AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış])'), ev('[Net Satış]/36'), ev('COUNTROWS(FILTER(VALUES(Tarih[YilAy]), NOT ISBLANK([Net Satış])))'));
+p(g([{t:'Tarih',c:'Yil'}],['MAXX(VALUES(Tarih[YilAy]), [Net Satış])','AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış])','AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış] + 0)','COUNTROWS(FILTER(VALUES(Tarih[YilAy]), NOT ISBLANK([Net Satış])))']));
+p(q('EVALUATE TOPN(1, ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış]), [S], DESC)'));
+p(q('EVALUATE ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "Yanlis", AVERAGE(Satislar[BirimFiyat]), "Dogru", CALCULATE(AVERAGE(Satislar[BirimFiyat])))'));
+p('ortalama kargo', ev('AVERAGE(Satislar[KargoGun])'), ev('AVERAGEX(VALUES(Satislar[SiparisNo]), CALCULATE(AVERAGE(Satislar[KargoGun])))'));

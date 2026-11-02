@@ -1,0 +1,5 @@
+require('./h.js'); const P = require('./pz.js');
+T(`EVALUATE VAR Pazar = ${P} RETURN FILTER(ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "Koruma", VAR k = Kategoriler[Kategori] VAR p23 = SUMX(FILTER(Pazar, [Kategori]=k && [Yil]=2023), [PazarTL]) VAR p24 = SUMX(FILTER(Pazar, [Kategori]=k && [Yil]=2024), [PazarTL]) RETURN DIVIDE(CALCULATE([Net Satış], Tarih[Yil]=2023), p23) * p24 - CALCULATE([Net Satış], Tarih[Yil]=2024)), [Koruma] > 0)`);
+const L = `Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"}`;
+T(`EVALUATE ADDCOLUMNS(VALUES(Tarih[Yil]), "Adet", CALCULATE([Satılan Adet], ${L}), "Maliyet", CALCULATE([Net Maliyet], ${L}), "Satis", CALCULATE([Net Satış], ${L}), "Birim", DIVIDE(CALCULATE([Net Maliyet], ${L}), CALCULATE([Satılan Adet], ${L})), "BE", DIVIDE(18000, 0.45 * DIVIDE(CALCULATE([Net Maliyet], ${L}), CALCULATE([Satılan Adet], ${L}))), "Kendi", 18000 + 0.55*CALCULATE([Net Maliyet], ${L}), "Yeni", 3000 + 0.88*CALCULATE([Net Maliyet], ${L}))`);
+console.log(ev(`CALCULATE([Kâr Marjı %], ${L}, Tarih[Yil]=2024)`), ev(`CALCULATE([Net Satış], Urunler[Kategori]="Kozmetik", Tarih[Yil]=2024)`));

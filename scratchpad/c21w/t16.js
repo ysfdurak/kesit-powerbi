@@ -1,0 +1,17 @@
+require('./h.js');
+const K=[{t:'Kategoriler',c:'Kategori'}], Y=[{t:'Tarih',c:'Yil'}], M=[{t:'Tarih',c:'YilAy'}];
+const show=(l,rows,v)=>console.log('--'+l+'\n'+G(rows,v).join('\n'));
+show('B D elek', K.slice(), ['CALCULATE([Net Satış], FILTER(Satislar, Satislar[Durum] <> "İade"))','CALCULATE([Toplam Satış], Satislar[Durum] <> "İptal", Satislar[Durum] <> "İade")','CALCULATE([Net Satış], FILTER(ALL(Satislar), Satislar[Durum] <> "İade"))','CALCULATE([Net Satış], Satislar[Durum] <> "İade")']);
+console.log(Q('EVALUATE VAR Ilk5 = TOPN(5, VALUES(Musteriler[MusteriNo]), [Net Satış]) RETURN SUMMARIZECOLUMNS(Satislar[Kanal], "İlk 5", CALCULATE([Net Satış], Ilk5))'));
+console.log(Q('EVALUATE ROW("Seçim", CALCULATE([Net Satış], Tarih[YilAy] IN {"2023-12", "2024-01"}), "Seçimde 2024", CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), Tarih[YilAy] IN {"2023-12", "2024-01"}))'));
+show('talep', K, ['[Talep Sayısı]','CALCULATE([Talep Sayısı], TREATAS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), Musteriler[MusteriNo]))']);
+show('talep y', Y, ['[Talep Sayısı]','CALCULATE([Talep Sayısı], TREATAS(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), Musteriler[MusteriNo]))']);
+const cok='COUNTROWS(FILTER(CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal"), CALCULATE(DISTINCTCOUNT(Urunler[Kategori]), REMOVEFILTERS(Kategoriler), Satislar[Durum] <> "İptal") >= 3))';
+show('cok', K, [cok]); show('cok y', Y, [cok]);
+console.log(Q('EVALUATE ROW("Satırların toplamı", SUMX(VALUES(Kategoriler[Kategori]), [Müşteri Sayısı]), "Tekil", [Müşteri Sayısı])'));
+def('Açık Sipariş', `VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun, Satislar[Durum] <> "İptal", FILTER(ALL(Satislar[TeslimTarihi]), ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun))`);
+const tut=`VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE(SUM(Satislar[Tutar]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun, Satislar[Durum] <> "İptal", FILTER(ALL(Satislar[TeslimTarihi]), ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun))`;
+const yas=`VAR Gun = MAX(Tarih[Tarih]) RETURN CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), REMOVEFILTERS(Tarih), Satislar[Tarih] <= Gun - 3, Satislar[Durum] <> "İptal", FILTER(ALL(Satislar[TeslimTarihi]), ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] > Gun))`;
+show('acik', K, ['[Açık Sipariş]', tut, yas]); show('acik y', Y, ['[Açık Sipariş]', tut, yas]);
+const avg='AVERAGEX(VALUES(Tarih[Tarih]), [Açık Sipariş])';
+const r=X.query({rows:M, measures:ms, values:['[Açık Sipariş]',avg,'MAXX(VALUES(Tarih[Tarih]), [Açık Sipariş])', tut, yas], slicers:[{t:'Tarih',c:'Yil',values:[2024]}], totals:true}); r.rows.forEach(x=>console.log(x.keys.join(),x.vals.join(' | '))); console.log(r.total);

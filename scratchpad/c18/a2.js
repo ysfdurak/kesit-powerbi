@@ -1,0 +1,14 @@
+const {M, ev, q, rq} = require('./h.js');
+const OT = 'CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] <> "İptal")';
+const V = 'CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] <> "İptal")';
+console.log('avgx', ev(`AVERAGEX(${OT}, ${V})`), 'med', ev(`MEDIANX(${OT}, ${V})`), 'max', ev(`MAXX(${OT}, ${V})`), 'min', ev(`MINX(${OT}, ${V})`));
+console.log('above avg share', ev(`VAR A=[Ortalama Sepet] RETURN DIVIDE(COUNTROWS(FILTER(${OT}, ${V} > A)), [Sipariş Sayısı])`));
+console.log('top10 orders share', ev(`VAR T = TOPN(10, ${OT}, ${V}) RETURN DIVIDE(SUMX(T, ${V}), [Net Satış])`));
+console.log('p90', ev(`PERCENTILEX.INC(${OT}, ${V}, 0.9)`));
+console.log(q([`MEDIANX(${OT}, ${V})`, '[Ortalama Sepet]'], {t:'Kategoriler',c:'Kategori'}));
+console.log(q([`MEDIANX(${OT}, ${V})`, '[Ortalama Sepet]'], {t:'Tarih',c:'Yil'}));
+console.log('mevsim 2024', q(['[Net Satış]','[MoM %]','[Kümülatif Satış]','[Sipariş Sayısı]'], {t:'Tarih',c:'YilAy'}).slice(18));
+console.log(q(['[İade Oranı %]','COUNTROWS(Satislar)'], {t:'Satislar',c:'IndirimBandi'}));
+console.log(q(['[Net Satış]','[Satış GY]','[YoY %]','[Sipariş Sayısı]'], [{t:'Kategoriler',c:'Kategori'},{t:'Tarih',c:'Yil'}]));
+console.log(q(['[İade Oranı %]','COUNTROWS(Satislar)','[Kâr Marjı %]'], [{t:'Musteriler',c:'Segment'}]));
+console.log(q(['[İade Oranı %]','COUNTROWS(Satislar)'], [{t:'Musteriler',c:'Segment'},{t:'Tarih',c:'Yil'}]));

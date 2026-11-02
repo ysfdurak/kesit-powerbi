@@ -1,0 +1,44 @@
+0 | Veriyi hazırla | Bir SQL Server kaynağından gelen sorguda adımların kaynağa katlanıp katlanmadığını Power Query’de en hızlı nasıl anlarsın? | doğru: “Yerel sorguyu görüntüle” etkin mi diye bakmak
+1 | Veriyi hazırla | Bir Excel dosyası her hafta farklı bir klasöre kaydediliyor ve sorgunun kaynağı elle değiştiriliyor. Kalıcı çözüm hangisi? | doğru: Dosya yolunu bir Power Query parametresine almak
+2 | Veriyi hazırla | Sütun kalitesi bir sütunda %3 hata gösteriyor. Hataların nedenini görmek için ilk ne yaparsın? | doğru: Hata hücresine tıklayıp ayrıntıyı okumak
+3 | Veriyi hazırla | Varsayılan veri önizlemesi yalnızca ilk 1.000 satırı inceliyor. Sütun profilini tüm veriye göre görmek için? | doğru: Profil ayarını “Tüm veri kümesi” yapmak
+4 | Veriyi hazırla | İki tablo arasında Birleştir (Merge) yaparken Musteriler’deki her satırın korunmasını, Siparisler’den yalnızca eşleşenlerin gelmesini istiyorsun. | doğru: Sol dış birleştirme
+5 | Veriyi hazırla | Ad ve soyadı bir arada tutan “Ayşe Yılmaz Kaya” değerlerinde soyadı son sözcük. Doğru bölme seçeneği? | doğru: En sağdaki sınırlayıcıda böl
+6 | Veriyi hazırla | Bir CSV’de tarih sütunu “03/04/2024” biçiminde ve ay/gün sırası ABD biçiminde. Doğru okumak için? | doğru: Türü değiştir → Yerel ayarla kullan: İngilizce (ABD)
+7 | Veriyi hazırla | Bir sorgunun yalnızca diğer sorgular tarafından kullanılan bir ara adım olduğunu ve yenileme süresini artırdığını düşünüyorsun. Hangisi doğrudur? | doğru: Başvuran sorgular için yine değerlendirilir
+8 | Veriyi hazırla | Kaynakta 120 sütun var ama raporda 15’i kullanılıyor. Modele en iyi etkisi olan adım? | doğru: Power Query’de yalnızca gereken sütunları seçmek
+9 | Veriyi hazırla | Bir web API’sinden gelen JSON’da her kayıt bir “kayıt (record)” olarak geliyor. Alanları sütun yapmak için? | doğru: Kayıt sütununu genişletmek
+10 | Veriyi hazırla | Şirket içi bir Oracle kaynağını Import modunda kullanan anlam modeli Service’te zamanlanmış yenileme yapacak. Ne gerekir? | doğru: Standart modda veri ağ geçidi ve bağlantı
+11 | Veriyi hazırla | Bir tablo “Bölge” ve “Ay” bazında satış hedeflerini içeriyor ama satış gün ve ürün bazında. Modele almadan önce yapılacak en doğru iş? | doğru: Kendi ayrıntı düzeyinde bırakıp ortak boyutlara bağlamak
+12 | Modelle | Tarih tablosunu “tarih tablosu olarak işaretle” ne sağlar? | doğru: Zaman zekâsının bu tabloyu doğru kullanması
+13 | Modelle | Bir ürün birden çok kampanyada, bir kampanya da birden çok üründe yer alıyor. Önerilen modelleme? | doğru: Ürün–Kampanya köprü tablosu ve iki bire-çok ilişki
+14 | Modelle | Satislar tablosunda SiparisTarihi ve TeslimTarihi var; ikisi de aynı Tarih tablosuna bağlanmalı. Doğru yaklaşım? | doğru: Biri etkin, diğeri pasif + USERELATIONSHIP
+15 | Modelle | Bir hesaplamayı ölçü yerine hesaplanmış sütun olarak yazmanın doğru olduğu durum hangisi? | doğru: Satır başına sabit, dilimleyicide kullanılacak değer
+16 | Modelle | Bir ilişkide çapraz filtre yönünü “Her ikisi” yapmanın en büyük riski nedir? | doğru: Belirsiz filtre yolları, beklenmedik sonuç
+17 | Modelle | Kullanıcıların rapor oluştururken ürün kodu, ürün anahtarı gibi teknik sütunları görmemesi için? | doğru: Sütunları rapor görünümünde gizlemek
+18 | Modelle | Bir boyut tablosunda Ülke → Şehir → Mahalle hiyerarşisi kuruldu. Bunun rapor kullanıcısına faydası? | doğru: Görsellerde hazır bir detaya inme yolu
+19 | Modelle | Bir ölçünün biçimini (para birimi, ondalık) tüm görsellerde aynı yapmanın en sürdürülebilir yolu? | doğru: Ölçünün biçim dizesini model düzeyinde tanımlamak
+20 | Modelle | Kâr marjı ölçüsü toplam satırında satır yüzdelerinin toplamını gösteriyor (ör. %260). En olası neden? | doğru: Ölçü SUMX ile satır satır marjları topluyor
+21 | Modelle | Rapor sayfasında hiç kullanılmayan, ama modelin büyük kısmını oluşturan yüksek kardinaliteli bir GUID sütunu var. En iyi adım? | doğru: Sütunu kaldırmak (ya da hiç yüklememek)
+22 | Modelle | Hangi DAX ifadesi seçili tarih aralığının sonundaki stok bakiyesini verir (stok her ay sonunda kaydediliyor)? | doğru: CALCULATE(SUM(Stok[Adet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(Stok))))
+23 | Modelle | Rol oynayan boyut için ikinci bir tarih tablosu kullanmak yerine USERELATIONSHIP tercih etmenin avantajı? | doğru: Tek tarih tablosuyla model küçük kalır
+24 | Görselleştir ve analiz et | Yönetici, kategori satışlarının hedefe göre durumunu tek görselde, az yerde görmek istiyor. En uygun görsel? | doğru: Hedef işaretli madde grafiği
+25 | Görselleştir ve analiz et | Bir görselde “Diğer” kategorisini sona almak ve sıralamanın değere göre olmasını istiyorsun. Ne gerekir? | doğru: Ayrı bir sıra sütunu ve ölçüyle “Diğer”i sona almak
+26 | Görselleştir ve analiz et | Bir sayfadaki dilimleyicinin bir grafiği süzmemesi, diğer görselleri süzmesi istenirse? | doğru: Etkileşimleri düzenle → “Yok”
+27 | Görselleştir ve analiz et | Satış ekibi ürün listesini kendi isteğine göre (ürün adı, kategori, marj) sütun seçerek incelemek istiyor ama yeni rapor yazmamalı. Hangi özellik? | doğru: Görselleri kişiselleştir
+28 | Görselleştir ve analiz et | Aylık satış çizgisinde “Analiz” bölmesinden eklenebilecekler hangisidir? | doğru: Sabit çizgi, ortalama, eğilim, tahmin
+29 | Görselleştir ve analiz et | Bir KPI’ın neden düştüğünü kullanıcının kendisinin bölge, ürün ve kanal boyunca keşfetmesini istiyorsun. En uygun yapay zekâ görseli? | doğru: Ayrıştırma ağacı
+30 | Görselleştir ve analiz et | Raporun ekran okuyucularla kullanılabilmesi için görsel düzeyinde girilmesi gereken bilgi? | doğru: Alternatif metin
+31 | Görselleştir ve analiz et | Kullanıcı bir tabloyu Excel’e aktardığında yalnızca özet satırları alabilmeli. Ayar nerede? | doğru: Dışa aktarma: “Yalnızca özetlenmiş veri”
+32 | Görselleştir ve analiz et | Bir sayfa iki farklı hikâye anlatıyor: “Bu yıl” ve “Geçen yılla karşılaştırma”. Düğmeyle geçişi sağlamak için? | doğru: Her durum için yer imi + düğme
+33 | Görselleştir ve analiz et | Rapor sayfası 1 sn’de açılıyor ama bir tablo görseli 6 sn sürüyor. Performans Analizi’nde süre çoğunlukla “DAX sorgusu”nda. İlk inceleme? | doğru: Görselin DAX sorgusunu kopyalayıp ölçmek
+34 | Görselleştir ve analiz et | Bir kart görselinde “Seçili yıl: 2024” gibi dinamik bir başlık göstermek için? | doğru: fx ile başlığa metin ölçüsü bağlamak
+35 | Yönet ve güvenli hâle getir | Kullanıcılara içerik dağıtmak için çalışma alanı yerine uygulama (app) yayımlamanın avantajı? | doğru: Seçilmiş içerik ve gezinme; hedef kitleler
+36 | Yönet ve güvenli hâle getir | Statik bir RLS rolü tanımladın. Service’te kullanıcıları role nerede eklersin? | doğru: Anlam modelinin Güvenlik sayfasında
+37 | Yönet ve güvenli hâle getir | Çalışma alanında rapor yazabilmesi ama başkalarının erişimini yönetememesi gereken bir analist için doğru rol? | doğru: Katkıda bulunan
+38 | Yönet ve güvenli hâle getir | Bir anlam modeli günde 8 kez yenilenmeli. Paylaşılan (Pro) kapasitede en fazla kaç zamanlanmış yenileme yapılabilir? | doğru: 8
+39 | Yönet ve güvenli hâle getir | Hassas verilere duyarlılık etiketi uygulanan bir rapor Excel’e aktarıldığında ne olur? | doğru: Etiket ve koruma dosyaya taşınır
+40 | Yönet ve güvenli hâle getir | Bir anlam modelinin hangi raporlar ve panolar tarafından kullanıldığını görmek için? | doğru: Köken görünümü ya da etki analizi
+41 | Yönet ve güvenli hâle getir | Kullanıcının dinamik RLS’de kim olduğunu DAX içinde veren fonksiyon? | doğru: USERPRINCIPALNAME()
+42 | Yönet ve güvenli hâle getir | Bir rapora her pazartesi sabahı ekiplerin e-postasına anlık görüntü göndermek için? | doğru: Rapor aboneliği oluşturmak
+43 | Yönet ve güvenli hâle getir | Ağ geçidi üzerinden yenilenen bir modelde “kimlik bilgileri geçersiz” hatası alınıyor. Düzeltme nerede yapılır? | doğru: Veri kaynağı bağlantısında kimlik bilgisini güncellemek

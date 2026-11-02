@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8765",
+      "localStorage": [
+        {
+          "name": "pbipatika.v1",
+          "value": "{\"weak\":{\"tarih\":3,\"aile\":3,\"arayuz\":3,\"ilk-rapor\":2},\"skillStat\":{},\"rv\":{\"tarih:0\":{\"b\":0,\"d\":\"2026-10-28\"},\"tarih:1\":{\"b\":0,\"d\":\"2026-10-28\"},\"tarih:2\":{\"b\":0,\"d\":\"2026-10-28\"},\"aile:0\":{\"b\":0,\"d\":\"2026-10-28\"},\"aile:1\":{\"b\":0,\"d\":\"2026-10-28\"},\"aile:2\":{\"b\":0,\"d\":\"2026-10-28\"},\"arayuz:0\":{\"b\":0,\"d\":\"2026-10-28\"},\"arayuz:1\":{\"b\":0,\"d\":\"2026-10-28\"},\"arayuz:2\":{\"b\":0,\"d\":\"2026-10-28\"},\"ilk-rapor:0\":{\"b\":0,\"d\":\"2026-10-28\"},\"ilk-rapor:1\":{\"b\":0,\"d\":\"2026-10-28\"},\"ilk-rapor:2\":{\"b\":0,\"d\":\"2026-10-28\"},\"ilk-rapor:3\":{\"b\":0,\"d\":\"2026-10-28\"}},\"rvc\":0,\"reports\":[],\"exams\":{},\"arena\":null,\"theme\":\"auto\",\"done\":{\"tarih\":true,\"aile\":true,\"arayuz\":true,\"ilk-rapor\":true},\"ex\":{\"tarih:0\":true,\"tarih:1\":true,\"tarih:2\":true,\"aile:0\":true,\"aile:1\":true,\"aile:2\":true,\"arayuz:0\":true,\"arayuz:1\":true,\"arayuz:2\":true,\"ilk-rapor:0\":true,\"ilk-rapor:1\":true,\"ilk-rapor:2\":true,\"ilk-rapor:3\":true},\"xp\":115,\"days\":{\"2026-10-27\":115},\"placement\":null,\"drafts\":{\"ilk-rapor:2\":\"En Küçük Satır = MIN(Satislar[Tutar])\",\"ilk-rapor:3\":\"En Büyük Satır = MAX(Satislar[Tutar])\"},\"last\":\"ilk-rapor\",\"seen\":{\"tarih\":true,\"aile\":true,\"arayuz\":true,\"ilk-rapor\":true},\"mine\":[],\"studio\":null,\"gclosed\":{\"home\":false},\"final\":{},\"labSeen\":{},\"trickSeen\":{},\"pq\":{},\"pqFree\":{},\"ivr\":{},\"cap\":{},\"ready\":{},\"cert\":{},\"navc\":{\"Başvuru\":true},\"goal\":{\"path\":\"analist\",\"exp\":\"sifir\",\"hours\":5,\"start\":\"2026-10-27\"}}"
+        }
+      ]
+    }
+  ]
+}

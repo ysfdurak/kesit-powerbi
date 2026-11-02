@@ -1,0 +1,17 @@
+create temp view v as select t.*, substr(t.txn_time,1,10) d, cast(substr(txn_time,12,2) as int) h, cast(substr(txn_time,6,2) as int) m, a.currency cur, a.account_type, a.customer_id, a.closed_date, a.opened_date, a.credit_limit, c.segment, c.branch_id, amount * (case when a.currency='TRY' then 1 else (select try_rate from bank_fx f where f.currency=a.currency and f.rate_date <= substr(t.txn_time,1,10) order by rate_date desc limit 1) end) tl from bank_txns t join bank_accounts a using(account_id) join bank_customers c using(customer_id);
+select 'net tl', sum(tl), sum(case when tl>0 then tl end), -sum(case when tl<0 then tl end) from v;
+select 'faiz tl', sum(tl) from v where txn_type='faiz';
+select 'month', m, count(*), sum(tl) from v group by m;
+select 'aktif hesap', count(distinct account_id), count(distinct customer_id) from v;
+select 'dijital', 1.0*sum(channel in ('mobil','internet'))/count(*) from v;
+select 'kart', -sum(tl), count(*), -avg(tl) from v where txn_type='kart_harcama';
+select 'big card', count(*) from v where txn_type='kart_harcama' and amount <= -30000;
+select 'big card 25k', count(*) from v where txn_type='kart_harcama' and amount <= -25000;
+select 'max normal card', min(amount) from v where txn_type='kart_harcama' and h>=6;
+select 'limit exceed txn', count(*) from v where account_type='kredi_karti' and -amount > credit_limit;
+select 'limit exceed month', count(*) from (select account_id, m, -sum(amount) s, max(credit_limit) l from v where account_type='kredi_karti' and txn_type='kart_harcama' group by 1,2) where s > l;
+select 'branch', branch_id, sum(tl), count(*) from v group by branch_id order by 3 desc;
+select 'closed by q', (cast(substr(closed_date,6,2) as int)+2)/3 q, count(*) from bank_accounts where closed_date is not null group by q;
+select 'seg', segment, sum(tl), count(distinct customer_id) from v group by 1;
+select 'card unpaid dec', -sum(amount) from v where account_type='kredi_karti' and txn_type='kart_harcama' and m=12;
+select 'kart_odeme partial', count(*) from v where txn_type='kart_odeme';

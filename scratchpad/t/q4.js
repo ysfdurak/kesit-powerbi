@@ -1,0 +1,10 @@
+const { a, M } = require('./h.js');
+let t=Date.now(); const r3=a.Q(['Satislar[SiparisNo]','Satislar[UrunNo]'], ['Satılan Adet']); console.log(r3.rows.length, Date.now()-t);
+t=Date.now(); const r4=a.Q(['Satislar[SatirNo]'], ['Toplam Satış'], { add:[{t:'Satislar',c:'Durum',values:['İade']}] }); console.log(r4.rows.length, Date.now()-t);
+t=Date.now(); const r5=a.Q(['Musteriler[MusteriNo]','Satislar[Kanal]'], ['Net Satış']); console.log(r5.rows.length, Date.now()-t);
+t=Date.now(); const r6=a.Q(['Musteriler[Musteri]'], ['Net Satış','Brüt Kâr','Kâr Marjı %','Sipariş Sayısı','Ortalama İndirim %']); console.log(r6.rows.length, Date.now()-t);
+t=Date.now(); const r7=a.Q(['Musteriler[Bolge]','Kategoriler[Kategori]'], ['Net Satış']); console.log(r7.rows.length, Date.now()-t);
+t=Date.now(); const r8=a.Q(['Musteriler[Bolge]','Tarih[Ay]'], ['Net Satış']); console.log(r8.rows.length, Date.now()-t);
+const nm = M.tables.Musteriler.rows.map(r=>r.Musteri); console.log('uniq names', new Set(nm).size, nm.length);
+console.log(M.tables.Urunler.rows.map(u=>u.Urun+'/'+u.Kategori).join(', '));
+console.log(a.M('CALCULATE([Kâr Marjı %], Tarih[Yil]=2023)', {except:[['Tarih','Yil']]}), a.M('CALCULATE([Kâr Marjı %], Tarih[Yil]=2022)', {except:[['Tarih','Yil']]}));

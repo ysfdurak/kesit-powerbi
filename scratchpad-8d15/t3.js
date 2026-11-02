@@ -1,0 +1,18 @@
+globalThis.window = globalThis;
+for (const f of ['data','dax','measures']) require('/home/claude/pbi/'+f+'.js');
+const X = PBI_DAX; const ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
+const t = (lbl, e, f) => { const t0 = Date.now(); try { console.log(lbl.padEnd(18), JSON.stringify(X.evalMeasure(ms, e, f || [])), (Date.now()-t0)+'ms'); } catch (er) { console.log(lbl, 'ERR', er.message); } };
+const q = (lbl, src) => { const t0 = Date.now(); try { const r = X.runQuery(ms, src); console.log(lbl, r.cols, JSON.stringify(r.rows.slice(0,6)), (Date.now()-t0)+'ms'); } catch (er) { console.log(lbl, 'ERR', er.message); } };
+const Y = [{t:'Tarih',c:'Yil',values:[2024]}];
+t('order date', '[Net Satış]', Y);
+t('ship date', 'CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))', Y);
+t('bidir', 'CALCULATE(COUNTROWS(Urunler), CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH))', [{t:'Satislar',c:'Kanal',values:['Mağaza']},...Y]);
+t('treatas', 'CALCULATE([Net Satış], TREATAS({"Kitap","Spor"}, Kategoriler[Kategori]))');
+t('except', 'COUNTROWS(EXCEPT(VALUES(Musteriler[MusteriNo]), CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2024)))');
+t('path', 'MAXX(Calisanlar, PATHLENGTH(PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo])))');
+t('lastnonblank', 'CALCULATE(SUM(StokGorunum[StokAdet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum))))', Y);
+t('pctl', 'PERCENTILEX.INC(VALUES(Musteriler[MusteriNo]), [Net Satış], 0.8)');
+t('datatable', 'COUNTROWS(DATATABLE("Ad", STRING, "N", INTEGER, {{"a", 1}, {"b", 2}}))');
+t('generate', 'COUNTROWS(GENERATE(VALUES(Satislar[Kanal]), VALUES(Tarih[Yil])))');
+q('offset', 'EVALUATE ADDCOLUMNS(VALUES(Tarih[YilAy]), "S", [Net Satış], "Önceki", CALCULATE([Net Satış], OFFSET(-1, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy]))), "Pencere3", CALCULATE([Net Satış], WINDOW(-2, REL, 0, REL, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy])))) ORDER BY Tarih[YilAy]');
+q('rank', 'EVALUATE ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "S", [Net Satış], "Sıra", RANK(ALL(Kategoriler[Kategori]), ORDERBY([Net Satış], DESC)))');

@@ -1,0 +1,10 @@
+const { a, M } = require('./h.js');
+console.log(M.geo);
+console.log(a.Q(['Musteriler[Sehir]','Musteriler[Bolge]'], ['Net Satış','Müşteri Sayısı']).rows.map(r=>r.keys.join('|')+' '+r.vals.map(Math.round)));
+const S=M.tables.Satislar.rows; const o={}; S.forEach(r=>{(o[r.SiparisNo]=o[r.SiparisNo]||new Set()).add(r.UrunNo)}); const sz=Object.values(o).map(s=>s.size); console.log('orders',sz.length,'multi',sz.filter(x=>x>1).length, Math.max(...sz));
+console.log(a.Q(['Kategoriler[Kategori]'], ['İade Oranı %','İade Tutarı']).rows);
+console.log(a.Q(['Satislar[Kanal]'], ['İade Oranı %']).rows);
+console.log(a.Q(['Calisanlar[AdSoyad]'], ['İade Oranı %','Net Satış']).rows);
+console.log(M.tables.Tarih.rows.slice(0,2), [...new Set(S.map(r=>r.Durum))]);
+console.log(a.Q(['Musteriler[Segment]'], ['Net Satış','Kâr Marjı %','Müşteri Sayısı']).rows);
+console.log(M.tables.Musteriler.rows[0], M.tables.Satislar.rows[0]);
