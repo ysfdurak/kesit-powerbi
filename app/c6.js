@@ -146,7 +146,7 @@ KohortAyFarki = DATEDIFF(RELATED(Musteriler[IlkSiparis]), Satislar[Tarih], MONTH
       start: 'VAR DonemBasi = MIN(Tarih[Tarih])\nVAR BuDonem =\n    \nVAR Onceki =\n    \nRETURN\n    ',
       sol: 'VAR DonemBasi = MIN(Tarih[Tarih])\nVAR BuDonem = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")\nVAR Onceki = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Tarih] < DonemBasi, Satislar[Durum] <> "İptal")\nRETURN COUNTROWS(INTERSECT(BuDonem, Onceki))',
       grid: [{ t: 'Tarih', c: 'YilCeyrek' }, { t: 'Satislar', c: 'Kanal' }], hint: 'Onceki: CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Tarih] < DonemBasi, …). Sonra INTERSECT.',
-      explain: 'Tarih[Tarih] < DonemBasi filtresi işaretli tarih tablosunda diğer tarih filtrelerinin yerine geçer: dönem öncesinin tamamı. Kanal satırında yalnızca o kanaldaki alışverişler dikkate alınır.' },
+      explain: 'Tarih[Tarih] &lt; DonemBasi filtresi işaretli tarih tablosunda diğer tarih filtrelerinin yerine geçer: dönem öncesinin tamamı. Kanal satırında yalnızca o kanaldaki alışverişler dikkate alınır.' },
     { t: 'dax', q: '<b>Kayıp Müşteri</b>: Dönem başından önceki 12 ayda alışveriş yapıp bu dönemde yapmayan müşteri sayısı. Pencere: DATESINPERIOD(Tarih[Tarih], DonemBasi - 1, -12, MONTH).', name: 'Kayıp Müşteri',
       sol: 'VAR DonemBasi = MIN(Tarih[Tarih])\nVAR OncekiYil = CALCULATETABLE(VALUES(Satislar[MusteriNo]), DATESINPERIOD(Tarih[Tarih], DonemBasi - 1, -12, MONTH), Satislar[Durum] <> "İptal")\nVAR BuDonem = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> "İptal")\nRETURN COUNTROWS(EXCEPT(OncekiYil, BuDonem))',
       grid: [{ t: 'Tarih', c: 'Yil' }, { t: 'Tarih', c: 'YilCeyrek' }], explain: 'DonemBasi - 1 bir tarihten bir gün çıkarır. DATESINPERIOD bu günden geriye 12 aylık pencere üretir. EXCEPT önceki pencerede olup bu dönemde olmayanları bırakır.' },
@@ -155,7 +155,7 @@ KohortAyFarki = DATEDIFF(RELATED(Musteriler[IlkSiparis]), Satislar[Tarih], MONTH
       grid: [{ t: 'Musteriler', c: 'KohortAy' }, { t: 'Satislar', c: 'KohortAyFarki' }], explain: 'Aynı sütuna (KohortAyFarki) verilen “= 0” filtresi, hücrenin ay farkı filtresinin yerine geçer; böylece payda hep kohortun ilk ayıdır.' },
     { t: 'dax', q: '<b>Son Alımdan Bu Yana Gün</b>: Seçili dönemin son gününe göre müşterinin son (iptal edilmemiş) alışverişinden bu yana geçen gün. Müşteri satırında hesaplanacak; tek müşteri yoksa boş döndür.', name: 'Son Alımdan Bu Yana Gün',
       sol: 'VAR Bugun = MAX(Tarih[Tarih])\nVAR SonAlim = CALCULATE(MAX(Satislar[Tarih]), Tarih[Tarih] <= Bugun, Satislar[Durum] <> "İptal")\nRETURN IF(HASONEVALUE(Musteriler[MusteriNo]) && NOT ISBLANK(SonAlim), DATEDIFF(SonAlim, Bugun, DAY))',
-      grid: [{ t: 'Musteriler', c: 'Musteri' }], noTotal: true, explain: 'RFM\'nin R bileşeni. Tarih[Tarih] <= Bugun, yıl filtresini kaldırıp geçmişin tamamına bakar. Müşteri adı tekrarlanabildiği için kontrol MusteriNo üzerinden yapılır.' }
+      grid: [{ t: 'Musteriler', c: 'Musteri' }], noTotal: true, explain: 'RFM\'nin R bileşeni. Tarih[Tarih] &lt;= Bugun, yıl filtresini kaldırıp geçmişin tamamına bakar. Müşteri adı tekrarlanabildiği için kontrol MusteriNo üzerinden yapılır.' }
   ]
 },
 
