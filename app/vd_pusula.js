@@ -1,8 +1,8 @@
-/* Kesit Power BI — Pusula A.Ş. İnsan Kaynakları vaka paketi */
+/* Kesit Power BI — Pusula İK vaka paketi */
 (function (W) {
 'use strict';
 (W.PBI_DATASETS = W.PBI_DATASETS || []).push({
-  id: 'pusula-ik', name: 'Pusula A.Ş. İnsan Kaynakları', sector: 'İnsan kaynakları', icon: '🧭', color: '#7A5AF8', lv: 'orta', src: 'ik',
+  id: 'pusula-ik', name: 'Pusula İK', sector: 'İnsan kaynakları', icon: '🧭', color: '#7A5AF8', lv: 'orta', src: 'ik',
   period: 'Ocak 2019 – Aralık 2024',
   tagline: 'Çalışan sayısı, devir hızı, işe alım süresi ve ücret eşitliğini zaman aralıklı İK verisiyle doğru ölçmek',
   roles: ['analist', 'gelistirici', 'dax', 'karar'],
