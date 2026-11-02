@@ -1,4 +1,4 @@
-/* Kesit Power BI yapılandırması — yayından sonra yalnızca bu dosyayı düzenlemen yeterli (YAYIN.md). Boş bırakılan özellik görünmez. */
+/* Kesit Power BI yapılandırması — yayından sonra yalnızca bu dosyayı düzenlemen yeterli (kaynak dalında app/build/gh/YAYIN.md). Boş bırakılan özellik görünmez. */
 window.KESIT_CONFIG = {
   /* Sitenin adresi (paylaşım önizlemesinde kullanılır). */
   siteUrl: 'https://ysfdurak.github.io/kesit-powerbi/',
@@ -22,12 +22,12 @@ window.KESIT_CONFIG = {
   pbiUrl: 'https://ysfdurak.github.io/kesit-powerbi/',
   pythonUrl: 'https://ysfdurak.github.io/kesit-python/',
 
-  /* Boşsa geri bildirim GitHub Issues'a gider. Form kullanılacaksa adresi buraya yaz: {ders} yazan yere ders adı gelir (YAYIN.md, adım 4). */
+  /* Boşsa geri bildirim GitHub Issues'a gider. Form kullanılacaksa adresi buraya yaz: {ders} yazan yere ders adı gelir (kaynak dalında YAYIN.md, adım 4). */
   feedbackFormUrl: '',
 
-  /* Ders yorumları (Giscus, GitHub Discussions). repoId ve categoryId için YAYIN.md, adım 5. İkisi boşken yorum alanı görünmez. */
+  /* Ders yorumları (Giscus, GitHub Discussions). repoId ve categoryId için kaynak dalında YAYIN.md, adım 5. İkisi boşken yorum alanı görünmez. */
   giscus: { repo: 'ysfdurak/kesit-powerbi', repoId: '', category: 'Dersler', categoryId: '' },
 
-  /* Ziyaret sayacı (GoatCounter, çerezsiz). Örn. 'kesitpowerbi' → https://kesitpowerbi.goatcounter.com (YAYIN.md, adım 6). */
+  /* Ziyaret sayacı (GoatCounter, çerezsiz). Örn. 'kesitpowerbi' → https://kesitpowerbi.goatcounter.com (kaynak dalında YAYIN.md, adım 6). */
   goatcounter: ''
 };
