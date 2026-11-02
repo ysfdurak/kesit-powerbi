@@ -12,6 +12,31 @@
   class DaxError extends Error { constructor(msg) { super(msg); this.dax = true; } }
   const err = m => { throw new DaxError(m); };
 
+
+  /* Bağımsız değişken sayısı: [en az, en çok] (Infinity = sınırsız). Gerçek DAX fazla bağımsız değişkeni hata sayar; burada da ayrıştırırken yakalanır. */
+  const INF = Infinity;
+  const ARITY = {
+    SUM: [1, 1], AVERAGE: [1, 1], MIN: [1, 2], MAX: [1, 2], MEDIAN: [1, 1], 'STDEV.S': [1, 1], 'STDEV.P': [1, 1], 'VAR.S': [1, 1], 'VAR.P': [1, 1], GEOMEAN: [1, 1],
+    COUNT: [1, 1], COUNTA: [1, 1], COUNTBLANK: [1, 1], COUNTROWS: [0, 1], DISTINCTCOUNT: [1, 1], DISTINCTCOUNTNOBLANK: [1, 1],
+    SUMX: [2, 2], AVERAGEX: [2, 2], MINX: [2, 3], MAXX: [2, 3], COUNTX: [2, 2], COUNTAX: [2, 2], MEDIANX: [2, 2], PRODUCTX: [2, 2], CONCATENATEX: [2, INF], 'VARX.S': [2, 2], 'VARX.P': [2, 2], 'STDEVX.S': [2, 2], 'STDEVX.P': [2, 2], 'PERCENTILE.INC': [2, 2], 'PERCENTILEX.INC': [3, 3],
+    CALCULATE: [1, INF], CALCULATETABLE: [1, INF], FILTER: [2, 2], ALL: [0, INF], REMOVEFILTERS: [0, INF], ALLNOBLANKROW: [1, INF], ALLSELECTED: [0, INF], ALLEXCEPT: [2, INF], ALLCROSSFILTERED: [1, 1], KEEPFILTERS: [1, 1], USERELATIONSHIP: [2, 2], CROSSFILTER: [3, 3],
+    VALUES: [1, 1], DISTINCT: [1, 1], SELECTEDVALUE: [1, 2], HASONEVALUE: [1, 1], HASONEFILTER: [1, 1], ISFILTERED: [1, 1], ISCROSSFILTERED: [1, 1], ISINSCOPE: [1, 1], RELATED: [1, 1], RELATEDTABLE: [1, 1], LOOKUPVALUE: [3, INF], EARLIER: [1, 2],
+    TOPN: [2, INF], RANKX: [2, 5], ADDCOLUMNS: [3, INF], SELECTCOLUMNS: [1, INF], GROUPBY: [1, INF], CURRENTGROUP: [0, 0], SUMMARIZE: [1, INF], SUMMARIZECOLUMNS: [1, INF], ROW: [2, INF], GENERATESERIES: [2, 3], CALENDAR: [2, 2], CALENDARAUTO: [0, 1], UNION: [2, INF], CROSSJOIN: [2, INF], EXCEPT: [2, 2], INTERSECT: [2, 2], GENERATE: [2, 2], NATURALINNERJOIN: [2, 2], TREATAS: [2, INF], CONTAINS: [3, INF], ISEMPTY: [1, 1], DATATABLE: [3, INF],
+    IF: [2, 3], 'IF.EAGER': [2, 3], SWITCH: [3, INF], AND: [2, 2], OR: [2, 2], NOT: [1, 1], TRUE: [0, 0], FALSE: [0, 0], BLANK: [0, 0], ISBLANK: [1, 1], ISNUMBER: [1, 1], ISTEXT: [1, 1], ISERROR: [1, 1], ERROR: [1, 1], IFERROR: [2, 2], COALESCE: [2, INF], CONTAINSSTRING: [2, 2], USERPRINCIPALNAME: [0, 0], USERNAME: [0, 0],
+    DIVIDE: [2, 3], ROUND: [2, 2], ROUNDUP: [2, 2], ROUNDDOWN: [2, 2], TRUNC: [1, 2], INT: [1, 1], ABS: [1, 1], SQRT: [1, 1], EXP: [1, 1], LN: [1, 1], LOG: [1, 2], SIGN: [1, 1], MOD: [2, 2], POWER: [2, 2], QUOTIENT: [2, 2], EVEN: [1, 1], ODD: [1, 1], CEILING: [2, 2], FLOOR: [2, 2], MROUND: [2, 2], PI: [0, 0], RAND: [0, 0], FV: [3, 5], PV: [3, 5], PMT: [3, 5], XNPV: [4, 4], XIRR: [3, 5],
+    VALUE: [1, 1], FORMAT: [2, 3], CONCATENATE: [2, 2], LEFT: [1, 2], RIGHT: [1, 2], MID: [3, 3], LEN: [1, 1], UPPER: [1, 1], LOWER: [1, 1], TRIM: [1, 1], SUBSTITUTE: [3, 4], SEARCH: [2, 4], FIND: [2, 4], REPLACE: [4, 4], UNICHAR: [1, 1], REPT: [2, 2], COMBINEVALUES: [2, INF], CONVERT: [2, 2],
+    DATE: [3, 3], TODAY: [0, 0], NOW: [0, 0], YEAR: [1, 1], MONTH: [1, 1], DAY: [1, 1], QUARTER: [1, 1], WEEKDAY: [1, 2], WEEKNUM: [1, 2], EOMONTH: [2, 2], EDATE: [2, 2], HOUR: [1, 1], MINUTE: [1, 1], SECOND: [1, 1], DATEDIFF: [3, 3], DATEVALUE: [1, 1], NETWORKDAYS: [2, 4],
+    DATESYTD: [1, 2], DATESQTD: [1, 1], DATESMTD: [1, 1], TOTALYTD: [2, 4], TOTALQTD: [2, 3], TOTALMTD: [2, 3], DATEADD: [3, 5], SAMEPERIODLASTYEAR: [1, 1], PARALLELPERIOD: [3, 3], PREVIOUSMONTH: [1, 1], PREVIOUSQUARTER: [1, 1], PREVIOUSYEAR: [1, 2], PREVIOUSDAY: [1, 1], NEXTMONTH: [1, 1], NEXTQUARTER: [1, 1], NEXTYEAR: [1, 2], NEXTDAY: [1, 1], DATESINPERIOD: [4, 4], DATESBETWEEN: [3, 3], FIRSTDATE: [1, 1], LASTDATE: [1, 1], STARTOFMONTH: [1, 1], ENDOFMONTH: [1, 1], STARTOFQUARTER: [1, 1], ENDOFQUARTER: [1, 1], STARTOFYEAR: [1, 2], ENDOFYEAR: [1, 2], CLOSINGBALANCEMONTH: [2, 3], CLOSINGBALANCEQUARTER: [2, 3], CLOSINGBALANCEYEAR: [2, 4], OPENINGBALANCEYEAR: [2, 4],
+    LASTNONBLANK: [2, 2], FIRSTNONBLANK: [2, 2], LASTNONBLANKVALUE: [2, 2], FIRSTNONBLANKVALUE: [2, 2], PATH: [2, 2], PATHLENGTH: [1, 1], PATHITEM: [2, 3], PATHITEMREVERSE: [2, 3], PATHCONTAINS: [2, 2],
+    ORDERBY: [0, INF], PARTITIONBY: [0, INF], OFFSET: [1, INF], INDEX: [1, INF], WINDOW: [4, INF], RANK: [0, INF], ROWNUMBER: [0, INF], SELECTEDMEASURE: [0, 0]
+  };
+  const EXCEL_TIP = { AND: ' Üç ya da daha fazla koşul için && kullan (a && b && c).', OR: ' Üç ya da daha fazla koşul için || kullan (a || b || c).', CONCATENATE: ' Daha fazla parça için & kullan ("a" & "b" & "c").', SUM: ' İki sütunu toplamak için SUM(A[x]) + SUM(A[y]) ya da SUMX kullan.', MAX: ' Üç değerin büyüğü için MAX(MAX(a, b), c) yaz.', MIN: ' Üç değerin küçüğü için MIN(MIN(a, b), c) yaz.' };
+  function checkArity(fn, n) {
+    const r = ARITY[fn]; if (!r) return;
+    if (n < r[0]) err(fn + ' en az ' + r[0] + ' bağımsız değişken ister, sen ' + n + ' yazdın.');
+    if (n > r[1]) err(fn + ' en çok ' + r[1] + ' bağımsız değişken alır, sen ' + n + ' yazdın.' + (EXCEL_TIP[fn] || ''));
+  }
+
   /* ---------- Değerler ---------- */
   const isBlank = v => v === null || v === undefined;
   const isTable = v => v && typeof v === 'object' && v.kind === 'table';
@@ -107,7 +132,7 @@
       if (t.type === 'br') { p++; return { type: 'mref', name: t.value.trim() }; }
       if (t.type === 'qid' || t.type === 'id') {
         p++;
-        if (t.type === 'id' && isOp('(')) return { type: 'call', fn: t.value.toUpperCase(), args: args(), pos: t.pos };
+        if (t.type === 'id' && isOp('(')) { const fn0 = t.value.toUpperCase(), a0 = args(); checkArity(fn0, a0.length); return { type: 'call', fn: fn0, args: a0, pos: t.pos }; }
         if (peek().type === 'br') { const c = peek().value.trim(); p++; return { type: 'col', t: t.value, c }; }
         return { type: 'id', name: t.value, quoted: t.type === 'qid' };
       }
@@ -306,7 +331,8 @@
       case 'call': {
         const f = FN[node.fn];
         if (!f) err('“' + node.fn + '” fonksiyonu bu oyun alanında desteklenmiyor ya da yanlış yazılmış.');
-        return f(eng, node.args, st, node);
+        try { return f(eng, node.args, st, node); }
+        catch (e) { if (e && (e.dax || e instanceof RangeError)) throw e; err(node.fn + ' bu bağımsız değişkenlerle hesaplanamadı. Sayısını ve türünü kontrol et (tablo mu, sütun mu, değer mi).'); }
       }
     }
     err('Bilinmeyen ifade');
@@ -404,6 +430,8 @@
   function colArg(a, fn) { if (a.type !== 'col') err(fn + ' bir sütun başvurusu bekliyor (ör. Satislar[Tutar]).'); return resolveCol(a); }
   function iterate(eng, tb, st, fn) { const n = tLen(tb); const out = new Array(n); for (let i = 0; i < n; i++) out[i] = fn(Object.assign({}, st, { frames: st.frames.concat([tFrame(tb, i)]) }), i); return out; }
   function colVals(eng, a, st, fn) { const { t, c } = colArg(a, fn); return visible(st.ctx, t).map(i => T[t].rows[i][c]); }
+  const textCol = (t, c) => { const r = T[t].rows.find(x => x[c] !== null && x[c] !== undefined); return !!r && typeof r[c] === 'string'; };
+  const NUM_ONLY = new Set(['SUM', 'AVERAGE', 'MEDIAN', 'STDEV.S', 'STDEV.P']);
   const nums = arr => arr.filter(v => !isBlank(v) && typeof v !== 'string').map(num);
   function agg(kind, arr) {
     const a = nums(arr);
@@ -584,7 +612,7 @@
   /* ---------- Fonksiyonlar ---------- */
   const FN = {};
   // toplama
-  const simpleAgg = (kind, fn) => (eng, a, st) => { need(a, 1, fn, fn + '(Tablo[Sütun])'); if (a.length > 1 && (fn === 'MAX' || fn === 'MIN')) return minmaxRaw([evS(eng, a[0], st), evS(eng, a[1], st)], fn === 'MAX'); if (a[0].type !== 'col') { const v = evS(eng, a[0], st); if (a.length > 1 && (fn === 'MAX' || fn === 'MIN')) { const w = evS(eng, a[1], st); return minmaxRaw([v, w], fn === 'MAX'); } err(fn + ' bir sütun ister (ör. ' + fn + '(Satislar[Tutar])). Bir ifadeyi toplamak için ' + fn + 'X kullan.'); } const vals = colVals(eng, a[0], st, fn); if ((fn === 'MAX' || fn === 'MIN')) { const r = minmaxRaw(vals, fn === 'MAX'); return r; } return agg(kind, vals); };
+  const simpleAgg = (kind, fn) => (eng, a, st) => { need(a, 1, fn, fn + '(Tablo[Sütun])'); if (NUM_ONLY.has(fn) && a[0].type === 'col') { const rc = resolveCol(a[0]); if (textCol(rc.t, rc.c)) err(fn + ' metin sütununda çalışmaz: ' + rc.t + '[' + rc.c + '] metin. Satır saymak için COUNTROWS ya da DISTINCTCOUNT kullan.'); } if (a.length > 1 && (fn === 'MAX' || fn === 'MIN')) return minmaxRaw([evS(eng, a[0], st), evS(eng, a[1], st)], fn === 'MAX'); if (a[0].type !== 'col') { const v = evS(eng, a[0], st); if (a.length > 1 && (fn === 'MAX' || fn === 'MIN')) { const w = evS(eng, a[1], st); return minmaxRaw([v, w], fn === 'MAX'); } err(fn + ' bir sütun ister (ör. ' + fn + '(Satislar[Tutar])). Bir ifadeyi toplamak için ' + fn + 'X kullan.'); } const vals = colVals(eng, a[0], st, fn); if ((fn === 'MAX' || fn === 'MIN')) { const r = minmaxRaw(vals, fn === 'MAX'); return r; } return agg(kind, vals); };
   FN.SUM = simpleAgg('sum', 'SUM'); FN.AVERAGE = simpleAgg('avg', 'AVERAGE'); FN.MIN = simpleAgg('min', 'MIN'); FN.MAX = simpleAgg('max', 'MAX'); FN.MEDIAN = simpleAgg('median', 'MEDIAN');
   FN['STDEV.S'] = simpleAgg('stdevs', 'STDEV.S'); FN['STDEV.P'] = simpleAgg('stdevp', 'STDEV.P');
   FN.COUNT = (eng, a, st) => { const v = colVals(eng, a[0], st, 'COUNT').filter(x => !isBlank(x) && typeof x !== 'boolean'); return v.length || null; };
@@ -816,7 +844,7 @@
   FN.UNICHAR = (eng, a, st) => String.fromCodePoint(num(evS(eng, a[0], st)));
   FN.REPT = (eng, a, st) => str(evS(eng, a[0], st)).repeat(Math.max(0, Math.min(500, num(evS(eng, a[1], st)))));
   // tarih
-  const dateArg = (eng, a, st, fn) => { const v = evS(eng, a, st); if (isBlank(v)) return null; if (!isDate(v)) { if (typeof v === 'number') return fromSerial(v); err(fn + ' bir tarih bekliyor.'); } return v; };
+  const dateArg = (eng, a, st, fn) => { const v = evS(eng, a, st); if (isBlank(v)) return null; if (!isDate(v)) { if (typeof v === 'number') return fromSerial(v); const m = typeof v === 'string' && v.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if (m) { const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])); if (d.getUTCMonth() === +m[2] - 1) return d; } err(fn + ' bir tarih bekliyor; “' + String(v).slice(0, 30) + '” tarihe çevrilemedi.'); } return v; };
   FN.DATE = (eng, a, st) => dUTC(num(evS(eng, a[0], st)), num(evS(eng, a[1], st)) - 1, num(evS(eng, a[2], st)));
   FN.TODAY = () => dUTC(2024, 11, 31); FN.NOW = FN.TODAY;
   FN.YEAR = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'YEAR'); return d ? d.getUTCFullYear() : null; };
