@@ -138,7 +138,7 @@ KohortAy = FORMAT(Musteriler[IlkSiparis], "yyyy-MM")
 KohortAyFarki = DATEDIFF(RELATED(Musteriler[IlkSiparis]), Satislar[Tarih], MONTH)</pre>
 <p>Hesaplanmış sütunda <code>CALCULATE</code> bağlam geçişi yapar: müşteri satırı filtreye dönüşür ve yalnızca o müşterinin siparişleri arasında en küçük tarih bulunur. Matris: satırlar <code>Musteriler[KohortAy]</code>, sütunlar <code>Satislar[KohortAyFarki]</code>, değer “Kohort Tutma %”.</p>
 <h2>RFM</h2>
-<p>R (Recency, yenilik), F (Frequency, sıklık), M (Monetary, parasal değer). Her müşteri üç boyutta 1–5 puan alır; puan kombinasyonları iş dilinde segmentlere çevrilir. Ayrıntılı ölçüler <button class="lnk" data-go="lab">Ölçü Laboratuvarı</button>'nda, sonuçlar <button class="lnk" data-go="dash" data-id="rfm">RFM dashboardu</button>'nda.</p>
+<p>R (Recency, yenilik), F (Frequency, sıklık), M (Monetary, parasal değer). Her müşteri üç boyutta 1–5 puan alır; puan kombinasyonları iş dilinde segmentlere çevrilir. Ayrıntılı ölçüler <button class="lnk" data-go="lab">Measure Lab</button>'nda, sonuçlar <button class="lnk" data-go="dash" data-id="rfm">RFM raporu</button>'nda.</p>
 <div class="tip"><b>Ölçü mü, sütun mu?</b>Müşteri segmentini hesaplanmış sütun yaparsan dilimleyicide ve eksende kullanabilirsin ama yenileme anında donar. Ölçü yaparsan seçili döneme göre değişir ama eksene konamaz; o zaman bağlantısız bir segment tablosu ve sayım ölçüsü gerekir (RFMSegmentleri kalıbı).</div>
 `,
   ex: [
@@ -195,7 +195,7 @@ DATATABLE(
 <pre class="dax" data-notry>FiyatSenaryosu = GENERATESERIES(-0.2, 0.2, 0.05)
 FiyatSenaryosu Değeri = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)</pre>
 <p>ve sayfaya bir kaydırıcı dilimleyici ekler. Ölçülerinde <code>[FiyatSenaryosu Değeri]</code>'ni kullanarak senaryo hesaplarsın. Parametre tablosunu eksene koyarsan her senaryoyu yan yana görürsün (ör. kâr eğrisi ve optimum fiyat).</p>
-<div class="tip"><b>Dashboardda</b><button class="lnk" data-go="dash" data-id="fiyat">Fiyat ve İndirim dashboardu</button> bu parametreyi kaydırıcıyla kullanıyor; <button class="lnk" data-go="dash" data-id="urun">Ürün dashboardu</button> ABC sınıfını ve Pareto eğrisini gösteriyor.</div>
+<div class="tip"><b>Raporda</b><button class="lnk" data-go="dash" data-id="fiyat">Fiyat ve İndirim raporu</button> bu parametreyi kaydırıcıyla kullanıyor; <button class="lnk" data-go="dash" data-id="urun">Ürün raporu</button> ABC sınıfını ve Pareto eğrisini gösteriyor.</div>
 `,
   ex: [
     { t: 'dax', q: '<b>Dilimdeki Müşteri</b>: Eksende <code>MusteriDilimleri[Dilim]</code> var. Seçili dönemde net satışı dilimin Min (hariç) ve Max (dahil) sınırları arasında olan müşteri sayısı.', name: 'Dilimdeki Müşteri',
@@ -242,7 +242,7 @@ FiyatSenaryosu Değeri = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)</pre>
 </ul>
 <h2>Panolar, abonelikler ve uyarılar</h2>
 <ul>
-<li><b>Pano (dashboard):</b> Service'te farklı raporlardan görselleri <b>sabitleyerek</b> (pin) oluşturulan tek sayfa. Canlı sayfa da sabitlenebilir. Bu uygulamadaki “dashboard”lar ise rapor sayfası düzeninde örneklerdir; günlük dilde ikisi karıştırılır, sınavda karıştırılmaz.</li>
+<li><b>Pano (dashboard):</b> Service'te farklı raporlardan görselleri <b>sabitleyerek</b> (pin) oluşturulan tek sayfa. Canlı sayfa da sabitlenebilir. Bu uygulamadaki Örnek raporlar ise pano değil, rapordur; günlük dilde ikisi karıştırılır, sınavda karıştırılmaz.</li>
 <li><b>Abonelik:</b> Rapor sayfasının ya da sayfalandırılmış raporun düzenli e-posta anlık görüntüsü (günlük, haftalık, yenilemeden sonra). Başkaları adına abone yapılabilir; dinamik abonelik ile alıcıya göre filtre.</li>
 <li><b>Veri uyarıları:</b> Panodaki kart, KPI ve gösterge kutucuklarında eşik aşılınca bildirim (“Net satış 50.000'in altına düşerse”). Power Automate ile iş akışı tetiklenebilir. Fabric'te Activator daha gelişmiş kurallar sunar.</li>
 </ul>
@@ -251,7 +251,7 @@ FiyatSenaryosu Değeri = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)</pre>
 `,
   ex: [
     { t: 'mc', q: 'Rapor yazarlarının şirketin onaylı satış modeli üzerinde kendi raporlarını yapabilmesini, ama modeli değiştirememesini istiyorsun.', o: ['Çalışma alanı Üye rolü', 'Anlam modelinde Derleme (Build) izni', 'Web\'de yayımla', 'Görüntüleyici rolü yeterli'], a: 1, why: 'Derleme izni modeli kullanarak yeni rapor oluşturmayı sağlar; düzenleme yetkisi vermez.' },
-    { t: 'mc', q: 'Net satış kartı belirli bir değerin altına düşünce yöneticiye bildirim gitmeli.', o: ['Pano kutucuğunda veri uyarısı', 'Yer imi', 'RLS', 'Duyarlılık etiketi'], a: 0, why: 'Veri uyarıları pano kutucuklarında (kart, KPI, gösterge) tanımlanır.' },
+    { t: 'mc', q: 'Net satış kartı belirli bir değerin altına düşünce yöneticiye bildirim gitmeli.', o: ['Pano kutucuğunda veri uyarısı', 'Yer işareti', 'RLS', 'Duyarlılık etiketi'], a: 0, why: 'Veri uyarıları pano kutucuklarında (kart, KPI, gösterge) tanımlanır.' },
     { t: 'mc', q: 'Kuruluşta kalite onayından geçmiş tek bir satış modeli olduğunu herkese göstermek için?', o: ['Tanıtmak (Promoted)', 'Sertifikalamak (Certified)', 'Gizlemek', 'Etiketlemek'], a: 1, why: 'Sertifikalama, yetkili kişilerin kalite onayıdır; tanıtma ise sahibin beyanıdır.' },
     { t: 'mc', q: 'Kaynak OneDrive İş\'teki bir Excel dosyası. Zamanlanmış yenileme için ağ geçidi gerekir mi?', o: ['Evet, her zaman', 'Hayır, bulut kaynağı', 'Yalnızca DirectQuery\'de', 'Yalnızca RLS varsa'], a: 1, why: 'Bulut kaynaklarına Service doğrudan erişir.' }
   ]
@@ -265,12 +265,12 @@ FiyatSenaryosu Değeri = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)</pre>
 <h2>İki farklı rapor türü</h2>
 <div class="tbl-wrap"><table>
 <tr><th></th><th>Etkileşimli rapor (.pbix)</th><th>Sayfalandırılmış rapor (.rdl)</th></tr>
-<tr><td>Amaç</td><td>Keşif, analiz, dashboard</td><td>Yazdırma, PDF, operasyonel liste, resmi belge</td></tr>
+<tr><td>Amaç</td><td>Keşif, analiz, rapor</td><td>Yazdırma, PDF, operasyonel liste, resmi belge</td></tr>
 <tr><td>Düzen</td><td>Ekrana sığan sayfa</td><td>Piksel hassasiyetinde, çok sayfaya yayılan tablolar</td></tr>
 <tr><td>Araç</td><td>Power BI Desktop</td><td>Power BI Report Builder (ücretsiz)</td></tr>
 <tr><td>Etkileşim</td><td>Çapraz filtre, detaya inme, araç ipucu</td><td>Parametreler, detay bağlantıları</td></tr>
 <tr><td>Satır sayısı</td><td>Görsel başına sınırlı</td><td>Binlerce satır, sayfa sonları, üst/alt bilgi</td></tr>
-<tr><td>Tipik örnek</td><td>Satış performansı dashboardu</td><td>Fatura, sipariş listesi, aylık resmî mutabakat</td></tr>
+<tr><td>Tipik örnek</td><td>Satış performansı raporu</td><td>Fatura, sipariş listesi, aylık resmî mutabakat</td></tr>
 </table></div>
 <h2>Ne zaman sayfalandırılmış?</h2>
 <ul>

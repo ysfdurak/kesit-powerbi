@@ -10,7 +10,7 @@ add('dashboard-kavramlar', {
   title: 'Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak',
   sum: 'Ortalama ile medyan, yüzde ile yüzde puan, küçük taban etkisi, korelasyon ile nedensellik, Simpson paradoksu, yanıltan grafikler, örneklem ve mevsimsellik. Yöneticinin analiste sorması gereken sorular.',
   body: `
-<p>Bir dashboard doğru hesaplanmış olabilir ama yine de yanlış okunabilir. “Ortalama sepet 1.500 ₺”, “iade %19 düştü”, “Giyim %492 büyüdü” gibi cümleler doğrudur; ama hepsi bir bağlam ister. Bu ders formül yazmayı değil, <b>rakamı okumayı</b> öğretiyor. Örneklerin tamamı Anadolu Market modelinden hesaplandı.</p>
+<p>Bir rapor doğru hesaplanmış olabilir ama yine de yanlış okunabilir. “Ortalama sepet 1.500 ₺”, “iade %19 düştü”, “Giyim %492 büyüdü” gibi cümleler doğrudur; ama hepsi bir bağlam ister. Bu ders formül yazmayı değil, <b>rakamı okumayı</b> öğretiyor. Örneklerin tamamı Anadolu Market modelinden hesaplandı.</p>
 
 <h2>Ortalama mı, medyan mı?</h2>
 <p><b>Ortalama (mean)</b> bütün değerleri toplar ve sayıya böler. <b>Medyan (median)</b> değerleri sıraya dizer ve tam ortadakini alır. Değerler simetrik dağılıyorsa ikisi yakındır. Birkaç çok büyük değer varsa ortalama yukarı kayar, medyan yerinde kalır.</p>
@@ -147,13 +147,13 @@ RETURN
 /* ---------- 2 · Analiz · rapordan karara ---------- */
 add('ayristirma-etkileyen', {
   id: 'karar-toplantisi', lv: 'B1', mod: 'Analiz', min: 24,
-  title: 'Rapordan karara: yönetici toplantısında dashboard kullanmak',
+  title: 'Rapordan karara: yönetici toplantısında rapor kullanmak',
   sum: 'KPI sayfasını yukarıdan aşağı oku, her sayıya “neye göre?” diye sor, kırmızı bir KPI’dan üç tıklamada nedene in, bulguyu sahibi ve tarihi olan bir eyleme çevir, takip ölçüsünü seç ve tek paragraflık yönetici özetini DAX ile üret.',
   body: `
-<p>Dashboard bir sonuç değil, bir toplantının aracıdır. Toplantının sonunda “güzel rapor” değil, <b>“kim, neyi, ne zamana kadar yapacak?”</b> sorusunun cevabı çıkmalıdır. Bu derste Anadolu Market’in 2024 ikinci çeyrek (Ç2) toplantısını baştan sona oynuyoruz. Bütün sayılar modelden hesaplandı.</p>
+<p>Rapor bir sonuç değil, bir toplantının aracıdır. Toplantının sonunda “güzel rapor” değil, <b>“kim, neyi, ne zamana kadar yapacak?”</b> sorusunun cevabı çıkmalıdır. Bu derste Anadolu Market’in 2024 ikinci çeyrek (Ç2) toplantısını baştan sona oynuyoruz. Bütün sayılar modelden hesaplandı.</p>
 
 <h2>KPI sayfasını yukarıdan aşağı okumak</h2>
-<p>İyi bir yönetici sayfası üç katmandır (bkz. “Dashboard kavramları” ve “Kullanıcı odaklı tasarım”):</p>
+<p>İyi bir yönetici sayfası üç katmandır (bkz. “Rapor kavramları” ve “Kullanıcı odaklı tasarım”):</p>
 <ol>
 <li><b>Üst şerit, “Durum ne?”:</b> 3–5 KPI kartı. Her kartta değer, karşılaştırma ve renk.</li>
 <li><b>Orta, “Nerede?”:</b> Kategori, kanal ya da bölge kırılımı. Kırmızının hangi parçadan geldiğini gösterir.</li>
@@ -191,7 +191,7 @@ ADDCOLUMNS(
 <p><b>Tık 2, Web’de sipariş durumu:</b> Web’in iptal dahil toplam tutarı Ç1’de 64.791 ₺, Ç2’de 59.004 ₺; yani talep yalnızca %8,9 azalmış. Asıl fark iptallerde: iptal edilen tutar 8.461 ₺’den <b>16.498 ₺</b>’ye çıkmış. Satır bazında iptal oranı %10,8’den <b>%24,7</b>’ye yükselmiş.</p>
 <p><b>Tık 3, Web iptallerinin ayı:</b> Nisan %23,8, <b>Mayıs %36,4</b> (33 satırdan 12’si), Haziran %5,3. Sorun Nisan–Mayıs’a yoğunlaşmış ve Haziran’da kendiliğinden geçmiş görünüyor. Web’deki ek iptal tutarı (16.498 − 8.461 = 8.037 ₺) tek başına hedef açığının (9.898 ₺) yaklaşık <b>%81</b>’i kadar.</p>
 <p><b>Mağaza’ya da bakalım:</b> Mağaza’nın Ç1’i tek bir siparişle şişmiş: 12.335 ₺’lik sipariş, bütün verinin en büyük siparişi. Mağaza’nın sipariş sayısı 17’den 19’a çıkmış, medyan sipariş 814 ₺’den 948 ₺’ye yükselmiş. Yani Mağaza’da bir sorun yok; düşüş, bir önceki çeyreğin aykırı değerinden geliyor. Bu bilgi toplantıda gereksiz bir “Mağaza kampanyası” kararını önler.</p>
-<div class="tip"><b>Raporda bu yol nasıl kurulur?</b>Kanal çubuğundan bir <b>detay sayfasına (drillthrough)</b> geç; o sayfada durum (Durum) ve ay kırılımı olsun. Aynı keşfi <b>ayrıştırma ağacı</b> ile de yapabilirsin: Net Satış → Kanal → Durum → Ay. Araçların kendisi “Ayrıştırma ağacı ve önemli etkileyenler” ile “Raporla hikâye anlatmak” derslerinde.</div>
+<div class="tip"><b>Raporda bu yol nasıl kurulur?</b>Kanal çubuğundan bir <b>detay sayfasına (drillthrough)</b> geç; o sayfada durum (Durum) ve ay kırılımı olsun. Aynı keşfi <b>ayrıştırma ağacı</b> ile de yapabilirsin: Net Satış → Kanal → Durum → Ay. Araçların kendisi “Ayrıştırma ağacı ve anahtar etkileyiciler” ile “Raporla hikâye anlatmak” derslerinde.</div>
 
 <h2>Bulgudan eyleme: sahip ve tarih</h2>
 <p>“Web’de iptal arttı” bir bulgudur, eylem değildir. Eylemin dört parçası vardır: <b>ne yapılacak, kim yapacak, ne zamana kadar, nasıl ölçülecek</b>.</p>
@@ -279,14 +279,14 @@ add('yonetisim', {
 <p>İki tür satın alma vardır: <b>kullanıcı başına lisans</b> ve <b>kapasite</b> (paylaşılan işlem gücü).</p>
 <div class="tbl-wrap"><table>
 <tr><th>Seçenek</th><th>Ne sağlar?</th><th>Dikkat</th></tr>
-<tr><td><b>Ücretsiz (Free)</b></td><td>Fabric’e giriş, Fabric kapasitesindeki alanlarda Power BI dışı Fabric öğeleri oluşturup paylaşmak</td><td>Paylaşılan Power BI içeriğini yalnızca F64 ve üstü kapasitede, izleyici (Viewer) rolüyle görebilir</td></tr>
+<tr><td><b>Ücretsiz (Free)</b></td><td>Fabric’e giriş, Fabric kapasitesindeki alanlarda Power BI dışı Fabric öğeleri oluşturup paylaşmak</td><td>Paylaşılan Power BI içeriğini yalnızca F64 ve üstü kapasitede, Görüntüleyici (Viewer) rolüyle görebilir</td></tr>
 <tr><td><b>Pro</b></td><td>Power BI içeriği oluşturup paylaşmak</td><td>Power BI kullanan her kuruluşta en az bir Pro ya da PPU kullanıcı gerekir</td></tr>
 <tr><td><b>Kullanıcı başına Premium (PPU)</b></td><td>Premium özelliklerinin çoğu, kullanıcı başına</td><td>Fabric kapasitesi sağlamaz; Power BI dışı Fabric öğelerini tek başına çalıştıramaz. Learn’e göre 250’den az kullanıcı için genelde daha ekonomik</td></tr>
 <tr><td><b>Fabric kapasitesi (F SKU)</b></td><td>F2’den F8192’ye; saniye bazında faturalama, isteğe bağlı yıllık rezervasyon</td><td>Önerilen seçenek. Power BI Premium kapasite (P SKU) satın alma seçenekleri emekliye ayrılıyor</td></tr>
 <tr><td><b>Deneme (Trial)</b></td><td>60 gün; F4 ya da F64 boyutunda deneme kapasitesi</td><td>Power BI lisans kuralları denemede değişmez; Copilot denemede desteklenmez; süre bitince sona erer</td></tr>
 </table></div>
-<p><b>F64 eşiği</b> kararın merkezindedir. Learn’e göre F64’ten küçük F kapasitelerde, Power BI içeriğini görüntüleyen her kullanıcının Pro, PPU ya da bireysel deneme lisansı olmalı. F64 ve üstünde yalnızca ücretsiz lisansı olan ve çalışma alanında izleyici rolü bulunan kullanıcılar da içeriği görebilir. Kuruluş içi gömme (SharePoint, PowerPoint) için de aynı kural geçerlidir.</p>
-<p>Anadolu Market’te 20 rapor geliştiricisi ve 600 mağaza müdürü (yalnızca okuyucu) varsa soru şudur: 600 okuyucuya Pro mu alınır, yoksa F64 ve üstü bir kapasite mi? Cevap fiyat listesine, kapasitenin başka iş yüklerine (lakehouse, not defteri) gerekip gerekmediğine ve kullanım yoğunluğuna bağlıdır. Kapasite alındıysa <b>Microsoft Fabric Capacity Metrics</b> uygulamasıyla CU tüketimi ve kısıtlama (throttling) izlenir.</p>
+<p><b>F64 eşiği</b> kararın merkezindedir. Learn’e göre F64’ten küçük F kapasitelerde, Power BI içeriğini görüntüleyen her kullanıcının Pro, PPU ya da bireysel deneme lisansı olmalı. F64 ve üstünde yalnızca ücretsiz lisansı olan ve çalışma alanında Görüntüleyici rolü bulunan kullanıcılar da içeriği görebilir. Kuruluş içi gömme (SharePoint, PowerPoint) için de aynı kural geçerlidir.</p>
+<p>Anadolu Market büyüyüp 20 rapor geliştiricisine ve 600 mağaza müdürüne (yalnızca okuyucu) ulaştığını varsay. Soru şudur: 600 okuyucuya Pro mu alınır, yoksa F64 ve üstü bir kapasite mi? Cevap fiyat listesine, kapasitenin başka iş yüklerine (lakehouse, not defteri) gerekip gerekmediğine ve kullanım yoğunluğuna bağlıdır. Kapasite alındıysa <b>Microsoft Fabric Capacity Metrics</b> uygulamasıyla CU tüketimi ve kısıtlama (throttling) izlenir.</p>
 <p>Kapasite ve depolama kavramlarının teknik tarafı “Microsoft Fabric’e giriş” ve “Kurumsal model” derslerinde.</p>
 
 <h2>Self-servis, yönetilen self-servis, kurumsal BI</h2>
@@ -341,7 +341,7 @@ add('yonetisim', {
 <p>Yayımlanan raporu kimse açmıyorsa proje başarısızdır, ne kadar güzel olursa olsun. İki resmî araç vardır:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Araç</th><th>Kim görür?</th><th>Ne gösterir?</th></tr>
-<tr><td><b>Kullanım ölçümleri raporu (Usage metrics report)</b></td><td>Çalışma alanında Yönetici, Üye ya da Katkıda bulunan; Pro ya da PPU lisansı gerekir. İzleyici rolü yetmez</td><td>Son 30 günün rapor ve sayfa görüntülemeleri, tekil izleyiciler, eğilim, tipik açılma süresi. “Çalışma alanım”da desteklenmez</td></tr>
+<tr><td><b>Kullanım ölçümleri raporu (Usage metrics report)</b></td><td>Çalışma alanında Yönetici, Üye ya da Katkıda bulunan; Pro ya da PPU lisansı gerekir. Görüntüleyici rolü yetmez</td><td>Son 30 günün rapor ve sayfa görüntülemeleri, tekil görüntüleyiciler, eğilim, tipik açılma süresi. “Çalışma alanım”da desteklenmez</td></tr>
 <tr><td><b>Yönetici izleme çalışma alanı (Admin monitoring workspace)</b></td><td>Fabric yöneticisi kurar; raporları başkalarıyla paylaşabilir</td><td>Kiracı geneli etkinlik ve envanter. Microsoft genel bakış için OneLake kataloğundaki <b>Govern</b> raporunu öneriyor; eski “Feature usage and adoption” raporu önizlemede kalacak</td></tr>
 </table></div>
 <p>Kullanım ölçümleri modeli yalnızca son 30 günü tutar. Uzun dönem eğilim için verisini düzenli olarak dışarı aktar. Basit bir benimseme ölçüsü: <b>aktif kullanıcı / lisanslı kullanıcı</b>. Aşağıdaki sorgu, örnek amaçlı küçük bir 30 günlük kullanım tablosundan bunu hesaplıyor (12 lisanslı kullanıcıdan 6’sı aktif, %50):</p>
@@ -375,18 +375,18 @@ RETURN
 <div class="tip"><b>İlk metrik seti</b>Aktif kullanıcı oranı, sertifikalı modele bağlı rapor payı, 30 günde hiç açılmayan rapor sayısı, destek talebi çözüm süresi. Dördü de bir eyleme bağlanır.</div>
 `,
   ex: [
-    { t: 'mc', q: 'Anadolu Market F32 Fabric kapasitesi aldı. Raporları yalnızca okuyacak, ücretsiz lisanslı mağaza müdürleri izleyici rolüyle eklendi ama içeriği göremiyorlar. Neden?',
-      o: ['İzleyici rolü yerine Katkıda bulunan rolü gerekiyor', 'F64 altında her okuyucuya Pro/PPU gerekir', 'Raporlar sertifikalanmadan paylaşılamaz', 'Kapasite yalnızca not defterleri içindir'], a: 1,
-      why: 'Learn’e göre F64’ten küçük kapasitelerde Power BI içeriğini gören her kullanıcının Pro, PPU ya da bireysel deneme lisansı olmalı. Ücretsiz kullanıcı ancak F64 ve üstünde, izleyici rolüyle görebilir.' },
+    { t: 'mc', q: 'Anadolu Market F32 Fabric kapasitesi aldı. Raporları yalnızca okuyacak, ücretsiz lisanslı mağaza müdürleri Görüntüleyici rolüyle eklendi ama içeriği göremiyorlar. Neden?',
+      o: ['Görüntüleyici rolü yerine Katkıda bulunan rolü gerekiyor', 'F64 altında her okuyucuya Pro/PPU gerekir', 'Raporlar sertifikalanmadan paylaşılamaz', 'Kapasite yalnızca not defterleri içindir'], a: 1,
+      why: 'Learn’e göre F64’ten küçük kapasitelerde Power BI içeriğini gören her kullanıcının Pro, PPU ya da bireysel deneme lisansı olmalı. Ücretsiz kullanıcı ancak F64 ve üstünde, Görüntüleyici rolüyle görebilir.' },
     { t: 'mc', q: 'BI ekibi tek bir Satış anlam modelini yönetiyor; bölge analistleri bu modele canlı bağlanıp kendi raporlarını yazıyor. Bu hangi içerik sahipliği stratejisidir?',
       o: ['Kurumsal BI', 'Gölge BI', 'Yönetilen self-servis', 'İş birimi liderliğinde self-servis'], a: 2,
       why: 'Veriyi merkezî ekip, raporu iş birimi sahipleniyor: yönetilen self-servis. Kurumsalda raporu da merkez yazar; iş birimi liderliğinde self-serviste veri de birimdedir.' },
     { t: 'mc', q: 'İki müdür aynı ay için farklı “net satış” rakamı getiriyor; her biri kendi raporundaki modeli kullanıyor. Kalıcı çözüm hangisi?',
       o: ['Raporlara “rakamlar farklı olabilir” notu eklemek', 'Her müdüre ayrı bir çalışma alanı açmak', 'Bütün raporları PDF olarak dağıtmak', 'Tek modeli sertifikalayıp raporları ona bağlamak'], a: 3,
       why: 'Tek doğruluk kaynağı, sertifikalı ve paylaşılan bir anlam modelidir. Yol haritası, anlam modeli / rapor oranını bu tekrarın göstergesi olarak izlemeyi önerir.' },
-    { t: 'mc', q: 'Bir rapor yazarı çalışma alanında yalnızca <b>İzleyici</b> rolünde. Kullanım ölçümleri raporunu açamıyor. Neden?',
+    { t: 'mc', q: 'Bir rapor yazarı çalışma alanında yalnızca <b>Görüntüleyici</b> rolünde. Kullanım ölçümleri raporunu açamıyor. Neden?',
       o: ['Yönetici, Üye ya da Katkıda bulunan rolü gerekir', 'Kullanım ölçümleri yalnızca Desktop’ta açılır', 'Rapor 30 günden eski olduğu için silinmiştir', 'Kullanım ölçümleri yalnızca panolarda çalışır'], a: 0,
-      why: 'Learn: kullanım ölçümlerini yalnızca Yönetici, Üye ya da Katkıda bulunan rolündekiler görebilir; izleyici yetmez. Ayrıca Pro ya da PPU lisansı gerekir.' },
+      why: 'Learn: kullanım ölçümlerini yalnızca Yönetici, Üye ya da Katkıda bulunan rolündekiler görebilir; Görüntüleyici yetmez. Ayrıca Pro ya da PPU lisansı gerekir.' },
     { t: 'mc', q: 'Hangi kiracı ayarı, kimlik doğrulaması olmadan internetteki herkesin görebileceği bir bağlantı üretilmesine izin verir?',
       o: ['Certification', 'Create workspaces', 'Publish to web', 'Export to Excel'], a: 2,
       why: 'Publish to web herkese açık bağlantı üretir. Hassas veri riski yüzünden genelde kapalı tutulur ya da çok dar bir gruba açılır.' },
@@ -408,7 +408,7 @@ RETURN
 add('kademeli-tasarim', {
   id: 'proje-yonetimi-bi', lv: 'B2', mod: 'Kariyer', min: 24,
   title: 'Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım',
-  sum: 'Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir dashboard sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı sonrası yenileme ve veri tazeliği izleme, eski raporları emekliye ayırmak.',
+  sum: 'Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir rapor sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı sonrası yenileme ve veri tazeliği izleme, eski raporları emekliye ayırmak.',
   body: `
 <p>İş ilanlarında “Power BI bilgisi” yazar ama mülakatta sorulan çoğu zaman şudur: <b>“Bir projeyi baştan sona nasıl yürüttün?”</b> Bu ders o soruya cevap verebilmen için. Örnek proje: Anadolu Market satış müdürü haftalık toplantı için bir <b>satış ve hedef panosu</b> istiyor; süre dört hafta.</p>
 
@@ -490,7 +490,7 @@ RETURN
 <p><b>Tamlık:</b> Bir sütunda boş değer ne kadar? Satislar[KargoGun] 1.620 satırın 131’inde boş. Ama boşların 121’i iptal satırı (iptal edilen sipariş kargoya çıkmaz), 10’u ise henüz kargoda. Teslim edilmiş satırlarda boş yok. Ders: <b>boş her zaman hata değildir</b>; tamlık ölçüsünü iş kuralına göre tanımla.</p>
 <pre class="dax">Boş Kargo Satırı =
 CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[KargoGun]), Satislar[Durum] = "Teslim Edildi")</pre>
-<p>Bu ölçü sıfırdan farklı olursa veri hattında bir sorun var demektir. Hizmette yenileme geçmişini izle, yenileme hatası bildirimlerini bir gruba yönlendir ve sağlık ölçülerini bir “Veri sağlığı” sayfasına koy.</p>
+<p>Bu ölçü sıfırdan farklı olursa veri hattında bir sorun var demektir. Service’te yenileme geçmişini izle, yenileme hatası bildirimlerini bir gruba yönlendir ve sağlık ölçülerini bir “Veri sağlığı” sayfasına koy.</p>
 
 <h2>Eski raporları emekliye ayırmak</h2>
 <p>Yeni pano canlıya çıkınca eski Excel ve rapor kopyaları kendiliğinden ölmez. Emeklilik süreci:</p>

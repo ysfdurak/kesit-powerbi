@@ -148,7 +148,7 @@ W.PBI_CONFUSED.push(
   rule: 'Grafikte, tabloda ve sıralamada kullanılacak her değer sayı kalmalı: biçim dizesi ya da dinamik biçim dizesi. FORMAT’ı yalnızca başlık, etiket ve açıklama gibi metin ölçülerinde kullan.',
   body: 'En sık görülen hata, “₺ işareti görünsün” diye ölçüyü FORMAT ile sarmaktır. Ölçü metne döner ve “9.500 ₺” değeri “12.000 ₺”den büyük sıralanır, çünkü metin karakter karakter karşılaştırılır. Seçime göre değişen biçim gerekiyorsa (ör. Görünüm tablosu: Cari / YoY %) dinamik biçim dizesi doğru araçtır; hesaplama grubu öğelerinde de aynı mekanizma vardır.',
   quiz: [
-    { q: 'Alan parametresiyle ölçü seçiliyor: “Net Satış” seçilince ₺, “YoY %” seçilince yüzde biçimi gerekiyor ve grafik çizilmeye devam etmeli. Ne yaparsın?', o: ['Dinamik biçim dizesi', '`FORMAT` ile metne çevir', 'İki ayrı grafik ve yer imi', 'Biçimi Genel bırak'], a: 0, why: 'Dinamik biçim dizesi değeri sayı olarak bırakır, yalnızca gösterimi seçime göre değiştirir. FORMAT metin üretir ve grafik çizemez.' },
+    { q: 'Alan parametresiyle ölçü seçiliyor: “Net Satış” seçilince ₺, “YoY %” seçilince yüzde biçimi gerekiyor ve grafik çizilmeye devam etmeli. Ne yaparsın?', o: ['Dinamik biçim dizesi', '`FORMAT` ile metne çevir', 'İki ayrı grafik ve yer işareti', 'Biçimi Genel bırak'], a: 0, why: 'Dinamik biçim dizesi değeri sayı olarak bırakır, yalnızca gösterimi seçime göre değiştirir. FORMAT metin üretir ve grafik çizemez.' },
     { q: 'Tablo Net Satış’a göre sıralanınca “9.500 ₺” en üstte, “120.000 ₺” aşağıda. Ölçüde ne olabilir?', o: ['Biçim dizesi yanlış seçilmiş', 'Sıralama ölçütü sütunu eksik', 'Toplam satırı kapatılmış', 'Ölçü metin döndürüyor'], a: 3, why: 'Metin, karakter karakter sıralanır: “9” “1”den büyüktür. Ölçünün sayı döndürmesini sağla, para birimini biçim dizesiyle göster.' }
   ]
 },
@@ -183,7 +183,7 @@ W.PBI_CONFUSED.push(
   body: 'Beş ölçü × dört zaman görünümü için 20 ölçü yazmak yerine beş ölçü ve dört öğelik bir hesaplama grubu yeter. Alan parametresi ise “Net Satış mı Brüt Kâr mı?” ya da “Kategoriye mi kanala mı göre?” seçimini dilimleyiciye taşır. Hesaplama grubu örtük ölçülerle (sürükle-bırak toplama) çalışmaz; modelde açık ölçü kullanma alışkanlığı ister.',
   quiz: [
     { q: 'Finans ekibi 12 ölçünün her biri için YTD, GY ve YoY % istiyor. Bakımı en kolay yol?', o: ['36 yeni ölçü', 'Alan parametresi', 'Görsel hesaplama', 'Hesaplama grubu'], a: 3, why: 'Hesaplama grubu üç dönüşümü bir kez tanımlar ve tüm ölçülere uygular. Alan parametresi yalnızca alan seçtirir, hesap yapmaz. Görsel hesaplama tek görselde kalır.' },
-    { q: 'Yönetici aynı grafikte ekseni “Kategori”, “Kanal” ve “Şehir” arasında değiştirmek istiyor. Hangisi?', o: ['Alan parametresi', 'Hesaplama grubu', 'Yer imi ve üç grafik', '`SWITCH` ölçüsü'], a: 0, why: 'Alan parametresi boyut sütunlarını da listeleyebilir; eksene konduğunda seçilen sütunla gruplar. Hesaplama grubu ölçüleri dönüştürür, ekseni değiştirmez.' }
+    { q: 'Yönetici aynı grafikte ekseni “Kategori”, “Kanal” ve “Şehir” arasında değiştirmek istiyor. Hangisi?', o: ['Alan parametresi', 'Hesaplama grubu', 'Yer işareti ve üç grafik', '`SWITCH` ölçüsü'], a: 0, why: 'Alan parametresi boyut sütunlarını da listeleyebilir; eksene konduğunda seçilen sütunla gruplar. Hesaplama grubu ölçüleri dönüştürür, ekseni değiştirmez.' }
   ]
 },
 {
@@ -341,13 +341,13 @@ W.PBI_CONFUSED.push(
   id: 'parametre-fonksiyon', area: 'Power Query', lesson: 'pq-model',
   title: 'Parametre / özel fonksiyon',
   items: [
-    { n: 'Parametre', d: 'Tek bir değer tutar (sunucu adı, dosya yolu, tarih sınırı). Sorgularda kullanılır, hizmette ayarlardan değiştirilebilir.' },
+    { n: 'Parametre', d: 'Tek bir değer tutar (sunucu adı, dosya yolu, tarih sınırı). Sorgularda kullanılır, Service’te ayarlardan değiştirilebilir.' },
     { n: 'Özel fonksiyon', d: 'Girdi alıp bir dönüşüm uygulayan yeniden kullanılabilir sorgu. Aynı temizlik adımlarını birçok dosyaya ya da tabloya uygulamak için.' }
   ],
   rule: 'Ortama göre değişen tek bir değer varsa parametre. Aynı adım dizisini birden çok girdiye uygulayacaksan fonksiyon. Fonksiyonun girdisi de parametre olabilir.',
   body: 'Geliştirme ve üretim sunucusu arasındaki fark bir parametredir: sorgu aynı, yalnızca adres değişir. Her ayın Excel dosyasını aynı biçimde temizlemek ise bir fonksiyondur: “Fonksiyon oluştur” ile örnek sorguyu fonksiyona çevirir, sonra Sütun ekle → Özel fonksiyon çağır ile her dosyaya uygularsın. Klasör bağlayıcısının “Birleştir” düğmesi de arka planda tam olarak bunu yapar.',
   quiz: [
-    { q: 'Aynı rapor test ve üretim veritabanına yayımlanacak; yalnızca sunucu adı farklı. Ne kullanırsın?', o: ['Özel fonksiyon', 'Başvuru sorgusu', 'Yinelenen sorgu', 'Parametre'], a: 3, why: 'Ortama göre değişen tek değer parametredir; hizmette anlam modeli ayarlarından ya da dağıtım işlem hattı kurallarıyla değiştirilebilir.' },
+    { q: 'Aynı rapor test ve üretim veritabanına yayımlanacak; yalnızca sunucu adı farklı. Ne kullanırsın?', o: ['Özel fonksiyon', 'Başvuru sorgusu', 'Yinelenen sorgu', 'Parametre'], a: 3, why: 'Ortama göre değişen tek değer parametredir; Service’te anlam modeli ayarlarından ya da dağıtım işlem hattı kurallarıyla değiştirilebilir.' },
     { q: '12 şubenin aynı biçimdeki Excel dosyasına aynı 9 temizlik adımı uygulanacak. En bakımlı yol?', o: ['Her şubeye ayrı sorgu', 'Özel fonksiyon', 'Parametre ve tek sorgu', 'DAX hesaplanmış tablo'], a: 1, why: 'Adımlar bir kez fonksiyonda yazılır, her dosyaya çağrılır. Bir adım değişince 12 sorguyu değil tek fonksiyonu güncellersin.' }
   ]
 },
@@ -373,11 +373,11 @@ W.PBI_CONFUSED.push(
     { n: 'Kuruluş (Organizational)', d: 'Kurum içi veri. Diğer Kuruluş kaynaklarıyla birleştirilebilir; Genel kaynaklara gönderilmez.' },
     { n: 'Genel (Public)', d: 'Herkese açık veri (ör. açık döviz kuru servisi). Diğer kaynaklara gönderilmesinde sakınca yoktur.' }
   ],
-  rule: 'Her kaynağa gerçeği yansıtan düzeyi ver. “Formula.Firewall” hatasını gizlilik düzeylerini yok sayarak değil, sorguyu yeniden düzenleyerek ya da düzeyleri doğru ayarlayarak çöz. Hizmette de aynı düzeyler kullanılır.',
-  body: 'Gizlilik düzeyleri, Power Query birleştirme yaparken bir kaynaktan aldığı değeri (ör. bir filtre listesi) başka bir kaynağa sorgu içinde göndermesini kontrol eder. Özel bir Excel dosyasındaki müşteri listesiyle Genel bir web servisini birleştirirsen, motor müşteri adlarını web servisine göndermemek için katlamayı durdurur ve veriyi yerelde işler. “Gizlilik düzeylerini yoksay” Desktop’ta hızlı çözüm gibi görünür ama hizmette aynı sorgu farklı davranabilir.',
+  rule: 'Her kaynağa gerçeği yansıtan düzeyi ver. “Formula.Firewall” hatasını gizlilik düzeylerini yok sayarak değil, sorguyu yeniden düzenleyerek ya da düzeyleri doğru ayarlayarak çöz. Service’te de aynı düzeyler kullanılır.',
+  body: 'Gizlilik düzeyleri, Power Query birleştirme yaparken bir kaynaktan aldığı değeri (ör. bir filtre listesi) başka bir kaynağa sorgu içinde göndermesini kontrol eder. Özel bir Excel dosyasındaki müşteri listesiyle Genel bir web servisini birleştirirsen, motor müşteri adlarını web servisine göndermemek için katlamayı durdurur ve veriyi yerelde işler. “Gizlilik düzeylerini yoksay” Desktop’ta hızlı çözüm gibi görünür ama Service’te aynı sorgu farklı davranabilir.',
   quiz: [
     { q: 'İK’nın maaş Excel’i ile herkese açık bir enflasyon servisini birleştiriyorsun. Maaş dosyasına hangi düzeyi verirsin?', o: ['Genel', 'Kuruluş', 'Özel', 'Hiçbir düzey vermem'], a: 2, why: 'Maaş verisi hassastır; Özel düzeyi bu değerlerin başka bir kaynağa sorgu içinde gönderilmesini engeller.' },
-    { q: 'İki kurum içi SQL veritabanını birleştirirken katlama gereksiz yere duruyor; biri Özel, diğeri Kuruluş işaretli. Doğru çözüm?', o: ['Gizlilik düzeylerini yoksay', 'İkisini de Kuruluş yap', 'İkisini de Genel yap', 'Birleştirmeyi DAX’a taşı'], a: 1, why: 'İkisi de kurum içi veridir; aynı Kuruluş düzeyi aralarında veri akışına izin verir. Genel yanlış bir beyan olur, yoksaymak hizmette risk taşır.' }
+    { q: 'İki kurum içi SQL veritabanını birleştirirken katlama gereksiz yere duruyor; biri Özel, diğeri Kuruluş işaretli. Doğru çözüm?', o: ['Gizlilik düzeylerini yoksay', 'İkisini de Kuruluş yap', 'İkisini de Genel yap', 'Birleştirmeyi DAX’a taşı'], a: 1, why: 'İkisi de kurum içi veridir; aynı Kuruluş düzeyi aralarında veri akışına izin verir. Genel yanlış bir beyan olur, yoksaymak Service’te risk taşır.' }
   ]
 },
 {
@@ -398,17 +398,17 @@ W.PBI_CONFUSED.push(
 /* ---------------- Rapor ---------------- */
 {
   id: 'yerimi-detay-ipucu', area: 'Rapor', lesson: 'hikaye',
-  title: 'Yer imi / detaylandırma sayfası / araç ipucu sayfası',
+  title: 'Yer işareti / detaylandırma sayfası / araç ipucu sayfası',
   items: [
-    { n: 'Yer imi', d: 'Sayfanın bir durumunu (görünür görseller, filtreler, seçimler) kaydeder. Düğmeyle durumlar arasında geçiş ve hikâye anlatımı için.' },
+    { n: 'Yer işareti', d: 'Sayfanın bir durumunu (görünür görseller, filtreler, seçimler) kaydeder. Düğmeyle durumlar arasında geçiş ve hikâye anlatımı için.' },
     { n: 'Detaylandırma sayfası', d: 'Bir değere sağ tıklayınca (ya da düğmeyle) o değere süzülmüş ayrı bir ayrıntı sayfası açılır. Bağlam taşınır.' },
     { n: 'Araç ipucu sayfası', d: 'Fareyle üzerine gelince küçük bir sayfa açılır; tıklama gerekmez, sayfa değişmez. Hızlı bakış için.' }
   ],
-  rule: 'Aynı sayfada görünüm değiştir: yer imi. Bir değerin ayrıntısına git ve orada çalış: detaylandırma. Ayrıntıya yalnızca göz at, ana sayfadan ayrılma: araç ipucu sayfası.',
-  body: 'Üçü de “ayrıntı göster” der ama kullanıcının akışı farklıdır. Araç ipucu dokunmatik ekranda zayıftır; mobil kullanıcıların çoğunlukta olduğu raporda detaylandırma düğmesi daha güvenilirdir. Yer imi filtre durumunu da kaydedebilir; kullanıcının kendi seçimini ezmemesi için “Veri” seçeneğini bilerek ayarla.',
+  rule: 'Aynı sayfada görünüm değiştir: yer işareti. Bir değerin ayrıntısına git ve orada çalış: detaylandırma. Ayrıntıya yalnızca göz at, ana sayfadan ayrılma: araç ipucu sayfası.',
+  body: 'Üçü de “ayrıntı göster” der ama kullanıcının akışı farklıdır. Araç ipucu dokunmatik ekranda zayıftır; mobil kullanıcıların çoğunlukta olduğu raporda detaylandırma düğmesi daha güvenilirdir. Yer işareti filtre durumunu da kaydedebilir; kullanıcının kendi seçimini ezmemesi için “Veri” seçeneğini bilerek ayarla.',
   quiz: [
-    { q: 'Kullanıcı ürün grafiğinde bir ürünün üzerine gelince, sayfadan ayrılmadan o ürünün aylık eğilimini görmek istiyor. Hangisi?', o: ['Yer imi', 'Detaylandırma sayfası', 'Alt düzeye inme', 'Araç ipucu sayfası'], a: 3, why: 'Üzerine gelince açılan, sayfayı değiştirmeyen küçük ayrıntı araç ipucu sayfasıdır. Detaylandırma ayrı sayfaya götürür; yer imi değerden bağımsız bir durum kaydıdır.' },
-    { q: 'Müşteri tablosunda bir müşteri seçilince o müşterinin tüm siparişleri, talepleri ve iletişim bilgileri ayrı bir sayfada açılmalı. Hangisi?', o: ['Detaylandırma sayfası', 'Rapor sayfası araç ipucu', 'Yer imi gezgini', 'Sayfa gezgini'], a: 0, why: 'Bir değerin bağlamını ayrı ve dolu bir sayfaya taşımak detaylandırmadır. Araç ipucu bu kadar içerik için küçük kalır.' }
+    { q: 'Kullanıcı ürün grafiğinde bir ürünün üzerine gelince, sayfadan ayrılmadan o ürünün aylık eğilimini görmek istiyor. Hangisi?', o: ['Yer işareti', 'Detaylandırma sayfası', 'Alt düzeye inme', 'Araç ipucu sayfası'], a: 3, why: 'Üzerine gelince açılan, sayfayı değiştirmeyen küçük ayrıntı araç ipucu sayfasıdır. Detaylandırma ayrı sayfaya götürür; yer işareti değerden bağımsız bir durum kaydıdır.' },
+    { q: 'Müşteri tablosunda bir müşteri seçilince o müşterinin tüm siparişleri, talepleri ve iletişim bilgileri ayrı bir sayfada açılmalı. Hangisi?', o: ['Detaylandırma sayfası', 'Rapor sayfası araç ipucu', 'Yer işareti gezgini', 'Sayfa gezgini'], a: 0, why: 'Bir değerin bağlamını ayrı ve dolu bir sayfaya taşımak detaylandırmadır. Araç ipucu bu kadar içerik için küçük kalır.' }
   ]
 },
 {
@@ -421,8 +421,8 @@ W.PBI_CONFUSED.push(
   rule: 'Kullanıcının sık değiştirdiği ve görünür bir kontrol isteyen seçim: eşitlenmiş dilimleyici. Raporun kapsamını belirleyen, nadiren değişen ya da sabit kalması gereken koşul: tüm sayfalardaki filtre (gerekirse kilitli).',
   body: 'Yıl seçimi kullanıcı için ana kontroldür ve her sayfada aynı kalmalıdır: eşitlenmiş dilimleyici. “İptal edilen siparişler hariç” ise raporun tanımıdır; rapor düzeyi kilitli filtre olarak durur. Eşitleme grubu (Gelişmiş seçenekler) ile farklı görünümlü iki dilimleyici aynı seçimi paylaşabilir.',
   quiz: [
-    { q: 'Kullanıcı ilk sayfada 2024’ü seçiyor, ikinci sayfaya geçince seçim kayboluyor. En doğru çözüm?', o: ['Her sayfaya yeni dilimleyici', 'Dilimleyicileri eşitle', 'Yer imiyle seçimi kaydet', 'Sayfa filtresine 2024 yaz'], a: 1, why: 'Dilimleyicileri eşitle, seçimi sayfalar arasında taşır. Sayfa filtresine sabit yıl yazmak kullanıcıdan kontrolü alır.' },
-    { q: 'Rapor yalnızca Türkiye satışlarını göstermeli ve kullanıcı bunu değiştirememeli. Ne yaparsın?', o: ['Tüm sayfalarda kilitli filtre', 'Eşitlenmiş gizli dilimleyici', 'Her görsele görsel filtresi', 'Yer imiyle varsayılan görünüm'], a: 0, why: 'Raporun kapsamı rapor düzeyinde bir kez tanımlanır ve kilitlenir. Görsel düzeyinde tek tek filtre bakım yükü yaratır; yer imi kullanıcı seçimiyle bozulabilir. Bu bir güvenlik değildir; veri gerçekten gizliyse RLS gerekir.' }
+    { q: 'Kullanıcı ilk sayfada 2024’ü seçiyor, ikinci sayfaya geçince seçim kayboluyor. En doğru çözüm?', o: ['Her sayfaya yeni dilimleyici', 'Dilimleyicileri eşitle', 'Yer işaretiyle seçimi kaydet', 'Sayfa filtresine 2024 yaz'], a: 1, why: 'Dilimleyicileri eşitle, seçimi sayfalar arasında taşır. Sayfa filtresine sabit yıl yazmak kullanıcıdan kontrolü alır.' },
+    { q: 'Rapor yalnızca Türkiye satışlarını göstermeli ve kullanıcı bunu değiştirememeli. Ne yaparsın?', o: ['Tüm sayfalarda kilitli filtre', 'Eşitlenmiş gizli dilimleyici', 'Her görsele görsel filtresi', 'Yer işaretiyle varsayılan görünüm'], a: 0, why: 'Raporun kapsamı rapor düzeyinde bir kez tanımlanır ve kilitlenir. Görsel düzeyinde tek tek filtre bakım yükü yaratır; yer işareti kullanıcı seçimiyle bozulabilir. Bu bir güvenlik değildir; veri gerçekten gizliyse RLS gerekir.' }
   ]
 },
 {
@@ -447,7 +447,7 @@ W.PBI_CONFUSED.push(
     { n: 'Sayfalandırılmış rapor (.rdl)', d: 'Yazdırmaya ve dışa aktarmaya hazır, piksel hassasiyetli belge. Uzun tablolar birden çok sayfaya akar; fatura, ekstre ve resmî rapor için.' }
   ],
   rule: 'Kullanıcı analiz edip soru soracaksa Power BI raporu. Belge çıktısı (PDF, Excel), sabit düzen ve binlerce satır gerekiyorsa sayfalandırılmış rapor. İkisi aynı anlam modelini kullanabilir.',
-  body: 'Power BI raporundaki tablo görseli kaydırma çubuğuyla çalışır; PDF’e aktarınca yalnızca ekranda görünen satırlar çıkar. Sayfalandırılmış rapor ise tüm satırları sayfalara böler, her sayfada başlık ve sayfa numarası basar. Power BI Report Builder ile tasarlanır; artık hizmette web üzerinden basit sayfalandırılmış rapor oluşturmak da mümkün.',
+  body: 'Power BI raporundaki tablo görseli kaydırma çubuğuyla çalışır; PDF’e aktarınca yalnızca ekranda görünen satırlar çıkar. Sayfalandırılmış rapor ise tüm satırları sayfalara böler, her sayfada başlık ve sayfa numarası basar. Power BI Report Builder ile tasarlanır; artık Service’te web üzerinden basit sayfalandırılmış rapor oluşturmak da mümkün.',
   quiz: [
     { q: 'Muhasebe her ay sonunda 3.000 satırlık müşteri ekstresini PDF olarak arşivliyor. Hangisi?', o: ['Sayfalandırılmış rapor', 'Power BI raporu ve tablo', 'Pano (dashboard)', 'Excel’de analiz et'], a: 0, why: 'Uzun, çok sayfalı, yazdırılabilir belge sayfalandırılmış raporun işidir. Power BI tablo görseli PDF’e yalnızca görünen satırları aktarır.' },
     { q: 'Bölge müdürleri kategori ve kanal kırılımında “neden düştü?” sorusunu kendileri araştırmak istiyor. Hangisi?', o: ['Sayfalandırılmış rapor', 'Power BI raporu', 'PDF aboneliği', 'CSV dışa aktarma'], a: 1, why: 'Etkileşimli keşif (dilimleyici, detaya inme, çapraz filtre) Power BI raporunun gücüdür. Sayfalandırılmış rapor sabit çıktıya odaklanır.' }
@@ -455,22 +455,22 @@ W.PBI_CONFUSED.push(
 },
 {
   id: 'etkileyen-ayristirma', area: 'Rapor', lesson: 'ayristirma-etkileyen',
-  title: 'Önemli etkileyenler / ayrıştırma ağacı',
+  title: 'Anahtar etkileyiciler / ayrıştırma ağacı',
   items: [
-    { n: 'Önemli etkileyenler', d: 'Bir sonucu (ör. iade, düşük memnuniyet) en çok hangi faktörlerin artırdığını istatistiksel olarak sıralar. “Neden?” sorusuna aday cevaplar.' },
+    { n: 'Anahtar etkileyiciler', d: 'Bir sonucu (ör. iade, düşük memnuniyet) en çok hangi faktörlerin artırdığını istatistiksel olarak sıralar. “Neden?” sorusuna aday cevaplar.' },
     { n: 'Ayrıştırma ağacı', d: 'Bir ölçüyü boyutlara göre adım adım parçalar; kullanıcı her düzeyde hangi alana bölüneceğini seçer (ya da en yüksek/en düşük değeri yapay zekâ seçer). “Nerede?” sorusuna yol.' }
   ],
-  rule: '“Hangi faktörler sonucu etkiliyor?” sorusu: önemli etkileyenler. “Bu toplam nereden geliyor, hangi dala inersem büyüğü bulurum?” sorusu: ayrıştırma ağacı. İkisi de bir başlangıçtır; bulguyu ölçü ve iş bilgisiyle doğrula.',
-  body: 'Önemli etkileyenler korelasyon gösterir, nedensellik değil: “Premium segmentte iade 1,8 kat fazla” bulgusu, ürün karmasından kaynaklanıyor olabilir. Ayrıştırma ağacı ise yalnızca toplamı böler; istatistik yapmaz ama yolu herkesin görebileceği şekilde açar. Toplantıda canlı keşif için ağaç, analist çalışması için etkileyenler daha uygundur.',
+  rule: '“Hangi faktörler sonucu etkiliyor?” sorusu: anahtar etkileyiciler. “Bu toplam nereden geliyor, hangi dala inersem büyüğü bulurum?” sorusu: ayrıştırma ağacı. İkisi de bir başlangıçtır; bulguyu ölçü ve iş bilgisiyle doğrula.',
+  body: 'Anahtar etkileyiciler korelasyon gösterir, nedensellik değil: “Premium segmentte iade 1,8 kat fazla” bulgusu, ürün karmasından kaynaklanıyor olabilir. Ayrıştırma ağacı ise yalnızca toplamı böler; istatistik yapmaz ama yolu herkesin görebileceği şekilde açar. Toplantıda canlı keşif için ağaç, analist çalışması için etkileyenler daha uygundur.',
   quiz: [
-    { q: 'Destek müdürü “düşük memnuniyeti en çok hangi faktörler artırıyor: kanal mı, konu mu, öncelik mi?” diye soruyor. Hangi görsel?', o: ['Ayrıştırma ağacı', 'Anomali algılamalı çizgi', 'Önemli etkileyenler', 'Şelale grafiği'], a: 2, why: 'Bir sonucu etkileyen faktörleri sıralamak önemli etkileyenlerin işidir. Ayrıştırma ağacı toplamı parçalar ama faktörleri istatistiksel olarak karşılaştırmaz.' },
-    { q: 'Toplantıda CFO, giderin hangi departman → gider türü → aydan geldiğini canlı olarak adım adım açmak istiyor. Hangisi?', o: ['Önemli etkileyenler', 'Ayrıştırma ağacı', 'Dağılım grafiği', 'Anomali algılama'], a: 1, why: 'Toplamı kullanıcının seçtiği sırayla dallara bölmek ayrıştırma ağacıdır; her adım ekranda görünür ve geri alınabilir.' }
+    { q: 'Destek müdürü “düşük memnuniyeti en çok hangi faktörler artırıyor: kanal mı, konu mu, öncelik mi?” diye soruyor. Hangi görsel?', o: ['Ayrıştırma ağacı', 'Anomali algılamalı çizgi', 'Anahtar etkileyiciler', 'Şelale grafiği'], a: 2, why: 'Bir sonucu etkileyen faktörleri sıralamak anahtar etkileyicilerin işidir. Ayrıştırma ağacı toplamı parçalar ama faktörleri istatistiksel olarak karşılaştırmaz.' },
+    { q: 'Toplantıda CFO, giderin hangi departman → gider türü → aydan geldiğini canlı olarak adım adım açmak istiyor. Hangisi?', o: ['Anahtar etkileyiciler', 'Ayrıştırma ağacı', 'Dağılım grafiği', 'Anomali algılama'], a: 1, why: 'Toplamı kullanıcının seçtiği sırayla dallara bölmek ayrıştırma ağacıdır; her adım ekranda görünür ve geri alınabilir.' }
   ]
 },
 
 /* ---------------- Hizmet ---------------- */
 {
-  id: 'lisans-kapasite', area: 'Hizmet', lesson: 'bi-yonetimi',
+  id: 'lisans-kapasite', area: 'Service', lesson: 'bi-yonetimi',
   title: 'Pro / Premium kullanıcı başına (PPU) / Fabric kapasitesi',
   items: [
     { n: 'Pro', d: 'Kullanıcı başına lisans. Paylaşılan kapasitede içerik yayımlar ve paylaşır; içeriği görüntüleyenlerin de Pro’su olmalı.' },
@@ -485,7 +485,7 @@ W.PBI_CONFUSED.push(
   ]
 },
 {
-  id: 'lakehouse-warehouse-eventhouse', area: 'Hizmet', lesson: 'fabric-giris',
+  id: 'lakehouse-warehouse-eventhouse', area: 'Service', lesson: 'fabric-giris',
   title: 'Lakehouse / Ambar (Warehouse) / Eventhouse (KQL)',
   items: [
     { n: 'Lakehouse', d: 'Dosya ve Delta tabloları bir arada. Spark not defterleri ve veri akışlarıyla yazılır; SQL analiz uç noktası tabloları salt okunur T-SQL ile sunar.' },
@@ -500,7 +500,7 @@ W.PBI_CONFUSED.push(
   ]
 },
 {
-  id: 'yenileme-turleri', area: 'Hizmet', lesson: 'yayinlama',
+  id: 'yenileme-turleri', area: 'Service', lesson: 'yayinlama',
   title: 'Zamanlanmış yenileme / otomatik sayfa yenileme',
   items: [
     { n: 'Zamanlanmış yenileme', d: 'İçeri aktarma (Import) modelinin verisini belirli saatlerde kaynaktan yeniden yükler. Pro’da günde 8, Premium/Fabric kapasitede 48 zamana kadar.' },
@@ -514,7 +514,7 @@ W.PBI_CONFUSED.push(
   ]
 },
 {
-  id: 'ag-gecidi-modlari', area: 'Hizmet', lesson: 'veri-baglantilari',
+  id: 'ag-gecidi-modlari', area: 'Service', lesson: 'veri-baglantilari',
   title: 'Ağ geçidi: standart mod / kişisel mod',
   items: [
     { n: 'Standart mod (şirket içi veri ağ geçidi)', d: 'Sunucuya kurulur, birçok kullanıcı ve veri kaynağıyla paylaşılır. Zamanlanmış yenileme, DirectQuery ve canlı bağlantı destekler; Fabric veri akışları ve işlem hatları da kullanır. Kümelenerek yüksek erişilebilirlik sağlar.' },
@@ -528,7 +528,7 @@ W.PBI_CONFUSED.push(
   ]
 },
 {
-  id: 'pipeline-git', area: 'Hizmet', lesson: 'yasam-dongusu',
+  id: 'pipeline-git', area: 'Service', lesson: 'yasam-dongusu',
   title: 'Dağıtım işlem hattı / Git tümleştirmesi',
   items: [
     { n: 'Dağıtım işlem hattı', d: 'İçeriği Geliştirme → Test → Üretim gibi aşamalar (çalışma alanları) arasında taşır; aşamalar arası farkı gösterir, dağıtım kurallarıyla bağlantı ve parametreleri değiştirir.' },
@@ -542,7 +542,7 @@ W.PBI_CONFUSED.push(
   ]
 },
 {
-  id: 'yayimla-gomme', area: 'Hizmet', lesson: 'embed-api',
+  id: 'yayimla-gomme', area: 'Service', lesson: 'embed-api',
   title: 'Web’de yayımla / güvenli gömme / uygulamaya gömme',
   items: [
     { n: 'Web’de yayımla (Publish to web)', d: 'Herkese açık bir bağlantı ve iframe üretir. Oturum açma yok, RLS uygulanmaz; bağlantıyı bulan herkes görür. Yalnızca gerçekten kamuya açık veri için.' },
@@ -735,9 +735,9 @@ W.PBI_MISTAKES.push(
 {
   id: 'yer-imi-filtre-eziyor', area: 'Rapor', lesson: 'hikaye',
   sym: 'Grafik/tablo düğmesine basınca kullanıcının yaptığı filtre seçimleri sıfırlanıyor',
-  cause: 'Görsel değiştiren yer imlerinde “Veri” seçeneği açık. Yer imi, kaydedildiği andaki filtre ve dilimleyici durumunu da geri yüklüyor.',
-  fix: 'Yer imleri bölmesinde ilgili yer iminin “…” menüsünden Veri seçeneğini kapat; yalnızca Görüntü (ve gerekiyorsa Seçili görseller) kalsın. Sonra yer imini güncelle.',
-  tags: ['yer imi', 'filtre sıfırlanıyor', 'bookmark', 'veri seçeneği', 'seçim kayboldu']
+  cause: 'Görsel değiştiren yer işaretlerinde “Veri” seçeneği açık. Yer işareti, kaydedildiği andaki filtre ve dilimleyici durumunu da geri yüklüyor.',
+  fix: 'Yer işaretleri bölmesinde ilgili yer işaretinin “…” menüsünden Veri seçeneğini kapat; yalnızca Görüntü (ve gerekiyorsa Seçili görseller) kalsın. Sonra yer işaretini güncelle.',
+  tags: ['yer işareti', 'filtre sıfırlanıyor', 'bookmark', 'veri seçeneği', 'seçim kayboldu']
 },
 {
   id: 'tooltip-acilmiyor', area: 'Rapor', lesson: 'etkilesim',
@@ -749,24 +749,24 @@ W.PBI_MISTAKES.push(
 
 /* ---------------- Hizmet ---------------- */
 {
-  id: 'today-utc', area: 'Hizmet', lesson: 'yayinlama',
-  sym: '“Bugün” ölçüsü hizmette sabah saatlerinde bir gün geride',
-  cause: 'Power BI hizmeti TODAY() ve NOW() fonksiyonlarını sunucunun saat diliminde (UTC) hesaplar. Türkiye UTC+3 olduğu için gece 00:00–03:00 arasında hâlâ önceki gün döner; Desktop’ta ise bilgisayarın saati kullanıldığı için sorun görünmez.',
+  id: 'today-utc', area: 'Service', lesson: 'yayinlama',
+  sym: '“Bugün” ölçüsü Service’te sabah saatlerinde bir gün geride',
+  cause: 'Power BI Service TODAY() ve NOW() fonksiyonlarını sunucunun saat diliminde (UTC) hesaplar. Türkiye UTC+3 olduğu için gece 00:00–03:00 arasında hâlâ önceki gün döner; Desktop’ta ise bilgisayarın saati kullanıldığı için sorun görünmez.',
   fix: 'Yerel saati açıkça hesapla: `UTCNOW() + 3/24` ya da Power Query’de DateTimeZone.SwitchZone ile. Göreli tarih filtrelerinde de bu farkı hesaba kat; kritik raporlarda “bugün”ü verinin son tarihinden türet.',
-  tags: ['today', 'utc', 'saat dilimi', 'bir gün geride', 'now', 'hizmet farkı']
+  tags: ['today', 'utc', 'saat dilimi', 'bir gün geride', 'now', 'Service farkı']
 },
 {
-  id: 'yenileme-zaman-asimi', area: 'Hizmet', lesson: 'yayinlama',
+  id: 'yenileme-zaman-asimi', area: 'Service', lesson: 'yayinlama',
   sym: 'Zamanlanmış yenileme yaklaşık 2 saat sonra zaman aşımıyla başarısız oluyor',
   cause: 'Paylaşılan kapasitede (Pro) içeri aktarma modelinin yenilemesi 2 saatle sınırlıdır (Premium/Fabric kapasitede 5 saat). Büyük veri, katlanmayan Power Query adımları ya da yavaş kaynak süreyi aşar.',
   fix: 'Gereksiz sütun ve satırları kaynakta at, katlanmayan adımları düzelt, büyük olgu tablolarında artımlı yenileme kur. Hâlâ yetmiyorsa kapasiteye taşı ya da hazırlığı veri akışı/lakehouse katmanına ayır.',
   tags: ['zaman aşımı', 'timeout', 'yenileme uzun', '2 saat', 'artımlı yenileme']
 },
 {
-  id: 'rls-rol-yok-bos', area: 'Hizmet', lesson: 'guvenlik',
+  id: 'rls-rol-yok-bos', area: 'Service', lesson: 'guvenlik',
   sym: 'Paylaştığım kişi raporu açıyor ama tüm görseller boş',
   cause: 'Modelde RLS tanımlı ve kullanıcı (ya da grubu) hiçbir role eklenmemiş. RLS’li bir modelde rolü olmayan Görüntüleyici hiçbir satır göremez.',
-  fix: 'Hizmette anlam modeli → Güvenlik bölümünde kullanıcıyı ya da güvenlik grubunu ilgili role ekle. Rol atamasını kişi kişi değil gruplarla yönet; “Rol olarak test et” ile doğrula.',
+  fix: 'Service’te anlam modeli → Güvenlik bölümünde kullanıcıyı ya da güvenlik grubunu ilgili role ekle. Rol atamasını kişi kişi değil gruplarla yönet; “Rol olarak test et” ile doğrula.',
   tags: ['rls', 'boş rapor', 'rol atanmamış', 'görseller boş', 'güvenlik', 'paylaşım']
 }
 );

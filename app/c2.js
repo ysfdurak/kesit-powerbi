@@ -15,7 +15,7 @@
 <li><code>SUM(Satislar[Tutar])</code>'ı yalnızca kalan satırlar üzerinde hesaplar.</li>
 </ol>
 <p>Bu filtrelerin tümüne <b>filtre bağlamı</b> denir. Formül hiç değişmez; değişen, formülün gördüğü satırlardır. Toplam satırında kategori filtresi yoktur, bu yüzden toplam tüm kategorileri kapsar.</p>
-<div class="note"><b>Deney</b>DAX Stüdyosu'nda <code>SUM(Satislar[Tutar])</code> yaz ve satır eksenini Kategori, sonra Yıl, sonra Kanal yap. Aynı formül, farklı bağlam.</div>
+<div class="note"><b>Deney</b>DAX Playground’da <code>SUM(Satislar[Tutar])</code> yaz ve satır eksenini Kategori, sonra Yıl, sonra Kanal yap. Aynı formül, farklı bağlam.</div>
 <h2>Satır bağlamı: “Şu an hangi satırdayım?”</h2>
 <p>Hesaplanmış sütunlarda ve <code>SUMX</code> gibi <b>yineleyicilerde</b> (iterator) DAX tablonun satırlarını tek tek dolaşır. Her adımda “geçerli satır” vardır; <code>Satislar[Adet]</code> yazdığında o satırın adedini okursun.</p>
 <pre class="dax">Brüt Tutar = SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])</pre>
@@ -32,7 +32,7 @@
   ex: [
     { t: 'mc', q: 'Bir matriste satırlarda Kategori var, değer [Toplam Satış]. “Toplam” satırı neden tüm kategorilerin toplamına eşit?', o: ['Power BI hücreleri ayrıca toplar', 'Toplam satırında kategori filtresi yoktur; ölçü tüm satırlarda yeniden hesaplanır', 'Toplam satırı her zaman SUM kullanır', 'Önbellekten gelir'], a: 1, why: 'Toplam satırı ayrı bir filtre bağlamıdır. SUM için sonuç aynıdır, ama oran gibi toplanamayan ölçülerde toplam satırı hücrelerin toplamı olmaz.' },
     { t: 'dax', q: '<b>Brüt Tutar</b>: her satış satırı için <code>Adet × BirimFiyat</code> hesapla ve topla (indirim öncesi tutar).', name: 'Brüt Tutar', sol: 'SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])', hint: 'SUMX(Tablo, satır başına ifade)' },
-    { t: 'mc', q: '[Kâr Marjı %] ölçüsü kategorilerde %40,5, %38,2, %34,4… gösteriyor. Toplam satırında ne görmeyi beklersin?', o: ['Yüzdelerin toplamını', 'Yüzdelerin basit ortalamasını', 'Toplam kârın toplam satışa oranını', 'Boş'], a: 2, why: 'Toplam satırında ölçü, filtresiz bağlamda yeniden hesaplanır: DIVIDE(toplam kâr, toplam satış).' }
+    { t: 'mc', q: '[Kâr Marjı %] ölçüsü kategorilerde %40,5, %38,2, %34,4… gösteriyor. Toplam satırında ne görmeyi beklersin?', o: ['Yüzdelerin toplamını', 'Yüzdelerin basit ortalamasını', 'Toplam kârın toplam satışa oranını', 'Boş'], a: 2, why: 'Toplam satırında ölçü, görselin kategori filtresi olmadan yeniden hesaplanır (dilimleyici ve sayfa filtreleri kalır): DIVIDE(toplam kâr, toplam satış).' }
   ]
 },
 
@@ -118,7 +118,7 @@ Sipariş Ortalaması = AVERAGEX(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satis
 <h2>ALL ailesi</h2>
 <div class="tbl-wrap"><table>
 <tr><th>Fonksiyon</th><th>CALCULATE içinde ne yapar?</th></tr>
-<tr><td><code>ALL(Tablo)</code> / <code>REMOVEFILTERS(Tablo)</code></td><td>Tablodaki (ve ilişkiyle bağlı boyutlarındaki) tüm filtreleri kaldırır</td></tr>
+<tr><td><code>ALL(Tablo)</code> / <code>REMOVEFILTERS(Tablo)</code></td><td>Tablonun ve genişletilmiş tablosunun (bire tarafındaki tablolar) filtrelerini kaldırır</td></tr>
 <tr><td><code>ALL(Tablo[Sütun])</code></td><td>Yalnızca o sütunun filtresini kaldırır</td></tr>
 <tr><td><code>ALLEXCEPT(Tablo, Tablo[Sütun])</code></td><td>Belirtilen sütun dışındaki tüm filtreleri kaldırır</td></tr>
 <tr><td><code>ALLSELECTED(...)</code></td><td>Görselin satır/sütun filtrelerini kaldırır ama dilimleyici seçimlerini korur</td></tr>
@@ -137,7 +137,7 @@ DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun])))</pre>
 <li><b>Seçime göre pay:</b> Payda yalnızca seçili kategorilerdir; görseldeki yüzdeler 100'e tamamlanır.</li>
 <li><b>Kategori içi pay:</b> Satırda ürün varken, ürün filtresi kalkar ama kategori filtresi kalır: ürünün kendi kategorisindeki payı.</li>
 </ul>
-<div class="warn"><b>Doğru sütunu kaldır</b>Görselde <code>Kategoriler[Kategori]</code> ile grupluyorsan, paydada da <code>Kategoriler</code> filtresini kaldırmalısın. <code>ALL(Urunler[Kategori])</code> yazarsan görselin filtresi (Kategoriler'den geliyor) yerinde kalır ve her satırda %100 görürsün. Bu modelde iki kategori sütunu var; alıştırmalarda hangisinin kullanıldığına dikkat et.</div>
+<div class="warn"><b>Doğru sütunu kaldır</b>Görselde <code>Kategoriler[Kategori]</code> ile grupluyorsan, paydada da <code>Kategoriler</code> filtresini kaldırmalısın. <code>ALL(Urunler[Kategori])</code> yazarsan görselin filtresi (Kategoriler'den geliyor) yerinde kalır ve her satırda %100 görürsün. Bu modelde iki kategori sütunu var: raporda ve alıştırmalarda eksen hep <code>Kategoriler[Kategori]</code>; <code>Urunler[Kategori]</code> ilişki anahtarıdır ve Playground’un alan listesinde gösterilmez.</div>
 `,
   ex: [
     { t: 'dax', q: '<b>Kategori Payı %</b>: Net satışın tüm kategoriler içindeki payı. Kontrol tablosu satırlarda <code>Kategoriler[Kategori]</code> kullanıyor. <code>[Net Satış]</code> ölçüsü hazır.', name: 'Kategori Payı %', sol: 'DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))', hint: 'Paydada ALL(Kategoriler) ya da REMOVEFILTERS(Kategoriler)', grid: [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }] },
@@ -153,7 +153,8 @@ DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun])))</pre>
   sum: 'TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri.',
   body: `
 <h2>Ön koşul</h2>
-<p>Zaman zekâsı fonksiyonları, tarih tablosu olarak işaretlenmiş, kesintisiz bir tarih tablosuna ihtiyaç duyar. Bu modelde <code>Tarih[Tarih]</code> o sütundur. Görselde tarih bilgisini her zaman <b>Tarih tablosundan</b> al (<code>Tarih[Yil]</code>, <code>Tarih[YilAy]</code>), olgu tablosundaki tarihten değil.</p>
+<p>Zaman zekâsı fonksiyonları kesintisiz bir tarih sütununa ihtiyaç duyar; iyi uygulama, ayrı bir tarih tablosu kurup “Tarih tablosu olarak işaretle”mektir. İlişki tarih türünde bir sütunla kurulduysa işaretlemeden de çalışır; tarih dışı bir anahtarla kurulduysa işaret şarttır. Bu modelde <code>Tarih[Tarih]</code> o sütundur. Görselde tarih bilgisini her zaman <b>Tarih tablosundan</b> al (<code>Tarih[Yil]</code>, <code>Tarih[YilAy]</code>), olgu tablosundaki tarihten değil.</p>
+<div class="note"><b>Veriye dikkat: 2022 yarım yıl</b>İlk satış Haziran 2022’de. Bu yüzden hazır <code>[YoY %]</code> 2023 için %289,8 verir: tam yılı yarım yılla karşılaştırır. Bu veri bilerek böyle; “Tam dönem YoY” alıştırması sorunu çözer.</div>
 <h2>Yılbaşından bugüne (YTD)</h2>
 <pre class="dax">Satış YTD = TOTALYTD([Net Satış], Tarih[Tarih])
 -- aynısı:
@@ -333,7 +334,7 @@ CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
 
 {
   id: 'etkilesim', lv: 'orta', mod: 'Görselleştirme', min: 15,
-  title: 'Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer imi',
+  title: 'Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti',
   sum: 'Raporu keşfedilebilir yapan özellikler ve hangisinin ne zaman kullanılacağı.',
   body: `
 <h2>Dilimleyiciler</h2>
@@ -343,17 +344,17 @@ CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
 <li>Çok sayıda dilimleyici yerine <b>Filtreler bölmesi</b>ni kullanıcıya açmak da bir seçenektir.</li>
 </ul>
 <h2>Çapraz filtreleme ve vurgulama</h2>
-<p>Bir grafikte bir çubuğa tıklamak sayfadaki diğer görselleri etkiler. Varsayılan davranış çoğu görselde <b>vurgulama</b>dır (seçilmeyen kısım soluklaşır). Biçim → <b>Etkileşimleri düzenle</b> ile her görsel için “Filtrele / Vurgula / Yok” seçersin. <b>Dashboardlar</b> sayfasında grafiklere tıklayarak bunu deneyebilirsin.</p>
+<p>Bir grafikte bir çubuğa tıklamak sayfadaki diğer görselleri etkiler. Varsayılan davranış çoğu görselde <b>vurgulama</b>dır (seçilmeyen kısım soluklaşır). Biçim → <b>Etkileşimleri düzenle</b> ile her görsel için “Filtrele / Vurgula / Yok” seçersin. <b>Örnek raporlar</b> sayfasında grafiklere tıklayarak bunu deneyebilirsin.</p>
 <h2>Detaya inme (drill-down)</h2>
 <p>Eksene birden çok alan koyarsan (Yıl → Çeyrek → Ay) bir <b>hiyerarşi</b> oluşur. Görselin üstündeki oklarla bir alt düzeye inersin. Tarih hiyerarşileri ve Kategori → Ürün gibi doğal hiyerarşiler için idealdir.</p>
 <h2>Detay sayfası (drill-through)</h2>
 <p>Ayrı bir “Ürün Detayı” sayfası tasarlar, <code>Urunler[Urun]</code> alanını o sayfanın <b>detaylandırma</b> alanına koyarsın. Kullanıcı herhangi bir sayfada bir ürüne sağ tıklayıp <i>Detaya git → Ürün Detayı</i> der ve o ürünle süzülmüş sayfaya geçer.</p>
 <h2>Araç ipucu sayfaları</h2>
 <p>Küçük bir sayfayı (Sayfa bilgileri → Araç ipucu olarak kullan) bir görselin üzerine gelindiğinde açılan mini rapor olarak gösterebilirsin. Örneğin kategori çubuğunun üzerine gelince o kategorinin aylık eğilimi.</p>
-<h2>Yer imleri ve düğmeler</h2>
+<h2>Yer işaretleri ve düğmeler</h2>
 <ul>
-<li><b>Yer imi:</b> Sayfanın o anki durumunu (filtreler, görünür görseller) kaydeder.</li>
-<li><b>Düğme + yer imi:</b> “Grafik / Tablo” geçişi, “Filtreleri temizle” düğmesi, rehberli sunum.</li>
+<li><b>Yer işareti:</b> Sayfanın o anki durumunu (filtreler, görünür görseller) kaydeder.</li>
+<li><b>Düğme + yer işareti:</b> “Grafik / Tablo” geçişi, “Filtreleri temizle” düğmesi, rehberli sunum.</li>
 <li><b>Sayfa gezintisi:</b> Düğmelerle sayfalar arasında menü oluşturma.</li>
 </ul>
 <h2>Yapay zekâ görselleri</h2>
@@ -364,7 +365,7 @@ CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
 </ul>
 `,
   ex: [
-    { t: 'mc', q: 'Kullanıcılar herhangi bir sayfada bir müşteriye sağ tıklayıp o müşterinin tüm ayrıntılarını tek sayfada görmek istiyor. Hangi özellik?', o: ['Detaya inme (drill-down)', 'Detay sayfası (drill-through)', 'Yer imi', 'Senkron dilimleyici'], a: 1, why: 'Drill-through, seçilen öğeyle süzülmüş ayrı bir sayfaya götürür.' },
+    { t: 'mc', q: 'Kullanıcılar herhangi bir sayfada bir müşteriye sağ tıklayıp o müşterinin tüm ayrıntılarını tek sayfada görmek istiyor. Hangi özellik?', o: ['Detaya inme (drill-down)', 'Detay sayfası (drill-through)', 'Yer işareti', 'Senkron dilimleyici'], a: 1, why: 'Drill-through, seçilen öğeyle süzülmüş ayrı bir sayfaya götürür.' },
     { t: 'mc', q: 'Bir sütun grafiğinde Yıl → Çeyrek → Ay hiyerarşisinde gezinmek hangi özelliktir?', o: ['Drill-down', 'Drill-through', 'Araç ipucu sayfası', 'Etkileşimleri düzenle'], a: 0, why: 'Drill-down aynı görsel içinde hiyerarşinin alt düzeyine iner.' },
     { t: 'mc', q: 'Kanal grafiğine tıklandığında yanındaki KPI kartının hiç değişmemesini istiyorsun. Ne yaparsın?', o: ['Kartı silmek', 'Etkileşimleri düzenle → kart için “Yok”', 'Kartı başka sayfaya taşımak', 'RLS tanımlamak'], a: 1, why: 'Etkileşimleri düzenle, her kaynak-hedef görsel çifti için davranışı belirler.' }
   ]

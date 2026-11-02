@@ -217,10 +217,10 @@ function sqlPct(where, p) {
         interactions: ['Alan parametresi (Field parameter) ile ölçü seçici: Medyan / P90 / Ortalama hazırlık', 'Restoran çubuğundan “Restoran Detayı” sayfasına detaya git (Drill through)'] },
       { name: 'Restoran Detayı', purpose: 'Detaya git hedef sayfası: tek restoranın siparişleri, puanları ve iadeleri.',
         visuals: ['Detaya git alanı: lk_restaurants[name]; “Tüm filtreleri koru” açık', 'Kartlar: [GMV], [İptal Oranı], [İade Oranı], [Yemek Puanı]', 'Tablo: order_id, placed_at, picked_at, delivered_at, status, payment, kurye adı, [Ürün Tutarı]; status = iade satırları koşullu renkli', 'Sütun grafik: lk_menu_items[category] ile [Ürün Tutarı]'],
-        interactions: ['Geri düğmesi otomatik eklenir', 'Yer imi (Bookmark): “Yalnız iadeler” görünümü ile tüm siparişler arasında geçiş'] },
+        interactions: ['Geri düğmesi otomatik eklenir', 'Yer işareti (Bookmark): “Yalnız iadeler” görünümü ile tüm siparişler arasında geçiş'] },
       { name: 'Soruşturma ve Araç İpucu', purpose: 'Denetim ekibine kanıt zinciri: alarm → şüpheli → imkânsız teslim → davet halkası → zarar. Ayrıca kurye üzerine gelince açılan araç ipucu sayfası.',
         visuals: ['Çizgi grafik: Takvim[YilAy] ile [İade Oranı]', 'Tablo: restoran–kurye ikilileri ve [İade Edilen Sipariş], TOPN filtre 5', 'Kart: [Işınlanan Sipariş] ve [Sahte İade Zararı] (görev ölçüleri)', 'Ayrıştırma ağacı (Decomposition tree): [İade Edilen Sipariş] → restoran → kurye → payment', 'Araç ipucu sayfası (Tooltip page; Biçim bölmesi → Sayfa bilgileri / Page information → Araç ipucu / Tooltip anahtarı Açık): kurye adı, işe başlama tarihi, [Teslim Edilen Sipariş], [Medyan Teslim Süresi], [İade Oranı]'],
-        interactions: ['Kurye görsellerinde Biçim → Araç ipuçları (Tooltips) kartı → Sayfa açılır listesinden araç ipucu sayfasını seç; ya da kurye adını sayfanın Araç ipucu alanlarına (Tooltip fields) koyup Otomatik bırak', 'Yer imi: “Soruşturma özeti” (yalnız Aralık, İstanbul)', 'Satır düzeyi güvenlik (RLS) önerisi: şehir müdürleri yalnız kendi şehirlerini görsün'] }
+        interactions: ['Kurye görsellerinde Biçim → Araç ipuçları (Tooltips) kartı → Sayfa açılır listesinden araç ipucu sayfasını seç; ya da kurye adını sayfanın Araç ipucu alanlarına (Tooltip fields) koyup Otomatik bırak', 'Yer işareti: “Soruşturma özeti” (yalnız Aralık, İstanbul)', 'Satır düzeyi güvenlik (RLS) önerisi: şehir müdürleri yalnız kendi şehirlerini görsün'] }
     ]
   },
   traps: [

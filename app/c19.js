@@ -14,7 +14,7 @@ add('pq-orta', {
 <p>İki katman var: <b>veri katmanı</b> (temizlenmiş tablolar) ve <b>anlam katmanı</b> (ilişkiler, ölçüler, güvenlik). Veri akışı birinci katmanı, paylaşılan anlam modeli ikinci katmanı ortak hâle getirir.</p>
 
 <h2>Veri akışı nedir? Gen2 ile Gen1 farkı</h2>
-<p>Veri akışı (dataflow), Power Query adımlarının bir .pbix dosyasının içinde değil, hizmette (bulutta) çalışan hâlidir. Adımlar aynıdır: “Power Query ile veri temizleme” ve “Power Query: birleştirme, ekleme, özetten çıkarma” derslerinde öğrendiğin her dönüşüm burada da var. Fark, sonucun bir kez hesaplanıp birçok kişiye sunulmasıdır.</p>
+<p>Veri akışı (dataflow), Power Query adımlarının bir .pbix dosyasının içinde değil, Service’te (bulutta) çalışan hâlidir. Adımlar aynıdır: “Power Query ile veri temizleme” ve “Power Query: birleştirme, ekleme, özetten çıkarma” derslerinde öğrendiğin her dönüşüm burada da var. Fark, sonucun bir kez hesaplanıp birçok kişiye sunulmasıdır.</p>
 <div class="tbl-wrap"><table>
 <tr><th>Özellik</th><th>Veri akışı Gen2 (Fabric)</th><th>Veri akışı Gen1 (Power BI)</th></tr>
 <tr><td>Sonuç nereye yazılır?</td><td>Seçtiğin bir veya birden çok <b>çıkış hedefine</b> (lakehouse, ambar…)</td><td>Veri akışının kendi deposuna; raporlar veri akışı bağlayıcısıyla okur</td></tr>
@@ -86,7 +86,7 @@ SUMMARIZECOLUMNS(
 <p>Sonuçta altı kategori 0 ya da 1 gün geride, <b>Hediye</b> ise 16 gün (son satış 15.12.2024). Bu bir veri hatası olmayabilir; belki o kategoride gerçekten satış yoktur. Ama göstergeyi gören kişi soruyu sorar, rakamı körü körüne kullanmaz.</p>
 `,
   ex: [
-    { t: 'mc', q: 'Dört farklı anlam modeli aynı ürün tablosunu aynı Power Query adımlarıyla temizliyor. Temizliği tek yerde yapıp sonucu bir lakehouse tablosuna yazmak için ne kullanılır?', o: ['Her modelde başvuru (reference) sorgusu', 'Veri akışı Gen2 ve lakehouse hedefi', 'Rapor düzeyi ölçüler', 'Canlı bağlantılı ince rapor'], a: 1, why: 'Veri akışı Gen2, Power Query adımlarını hizmette bir kez çalıştırır ve sonucu seçilen çıkış hedefine (ör. lakehouse tablosu) yazar. Modeller bu tabloyu okur.' },
+    { t: 'mc', q: 'Dört farklı anlam modeli aynı ürün tablosunu aynı Power Query adımlarıyla temizliyor. Temizliği tek yerde yapıp sonucu bir lakehouse tablosuna yazmak için ne kullanılır?', o: ['Her modelde başvuru (reference) sorgusu', 'Veri akışı Gen2 ve lakehouse hedefi', 'Rapor düzeyi ölçüler', 'Canlı bağlantılı ince rapor'], a: 1, why: 'Veri akışı Gen2, Power Query adımlarını Service’te bir kez çalıştırır ve sonucu seçilen çıkış hedefine (ör. lakehouse tablosu) yazar. Modeller bu tabloyu okur.' },
     { t: 'mc', q: 'Mevcut bir Gen1 veri akışının raporlarını <b>veri akışı bağlayıcısıyla DirectQuery</b> üzerinden okuyorsun. Gen2’ye geçerken ne değişir?', o: ['Gen2 de aynı DirectQuery bağlantısını destekler', 'Gen2’de DirectQuery için ağ geçidi şarttır', 'Desteklenmez; çıkış tablosuna bağlanılır', 'Gen2 yalnızca Import modda veri akışı okur'], a: 2, why: 'Learn’in karşılaştırmasına göre veri akışı bağlayıcısıyla DirectQuery yalnızca Gen1’de var. Gen2’de veri bir hedefe yazılır ve rapor o tabloya (ör. lakehouse ya da ambar) doğrudan bağlanır.' },
     { t: 'mc', q: 'Canlı bağlantıyla paylaşılan bir anlam modeline bağlanan analist Desktop’ta hangisini <b>yapabilir</b>?', o: ['Rapor düzeyi bir ölçü eklemek', 'Modele yeni bir tablo eklemek', 'İki tablo arasına ilişki kurmak', 'Modelin RLS rolünü kapatmak'], a: 0, why: 'Canlı bağlı raporda model değiştirilemez: tablo, sütun ve ilişki eklenemez, RLS de devrede kalır. Ama rapor düzeyi ölçü ve görsel hesaplama eklenebilir.' },
     { t: 'mc', q: 'Veri akışı her gece 02:00’de, anlam modeli 03:00’te zamanlanmış. Bir gece veri akışı 70 dakika sürdü. En sağlam çözüm hangisi?', o: ['Modelin saatini 04:00’e ertelemek', 'Yenilemeyi her saat başı tekrarlamak', 'İşlem hattında olaya bağlı zincir kurmak', 'Veri akışını ikiye bölüp iki saate yaymak'], a: 2, why: 'Saate göre zincir süre uzayınca kırılır. İşlem hattında Dataflow Gen2 etkinliğinden sonra anlam modeli yenileme etkinliği çalışırsa model ancak veri hazır olduğunda yenilenir; hata olursa zincir durur.' },
@@ -371,14 +371,14 @@ add('yasam-dongusu', {
   title: 'Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller',
   sum: 'Kuruluş için gömme ile müşteriler için gömme, hizmet sorumlusu ve gömme belirteci, etkin kimlikle gömülü RLS, Power BI ve Fabric REST API ile yenileme, listeleme ve dışa aktarma, PowerShell cmdlet’leri, not defterinde semantic link ve özel görsel geliştirme.',
   body: `
-<p>Buraya kadar raporlar Power BI hizmetinde yaşadı. Ama Anadolu Market’in iki yeni isteği var: bayiler kendi satışlarını Anadolu Market’in <b>bayi portalında</b> görsün (bayilerin Power BI hesabı yok), ve BT ekibi her gece yüzlerce yenilemeyi <b>elle değil, kodla</b> yönetsin. Bu ders bir BI geliştiricisinin “rapor yazmanın ötesindeki” araç kutusudur.</p>
+<p>Buraya kadar raporlar Power BI Service’te yaşadı. Ama Anadolu Market’in iki yeni isteği var: bayiler kendi satışlarını Anadolu Market’in <b>bayi portalında</b> görsün (bayilerin Power BI hesabı yok), ve BT ekibi her gece yüzlerce yenilemeyi <b>elle değil, kodla</b> yönetsin. Bu ders bir BI geliştiricisinin “rapor yazmanın ötesindeki” araç kutusudur.</p>
 
 <h2>İki gömme senaryosu</h2>
 <div class="tbl-wrap"><table>
 <tr><th></th><th>Kuruluşun için gömme (user owns data)</th><th>Müşterilerin için gömme (app owns data)</th></tr>
 <tr><td>Kim izler?</td><td>Şirket çalışanları, kendi Microsoft Entra hesaplarıyla</td><td>Dış kullanıcılar (bayi, müşteri); Power BI hesabı gerekmez</td></tr>
-<tr><td>Kimlik</td><td>Kullanıcı oturum açar; izinler hizmetteki gibi</td><td>Uygulama kendi kimliğiyle (hizmet sorumlusu) belirteç üretir</td></tr>
-<tr><td>Lisans</td><td>İzleyicide Pro/PPU ya da içerik uygun kapasitede</td><td>Kapasite gerekir: Fabric F, Premium P ya da Power BI Embedded; Pro/PPU üretim için yetmez</td></tr>
+<tr><td>Kimlik</td><td>Kullanıcı oturum açar; izinler Service’teki gibi</td><td>Uygulama kendi kimliğiyle (hizmet sorumlusu) belirteç üretir</td></tr>
+<tr><td>Lisans</td><td>Görüntüleyicide Pro/PPU ya da içerik uygun kapasitede</td><td>Kapasite gerekir: Fabric F, Premium P ya da Power BI Embedded; Pro/PPU üretim için yetmez</td></tr>
 <tr><td>Tipik yer</td><td>Şirket intraneti, SharePoint, iç uygulama</td><td>SaaS ürünü, müşteri portalı</td></tr>
 </table></div>
 <p>Learn, Premium P SKU’larının satıştan kaldırıldığını ve yeni projelerde Fabric F SKU’larının düşünülmesini öneriyor. Kodsuz bir seçenek de var: Power Pages raporu kod yazmadan gömebilir.</p>
@@ -429,7 +429,7 @@ RETURN
 <p>Sonuç 310.138 ₺: Ege (146.768 ₺) ile Akdeniz (163.370 ₺) toplamı. Gömülü senaryoda <code>username</code> alanına “bayi-izmir-07” gönderilseydi, aynı fonksiyon o değeri döndürür ve yetki tablosunda o bayinin satırı aranırdı.</p>
 
 <h2>Tarayıcı tarafı: istemci API’si</h2>
-<p>Sayfada gömme için <code>powerbi-client</code> JavaScript/TypeScript kitaplığı kullanılır. Bu kitaplıkla sayfalar arasında gezinme, filtre ve dilimleyici ayarlama, yer imleri ve olaylara (yüklendi, veri noktası seçildi) tepki verebilirsin. Learn’deki Power BI Embedded Analytics Playground denemek için örnek içerik sunar.</p>
+<p>Sayfada gömme için <code>powerbi-client</code> JavaScript/TypeScript kitaplığı kullanılır. Bu kitaplıkla sayfalar arasında gezinme, filtre ve dilimleyici ayarlama, yer işaretleri ve olaylara (yüklendi, veri noktası seçildi) tepki verebilirsin. Learn’deki Power BI Embedded Analytics Playground denemek için örnek içerik sunar.</p>
 <pre data-notry>import * as pbi from "powerbi-client";
 
 const ayar: pbi.IEmbedConfiguration = {
@@ -449,7 +449,7 @@ rapor.on("loaded", () =&gt; console.log("Rapor yüklendi"));</pre>
 <p>Gömme belirtecinin süresi dolar; uygulama süre bitmeden yenisini isteyip <code>setAccessToken</code> ile raporu kesintisiz sürdürmelidir.</p>
 
 <h2>REST API ile otomasyon</h2>
-<p>Power BI REST API (<code>api.powerbi.com/v1.0/myorg</code>) ve Fabric REST API (<code>api.fabric.microsoft.com/v1</code>), hizmette elle yaptığın işlerin çoğunu kodla yapmanı sağlar. Sık kullanılanlar:</p>
+<p>Power BI REST API (<code>api.powerbi.com/v1.0/myorg</code>) ve Fabric REST API (<code>api.fabric.microsoft.com/v1</code>), Service’te elle yaptığın işlerin çoğunu kodla yapmanı sağlar. Sık kullanılanlar:</p>
 <pre data-notry>// 1) Anlam modelini yenile (202 Accepted döner)
 POST https://api.powerbi.com/v1.0/myorg/groups/{calismaAlaniId}/datasets/{modelId}/refreshes
 { "notifyOption": "MailOnFailure", "retryCount": 3 }

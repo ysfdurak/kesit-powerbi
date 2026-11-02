@@ -100,7 +100,7 @@ W.PBI_CERTQ = (W.PBI_CERTQ || []).concat([
   items:['Kapasite ayarlarının İş yükleri (Workloads) bölümünde XMLA uç noktasını Okuma Yazma (Read Write) yap',
          'Tabular Editor’da dağıtım sihirbazını açıp sunucu olarak çalışma alanının `powerbi://` adresini gir',
          'Çalışma alanında Katkıda bulunan ya da üstü rolü olan hesapla oturum açıp model meta verisini dağıt',
-         'Hizmette yeni modelin ayarlarında veri kaynağı kimlik bilgilerini gir',
+         'Service’te yeni modelin ayarlarında veri kaynağı kimlik bilgilerini gir',
          'Tabloları doldurmak için XMLA üzerinden TMSL `refresh` komutunu çalıştır'],
   extra:['Hesabına modelde yalnızca Derleme (Build) izni verip bu izinle dağıt', 'XMLA uç noktasını Salt okunur (Read Only) bırak; dağıtım bu ayarla da yapılır'],
   why:'XMLA varsayılan olarak salt okunurdur; yazma için kapasitede Okuma Yazma gerekir. Yazma, modelde Yazma izni demektir ve bu izin çalışma alanında Katkıda bulunan ve üstü rollerde vardır; Derleme yalnızca okumaya yeter. Dağıtım meta veriyi taşır; veri, kimlik bilgileri girildikten sonra yenilemeyle yüklenir.' },
@@ -192,9 +192,9 @@ RETURN DIVIDE(Simdi - Gecen, Gecen)
          'Kapat ve Uygula (Close & Apply) ile filtrelenmiş veriyi yükle',
          'Artımlı yenileme iletişim kutusunda arşiv dönemini 3 yıl, artımlı yenileme dönemini 7 gün olarak tanımla',
          'DirectQuery ile en son veriyi gerçek zamanlı al (Get the latest data in real time with DirectQuery) ve Yalnızca tamamlanmış günleri yenile (Only refresh complete days) seçeneklerini işaretle',
-         'Modeli yayımlayıp hizmette ilk yenilemeyi çalıştır'],
+         'Modeli yayımlayıp Service’te ilk yenilemeyi çalıştır'],
   extra:['Filtreden sonra sorgu katlamayı bozan bir özel sütun adımı ekle', 'Filtrede iki sınırda da eşittir kullan (`>= RangeStart` ve `<= RangeEnd`)'],
-  why:'Gerçek zamanlı DirectQuery bölümü, yenileme döneminden sonraki satırları her sorguda kaynaktan okur; bu seçenek Yalnızca tamamlanmış günleri yenile ayarını zorunlu kılar ve katlanmayan dönüşümlere izin vermez. Eşittir yalnızca bir sınırda olmalıdır. Bölümler hizmetteki ilk yenilemede oluşur.' }
+  why:'Gerçek zamanlı DirectQuery bölümü, yenileme döneminden sonraki satırları her sorguda kaynaktan okur; bu seçenek Yalnızca tamamlanmış günleri yenile ayarını zorunlu kılar ve katlanmayan dönüşümlere izin vermez. Eşittir yalnızca bir sınırda olmalıdır. Bölümler Service’teki ilk yenilemede oluşur.' }
 ]);
 
 W.PBI_SERIES = (W.PBI_SERIES || []).concat([

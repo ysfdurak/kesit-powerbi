@@ -324,7 +324,7 @@ add('segmentasyon', {
   title: 'Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar',
   sum: 'Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri, XNPV ve XIRR ile yatırım kararı ve ne olur parametresiyle duyarlılık.',
   body: `
-<p>Finans ekibi bir raporda üç şey arar: <b>tutarlar bir gelir tablosu düzeninde mi</b>, <b>bütçeye göre neredeyiz</b> ve <b>bir kararın parasal değeri ne</b>. Anadolu Market modelinde faaliyet giderleri ve bilanço yok; kavramları anlatıp örnekleri satış ve maliyet satırlarıyla sınırlayacağız.</p>
+<p>Finans ekibi bir raporda üç şey arar: <b>tutarlar bir gelir tablosu düzeninde mi</b>, <b>bütçeye göre neredeyiz</b> ve <b>bir kararın parasal değeri ne</b>. Anadolu Market modelinde faaliyet giderleri <code>Giderler</code>, bütçesi <code>GiderButce</code>, türleri <code>GiderTurleri</code> tablosundadır; bilanço yoktur. Gelir tablosunu faaliyet kârına kadar gerçek veriyle kurarız. Şirket ölçeği öğretim için sıkıştırılmıştır: <code>Giderler</code> tutarları satışa göre küçük, <code>Calisanlar[Maas]</code> ile aynı ölçekte değildir.</p>
 
 <h2>Gelir tablosunun mantığı</h2>
 <p>Gelir tablosu (kâr-zarar tablosu, P&amp;L) yukarıdan aşağı okunur; her satır bir öncekinden bir kalem düşer:</p>
@@ -336,7 +336,7 @@ add('segmentasyon', {
 <li><b>− Faaliyet giderleri</b> (pazarlama, genel yönetim, personel) → <b>FAVÖK</b> (faiz, amortisman ve vergi öncesi kâr; İngilizcede EBITDA). Operasyonun nakit üretme gücüne yakın bir göstergedir.</li>
 <li><b>− Amortisman, faiz, vergi</b> → <b>Net kâr</b>.</li>
 </ol>
-<p>Modelde 4. satıra kadar inebiliriz. Dikkat: modeldeki <code>[Net Satış]</code> yalnızca iptalleri çıkarır, iadeleri değil. Muhasebe dilindeki net satış için iadeyi ayrıca düşmek gerekir. Bir ölçüye ad verirken hangi tanımı kullandığını açıklamasına yaz.</p>
+<p>Modelde 5. satıra kadar inebiliriz: hazır <code>[Gider]</code> ve <code>[Faaliyet Kârı]</code> ölçüleri <code>Giderler</code> tablosunu kullanır. Amortisman ayrı tutulmadığı için buna tam FAVÖK değil, faaliyet kârı diyoruz. Dikkat: modeldeki <code>[Net Satış]</code> yalnızca iptalleri çıkarır, iadeleri değil. Muhasebe dilindeki net satış için iadeyi ayrıca düşmek gerekir. Bir ölçüye ad verirken hangi tanımı kullandığını açıklamasına yaz.</p>
 
 <h2>Modelden küçük bir kâr-zarar tablosu</h2>
 <p>Matrisin satırlarında “Brüt satış, İndirimler, …” gibi <b>kalem adları</b> olmalı; ama bu adlar modelde bir sütun değil. Kalıp: kalemleri tutan bir <b>yardımcı tablo</b> (Giriş → Veri gir) ve kalem başına doğru ölçüyü seçen bir <b>SWITCH</b> ölçüsü.</p>
@@ -386,6 +386,11 @@ RETURN ADDCOLUMNS(Kalemler, "Tutar", SWITCH([Sira],
 <pre class="dax">Bütçe Sapma Yüzdesi = DIVIDE([Net Satış] - [Hedef], [Hedef])</pre>
 <p>Toplamda net satış 1.250.772 TL, hedef 1.299.300 TL: sapma −48.528 TL, yani <b>−%3,7</b>. Yıllara göre: 2022 −%23,0, 2023 −%0,4, 2024 −%2,1. 2022'deki büyük açık bir performans sorunu değil; hedefler Ocak'tan, satışlar 22 Haziran'dan başlıyor. Sapmayı yorumlamadan önce iki tarafın aynı dönemi kapsadığını kontrol et.</p>
 <p>Sapma <b>işareti</b> kaleme göre yorumlanır: satışta pozitif sapma iyi, maliyette kötüdür. Koşullu biçimlendirmede renk kuralını kaleme göre ters çevir. Oranlarda (marj gibi) sapma <b>yüzde puan</b> olarak verilir: %36,5 marj ile %35 hedef arasındaki fark +1,5 puandır, %4,3 değil.</p>
+
+<h3>Gider bütçesi: gerçek veriyle sapma</h3>
+<p><code>GiderButce</code> gider türü ve ay düzeyindedir. Hazır ölçüler:</p>
+<pre class="dax">Gider Sapma Kontrol = [Gider] - [Gider Bütçe]</pre>
+<p>Gider tarafında işaret terstir: pozitif sapma bütçe aşımı, yani kötü haberdir. <b>Örnek raporlar → Finansal Performans</b> raporu bu ölçüleri ve <code>GiderTurleri[Grup]</code> kırılımını kullanır.</p>
 
 <h2>Oranlar ve oran panosu</h2>
 <div class="tbl-wrap"><table>
@@ -447,7 +452,8 @@ RETURN ADDCOLUMNS(GENERATESERIES(0.10, 0.40, 0.05), "NBD", XNPV(Akis, [Nakit], [
     { t: 'query', q: '1 Ocak 2025’te −200.000 TL, ardından 1 Ocak 2026, 2027 ve 2028’de 90.000 TL nakit akışı olan bir yatırımın %20 oranla NBD’sini ("NBD") ve İVO’sunu ("İVO") tek satırda döndür. Akış tablosunu SELECTCOLUMNS(GENERATESERIES(...)) ile kur.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR Akis = SELECTCOLUMNS(GENERATESERIES(0, 3), "Tarih", DATE(2025 + [Value], 1, 1), "Nakit", IF([Value] = 0, -200000, 90000))\nRETURN ROW("NBD", XNPV(Akis, [Nakit], [Tarih], 0.20), "İVO", XIRR(Akis, [Nakit], [Tarih]))', hint: 'GENERATESERIES(0, 3) dört satır verir; tarih DATE(2025 + [Value], 1, 1), nakit IF([Value] = 0, -200000, 90000). Sonra ROW("NBD", XNPV(...), "İVO", XIRR(...)).' },
     { t: 'mc', q: 'Bir projenin %25 oranla NBD’si −8.000 TL, İVO’su %22. Hangi yorum doğru?', o: ['Proje zarar eder, İVO negatif olmalıdır', '%25’i karşılamıyor; bu oranla reddedilir', 'NBD ile İVO çelişiyor, hesap hatalı', 'İVO pozitif olduğu için kabul edilmelidir'], a: 1, why: 'İVO (%22) istenen getiriden (%25) düşük, bu yüzden %25 ile indirgenmiş NBD negatiftir. İkisi aynı kararı verir: proje kendi parasını çıkarır ama istenen getiriyi sağlamaz.' },
     { t: 'mc', q: 'Kâr-zarar matrisinde kalemler “Brüt kâr, Brüt satış, İadeler…” diye alfabetik diziliyor. Çözüm nedir?', o: ['SWITCH’teki kalemlerin sırasını değiştirmek', 'Matrisin toplam satırını kapatmak', 'Kalemleri büyük harfle yazmak', 'Kalem sütununu Sira’ya göre sıralamak'], a: 3, why: 'Satır başlıkları yardımcı tablonun Kalem sütunundan gelir. “Sütuna göre sırala” ile Kalem’i Sira’ya bağlamak, gelir tablosunun yukarıdan aşağı düzenini korur. SWITCH’in sırası görseldeki sırayı etkilemez.' },
-    { t: 'mc', q: 'FAVÖK (EBITDA) için bu modelde neden ölçü yazamıyoruz?', o: ['Modelde faaliyet gideri yok', 'DAX’ta FAVÖK fonksiyonu yoktur', 'İade tutarı negatif olduğu için', 'Hedefler tablosu aylık olduğu için'], a: 0, why: 'FAVÖK = brüt kâr − faaliyet giderleri (amortisman hariç). Modelde yalnızca satış ve maliyet satırları var; pazarlama, personel, kira gibi gider kalemleri yok.' }
+    { t: 'mc', q: 'Bu modelde [Faaliyet Kârı] ölçüsüne neden tam FAVÖK (EBITDA) demiyoruz?', o: ['Amortisman ayrı bir kalem olarak tutulmuyor', 'DAX’ta FAVÖK fonksiyonu yoktur', 'Modelde faaliyet gideri hiç yok', 'Hedefler tablosu aylık olduğu için'], a: 0, why: 'Faaliyet giderleri Giderler tablosunda var, ama amortisman, faiz ve vergi ayrı tutulmuyor. Bu yüzden ölçü “brüt kâr − faaliyet giderleri”dir; adını da buna göre koyarız.' },
+    { t: 'dax', name: 'Faaliyet Kârı Marjı', q: '<b>Faaliyet Kârı Marjı</b>: Brüt kârdan faaliyet giderlerini (<code>Giderler[Tutar]</code> toplamı) çıkar, net satışa böl. Hazır <code>[Brüt Kâr]</code> ve <code>[Net Satış]</code> ölçülerini kullan.', sol: 'DIVIDE([Brüt Kâr] - SUM(Giderler[Tutar]), [Net Satış])', hint: 'Payda net satış, payda sıfır olabilir: güvenli bölme kullan.', explain: 'Giderler tablosu kategoriye bağlı değildir; kategori satırlarında giderin tamamı düşülür. Bu tür kırılımda yorumu buna göre yap.' }
   ]
 });
 })(window);

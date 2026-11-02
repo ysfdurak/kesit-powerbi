@@ -18,19 +18,19 @@ add('hizmet-kullanici', {
 <p>Şirketlerde Power BI çoğu zaman Excel'in yerine değil, yanına gelir. Finans ekibi rakamları yine Excel'de çevirmek ister; satış ekibi listeyi Excel'e alıp telefonla arama yapar. Bu derste iki yönü de göreceğiz: <b>Excel'den Power BI'a</b> (Excel bir veri kaynağı olarak) ve <b>Power BI'dan Excel'e</b> (Excel, yayımlanmış modelin bir istemcisi olarak).</p>
 
 <h2>Excel kaynak olarak: dosya nerede durmalı?</h2>
-<p>Desktop'ta <b>Veri al → Excel çalışma kitabı</b> ile bir dosyaya bağlanmak kolaydır. Sorun yayımladıktan sonra başlar. <code>C:\\Raporlar\\satis.xlsx</code> gibi <b>yerel bir yol</b> yalnızca senin bilgisayarında vardır. Power BI hizmeti buluttadır ve bu yola ulaşamaz; zamanlanmış yenileme hata verir.</p>
+<p>Desktop'ta <b>Veri al → Excel çalışma kitabı</b> ile bir dosyaya bağlanmak kolaydır. Sorun yayımladıktan sonra başlar. <code>C:\\Raporlar\\satis.xlsx</code> gibi <b>yerel bir yol</b> yalnızca senin bilgisayarında vardır. Power BI Service buluttadır ve bu yola ulaşamaz; zamanlanmış yenileme hata verir.</p>
 <ul>
 <li><b>Çözüm 1 – dosyayı buluta taşı:</b> Dosyayı iş ya da okul hesabının OneDrive'ına veya bir SharePoint Online sitesine koy. Bulut kaynakları için ağ geçidi gerekmez.</li>
 <li><b>Çözüm 2 – ağ geçidi:</b> Dosya şirket ağındaki bir klasörde kalacaksa şirket içi veri ağ geçidi (on-premises data gateway) kurulur. Ağ geçidinin çalıştığı makine açık olmalıdır.</li>
 </ul>
-<div class="warn"><b>Eşitlenmiş klasör tuzağı</b>OneDrive'ın bilgisayarına eşitlediği klasör (<code>C:\\Users\\...\\OneDrive - Şirket\\...</code>) de yerel bir yoldur. Dosya bulutta olsa bile bağlantı yerel yoldan kurulduysa hizmet onu bulamaz. Bağlantıyı dosyanın <b>web adresiyle</b> kur: Excel'de Dosya → Bilgi → Yolu kopyala ile https adresini al, Power BI'da Veri al → Web ya da SharePoint klasörü bağlayıcısını kullan.</div>
-<p>Excel dosyasını doğrudan hizmete içeri aldıysan Power BI dosyayı OneDrive ya da SharePoint'te <b>yaklaşık saatte bir</b> kontrol eder. Bu dosya eşitlemesi, dış kaynaklardan veri çeken <b>zamanlanmış yenilemeden</b> ayrı bir işlemdir.</p>
+<div class="warn"><b>Eşitlenmiş klasör tuzağı</b>OneDrive'ın bilgisayarına eşitlediği klasör (<code>C:\\Users\\...\\OneDrive - Şirket\\...</code>) de yerel bir yoldur. Dosya bulutta olsa bile bağlantı yerel yoldan kurulduysa Service onu bulamaz. Bağlantıyı dosyanın <b>web adresiyle</b> kur: Excel'de Dosya → Bilgi → Yolu kopyala ile https adresini al, Power BI'da Veri al → Web ya da SharePoint klasörü bağlayıcısını kullan.</div>
+<p>Excel dosyasını doğrudan Service’e içeri aldıysan Power BI dosyayı OneDrive ya da SharePoint'te <b>yaklaşık saatte bir</b> kontrol eder. Bu dosya eşitlemesi, dış kaynaklardan veri çeken <b>zamanlanmış yenilemeden</b> ayrı bir işlemdir.</p>
 <p>Excel tarafında da düzen gerekir. Veriyi <b>Tablo</b> olarak biçimlendir (Ctrl+T) ve tabloya anlamlı bir ad ver. Power BI'da sayfaya değil tabloya bağlan; yeni satırlar tabloya eklendikçe yenilemede gelir. Birleştirilmiş hücre, ara toplam satırı ve aynı sütunda metinle sayının karışması temizlik işini artırır. Sütun adını sonradan değiştirmek Power Query adımlarını kırar. Temizlik için <b>Power Query ile veri temizleme</b> dersine bak.</p>
 
 <h2>Excel'de Analiz Et: PivotTable'ı modele bağlamak</h2>
 <p><b>Excel'de Analiz Et</b> (Analyze in Excel), yayımlanmış bir anlam modeline (semantic model) <b>canlı bağlı</b> bir Excel çalışma kitabı üretir. Dosyada verinin kopyası değil, modele giden bağlantı vardır. PivotTable Alanları listesinde modelin tabloları ve ölçüleri görünür.</p>
 <ul>
-<li><b>Hizmetten:</b> Raporu aç → <b>Dışa aktar → Excel'de Analiz Et</b>. Çalışma alanında anlam modelinin <b>…</b> menüsünden de başlatılabilir.</li>
+<li><b>Service’ten:</b> Raporu aç → <b>Dışa aktar → Excel'de Analiz Et</b>. Çalışma alanında anlam modelinin <b>…</b> menüsünden de başlatılabilir.</li>
 <li><b>Excel'den:</b> Ekle → PivotTable → <b>Power BI'dan</b>, ya da Veri → Veri Al → Power Platform'dan → <b>Power BI'dan</b>. Sağda erişebildiğin anlam modellerini listeleyen bir bölme açılır.</li>
 </ul>
 <p><b>Gereksinimler:</b> Modelde <b>Derleme (Build) izni</b> ya da çalışma alanında en az <b>Katkıda bulunan</b> rolü, bir Power BI lisansı ve kiracı yöneticisinin canlı bağlantıyla Excel kullanımını açmış olması. Mac kullanıcıları bu dosyaları yalnızca Excel'in web sürümünde inceleyebilir. Kiracı dışındaki konuk kullanıcılar Power BI verisini Excel'de canlı bağlantıyla kullanamaz.</p>
@@ -61,7 +61,7 @@ ROW(
 <p>Bu basit ölçü bile Excel kullanıcısının işine yarar: Satislar tablosunda 1.620 satır var; pivotta hangi seçimde kaç satır olduğunu görmek, dışa aktarma sınırlarını tahmin etmeyi kolaylaştırır.</p>
 
 <h2>Dışa aktarma: özetlenmiş mi, temel veri mi?</h2>
-<p>Görselin <b>…</b> menüsündeki <b>Verileri dışa aktar</b> komutu birkaç seçenek sunar. Hizmet kullanıcısı tarafı için <b>Power BI hizmetinde rapor kullanmak</b>, ayarlar için <b>Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</b> derslerine bak; burada sınırları bir arada görelim:</p>
+<p>Görselin <b>…</b> menüsündeki <b>Verileri dışa aktar</b> komutu birkaç seçenek sunar. Hizmet kullanıcısı tarafı için <b>Power BI Service’te rapor kullanmak</b>, ayarlar için <b>Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</b> derslerine bak; burada sınırları bir arada görelim:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Seçenek</th><th>Ne iner?</th><th>Sınır (Learn)</th></tr>
 <tr><td>Özetlenmiş veriler (.xlsx)</td><td>Görselin gösterdiği toplama düzeyi</td><td>150.000 satır</td></tr>
@@ -92,7 +92,7 @@ ROW(
 <p>Excel'e “her şeyi indir” isteği çoğu zaman yanlış soruya işarettir. Kullanıcı aslında aynı listeyi her ay istiyorsa <b>Sayfalandırılmış raporlar: ne zaman?</b> dersindeki çözüm, kendi hesabını yapmak istiyorsa canlı bağlı PivotTable daha güvenli ve günceldir.</p>
 `,
   ex: [
-    { t: 'mc', q: 'Desktop’ta <code>C:\\Raporlar\\hedef.xlsx</code> dosyasına bağlı bir raporu yayımladın. Hizmette zamanlanmış yenileme hata veriyor. En olası neden nedir?', o: ['Excel dosyası çok büyük', 'Hizmet yerel yola ulaşamıyor', 'Rapor sayfası sayısı fazla', 'Excel tablosuna ad verilmemiş'], a: 1, why: 'Yerel yol yalnızca senin bilgisayarında vardır. Dosyayı OneDrive iş/okul ya da SharePoint Online’a taşıyıp web adresiyle bağlanmak ya da ağ geçidi kurmak gerekir.' },
+    { t: 'mc', q: 'Desktop’ta <code>C:\\Raporlar\\hedef.xlsx</code> dosyasına bağlı bir raporu yayımladın. Service’te zamanlanmış yenileme hata veriyor. En olası neden nedir?', o: ['Excel dosyası çok büyük', 'Service yerel yola ulaşamıyor', 'Rapor sayfası sayısı fazla', 'Excel tablosuna ad verilmemiş'], a: 1, why: 'Yerel yol yalnızca senin bilgisayarında vardır. Dosyayı OneDrive iş/okul ya da SharePoint Online’a taşıyıp web adresiyle bağlanmak ya da ağ geçidi kurmak gerekir.' },
     { t: 'mc', q: 'Excel’de Analiz Et ile açtığın PivotTable’da <code>Satislar[Adet]</code> sütununu Değerler alanına koyup toplayamıyorsun. Model tarafında ne yapmalısın?', o: ['Sütunu metin türüne çevirmek', 'Raporu yeniden yayımlamak', 'Adet için açık bir ölçü yazmak', 'Excel’de Hesaplanmış alan eklemek'], a: 2, why: 'Excel PivotTable’ı modele MDX ile bağlanır; Değerler alanına modeldeki ölçüler gelir. Örtük toplam yerine SUM(Satislar[Adet]) gibi açık bir ölçü yaz. Hesaplanmış alan komutu bu tür pivotlarda kullanılamaz.' },
     { t: 'mc', q: 'Satış ekibi 400.000 satırlık, filtrelenmiş ve her gün güncellenebilen bir listeyi Excel’de istiyor. Hangisi uygun?', o: ['.csv olarak dışa aktarmak', 'Canlı bağlantılı .xlsx ya da bağlı tablo', 'Temel verileri .xlsx olarak almak', 'Görseli PowerPoint’e aktarmak'], a: 1, why: '.csv en fazla 30.000, normal .xlsx dışa aktarımı en fazla 150.000 satır alır ve yenilenmez. Canlı bağlantılı .xlsx (500.000 satıra kadar) ya da bağlı tablo Excel’den yenilenebilir.' },
     { t: 'mc', q: 'Bir ekip yeni bir Excel çözümünü “öne çıkan tablolar” ve kuruluş veri türleri üzerine kurmak istiyor. Ne önerirsin?', o: ['Bağlı tablo ya da PivotTable kullanmalarını', 'Featured table ayarını açmalarını', 'Modeli DirectQuery’ye çevirmelerini', 'Dosyayı .csv olarak paylaşmalarını'], a: 0, why: 'Learn’e göre öne çıkan tablo ayarı Haziran 2026 Desktop sürümüyle kaldırıldı. Yeni çözüm, modele canlı bağlı PivotTable ya da bağlı tablo üzerine kurulmalı.' },
@@ -144,7 +144,7 @@ CONCATENATEX(
 <ul>
 <li>Görsel üzerinden en fazla <b>1.000 kayıt</b> aktarılır.</li>
 <li>Raporun yazmadan sonra hemen güncellenmesi için uygulamanın <b>görselin içinden oluşturulmuş</b> olması ve <code>PowerBIIntegration.Refresh()</code> çağırması gerekir. Bu işlev yalnızca <b>DirectQuery</b> ile bağlanmış kaynaklarda çalışır. İçeri aktarma modelinde değişiklik bir sonraki yenilemede görünür.</li>
-<li>Görsel rapora geri filtre gönderemez. Uygulamayı rapordan <b>ayrıca paylaşman</b> gerekir. Oluşturma ve düzenleme Edge ve Chrome'da desteklenir; önce raporu yayımlayıp sonra uygulamayı hizmette oluşturmak önerilir.</li>
+<li>Görsel rapora geri filtre gönderemez. Uygulamayı rapordan <b>ayrıca paylaşman</b> gerekir. Oluşturma ve düzenleme Edge ve Chrome'da desteklenir; önce raporu yayımlayıp sonra uygulamayı Service’te oluşturmak önerilir.</li>
 <li>Gömme yalnızca “kuruluşun için gömme” senaryosunda desteklenir; Power BI Rapor Sunucusu desteklemez.</li>
 </ul>
 
@@ -159,7 +159,7 @@ CONCATENATEX(
 <div class="note"><b>Learn'deki iki kural</b>Rapora bağlanan işlev bir <b>metin (str)</b> döndürmelidir; Power BI bu metni kullanıcıya sonuç mesajı olarak gösterir. Veri işlevi düğmesi belirli bir çalışma alanına, işlev kümesine ve işleve sabit bir başvuru tutar; raporu dağıtım işlem hattıyla başka bir çalışma alanına taşıdığında <b>başvuru otomatik değişmez</b>, hedefte güncellemen gerekir.</div>
 
 <h2>Uyarılar: pano uyarısı ve Fabric Activator</h2>
-<p><b>Klasik veri uyarısı</b> hizmetteki bir <b>panonun</b> kart, KPI ya da gösterge kutucuğunda kurulur: “Net satış 50.000'in altına düşerse haber ver.” Learn'e göre yalnızca sayısal değerlerle ve yenilenen veriyle çalışır, Desktop'ta yoktur, en fazla 250 uyarı kurabilirsin ve uyarılar kişiseldir. Uyarı bir Power Automate akışını da tetikleyebilir. Pano ve abonelik ayrıntıları <b>Yönetişim</b> dersinde.</p>
+<p><b>Klasik veri uyarısı</b> Service’teki bir <b>panonun</b> kart, KPI ya da gösterge kutucuğunda kurulur: “Net satış 50.000'in altına düşerse haber ver.” Learn'e göre yalnızca sayısal değerlerle ve yenilenen veriyle çalışır, Desktop'ta yoktur, en fazla 250 uyarı kurabilirsin ve uyarılar kişiseldir. Uyarı bir Power Automate akışını da tetikleyebilir. Pano ve abonelik ayrıntıları <b>Yönetişim</b> dersinde.</p>
 <p><b>Rapor görselinde uyarı</b> ise <b>Fabric Activator</b> ile çalışır (eski adı Data Activator). Görselin menüsünden <b>Uyarı ayarla</b> (Set alert) seçilir; izlenecek ölçü, koşul ve eşik belirlenir, bildirim e-postayla ya da Teams'le gelir. Power BI bir <b>Activator öğesi</b> oluşturur ve modeli izlemeye başlar; kural Activator'da genişletilip başka kişilere bildirim ya da Power Automate akışı eklenebilir. Learn bu özelliği <b>genel önizleme</b> olarak işaretliyor ve Fabric kapasitesi olan (sayfaya göre F64 ya da üstü veya Premium) bir çalışma alanında yazma izni istiyor.</p>
 <p>Uyarıyı doğrudan bir oran yerine bir <b>bayrak ölçüsüne</b> kurmak, kuralı modelde tutar ve herkes için aynı tanımı sağlar:</p>
 <pre class="dax">Hedef Alarmı (Kategori Sayısı) =
@@ -173,7 +173,7 @@ COUNTROWS(
 <ul>
 <li><b>Lisans:</b> Standart bağlayıcılar çoğu Microsoft 365 lisansında gelir. Dataverse ya da SQL gibi premium bağlayıcı kullanan akış ve uygulamalar, onları çalıştıran kullanıcılar için ek Power Platform lisansı gerektirir. Kullanıcı veri işlevleri ve Activator Fabric kapasitesi tüketir. Kesin durumu kurumunun lisans rehberinden doğrula.</li>
 <li><b>Sahiplik:</b> Akışın sahibi şirketten ayrılınca akış durabilir. Önemli akışları bir ekip ya da hizmet hesabı sahipliğinde tut, ortak sahip ekle.</li>
-<li><b>Veri kaybı önleme (DLP):</b> Power Platform yönetim merkezindeki DLP ilkeleri hangi bağlayıcıların birlikte kullanılabileceğini sınırlar. Raporun verisini kişisel bir e-posta ya da dış bir hizmete gönderen akış bu ilkelere takılabilir; takılması da iyidir.</li>
+<li><b>Veri kaybı önleme (DLP):</b> Power Platform yönetim merkezindeki DLP ilkeleri hangi bağlayıcıların birlikte kullanılabileceğini sınırlar. Raporun verisini kişisel bir e-posta ya da dış bir Service’e gönderen akış bu ilkelere takılabilir; takılması da iyidir.</li>
 <li><b>Güvenlik:</b> RLS raporda kullanıcının gördüğünü sınırlar; ama geri yazılan kaynağın yetkileri ayrıdır. Kullanıcının hangi kaydı değiştirebileceğini yazılan kaynakta da kontrol et.</li>
 <li><b>Geri yazmayı doğrula:</b> Formdaki her alan bir giriş denetimi ister (boş, negatif, aralık dışı). Kimin neyi ne zaman değiştirdiğini tutan bir denetim sütunu ekle.</li>
 <li><b>Ortam:</b> Akış ve uygulamayı kişisel varsayılan ortam yerine ekibin ortamında oluştur; geliştirme ve üretim ortamlarını ayır.</li>
@@ -199,7 +199,7 @@ add('pencere', {
   sum: 'Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek, modele kaydetmek ve TMDL, imza tasarımı, parametre türleri, val ve expr geçiş modlarının bağlama etkisi, sınırlar.',
   body: `
 <p>Büyüyen bir modelde aynı mantık onlarca ölçüde tekrar eder: “geçen yıla göre değişim”, “payda sıfırsa boş döndür”, “şu kanalın payı”. Bir gün tanım değişir (ör. iadeler de düşülecek) ve sen otuz ölçüyü tek tek düzeltirsin; birini unutursun. <b>DAX kullanıcı tanımlı fonksiyonları</b> (user-defined functions, UDF) bu mantığı parametreli bir fonksiyon olarak <b>bir kez</b> yazmanı sağlar.</p>
-<div class="note"><b>Durum</b>UDF'ler 2025'te önizleme olarak geldi. Microsoft Learn'e göre <b>Haziran 2026</b> sürümünden itibaren Power BI Desktop ve hizmette genel kullanımdadır ve veritabanı uyumluluk düzeyi <b>1702</b> ya da üstünü ister. Bu uygulamanın Stüdyo motoru <code>FUNCTION</code> sözcüğünü desteklemez: UDF kodlarını okuyup anla, alıştırmalarda fonksiyon çağrısının <b>açılmış (inline) hâlini</b> yaz.</div>
+<div class="note"><b>Durum</b>UDF'ler 2025'te önizleme olarak geldi. Microsoft Learn'e göre <b>Haziran 2026</b> sürümünden itibaren Power BI Desktop ve Service’te genel kullanımdadır ve veritabanı uyumluluk düzeyi <b>1702</b> ya da üstünü ister. Bu uygulamanın Playground motoru <code>FUNCTION</code> sözcüğünü desteklemez: UDF kodlarını okuyup anla, alıştırmalarda fonksiyon çağrısının <b>açılmış (inline) hâlini</b> yaz.</div>
 
 <h2>UDF mi, hesaplama grubu mu, düz ölçü mü?</h2>
 <div class="tbl-wrap"><table>

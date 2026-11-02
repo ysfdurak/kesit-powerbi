@@ -83,7 +83,6 @@
     const bw = iw / Math.max(1, cats.length); const gw = Math.max(2, bw * (o.gap != null ? 1 - o.gap : cats.length > 12 ? 0.78 : 0.66)); const sw = stacked ? gw : (gw - 2 * (bars.length - 1)) / Math.max(1, bars.length);
     let h = svgOpen(W, H, o.label);
     ticks.forEach(t => { if (o.grid || t === 0) h += '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y(t) + '" y2="' + y(t) + '" class="' + (t === 0 ? 'vbase' : 'vgrid') + '"/>'; if (!o.noAxis) h += txt(padL - 6, y(t) + 3.5, o.pct ? Math.round(t * 100) + '%' : fmt(t, d.fmt, true, o.units), 'vt vax', 'end'); });
-    if (o.yMin === 'auto' && mn > 0) h += '<path d="M' + (padL - 4) + ',' + (padT + ih - 4) + 'l4,4l4,-4" class="vbreak"/>';
     const every = Math.ceil(cats.length / Math.max(1, Math.floor(iw / 34)));
     cats.forEach((c, i) => {
       const x0 = padL + i * bw + (bw - gw) / 2; let pos = 0, neg = 0;
@@ -146,7 +145,6 @@
     const X = i => padL + (cats.length > 1 ? i * step : iw / 2), Y = v => padT + ih - (v - mn) / (mx - mn) * ih;
     let h = svgOpen(W, H, o.label);
     ticks.forEach(t => { if (o.grid || t === 0) h += '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + Y(t).toFixed(1) + '" y2="' + Y(t).toFixed(1) + '" class="' + (t === 0 ? 'vbase' : 'vgrid') + '"/>'; h += txt(padL - 6, Y(t) + 3.5, fmt(t, d.fmt, true, o.units), 'vt vax', 'end'); });
-    if (o.yMin === 'auto' && mn > 0) h += '<path d="M' + (padL - 4) + ',' + (padT + ih - 4) + 'l4,4l4,-4" class="vbreak"/>';
     const every = Math.ceil(cats.length / Math.max(1, Math.floor(iw / 42)));
     cats.forEach((c, i) => { if (i % every === 0) h += txt(X(i), H - padB + 16, trunc(c, 8), 'vt vcat', 'middle'); });
     const pathOf = (vals) => { let p = '', prev = null; vals.forEach((v, i) => { if (!isNum(v)) { prev = null; return; } const xx = X(i), yy = Y(v); if (prev === null) p += 'M' + xx.toFixed(1) + ',' + yy.toFixed(1); else if (o.interp === 'step') p += 'H' + xx.toFixed(1) + 'V' + yy.toFixed(1); else if (o.interp === 'smooth') { const mxp = (prev[0] + xx) / 2; p += 'C' + mxp.toFixed(1) + ',' + prev[1].toFixed(1) + ' ' + mxp.toFixed(1) + ',' + yy.toFixed(1) + ' ' + xx.toFixed(1) + ',' + yy.toFixed(1); } else p += 'L' + xx.toFixed(1) + ',' + yy.toFixed(1); prev = [xx, yy]; }); return p; };
@@ -432,7 +430,7 @@
     if (o.today) { const x = X(o.today); h += '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + (padT - 6) + '" y2="' + (H - 4) + '" class="ref ref-avg"/>' + txt(x + 3, padT - 8, o.todayLabel || 'Bugün', 'vt vref'); }
     return h + '</svg>';
   }
-  /* ---------- Önemli etkileyenler: hedef olayın oranını kaç kat artıran etkenler ---------- */
+  /* ---------- Anahtar etkileyiciler: hedef olayın oranını kaç kat artıran etkenler ---------- */
   function influencers(rows, o) {
     o = o || {}; const mx = Math.max(...rows.map(r => r.lift || 0), 1);
     return '<div class="infl">' + (o.head ? '<p class="infh">' + esc(o.head) + '</p>' : '') + rows.map((r, i) => '<div class="infr vmark' + selCls(o, i) + '" data-i="' + i + '"' + tip(r.factor, [['Bu gruptaki oran', fmt(r.rate, 'yuzde')], ['Diğerlerinde', fmt(r.base, 'yuzde')], ['Kat', (Math.round(r.lift * 100) / 100).toLocaleString('tr-TR') + '×'], ['Satır sayısı', String(r.n || '—')]]) + '><span class="inf-f">' + esc(r.factor) + '</span><span class="inf-b"><i style="width:' + Math.max(4, r.lift / mx * 100).toFixed(0) + '%"></i></span><b>' + (Math.round(r.lift * 100) / 100).toLocaleString('tr-TR') + '×</b></div>').join('') + '</div>';

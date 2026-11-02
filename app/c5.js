@@ -136,7 +136,7 @@ Ortalama Stok =
 AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <p>Ortalama stok, stok devir hızı hesabında kullanılır: <code>Stok Devir Hızı = DIVIDE([Net Maliyet], [Ortalama Stok Değeri])</code>.</p>
 <h2>Toplanabilir yanı unutma</h2>
-<p><code>GelenAdet</code> (depoya giren) toplanabilir bir hareket ölçüsüdür: <code>SUM</code> doğrudur. İyi bir stok raporu ikisini birlikte gösterir: hareket (giren/çıkan) ve görüntü (bakiye). <button class="lnk" data-go="dash" data-id="stok">Stok dashboardu</button> bu ayrımı kullanıyor.</p>
+<p><code>GelenAdet</code> (depoya giren) toplanabilir bir hareket ölçüsüdür: <code>SUM</code> doğrudur. İyi bir stok raporu ikisini birlikte gösterir: hareket (giren/çıkan) ve görüntü (bakiye). <button class="lnk" data-go="dash" data-id="stok">Stok raporu</button> bu ayrımı kullanıyor.</p>
 `,
   ex: [
     { t: 'dax', q: '<b>Stok Adedi (Kapanış)</b>: Seçili dönemde stok kaydı olan son tarihteki toplam stok adedi.', name: 'Stok Adedi (Kapanış)', start: 'VAR SonTarih = CALCULATE(MAX(StokGorunum[Tarih]))\nRETURN\n', sol: 'VAR SonTarih = CALCULATE(MAX(StokGorunum[Tarih]))\nRETURN CALCULATE(SUM(StokGorunum[StokAdet]), Tarih[Tarih] = SonTarih)', grid: [{ t: 'Tarih', c: 'Yil' }, { t: 'Tarih', c: 'YilCeyrek' }, { t: 'Kategoriler', c: 'Kategori' }], explain: 'Yıl ve çeyrek satırlarında dönemin son ay sonu kullanılır; kategoriler arasında toplanır. Toplam satırında 31.12.2024 stoku.' },
@@ -147,41 +147,41 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 
 {
   id: 'hikaye', lv: 'B2', mod: 'Görselleştirme', min: 20,
-  title: 'Raporla hikâye anlatmak: yer imi, araç ipucu, detay, gezinme',
-  sum: 'Yer imleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar.',
+  title: 'Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme',
+  sum: 'Yer işaretleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar.',
   body: `
 <h2>Seçim bölmesi: katmanlar ve gruplar</h2>
 <p>Görünüm → <b>Seçim</b>. Sayfadaki her nesne (görsel, şekil, düğme) listelenir. Buradan:</p>
 <ul>
-<li>Nesneleri <b>gizle/göster</b> (göz simgesi). Yer imleri bu görünürlüğü kaydeder.</li>
+<li>Nesneleri <b>gizle/göster</b> (göz simgesi). Yer işaretleri bu görünürlüğü kaydeder.</li>
 <li><b>Katman sırasını</b> değiştir (arka plan kutusu altta, grafik üstte).</li>
 <li><b>Grupla</b> (Ctrl + G): bir kart, başlığı ve arka planı tek nesne gibi taşınır ve gizlenir.</li>
 <li><b>Sekme sırası</b>: klavyeyle gezinme sırası (erişilebilirlik).</li>
 </ul>
-<h2>Yer imleri</h2>
-<p>Görünüm → <b>Yer imleri</b> → Ekle. Bir yer imi sayfanın o anki durumunu kaydeder. Yer iminin <b>…</b> menüsünde neleri kaydedeceğini seçersin:</p>
+<h2>Yer işaretleri</h2>
+<p>Görünüm → <b>Yer işaretleri</b> → Ekle. Bir yer işareti sayfanın o anki durumunu kaydeder. Yer işaretinin <b>…</b> menüsünde neleri kaydedeceğini seçersin:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Seçenek</th><th>Kaydeder</th><th>Kapalıysa</th></tr>
-<tr><td>Veri</td><td>Filtreler, dilimleyiciler, sıralama, detaya inme durumu</td><td>Yer imine geçince filtreler değişmez</td></tr>
+<tr><td>Veri</td><td>Filtreler, dilimleyiciler, sıralama, detaya inme durumu</td><td>Yer işaretine geçince filtreler değişmez</td></tr>
 <tr><td>Görüntü</td><td>Görünürlük (Seçim bölmesi), odak modu</td><td>Görünürlük değişmez</td></tr>
-<tr><td>Geçerli sayfa</td><td>Hangi sayfada olunduğu</td><td>Yer imi bulunulan sayfada uygulanır</td></tr>
+<tr><td>Geçerli sayfa</td><td>Hangi sayfada olunduğu</td><td>Yer işareti bulunulan sayfada uygulanır</td></tr>
 <tr><td>Tüm görseller / Seçili görseller</td><td>Kapsam</td><td>Yalnızca seçili görsellere uygulanır</td></tr>
 </table></div>
 <h3>Klasik kalıp: Grafik ↔ Tablo geçişi</h3>
 <ol>
 <li>Aynı yere bir grafik ve aynı veriyi gösteren bir tablo koy.</li>
-<li>Seçim bölmesinde tabloyu gizle → “Grafik” yer imi (yalnızca <b>Görüntü</b> açık, Veri kapalı; böylece kullanıcının filtreleri korunur).</li>
-<li>Grafiği gizle, tabloyu göster → “Tablo” yer imi.</li>
-<li>İki düğme ekle (Ekle → Düğmeler) → Biçim → <b>Eylem</b> → Tür: Yer imi → ilgili yer imi.</li>
+<li>Seçim bölmesinde tabloyu gizle → “Grafik” yer işareti (yalnızca <b>Görüntü</b> açık, Veri kapalı; böylece kullanıcının filtreleri korunur).</li>
+<li>Grafiği gizle, tabloyu göster → “Tablo” yer işareti.</li>
+<li>İki düğme ekle (Ekle → Düğmeler) → Biçim → <b>Eylem</b> → Tür: Yer işareti → ilgili yer işareti.</li>
 </ol>
-<p>Birden çok yer imini bir <b>yer imi grubu</b>na koyup Ekle → Düğmeler → <b>Yer imi gezgini</b> ile sekme gibi görünen bir düğme şeridi oluşturabilirsin.</p>
+<p>Birden çok yer işaretini bir <b>yer işareti grubu</b>na koyup Ekle → Düğmeler → <b>Yer işareti gezgini</b> ile sekme gibi görünen bir düğme şeridi oluşturabilirsin.</p>
 <h2>Rapor sayfası araç ipuçları</h2>
 <ol>
 <li>Yeni sayfa → Biçim → Sayfa bilgileri → <b>Araç ipucu olarak kullan</b>: Açık. Tuval ayarları → Tür: <b>Araç ipucu</b> (küçük boyut).</li>
 <li>Bu sayfaya küçük görseller koy (ör. kategorinin aylık eğilimi + iki kart).</li>
 <li>Ana sayfadaki görselin Biçim → Genel → <b>Araç ipuçları</b> → Tür: Rapor sayfası → Sayfa: bu sayfa.</li>
 </ol>
-<p>Fareyle bir çubuğun üzerine gelince, mini sayfa o çubuğun filtresiyle (ör. Kategori = Kitap) açılır. <button class="lnk" data-go="dash">Dashboardlar</button>'da kategori grafiklerinin üzerine gelince açılan mini eğilim grafiği bu özelliğin benzetimidir.</p>
+<p>Fareyle bir çubuğun üzerine gelince, mini sayfa o çubuğun filtresiyle (ör. Kategori = Kitap) açılır. <button class="lnk" data-go="dash">Örnek raporlar</button>'da kategori grafiklerinin üzerine gelince açılan mini eğilim grafiği bu özelliğin benzetimidir.</p>
 <h2>Detay sayfası (drillthrough)</h2>
 <ol>
 <li>“Ürün Detayı” sayfası oluştur; <code>Urunler[Urun]</code> alanını Görselleştirmeler bölmesindeki <b>Detaylandırma</b> kutusuna sürükle.</li>
@@ -193,15 +193,15 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <h2>Gezinme</h2>
 <ul>
 <li><b>Sayfa gezgini</b> (Ekle → Düğmeler → Gezgin → Sayfa gezgini): Tüm görünür sayfalar için otomatik düğmeler. Gizli sayfalar dahil edilmez.</li>
-<li><b>Düğme eylemleri:</b> Geri, Yer imi, Detaya git, Sayfa gezintisi, Web URL'si, Tüm dilimleyicileri temizle (yeni “Filtreleri temizle” eylemi).</li>
+<li><b>Düğme eylemleri:</b> Geri, Yer işareti, Detaya git, Sayfa gezintisi, Web URL'si, Tüm dilimleyicileri temizle (yeni “Filtreleri temizle” eylemi).</li>
 <li><b>Dilimleyicileri eşitle:</b> Bir dilimleyiciyi seç → Görünüm → Dilimleyicileri eşitle → hangi sayfalarda eşitleneceğini ve görüneceğini işaretle. “Görünür değil ama eşitlenmiş” bir dilimleyici, seçimi sayfadan sayfaya taşır.</li>
 </ul>
 <div class="tip"><b>Hikâye akışı</b>İyi bir rapor bir soru zinciridir: Özet sayfası (ne oldu?) → Analiz sayfası (neden?) → Detay sayfası (hangi kayıtlar?). Gezinmeyi bu sıraya göre kur; kullanıcı her zaman bir “Geri” ve “Filtreleri temizle” düğmesi bulsun.</div>
 `,
   ex: [
-    { t: 'mc', q: 'Grafik/Tablo geçişi yapan bir yer imi, kullanıcının seçtiği yıl filtresini sıfırlıyor. Ne yapmalısın?', o: ['Yer iminde “Veri” seçeneğini kapatmak', 'Yer imini silmek', 'Dilimleyiciyi kilitlemek', 'Sayfayı gizlemek'], a: 0, why: '“Veri” kapalıysa yer imi filtreleri değiştirmez; yalnızca görünürlüğü uygular.' },
-    { t: 'mc', q: 'Bir çubuğun üzerine gelince o kategorinin aylık eğilimini gösteren küçük bir grafik açılsın istiyorsun.', o: ['Detay sayfası', 'Rapor sayfası araç ipucu', 'Yer imi', 'Sayfa gezgini'], a: 1, why: 'Araç ipucu olarak işaretlenmiş sayfa, üzerine gelinen veri noktasının filtresiyle açılır.' },
-    { t: 'mc', q: 'Bir sayfadaki Yıl dilimleyicisi seçiminin diğer 4 sayfaya da taşınmasını istiyorsun ama diğer sayfalarda dilimleyici görünmesin.', o: ['Dilimleyicileri eşitle: eşitle açık, görünür kapalı', 'Her sayfaya ayrı dilimleyici', 'Rapor filtresi', 'Yer imi'], a: 0, why: 'Eşitlenmiş ama görünmez dilimleyici seçimi taşır.' },
+    { t: 'mc', q: 'Grafik/Tablo geçişi yapan bir yer işareti, kullanıcının seçtiği yıl filtresini sıfırlıyor. Ne yapmalısın?', o: ['Yer işaretinde “Veri” seçeneğini kapatmak', 'Yer işaretini silmek', 'Dilimleyiciyi kilitlemek', 'Sayfayı gizlemek'], a: 0, why: '“Veri” kapalıysa yer işareti filtreleri değiştirmez; yalnızca görünürlüğü uygular.' },
+    { t: 'mc', q: 'Bir çubuğun üzerine gelince o kategorinin aylık eğilimini gösteren küçük bir grafik açılsın istiyorsun.', o: ['Detay sayfası', 'Rapor sayfası araç ipucu', 'Yer işareti', 'Sayfa gezgini'], a: 1, why: 'Araç ipucu olarak işaretlenmiş sayfa, üzerine gelinen veri noktasının filtresiyle açılır.' },
+    { t: 'mc', q: 'Bir sayfadaki Yıl dilimleyicisi seçiminin diğer 4 sayfaya da taşınmasını istiyorsun ama diğer sayfalarda dilimleyici görünmesin.', o: ['Dilimleyicileri eşitle: eşitle açık, görünür kapalı', 'Her sayfaya ayrı dilimleyici', 'Rapor filtresi', 'Yer işareti'], a: 0, why: 'Eşitlenmiş ama görünmez dilimleyici seçimi taşır.' },
     { t: 'dax', q: '<b>Detay Düğmesi Metni</b>: Tek ürün seçiliyse "Ayrıntı: Ürün adı", değilse "Ayrıntı için bir ürün seç" döndür.', name: 'Detay Düğmesi Metni', sol: 'IF(HASONEVALUE(Urunler[Urun]), "Ayrıntı: " & SELECTEDVALUE(Urunler[Urun]), "Ayrıntı için bir ürün seç")', grid: [{ t: 'Urunler', c: 'Urun' }], explain: 'Düğmenin Metin alanı fx ile bu ölçüye bağlanır; düğme, kullanıcı bir ürün seçince ne yapacağını söyler.' }
   ]
 },
@@ -237,7 +237,7 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <tr><td><b>Anlatı</b> (Copilot / akıllı anlatı)</td><td>Sayfanın özetini metin olarak yaz</td><td>Ekle → Anlatı. Metin filtrelerle güncellenir.</td></tr>
 </table></div>
 <h2>Aykırı değer ve anomali</h2>
-<p>Yerleşik “Anomali bul” eğilimi ve mevsimselliği hesaba katar. Kendi kuralınla işaretlemek için z-skoru ölçüsü yazılır (İleri seviye Ölçü Laboratuvarı: <i>Z-skoru ile aykırı ay tespiti</i>) ve koşullu biçimlendirmeyle renklendirilir.</p>
+<p>Yerleşik “Anomali bul” eğilimi ve mevsimselliği hesaba katar. Kendi kuralınla işaretlemek için z-skoru ölçüsü yazılır (İleri seviye Measure Lab: <i>Z-skoru ile aykırı ay tespiti</i>) ve koşullu biçimlendirmeyle renklendirilir.</p>
 <div class="warn"><b>Dikkat</b>Tahmin ve yapay zekâ görselleri keşif araçlarıdır. Bir yönetim raporuna koymadan önce sonucun iş açısından mantıklı olup olmadığını kontrol et ve varsayımları (güven aralığı, mevsimsellik) görsel başlığında ya da notta belirt.</div>
 `,
   ex: [
@@ -279,7 +279,7 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <li>Duyarlılık etiketleri dışa aktarılan dosyaya taşınır.</li>
 </ul>
 <h2>Kişiselleştirme</h2>
-<p>Rapor ayarları → <b>Okuyucuların görselleri kişiselleştirmesine izin ver</b>. Okuyucu bir görselin türünü değiştirebilir, alan ekleyip çıkarabilir ve bunu kendi kişisel yer imi olarak kaydedebilir; asıl rapor değişmez. Görsel başına kapatılabilir.</p>
+<p>Rapor ayarları → <b>Okuyucuların görselleri kişiselleştirmesine izin ver</b>. Okuyucu bir görselin türünü değiştirebilir, alan ekleyip çıkarabilir ve bunu kendi kişisel yer işareti olarak kaydedebilir; asıl rapor değişmez. Görsel başına kapatılabilir.</p>
 <h2>Otomatik sayfa yenileme</h2>
 <p>DirectQuery ya da gerçek zamanlı kaynaklarda sayfa ayarlarında <b>Sayfa yenileme</b>: sabit aralık (ör. 30 saniye) ya da <b>değişiklik algılama</b> (bir ölçünün değeri değişince yenile). Kapasite yöneticisi en kısa aralığı sınırlar.</p>
 `,

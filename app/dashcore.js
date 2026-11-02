@@ -36,7 +36,7 @@ function initState(dash) {
   const ps = pagesOf(dash);
   return { id: dash.id, sl, cross: null, drill: {}, page: (ps.find(p => !p.hidden) || ps[0]).id, pr, vis: Object.assign({}, dash.vis || {}), thru: null, mobile: false, bm: null };
 }
-/* Yer imi uygula: sayfa, dilimleyiciler, parametreler, görünürlük ve çapraz filtre */
+/* Yer işareti uygula: sayfa, dilimleyiciler, parametreler, görünürlük ve çapraz filtre */
 function applyBookmark(dash, st, bm) {
   if (!bm) { const f = initState(dash); Object.assign(st, f, { mobile: st.mobile }); return; }
   if (bm.page) st.page = bm.page;

@@ -13,16 +13,16 @@ SUMX(VALUES(Urunler[Kategori]), [Müşteri Sayısı])</pre>
 <p>Toplam satırında farklı bir şey göstermek (ya da hiçbir şey göstermemek) için hücrenin hangi düzeyde olduğunu sorabilirsin:</p>
 <pre class="dax">Kategori Satışı (yalnızca satırlarda) =
 IF(ISINSCOPE(Urunler[Kategori]), [Net Satış], BLANK())</pre>
-<div class="note"><b>Kural</b>Bir ölçünün toplamı “yanlış” görünüyorsa önce şunu sor: toplam satırının filtre bağlamı ne? Cevap neredeyse her zaman “satırlardaki filtrenin olmadığı bağlam”dır.</div>`);
+<div class="note"><b>Kural</b>Bir ölçünün toplamı “yanlış” görünüyorsa önce şunu sor: toplam satırının filtre bağlamı ne? Cevap neredeyse her zaman “görselin satır filtresinin olmadığı bağlam”dır; dilimleyici ve sayfa filtreleri kalır.</div>`);
 
 deep('calculate', 'Filtre argümanı aslında bir tablodur', `
-<p><code>CALCULATE([Net Satış], Urunler[Kategori] = "Elektronik")</code> yazdığında DAX bunu şuna çevirir:</p>
+<p><code>CALCULATE([Net Satış], Kategoriler[Kategori] = "Elektronik")</code> yazdığında DAX bunu şuna çevirir:</p>
 <pre class="dax">Elektronik Satış =
-CALCULATE([Net Satış], FILTER(ALL(Urunler[Kategori]), Urunler[Kategori] = "Elektronik"))</pre>
-<p>İçteki <code>ALL</code>, kategori sütunundaki dış filtreyi <b>kaldırır</b>. Bu yüzden ölçüyü kategoriye göre bir matrise koyduğunda her satırda Elektronik’in satışı (339.304 ₺) görünür: Giyim satırında da, Kitap satırında da. Bu bir hata değil, “filtreyi değiştir” davranışıdır.</p>
+CALCULATE([Net Satış], FILTER(ALL(Kategoriler[Kategori]), Kategoriler[Kategori] = "Elektronik"))</pre>
+<p>İçteki <code>ALL</code>, kategori sütunundaki dış filtreyi <b>kaldırır</b>. Bu yüzden ölçüyü <code>Kategoriler[Kategori]</code> eksenli bir matrise koyduğunda her satırda Elektronik’in satışı (339.304 ₺) görünür: Giyim satırında da, Kitap satırında da. Bu bir hata değil, “filtreyi değiştir” davranışıdır.</p>
 <p>Dış filtreyi silmek yerine onunla <b>kesiştirmek</b> istiyorsan KEEPFILTERS kullan:</p>
 <pre class="dax">Elektronik Satış (kesişim) =
-CALCULATE([Net Satış], KEEPFILTERS(Urunler[Kategori] = "Elektronik"))</pre>
+CALCULATE([Net Satış], KEEPFILTERS(Kategoriler[Kategori] = "Elektronik"))</pre>
 <p>Bu sürüm Elektronik satırında 339.304 ₺, diğer kategorilerde BLANK döndürür; görsel de yalnızca Elektronik satırını gösterir.</p>
 <h3>Sütun filtresi mi, tablo filtresi mi?</h3>
 <p><code>FILTER(Urunler, Urunler[Fiyat] &gt; 1000)</code> bütün <code>Urunler</code> tablosunu filtre olarak verir; tablo, o anki bağlamda görünen satırlarla ve tüm sütunlarıyla gelir. <code>Urunler[Fiyat] &gt; 1000</code> ise yalnızca Fiyat sütununu filtreler. Bu örnekte iki yazım aynı sonucu verir, ama tablo filtresi daha yavaştır ve filtre bağlamındaki diğer Urunler sütunlarını da sabitler. Önce sütun filtresini dene; tablo filtresine yalnızca koşul birden çok tablodan sütun ya da bir ölçü içerdiğinde ihtiyaç duyarsın.</p>`);
@@ -63,7 +63,7 @@ deep('filter-all', 'Genişletilmiş tablolar: ALL(Satislar) neden kategori filtr
 <p>DAX’ta bir olgu tablosu, ilişkili olduğu boyut tablolarının sütunlarını da “içerir”. Buna <b>genişletilmiş tablo</b> denir: <code>Satislar</code>, çoktan bire ilişkiler üzerinden <code>Urunler</code>, <code>Musteriler</code> ve <code>Tarih</code> sütunlarını da kapsar. Bu yüzden:</p>
 <pre class="dax">Tüm Satışlar =
 CALCULATE([Net Satış], ALL(Satislar))</pre>
-<p>kategori kırılımında her satırda <b>1.250.772 ₺</b> (genel toplam) verir. Kategori filtresi <code>Urunler</code> tablosunda olduğu halde ALL(Satislar) onu da kaldırır, çünkü Urunler[Kategori] genişletilmiş Satislar tablosunun bir parçasıdır. Tersi doğru değildir: <code>ALL(Urunler)</code> yalnızca ürün tablosundaki filtreleri siler; <code>Satislar[Kanal]</code> filtresi yerinde kalır.</p>
+<p>kategori kırılımında her satırda <b>1.250.772 ₺</b> (genel toplam) verir. Kategori filtresi <code>Urunler</code> tablosunda olduğu halde ALL(Satislar) onu da kaldırır, çünkü Urunler[Kategori] genişletilmiş Satislar tablosunun bir parçasıdır. Tersi doğru değildir: <code>ALL(Urunler)</code> ürün tablosunun ve onun genişletilmiş tablosunun (bire tarafındaki <code>Kategoriler</code>) filtrelerini siler; çok tarafındaki <code>Satislar[Kanal]</code> filtresi yerinde kalır.</p>
 <pre class="dax">Kanal Filtresiz Satış =
 CALCULATE([Net Satış], ALL(Satislar[Kanal]))</pre>
 <p>Tek bir sütunu hedeflemek ise genişletmeye girmez: yukarıdaki ölçü yalnızca kanal filtresini kaldırır; kategori, tarih ve müşteri filtreleri korunur. Pratik kural: <b>tüm tabloyu değil, kaldırmak istediğin sütunu ya da boyut tablosunu</b> hedefle. Niyetini en açık gösteren yazım <code>REMOVEFILTERS(Urunler)</code> gibi boyut tablosunu adıyla anmaktır.</p>`);
@@ -107,7 +107,7 @@ deep('dax-opt', 'Formula Engine ve Storage Engine', `
 </ul>
 <pre class="dax">Pahalı Satırlar Satışı =
 CALCULATE([Net Satış], Satislar[Tutar] &gt; 2000)</pre>
-<p>Bu yazım, aynı sonucu veren <code>SUMX(Satislar, IF(Satislar[Tutar] &gt; 2000, Satislar[Tutar]))</code> gibi bir iteratörden daha ölçeklenebilirdir. Gerçek modelde farkı görmek için Performans Analizcisi ile sorguyu kopyalayıp DAX Studio’da “Server Timings” ile SE ve FE sürelerine bak.</p>`);
+<p>Bu yazım, aynı sonucu veren <code>SUMX(Satislar, IF(Satislar[Tutar] &gt; 2000, Satislar[Tutar]))</code> gibi bir iteratörden daha ölçeklenebilirdir. Gerçek modelde farkı görmek için Performans Analizi ile sorguyu kopyalayıp DAX Studio’da “Server Timings” ile SE ve FE sürelerine bak.</p>`);
 
 /* ---------- Yeni ders: mülakata hazırlık ---------- */
 L.push({
@@ -121,7 +121,7 @@ L.push({
 <tr><th>Bölüm</th><th>Ne ölçülür?</th><th>Nasıl hazırlanılır?</th></tr>
 <tr><td>Kavram soruları</td><td>Filtre bağlamı, ilişkiler, model tasarımı gibi temellerin anlaşılması</td><td>Aşağıdaki 12 soruyu kendi cümlelerinle, örnekle cevaplayabilmek</td></tr>
 <tr><td>Canlı DAX ya da SQL</td><td>Bir iş sorusunu doğru ölçüye çevirme ve sesli düşünme</td><td>Arena meydan okumaları ve Sınavlar’daki kod sınavları</td></tr>
-<tr><td>Vaka ya da rapor eleştirisi</td><td>Bir dashboard’u okuma, sorunu bulma, öneri sunma</td><td>Dashboardlar bölümü ve DAX Dedektif vakaları</td></tr>
+<tr><td>Vaka ya da rapor eleştirisi</td><td>Bir raporu okuma, sorunu bulma, öneri sunma</td><td>Örnek raporlar bölümü ve DAX Dedektif vakaları</td></tr>
 <tr><td>Davranışsal</td><td>Paydaşla çalışma, belirsizlik, hata yönetimi</td><td>2–3 gerçek proje hikâyesini Durum–Görev–Eylem–Sonuç yapısıyla hazırlamak</td></tr>
 </table></div>
 
@@ -136,8 +136,8 @@ L.push({
 <details class="faq"><summary>7. Çift yönlü ilişki ne zaman sorun olur?</summary><p>Filtrenin iki yönde akması belirsiz yollar ve döngüler yaratabilir; sonuçlar beklenmedik değişir ve performans düşer. Gerektiğinde ilişkiyi tek yönlü bırakıp ölçü içinde <code>CROSSFILTER(..., BOTH)</code> ile yalnızca o hesap için açmak daha güvenlidir.</p></details>
 <details class="faq"><summary>8. Hesaplanmış sütun mu, ölçü mü?</summary><p>Hesaplanmış sütun yenilemede bir kez hesaplanır, modelde yer kaplar ve dilimleyicide, satır alanında kullanılabilir. Ölçü sorgu anında, filtre bağlamına göre hesaplanır ve yer kaplamaz. Kural: değeri satır düzeyinde bir özellik olarak filtrelemek ya da gruplamak istiyorsan sütun; toplanacak bir sayıysa ölçü.</p></details>
 <details class="faq"><summary>9. Zaman zekâsı için neden ayrı bir tarih tablosu gerekir?</summary><p>Zaman fonksiyonları kesintisiz bir tarih sütunu bekler. Olgu tablosundaki tarihlerde boşluk olur (satış olmayan günler). Ayrıca ayrı tablo; yıl, çeyrek, ay ve tatil gibi sütunları tek yerde tutar ve birden çok olgu tablosunu aynı takvimle filtreler.</p></details>
-<details class="faq"><summary>10. Satır düzeyi güvenlik (RLS) nasıl çalışır?</summary><p>Bir rol, bir tabloya DAX filtresi ekler (ör. <code>[Bolge] = "Marmara"</code>); filtre ilişkiler üzerinden olgu tablosuna yayılır. Dinamik RLS’te filtre kullanıcının e-postasıyla eşleşen satırları seçer: <code>[Eposta] = USERPRINCIPALNAME()</code>. Roller yayından sonra hizmette kullanıcılara atanır ve “Farklı görüntüle” ile test edilir.</p></details>
-<details class="faq"><summary>11. Yavaş bir raporu nasıl incelersin?</summary><p>Önce ölç: Performans Analizcisi ile hangi görselin ve hangi aşamanın (DAX sorgusu mu, görsel çizimi mi) yavaş olduğunu bul. Sorgu yavaşsa DAX Studio’da Server Timings’e bak. Sonra en sık sebepleri ele: yüksek kardinaliteli sütunlar, gereksiz sütunlar, çift yönlü ilişkiler, iteratör içindeki koşullar, sayfadaki görsel sayısı.</p></details>
+<details class="faq"><summary>10. Satır düzeyi güvenlik (RLS) nasıl çalışır?</summary><p>Bir rol, bir tabloya DAX filtresi ekler (ör. <code>[Bolge] = "Marmara"</code>); filtre ilişkiler üzerinden olgu tablosuna yayılır. Dinamik RLS’te filtre kullanıcının e-postasıyla eşleşen satırları seçer: <code>[Eposta] = USERPRINCIPALNAME()</code>. Roller yayından sonra Service’te kullanıcılara atanır ve “Farklı görüntüle” ile test edilir.</p></details>
+<details class="faq"><summary>11. Yavaş bir raporu nasıl incelersin?</summary><p>Önce ölç: Performans Analizi ile hangi görselin ve hangi aşamanın (DAX sorgusu mu, görsel çizimi mi) yavaş olduğunu bul. Sorgu yavaşsa DAX Studio’da Server Timings’e bak. Sonra en sık sebepleri ele: yüksek kardinaliteli sütunlar, gereksiz sütunlar, çift yönlü ilişkiler, iteratör içindeki koşullar, sayfadaki görsel sayısı.</p></details>
 <details class="faq"><summary>12. Import, DirectQuery ve Direct Lake arasında nasıl seçim yaparsın?</summary><p>Import en hızlı sorguyu verir ama veri yenileme zamanına kadar eskidir ve model belleğe sığmalıdır. DirectQuery veriyi kaynağında sorgular; güncel ama yavaştır ve DAX kısıtları vardır. Direct Lake (Fabric) Delta tablolarını doğrudan belleğe okur: Import’a yakın hız, kopya ve yenileme gerektirmeden güncellik.</p></details>
 
 <h2>Canlı DAX sorusuna yaklaşım</h2>
@@ -163,8 +163,8 @@ L.push({
 <p>Bu tuzakların hepsi derslerin “Derinleş” bölümlerinde gerçek verilerle gösteriliyor.</p>
 
 <h2>Vaka sorusunu anlatmak</h2>
-<p>“Bu dashboard’a bakıp ne söylersin?” sorusunda sonuca değil, <b>yola</b> puan verilir. Önce genel resmi (toplam, eğilim), sonra en büyük sapmayı, sonra sebebi aradığın kırılımları anlat ve bir öneriyle bitir. DAX Dedektif vakaları tam olarak bu akışı çalıştırır. Sınavlar bölümündeki <b>Mülakat simülasyonu</b> ise süreli bir canlı DAX turudur ve her sorudan sonra gerçek mülakatlardaki gibi bir takip sorusu gösterir.</p>
-<p>Rol bazlı kavram soru bankası (zayıf ve güçlü cevap örnekleriyle), davranışsal sorular, ev ödevi vakası ve dashboard eleştirisi alıştırması için menüdeki <b>Mülakat hazırlığı</b> bölümüne, sık karıştırılan kavramlar ve hatalar için de <b>Sık karıştırılanlar</b> ve <b>Sık yapılan hatalar</b> sayfalarına bak.</p>`,
+<p>“Bu rapora bakıp ne söylersin?” sorusunda sonuca değil, <b>yola</b> puan verilir. Önce genel resmi (toplam, eğilim), sonra en büyük sapmayı, sonra sebebi aradığın kırılımları anlat ve bir öneriyle bitir. DAX Dedektif vakaları tam olarak bu akışı çalıştırır. Sınavlar bölümündeki <b>Mülakat simülasyonu</b> ise süreli bir canlı DAX turudur ve her sorudan sonra gerçek mülakatlardaki gibi bir takip sorusu gösterir.</p>
+<p>Rol bazlı kavram soru bankası (zayıf ve güçlü cevap örnekleriyle), davranışsal sorular, ev ödevi vakası ve rapor eleştirisi alıştırması için menüdeki <b>Mülakat</b> bölümüne, sık karıştırılan kavramlar ve hatalar için de <b>Sık karıştırılanlar</b> ve <b>Sık hatalar</b> sayfalarına bak.</p>`,
   ex: [
     { t: 'mc', q: 'Mülakatçı şu ölçüyü gösteriyor: <code>VAR S = [Net Satış] RETURN CALCULATE(S, Satislar[Kanal] = "Web")</code>. Ne döndürür?', o: ['Yalnızca Web kanalının net satışını; CALCULATE filtreyi değişkene de uygular', 'O anki bağlamın tüm net satışını; S önceden hesaplanmış bir sabittir', 'Söz dizimi hatası; VAR, CALCULATE içinde kullanılamaz', 'BLANK'], a: 1, why: 'Değişken tanımlandığı yerde, dış bağlamda bir kez hesaplanır. CALCULATE’in değiştirdiği filtre hesaplanmış bir sayıyı etkilemez.' },
     { t: 'mc', q: 'Matriste her kategorinin müşteri sayısı doğru, ama Toplam satırı satırların toplamından çok küçük. En doğru açıklama hangisi?', o: ['Matrisin toplam ayarı “toplam” yerine “ortalama” olarak bırakılmış', 'Toplamda ölçü kategori filtresi olmadan yeniden hesaplanır; aynı müşteri bir kez sayılır', 'Musteriler ile Satislar arasındaki ilişki tek yönlü olduğu için toplam satırı eksik kalıyor', 'DISTINCTCOUNT toplam satırında desteklenmez'], a: 1, why: 'Toplam satırı satırları toplamaz; ölçü o hücrenin bağlamında yeniden hesaplanır. Farklı müşteri sayısı toplanabilir bir ölçü değildir.' },

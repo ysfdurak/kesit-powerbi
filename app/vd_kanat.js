@@ -130,7 +130,7 @@
       ], interactions: [
         '<b>Modelleme → Yeni parametre → Alanlar</b> ile ölçü seçici',
         'Çubuktan uçuş detayına <b>Detaya git (Drillthrough)</b>',
-        'Kalkış/varış görünümü için iki yer imi (Bookmark): biri [Toplam Yolcu], diğeri [Varış Yolcusu]'
+        'Kalkış/varış görünümü için iki yer işareti (Bookmark): biri [Toplam Yolcu], diğeri [Varış Yolcusu]'
       ] },
       { name: 'Ticari Görünüm', purpose: 'Doluluk, gelir/yolcu, erken rezervasyon ve sadakat segmentleri.', visuals: [
         'Dağılım grafiği (Scatter): her nokta hv_routes[route_id]; x [Doluluk Oranı], y [Gelir / Yolcu], boyut [Biletli Yolcu]',

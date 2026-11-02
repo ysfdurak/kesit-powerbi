@@ -113,7 +113,7 @@ CALCULATE(
 <tr><td>2024 Satışı (Kesişim)</td><td>Çiftler korunur ve Yil = 2024 ile kesişir: yalnızca (2024, 1).</td><td>47.433 ₺</td></tr>
 <tr><td>Biçim kaybolsaydı (iki ayrı dilimleyici)</td><td>Yil {2023, 2024} × Ay {12, 1}: dört ay.</td><td>198.531 ₺</td></tr>
 </table></div>
-<p>Üzerine yazma sürümü, kullanıcının hiç seçmediği Aralık 2024’ü raporlar. Testte görünmez, çünkü test eden genelde tek ay seçer. Hiyerarşi seçimini Stüdyoda TREATAS ile kurup üç sonucu kendin görebilirsin:</p>
+<p>Üzerine yazma sürümü, kullanıcının hiç seçmediği Aralık 2024’ü raporlar. Testte görünmez, çünkü test eden genelde tek ay seçer. Hiyerarşi seçimini Playground’da TREATAS ile kurup üç sonucu kendin görebilirsin:</p>
 <pre class="dax">Seçim (Çiftler) =
 CALCULATE([Net Satış], TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
 Seçimde 2024 (Üzerine Yazma) =
@@ -379,10 +379,10 @@ add('ileri-kaliplar', {
   title: 'Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe',
   sum: 'Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı, işlem kuru / dönem sonu kuru / sabit kur ayrımı ve eksik kur, aylık hedefi güne dağıtmak ve taneciklik koruması.',
   body: `
-<p>“İleri iş kalıpları” dersinde Top N + Diğer, sepet analizi, ürün düzeyinde LFL ve aylık kurla dönüşümün iskeletini kurdun; Ölçü Laboratuvarı’nda [Yoldaki Sipariş] kalıbını gördün. Bu ders o kalıpları <b>üretime</b> taşıyor: gerçek verinin kenar durumları, aynı sorunun iki farklı doğru tanımı ve raporu sessizce bozan tanecik farkları. Her bölümde önce mevcut çözümün nerede yanlış sayı verdiğini motorla göreceğiz.</p>
+<p>“İleri iş kalıpları” dersinde Top N + Diğer, sepet analizi, ürün düzeyinde LFL ve aylık kurla dönüşümün iskeletini kurdun; Measure Lab’de [Yoldaki Sipariş] kalıbını gördün. Bu ders o kalıpları <b>üretime</b> taşıyor: gerçek verinin kenar durumları, aynı sorunun iki farklı doğru tanımı ve raporu sessizce bozan tanecik farkları. Her bölümde önce mevcut çözümün nerede yanlış sayı verdiğini motorla göreceğiz.</p>
 
 <h2>1 · Devam eden olaylar: açık siparişleri doğru saymak</h2>
-<p>Lojistik müdürü yılbaşı sabahı soruyor: “31 Aralık 2024 akşamı depoda kaç açık sipariş vardı?” Ölçü Laboratuvarı’ndaki [Yoldaki Sipariş], ay satırlarında 2024 boyunca 1 ile 5 arasında değerler veriyor. Aralık 2024 satırı ise <b>BLANK</b>.</p>
+<p>Lojistik müdürü yılbaşı sabahı soruyor: “31 Aralık 2024 akşamı depoda kaç açık sipariş vardı?” Measure Lab’deki [Yoldaki Sipariş], ay satırlarında 2024 boyunca 1 ile 5 arasında değerler veriyor. Aralık 2024 satırı ise <b>BLANK</b>.</p>
 <p>Sebep veride: Aralık’ın son günlerinde verilmiş 6 sipariş (10 satır) hâlâ “Kargoda” ve TeslimTarihi <b>boş</b>. Kalıp <code>Satislar[TeslimTarihi] &gt; Gun</code> koşulunu kullanıyor; DAX’ta BLANK bir tarihle karşılaştırılınca sıfır gibi davranır ve koşul yanlış olur. Yani “henüz teslim edilmemiş” siparişler, tam da sayılması gerekenler, dışarıda kalıyor. Öte yandan iptal edilen 121 satırın da teslim tarihi boş; onları açık saymamalıyız.</p>
 <pre class="dax">Açık Sipariş =
 VAR Gun = MAX(Tarih[Tarih])
@@ -462,7 +462,7 @@ RETURN
 <div class="note"><b>Üretimde bayrak</b>Perakendede karşılaştırılabilir mağaza listesi genelde iş kuralıyla (en az 13 ay açık, tadilat yok) belirlenir ve kaynakta ya da Power Query’de dönem başına bir bayrak sütunu olarak tutulur. Dinamik DAX kümesi keşif için iyidir; resmî raporda bayrak, denetlenebilir ve hızlıdır.</div>
 
 <h2>3 · Döviz çevirme: hangi kur, hangi sayı?</h2>
-<p>Ortaklara dolar bazlı rapor hazırlanıyor. Kur tablosu DovizKurlari ayda bir satır tutuyor (ayın ilk günü, USD ve EUR) ve Tarih’e bağlı değil. Aylık kurla satış dönüşümünü Ölçü Laboratuvarı’ndaki [Satış (Seçili Para)] yapıyor. Uzman sorusu şu: <b>her sayı aynı kurla mı çevrilir?</b></p>
+<p>Ortaklara dolar bazlı rapor hazırlanıyor. Kur tablosu DovizKurlari ayda bir satır tutuyor (ayın ilk günü, USD ve EUR) ve Tarih’e bağlı değil. Aylık kurla satış dönüşümünü Measure Lab’deki [Satış (Seçili Para)] yapıyor. Uzman sorusu şu: <b>her sayı aynı kurla mı çevrilir?</b></p>
 <div class="tbl-wrap"><table>
 <tr><th>Sayı türü</th><th>Örnek</th><th>Doğru kur</th></tr>
 <tr><td>Akış (dönem boyunca oluşur)</td><td>Satış, gider, satın alma</td><td>İşlem tarihinin kuru (burada ay kuru); ay ay çevrilip toplanır</td></tr>

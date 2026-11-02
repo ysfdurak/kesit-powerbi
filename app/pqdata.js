@@ -1,4 +1,4 @@
-/* Kesit Power BI — Power Query Atölyesi: dönüşüm motoru, M kodu üretici, kirli örnek tablolar ve alıştırmalar.
+/* Kesit Power BI — Power Query Lab: dönüşüm motoru, M kodu üretici, kirli örnek tablolar ve alıştırmalar.
    Motor, Power Query Düzenleyicisi'nin en sık kullanılan komutlarını taklit eder; her adım gerçek M koduna çevrilir. */
 (function (W) {
 'use strict';

@@ -12,7 +12,7 @@
 <li><b>2010</b> · <b>PowerPivot for Excel 2010</b> çıkar. Milyonlarca satırı belleğe sıkıştıran <b>VertiPaq</b> motoru ve onunla konuşan dil <b>DAX</b> (Data Analysis Expressions) ilk kez kullanıcıların eline geçer.</li>
 <li><b>2012</b> · SQL Server 2012 ile <b>Analysis Services Tabular</b> modeli gelir. Aynı motor ve aynı DAX, artık kurumsal sunucularda da çalışır. Aynı yıl görselleştirme aracı <b>Power View</b> tanıtılır.</li>
 <li><b>2013</b> · Veri alma ve temizleme eklentisi <b>Power Query</b> (ilk adı Data Explorer) yayımlanır. Arkasında <b>M</b> adlı bir dil vardır. Yıl içinde “Power BI for Office 365” duyurulur.</li>
-<li><b>2015</b> · Temmuzda bugünkü <b>Power BI hizmeti</b> ve ücretsiz <b>Power BI Desktop</b> genel kullanıma açılır. Power Query, Power Pivot ve Power View tek bir uygulamada birleşir.</li>
+<li><b>2015</b> · Temmuzda bugünkü <b>Power BI Service</b> ve ücretsiz <b>Power BI Desktop</b> genel kullanıma açılır. Power Query, Power Pivot ve Power View tek bir uygulamada birleşir.</li>
 <li><b>2016–2017</b> · Aylık güncelleme temposu başlar. Kurumsal ölçek için <b>Premium</b> kapasite ve şirket içinde çalışan <b>Power BI Report Server</b> eklenir.</li>
 <li><b>2019–2020</b> · Yapay zekâ görselleri (Anahtar etkileyiciler, Ayrıştırma ağacı), veri akışları (dataflows) ve dağıtım işlem hatları gelir.</li>
 <li><b>2023</b> · <b>Microsoft Fabric</b> duyurulur ve yıl sonunda genel kullanıma açılır. Power BI artık veri mühendisliği, veri ambarı ve gerçek zamanlı analizle aynı platformun bir parçasıdır. “Dataset” kavramının adı <b>anlam modeli</b> (semantic model) olur.</li>
@@ -25,7 +25,7 @@
 <li><b>Microsoft ekosistemi:</b> Excel, Teams, SharePoint, Azure ve Fabric ile doğal olarak bağlanır.</li>
 <li><b>Hızlı motor:</b> VertiPaq, verileri sütun sütun sıkıştırır. Birkaç yüz milyon satır bile dizüstü bilgisayarda çalışabilir.</li>
 </ul>
-<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL’deki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX formüllerin tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
+<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL’deki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX fonksiyonların tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
 `,
   ex: [
     { t: 'mc', q: 'DAX dili ilk olarak hangi ürünle kullanıcılara ulaştı?', o: ['Power BI Desktop (2015)', 'PowerPivot for Excel 2010', 'SQL Server 2000', 'Power View'], a: 1, why: 'DAX, 2010\'da PowerPivot eklentisiyle geldi. Power BI Desktop aynı motoru ve dili devraldı.' },
@@ -64,7 +64,7 @@
 <li><b>Görselleştir:</b> Grafikleri, kartları, dilimleyicileri sayfaya yerleştir.</li>
 <li><b>Yayımla ve paylaş:</b> Service'e gönder, yenilemeyi zamanla, uygulama olarak dağıt.</li>
 </ol>
-<p>Bu uygulamadaki menü de aynı sırayı izler: <b>Veri Modeli</b> (2–3. adım), <b>DAX Stüdyosu</b> ve <b>Formüller</b> (4. adım), <b>Görseller</b> ve <b>Dashboardlar</b> (5. adım).</p>
+<p>Bu uygulamadaki menü de aynı sırayı izler: <b>Anadolu Market modeli</b> (2–3. adım), <b>DAX Playground</b> ve <b>DAX fonksiyonları</b> (4. adım), <b>Görseller</b> ve <b>Örnek raporlar</b> (5. adım).</p>
 `,
   ex: [
     { t: 'mc', q: 'Bir analist raporu Desktop\'ta hazırladı ve 5 meslektaşıyla Service üzerinden paylaşmak istiyor. Kurumda kapasite yok. Neye ihtiyaç var?', o: ['Hiçbir şeye, Desktop ücretsiz', 'Sadece analistin Pro lisansı', 'Analistin ve 5 meslektaşın her birinin Pro (ya da PPU) lisansı', 'Report Server kurulumu'], a: 2, why: 'Kapasite yoksa paylaşım için hem paylaşanın hem görüntüleyenlerin Pro ya da PPU lisansı olmalıdır.' },
@@ -100,7 +100,7 @@
 <li><b>Giriş:</b> Veri al, Verileri dönüştür (Power Query'yi açar), Yenile, Yayımla.</li>
 <li><b>Ekle:</b> Yeni sayfa, metin kutusu, düğme, şekil, görsel.</li>
 <li><b>Modelleme:</b> Yeni ölçü, yeni sütun, yeni tablo, roller (RLS), parametreler.</li>
-<li><b>Görünüm:</b> Temalar, mobil düzen, Performans Analizi, yer imleri, seçim bölmesi.</li>
+<li><b>Görünüm:</b> Temalar, mobil düzen, Performans Analizi, yer işaretleri, seçim bölmesi.</li>
 </ul>
 `,
   ex: [
@@ -183,7 +183,7 @@ in
   ex: [
     { t: 'mc', q: 'Şehir sütununda “ Ankara”, “ankara” ve “Ankara” değerleri var. Dilimleyicide tek “Ankara” görmek için en doğru adım sırası hangisi?', o: ['Yinelenenleri kaldır', 'Kırp → Her Sözcüğün İlk Harfi Büyük', 'DAX ile UPPER kullan', 'Sütunu sil'], a: 1, why: 'Önce baştaki boşluğu kırp, sonra harf biçimini eşitle. Yinelenenleri kaldırmak satırları siler; sorunu çözmez.' },
     { t: 'mc', q: 'Power Query\'de yaptığın adımlar yenileme sırasında ne olur?', o: ['Silinir, yeniden yapman gerekir', 'Sırayla yeniden çalışır', 'Yalnızca ilk adım çalışır', 'DAX\'a dönüşür'], a: 1, why: 'Uygulanan adımlar bir tariftir: her yenilemede kaynak veriye baştan uygulanır.' },
-    { t: 'mc', q: 'Bir sütunun yüzde kaçının boş ya da hatalı olduğunu hızla görmek için hangi özellik kullanılır?', o: ['Sütun kalitesi', 'Performans Analizi', 'Yer imleri', 'Hızlı ölçü'], a: 0, why: 'Görünüm → Sütun kalitesi, geçerli / hata / boş yüzdelerini sütun başlığının altında gösterir.' }
+    { t: 'mc', q: 'Bir sütunun yüzde kaçının boş ya da hatalı olduğunu hızla görmek için hangi özellik kullanılır?', o: ['Sütun kalitesi', 'Performans Analizi', 'Yer işaretleri', 'Hızlı ölçü'], a: 0, why: 'Görünüm → Sütun kalitesi, geçerli / hata / boş yüzdelerini sütun başlığının altında gösterir.' }
   ]
 },
 
@@ -201,7 +201,7 @@ in
 <tr><td>Bu modelde</td><td><code>Satislar</code>, <code>Hedefler</code></td><td><code>Urunler</code>, <code>Musteriler</code>, <code>Tarih</code>, <code>Kategoriler</code></td></tr>
 </table></div>
 <h2>Yıldız şema</h2>
-<p>Olgu tablosu ortada durur, boyutlar çevresinde dizilir. Her boyut olguya <b>bire-çok (1:*)</b> ilişkiyle bağlanır: bir ürünün çok satış satırı vardır. Diyagram bir yıldıza benzer. <b>Veri Modeli</b> sayfasında bu modelin diyagramını görebilirsin.</p>
+<p>Olgu tablosu ortada durur, boyutlar çevresinde dizilir. Her boyut olguya <b>bire-çok (1:*)</b> ilişkiyle bağlanır: bir ürünün çok satış satırı vardır. Diyagram bir yıldıza benzer. <b>Anadolu Market modeli</b> sayfasında bu modelin diyagramını görebilirsin.</p>
 <div class="tip"><b>Neden yıldız?</b>Filtreler boyuttan olguya doğru akar. Kullanıcı dilimleyicide “Kitap” seçer → <code>Urunler</code> süzülür → ilişki üzerinden <code>Satislar</code> yalnızca kitap satırlarına iner → ölçü bu satırlar üzerinde hesaplanır. Tablolar az, ilişkiler net olduğunda hem DAX basitleşir hem motor hızlanır.</div>
 <h2>İlişkinin özellikleri</h2>
 <ul>
@@ -214,7 +214,7 @@ in
 <h2>Kaçınılacak desenler</h2>
 <ul>
 <li><b>Tek dev tablo:</b> Her şeyi tek tabloya birleştirmek ilk başta kolay gelir ama DAX'ı zorlaştırır ve modeli şişirir.</li>
-<li><b>Kar tanesi (snowflake) aşırılığı:</b> Boyutu boyuta, onu da başka boyuta bağlamak. Mümkünse Power Query'de boyutları düzleştir. (Bu modeldeki <code>Kategoriler</code> bilinçli bir istisnadır: hem ürünleri hem hedefleri bağlayan ortak bir boyut.)</li>
+<li><b>Kar tanesi (snowflake) aşırılığı:</b> Boyutu boyuta, onu da başka boyuta bağlamak. Mümkünse Power Query'de boyutları düzleştir. (Bu modeldeki <code>Kategoriler</code> bilinçli bir istisnadır, derslerde kategori eksenini hep <code>Kategoriler[Kategori]</code>’den alırız; <code>Urunler[Kategori]</code> ilişki anahtarıdır: hem ürünleri hem hedefleri bağlayan ortak bir boyut.)</li>
 <li><b>Gereksiz çift yönlü ilişkiler.</b></li>
 </ul>
 `,
@@ -340,11 +340,13 @@ Sipariş Sayısı = DISTINCTCOUNT(Satislar[SiparisNo])</pre>
   title: 'İlk raporunu kur',
   sum: 'Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema.',
   body: `
+<div class="note"><b>Önce veri ve ölçüler</b>Bu dersi Desktop’ta yapacaksan: <button class="lnk" data-act="data-zip">veri setini indir</button>, zip’i aç, <b>Giriş → Veri al → Metin/CSV</b> ile <code>Satislar</code>, <code>Urunler</code>, <code>Kategoriler</code> ve <code>Tarih</code> dosyalarını yükle. Model görünümünde <code>Satislar[UrunNo] → Urunler[UrunNo]</code>, <code>Urunler[Kategori] → Kategoriler[Kategori]</code> ve <code>Satislar[Tarih] → Tarih[Tarih]</code> ilişkilerini kur (bu adımların nedenini “Veri modelleme” dersinde göreceksin). Sonra <b>Yeni ölçü (New measure)</b> ile şu iki ölçüyü ekle:<pre class="dax" data-notry>Net Satış = CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal")
+Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Desktop’un yoksa aynı görselleri <button class="lnk" data-go="visuals">Görseller ve biçim</button> sayfasında dene.</div>
 <h2>Üç görsel, bir hikâye</h2>
 <p>İyi bir ilk sayfa üç soruya cevap verir: <b>Ne kadar?</b> (kart), <b>Nerede?</b> (kategori karşılaştırması), <b>Nasıl gidiyor?</b> (zaman içindeki eğilim). <b>Görseller</b> sayfasında hepsini bu verilerle canlı görebilirsin.</p>
 <ol>
 <li><b>Kart:</b> Görselleştirmeler → Kart. Alanlar kutusuna <code>[Net Satış]</code>. Biçim → Belirtici → Görüntü birimleri: Milyon.</li>
-<li><b>Kümelenmiş çubuk grafik:</b> Y eksenine <code>Kategoriler[Kategori]</code>, X eksenine <code>[Net Satış]</code>. Görselin “…” menüsünden <i>Eksene göre sırala → Net Satış, azalan</i>.</li>
+<li><b>Kümelenmiş çubuk grafik:</b> Y eksenine <code>Kategoriler[Kategori]</code>, X eksenine <code>[Net Satış]</code>. Görselin “…” menüsünden <i>Ekseni sırala (Sort axis) → Net Satış, azalan</i>.</li>
 <li><b>Çizgi grafik:</b> X eksenine <code>Tarih[YilAy]</code>, Y eksenine <code>[Net Satış]</code>. İkinci çizgi olarak <code>[Satış GY]</code> (geçen yıl) eklersen büyümeyi görürsün.</li>
 <li><b>Dilimleyici:</b> <code>Tarih[Yil]</code>. Stil: Döşeme (tile). Tüm görselleri birlikte süzer.</li>
 </ol>
@@ -382,7 +384,7 @@ Sipariş Sayısı = DISTINCTCOUNT(Satislar[SiparisNo])</pre>
 <tr><td>Süreç adımlarında kayıp?</td><td>Huni</td><td>Çubuk</td><td>Pasta</td></tr>
 <tr><td>Ayrıntılı sayılara bakmak?</td><td>Matris (koşullu biçimle)</td><td>Tablo</td><td>Uzun grafik</td></tr>
 </table></div>
-<h2>Sık yapılan hatalar</h2>
+<h2>Sık hatalar</h2>
 <ul>
 <li><b>Sıfırdan başlamayan çubuk ekseni:</b> Farkları olduğundan büyük gösterir. Çubuklar her zaman sıfırdan başlar; çizgilerde esneklik vardır.</li>
 <li><b>İkili eksen:</b> İki farklı ölçeği üst üste bindirmek, okuyanı yanlış ilişki kurmaya iter. İki ayrı grafik kullan ya da ölçüleri aynı birime getir (ör. ikisi de %).</li>

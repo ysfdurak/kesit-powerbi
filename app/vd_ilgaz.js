@@ -138,7 +138,7 @@ var TL = 'SUMX(\n    bank_txns,\n    VAR pb = RELATED(bank_accounts[currency])\n
         'Sütun grafik: bank_txns[Saat] (0–23) × İşlem Sayısı; gece saatlerindeki küçük tepe görünür',
         'Tablo: txn_time, account_id, amount, channel, merchant_category; görsel düzeyinde filtre Şüpheli İşlem = 1',
         'Dağılım grafiği (Scatter): kredi kartı başına credit_limit × Kart Harcama TL; limit çizgisinin üstü aşım'],
-        interactions: ['"Şüpheli" ve "Tüm işlemler" için iki yer imi (Bookmark) ve bunlara bağlı düğmeler', 'Tablo satırından Müşteri Detayı sayfasına detaya git'] },
+        interactions: ['"Şüpheli" ve "Tüm işlemler" için iki yer işareti (Bookmark) ve bunlara bağlı düğmeler', 'Tablo satırından Müşteri Detayı sayfasına detaya git'] },
       { name: 'Müşteri Detayı (detaya git)', purpose: 'Seçili şube ya da hesabın müşterilerini satır düzeyinde incelemek.', visuals: [
         'Tablo: bank_customers[full_name], segment, risk_score, kvkk_consent, Aktif Hesap, Net Akış TL',
         'Çizgi grafik: Takvim[Tarih] × Net Akış YTD (seçili müşteri ya da şube için birikimli akış)',

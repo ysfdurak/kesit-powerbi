@@ -1,26 +1,26 @@
-/* Kesit Power BI — Final projesi: sıfırdan yayına uçtan uca profesyonel rapor. Her menü komutu bir aşamada kullanılır. */
+/* Kesit Power BI — Bitirme projesi: sıfırdan yayına uçtan uca profesyonel rapor. Her menü komutu bir aşamada kullanılır. */
 (function (W) {
 const S = [
-  { n: 1, lv: 'A1', title: 'Proje kurulumu ve veri alma', goal: 'Boş bir Power BI Desktop dosyasından başlayıp Anadolu Market verisini (Excel + SQL) içeri al, dosyayı doğru ayarlarla kaydet.',
+  { n: 1, lv: 'A1', title: 'Proje kurulumu ve veri alma', goal: 'Boş bir Power BI Desktop dosyasından başlayıp Anadolu Market CSV paketini içeri al, dosyayı doğru ayarlarla kaydet.',
     tasks: [
-      'Dosya → Seçenekler → Geçerli dosya → Veri yükleme: “Otomatik tarih/saat” ve “İlişkileri otomatik algıla” seçeneklerini kapat; bölgesel ayarı Türkçe yap.',
-      'Giriş → Veri al → Excel çalışma kitabı: Satislar, Urunler, Musteriler, Calisanlar sayfalarını seç; “Yükle” yerine “Verileri dönüştür”e bas.',
-      'Giriş → Veri al → SQL Server ile Hedefler tablosunu, Veri gir ile küçük bir Kanal açıklama tablosunu ekle.',
-      'Dosya → İçeri aktar ile şirketin standart tema/şablonunu (.pbit) değerlendir; Son kaynaklar listesini kontrol et.',
-      'Dosya → Veri kaynağı ayarları ve Giriş → Verileri dönüştür → Parametreleri düzenle: dosya yolunu “KaynakKlasor” parametresine bağla.',
-      'Sol görünümler: Rapor ve Tablo görünümleri arasında geçip yüklenen satır sayılarını doğrula; Giriş → Yenile ile yenile.',
+      'Dosya → Seçenekler ve ayarlar → Seçenekler → Geçerli dosya → Veri yükleme: “Otomatik tarih/saat” ve “İlişkileri otomatik algıla” seçeneklerini kapat.',
+      'Bitirme projeleri ya da Anadolu Market modeli sayfasından veri setini indir (.zip); bir klasöre aç. İçinde 19 CSV ve BENIOKU var.',
+      'Giriş → Veri al → Metin/CSV: Satislar, Urunler, Kategoriler, Musteriler, Calisanlar, Tarih, Hedefler dosyalarını sırayla seç (dosya kaynağı 65001: UTF-8); “Yükle” yerine “Verileri dönüştür”e bas. Sayı ve tarih türlerini “Yerel ayarı kullanarak → İngilizce (ABD)” ile ver: ondalık ayırıcı noktadır.',
+      'Giriş → Veri gir ile küçük bir Kanal açıklama tablosu ekle (Web, Mobil, Mağaza ve birer cümle).',
+      'Dosya → Seçenekler ve ayarlar → Veri kaynağı ayarları: dosya izinlerini kontrol et. Giriş → Verileri dönüştür → Parametreleri düzenle: klasör yolunu “KaynakKlasor” parametresine bağla.',
+      'Sol görünümler: Rapor ve Tablo görünümleri arasında geçip yüklenen satır sayılarını doğrula (Satislar 1.620, Urunler 40, Musteriler 150); Giriş → Yenile ile yenile.',
       'Yardım → Kılavuzlu öğrenme / Belgeler: kullandığın bağlayıcının belge sayfasını bul (sınavda da sorulur).',
       'Dosyayı Power BI Projesi (.pbip) olarak kaydet.'
-    ], measures: [], deliver: 'Tüm kaynakları içeri almış, parametreli ve .pbip olarak kaydedilmiş dosya.' },
+    ], measures: [], deliver: 'Tüm CSV’leri içeri almış, parametreli ve .pbip olarak kaydedilmiş dosya.' },
   { n: 2, lv: 'A2', title: 'Power Query ile temizlik ve şekillendirme', goal: 'Kirli kaynakları güvenilir, doğru türde ve yıldız şemaya hazır tablolara dönüştür.',
     tasks: [
       'Görünüm → Sütun kalitesi / dağılımı / profili ve “Tüm veri kümesine göre profil oluştur”: hatalı ve boş değerleri bul.',
       'Giriş: Sütunları kaldır, Satırları kaldır (boş/hatalı), Sırala, İlk satırı başlık olarak kullan, Veri türü; Dönüştür → Türleri algıla değil, türleri elle ver.',
-      'Dönüştür → Değerleri değiştir / Hataları değiştir / Doldur (aşağı) ile eksik kategori adlarını tamamla; Biçim → Kırp, Temizle, Her Sözcüğün İlk Harfini Büyüt.',
+      'Dönüştür → Değerleri değiştir / Hataları değiştir / Musteriler[Sehir] boşlarına karar ver (“Bilinmiyor” yaz); Doldur (aşağı) komutunu küçük bir örnekle dene; Biçim → Kırp, Temizle, Her Sözcüğün İlk Harfini Büyüt.',
       'Dönüştür → Sütunu böl ve Ayıkla ile “AdSoyad”dan e-posta kullanıcı adı üret; Tarih → Yıl, Ay adı.',
-      'Hedefler tablosunu Dönüştür → Sütunların özetini kaldır ile geniş biçimden uzun biçime çevir; ters işlem için Özet sütunu dene; Devrik ve Satır sayısını say ile kontrol et.',
+      'Hedefler tablosunu Özet sütun ile geniş biçime çevir, sonra Sütunların özetini kaldır ile uzun biçime geri al; Devrik ve Satır sayısını say ile kontrol et.',
       'Sütun ekle: Örneklerden sütun (İndirim bandı), Koşullu sütun, Özel sütun (Tutar = Adet × BirimFiyat × (1 − İndirim)), Dizin sütunu, Sütunu çoğalt.',
-      'Giriş → Gruplandırma ölçütü ile müşteri başına ilk sipariş tarihini hesapla; Sorguları birleştir (Musteriler ← ilk sipariş) ve Sorguları ekle (2023 + 2024 dosyaları); Dosyaları birleştir ile klasördeki aylık dosyaları tek tabloya al.',
+      'Giriş → Gruplandırma ölçütü ile müşteri başına ilk sipariş tarihini hesapla; Sorguları birleştir (Musteriler ← ilk sipariş) ve Sorguları ekle (Satislar’ı yıla göre iki sorguya ayırıp yeniden ekle); paketteki CSV’leri Veri al → Klasör ile açıp Dosyaları birleştir’in ne yaptığını gör.',
       'Sütun ekle → Özel işlev çağır: temizleme adımlarını bir işleve çevirip her dosyaya uygula; Dönüştür → Yapılandırılmış sütun → Genişlet.',
       'Dönüştür → İstatistikler / Standart / Yuvarlama ile tutarları 2 haneye yuvarla; R/Python betiği seçeneğinin ne zaman uygun olduğunu not et.',
       'Giriş → Gelişmiş Düzenleyici ile M kodunu oku; adımları anlamlı adlarla yeniden adlandır. Görünüm → Formül çubuğu ve Sorgu bağımlılıkları.',
@@ -34,7 +34,7 @@ const S = [
       'Tablo araçları → Tarih tablosu olarak işaretle; Ad ile tabloları iş diliyle yeniden adlandır.',
       'Sütun araçları: Veri türü ve Biçim; Özetleme = Hiçbiri (anahtarlar, yıl); Veri kategorisi = Şehir (Musteriler[Sehir]); Sütuna göre sırala (Ay → AyNo); Veri grupları ile Yaş grubu.',
       'Veri bölmesinde anahtar sütunları gizle; Özellikler bölmesinde açıklama ve eş anlamlı ekle; ölçüler için ayrı bir “_Ölçüler” tablosu oluştur.'
-    ], measures: [], deliver: 'Doğrulanmış yıldız şema (Veri Modeli sayfasındaki gibi).' },
+    ], measures: [], deliver: 'Doğrulanmış yıldız şema (Anadolu Market modeli sayfasındaki gibi).' },
   { n: 4, lv: 'B1', title: 'Temel ve zaman ölçüleri', goal: 'Raporun tüm sayılarının dayandığı ölçü katmanını yaz: önce temel, sonra karşılaştırma ölçüleri.',
     tasks: [
       'Modelleme → Yeni ölçü: [Toplam Satış], [Net Satış] (iptaller hariç), [Brüt Kâr], [Kâr Marjı %], [Sipariş Sayısı].',
@@ -46,19 +46,19 @@ const S = [
   { n: 5, lv: 'B1', title: 'Özet sayfasını tasarla', goal: 'Yönetici Özeti sayfasını 12 sütunluk ızgarada, tema ve biçim kurallarıyla kur.',
     tasks: [
       'Görünüm → Temalar: kurumsal tema (JSON) uygula; Sayfa görünümü = Sayfaya sığdır; Kılavuz çizgileri, Izgaraya yapış, Nesneleri kilitle.',
-      'Ekle → Yeni sayfa (Özet) ve Sayfayı çoğalt; Giriş/Ekle → Yeni görsel: 4 KPI/kart, çizgi, halka, çubuk, tablo (Dashboardlar → Yönetici Özeti).',
+      'Ekle → Yeni sayfa (Özet) ve Sayfayı çoğalt; Giriş/Ekle → Yeni görsel: 4 KPI/kart, çizgi, halka, çubuk, tablo (Örnek raporlar → Yönetici Özeti).',
       'Görselleştirmeler → Oluştur: alanları doğru kutulara koy; Biçim: başlık, eksen, veri etiketleri, renk; Analiz: ortalama ve sabit (hedef) çizgisi.',
       'Ekle → Metin kutusu (sayfa başlığı), Şekiller (ayırıcı), Görüntü (logo), Düğmeler (sayfa gezintisi).',
       'Biçim boyacısı ile ilk kartın biçimini diğer kartlara aktar; Biçim → Hizala / Dağıt / Öne getir; ilgili görselleri Gruplandır.',
       'Filtreler bölmesi: sayfa düzeyi filtre (Durum ≠ İptal değil — ölçüde çözüldü!), rapor düzeyi filtre gereksinimini tartış; Görünüm → Filtreler ile bölmeyi okuyucu için biçimlendir.'
     ], measures: ['Net Satış', 'Hedef', 'Satış GY', 'Kategori Payı %', 'Trend Mini Grafik'], dash: 'ozet', deliver: 'Biçim kurallarına uyan tek sayfalık özet.' },
-  { n: 6, lv: 'B2', title: 'Etkileşim ve hikâye', goal: 'Okuyucunun özetten ayrıntıya kendi gitmesini sağla: detaya inme, detay sayfası, yer imleri, eşitlenmiş dilimleyiciler.',
+  { n: 6, lv: 'B2', title: 'Etkileşim ve hikâye', goal: 'Okuyucunun özetten ayrıntıya kendi gitmesini sağla: detaya inme, detay sayfası, yer işaretleri, eşitlenmiş dilimleyiciler.',
     tasks: [
       'Kategori → Ürün hiyerarşisini çubuğa koy; Veri / Detaya git sekmesi: Detaya inme modu, Sonraki düzeye git, Bir düzey aşağı genişlet; Verileri göster / Kayıtları göster.',
       'Ürün detayı sayfası oluştur: Detaya git (drill through) alanına Urunler[Urun]; Geri düğmesi otomatik eklenir.',
-      'Araç ipucu sayfası (320×240) kur ve kategori çubuğuna bağla (Püf Noktaları → Rapor sayfası araç ipucu).',
+      'Araç ipucu sayfası (320×240) kur ve kategori çubuğuna bağla (Püf noktaları → Rapor sayfası araç ipucu).',
       'Biçim → Etkileşimleri düzenle: halka grafiğin KPI kartlarını filtrelemesini kapat, tabloyu vurgula yerine filtreleye çevir.',
-      'Görünüm → Yer imleri ve Seçim: “Grafik / Tablo” geçiş yer imleri, gizli görseller; Yer imleri bölmesinde Veri seçeneğinin anlamını not et.',
+      'Görünüm → Yer işaretleri ve Seçim: “Grafik / Tablo” geçiş yer işaretleri, gizli görseller; Yer işaretleri bölmesinde Veri seçeneğinin anlamını not et.',
       'Görünüm → Dilimleyicileri eşitle: Yıl dilimleyicisini tüm sayfalarda eşitle, Ekip sayfasında gizli ama etkin tut.'
     ], measures: ['Seçime Göre Pay %', 'Dinamik Başlık'], dash: 'urun', deliver: 'Kendi kendine keşfedilebilen çok sayfalı rapor.' },
   { n: 7, lv: 'B2', title: 'Yapay zekâ görselleri, mobil ve erişilebilirlik', goal: 'Analitik görselleri doğru yerde kullan, raporu telefona ve ekran okuyuculara uygun hâle getir.',
@@ -73,24 +73,24 @@ const S = [
     tasks: [
       'Modelleme → Yeni parametre → Sayısal aralık: Fiyat değişimi (−20%…+20%); Yeni parametre → Alanlar: ölçü seçici.',
       'Modelleme → Hesaplama grubu: Zaman Hesabı (Cari, GY, YTD, YoY %) ve dinamik biçim dizesi.',
-      'Ölçü Laboratuvarı’ndaki İleri seviye kalıplarını (RFM, kohort, Top N + Diğer, LFL) kendi modeline uyarla.',
+      'Measure Lab’deki İleri seviye kalıplarını (RFM, kohort, Top N + Diğer, LFL) kendi modeline uyarla.',
       'Görünüm → Performans Analizi ve İyileştir → Görselleri duraklat, İyileştirme ön ayarları, Sorgu azaltma ayarları: “Uygula” düğmeli dilimleyiciler.',
       'Harici araçlar → DAX Studio (sunucu zamanlamaları, VertiPaq Analyzer) ve Tabular Editor (toplu biçim, en iyi uygulama analizcisi); TMDL görünümünde ölçü klasörlerini metinle düzenle.'
     ], measures: ['Satış (Top N + Diğer)', 'Senaryo Kârı', 'RFM Segmenti', 'Kohort Tutma %', 'LFL Büyüme %', 'Görünüm (Dinamik Biçim)'], dash: 'fiyat', deliver: 'Tüm görselleri 1 sn altında çizilen, parametreli rapor.' },
-  { n: 9, lv: 'C1', title: 'Güvenlik ve yayımlama', goal: 'Temsilcilerin yalnızca kendi verisini gördüğü raporu Service’e yayımla, yenilemeyi kur.',
+  { n: 9, lv: 'C1', title: 'Güvenlik ve yayımlama', goal: 'Temsilcilerin yalnızca kendi verisini gördüğü raporu Service’e yayımla, yenilemeyi kur.', note: 'İş ya da okul hesabın yoksa ya da Pro lisansın yoksa: RLS’i Desktop’ta “Farklı görüntüle” ile test et; Service adımlarını ilgili dersten oku ve yapacağın ayarları teslim notuna yaz. Yerel CSV zamanlanmış yenilemede ağ geçidi ister.',
     tasks: [
-      'Modelleme → Rolleri yönet: “Temsilci” rolü, Calisanlar[Eposta] = USERPRINCIPALNAME(); Farklı görüntüle ile test et (Dashboardlar → Satış Ekibi).',
+      'Modelleme → Rolleri yönet: “Temsilci” rolü, Calisanlar[Eposta] = USERPRINCIPALNAME(); Farklı görüntüle ile test et (Örnek raporlar → Satış Ekibi).',
       'Giriş → Duyarlılık etiketi: “Genel değil — Şirket içi”.',
       'Giriş/Dosya → Yayımla: “Satış Analitiği [Geliştirme]” çalışma alanı.',
       'Service, çalışma alanı: Yeni öğe, Erişimi yönet (geliştiriciler Üye, okuyucular yalnızca uygulama), Çalışma alanı ayarları.',
       'Anlam modeli ayarları: Ağ geçidi ve bulut bağlantıları, Veri kaynağı kimlik bilgileri, Parametreler, Zamanlanmış yenileme (günde 2), Satır düzeyi güvenlik üyeleri, Onaylama (Yükseltilmiş), Büyük model depolama biçimi, Derleme izni.',
       'Uygulama oluştur: hedef kitleler (Yönetim, Satış), gezinti sırası.'
     ], measures: ['Temsilci Sırası', 'Ekip Satışı'], dash: 'ekip', deliver: 'RLS’li, zamanlanmış yenilemeli, uygulama ile dağıtılmış rapor.' },
-  { n: 10, lv: 'C2', title: 'Dağıtım, yönetişim ve teslim', goal: 'Raporu geliştirme → test → üretim akışına al, tüketicilerin kullanımını ve yönetişimi kur, teslim dosyalarını hazırla.',
+  { n: 10, lv: 'C2', title: 'Dağıtım, yönetişim ve teslim', goal: 'Raporu geliştirme → test → üretim akışına al, tüketicilerin kullanımını ve yönetişimi kur, teslim dosyalarını hazırla.', note: 'Dağıtım işlem hattı ve yönetici portalı lisans ve yetki ister. Bunlar yoksa planı yaz: hangi ortam, hangi kural, kim onaylar. Portföyde ekran görüntüsü yerine bu notu göster; yapmadığın adımı yapmış gibi anlatma.',
     tasks: [
       'Dağıtım işlem hattı oluştur (Geliştirme → Test → Üretim); parametre kurallarıyla kaynakları ortama göre değiştir; ALM Toolkit ile ortamlar arası model farkını karşılaştır.',
       'Soy görünümü: kaynak → anlam modeli → rapor → uygulama bağımlılıklarını doğrula.',
-      'Rapor menüsü: Abone ol (Pazartesi 08:00), Paylaş / Teams / bağlantı, Dışa aktar → PowerPoint/PDF/Excel’de analiz et, Kopyasını kaydet / İndir, Düzenle, Kişisel yer imleri / Odak modu.',
+      'Rapor menüsü: Abone ol (Pazartesi 08:00), Paylaş / Teams / bağlantı, Dışa aktar → PowerPoint/PDF/Excel’de analiz et, Kopyasını kaydet / İndir, Düzenle, Kişisel yer işaretleri / Odak modu.',
       'Net Satış kartını panoya sabitle ve uyarı ayarla (hedefin %5 altına düşerse).',
       'Yönetici portalı: kiracı ayarları (dışa aktarma, Excel’de analiz), kapasite ayarları, denetim ve kullanım ölçümleri raporu.',
       'Dosya → Dışa aktar → Power BI şablonu (.pbit) ve PDF: teslim paketi; README’de ölçü sözlüğü ve sayfa amaçları.'
@@ -107,8 +107,8 @@ const TAB = {
 };
 const stageOf = (tab, i) => { const m = TAB[tab]; if (!m) return null; return (m[1] && m[1][i] != null) ? m[1][i] : m[0]; };
 W.PBI_FINAL = {
-  title: 'Anadolu Market Ticari Performans Raporu',
-  intro: 'Bu proje, öğrendiğin her şeyi tek bir profesyonel teslimde birleştirir: veri almadan yayına, 10 aşamada. Sonunda beş sayfalı (Özet, Ürün, Müşteri, Hedef, Ekip), araç ipucu ve detay sayfalı, RLS’li, mobil düzenli ve dağıtım işlem hattında yaşayan bir rapor olacak. Aşağıdaki tablo, Power BI’ın her menü komutunun hangi aşamada kullanıldığını gösterir: final bittiğinde tüm menüleri en az bir kez kullanmış olursun.',
+  title: 'Anadolu Market yönetim kokpiti',
+  intro: 'Tam programın tek bitirme projesi: öğrendiğin her şeyi veri almadan yayına, 10 aşamada birleştirirsin. Kaynak veri indirdiğin CSV paketidir. Sonunda beş sayfalı (Özet, Ürün, Müşteri, Hedef, Ekip), araç ipucu ve detay sayfalı, RLS’li, mobil düzenli bir rapor olur. Aşağıdaki tablo Power BI komutlarının hangi aşamada kullanıldığını gösterir.',
   stages: S, stageOf,
   pages: [['ozet', 'Özet'], ['urun', 'Ürün'], ['musteri', 'Müşteri'], ['hedef', 'Hedef'], ['ekip', 'Ekip']],
   rubric: [

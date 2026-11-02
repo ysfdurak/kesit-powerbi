@@ -141,7 +141,7 @@
         'Yatay çubuk: ik_employees[term_reason] × [Gönüllü Ayrılan], azalan sırada'
       ], interactions: [
         'Dilimleyici: Takvim[Yil] ve ik_departments[function_area]; <b>Görünüm → Dilimleyicileri eşitle</b> (Sync slicers) ile tüm sayfalarda aynı',
-        'Yer imi (bookmark): “Yalnız gönüllü” görünümü, term_type filtresi uygulanmış hâli',
+        'Yer işareti (bookmark): “Yalnız gönüllü” görünümü, term_type filtresi uygulanmış hâli',
         'Kart araç ipuçlarında bir önceki yıla göre değişim'
       ] },
       { name: 'Ayrılma analizi', purpose: 'Kimi, ne zaman ve neden kaybediyoruz?', visuals: [

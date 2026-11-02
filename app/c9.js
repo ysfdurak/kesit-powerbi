@@ -1,4 +1,4 @@
-/* Kesit Power BI — dört yeni ders: hizmette rapor kullanmak, rapor brifi, görsel algı, kademeli tasarım. */
+/* Kesit Power BI — dört yeni ders: Service’te rapor kullanmak, rapor brifi, görsel algı, kademeli tasarım. */
 (function (W) {
 'use strict';
 const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
@@ -7,12 +7,12 @@ const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O &&
 /* ---------- 1 · A1 · Başlangıç ---------- */
 add('gorsel-temel', {
   id: 'hizmet-kullanici', lv: 'A1', mod: 'Başlangıç', min: 15,
-  title: 'Power BI hizmetinde rapor kullanmak',
-  sum: 'Raporu yapan değil, kullanan tarafta ol: hizmette raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a sor.',
+  title: 'Power BI Service’te rapor kullanmak',
+  sum: 'Raporu yapan değil, kullanan tarafta ol: Service’te raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a sor.',
   body: `
 <p>Bu derste Desktop’u kapatıyoruz. Bir meslektaşın raporu yayımladı, sen de tarayıcıdan <b>app.powerbi.com</b> adresine girip onu <b>kullanacaksın</b>. Raporu yapanların da bu dersi bilmesi gerekir: kullanıcının ne yapabildiğini bilmeyen tasarımcı, gereksiz düğmeler ve dilimleyicilerle sayfayı doldurur.</p>
 
-<h2>Hizmete giriş: gezinti bölmesi</h2>
+<h2>Service’e giriş: gezinti bölmesi</h2>
 <p>Sol kenardaki dikey şerit <b>gezinti bölmesidir (navigation pane)</b>. Bir içeriği bulmanın yolu, onun sana nasıl ulaştığına bağlıdır:</p>
 <div class="tbl-wrap"><table>
 <tr><th>İçerik sana nasıl geldi?</th><th>Nerede bulursun?</th></tr>
@@ -23,7 +23,7 @@ add('gorsel-temel', {
 <tr><td>E-postayla bir bağlantı ya da abonelik geldi</td><td>Bağlantı raporu doğrudan açar</td></tr>
 </table></div>
 <p>Çalışma alanı ve uygulamanın yazar tarafındaki anlamı “Yayımlama, yenileme ve yaşam döngüsü” dersinde. Burada yalnızca okuyucuyuz.</p>
-<div class="note"><b>Adlar değişebilir</b>Microsoft hizmet arayüzünü sık yeniler; Türkçe arayüzde bazı adlar farklı çevrilmiş olabilir. Simgeler ve yerleri genelde aynı kalır. Raporların çoğu <b>Okuma görünümünde (Reading view)</b> açılır; <b>Düzenle</b> düğmesi soluksa raporu değiştirme iznin yoktur. Paylaşılan içeriği görmek için genellikle Pro ya da PPU lisansı gerekir; içerik Premium ya da yeterli büyüklükte Fabric kapasitesindeyse ücretsiz kullanıcı da görebilir.</div>
+<div class="note"><b>Adlar değişebilir</b>Microsoft Service arayüzünü sık yeniler; Türkçe arayüzde bazı adlar farklı çevrilmiş olabilir. Simgeler ve yerleri genelde aynı kalır. Raporların çoğu <b>Okuma görünümünde (Reading view)</b> açılır; <b>Düzenle</b> düğmesi soluksa raporu değiştirme iznin yoktur. Paylaşılan içeriği görmek için genellikle Pro ya da PPU lisansı gerekir; içerik Premium ya da yeterli büyüklükte Fabric kapasitesindeyse ücretsiz kullanıcı da görebilir.</div>
 
 <h2>Raporu okumak: filtreler ve dilimleyiciler</h2>
 <ul>
@@ -67,17 +67,17 @@ add('gorsel-temel', {
 <tr><td>Sayfa</td><td>Birden çok sayfa</td><td>Tek sayfa, kutucuklar</td></tr>
 <tr><td>Kaynak</td><td>Tek bir anlam modeli</td><td>Farklı raporlardan sabitlenmiş görseller</td></tr>
 <tr><td>Etkileşim</td><td>Filtre bölmesi, dilimleyici, detaya inme</td><td>Kutucuğa tıklayınca kaynak rapora gider</td></tr>
-<tr><td>Veri uyarısı</td><td>Yok</td><td>Kart, KPI, gösterge kutucuklarında var</td></tr>
-<tr><td>Nerede yapılır?</td><td>Desktop ya da hizmet</td><td>Yalnızca hizmet</td></tr>
+<tr><td>Veri uyarısı</td><td>Klasik uyarı yok; Fabric Activator ile kural kurulabilir</td><td>Kart, KPI, gösterge kutucuklarında var</td></tr>
+<tr><td>Nerede yapılır?</td><td>Desktop ya da Service</td><td>Yalnızca Service</td></tr>
 </table></div>
 
 <h2>Copilot’a soru sormak</h2>
 <p>Rapor açıkken <b>Copilot</b> bölmesini açıp doğal dille sorabilirsin: “Bu sayfayı özetle”, “2024’te hangi kategori hedefin üstünde?”. Bizim modelde doğru cevap <b>Kitap</b>’tır (hedef gerçekleşme %100,2); diğer altı kategori hedefin altında. Copilot cevabını rapordaki görsellerle karşılaştır; özellikle “neden” sorularında yorum yapar, kanıt göstermez.</p>
 <div class="warn"><b>Copilot herkese açık değil</b>Copilot, çalışma alanı ücretli bir Fabric (F2 ve üstü) ya da Power BI Premium (P1 ve üstü) kapasitesindeyse ya da kurumda bir Fabric Copilot kapasitesi tanımlıysa çalışır. Deneme kapasitelerinde çalışmaz; yönetici kiracı ya da kapasite ayarından kapatmış olabilir. Yalnızca Pro lisanslı paylaşılan bir çalışma alanındaki raporda Copilot bölmesi görünmüyorsa sebep genellikle budur. Eski Soru-Cevap (Q&amp;A) özelliği Aralık 2026’da kaldırılıyor; doğal dil soruları Copilot’la soruluyor.</div>
-<div class="tip"><b>Kullanıcı gibi test et</b>Raporu yayımladıktan sonra hizmette bir “Görüntüleyici” hesabıyla aç: filtreleri değiştir, varsayılana sıfırla, Excel’e aktar, kişisel yer işareti ekle. Kullanıcının takıldığı yer, tasarımın düzeltilecek yeridir.</div>
+<div class="tip"><b>Kullanıcı gibi test et</b>Raporu yayımladıktan sonra Service’te bir “Görüntüleyici” hesabıyla aç: filtreleri değiştir, varsayılana sıfırla, Excel’e aktar, kişisel yer işareti ekle. Kullanıcının takıldığı yer, tasarımın düzeltilecek yeridir.</div>
 `,
   ex: [
-    { t: 'mc', q: 'Bir meslektaşın bir raporu doğrudan seninle paylaştı. Onun çalışma alanının üyesi değilsin. Raporu hizmette en hızlı nerede bulursun?',
+    { t: 'mc', q: 'Bir meslektaşın bir raporu doğrudan seninle paylaştı. Onun çalışma alanının üyesi değilsin. Raporu Service’te en hızlı nerede bulursun?',
       o: ['Göz at → Benimle paylaşılanlar', 'Çalışma alanları → Çalışma alanım', 'Oluştur → Yeni rapor sayfası', 'OneLake kataloğu → Anlam modelleri'], a: 0,
       why: 'Doğrudan paylaşılan raporlar Göz at altındaki “Benimle paylaşılanlar” listesine düşer. Çalışma alanım yalnızca senin içeriğindir; OneLake kataloğu veri varlıklarını listeler.' },
     { t: 'mc', q: 'Kategori grafiğinde “Elektronik” çubuğunun hangi siparişlerden oluştuğunu satır satır görmek istiyorsun. Ne yaparsın?',
@@ -162,7 +162,7 @@ CALCULATE([Ortalama Sepet], Satislar[Durum] &lt;&gt; "İade")</pre>
 <tr><td>Alt</td><td>Kategori × kanal matrisi; ürün detayına geçiş</td><td>3. soru ve ayrıntı</td></tr>
 <tr><td>Üst ya da sol kenar</td><td>Yıl, çeyrek, bölge, kanal dilimleyicileri</td><td>Filtreler</td></tr>
 </table></div>
-<p>Taslaktaki her kutunun yanına brifteki hangi soruya cevap verdiğini yaz. Hiçbir soruya bağlanmayan kutu taslaktan çıkar. Düzen ilkeleri için “Dashboard tasarımı: bir vaka çalışması”, görsel türü için “Doğru görseli seçmek” derslerine bak.</p>
+<p>Taslaktaki her kutunun yanına brifteki hangi soruya cevap verdiğini yaz. Hiçbir soruya bağlanmayan kutu taslaktan çıkar. Düzen ilkeleri için “Rapor tasarımı: bir vaka çalışması”, görsel türü için “Doğru görseli seçmek” derslerine bak.</p>
 
 <h2>Kabul kriterleri</h2>
 <p>“Rapor bitti mi?” sorusunun cevabı brifte önceden yazılı olmalı. Her kriter ölçülebilir olsun:</p>
@@ -326,7 +326,7 @@ add('hikaye', {
   title: 'Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler',
   sum: 'Özeti önde tut, ayrıntıyı kullanıcı istedikçe aç: göster/gizle paneller, beş düğme durumu ve ölçüyle dinamik düğme metni, alan parametresiyle görsel değiştirme, UNICHAR ile durum okları, filtre bölmesi ve tema JSON varsayılanları, mobilde aynı ilke.',
   body: `
-<p>Bir sayfaya koyabileceğin her şeyi koyarsan kullanıcı hiçbir şeyi görmez. <b>Kademeli açığa çıkarma (progressive disclosure)</b>, bilgiyi katmanlara ayırıp her katmanı kullanıcı bir adım attığında göstermektir. Yer imi, Seçim bölmesi, detay sayfası ve araç ipucunun mekaniği “Raporla hikâye anlatmak” dersinde; burada bu araçlarla <b>kullanıcı odaklı</b> bir arayüz kuruyoruz.</p>
+<p>Bir sayfaya koyabileceğin her şeyi koyarsan kullanıcı hiçbir şeyi görmez. <b>Kademeli açığa çıkarma (progressive disclosure)</b>, bilgiyi katmanlara ayırıp her katmanı kullanıcı bir adım attığında göstermektir. Yer işareti, Seçim bölmesi, detay sayfası ve araç ipucunun mekaniği “Raporla hikâye anlatmak” dersinde; burada bu araçlarla <b>kullanıcı odaklı</b> bir arayüz kuruyoruz.</p>
 
 <h2>Üç katman</h2>
 <div class="tbl-wrap"><table>
@@ -342,9 +342,9 @@ add('hikaye', {
 <ol>
 <li>Bir dikdörtgen şekil (panel arka planı), dilimleyiciler ve bir “Kapat ×” düğmesi yerleştir.</li>
 <li>Seçim bölmesinde bunları seçip <b>grupla</b>; grubu “Filtre Paneli” diye adlandır.</li>
-<li>Panel açıkken bir yer imi ekle: “Panel açık”. Panel grubunu gizleyip ikinci yer imini ekle: “Panel kapalı”.</li>
-<li>Her iki yer iminde <b>Veri</b> seçeneğini kapat (kullanıcının seçtiği filtreler korunur), <b>Görüntü</b> açık kalsın ve <b>Seçili görseller</b> ile yalnızca panel grubunu kapsa. Böylece yer imi sayfadaki diğer görsellerin durumunu değiştirmez.</li>
-<li>“Filtreler” düğmesine Eylem → Yer imi → “Panel açık”, “Kapat ×” düğmesine “Panel kapalı” bağla.</li>
+<li>Panel açıkken bir yer işareti ekle: “Panel açık”. Panel grubunu gizleyip ikinci yer işaretini ekle: “Panel kapalı”.</li>
+<li>Her iki yer işaretinde <b>Veri</b> seçeneğini kapat (kullanıcının seçtiği filtreler korunur), <b>Görüntü</b> açık kalsın ve <b>Seçili görseller</b> ile yalnızca panel grubunu kapsa. Böylece yer işareti sayfadaki diğer görsellerin durumunu değiştirmez.</li>
+<li>“Filtreler” düğmesine Eylem → Yer işareti → “Panel açık”, “Kapat ×” düğmesine “Panel kapalı” bağla.</li>
 </ol>
 <div class="warn"><b>Gizli panel, gizli filtre demektir</b>Panel kapalıyken kullanıcı hangi filtrenin seçili olduğunu göremez. Bunu düğmenin metninde söyle (aşağıdaki ölçü) ya da sayfa başlığına seçimi yazan bir metin ölçüsü koy.</div>
 <pre class="dax">Filtre Düğmesi Metni =
@@ -369,7 +369,7 @@ IF(
 <div class="note"><b>Telefonda “üzerine gelme” yok</b>Dokunmatik ekranda üzerine gelince durumu hiç görünmez. Bir düğmenin tıklanabilir olduğunu yalnızca hover rengine bırakma; varsayılan durum da düğme gibi görünmeli.</div>
 
 <h2>Alan parametresiyle görsel değiştirme</h2>
-<p>“Grafik / Tablo” geçişi için iki görsel ve iki yer imi gerekir. Aynı görselde yalnızca <b>ölçüyü ya da ekseni</b> değiştirmek istiyorsan alan parametresi daha sade bir katman sağlar: tek grafik, bir düğme dilimleyici (“Satış · Kâr · Sipariş”), hiç yer imi yok. Oluşturma adımları “Hesaplama grupları, alan parametreleri, görsel hesaplamalar” dersinde. Arka planda oluşan tablo şuna benzer:</p>
+<p>“Grafik / Tablo” geçişi için iki görsel ve iki yer işareti gerekir. Aynı görselde yalnızca <b>ölçüyü ya da ekseni</b> değiştirmek istiyorsan alan parametresi daha sade bir katman sağlar: tek grafik, bir düğme dilimleyici (“Satış · Kâr · Sipariş”), hiç yer işareti yok. Oluşturma adımları “Hesaplama grupları, alan parametreleri, görsel hesaplamalar” dersinde. Arka planda oluşan tablo şuna benzer:</p>
 <pre class="dax" data-notry>Ölçü Seçimi = {
     ("Net Satış", NAMEOF('Ölçüler'[Net Satış]), 0),
     ("Brüt Kâr", NAMEOF('Ölçüler'[Brüt Kâr]), 1),
@@ -377,7 +377,7 @@ IF(
 }</pre>
 <ul>
 <li><b>Alan parametresi:</b> Aynı görsel türü, farklı alan. Filtreler doğal olarak korunur, bakımı kolaydır.</li>
-<li><b>Yer imi geçişi:</b> Farklı görsel türleri (çizgi ↔ matris) ya da farklı düzenler arasında.</li>
+<li><b>Yer işareti geçişi:</b> Farklı görsel türleri (çizgi ↔ matris) ya da farklı düzenler arasında.</li>
 <li>Seçili alanı başlığa yazmayı unutma; aksi hâlde ekran görüntüsünde hangi ölçünün çizildiği anlaşılmaz.</li>
 </ul>
 
@@ -420,7 +420,7 @@ RETURN
 <h2>Tema JSON ile varsayılanlar</h2>
 <p>Her düğmeyi, her filtre kartını tek tek biçimlendirmek yerine kuralları temaya yaz (tema dosyasının temel yapısı “Temalar, sayfa ayarları ve tuval tasarımı” dersinde). Filtre bölmesi ayarları <code>visualStyles</code> altında <code>page</code> girdisine yazılır:</p>
 <pre class="dax" data-notry>{
-  "name": "Patika Sade",
+  "name": "Kesit Sade",
   "textClasses": {
     "label":   { "fontFace": "Segoe UI", "fontSize": 10, "color": "#3B3A36" },
     "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 28 }
@@ -440,7 +440,7 @@ RETURN
 <h2>Mobilde kademeli açığa çıkarma</h2>
 <ul>
 <li>Telefon ekranında katman 1 (KPI kartları ve oklar) üstte kalır; ayrıntı tablosu mobil düzene konmaz, detay sayfasına bırakılır.</li>
-<li>Mobil düzen otomatik oluşturulduğunda gizli görseller de yerleştirilir; görünürlüğü değiştiren yer imleri mobilde de çalışır. Gizli bir görsel tuvalde yer kaplar, boşluk varmış gibi görünse de oraya başka şey koyma.</li>
+<li>Mobil düzen otomatik oluşturulduğunda gizli görseller de yerleştirilir; görünürlüğü değiştiren yer işaretleri mobilde de çalışır. Gizli bir görsel tuvalde yer kaplar, boşluk varmış gibi görünse de oraya başka şey koyma.</li>
 <li>Telefonda üzerine gelme olmadığı için araç ipucuna gömülü bilgi zor bulunur. Önemli ayrıntıyı dokunarak açılan bir panele ya da detay sayfasına taşı.</li>
 <li>Düğmeleri parmakla rahat basılacak kadar büyük yap; yan yana çok küçük düğme yanlış dokunmaya yol açar.</li>
 </ul>
@@ -458,15 +458,15 @@ RETURN
       q: '<b>Düğme Dolgu Rengi</b>: Aynı düğmenin dolgusu için: tek bir kategori seçiliyse "#2A78D6", değilse soluk gri "#C8C6C0" döndür.',
       sol: 'IF(HASONEVALUE(Kategoriler[Kategori]), "#2A78D6", "#C8C6C0")',
       hint: 'HASONEVALUE(Kategoriler[Kategori]) koşuluyla iki renk kodundan birini döndüren bir IF.' },
-    { t: 'mc', q: 'Göster/gizle filtre paneli için iki yer imi kurdun. Kullanıcı paneli kapatınca seçtiği kanal filtresi sıfırlanıyor. Ne değiştirmelisin?',
-      o: ['Yer imlerinde Veri seçeneğini kapat', 'Panel grubunu çözüp nesneleri tek tek gizle', 'Görünüm menüsünden dilimleyicileri eşitle', 'Paneli ayrı bir rapor sayfasına taşı'], a: 0,
-      why: 'Veri seçeneği açık bir yer imi, kaydedildiği andaki filtreleri geri yükler. Görünürlük için yalnızca Görüntü açık kalmalı; kullanıcının filtreleri korunur.' },
+    { t: 'mc', q: 'Göster/gizle filtre paneli için iki yer işareti kurdun. Kullanıcı paneli kapatınca seçtiği kanal filtresi sıfırlanıyor. Ne değiştirmelisin?',
+      o: ['Yer işaretlerinde Veri seçeneğini kapat', 'Panel grubunu çözüp nesneleri tek tek gizle', 'Görünüm menüsünden dilimleyicileri eşitle', 'Paneli ayrı bir rapor sayfasına taşı'], a: 0,
+      why: 'Veri seçeneği açık bir yer işareti, kaydedildiği andaki filtreleri geri yükler. Görünürlük için yalnızca Görüntü açık kalmalı; kullanıcının filtreleri korunur.' },
     { t: 'mc', q: 'Bir detaya git düğmesi, kullanıcı seçim yapmadan tıklanamıyor. Kullanıcıya bunu en açık biçimde nasıl anlatırsın?',
       o: ['Düğmenin üzerine gelince rengini değiştir', 'Sayfanın üstüne uzun bir yardım metni ekle', 'Gri devre dışı durumu ve yönlendiren metin', 'Seçim yapılana kadar düğmeyi sayfadan kaldır'], a: 2,
       why: 'Devre dışı durumu ayrıca biçimlendirilir; dinamik metin (“Önce bir kategori seç”) ne yapılması gerektiğini söyler. Hover telefonda görünmez, düğmeyi kaldırmak ise özelliği gizler.' },
     { t: 'mc', q: 'Tek bir çizgi grafikte kullanıcı Net Satış, Brüt Kâr ve Sipariş Sayısı arasında geçiş yapmak istiyor. Bakımı en kolay çözüm?',
-      o: ['Üç grafik ve üç yer imi', 'Ölçülerden bir alan parametresi', 'Üç ayrı rapor sayfası', 'Her ölçü için ayrı detay sayfası'], a: 1,
-      why: 'Alan parametresi tek görselde ölçü değiştirir; yer imi, ek görsel ve sayfa gerektirmez, filtreler doğal olarak korunur.' },
+      o: ['Üç grafik ve üç yer işareti', 'Ölçülerden bir alan parametresi', 'Üç ayrı rapor sayfası', 'Her ölçü için ayrı detay sayfası'], a: 1,
+      why: 'Alan parametresi tek görselde ölçü değiştirir; yer işareti, ek görsel ve sayfa gerektirmez, filtreler doğal olarak korunur.' },
     { t: 'mc', q: 'Tema JSON’unda uygulanmış filtre kartlarını boştaki kartlardan farklı renkte göstermek istiyorsun. Hangi ayar?',
       o: ['textClasses içinde label', 'dataColors dizisinin ilk rengi', 'filterCard altında $id: "Applied"', 'good / neutral / bad renkleri'], a: 2,
       why: 'Filtre kartları visualStyles → page altındaki filterCard girdisiyle biçimlenir; "Applied" uygulanmış, "Available" boştaki kart içindir.' }

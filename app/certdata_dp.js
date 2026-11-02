@@ -42,7 +42,7 @@ W.PBI_CERTQ = (W.PBI_CERTQ || []).concat([
   why:'Derleme (Build) izni, öğe düzeyinde verilir ve kullanıcının çalışma alanı rolü olmadan o model üzerinde rapor oluşturmasını sağlar. Çalışma alanı rolleri istenmeyen çalışma alanı erişimi verir; Yazma izni modeli düzenleme yetkisidir.' },
 { ex:'dp600', id:'dp-n09', k:YON, s:'dp-lc2', type:'multi',
   q:'Bir Power BI Desktop projesi (.pbip) hakkında hangi iki ifade doğrudur? İki tane seç.',
-  o:['Rapor ve anlam modeli, `.Report` ve `.SemanticModel` adlı ayrı klasörlerde metin dosyaları olarak saklanır', 'Model tanımı `definition` klasöründe TMDL olarak bir metin düzenleyicide değiştirilebilir', 'Yerel veri önbelleği `cache.abf`, satır karşılaştırması için depoya commit edilmelidir', 'Proje yalnızca Fabric hizmetinde açılabilir; Power BI Desktop’ta açılamaz', '.pbix’ten .pbip’e geçmek için ayrı bir dönüştürme aracı kurmak gerekir'], a:[0, 1],
+  o:['Rapor ve anlam modeli, `.Report` ve `.SemanticModel` adlı ayrı klasörlerde metin dosyaları olarak saklanır', 'Model tanımı `definition` klasöründe TMDL olarak bir metin düzenleyicide değiştirilebilir', 'Yerel veri önbelleği `cache.abf`, satır karşılaştırması için depoya commit edilmelidir', 'Proje yalnızca Fabric portalında açılabilir; Power BI Desktop’ta açılamaz', '.pbix’ten .pbip’e geçmek için ayrı bir dönüştürme aracı kurmak gerekir'], a:[0, 1],
   why:'.pbip, rapor ve modeli ayrı klasörlerde metin olarak tutar; model tanımı TMDL’dir. Dönüşüm Power BI Desktop’ta Dosya > Farklı kaydet ile yapılır ve `cache.abf` Git dışında tutulur.' },
 
 /* ---------- Veriyi hazırla ---------- */
@@ -224,9 +224,9 @@ WHERE m.MusteriKey {2};`,
   why:'Köprü tablo çoka çok ilişkiyi iki bire çok ilişkiye böler; filtrenin Müşteri’den köprü üzerinden Hesap’a, oradan olguya ulaşması için köprü ile Hesap arasındaki ilişki iki yönlü olmalıdır. Satırları çoğaltmak toplamları şişirir.' },
 { ex:'dp600', id:'dp-n40', k:AM, s:'dp-op1', type:'order',
   q:'Yavaş açılan bir rapor sayfasındaki sorunlu görseli bulup DAX’ını iyileştirmek için adımları sırala.',
-  items:['Performans çözümleyicisini (Performance analyzer) açıp kaydı başlat', 'Görselleri yenile', 'En uzun süren görselde DAX sorgusu ve görsel görüntüleme sürelerini karşılaştır', 'Görselin DAX sorgusunu kopyalayıp DAX sorgu görünümünde ya da DAX Studio’da çalıştırarak iyileştir'],
+  items:['Performans Analizini (Performance analyzer) açıp kaydı başlat', 'Görselleri yenile', 'En uzun süren görselde DAX sorgusu ve görsel görüntüleme sürelerini karşılaştır', 'Görselin DAX sorgusunu kopyalayıp DAX sorgu görünümünde ya da DAX Studio’da çalıştırarak iyileştir'],
   extra:['Raporu .pbit şablonu olarak kaydet'],
-  why:'Performans çözümleyicisi kayıt sırasında yenilenen her görselin süresini bileşenlerine ayırır; DAX sorgusu uzun ise sorgu kopyalanıp ayrı bir araçta denenir. Şablon kaydetmek performansla ilgili değildir.' }
+  why:'Performans Analizi kayıt sırasında yenilenen her görselin süresini bileşenlerine ayırır; DAX sorgusu uzun ise sorgu kopyalanıp ayrı bir araçta denenir. Şablon kaydetmek performansla ilgili değildir.' }
 ]);
 
 W.PBI_CASES = (W.PBI_CASES || []).concat([

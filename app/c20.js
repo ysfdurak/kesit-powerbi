@@ -7,9 +7,9 @@ const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O &&
 add('aile', {
   id: 'kurulum', lv: 'A1', mod: 'Başlangıç', min: 10,
   title: 'Power BI Desktop kurulumu: bilgisayarını hazırla',
-  sum: 'Desktop’ı Microsoft Store’dan ya da indirme merkezinden kurmak, sistem gereksinimleri, aylık güncellemeler, Mac kullanıcıları için seçenekler ve Power BI hizmeti için gereken iş/okul hesabı.',
+  sum: 'Desktop’ı Microsoft Store’dan ya da indirme merkezinden kurmak, sistem gereksinimleri, aylık güncellemeler, Mac kullanıcıları için seçenekler ve Power BI Service için gereken iş/okul hesabı.',
   body: `
-<p>Bu uygulamadaki bütün alıştırmalar tarayıcıda çalışır; kurulum yapmadan ilerleyebilirsin. Ama işte raporu <b>Power BI Desktop</b>’ta yapacaksın. Desktop ücretsizdir ve raporu yerel olarak hazırlamak için lisans ya da oturum açma gerektirmez. Lisans ve hesap, raporu Power BI hizmetinde yayımlamak ve paylaşmak istediğinde gerekir.</p>
+<p>Bu uygulamadaki bütün alıştırmalar tarayıcıda çalışır; kurulum yapmadan ilerleyebilirsin. Ama işte raporu <b>Power BI Desktop</b>’ta yapacaksın. Desktop ücretsizdir ve raporu yerel olarak hazırlamak için lisans ya da oturum açma gerektirmez. Lisans ve hesap, raporu Power BI Service’te yayımlamak ve paylaşmak istediğinde gerekir.</p>
 
 <h2>Önce: bilgisayarın uygun mu?</h2>
 <p>Power BI Desktop yalnızca <b>Windows</b> uygulamasıdır. Microsoft Learn’deki gereksinimlerin özeti:</p>
@@ -33,7 +33,7 @@ add('aile', {
 <li>Microsoft Store’u aç, “Power BI Desktop” ara ve <b>Yükle</b>’ye bas. İndirme yolunu seçtiysen 64 bit sürümü al.</li>
 <li>İlk açılışta bir oturum açma penceresi çıkabilir. Henüz hesabın yoksa kapatabilirsin; yerel çalışma için gerekmez.</li>
 <li><b>Dosya → Seçenekler ve ayarlar → Seçenekler</b> altında bölgesel ayarlara ve önizleme özelliklerine bir göz at. Ondalık ayırıcı ve tarih biçimi buradan etkilenir.</li>
-<li>Başlangıç ekranındaki örnek veri seçeneğiyle ya da kendi Excel dosyanla ilk raporunu aç; ardından bu patikadaki “Arayüz turu” dersine geç.</li>
+<li>Başlangıç ekranındaki örnek veri seçeneğiyle ya da kendi Excel dosyanla ilk raporunu aç; ardından “İlk raporunu kur” dersine geç.</li>
 </ol>
 <div class="warn"><b>İkisini birden kurma</b>Store sürümü ile .exe sürümünü yan yana kurmak desteklenmiyor. Store sürümüne geçersen .exe sürümündeki kullanıcı ayarları kopyalanmaz; veri kaynağı kimlik bilgilerini yeniden girmen gerekebilir.</div>
 
@@ -46,19 +46,19 @@ add('aile', {
 <ul>
 <li><b>Sanal makine:</b> Mac’te bir sanallaştırma uygulamasıyla Windows çalıştırmak. Apple işlemcili Mac’lerde bu ARM için Windows demektir; yukarıdaki güncelleme şartını unutma.</li>
 <li><b>Bulut bilgisayar:</b> Şirketin Windows 365 ya da Azure Virtual Desktop sağlıyorsa Desktop’ı oradaki Windows’ta kullanabilirsin.</li>
-<li><b>Tarayıcıda Power BI hizmeti:</b> Rapor oluşturma ve düzenleme hizmette de yapılabilir; ama Power Query ve modelleme özelliklerinin bir kısmı Desktop kadar geniş değildir. Hesap gerektirir.</li>
+<li><b>Tarayıcıda Power BI Service:</b> Rapor oluşturma ve düzenleme Service’te de yapılabilir; ama Power Query ve modelleme özelliklerinin bir kısmı Desktop kadar geniş değildir. Hesap gerektirir.</li>
 <li><b>Bu uygulama:</b> DAX, model ve rapor tasarımı alıştırmalarını Mac’te tarayıcıdan yapmaya devam edebilirsin.</li>
 </ul>
 
-<h2>Hizmet için hangi hesap gerekir?</h2>
-<p>Power BI hizmetine (app.powerbi.com) kaydolmak için <b>iş ya da okul e-posta hesabı</b> gerekir. Gmail, Hotmail gibi kişisel adreslerle doğrudan kaydolunmaz. İş hesabın yoksa Microsoft Learn’ün önerdiği yol, önce bir Microsoft 365 denemesi başlatmaktır; bu deneme sana bir iş hesabı oluşturur. Rapor paylaşmak için Pro, PPU ya da Fabric kapasitesi gerekir; ayrıntılar “Power BI ailesi” ve “Yayınlama” derslerinde.</p>
+<h2>Service için hangi hesap gerekir?</h2>
+<p>Power BI Service’e (app.powerbi.com) kaydolmak için <b>iş ya da okul e-posta hesabı</b> gerekir. Gmail, Hotmail gibi kişisel adreslerle doğrudan kaydolunmaz. İş hesabın yoksa Microsoft Learn’ün önerdiği yol, önce bir Microsoft 365 denemesi başlatmaktır; bu deneme sana bir iş hesabı oluşturur. Rapor paylaşmak için Pro, PPU ya da Fabric kapasitesi gerekir; ayrıntılar “Power BI ailesi” ve “Yayınlama” derslerinde.</p>
 <div class="tip"><b>İşe başladığında ilk gün</b>Şirket bilgisayarında Desktop kurulu değilse BT ekibinden Store sürümünü ya da şirketin onayladığı sürümü iste. Yönetici izni olmadan .exe kurmaya çalışma; Store sürümü bu yüzden çoğu şirkette en hızlı yoldur.</div>
 `,
   ex: [
     { t: 'mc', q: 'Kişisel Windows 11 dizüstü bilgisayarına Desktop kuracaksın ve güncellemelerle uğraşmak istemiyorsun. Hangi yol uygun?', o: ['Microsoft Store sürümü', '32 bit .exe sürümü', 'Power BI Desktop for Report Server', 'Store ve .exe sürümünü birlikte kurmak'], a: 0, why: 'Store sürümü yeni sürümleri arka planda kendisi indirir ve yönetici izni gerektirmez. 32 bit sürüm artık desteklenmiyor; iki sürümü yan yana kurmak da desteklenmiyor.' },
     { t: 'mc', q: 'Bir ekip arkadaşın Desktop’ın bu ayki sürümüyle kaydettiği .pbix dosyasını sana gönderdi. Sende üç ay önceki sürüm var. Ne olur?', o: ['Dosya sorunsuz açılır, sürüm farkı önemli değildir', 'Açılmaz; Desktop’ı güncellemelisin', 'Dosya açılır ama yeni ölçüler sessizce silinir', 'Dosya yalnızca salt okunur modda açılır'], a: 1, why: 'Yeni sürümle kaydedilmiş dosyaları eski sürümler açamaz. Ekipte herkesin güncel sürümü kullanması gerekir.' },
-    { t: 'mc', q: 'Apple işlemcili bir MacBook kullanıyorsun. Power BI Desktop ile çalışmak için hangisi gerçek bir seçenektir?', o: ['App Store’dan Power BI Desktop for Mac indirmek', 'Mac’te sanal makinede ARM için Windows çalıştırıp Desktop’ı kurmak', 'Excel for Mac’in Power Pivot sekmesini kullanmak', 'Hiçbir seçenek yok'], a: 1, why: 'Desktop’ın macOS sürümü yok. Sanal makinede ARM için Windows, şirketin bulut bilgisayarı ya da tarayıcıdaki Power BI hizmeti seçeneklerdir.' },
-    { t: 'mc', q: 'Kişisel Gmail adresinle app.powerbi.com’a kaydolmaya çalışıyorsun ve kabul edilmiyor. Neden?', o: ['Power BI hizmeti Türkiye’den yapılan kayıtları kabul etmiyor', 'Hizmet iş ya da okul hesabı ister', 'Hizmete kaydolmadan önce Desktop lisansı satın almak gerekir', 'Gmail adresleri yalnızca Power BI Mobile uygulamasında çalışır'], a: 1, why: 'Hizmete kayıt için iş ya da okul e-postası gerekir. İş hesabın yoksa Microsoft 365 denemesi bir iş hesabı oluşturur. Desktop’ın kendisi ücretsizdir ve yerel çalışma için hesap istemez.' },
+    { t: 'mc', q: 'Apple işlemcili bir MacBook kullanıyorsun. Power BI Desktop ile çalışmak için hangisi gerçek bir seçenektir?', o: ['App Store’dan Power BI Desktop for Mac indirmek', 'Mac’te sanal makinede ARM için Windows çalıştırıp Desktop’ı kurmak', 'Excel for Mac’in Power Pivot sekmesini kullanmak', 'Hiçbir seçenek yok'], a: 1, why: 'Desktop’ın macOS sürümü yok. Sanal makinede ARM için Windows, şirketin bulut bilgisayarı ya da tarayıcıdaki Power BI Service seçeneklerdir.' },
+    { t: 'mc', q: 'Kişisel Gmail adresinle app.powerbi.com’a kaydolmaya çalışıyorsun ve kabul edilmiyor. Neden?', o: ['Power BI Service Türkiye’den yapılan kayıtları kabul etmiyor', 'Service iş ya da okul hesabı ister', 'Service’e kaydolmadan önce Desktop lisansı satın almak gerekir', 'Gmail adresleri yalnızca Power BI Mobile uygulamasında çalışır'], a: 1, why: 'Service’e kayıt için iş ya da okul e-postası gerekir. İş hesabın yoksa Microsoft 365 denemesi bir iş hesabı oluşturur. Desktop’ın kendisi ücretsizdir ve yerel çalışma için hesap istemez.' },
     { t: 'mc', q: 'Şirketin raporları kendi sunucusundaki Power BI Report Server’da tutuyor. Hangi Desktop’ı kurmalısın?', o: ['Microsoft Store’daki normal Desktop', 'Power BI Desktop for Report Server', 'Herhangi bir sürüm olur', 'Power BI Mobile'], a: 1, why: 'Report Server’a yayımlanan raporlar, sunucunun sürümüyle eşleşen “Power BI Desktop for Report Server” ile hazırlanır.' }
   ]
 });

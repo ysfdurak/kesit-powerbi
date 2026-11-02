@@ -1,4 +1,4 @@
-/* Kesit Power BI — dört yeni ders: hesaplanmış tablolar, dashboard kavramları, özel grafik teknikleri, ayrıştırma ağacı ve önemli etkileyenler. */
+/* Kesit Power BI — dört yeni ders: hesaplanmış tablolar, rapor kavramları, özel grafik teknikleri, ayrıştırma ağacı ve anahtar etkileyiciler. */
 (function (W) {
 'use strict';
 const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
@@ -153,10 +153,11 @@ COUNTROWS(
 /* ---------- 2 · Görselleştirme ---------- */
 add('rapor-brifi', {
   id: 'dashboard-kavramlar', lv: 'A2', mod: 'Görselleştirme', min: 20,
-  title: 'Dashboard kavramları: KPI, hedef ve gösterge türleri',
-  sum: 'Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik dashboard türleri; Gestalt ilkeleri ve ters piramit düzeni; süssüz ama ilgi çeken tasarım; kullanım ölçümleriyle benimsenmeyi izlemek.',
+  title: 'Rapor kavramları: KPI, hedef ve gösterge türleri',
+  sum: 'Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik rapor türleri; Gestalt ilkeleri ve ters piramit düzeni; süssüz ama ilgi çeken tasarım; kullanım ölçümleriyle benimsenmeyi izlemek.',
   body: `
-<p>“Talepten rapor brifine” dersinde talep sahibiyle konuşup KPI’ları yazdın. Bu ders o konuşmanın sözlüğünü veriyor: hangi sayı KPI’dır, hangisi yalnızca bir metriktir, hangi gösterge geleceği haber verir ve bir dashboard kime göre nasıl kurulur? Somut bir tasarım örneği “Dashboard tasarımı: bir vaka çalışması” dersinde.</p>
+<div class="note"><b>Terim</b>İş dilinde “dashboard” çoğu zaman tek bakışta okunan yönetici raporu demektir. Power BI’da <b>pano (dashboard)</b> ise ayrı bir nesnedir: Service’te rapor görsellerinin sabitlendiği tek sayfa. Bu derste genel anlam için “rapor” diyoruz; farkı “Power BI Service’te rapor kullanmak” dersinde görebilirsin.</div>
+<p>“Talepten rapor brifine” dersinde talep sahibiyle konuşup KPI’ları yazdın. Bu ders o konuşmanın sözlüğünü veriyor: hangi sayı KPI’dır, hangisi yalnızca bir metriktir, hangi gösterge geleceği haber verir ve bir rapor kime göre nasıl kurulur? Somut bir tasarım örneği “Rapor tasarımı: bir vaka çalışması” dersinde.</p>
 
 <h2>Metrik, KPI, OKR</h2>
 <div class="tbl-wrap"><table>
@@ -165,7 +166,7 @@ add('rapor-brifi', {
 <tr><td><b>KPI (anahtar performans göstergesi)</b></td><td>Bir hedefe bağlanmış ve karar için seçilmiş az sayıdaki metrik. Hedefi, eşiği ve sahibi vardır.</td><td>Net satış hedef gerçekleşmesi: 2024’te 747.065,70 ₺ / 763.200 ₺ = %97,9</td></tr>
 <tr><td><b>OKR (hedef ve anahtar sonuçlar)</b></td><td>Bir hedef cümlesi (Objective) ve onu ölçen 2–4 anahtar sonuç (Key Results). Genelde çeyreklik, iddialı.</td><td>Hedef: “Web kanalını kârlı büyütmek.” Anahtar sonuç: “Sepete ekleme oranı %28’den %32’ye.”</td></tr>
 </table></div>
-<p>Kural: Her KPI bir metriktir ama her metrik KPI değildir. Bir dashboard’da 30 KPI varsa aslında hiç KPI yoktur; yalnızca metrik listesi vardır. Yöneticiye dönük bir sayfada 3–6 KPI yeterlidir.</p>
+<p>Kural: Her KPI bir metriktir ama her metrik KPI değildir. Bir raporda 30 KPI varsa aslında hiç KPI yoktur; yalnızca metrik listesi vardır. Yöneticiye dönük bir sayfada 3–6 KPI yeterlidir.</p>
 <p>Bir KPI kartı üç parçadan oluşur: <b>değer</b>, <b>karşılaştırma</b> (hedef ya da geçen yıl) ve <b>durum</b> (iyi / izlenmeli / kötü). Durumu metinle değil sayısal bir kodla üreten bir ölçü, renk, simge ve sıralama için tek kaynak olur (alıştırma 1).</p>
 
 <h2>Öncü ve gecikmeli göstergeler</h2>
@@ -176,7 +177,7 @@ add('rapor-brifi', {
 <p>Bu modelde web hunisi Ekim–Kasım 2024’ü kapsıyor. Ziyaret adımındaki 900 ziyaretçinin 254’ü sepete ekledi (%28,2), 88’i satın aldı (%9,8). Kaynaklara göre bakınca E-posta’dan gelenlerde sepete ekleme %36,3, Reklam’dan gelenlerde %20,9. Satış gerçekleşmeden önce, sepete ekleme oranı hangi kaynağın daha verimli olduğunu gösteriyor. Yeni müşteri sayısı da öncü bir göstergedir: 2022’de 32, 2023’te 45, 2024’te 59.</p>
 <div class="tip"><b>İkisini eşleştir</b>Her gecikmeli KPI’ın yanına onu besleyen bir öncü gösterge koy: “Net satış” kartının yanında “Sepete ekleme oranı”, “Müşteri kaybı”nın yanında “90 gündür alışveriş yapmayan müşteri”. Okuyucu hem sonucu hem de yarının işaretini görür.</div>
 
-<h2>Dashboard türleri</h2>
+<h2>Rapor türleri</h2>
 <div class="tbl-wrap"><table>
 <tr><th>Tür</th><th>Kullanıcı</th><th>Soru</th><th>Ne gerekir?</th></tr>
 <tr><td><b>Stratejik</b></td><td>Üst yönetim</td><td>“Yıllık hedefe göre neredeyiz?”</td><td>Az KPI, uzun dönem eğilim, hedef ve geçen yıl karşılaştırması; aylık güncelleme yeterli</td></tr>
@@ -187,7 +188,7 @@ add('rapor-brifi', {
 <p>Bir sayfa iki türü birden taşımaya çalışınca ikisini de kötü yapar. Stratejik bir sayfaya 40 satırlık bir sipariş listesi eklemek yerine detay sayfasına geçiş koy.</p>
 
 <h2>Gestalt ilkeleri ve düzen</h2>
-<p>Gestalt ilkeleri, gözün ayrı öğeleri nasıl <b>grup</b> olarak algıladığını anlatır. Dashboard’da “bu kutular birbirine ait” mesajını kenarlıksız verebilirsin:</p>
+<p>Gestalt ilkeleri, gözün ayrı öğeleri nasıl <b>grup</b> olarak algıladığını anlatır. Raporda “bu kutular birbirine ait” mesajını kenarlıksız verebilirsin:</p>
 <ul>
 <li><b>Yakınlık (proximity):</b> Birbirine yakın öğeler grup sayılır. Satış kartı ile hedef kartı yan yana, kargo kartı biraz uzakta olsun.</li>
 <li><b>Benzerlik (similarity):</b> Aynı renk ya da şekil aynı anlamı taşır. “Hedef” her grafikte aynı gri kesikli çizgi olsun.</li>
@@ -197,7 +198,7 @@ add('rapor-brifi', {
 <p>Tasarımcıların dört temel kuralı da aynı sonuca götürür: <b>karşıtlık (contrast)</b> önemli sayıyı büyük ve koyu yapar; <b>tekrar (repetition)</b> aynı yazı tipi, renk ve kart biçimini her sayfada kullanır; <b>hizalama (alignment)</b> görselleri ortak bir ızgaraya oturtur; <b>yakınlık</b> ilgili öğeleri toplar, ilgisizleri ayırır.</p>
 
 <h2>Ters piramit: özet, eğilim, ayrıntı</h2>
-<p>Gazetecilikte en önemli bilgi ilk cümlededir. Dashboard’da da aynı sıra işler:</p>
+<p>Gazetecilikte en önemli bilgi ilk cümlededir. Raporda da aynı sıra işler:</p>
 <ol>
 <li><b>Üstte özet:</b> KPI kartları. “İyi mi, kötü mü?” sorusu 5 saniyede cevaplanır.</li>
 <li><b>Ortada eğilim ve karşılaştırma:</b> Aylık seri, hedef çizgisi, kategori sıralaması. “Ne zaman, nerede?”</li>
@@ -215,7 +216,7 @@ add('rapor-brifi', {
 </ul>
 
 <h2>Benimsenmeyi ölçmek: kullanım ölçümleri</h2>
-<p>Bir dashboard kullanılmıyorsa başarısızdır, ne kadar güzel olursa olsun. Power BI hizmetinde rapor açıkken <b>Diğer seçenekler (…) → Kullanım ölçümlerini aç (Open usage metrics)</b>; ya da çalışma alanı listesinde raporun yanındaki <b>…</b> → <b>Kullanım ölçümleri raporunu görüntüle</b>.</p>
+<p>Bir rapor kullanılmıyorsa başarısızdır, ne kadar güzel olursa olsun. Power BI Service’te rapor açıkken <b>Diğer seçenekler (…) → Kullanım ölçümlerini aç (Open usage metrics)</b>; ya da çalışma alanı listesinde raporun yanındaki <b>…</b> → <b>Kullanım ölçümleri raporunu görüntüle</b>.</p>
 <ul>
 <li>Rapor son <b>90 günü</b> gösterir ve günde bir güncellenir; veri 24 saate kadar gecikebilir.</li>
 <li>Görüntüleme sayısı, tekil görüntüleyen, kullanıcı başına görüntüleme, sayfa bazında görüntüleme ve platform (tarayıcı ya da mobil) gibi ölçümler içerir.</li>
@@ -224,7 +225,7 @@ add('rapor-brifi', {
 </ul>
 <p>Hangi sayfa hiç açılmıyor? Kullanıcıların çoğu ilk sayfada mı kalıyor? Bu sorular bir sonraki sürümün brifini yazar.</p>
 
-<h2>Dashboard kontrol listesi</h2>
+<h2>Rapor kontrol listesi</h2>
 <ol>
 <li>Sayfanın türü (stratejik, taktik, operasyonel, analitik) ve kullanıcısı tek cümleyle yazılabiliyor mu?</li>
 <li>Her KPI’ın hedefi, eşiği ve sahibi var mı? Metriklerden ayrılmış mı?</li>
@@ -248,16 +249,16 @@ add('rapor-brifi', {
     { t: 'mc', q: 'Aşağıdakilerden hangisi bir <b>öncü</b> göstergedir?',
       o: ['Geçen çeyreğin brüt kârı', 'Sepete ekleme oranı', 'Yıllık müşteri kaybı sayısı', 'Kapanmış ayın net satışı'], a: 1,
       why: 'Sepete ekleme satın almadan önce gerçekleşir ve yakın gelecekteki satışı haber verir. Diğerleri olmuş bitmiş sonuçları ölçen gecikmeli göstergelerdir.' },
-    { t: 'mc', q: 'Depo ekibi, bugün kargoya verilmesi gereken ama hâlâ bekleyen siparişleri görmek istiyor. Bu hangi dashboard türüdür?',
-      o: ['Stratejik dashboard', 'Analitik dashboard', 'Operasyonel', 'Taktik dashboard'], a: 2,
-      why: 'Günlük, eyleme dönük, sık yenilenen liste ve uyarılar operasyonel dashboard’un işidir. Stratejik sayfa uzun dönem hedefe, analitik sayfa “neden” sorusuna bakar.' },
+    { t: 'mc', q: 'Depo ekibi, bugün kargoya verilmesi gereken ama hâlâ bekleyen siparişleri görmek istiyor. Bu hangi rapor türüdür?',
+      o: ['Stratejik rapor', 'Analitik rapor', 'Operasyonel', 'Taktik rapor'], a: 2,
+      why: 'Günlük, eyleme dönük, sık yenilenen liste ve uyarılar operasyonel raporun işidir. Stratejik sayfa uzun dönem hedefe, analitik sayfa “neden” sorusuna bakar.' },
     { t: 'mc', q: 'Satış kartları ile kargo kartlarını kenarlık çizmeden iki ayrı grup gibi göstermek istiyorsun. En sade yol hangi Gestalt ilkesidir?',
       o: ['Grupların arasını açmak (yakınlık)', 'Her karta farklı bir renk vermek', 'Kartları dairesel düzene yerleştirmek', 'Her kartın başlığını büyük harf yapmak'], a: 0,
       why: 'Yakınlık ilkesine göre birbirine yakın öğeler grup algılanır. Gruplar arasına boşluk koymak kenarlık ve renk kalabalığı olmadan ayrımı yapar.' },
     { t: 'mc', q: 'Ters piramit düzeninde bir yönetici sayfasının en üstünde ne bulunmalı?',
       o: ['Ürün düzeyinde ayrıntı tablosu', 'Aylık seri ve hedef çizgisi', 'Tüm dilimleyiciler ve filtreler', 'Hedefe göre durumlu KPI kartları'], a: 3,
       why: 'Ters piramitte en önemli bilgi en üstte durur: “iyi mi, kötü mü?” sorusunu cevaplayan KPI’lar. Eğilim ortada, ayrıntı altta ya da detay sayfasında.' },
-    { t: 'mc', q: 'Yayımladığın raporun hangi sayfalarının açıldığını görmek istiyorsun. Power BI hizmetinde nereye bakarsın?',
+    { t: 'mc', q: 'Yayımladığın raporun hangi sayfalarının açıldığını görmek istiyorsun. Power BI Service’te nereye bakarsın?',
       o: ['Raporun … menüsü → Kullanım ölçümlerini aç', 'Desktop’ta Görünüm → Performans Analizi', 'Raporun Dışa aktar → PDF olarak indir', 'Çalışma alanı → Ayarlar → Lisans türü'], a: 0,
       why: 'Kullanım ölçümleri raporu son 90 günün görüntüleme, görüntüleyen ve sayfa bazında kullanım bilgisini verir. Performans Analizi yalnızca görsellerin yüklenme süresini ölçer.' }
   ]
@@ -328,7 +329,7 @@ CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Erkek")</pre>
 <p>Görselleştirmeler bölmesinde <b>…</b> → <b>Diğer görselleri al</b> ile AppSource’taki görseller eklenir ya da bir <code>.pbiviz</code> dosyası içe aktarılır.</p>
 <ul>
 <li><b>Sertifikalı (certified) görsel:</b> Power BI ekibinin kod gereksinimlerini karşılamış ve testten geçmiştir; testler görselin dış hizmetlere ya da kaynaklara erişmediğini doğrular. Sertifikasız görsel kötü değildir ama bu güvenceyi taşımaz.</li>
-<li><b>Yönetici denetimi:</b> Kiracı ayarlarında “Power BI SDK ile oluşturulan görsellere izin ver” kapatılabilir ya da “Yalnızca sertifikalı görselleri ekle ve kullan” açılabilir; o zaman sertifikasız görseller hizmette hata gösterir. Yönetici onayladığı görselleri <b>kuruluş görselleri (organizational visuals)</b> olarak herkese dağıtabilir; bunlar kiracı kısıtlarından etkilenmez.</li>
+<li><b>Yönetici denetimi:</b> Kiracı ayarlarında “Power BI SDK ile oluşturulan görsellere izin ver” kapatılabilir ya da “Yalnızca sertifikalı görselleri ekle ve kullan” açılabilir; o zaman sertifikasız görseller Service’te hata gösterir. Yönetici onayladığı görselleri <b>kuruluş görselleri (organizational visuals)</b> olarak herkese dağıtabilir; bunlar kiracı kısıtlarından etkilenmez.</li>
 <li><b>Bakım riski:</b> Üçüncü taraf görsel güncellenmezse ya da ücretli lisansa geçerse rapor bozulabilir. Yerleşik görselle yapılabiliyorsa yerleşik olanı seç.</li>
 </ul>
 `,
@@ -355,7 +356,7 @@ CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Erkek")</pre>
     { t: 'mc', q: 'Power BI’da yerleşik bir bullet grafik yok. Kümelenmiş çubuk grafikte her çubuğa kendi hedefini küçük bir işaretle eklemenin yerleşik yolu hangisi?',
       o: ['Analiz bölmesinde tek bir sabit çizgi eklemek', 'Hata çubuklarını [Hedef] ölçüsüne bağlamak', 'Çubukları %100 yığılmış hâle getirmek', 'Ağaç haritasına hedef alanını eklemek'], a: 1,
       why: 'Hata çubuklarının üst ve alt sınırı [Hedef] ölçüsüne bağlanınca her çubukta kendi hedefinde bir işaret çıkar. Sabit çizgi tüm çubuklar için tek bir değerdir.' },
-    { t: 'mc', q: 'Kuruluşunun kiracı ayarlarında “Yalnızca sertifikalı görselleri ekle ve kullan” açık. Raporuna AppSource’tan sertifikasız bir görsel ekledin. Hizmette ne olur?',
+    { t: 'mc', q: 'Kuruluşunun kiracı ayarlarında “Yalnızca sertifikalı görselleri ekle ve kullan” açık. Raporuna AppSource’tan sertifikasız bir görsel ekledin. Service’te ne olur?',
       o: ['Görsel çalışır ama bir uyarı simgesi gösterir', 'Görsel otomatik olarak sertifikalanır', 'Görsel tablo görseline dönüştürülür', 'Görsel çizilmez, hata gösterilir'], a: 3,
       why: 'Bu ayar açıkken yalnızca sertifikalı görseller çizilir; sertifikasız olanlar hata gösterir. Yönetici bir görseli kuruluş görseli olarak eklerse bu kısıttan etkilenmez.' }
   ]
@@ -364,8 +365,8 @@ CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Erkek")</pre>
 /* ---------- 4 · Analiz ---------- */
 add('analiz-ozellikleri', {
   id: 'ayristirma-etkileyen', lv: 'B2', mod: 'Analiz', min: 26,
-  title: 'Ayrıştırma ağacı ve önemli etkileyenler: soru sorarak analiz',
-  sum: 'Ayrıştırma ağacında yüksek/düşük değer bölmeleri, mutlak ve göreli mod, düzey kilitleme; önemli etkileyenlerde kategorik ve sürekli hedef, en iyi segmentler, veri gereksinimleri; Copilot anlatısı; bulguyu nedensellik iddiası olmadan okumak ve bir ölçüyle doğrulamak.',
+  title: 'Ayrıştırma ağacı ve anahtar etkileyiciler: soru sorarak analiz',
+  sum: 'Ayrıştırma ağacında yüksek/düşük değer bölmeleri, mutlak ve göreli mod, düzey kilitleme; anahtar etkileyicilerde kategorik ve sürekli hedef, en iyi segmentler, veri gereksinimleri; Copilot anlatısı; bulguyu nedensellik iddiası olmadan okumak ve bir ölçüyle doğrulamak.',
   body: `
 <p>“Analiz özellikleri ve yapay zekâ görselleri” dersinde bu görsellerin ne işe yaradığını bir tabloda gördün. Bu derste iki yapay zekâ görselini derinlemesine kullanacağız ve her bulguyu bir DAX ölçüsüyle <b>kendimiz doğrulayacağız</b>. Görselin bir cümlesini rapora koymadan önce aynı sayıyı ölçüyle üretebiliyor olmalısın.</p>
 
@@ -405,7 +406,7 @@ add('analiz-ozellikleri', {
 <li><b>Yapay zekâ bölmesi çalışmayan durumlar:</b> Azure Analysis Services, Power BI Rapor Sunucusu, Web’de yayımla ve <b>Çözümle</b> kutusundaki karmaşık ölçüler.</li>
 </ul>
 
-<h2>Önemli etkileyenler (key influencers)</h2>
+<h2>Anahtar etkileyiciler (key influencers)</h2>
 <p>Bu görsel “Hedef değişkeni en çok ne etkiliyor?” sorusunu sorar. Kutuları:</p>
 <ul>
 <li><b>Çözümle:</b> Hedef. Satislar tablosunun satır düzeyinde çözümlenir.</li>
@@ -417,10 +418,10 @@ add('analiz-ozellikleri', {
 <tr><td><b>Kategorik</b></td><td>“Durum = İade olmasını ne etkiliyor?”</td><td><code>Satislar[Durum]</code>, değer: İade</td><td>“… olduğunda İade olasılığı X kat artar”</td></tr>
 <tr><td><b>Sürekli</b></td><td>“Tutarın artmasını ne etkiliyor?”</td><td><code>Satislar[Tutar]</code> (özetlenmemiş) ya da bir ölçü</td><td>“… olduğunda ortalama Tutar Y ₺ daha yüksek”</td></tr>
 </table></div>
-<p>Özetlenmemiş sayısal bir sütunu iki şekilde de çözümleyebilirsin; seçim Biçim → Analiz kartındadır. Ölçüler her zaman sürekli çözümlenir. Görselin iki sekmesi vardır: <b>Önemli etkileyenler</b> tek tek etkenleri, <b>En iyi segmentler (Top segments)</b> ise birkaç koşulun birleşimini (ör. “Segment Kurumsal ve Bölge Ege”) hedef oranına göre sıralar; kabarcık büyüklüğü segmentteki satır sayısıdır.</p>
+<p>Özetlenmemiş sayısal bir sütunu iki şekilde de çözümleyebilirsin; seçim Biçim → Analiz kartındadır. Ölçüler her zaman sürekli çözümlenir. Görselin iki sekmesi vardır: <b>Anahtar etkileyiciler</b> tek tek etkenleri, <b>En iyi segmentler (Top segments)</b> ise birkaç koşulun birleşimini (ör. “Segment Kurumsal ve Bölge Ege”) hedef oranına göre sıralar; kabarcık büyüklüğü segmentteki satır sayısıdır.</p>
 <p>Örnek sonuçlar bu modelde: Genel iade oranı 110 ÷ 1.620 satır = %6,8. Görsel muhtemelen şunu söyler: “Segment Kurumsal olduğunda İade olasılığı 1,74 kat artar.” Kurumsal satırlarda iade %9,8 (45 ÷ 461), diğer segmentlerde %5,6. Sürekli hedefte: Elektronik satırlarında ortalama Tutar 1.428,15 ₺, diğer kategorilerde 722,01 ₺; görsel bunu “Kategori Elektronik olduğunda ortalama Tutar yaklaşık 706 ₺ daha yüksek” diye yazar.</p>
 
-<h2>Önemli etkileyenler ne ister, neyi yapamaz?</h2>
+<h2>Anahtar etkileyiciler ne ister, neyi yapamaz?</h2>
 <ul>
 <li><b>Yeterli gözlem:</b> Seçilen durum için en az 100 gözlem, karşılaştırılan durumlar için en az 10 gözlem gerekir. Bizim 110 iade satırımız sınırın hemen üstünde; tek bir yılı süzersen görsel “yeterli veri yok” der.</li>
 <li><b>Örneklem:</b> Analiz 10.000 veri noktalık bir örneklem üzerinde çalışır.</li>
@@ -430,7 +431,7 @@ add('analiz-ozellikleri', {
 </ul>
 
 <h2>Anlatı görseli ve Copilot</h2>
-<p><b>Anlatı (Narrative)</b> görselinin iki modu var. <b>Copilot modu</b> seçtiğin görselleri ya da sayfaları okuyup bir özet yazar; Copilot’un açık olduğu ücretli bir Fabric ya da Premium kapasitesi ister, deneme kapasitelerinde çalışmaz. Bu modda özet filtre değişince <b>kendiliğinden güncellenmez</b>; okuyucu yenile düğmesine basarak seçili filtrelere göre yeni özet ister. <b>Özel (Custom) mod</b> eski akıllı anlatıdır (smart narrative): metni sen yazarsın, içine ölçüye bağlı dinamik değerler koyarsın ve bunlar filtreyle güncellenir. Anlatı görseli önemli etkileyenler gibi bazı görselleri henüz okuyamıyor. Soru-Cevap görselini kullanma; kaldırılıyor ve yerini Copilot alıyor (“Copilot ile çalışmak” dersi).</p>
+<p><b>Anlatı (Narrative)</b> görselinin iki modu var. <b>Copilot modu</b> seçtiğin görselleri ya da sayfaları okuyup bir özet yazar; Copilot’un açık olduğu ücretli bir Fabric ya da Premium kapasitesi ister, deneme kapasitelerinde çalışmaz. Bu modda özet filtre değişince <b>kendiliğinden güncellenmez</b>; okuyucu yenile düğmesine basarak seçili filtrelere göre yeni özet ister. <b>Özel (Custom) mod</b> eski akıllı anlatıdır (smart narrative): metni sen yazarsın, içine ölçüye bağlı dinamik değerler koyarsın ve bunlar filtreyle güncellenir. Anlatı görseli anahtar etkileyiciler gibi bazı görselleri henüz okuyamıyor. Soru-Cevap görselini kullanma; kaldırılıyor ve yerini Copilot alıyor (“Copilot ile çalışmak” dersi).</p>
 
 <h2>Bulguyu okumak: etki nedensellik değildir</h2>
 <p>“Kurumsal olduğunda iade olasılığı 1,74 kat artar” cümlesi bir <b>ilişki</b> raporudur. “Kurumsal müşteri olmak iadeye yol açar” demez. Kurumsal müşteriler toplu sipariş veriyor, farklı ürünler alıyor ya da iadeyi farklı bir süreçle yapıyor olabilir. Rapora şöyle yaz:</p>
@@ -451,7 +452,7 @@ CALCULATE([İade Oranı %], EXCEPT(ALL(Musteriler[Segment]), Secili))</pre>
 `,
   ex: [
     { t: 'dax', name: 'Diğer Segmentlerde İade %',
-      q: '<b>Diğer Segmentlerde İade %</b>: Önemli etkileyenler görselinin karşılaştırma tabanını üret: bağlamdaki segment(ler) <b>dışındaki</b> tüm segmentlerde [İade Oranı %] değerini hesapla. Segment satırlarında her satır kendi dışındakileri göstermeli.',
+      q: '<b>Diğer Segmentlerde İade %</b>: Anahtar etkileyiciler görselinin karşılaştırma tabanını üret: bağlamdaki segment(ler) <b>dışındaki</b> tüm segmentlerde [İade Oranı %] değerini hesapla. Segment satırlarında her satır kendi dışındakileri göstermeli.',
       sol: 'VAR Secili = VALUES(Musteriler[Segment]) RETURN CALCULATE([İade Oranı %], EXCEPT(ALL(Musteriler[Segment]), Secili))',
       hint: 'Seçili segmentleri VALUES ile bir değişkene al. EXCEPT(ALL(Musteriler[Segment]), Secili) geri kalan segmentleri verir; bunu CALCULATE filtresi olarak kullan.',
       grid: [{ t: 'Musteriler', c: 'Segment' }], noTotal: true },
@@ -472,7 +473,7 @@ CALCULATE([İade Oranı %], EXCEPT(ALL(Musteriler[Segment]), Secili))</pre>
     { t: 'mc', q: 'Ayrıştırma ağacında “Yüksek değer” bölmesi mutlak modda ilk düzey için Cinsiyet = Kadın’ı seçti. Göreli moda geçince Bölge = İç Anadolu seçildi. Bunun sebebi nedir?',
       o: ['Göreli mod yalnızca coğrafi alanlara bakar', 'Mutlak mod alanları alfabetik sırayla dener', 'Göreli mod ortalamaya göre öne çıkanı arar', 'Cinsiyet alanında boş değerler bulunuyor'], a: 2,
       why: 'Mutlak mod en büyük düğümü seçer; iki değerli Cinsiyet doğal olarak büyük parçalar verir. Göreli mod düğümü o boyuttaki düğümlerin ortalamasına böler: İç Anadolu 2,39 katla öne çıkar.' },
-    { t: 'mc', q: 'Önemli etkileyenler görselinde Durum = İade’yi çözümlüyorsun ve yalnızca 2023’ü süzünce “yeterli veri yok” uyarısı geliyor. En olası neden?',
+    { t: 'mc', q: 'Anahtar etkileyiciler görselinde Durum = İade’yi çözümlüyorsun ve yalnızca 2023’ü süzünce “yeterli veri yok” uyarısı geliyor. En olası neden?',
       o: ['Seçili durumda 100 gözlem eşiği aşılmıyor', 'Görsel yalnızca tek yıllık veriyle çalışır', 'Durum sütunu metin türünde tanımlanmış', 'Tarih tablosu tarih tablosu işaretli değil'], a: 0,
       why: 'Görsel seçilen durum için en az 100, karşılaştırılan durumlar için en az 10 gözlem ister. Tüm yıllarda 110 iade satırı var; tek yıla süzünce eşiğin altına düşülür.' },
     { t: 'mc', q: 'Görsel “Segment Kurumsal olduğunda İade olasılığı 1,74 kat artar” diyor. Rapora yazılacak en doğru cümle hangisi?',

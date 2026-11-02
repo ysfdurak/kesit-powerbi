@@ -19,8 +19,8 @@ add('analiz-ozellikleri', {
 <tr><td>Anlatı görseli (Narrative)</td><td>Sayfadaki görselleri metinle özetler; filtre değişince metin de güncellenir.</td><td>Genel kullanım</td></tr>
 <tr><td>DAX sorgu görünümü (DAX query view)</td><td><code>Ctrl+I</code> ile Copilot: doğal dilden DAX sorgusu yazar, “Bu sorguyu açıkla” ile kodu anlatır, “Bir DAX konusunu açıkla” ile fonksiyon anlatır.</td><td>Desktop’ta Önizleme özellikleri altından açılır</td></tr>
 <tr><td>Ölçü açıklamaları</td><td>Bir ölçünün DAX’ını okuyup açıklama (description) önerir.</td><td>Model yazarı için</td></tr>
-<tr><td>Bağımsız Copilot (standalone)</td><td>Hizmette sol gezinti çubuğundaki simge: tüm raporlar ve modeller arasında arar, soruyu doğru öğeye yönlendirir.</td><td><b>Önizleme</b></td></tr>
-<tr><td>Web modellemede Copilot</td><td>Hizmette modeli inceler; ölçü, tablo, sütun ve ilişki düzenler.</td><td><b>Önizleme</b></td></tr>
+<tr><td>Bağımsız Copilot (standalone)</td><td>Service’te sol gezinti çubuğundaki simge: tüm raporlar ve modeller arasında arar, soruyu doğru öğeye yönlendirir.</td><td><b>Önizleme</b></td></tr>
+<tr><td>Web modellemede Copilot</td><td>Service’te modeli inceler; ölçü, tablo, sütun ve ilişki düzenler.</td><td><b>Önizleme</b></td></tr>
 </table></div>
 <p>Rapor bölmesinde bir <b>yetenek seçici</b> (skill picker) vardır: “Veriyle ilgili soruları yanıtla”, “Rapor görsellerini analiz et” ve “Yeni rapor sayfası oluştur”. Test ederken hangi yeteneği kullandığını bilerek seç; çünkü aşağıda göreceğin ayarların bir kısmı yalnızca veri sorularını etkiler.</p>
 
@@ -47,7 +47,7 @@ add('analiz-ozellikleri', {
 <p>Bir ayrıntı: “Yapay zekâ için verileri hazırla” bugün hâlâ modelde Soru-Cevap’ın <b>açık</b> olmasını ister; çünkü Copilot, metin sütunlarındaki değerleri (ör. “Ege”, “Premium”) bu dizinle tanır. Soru-Cevap görselini kaldırırken model ayarını kapatma.</p>
 
 <h2>Yapay zekâ için verileri hazırla (Prep data for AI) — önizleme</h2>
-<p>Desktop’ta <b>Giriş</b> şeridinde Copilot düğmesinin yanındadır; hizmette anlam modelinin sayfasında. Yaptığın her şey <b>anlam modeline</b> kaydedilir, rapora değil; o modeli kullanan tüm raporlar yararlanır.</p>
+<p>Desktop’ta <b>Giriş</b> şeridinde Copilot düğmesinin yanındadır; Service’te anlam modelinin sayfasında. Yaptığın her şey <b>anlam modeline</b> kaydedilir, rapora değil; o modeli kullanan tüm raporlar yararlanır.</p>
 <ol>
 <li><b>Yapay zekâ veri şeması (AI data schema):</b> Copilot’un öncelik vereceği alanları seçersin. Bizim modelde <code>Satislar[SatirNo]</code>, <code>KohortAyFarki</code>, <code>TopNSecim</code>, <code>OlcuSecimi</code> gibi yardımcı alanların Copilot’a gösterilmesine gerek yok. Modelde gizli alanlar ilk kurulumda otomatik olarak dışarıda kalır. Şema yalnızca veri sorularını etkiler; rapor özeti, sayfa oluşturma ve DAX sorgu üretimi tüm modeli kullanır.</li>
 <li><b>Onaylı cevaplar (verified answers):</b> Bir görseli seçip <b>…</b> menüsünden “Onaylı cevap ayarla” dersin ve tetikleyici ifadeler eklersin: “kanallara göre ciro”, “hangi kanal ne kadar sattı”. Kullanıcı benzer bir şey sorduğunda Copilot senin hazırladığın görseli döndürür. Sık sorulan, yanlış anlaşılmaya açık sorular için idealdir.</li>
@@ -67,7 +67,7 @@ Terimler
 
 Belirsizlik
 - "Performans" sorusunda hangi ölçünün kastedildiği belli değilse kullanıcıya sor.</pre>
-<p>Model hazır olunca hizmette modelin ayarlarından <b>Copilot için onaylı</b> (Approved for Copilot) kutusunu işaretleyebilirsin. Yönetici, bağımsız Copilot’un yalnızca onaylı içerikte arama yapmasını isteyebilir; onaysız modeller o zaman hiç görünmez.</p>
+<p>Model hazır olunca Service’te modelin ayarlarından <b>Copilot için onaylı</b> (Approved for Copilot) kutusunu işaretleyebilirsin. Yönetici, bağımsız Copilot’un yalnızca onaylı içerikte arama yapmasını isteyebilir; onaysız modeller o zaman hiç görünmez.</p>
 
 <h2>Modeli okunur kılmak</h2>
 <ul>
@@ -209,7 +209,7 @@ SUMMARIZECOLUMNS(
 add('copilot', {
   id: 'python-r', lv: 'B2', mod: 'Analiz', min: 18,
   title: 'Power BI’da Python ve R',
-  sum: 'Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, hizmetteki sınırlar ve aynı işin DAX ya da Power Query ile ne zaman daha iyi yapılacağı.',
+  sum: 'Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, Service’teki sınırlar ve aynı işin DAX ya da Power Query ile ne zaman daha iyi yapılacağı.',
   body: `
 <p>Power BI, Python ve R betiklerini üç yerde çalıştırabilir: <b>veri kaynağı</b> olarak, Power Query’de <b>dönüştürme adımı</b> olarak ve rapor tuvalinde <b>görsel</b> olarak. Bu, istatistik ve makine öğrenmesi kütüphanelerini rapora getirir. Ama her betik bir bağımlılık ve bir sınır demektir. Bu derste ne zaman kullanılacağını ve nerede duracağını göreceksin. (Kesit Power BI tarayıcıda Python çalıştıramaz; kodlar okumak ve kendi bilgisayarında denemek içindir.)</p>
 
@@ -243,7 +243,7 @@ df["Bolge"] = df["Bolge"].fillna(df["Sehir"].map(sehir_bolge))
 df["Bolge"] = df["Bolge"].fillna("Bilinmiyor")
 # zaman serisinde boşluğu bir sonraki değerle doldurmak: df["Kur"] = df["Kur"].bfill()</pre>
 <p>Bunun için Python gerekmez: aynı iş Power Query’de birleştirme (Merge) ve “Değeri değiştir” adımlarıyla da yapılır ve sorgu katlamayı bozmaz. Python’ı, Power Query’nin yapamadığı işler için sakla: istatistiksel eksik değer tahmini (ör. regresyonla doldurma), metin madenciliği, kümeleme.</p>
-<div class="warn"><b>Hizmette yenileme</b>Python ya da R betiği içeren bir sorgunun hizmette zamanlanmış yenilemesi için betiğin çalıştığı bilgisayara <b>kişisel mod ağ geçidi</b> (personal gateway) kurulmalı ve o bilgisayarda Python yüklü olmalı. Ayrıca betikle aynı sorgudaki tüm veri kaynaklarının gizlilik düzeyi <b>Genel</b> (Public) olmalı. Kurumsal ortamda bu çoğu zaman kabul edilemez; betiği Fabric not defterine ya da kaynağa taşımak daha sağlıklıdır.</div>
+<div class="warn"><b>Service’te yenileme</b>Python ya da R betiği içeren bir sorgunun Service’te zamanlanmış yenilemesi için betiğin çalıştığı bilgisayara <b>kişisel mod ağ geçidi</b> (personal gateway) kurulmalı ve o bilgisayarda Python yüklü olmalı. Ayrıca betikle aynı sorgudaki tüm veri kaynaklarının gizlilik düzeyi <b>Genel</b> (Public) olmalı. Kurumsal ortamda bu çoğu zaman kabul edilemez; betiği Fabric not defterine ya da kaynağa taşımak daha sağlıklıdır.</div>
 
 <h2>Python ve R görselleri</h2>
 <p>Görselleştirmeler bölmesinde <b>Py</b> ya da <b>R</b> simgesini seç, betik görsellerini etkinleştir ve alanları <b>Değerler</b> kutusuna sürükle. Power BI bu alanlardan <code>dataset</code> adlı bir veri çerçevesi oluşturur. Dikkat: alanlar tablo görseli gibi gruplanır, tekrar eden satırlar bir kez gelir; her satırı istiyorsan benzersiz bir alan (ör. <code>SatirNo</code>) ekle.</p>
@@ -267,10 +267,10 @@ ggplot(dataset, aes(x = Kanal, y = Kategori, fill = \`Net Satış\`)) +
 <div class="tbl-wrap"><table>
 <tr><th>Konu</th><th>Sınır</th></tr>
 <tr><td>Görsele gelen veri</td><td>En çok 150.000 satır (fazlası kesilir, görselde uyarı çıkar); Desktop’ta en çok 250 MB girdi</td></tr>
-<tr><td>Zaman aşımı</td><td>Desktop’ta görsel betiği 5 dakika; hizmette görsel başına 1 dakika</td></tr>
-<tr><td>Hizmetteki yük</td><td>Sıkıştırılmış veri + betik en çok 30 MB</td></tr>
-<tr><td>Paketler (hizmet)</td><td>Python 3.11 ve R 4.3.3 çalışma zamanı; yalnızca listede olan, PyPI/CRAN’da yayımlanmış açık kaynak paketler (pandas, matplotlib, seaborn, scikit-learn, ggplot2, corrplot…). Ağ bağlantısı kuran paketler engellenir.</td></tr>
-<tr><td>Lisans</td><td>Hizmette betik görseli oluşturmak için Pro ya da PPU; görüntüleme için Fabric/Premium çalışma alanı da yeterli olabilir. Fabric’in olmadığı bölgelerde ve egemen bulutlarda hizmette desteklenmez.</td></tr>
+<tr><td>Zaman aşımı</td><td>Desktop’ta görsel betiği 5 dakika; Service’te görsel başına 1 dakika</td></tr>
+<tr><td>Service’teki yük</td><td>Sıkıştırılmış veri + betik en çok 30 MB</td></tr>
+<tr><td>Paketler (Service)</td><td>Python 3.11 ve R 4.3.3 çalışma zamanı; yalnızca listede olan, PyPI/CRAN’da yayımlanmış açık kaynak paketler (pandas, matplotlib, seaborn, scikit-learn, ggplot2, corrplot…). Ağ bağlantısı kuran paketler engellenir.</td></tr>
+<tr><td>Lisans</td><td>Service’te betik görseli oluşturmak için Pro ya da PPU; görüntüleme için Fabric/Premium çalışma alanı da yeterli olabilir. Fabric’in olmadığı bölgelerde ve egemen bulutlarda Service’te desteklenmez.</td></tr>
 <tr><td>Paylaşım</td><td>Web’de yayımla (Publish to web) desteklemez; 2026 itibarıyla “müşterilerin için ekle” (app owns data) senaryosunda da destek sona eriyor.</td></tr>
 <tr><td>Çözünürlük</td><td>Görseller 72 DPI; sütun adları yeniden adlandırılsa da betik özgün adları görür.</td></tr>
 </table></div>
@@ -297,10 +297,10 @@ RETURN DIVIDE(Kov, SX * SY)</pre>
 `,
   ex: [
     { t: 'mc', q: 'Python görseline Değerler kutusuyla <code>Kanal</code> ve <code>Adet</code> alanlarını koydun; betik yalnızca birkaç satır görüyor. Neden?', o: ['Python görseli en çok 100 satır alır', 'Alanlar gruplanır, tekrar eden satırlar bir kez gelir', 'pandas yüklü değilse satırlar kırpılır', 'Görsel yalnızca seçili dilimleyici değerinin satırlarını alır'], a: 1, why: 'Betik görselleri alanları tablo görseli gibi gruplar ve tekrarları kaldırır. Her satırı görmek için SatirNo gibi benzersiz bir alan eklenir. Satır sınırı 150.000’dir.' },
-    { t: 'mc', q: 'Power Query’de Python adımı içeren bir model hizmette zamanlanmış yenilenecek. Ne gerekir?', o: ['Kişisel mod ağ geçidi ve o makinede Python', 'Yalnızca bir Fabric kapasitesi', 'Standart mod ağ geçidi, Python gerekmez', 'Hiçbir şey; hizmet Python’ı kendisi çalıştırır'], a: 0, why: 'Learn’e göre Python betikli sorguların yenilemesi için betiği çalıştıracak bilgisayarda kişisel ağ geçidi ve Python kurulu olmalı; kaynakların gizlilik düzeyi de Genel olmalı.' },
-    { t: 'mc', q: 'Hizmette bir Python görseli bir web servisinden kur verisi çekmeye çalışıyor ve çalışmıyor. En olası neden?', o: ['Görsel 72 DPI ile sınırlı', 'Python 2 sürümü kullanılıyor', 'Hizmette betik görsellerinden ağ erişimi engellenir', 'Betikte veri çerçevesinin adı dataset olarak geçmiyor'], a: 2, why: 'Güvenlik ve gizlilik için hizmette ağ bağlantısı kuran paket ve çağrılar engellenir. Dış veri Power Query ya da Fabric işlem hattıyla modele alınmalı.' },
+    { t: 'mc', q: 'Power Query’de Python adımı içeren bir model Service’te zamanlanmış yenilenecek. Ne gerekir?', o: ['Kişisel mod ağ geçidi ve o makinede Python', 'Yalnızca bir Fabric kapasitesi', 'Standart mod ağ geçidi, Python gerekmez', 'Hiçbir şey; Service Python’ı kendisi çalıştırır'], a: 0, why: 'Learn’e göre Python betikli sorguların yenilemesi için betiği çalıştıracak bilgisayarda kişisel ağ geçidi ve Python kurulu olmalı; kaynakların gizlilik düzeyi de Genel olmalı.' },
+    { t: 'mc', q: 'Service’te bir Python görseli bir web servisinden kur verisi çekmeye çalışıyor ve çalışmıyor. En olası neden?', o: ['Görsel 72 DPI ile sınırlı', 'Python 2 sürümü kullanılıyor', 'Service’te betik görsellerinden ağ erişimi engellenir', 'Betikte veri çerçevesinin adı dataset olarak geçmiyor'], a: 2, why: 'Güvenlik ve gizlilik için Service’te ağ bağlantısı kuran paket ve çağrılar engellenir. Dış veri Power Query ya da Fabric işlem hattıyla modele alınmalı.' },
     { t: 'mc', q: 'Kategori × kanal ısı haritası istendi ve kullanıcılar hücreye tıklayıp diğer görselleri filtrelemek istiyor. En iyi seçim?', o: ['seaborn kütüphanesiyle çizilen bir Python görseli', 'R görseli ve ggplot2', 'Python betiği veri kaynağı', 'Matris ve arka plan rengi koşullu biçimi'], a: 3, why: 'Python/R görselleri resimdir; çapraz filtreleme yapamaz. Matris + koşullu biçimlendirme ısı haritası etkisini verir ve tam etkileşimlidir.' },
-    { t: 'mc', q: 'Hangisi hizmette Python görseli için doğru bir sınırdır?', o: ['Görsel başına 1 dakika zaman aşımı', 'Görsel başına en çok 10 sütun', 'Yalnızca Premium kapasitede görüntülenir', 'Betik en çok 50 satır olabilir'], a: 0, why: 'Hizmette her Python/R görseli betiği için 1 dakika zaman aşımı ve 30 MB yük (sıkıştırılmış veri + betik) sınırı vardır.' },
+    { t: 'mc', q: 'Hangisi Service’te Python görseli için doğru bir sınırdır?', o: ['Görsel başına 1 dakika zaman aşımı', 'Görsel başına en çok 10 sütun', 'Yalnızca Premium kapasitede görüntülenir', 'Betik en çok 50 satır olabilir'], a: 0, why: 'Service’te her Python/R görseli betiği için 1 dakika zaman aşımı ve 30 MB yük (sıkıştırılmış veri + betik) sınırı vardır.' },
     { t: 'dax', name: 'Bölgesi Eksik Satır', q: '<b>Bölgesi Eksik Satır</b>: Python’da <code>df["Bolge"].isna().sum()</code> ile yaptığın eksik değer sayımını DAX’ta yap: bölgesi boş müşterilere ait <code>Satislar</code> satırlarının sayısı.', sol: 'CALCULATE(COUNTROWS(Satislar), ISBLANK(Musteriler[Bolge]))', hint: 'COUNTROWS(Satislar) ifadesini CALCULATE ile ISBLANK(Musteriler[Bolge]) koşuluna sar; ilişki filtreyi Satislar’a taşır.' },
     { t: 'dax', name: 'İndirim-Adet Korelasyonu', q: '<b>İndirim-Adet Korelasyonu</b>: İptaller hariç satış satırlarında <code>Satislar[Indirim]</code> ile <code>Satislar[Adet]</code> arasındaki Pearson korelasyonunu hesapla (Python’daki <code>df["Indirim"].corr(df["Adet"])</code> karşılığı).', sol: 'VAR T = FILTER(Satislar, Satislar[Durum] <> "İptal") VAR OrtX = AVERAGEX(T, Satislar[Indirim]) VAR OrtY = AVERAGEX(T, Satislar[Adet]) VAR Kov = SUMX(T, (Satislar[Indirim] - OrtX) * (Satislar[Adet] - OrtY)) VAR SX = SQRT(SUMX(T, (Satislar[Indirim] - OrtX) ^ 2)) VAR SY = SQRT(SUMX(T, (Satislar[Adet] - OrtY) ^ 2)) RETURN DIVIDE(Kov, SX * SY)', hint: 'Önce iptal olmayan satırları bir değişkene al; ortalamaları, kovaryansı ve iki standart sapmanın çarpımını hesapla; DIVIDE ile böl.' }
   ]
@@ -358,10 +358,10 @@ add('yonetisim', {
 <tr><td>Veri nerede?</td><td>Modelin belleğine kopyalanır</td><td>Kaynakta kalır, her sorguda SQL gider</td><td>OneLake’teki Delta dosyalarından belleğe, gerektikçe yüklenir</td></tr>
 <tr><td>Yenileme</td><td>Tam ya da artımlı veri yükleme (dakikalar–saatler)</td><td>Gerekmez</td><td><b>Çerçeveleme</b> (framing): yalnızca meta veri, genellikle saniyeler</td></tr>
 <tr><td>Sorgu hızı</td><td>Çok hızlı</td><td>Kaynağa bağlı, çoğu zaman yavaş</td><td>Import’a yakın (sütunlar bellekteyken)</td></tr>
-<tr><td>Power Query / hesaplanmış sütun</td><td>Var</td><td>Sınırlı</td><td>Yok: dönüşüm Delta tablolara yazılırken yapılır</td></tr>
+<tr><td>Power Query / hesaplanmış sütun</td><td>Var</td><td>Sınırlı</td><td>Power Query yok: dönüşüm Delta tablolara yazılırken yapılır. Direct Lake sütunlarına başvuran hesaplanmış sütun SQL üzerinde desteklenmez, OneLake üzerinde önizlemede ve sınırlıdır</td></tr>
 </table></div>
 <p>Direct Lake’te bir sorgu ilk kez bir sütuna ihtiyaç duyduğunda o sütun Parquet’ten belleğe yüklenir (transcoding); sonra bellekte kalır. Kullanılmayan sütun bellekten çıkarılabilir. Direct Lake’in iki türü (OneLake üzerinde ve SQL uç noktası üzerinde), DirectQuery’ye geri dönüş ve davranış ayarı “Kurumsal model” dersinde anlatılıyor.</p>
-<p>Senin için en iyi haber: <b>DAX değişmez.</b> Ölçüler, ilişkiler, RLS ve DAX sorguları Import modelde nasıl çalışıyorsa Direct Lake modelde de öyle çalışır. Aşağıdaki sorgu, bu uygulamanın modelinde de bir Direct Lake modelinde de aynı sonucu verir:</p>
+<p>Senin için en iyi haber: <b>DAX değişmez.</b> Ölçüler, ilişkiler, modelde tanımlı DAX RLS’i ve DAX sorguları Import modelde nasıl çalışıyorsa Direct Lake modelde de öyle çalışır. İstisnalar veri katmanındadır: SQL uç noktası üzerindeki Direct Lake’te SQL görünümleri ve ambardaki SQL RLS DirectQuery’ye düşürür; OneLake üzerindeki Direct Lake’te ise DirectQuery’ye düşme yoktur ve SQL RLS uygulanmaz. Aşağıdaki sorgu, bu uygulamanın modelinde de bir Direct Lake modelinde de aynı sonucu verir:</p>
 <pre class="dax">EVALUATE
 SUMMARIZECOLUMNS(
     Tarih[Yil],
@@ -390,7 +390,7 @@ SUMMARIZECOLUMNS(
     { t: 'mc', q: 'Lakehouse’un SQL analiz uç noktası ile ambar arasındaki temel fark nedir?', o: ['Uç nokta T-SQL ile yalnızca okur; ambar T-SQL ile yazar da', 'Uç nokta Delta biçimi kullanmaz', 'Ambar, Power BI anlam modellerine kaynak olarak bağlanamaz', 'Uç nokta yalnızca KQL destekler'], a: 0, why: 'SQL analiz uç noktası lakehouse tablolarına salt okunur T-SQL erişimi (ve görünümler) verir; veri Spark ya da veri akışıyla yazılır. Ambar INSERT, UPDATE, MERGE gibi yazma komutlarını destekler.' },
     { t: 'mc', q: 'Direct Lake modelde “yenileme” (çerçeveleme) neden genellikle saniyeler sürer?', o: ['Veri her sorguda kaynaktan SQL ile çekildiği için', 'Artımlı yenilemedeki gibi yalnızca son birkaç günün verisi yüklendiği için', 'Model en yeni Delta sürümünü işaret eder, veri kopyalanmaz', 'Çerçeveleme yalnızca gece çalıştığı için'], a: 2, why: 'Çerçeveleme Delta günlüğünün meta verisini okuyup modeli en yeni Parquet dosyalarına yönlendirir; Import’taki gibi tüm veri yeniden yüklenmez.' },
     { t: 'mc', q: 'Bir S3 klasörünü kopyalamadan lakehouse’ta göstermek için ne kullanılır?', o: ['Yansıtma', 'İşlem hattında kopyalama etkinliği', 'Veri akışı Gen2', 'Kısayol'], a: 3, why: 'Kısayol (shortcut), ADLS, S3, GCS ya da başka bir OneLake konumundaki veriyi kopyalamadan gösterir. Yansıtma ve kopyalama veriyi OneLake’e çoğaltır.' },
-    { t: 'mc', q: 'Import modelden Direct Lake’e geçerken hangisi <b>değişmez</b>?', o: ['Ölçülerin DAX kodu', 'Power Query adımlarının yeri', 'Hesaplanmış sütunların kullanımı', 'Yenilemenin süresi'], a: 0, why: 'DAX ölçüleri, ilişkiler ve RLS aynı kalır. Power Query dönüşümleri Delta tablolara yazmadan önceye taşınır, hesaplanmış sütunlar desteklenmez, yenileme çerçevelemeye dönüşür.' },
+    { t: 'mc', q: 'Import modelden Direct Lake’e geçerken hangisi <b>değişmez</b>?', o: ['Ölçülerin DAX kodu', 'Power Query adımlarının yeri', 'Hesaplanmış sütunların kullanımı', 'Yenilemenin süresi'], a: 0, why: 'DAX ölçüleri, ilişkiler ve RLS aynı kalır. Power Query dönüşümleri Delta tablolara yazmadan önceye taşınır, hesaplanmış sütun desteği sınırlıdır, yenileme çerçevelemeye dönüşür.' },
     { t: 'query', q: 'Modelin depolama modundan bağımsız çalışan bir DAX sorgusu yaz: her yıl ve müşteri segmenti için <code>[Net Satış]</code> değerini döndür (sütun adı “Net Satış”).', start: 'EVALUATE\n', sol: 'EVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], Musteriler[Segment], "Net Satış", [Net Satış])', hint: 'SUMMARIZECOLUMNS(Tarih[Yil], Musteriler[Segment], "Net Satış", [Net Satış])' }
   ]
 });

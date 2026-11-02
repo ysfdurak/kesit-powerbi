@@ -188,7 +188,7 @@ D.push({ id: 'kohort', name: 'Kohort ve Tutma', icon: 'KO', lv: 'C1', audience: 
   ],
   build: [
     ['Soru ve kitle', 'Büyüme ekibi: kazanılan müşteriler kalıyor mu? Kohort analizi, toplam müşteri sayısının gizlediği kaybı görünür kılar.', []],
-    ['Hesaplanmış sütunlar', 'Musteriler[IlkSiparis] (CALCULATE ile bağlam geçişi), Musteriler[KohortAy], Satislar[KohortAyFarki] (RELATED ile). Formüller Veri Modeli sayfasında.', []],
+    ['Hesaplanmış sütunlar', 'Musteriler[IlkSiparis] (CALCULATE ile bağlam geçişi), Musteriler[KohortAy], Satislar[KohortAyFarki] (RELATED ile). Formüller Anadolu Market modeli sayfasında.', []],
     ['Tutma ölçüsü', 'Aynı sütuna verilen “= 0” filtresi hücrenin ay farkını değiştirir: payda kohort büyüklüğü olur.', ['Kohort Tutma %', 'Yeni Müşteri (Küme)', 'Kayıp Müşteri']],
     ['Matris biçimi', 'Renk skalası 0–%100 arasında sabitlendi; böylece farklı filtrelerde renkler aynı anlamı taşır. Toplamlar kapalı (oranların toplamı anlamsız).', []],
     ['Performans', 'Kohort hesabı, takvim filtresi kaldırılmış (REMOVEFILTERS(Tarih)) DISTINCTCOUNT\'lardan oluşur; ön hesaplanmış sütunlar sayesinde hızlıdır. Kohortu tamamen ölçüyle (her hücrede ilk tarih aramak) hesaplamak çok yavaş olurdu.', []],

@@ -68,7 +68,7 @@ add('dashboard-tasarim', {
 </ol>
 
 <h2>Geri bildirimi toplamak ve ayıklamak</h2>
-<p>Demo sonrası notları ve hizmetteki yorumları tek bir listeye topla. Power BI hizmetinde raporun ya da tek bir görselin üzerine <b>yorum (comment)</b> eklenebilir ve <b>@bahsetme</b> ile bir meslektaş etiketlenebilir; etiketlenen kişiye bildirim gider. Sonra her maddeyi bir türe ayır:</p>
+<p>Demo sonrası notları ve Service’teki yorumları tek bir listeye topla. Power BI Service’te raporun ya da tek bir görselin üzerine <b>yorum (comment)</b> eklenebilir ve <b>@bahsetme</b> ile bir meslektaş etiketlenebilir; etiketlenen kişiye bildirim gider. Sonra her maddeyi bir türe ayır:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Tür</th><th>Örnek</th><th>Ne yaparsın?</th></tr>
 <tr><td><b>Hata</b></td><td>“Aralık satışı finans tablosundan farklı.”</td><td>Hemen incele; doğrula ya da farkın nedenini açıkla.</td></tr>
@@ -123,7 +123,7 @@ add('dashboard-tasarim', {
     { t: 'mc', q: 'Yöneticiye aylık sonucu anlatan bir e-postanın ilk cümlesi hangisi olmalı?',
       o: ['Verinin hangi kaynaklardan nasıl alındığı', 'Kullanılan DAX ölçülerinin kısa bir listesi', 'Rapor sayfalarının ekran görüntüleri', 'Cevap: ay geçen aya göre %5,6 arttı'], a: 3,
       why: 'Yöneticiye önce cevap verilir, sonra kanıt, en son öneri. Yöntem ve teknik ayrıntı, sorulursa ya da ekte verilir.' },
-    { t: 'mc', q: 'Hizmetteki bir rapora gelen yorum: “Bu sayıya iadeler dahil mi?” Bu geri bildirim hangi türe girer ve ne yaparsın?',
+    { t: 'mc', q: 'Service’teki bir rapora gelen yorum: “Bu sayıya iadeler dahil mi?” Bu geri bildirim hangi türe girer ve ne yaparsın?',
       o: ['Veri sorusu: tanımı açıkla ve not et', 'Hata: ölçüyü hemen değiştirip yayımla', 'Yeni talep: ayrı bir rapor projesi aç', 'Tercih: bir sonraki sürüme bırak'], a: 0,
       why: 'Kullanıcı bir tanımı soruyor; bu bir hata değil. Tanımı açıklarsın; aynı soru tekrar ediyorsa tanımı araç ipucuna ya da “Hakkında” sayfasına eklersin.' },
     { t: 'mc', q: 'Talep sahibi “Ne zaman biter?” diye soruyor; işin bir kısmı henüz erişimin olmayan bir veri kaynağına bağlı. En iyi cevap hangisi?',
@@ -354,7 +354,7 @@ FILTER(
 <p>Kural basit: <b>satır düzeyinde ve sabit</b> olan iş kaynağa ya da Power Query’ye, <b>filtreye göre değişen</b> iş DAX’a. Kategori payını SQL’de sabit bir sütun olarak hesaplarsan, kullanıcı dilimleyiciden bir yıl seçtiğinde pay yanlış kalır.</p>
 
 <h2>Sorgu katlama ve yerel sorgu riskleri</h2>
-<p>Power Query, gezginden seçtiğin bir tabloda yaptığın filtre ve gruplama adımlarını çoğu zaman kendisi SQL’e çevirip veritabanına gönderir; buna <b>sorgu katlama (query folding)</b> denir. Gezgin ile yerel SQL sorgusu arasındaki seçimi ve katlamayı korumanın yolunu “Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile hizmet” dersinde gördük; katlamanın temelleri “Power Query: birleştirme, ekleme, özetten çıkarma” dersinde. Burada yalnızca analistin bilmesi gereken riskleri toplayalım:</p>
+<p>Power Query, gezginden seçtiğin bir tabloda yaptığın filtre ve gruplama adımlarını çoğu zaman kendisi SQL’e çevirip veritabanına gönderir; buna <b>sorgu katlama (query folding)</b> denir. Gezgin ile yerel SQL sorgusu arasındaki seçimi ve katlamayı korumanın yolunu “Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service” dersinde gördük; katlamanın temelleri “Power Query: birleştirme, ekleme, özetten çıkarma” dersinde. Burada yalnızca analistin bilmesi gereken riskleri toplayalım:</p>
 <ul>
 <li><b>Katlama çoğu zaman biter:</b> Yerel bir SQL sorgusundan sonra eklenen Power Query adımlarının kaynağa katlanması yalnızca bazı bağlayıcılarda mümkündür. Geri kalan adımlar bilgisayarında ya da ağ geçidinde çalışır ve yenileme yavaşlar.</li>
 <li><b>Yan etki riski:</b> Microsoft Learn’e göre yerel sorguların amacı veriyi değiştirmemektir, ama Power Query bunun garantisini vermez. Bu yüzden Desktop, bağlayıcı penceresi dışında çalışan her yeni sorgu metni için onay ister (Seçenekler → Güvenlik → “Require user approval for new native database queries”). Başkasının yazdığı sorguyu senin kimlik bilgilerinle çalıştırmadan önce oku.</li>
@@ -394,7 +394,7 @@ ORDER BY Yil;</pre>
       o: ['Pay 2024’e göre doğru biçimde değişir', 'Görsel bir hesaplama hatası gösterir', 'Pay 2024’e göre yeniden hesaplanmaz', 'Görünüm dilimleyiciyle yeniden çalışır'], a: 2,
       why: 'SQL sonucu yenileme anında bir kez hesaplanır; dilimleyici onu değiştirmez. Filtreye göre değişmesi gereken oranlar DAX ölçüsü olarak yazılır.' },
     { t: 'mc', q: 'Bir meslektaşın raporunda, Power Query’de elle yazılmış uzun bir yerel SQL sorgusu var ve sonrasında birçok Power Query adımı eklenmiş. En olası sorun hangisi?',
-      o: ['Adımlar katlanmayabilir, yenileme yavaşlar', 'DAX ölçüleri bu tabloyla hiç çalışmaz', 'Rapor hizmette hiçbir zaman yayımlanamaz', 'Tablo kendiliğinden DirectQuery moduna geçer'], a: 0,
+      o: ['Adımlar katlanmayabilir, yenileme yavaşlar', 'DAX ölçüleri bu tabloyla hiç çalışmaz', 'Rapor Service’te hiçbir zaman yayımlanamaz', 'Tablo kendiliğinden DirectQuery moduna geçer'], a: 0,
       why: 'Yerel sorgudan sonra katlama yalnızca bazı bağlayıcılarda mümkündür. Katlanmayan adımlar kaynağa değil bilgisayarına ya da ağ geçidine yük bindirir. Çözüm genellikle mantığı bir SQL görünümüne taşımaktır.' }
   ]
 });
@@ -405,7 +405,7 @@ add('vaka-pazar', {
   title: 'Portföy, CV ve ilk 90 gün: Power BI işine hazırlanmak',
   sum: 'İşe alan yöneticinin ne aradığını bil; 2–3 portföy projesi seç ve şirket verisi sızdırmadan yayımla; proje README’si ve ölçülebilir CV maddeleri yaz; iş ilanını oku, ev ödevini çöz ve ilk 90 günü planla.',
   body: `
-<p>Bu patikanın sonunda elinde onlarca alıştırma ve birkaç vaka çalışması var. İşe alan yönetici bunların hepsini görmeyecek; CV’ne ve portföyüne birkaç dakika bakıp tek bir soru soracak: <i>“Bu kişi bizim ekipte, bizim verimizle, kısa sürede iş çıkarabilir mi?”</i> Bu ders o soruya kanıt hazırlamayı ve işe başladıktan sonraki ilk üç ayı anlatıyor. Teknik mülakat soruları “DAX ve Power BI mülakatına hazırlık” dersinde.</p>
+<p>Bu öğrenme yolunun sonunda elinde onlarca alıştırma ve birkaç vaka çalışması var. İşe alan yönetici bunların hepsini görmeyecek; CV’ne ve portföyüne birkaç dakika bakıp tek bir soru soracak: <i>“Bu kişi bizim ekipte, bizim verimizle, kısa sürede iş çıkarabilir mi?”</i> Bu ders o soruya kanıt hazırlamayı ve işe başladıktan sonraki ilk üç ayı anlatıyor. Teknik mülakat soruları “DAX ve Power BI mülakatına hazırlık” dersinde.</p>
 
 <h2>İşe alan yönetici ne görmek ister?</h2>
 <div class="tbl-wrap"><table>
@@ -421,7 +421,7 @@ add('vaka-pazar', {
 <h2>2–3 portföy projesi seçmek</h2>
 <p>On yarım proje yerine üç bitmiş proje göster. Her biri farklı bir beceriyi kanıtlasın:</p>
 <ol>
-<li><b>Uçtan uca bir rapor:</b> veri alma, temizlik, model, ölçüler, tasarım, yayımlama. Patikanın bitirme projesi tam olarak bu (Kariyer bölümündeki “Bitirme projeleri” sayfası ve “Bitirme projesine hazırlık” dersi).</li>
+<li><b>Uçtan uca bir rapor:</b> veri alma, temizlik, model, ölçüler, tasarım, yayımlama. Bu öğrenme yolunun bitirme projesi tam olarak bu (Kariyer bölümündeki “Bitirme projeleri” sayfası ve “Bitirme projesine hazırlık” dersi).</li>
 <li><b>Derin bir analiz:</b> bir soruya cevap veren vaka. Örnekler: “Vaka: müşteri kaybı (churn)”, “Vaka: e-ticaret dönüşüm hunisi ve kargo”, “Vaka: pazar payı ve rakip karşılaştırması”.</li>
 <li><b>Hedeflediğin sektöre yakın bir proje:</b> perakende için “Vaka: stok analizi”, finans için “Vaka: kredi portföyü ve geri ödeme planı”, insan kaynakları için “Vaka: İK analitiği”.</li>
 </ol>
@@ -459,7 +459,7 @@ add('vaka-pazar', {
 <p>Portföy projesinden gelen bir sayıyı iş deneyimi gibi gösterme; “kişisel proje” olarak etiketle. Mülakatta her maddenin ayrıntısı sorulabilir.</p>
 
 <h2>İş ilanını okumak</h2>
-<p>İlanlar genellikle ikiye ayrılır: <b>zorunlu (must-have)</b> ve <b>tercih sebebi (nice-to-have)</b>. Örnek bir “Junior BI Analisti” ilanı:</p>
+<p>İlanlar genellikle ikiye ayrılır: <b>zorunlu (must-have)</b> ve <b>tercih sebebi (nice-to-have)</b>. Örnek bir “BI Analisti (başlangıç düzeyi)” ilanı:</p>
 <div class="tbl-wrap"><table>
 <tr><th>İlandaki madde</th><th>Tür</th><th>Hazırlığın</th></tr>
 <tr><td>Power BI ile rapor ve veri modeli geliştirme</td><td>Zorunlu</td><td>Bitirme projesi, yıldız şema</td></tr>
@@ -505,13 +505,13 @@ add('vaka-pazar', {
       o: ['Web’de yayımla ile herkese açık bağlantı', 'Eski işyerinin verisiyle, adları değiştirerek', 'Kurgusal veriyle PDF, kısa video ve PBIP deposu', 'Raporu .pbix olarak e-postayla, veriyle birlikte'], a: 2,
       why: 'Web’de yayımla bağlantısını internetteki herkes giriş yapmadan açabilir ve model verisi açığa çıkabilir. Şirket verisi ad değiştirilse de paylaşılmaz. Kurgusal veriyle hazırlanmış PDF, video ve PBIP deposu güvenli yollardır.' },
     { t: 'mc', q: 'Hangisi “eylem + araç + ölçülebilir sonuç” formülüne uyan bir CV maddesidir?',
-      o: ['Power BI, DAX ve SQL konularında çok deneyimliyim.', 'Raporu Power BI’a taşıdım; 3 saatlik hazırlık kalktı.', 'Birçok farklı rapor ve dashboard projesi geliştirdim.', 'Takım çalışmasına yatkın ve öğrenmeye açık biriyim.'], a: 1,
+      o: ['Power BI, DAX ve SQL konularında çok deneyimliyim.', 'Raporu Power BI’a taşıdım; 3 saatlik hazırlık kalktı.', 'Birçok farklı rapor ve rapor projesi geliştirdim.', 'Takım çalışmasına yatkın ve öğrenmeye açık biriyim.'], a: 1,
       why: 'İkinci seçenekte eylem (taşıdım), araç (Power BI) ve ölçülebilir sonuç (3 saatlik hazırlığın kalkması) birlikte var. Diğerleri kanıtsız genel ifadeler.' },
     { t: 'mc', q: 'Bir ilanda “Zorunlu: Power BI, DAX, SQL. Tercih sebebi: PL-300, Fabric” yazıyor. Sende ilk üçü var, sertifika yok. Ne yaparsın?',
       o: ['Sertifikayı alana kadar başvurmam', 'Başvururum; zorunluları kanıtla eşlerim', 'Sertifikam varmış gibi CV’ye yazarım', 'Yalnızca Fabric isteyen ilanlara bakarım'], a: 1,
       why: 'Tercih sebepleri eleme ölçütü değildir. Zorunluları karşılıyorsan başvurursun ve kanıtlarını öne çıkarırsın. CV’de olmayan bir sertifikayı yazmak dürüstlük sorunudur.' },
     { t: 'mc', q: 'Yeni işindeki ilk ayında en değerli çıktı hangisidir?',
-      o: ['Tüm raporları yeni bir temayla baştan tasarlamak', 'Rapor envanteri ve veri kaynağı haritası', 'Kendi beğendiğin yeni bir dashboard yayımlamak', 'Kullanılmayan eski raporları hemen silmek'], a: 1,
+      o: ['Tüm raporları yeni bir temayla baştan tasarlamak', 'Rapor envanteri ve veri kaynağı haritası', 'Kendi beğendiğin yeni bir rapor yayımlamak', 'Kullanılmayan eski raporları hemen silmek'], a: 1,
       why: 'İlk ay öğrenme dönemidir. Hangi raporun kim tarafından kullanıldığını ve verinin nereden geldiğini bilmeden yapılan değişiklikler, birinin günlük işini bozabilir.' },
     { t: 'mc', q: 'Ev ödevinde kategori hedef gerçekleşmesini hesaplarken neden Kategoriler[Kategori] sütununu kullanmak gerekir?',
       o: ['Daha kısa yazıldığı için', 'Urunler tablosu gizli olduğu için', 'Biçimlendirme yalnızca bu sütunda çalıştığı için', 'Hedefler tablosu bu tabloya bağlı'], a: 3,

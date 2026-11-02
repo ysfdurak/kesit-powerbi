@@ -347,7 +347,7 @@ CREATE TABLE price_updates (
       Calisanlar: 'Çalışanlar. YoneticiNo aynı tablodaki yöneticiyi gösterir (ebeveyn-çocuk). Yol = PATH(...) ile hesaplanır. Satış ekibi Satislar[TemsilciNo] üzerinden bağlı; dinamik RLS için Eposta sütunu kullanılır.',
       Departmanlar: 'Kar tanesi (snowflake) örneği: Calisanlar → Departmanlar.',
       StokGorunum: 'Aylık stok görüntüsü (ay sonu). Yarı toplanabilir: ürünler arasında toplanır, aylar arasında toplanmaz; dönem sonu değeri alınır.',
-      WebOlaylari: 'Web sitesi olayları (Ekim–Kasım 2024): Ziyaret → Ürün görüntüleme → Sepete ekleme → Ödeme → Satın alma. Dönüşüm hunisi dashboardu için.',
+      WebOlaylari: 'Web sitesi olayları (Ekim–Kasım 2024): Ziyaret → Ürün görüntüleme → Sepete ekleme → Ödeme → Satın alma. Dönüşüm hunisi raporu için.',
       DovizKurlari: 'Aylık ortalama döviz kurları (yaklaşık değerler, eğitim amaçlı). Bağlantısız; para birimi dönüşümü kalıbında kullanılır.',
       ParaBirimleri: 'Bağlantısız seçim tablosu: TRY / USD / EUR.',
       FiyatSenaryosu: 'Ne olur (what-if) parametresi: −%20 … +%20 fiyat değişimi. Modelleme → Yeni parametre ile oluşturulur.',

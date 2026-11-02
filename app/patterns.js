@@ -1,5 +1,5 @@
-/* Kesit Power BI — Ölçü Laboratuvarı: seviyeye göre uzayan DAX kalıpları.
-   Her kalıp kütüphaneye de eklenir; dashboardlar bu ölçüleri kullanır. */
+/* Kesit Power BI — Measure Lab: seviyeye göre uzayan DAX kalıpları.
+   Her kalıp kütüphaneye de eklenir; raporlar bu ölçüleri kullanır. */
 (function (root) {
 const P = [
 /* ======================= B1 ======================= */
@@ -481,7 +481,7 @@ RETURN
     ['REMOVEFILTERS(Tarih)', 'Takvim dilimleyicisi kohort hesabını bozmasın.'],
     ['RETURN', 'Oran. 0. sütun her zaman %100\'dür.']
   ],
-  pitfall: 'KohortAy ve KohortAyFarki hesaplanmış sütunlardır (Veri Modeli sayfasında formülleri var). Kohortu ölçüyle hesaplamak mümkündür ama her hücrede tüm müşterilerin ilk tarihini bulmak çok yavaştır; burada ön hesaplama doğru tercihtir.',
+  pitfall: 'KohortAy ve KohortAyFarki hesaplanmış sütunlardır (Anadolu Market modeli sayfasında formülleri var). Kohortu ölçüyle hesaplamak mümkündür ama her hücrede tüm müşterilerin ilk tarihini bulmak çok yavaştır; burada ön hesaplama doğru tercihtir.',
   uses: ['kohort'] },
 
 { id: 'senaryo', lv: 'C1', name: 'Senaryo Satışı', fmt: 'para', group: 'Parametre', axis: 'Kategoriler[Kategori]', slicers: [['Tarih', 'Yil', [2024]], ['FiyatSenaryosu', 'FiyatDegisimi', [0.1]]], chart: 'bar',
@@ -648,7 +648,7 @@ RETURN
         BLANK()
     )`,
   steps: [
-    ['Eksen', 'Eksende Urunler değil UrunlerVeDiger kullanılır: ürün adları + fazladan bir “Diğer” satırı olan bağlantısız tablo (Veri Modeli\'nde formülü var).'],
+    ['Eksen', 'Eksende Urunler değil UrunlerVeDiger kullanılır: ürün adları + fazladan bir “Diğer” satırı olan bağlantısız tablo (Anadolu Market modelinde formülü var).'],
     ['Siralama / IlkN', 'Tüm ürünler satışa göre sıralanır, ilk N tutulur.'],
     ['IlkNToplam / Genel', 'İlk N\'in toplamı ve tüm ürünlerin toplamı.'],
     ['IlkNde', 'Eksendeki ürün ilk N içinde mi? ISEMPTY, FILTER sonucunun boş olup olmadığını hızlıca söyler.'],

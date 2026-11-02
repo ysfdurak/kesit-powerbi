@@ -169,7 +169,7 @@ RETURN TOPN(10, Riskli, [Ciro], DESC)</pre>
       hint:'CALCULATE([Net Satış], REMOVEFILTERS(Tarih), FILTER(VALUES(Musteriler[MusteriNo]), …180+ koşulu…)). Hiç siparişi olmayan müşteriyi NOT ISBLANK ile dışarıda bırak.',
       grid:[{t:'Musteriler',c:'Segment'},{t:'Musteriler',c:'YasGrubu'}] },
     { t:'mc', q:'Kayıp ölçüsünde “bugün” olarak neden <code>TODAY()</code> yerine veri sonu tarihini (31.12.2024) kullandık?',
-      o:['TODAY() bu motorda ve Power BI hizmetinde desteklenmeyen bir fonksiyondur','Sabit bir veri sonu tarihi TODAY() fonksiyonuna göre daha hızlı hesaplanır','TODAY() takvimle ilerler; veri bitse de sessiz gün büyür','TODAY() yalnızca hesaplanmış sütunlarda çalışır, ölçüde sonuç vermez'], a:2,
+      o:['TODAY() bu motorda ve Power BI Service’te desteklenmeyen bir fonksiyondur','Sabit bir veri sonu tarihi TODAY() fonksiyonuna göre daha hızlı hesaplanır','TODAY() takvimle ilerler; veri bitse de sessiz gün büyür','TODAY() yalnızca hesaplanmış sütunlarda çalışır, ölçüde sonuç vermez'], a:2,
       why:'Model 31.12.2024’te biten bir anlık görüntü. TODAY() kullanılırsa sessiz gün sayısı veriden değil takvimden büyür; birkaç ay sonra neredeyse herkes “kayıp” olur. Veri sonu, analizi verinin kendisine bağlar.' },
     { t:'mc', q:'Kampanya bütçesi yalnızca bir grup için yetiyor. Bulgulara göre <b>en mantıklı ilk hedef</b> hangisi?',
       o:['Risk listesindeki 20 müşteri','Kayıp oranı %40 olan Konya','Tüm 55+ yaş grubu','Hiç sipariş vermemiş 14 kayıtlı müşteri'], a:0,
@@ -627,7 +627,7 @@ add('dashboard-tasarim', {
 <li>Temsilcilerin performansı nasıl ve bu karşılaştırma adil mi?</li>
 <li>Kartların üstünde tek cümlelik, seçime göre değişen bir yönetici özeti.</li>
 </ol>
-<p>Sayfa düzeni ve KPI ilkeleri için <b>Dashboard tasarımı: bir vaka çalışması</b>, farklı ayrıntı düzeyindeki hedefler için <b>Hedef ve gerçekleşen</b> dersine dayanıyoruz.</p>
+<p>Sayfa düzeni ve KPI ilkeleri için <b>Rapor tasarımı: bir vaka çalışması</b>, farklı ayrıntı düzeyindeki hedefler için <b>Hedef ve gerçekleşen</b> dersine dayanıyoruz.</p>
 
 <h2>2. Veri ve model</h2>
 <div class="tbl-wrap"><table>

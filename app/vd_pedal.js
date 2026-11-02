@@ -33,7 +33,7 @@
     { name: 'bk_bikes', kind: 'dim', desc: 'Bisikletler (700)', cols: [
       ['bike_id', 'Tam sayı', 'Bisiklet numarası (anahtar)'],
       ['model', 'Metin', 'klasik / elektrikli'],
-      ['commissioned', 'Tarih', 'Hizmete giriş tarihi']] },
+      ['commissioned', 'Tarih', 'Service’e giriş tarihi']] },
     { name: 'bk_users', kind: 'dim', desc: 'Kullanıcılar (6.000)', cols: [
       ['user_id', 'Tam sayı', 'Kullanıcı numarası (anahtar)'],
       ['user_type', 'Metin', 'abone / tek seferlik'],
@@ -142,7 +142,7 @@
         'Çizgi grafik: X = bk_trips[Saat], açıklama = Takvim[HaftaSonu], Y = Yolculuk Sayısı (hafta içi iki zirve, hafta sonu tek öğleden sonra tepesi)',
         'Kartlar: Yağmurlu Saat Sayısı, Yağmurda Saatlik Yolculuk ve kuru saatle kıyas (Yağmur Etkisi % ölçüsü)',
         'Dağılım grafiği: X = günlük toplam yağış (SUM(bk_weather[rain_mm])), Y = Yolculuk Sayısı, ayrıntı = Takvim[Tarih]'
-      ], interactions: ['<b>Alan parametresi (field parameter)</b>: Y eksenini Yolculuk Sayısı / Gelir / Toplam Km arasında değiştir', '<b>Yer imleri (bookmarks)</b>: “Hafta içi” ve “Hafta sonu” görünümleri arasında düğmeyle geçiş'] },
+      ], interactions: ['<b>Alan parametresi (field parameter)</b>: Y eksenini Yolculuk Sayısı / Gelir / Toplam Km arasında değiştir', '<b>Yer işaretleri (bookmarks)</b>: “Hafta içi” ve “Hafta sonu” görünümleri arasında düğmeyle geçiş'] },
       { name: 'İstasyonlar ve denge', purpose: 'Operasyon: hangi istasyon boşalıyor, hangisi doluyor; kamyon rotası nereye?', visuals: [
         'Harita (Azure Maps ya da Harita): enlem/boylam = bk_stations[lat]/[lon], kabarcık boyutu = Yolculuk Sayısı, renk = İstasyon Dengesi (ıraksak renk: artı kırmızı, eksi mavi)',
         'Tablo: bk_stations[name], [district], Yolculuk Sayısı, Varış Sayısı, İstasyon Dengesi, İstasyon Sırası; dengeye göre sıralı, veri çubukları',

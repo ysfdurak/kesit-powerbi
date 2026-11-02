@@ -1,4 +1,4 @@
-/* Kesit Power BI — “Sık karıştırılanlar” kartları ve belirtiye göre “Sık yapılan hatalar” kataloğu. */
+/* Kesit Power BI — “Sık karıştırılanlar” kartları ve belirtiye göre “Sık hatalar” kataloğu. */
 (function (W) {
 'use strict';
 
@@ -427,22 +427,22 @@ W.PBI_CONFUSED = [
 
 /* ---------------- Hizmet ---------------- */
 {
-  id: 'rapor-pano-uygulama', area: 'Hizmet', lesson: 'aile',
+  id: 'rapor-pano-uygulama', area: 'Service', lesson: 'aile',
   title: 'Rapor / Pano (dashboard) / Uygulama (app)',
   items: [
-    { n: 'Rapor', d: 'Bir anlam modeline dayanan, çok sayfalı, etkileşimli görsel koleksiyonu; Desktop’ta veya hizmette oluşturulur.' },
-    { n: 'Pano (dashboard)', d: 'Yalnızca hizmette, tek sayfalık; farklı rapor ve modellerden sabitlenmiş kutucuklardan oluşur.' },
-    { n: 'Uygulama (app)', d: 'Bir çalışma alanındaki rapor ve panoları paketleyip izleyici kitlesine düzenli bir gezintiyle dağıtma yolu.' }
+    { n: 'Rapor', d: 'Bir anlam modeline dayanan, çok sayfalı, etkileşimli görsel koleksiyonu; Desktop’ta veya Service’te oluşturulur.' },
+    { n: 'Pano (dashboard)', d: 'Yalnızca Service’te, tek sayfalık; farklı rapor ve modellerden sabitlenmiş kutucuklardan oluşur.' },
+    { n: 'Uygulama (app)', d: 'Bir çalışma alanındaki rapor ve panoları paketleyip kitlesine düzenli bir gezintiyle dağıtma yolu.' }
   ],
   rule: 'Analiz ve keşif için rapor; birden çok rapordan en önemli sayıları tek bakışta izlemek için pano; tüketicilere düzenli, sürüm kontrollü dağıtım için uygulama.',
   quiz: [
-    { q: 'Hangisi Power BI Desktop’ta oluşturulamaz?', o: ['Rapor', 'Anlam modeli', 'Detaylandırma sayfası', 'Pano'], a: 3, why: 'Panolar yalnızca Power BI hizmetinde, rapor görsellerini sabitleyerek oluşturulur. Rapor ve model Desktop’ta da yapılır.' },
+    { q: 'Hangisi Power BI Desktop’ta oluşturulamaz?', o: ['Rapor', 'Anlam modeli', 'Detaylandırma sayfası', 'Pano'], a: 3, why: 'Panolar yalnızca Power BI Service’te, rapor görsellerini sabitleyerek oluşturulur. Rapor ve model Desktop’ta da yapılır.' },
     { q: 'Panodaki bir kutucuğa tıklayınca ne olur (varsayılan)?', o: ['Kutucuk büyür ve düzenlenir', 'Uyarı kurulur', 'Veri dışa aktarılır', 'Kaynak rapora gidilir'], a: 3, why: 'Sabitlenmiş kutucuk varsayılan olarak kaynak rapor sayfasına bağlantıdır. Bu, panonun bir “giriş kapısı” olarak kullanılmasını sağlar.' },
     { q: 'Yüzlerce tüketiciye çalışma alanına erişim vermeden içerik dağıtmanın önerilen yolu?', o: ['Herkesi Görüntüleyici yapmak', 'Uygulama yayımlamak', 'Raporu PDF olarak e-postalamak', 'Web’de yayımla'], a: 1, why: 'Uygulama, tüketicilere çalışma alanını göstermeden seçilmiş içeriği ve gezintiyi sunar; geliştirme ile yayımlanan sürüm ayrı tutulur. Web’de yayımla içeriği herkese açık yapar.' }
   ]
 },
 {
-  id: 'calisma-alani-rolleri', area: 'Hizmet', lesson: 'yonetisim',
+  id: 'calisma-alani-rolleri', area: 'Service', lesson: 'yonetisim',
   title: 'Çalışma alanı rolleri: Yönetici / Üye / Katkıda bulunan / Görüntüleyici',
   items: [
     { n: 'Yönetici (Admin)', d: 'Her şeyi yapar; çalışma alanını güncelleyip silebilir, diğer yöneticileri ekleyip çıkarabilir.' },
@@ -458,18 +458,18 @@ W.PBI_CONFUSED = [
   ]
 },
 {
-  id: 'rls-ols', area: 'Hizmet', lesson: 'guvenlik',
+  id: 'rls-ols', area: 'Service', lesson: 'guvenlik',
   title: 'RLS / OLS',
   items: [
     { n: 'RLS (satır düzeyi güvenlik)', d: 'Rol içindeki DAX filtresiyle kullanıcının göreceği SATIRLARI kısıtlar; tablo ve sütunlar görünür kalır.' },
     { n: 'OLS (nesne düzeyi güvenlik)', d: 'Belirli tablo veya sütunları rol için tamamen gizler; o alanı kullanan görseller “alan bulunamadı” hatası verir.' }
   ],
   rule: '“Kim hangi bölgenin verisini görür?” sorusu RLS; “maaş sütununu kim hiç görmemeli?” sorusu OLS. İkisi de yalnızca Görüntüleyici izniyle erişenlere uygulanır.',
-  body: 'RLS rolleri Desktop’ta Modelleme > Rolleri yönet ile tanımlanır. OLS kuralları TMDL görünümünde betikle ya da Tabular Editor gibi harici araçla (metadataPermission: none) tanımlanır. Rollere kişi ve grup ataması hizmette, anlam modelinin Güvenlik sayfasında yapılır.',
+  body: 'RLS rolleri Desktop’ta Modelleme > Rolleri yönet ile tanımlanır. OLS kuralları TMDL görünümünde betikle ya da Tabular Editor gibi harici araçla (metadataPermission: none) tanımlanır. Rollere kişi ve grup ataması Service’te, anlam modelinin Güvenlik sayfasında yapılır.',
   quiz: [
     { q: 'İK dışındakilerin Calisanlar[Maas] sütununu hiç görmemesi isteniyor; diğer sütunlar herkese açık. Hangisi?', o: ['Gizli sütun', 'RLS', 'OLS', 'Görsel düzeyi filtre'], a: 2, why: 'OLS bir sütunu rol için meta veri dahil gizler. Sütunu modelde gizlemek yalnızca alan listesinden saklar, güvenlik sağlamaz.' },
-    { q: 'Dinamik RLS’te kullanıcının e-postasına göre filtre için hangi fonksiyon kullanılır?', o: ['`USERPRINCIPALNAME()`', '`SELECTEDVALUE(Kullanicilar[Eposta])`', '`LOOKUPVALUE()`', '`USERELATIONSHIP()`'], a: 0, why: 'USERPRINCIPALNAME, hizmette oturum açan kullanıcının UPN’sini (genelde e-posta) döndürür; rol filtresinde kullanıcı tablosuyla eşleştirilir.' },
-    { q: 'Hizmette “Rol olarak test et” ile dinamik RLS denerken `USERPRINCIPALNAME()` neyi döndürür?', o: ['Seçilen kişinin UPN’sini', 'BLANK', 'Rol adını', 'Kendi UPN’ni'], a: 3, why: 'Microsoft Learn’e göre bu özellik dinamik RLS ifadelerini değerlendirirken test edenin kendi kimliğini kullanır; yani simüle etmeye çalıştığın kişinin değil, senin UPN’in döner.' }
+    { q: 'Dinamik RLS’te kullanıcının e-postasına göre filtre için hangi fonksiyon kullanılır?', o: ['`USERPRINCIPALNAME()`', '`SELECTEDVALUE(Kullanicilar[Eposta])`', '`LOOKUPVALUE()`', '`USERELATIONSHIP()`'], a: 0, why: 'USERPRINCIPALNAME, Service’te oturum açan kullanıcının UPN’sini (genelde e-posta) döndürür; rol filtresinde kullanıcı tablosuyla eşleştirilir.' },
+    { q: 'Service’te “Rol olarak test et” ile dinamik RLS denerken `USERPRINCIPALNAME()` neyi döndürür?', o: ['Seçilen kişinin UPN’sini', 'BLANK', 'Rol adını', 'Kendi UPN’ni'], a: 3, why: 'Microsoft Learn’e göre bu özellik dinamik RLS ifadelerini değerlendirirken test edenin kendi kimliğini kullanır; yani simüle etmeye çalıştığın kişinin değil, senin UPN’in döner.' }
   ]
 }
 ];
@@ -669,14 +669,14 @@ W.PBI_MISTAKES = [
   tags: ['query folding', 'sorgu katlama', 'yavaş yenileme', 'yerel sorgu', 'native query', 'performans']
 },
 {
-  id: 'kimlik-bilgisi', area: 'Hizmet', lesson: 'yayinlama',
-  sym: 'Hizmette zamanlanmış yenileme başarısız: kimlik bilgileri geçersiz / eksik',
-  cause: 'Yayımlanan anlam modelinin veri kaynağı kimlik bilgileri hizmette girilmemiş, süresi dolmuş ya da şirket içi kaynak için ağ geçidi eşlenmemiş.',
+  id: 'kimlik-bilgisi', area: 'Service', lesson: 'yayinlama',
+  sym: 'Service’te zamanlanmış yenileme başarısız: kimlik bilgileri geçersiz / eksik',
+  cause: 'Yayımlanan anlam modelinin veri kaynağı kimlik bilgileri Service’te girilmemiş, süresi dolmuş ya da şirket içi kaynak için ağ geçidi eşlenmemiş.',
   fix: 'Anlam modeli Ayarlar’ında Veri kaynağı kimlik bilgilerini düzenle; şirket içi kaynaklarda ağ geçidi bağlantısını eşle. Sonra Şimdi yenile ile dene.',
   tags: ['yenileme hatası', 'kimlik bilgisi', 'credentials', 'ağ geçidi', 'gateway', 'refresh failed']
 },
 {
-  id: 'rls-herkes-goruyor', area: 'Hizmet', lesson: 'guvenlik',
+  id: 'rls-herkes-goruyor', area: 'Service', lesson: 'guvenlik',
   sym: 'RLS tanımlı ama bir kullanıcı tüm bölgeleri görüyor',
   cause: 'Kullanıcı çalışma alanında Yönetici, Üye veya Katkıda bulunan rolünde. Bu rollerin model üzerinde düzenleme izni vardır ve RLS onlara uygulanmaz; RLS yalnızca Görüntüleyici izniyle erişenleri kısıtlar.',
   fix: 'Tüketicilere çalışma alanında yalnızca Görüntüleyici rolü ver ya da içeriği uygulama ile paylaş; kullanıcıyı anlam modelinin Güvenlik sayfasında doğru role ata ve “Rol olarak test et” ile doğrula.',

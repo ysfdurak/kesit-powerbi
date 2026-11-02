@@ -117,7 +117,7 @@ M.rels.push(
   { from: 'Projeler', fromCol: 'DepartmanNo', to: 'Departmanlar', toCol: 'DepartmanNo' }
 );
 Object.assign(M.notes || (M.notes = {}), {
-  Giderler: 'Olgu: e-ticaret biriminin aylık faaliyet giderleri (gider türü × ay). Kurgusal; satış ve sipariş hacminden türetildi. Calisanlar[Maas] şirketin tüm çalışanlarını gösterir; buradaki Personel gideri yalnızca e-ticaret birimine dağıtılan paydır, ikisi oranlanmaz. Gelir tablosu (P&L) dashboardunda brüt kârdan düşülür.',
+  Giderler: 'Olgu: e-ticaret biriminin aylık faaliyet giderleri (gider türü × ay). Kurgusal; satış ve sipariş hacminden türetildi. Calisanlar[Maas] şirketin tüm çalışanlarını gösterir; buradaki Personel gideri yalnızca e-ticaret birimine dağıtılan paydır, ikisi oranlanmaz. Gelir tablosu (P&L) raporunda brüt kârdan düşülür.',
   GiderButce: 'Olgu: aylık gider bütçesi (gider türü × ay). Gider ile aynı ayrıntı düzeyinde; ikisi GiderTurleri ve Tarih üzerinden karşılaştırılır.',
   GiderTurleri: 'Boyut: 6 gider türü ve grubu. Giderler ile GiderButce arasında paylaşılan boyut.',
   Talepler: 'Olgu: müşteri hizmetleri talepleri (2023–2024). Kargo gecikmesi ve iade talepleri satışlardan türetildi; Memnuniyet her talepte yok (anket yanıtı).',

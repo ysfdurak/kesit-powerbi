@@ -198,13 +198,13 @@ FILTER(
   ]
 });
 
-/* ---------- 3. Veri bağlantıları: veritabanı, yerel SQL, Desktop ile hizmet (B1) ---------- */
+/* ---------- 3. Veri bağlantıları: veritabanı, yerel SQL, Desktop ile Service (B1) ---------- */
 add('pq-model', {
   id: 'veri-baglantilari', lv: 'B1', mod: 'Veri Hazırlama', min: 18,
-  title: 'Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile hizmet',
-  sum: 'Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta kurulan bağlantının hizmette nasıl yenilendiği.',
+  title: 'Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service',
+  sum: 'Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta kurulan bağlantının Service’te nasıl yenilendiği.',
   body: `
-<p>“Veri alma ve bağlantı modları” dersinde İçeri aktarma ile DirectQuery farkını gördük. Bu ders bir bağlantının yaşam döngüsüne bakıyor: Desktop’ta nasıl kurulur, hangi bilgileri saklar ve rapor yayımlandıktan sonra hizmette neden bazen yenilenmez.</p>
+<p>“Veri alma ve bağlantı modları” dersinde İçeri aktarma ile DirectQuery farkını gördük. Bu ders bir bağlantının yaşam döngüsüne bakıyor: Desktop’ta nasıl kurulur, hangi bilgileri saklar ve rapor yayımlandıktan sonra Service’te neden bazen yenilenmez.</p>
 
 <h2>Verinin yolculuğu ve üç dil</h2>
 <ol>
@@ -212,7 +212,7 @@ add('pq-model', {
 <li><b>Power Query</b>: verinin alınması ve temizlenmesi. Dil: <b>M</b>.</li>
 <li><b>Anlam modeli</b> (semantic model): tablolar, ilişkiler, ölçüler. Dil: <b>DAX</b>.</li>
 <li><b>Rapor</b>: görseller ölçüleri çağırır.</li>
-<li><b>Hizmet</b> (Power BI service): yayımlanan model zamanlanmış olarak yenilenir, rapor paylaşılır.</li>
+<li><b>Service</b> (Power BI Service): yayımlanan model zamanlanmış olarak yenilenir, rapor paylaşılır.</li>
 </ol>
 <div class="tbl-wrap"><table>
 <tr><th>Dil</th><th>Nerede çalışır?</th><th>Ne için?</th></tr>
@@ -262,24 +262,24 @@ in
     Satislar = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data]
 in
     Satislar</pre>
-<p>Hizmette parametre değeri anlam modelinin ayarlarından değiştirilebilir; dağıtım işlem hatlarında (deployment pipelines) her aşama için ayrı değer veren kurallar tanımlanır.</p>
+<p>Service’te parametre değeri anlam modelinin ayarlarından değiştirilebilir; dağıtım işlem hatlarında (deployment pipelines) her aşama için ayrı değer veren kurallar tanımlanır.</p>
 
-<h2>Desktop’tan hizmete: neden yenilenmiyor?</h2>
-<p>Yayımladığında hizmete model, veri ve M kodu gider; <b>kimlik bilgileri gitmez</b>. Zamanlanmış yenilemenin çalışması için hizmetin kaynağa ulaşabilmesi ve oturum açabilmesi gerekir:</p>
+<h2>Desktop’tan Service’e: neden yenilenmiyor?</h2>
+<p>Yayımladığında Service’e model, veri ve M kodu gider; <b>kimlik bilgileri gitmez</b>. Zamanlanmış yenilemenin çalışması için Service’in kaynağa ulaşabilmesi ve oturum açabilmesi gerekir:</p>
 <ul>
 <li><b>Bulut kaynağı</b> (Azure SQL, SharePoint Online): anlam modeli ayarlarında <b>Veri kaynağı kimlik bilgileri</b>’ni gir ya da “Bağlantıları ve ağ geçitlerini yönet” sayfasındaki bir <b>bulut bağlantısını</b> seç.</li>
 <li><b>Şirket içi kaynak</b> (ofisteki SQL Server, ağ klasöründeki Excel): <b>şirket içi veri ağ geçidi</b> (on-premises data gateway) gerekir. Kimlik bilgilerini ağ geçidi yöneticisi tanımlar; senin hesabın o veri kaynağının kullanıcı listesinde olmalı. Kişisel mod ağ geçidi yalnızca tek kullanıcı içindir.</li>
-<li><b>Gizlilik düzeyleri</b>: farklı kaynakları birleştiren sorgularda hizmet de gizlilik düzeylerine (Özel, Kuruluş, Genel) uyar; Desktop’ta çalışan birleştirme hizmette bu yüzden hata verebilir.</li>
+<li><b>Gizlilik düzeyleri</b>: farklı kaynakları birleştiren sorgularda Service de gizlilik düzeylerine (Özel, Kuruluş, Genel) uyar; Desktop’ta çalışan birleştirme Service’te bu yüzden hata verebilir.</li>
 </ul>
 <div class="note"><b>Yenileme sınırları</b>Pro lisansta günde en fazla 8, Premium kişi başı (PPU) ve Premium/Fabric kapasitede 48 zamanlanmış yenileme yapılabilir. Art arda dört başarısız yenilemeden ya da süresi dolmuş kimlik bilgisi gibi düzeltilemez bir hatadan sonra zamanlama kendiliğinden kapanır. İki ay boyunca hiç görüntülenmeyen modelin zamanlaması da duraklatılır.</div>
 
 <h2>Bağlantı hatalarını okumak</h2>
 <div class="tbl-wrap"><table>
 <tr><th>Belirti</th><th>Olası neden</th><th>Ne yapılır?</th></tr>
-<tr><td>“Kimlik bilgileri geçersiz” ya da oturum açma hatası</td><td>Parola değişti, hesap kilitlendi, yanlış kimlik doğrulama türü</td><td>Veri kaynağı ayarlarında (hizmette model ayarlarında) kimliği güncelle.</td></tr>
-<tr><td>“Ağla ilgili ya da örneğe özgü bir hata” (network-related error)</td><td>Sunucu adı yanlış, güvenlik duvarı, VPN kapalı, hizmette ağ geçidi yok</td><td>Sunucuya ağdan erişimi kontrol et; buluttaki kaynakta istemci IP’sine izin ver; şirket içinde ağ geçidi kur.</td></tr>
+<tr><td>“Kimlik bilgileri geçersiz” ya da oturum açma hatası</td><td>Parola değişti, hesap kilitlendi, yanlış kimlik doğrulama türü</td><td>Veri kaynağı ayarlarında (Service’te model ayarlarında) kimliği güncelle.</td></tr>
+<tr><td>“Ağla ilgili ya da örneğe özgü bir hata” (network-related error)</td><td>Sunucu adı yanlış, güvenlik duvarı, VPN kapalı, Service’te ağ geçidi yok</td><td>Sunucuya ağdan erişimi kontrol et; buluttaki kaynakta istemci IP’sine izin ver; şirket içinde ağ geçidi kur.</td></tr>
 <tr><td><code>Expression.Error</code>: “…sütunu bulunamadı”</td><td>Kaynakta şema değişti: sütun silindi ya da yeniden adlandırıldı</td><td>Hata veren adımı bul; sütun adını düzelt ya da “Diğer sütunları kaldır” ile yalnızca gerekenleri seç.</td></tr>
-<tr><td>Hizmette “ağ geçidi çevrimdışı”</td><td>Ağ geçidinin kurulu olduğu makine kapalı</td><td>Makineyi ya da ağ geçidi kümesini çalıştır.</td></tr>
+<tr><td>Service’te “ağ geçidi çevrimdışı”</td><td>Ağ geçidinin kurulu olduğu makine kapalı</td><td>Makineyi ya da ağ geçidi kümesini çalıştır.</td></tr>
 </table></div>
 <p>Kaynak taşındığında (yeni sunucu, yeni dosya yolu) <b>Dönüştür → Veri kaynağı ayarları → Kaynağı değiştir</b> ile tüm sorgulardaki bağlantı bir kerede güncellenir. Tek bir sorguda ise <code>Kaynak</code> adımındaki sunucu adını Gelişmiş Düzenleyici’de değiştirmen yeter; sonraki adımlar aynı tablo yapısını bulduğu sürece çalışır.</p>
 
@@ -287,11 +287,11 @@ in
 <p>Milyonlarca satırlık bir olgu tablosunu her gece baştan yüklemek yerine yalnızca son günleri yenilemek mümkündür. Bunun için <code>RangeStart</code> ve <code>RangeEnd</code> adlı iki tarih/saat parametresiyle tabloyu filtreler ve tabloya bir yenileme ilkesi tanımlarsın. Filtrenin kaynağa katlanması şarttır; yerel SQL sorgusu bu yüzden burada risklidir. Ayrıntılar “Kurumsal model” dersinde.</p>
 `,
   ex: [
-    { t: 'mc', q: 'Bir SQL Server tablosunu gezginden seçip Power Query’de bir tarih filtresi ve sütun seçimi uyguladın. Bu adımlar nerede çalışır?', o: ['Her zaman bilgisayarındaki Power Query motorunda', 'SQL’e çevrilip veritabanında (katlanabiliyorsa)', 'Rapor her açıldığında modeldeki DAX motorunda', 'Yalnızca hizmette, şirket içi ağ geçidinin üzerinde'], a: 1, why: 'Sorgu katlama, Power Query adımlarını kaynağın diline (burada SQL) çevirir; filtre ve sütun seçimi tipik olarak katlanır. Veri kaynağında süzüldüğü için daha az satır taşınır.' },
+    { t: 'mc', q: 'Bir SQL Server tablosunu gezginden seçip Power Query’de bir tarih filtresi ve sütun seçimi uyguladın. Bu adımlar nerede çalışır?', o: ['Her zaman bilgisayarındaki Power Query motorunda', 'SQL’e çevrilip veritabanında (katlanabiliyorsa)', 'Rapor her açıldığında modeldeki DAX motorunda', 'Yalnızca Service’te, şirket içi ağ geçidinin üzerinde'], a: 1, why: 'Sorgu katlama, Power Query adımlarını kaynağın diline (burada SQL) çevirir; filtre ve sütun seçimi tipik olarak katlanır. Veri kaynağında süzüldüğü için daha az satır taşınır.' },
     { t: 'mc', q: 'Gelişmiş seçeneklerdeki <b>SQL deyimi</b> kutusuna bir sorgu yazdın, ardından Power Query’de ek filtreler ekledin. Klasik yöntemde ne olur?', o: ['Filtreler SQL sorgusunun WHERE kısmına eklenir', 'Power Query ek adımları kabul etmez', 'Sonraki adımlar katlanmaz, yerelde çalışır', 'Bağlantı kendiliğinden DirectQuery moduna geçer'], a: 2, why: 'Yerel sorgudan sonraki adımlar klasik yöntemde kaynağa gönderilmez. Katlamayı korumak için desteklenen bağlayıcılarda Value.NativeQuery(…, [EnableFolding = true]) kullanılır.' },
-    { t: 'mc', q: 'Raporu yayımladın. Model ofisteki bir SQL Server’dan besleniyor ve hizmette zamanlanmış yenileme “kaynağa ulaşılamıyor” hatası veriyor. Eksik parça ne?', o: ['Şirket içi veri ağ geçidi', 'Raporun yeniden yayımlanması', 'DirectQuery moduna geçiş', 'Satır düzeyi güvenlik rolü'], a: 0, why: 'Hizmet buluttadır ve şirket ağındaki sunucuya doğrudan erişemez. Şirket içi veri ağ geçidi bu köprüyü kurar; kimlik bilgileri ağ geçidindeki veri kaynağı tanımında tutulur.' },
-    { t: 'mc', q: 'Geliştirmede test sunucusunu, yayımladıktan sonra üretim sunucusunu kullanmak istiyorsun. M koduna her seferinde dokunmamak için ne yaparsın?', o: ['Her ortam için ayrı bir .pbix dosyası tutarsın', 'Sunucu adını yerel SQL sorgusunun içine yazarsın', 'Sunucu adını bir parametre yaparsın', 'Veri kaynağı ayarlarından kimlik bilgilerini silersin'], a: 2, why: 'Parametre, bağlantı bilgisini koddan ayırır. Hizmette model ayarlarından ya da dağıtım işlem hattı kurallarıyla her aşamaya ayrı değer verilir.' },
-    { t: 'mc', q: 'Kaynak veritabanında <code>Tutar</code> sütunu <code>SatisTutari</code> olarak yeniden adlandırıldı. Yenilemede hangi hatayı görmeyi beklersin?', o: ['Kimlik bilgilerinin geçersiz olduğu uyarısı', 'Expression.Error: sütun bulunamadı', 'Ağla ilgili ya da örneğe özgü bağlantı hatası', 'Hizmette ağ geçidinin çevrimdışı olduğu'], a: 1, why: 'Bağlantı ve oturum sorunsuzdur; ama sonraki adımlar artık var olmayan “Tutar” sütununu arar. Bu bir şema değişikliği hatasıdır ve hata veren adımda sütun adını düzeltmek gerekir.' },
+    { t: 'mc', q: 'Raporu yayımladın. Model ofisteki bir SQL Server’dan besleniyor ve Service’te zamanlanmış yenileme “kaynağa ulaşılamıyor” hatası veriyor. Eksik parça ne?', o: ['Şirket içi veri ağ geçidi', 'Raporun yeniden yayımlanması', 'DirectQuery moduna geçiş', 'Satır düzeyi güvenlik rolü'], a: 0, why: 'Service buluttadır ve şirket ağındaki sunucuya doğrudan erişemez. Şirket içi veri ağ geçidi bu köprüyü kurar; kimlik bilgileri ağ geçidindeki veri kaynağı tanımında tutulur.' },
+    { t: 'mc', q: 'Geliştirmede test sunucusunu, yayımladıktan sonra üretim sunucusunu kullanmak istiyorsun. M koduna her seferinde dokunmamak için ne yaparsın?', o: ['Her ortam için ayrı bir .pbix dosyası tutarsın', 'Sunucu adını yerel SQL sorgusunun içine yazarsın', 'Sunucu adını bir parametre yaparsın', 'Veri kaynağı ayarlarından kimlik bilgilerini silersin'], a: 2, why: 'Parametre, bağlantı bilgisini koddan ayırır. Service’te model ayarlarından ya da dağıtım işlem hattı kurallarıyla her aşamaya ayrı değer verilir.' },
+    { t: 'mc', q: 'Kaynak veritabanında <code>Tutar</code> sütunu <code>SatisTutari</code> olarak yeniden adlandırıldı. Yenilemede hangi hatayı görmeyi beklersin?', o: ['Kimlik bilgilerinin geçersiz olduğu uyarısı', 'Expression.Error: sütun bulunamadı', 'Ağla ilgili ya da örneğe özgü bağlantı hatası', 'Service’te ağ geçidinin çevrimdışı olduğu'], a: 1, why: 'Bağlantı ve oturum sorunsuzdur; ama sonraki adımlar artık var olmayan “Tutar” sütununu arar. Bu bir şema değişikliği hatasıdır ve hata veren adımda sütun adını düzeltmek gerekir.' },
     { t: 'mc', q: 'Bir .pbix dosyasını SQL Server bağlantısıyla birlikte meslektaşına e-postayla gönderdin. Dosyayı açıp yenilediğinde ne olur?', o: ['Senin kimliğinle bağlanır, çünkü parola dosyada saklıdır', 'Yenileme yapılamaz; dosya yalnızca senin bilgisayarında çalışır', 'Veriler silinir, yalnızca M kodu kalır', 'Kendi kimlik bilgilerini girmesi istenir; parola dosyada değil'], a: 3, why: 'Kimlik bilgileri .pbix’e yazılmaz, her kullanıcının Veri kaynağı ayarlarında saklanır. Meslektaşın ilk yenilemede kendi yetkisiyle oturum açar; yetkisi yoksa veriye ulaşamaz.' }
   ]
 });

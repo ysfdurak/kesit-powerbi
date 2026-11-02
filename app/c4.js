@@ -14,7 +14,7 @@
 <tr><td><b>Giriş</b></td><td>Veri al, Excel çalışma kitabı, OneLake kataloğu, Verileri dönüştür, Yenile, Yeni görsel, Yeni ölçü, Yayımla</td><td>Her gün: veri alma ve yenileme</td></tr>
 <tr><td><b>Ekle</b></td><td>Yeni sayfa, Yeni görsel, Anahtar etkileyiciler, Ayrıştırma ağacı, Anlatı, Metin kutusu, Düğmeler, Şekiller, Görüntü</td><td>Rapor sayfasını tasarlarken</td></tr>
 <tr><td><b>Modelleme</b></td><td>İlişkileri yönet, Yeni ölçü, Yeni sütun, Yeni tablo, Hızlı ölçü, Yeni parametre (sayısal aralık / alanlar), Rolleri yönet, Farklı görüntüle, Hesaplama grubu</td><td>Model ve DAX çalışırken</td></tr>
-<tr><td><b>Görünüm</b></td><td>Temalar, Sayfa görünümü, Mobil düzen, Kılavuz çizgileri, Izgaraya yapış, Filtreler, Yer imleri, Seçim, Performans Analizi, Dilimleyicileri eşitle</td><td>Tasarım ve hata ayıklama</td></tr>
+<tr><td><b>Görünüm</b></td><td>Temalar, Sayfa görünümü, Mobil düzen, Kılavuz çizgileri, Izgaraya yapış, Filtreler, Yer işaretleri, Seçim, Performans Analizi, Dilimleyicileri eşitle</td><td>Tasarım ve hata ayıklama</td></tr>
 <tr><td><b>İyileştir</b> (Optimize)</td><td>Görselleri duraklat, İyileştirme ön ayarları, Sorgu azaltma, Performans Analizi</td><td>Büyük modellerde rapor yavaşladığında</td></tr>
 <tr><td><b>Yardım</b></td><td>Belgeler, Topluluk, Eğitim, Hakkında (sürüm)</td><td>Sürümünü öğrenmek, öğrenme kaynakları</td></tr>
 </table></div>
@@ -26,8 +26,8 @@
 <li><b>Biçim</b> ve <b>Veri / Detaya git</b> (Görsel araçları): Bir görsel seçince. Etkileşimleri düzenle, detaya inme modu, gruplama, hizala, öne getir.</li>
 </ul>
 <h2>Bölmeler</h2>
-<p>Şeridin sağında kalan dikey paneller: <b>Veri</b> (tablolar, sütunlar, ölçüler), <b>Görselleştirmeler</b> (görsel türü + <i>Oluştur / Biçim / Analiz</i> sekmeleri), <b>Filtreler</b>. Görünüm sekmesinden <b>Yer imleri</b>, <b>Seçim</b>, <b>Performans Analizi</b> ve <b>Dilimleyicileri eşitle</b> bölmeleri açılır.</p>
-<div class="tip"><b>Uygulamada gez</b>Bu uygulamadaki <button class="lnk" data-go="menus">Power BI Menüleri</button> bölümünde her sekmenin her komutunu tıklayıp ne işe yaradığını, ne zaman kullanılacağını ve hangi derste geçtiğini görebilirsin.</div>
+<p>Şeridin sağında kalan dikey paneller: <b>Veri</b> (tablolar, sütunlar, ölçüler), <b>Görselleştirmeler</b> (görsel türü + <i>Oluştur / Biçim / Analiz</i> sekmeleri), <b>Filtreler</b>. Görünüm sekmesinden <b>Yer işaretleri</b>, <b>Seçim</b>, <b>Performans Analizi</b> ve <b>Dilimleyicileri eşitle</b> bölmeleri açılır.</p>
+<div class="tip"><b>Uygulamada gez</b>Bu uygulamadaki <button class="lnk" data-go="menus">Power BI arayüzü</button> bölümünde her sekmenin her komutunu tıklayıp ne işe yaradığını, ne zaman kullanılacağını ve hangi derste geçtiğini görebilirsin.</div>
 <h2>Klavye kısayolları</h2>
 <div class="tbl-wrap"><table>
 <tr><th>Kısayol</th><th>İş</th></tr>
@@ -42,7 +42,7 @@
   ex: [
     { t: 'mc', q: 'Bir sütunun aylarını alfabetik değil takvim sırasıyla göstermek istiyorsun. Komut hangi sekmede?', o: ['Giriş', 'Sütun araçları (Sütuna göre sırala)', 'Görünüm', 'Yardım'], a: 1, why: 'Sütun seçiliyken açılan Sütun araçları sekmesinde “Sütuna göre sırala” bulunur.' },
     { t: 'mc', q: 'Dilimleyici ve sayı ne olur (what-if) parametresi oluşturmak için hangi sekme?', o: ['Ekle', 'Modelleme (Yeni parametre)', 'Dosya', 'İyileştir'], a: 1, why: 'Modelleme → Yeni parametre → Sayısal aralık ya da Alanlar.' },
-    { t: 'mc', q: 'Rapor yavaş; hangi görselin ne kadar sürdüğünü görmek istiyorsun. Hangi bölme?', o: ['Seçim', 'Yer imleri', 'Performans Analizi', 'Filtreler'], a: 2, why: 'Performans Analizi her görselin DAX sorgu, çizim ve diğer sürelerini kaydeder.' }
+    { t: 'mc', q: 'Rapor yavaş; hangi görselin ne kadar sürdüğünü görmek istiyorsun. Hangi bölme?', o: ['Seçim', 'Yer işaretleri', 'Performans Analizi', 'Filtreler'], a: 2, why: 'Performans Analizi her görselin DAX sorgu, çizim ve diğer sürelerini kaydeder.' }
   ]
 },
 
@@ -76,7 +76,7 @@
 </table></div>
 <div class="warn"><b>En sık yapılan hata</b>Sayısal bir sütunu (ör. <code>Satislar[Adet]</code>) eksene koymak. Power BI onu kategori gibi davranıp her farklı adet değeri için bir sütun çizer. Sayıyı ölçüye, metni eksene koy.</div>
 <h2>Bir görsele tıklayınca ne olur?</h2>
-<p>Rapor görünümünde bir sütuna tıklamak, sayfadaki diğer görselleri <b>çapraz filtreler</b> ya da <b>vurgular</b>. Bu Power BI'ın varsayılan davranışıdır. Detaya inmek için ise görselin üstündeki <b>aşağı ok</b> (detaya inme modu) açılır; o zaman tıklama filtrelemek yerine bir alt düzeye iner. İkisini karıştırmamak için <button class="lnk" data-go="dash">Dashboardlar</button> bölümünde her görselin başlığında bu oklar ayrı düğmeler olarak duruyor.</p>
+<p>Rapor görünümünde bir sütuna tıklamak, sayfadaki diğer görselleri <b>çapraz filtreler</b> ya da <b>vurgular</b>. Bu Power BI'ın varsayılan davranışıdır. Detaya inmek için ise görselin üstündeki <b>aşağı ok</b> (detaya inme modu) açılır; o zaman tıklama filtrelemek yerine bir alt düzeye iner. İkisini karıştırmamak için <button class="lnk" data-go="dash">Örnek raporlar</button> bölümünde her görselin başlığında bu oklar ayrı düğmeler olarak duruyor.</p>
 <div class="tip"><b>Canlı dene</b><button class="lnk" data-go="visuals">Görseller</button> bölümünde her görsel için Oluştur sekmesindeki kutuları değiştirebilir ve sonucu anında görebilirsin.</div>
 `,
   ex: [
@@ -181,7 +181,7 @@
 `,
   ex: [
     { t: 'mc', q: 'Bir tablo görselinde yalnızca net satışa göre ilk 10 ürünü göstermek istiyorsun; sayfadaki diğer görseller etkilenmesin.', o: ['Sayfa filtresi: temel', 'Görsel filtresi: İlk N = 10, Değere göre: Net Satış', 'Dilimleyici', 'Rapor filtresi'], a: 1, why: 'İlk N filtresi görsel düzeyindedir ve yalnızca o görseli etkiler.' },
-    { t: 'mc', q: 'Rapordaki hiçbir sayfada test müşterileri görünmemeli ve kullanıcı bunu değiştirememeli.', o: ['Tüm sayfalardaki filtreler + Kilitle (ve isteğe bağlı Gizle)', 'Her sayfaya dilimleyici', 'Görsel filtresi', 'Yer imi'], a: 0, why: 'Rapor düzeyi kilitli filtre tüm sayfalara uygulanır ve değiştirilemez.' },
+    { t: 'mc', q: 'Rapordaki hiçbir sayfada test müşterileri görünmemeli ve kullanıcı bunu değiştirememeli.', o: ['Tüm sayfalardaki filtreler + Kilitle (ve isteğe bağlı Gizle)', 'Her sayfaya dilimleyici', 'Görsel filtresi', 'Yer işareti'], a: 0, why: 'Rapor düzeyi kilitli filtre tüm sayfalara uygulanır ve değiştirilemez.' },
     { t: 'dax', q: '<b>Seçili Kanal Sayısı</b>: Kanal dilimleyicisinde kaç kanal görünüyorsa onu say. (VALUES ile görünen değerler.)', name: 'Seçili Kanal Sayısı', sol: 'COUNTROWS(VALUES(Satislar[Kanal]))', hint: 'COUNTROWS(VALUES(Satislar[Kanal]))', grid: [{ t: 'Satislar', c: 'Kanal' }, { t: 'Tarih', c: 'Yil' }], explain: 'VALUES, filtre bağlamında görünen farklı değerleri tablo olarak döndürür; COUNTROWS satırları sayar. Toplam satırında filtre olmadığı için 3 döner.' }
   ]
 },
@@ -214,7 +214,7 @@ Maaş Kutusu = FLOOR(Calisanlar[Maas], 10000)</pre>
 <h2>Kümeleme</h2>
 <p>Dağılım grafiğinde <b>…</b> → <b>Kümeleri otomatik bul</b>. Power BI noktaları benzerliklerine göre gruplar ve yeni bir küme sütunu oluşturur (ör. “düşük satış, yüksek marj” ürünleri). Küme sayısını kendin de belirleyebilirsin. Sonuç keşif içindir; iş kuralına dönüştürmeden önce kümelerin anlamını kontrol et.</p>
 <h2>Bu modelde</h2>
-<p>İK verisi (<code>Calisanlar</code>, <code>Departmanlar</code>) istatistik alıştırmaları için idealdir: 27 çalışan, 7 departman, maaşlar arasında belirgin farklar. <button class="lnk" data-go="dash" data-id="ik">İK dashboardu</button> maaş histogramını ve dağılımını gösteriyor.</p>
+<p>İK verisi (<code>Calisanlar</code>, <code>Departmanlar</code>) istatistik alıştırmaları için idealdir: 27 çalışan, 7 departman, maaşlar arasında belirgin farklar. <button class="lnk" data-go="dash" data-id="ik">İK raporu</button> maaş histogramını ve dağılımını gösteriyor.</p>
 `,
   ex: [
     { t: 'dax', q: '<b>Medyan Maaş</b>: Calisanlar tablosundaki maaşların ortancası. Kontrol, departman kırılımında yapılır.', name: 'Medyan Maaş', sol: 'MEDIAN(Calisanlar[Maas])', grid: [{ t: 'Departmanlar', c: 'Departman' }], explain: 'MEDIAN sıralı listenin ortasındaki değeri alır. Departman filtresi Departmanlar → Calisanlar ilişkisiyle akar.' },
@@ -291,7 +291,7 @@ RETURN DIVIDE([Net Satış] - __PREV_YEAR, __PREV_YEAR)</pre>
 <p>Tuvalin boş bir yerine tıklayıp Biçim bölmesini aç:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Ayar</th><th>Seçenekler</th><th>Ne zaman?</th></tr>
-<tr><td>Tuval ayarları → Tür</td><td>16:9, 4:3, Mektup, Özel (ör. 1280 × 1800 uzun sayfa)</td><td>Ekranda 16:9; kaydırmalı uzun dashboard için özel yükseklik</td></tr>
+<tr><td>Tuval ayarları → Tür</td><td>16:9, 4:3, Mektup, Özel (ör. 1280 × 1800 uzun sayfa)</td><td>Ekranda 16:9; kaydırmalı uzun rapor için özel yükseklik</td></tr>
 <tr><td>Tuval arka planı</td><td>Renk, görüntü, saydamlık</td><td>Tasarımcıdan gelen arka plan görseli</td></tr>
 <tr><td>Duvar kâğıdı</td><td>Tuvalin dışındaki alan</td><td>Sunumlarda nötr bir renk</td></tr>
 <tr><td>Sayfa bilgileri</td><td>Ad, araç ipucu olarak kullan</td><td>Araç ipucu sayfaları için</td></tr>

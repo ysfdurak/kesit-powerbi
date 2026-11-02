@@ -17,7 +17,7 @@ C = SUMX(Musteriler, [Toplam Satış])</pre>
 <li><b>B:</b> <code>CALCULATE</code> geçerli müşteri satırını filtreye çevirir; her satırda o müşterinin satışı hesaplanır. Sonuç, toplam satışa eşittir.</li>
 <li><b>C:</b> Ölçü çağrısı gizli <code>CALCULATE</code> içerdiği için B ile aynıdır.</li>
 </ul>
-<p>Stüdyo'da üçünü de çalıştırıp farkı gör.</p>
+<p>Playground’da üçünü de çalıştırıp farkı gör.</p>
 <h2>Nerede işe yarar?</h2>
 <pre class="dax">-- Müşteri başına ortalama satış (yalnızca alışveriş yapanlar)
 Müşteri Ortalaması = AVERAGEX(VALUES(Satislar[MusteriNo]), [Net Satış])
@@ -76,7 +76,7 @@ CALCULATE([Net Satış], FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] &lt;= MAX(Tarih[
   sum: 'EVALUATE, SUMMARIZECOLUMNS, ADDCOLUMNS, SELECTCOLUMNS, TOPN, DEFINE MEASURE ve ORDER BY.',
   body: `
 <h2>DAX sorgu görünümü</h2>
-<p>Power BI Desktop'taki <b>DAX sorgu görünümü</b> (ve DAX Studio gibi araçlar), bir tablo döndüren sorgular çalıştırır. Ölçüleri görsel kurmadan test etmenin, veriyi incelemenin ve hata ayıklamanın en hızlı yoludur. Bu uygulamadaki DAX Stüdyosu'nun “Sorgu” modu da aynıdır.</p>
+<p>Power BI Desktop'taki <b>DAX sorgu görünümü</b> (ve DAX Studio gibi araçlar), bir tablo döndüren sorgular çalıştırır. Ölçüleri görsel kurmadan test etmenin, veriyi incelemenin ve hata ayıklamanın en hızlı yoludur. Bu uygulamadaki DAX Playground'nun “Sorgu” modu da aynıdır.</p>
 <pre class="dax">EVALUATE
 SUMMARIZECOLUMNS(
     Kategoriler[Kategori],
@@ -149,7 +149,7 @@ SWITCH(TRUE(),
     SELECTEDMEASURE() >= 1000000, "#,0.0,, \"Mn\"",
     SELECTEDMEASURE() >= 1000, "#,0.0, \"B\"",
     "#,0")</pre>
-<p>FORMAT ile metne çevirmenin (Ölçü Laboratuvarı: Akıllı Etiket) aksine, dinamik biçim dizesi sayının kendisini korur.</p>
+<p>FORMAT ile metne çevirmenin (Measure Lab: Akıllı Etiket) aksine, dinamik biçim dizesi sayının kendisini korur.</p>
 <h2>Alan parametresi, adım adım</h2>
 <ol>
 <li>Modelleme → Yeni parametre → <b>Alanlar</b>.</li>
@@ -158,11 +158,11 @@ SWITCH(TRUE(),
 <li>Parametre sütununu görselin eksenine ya da değerine koy. Kullanıcı dilimleyiciden seçtikçe görsel alan değiştirir.</li>
 </ol>
 <p>Ölçülerle alan parametresi “ölçü seçici”, sütunlarla “eksen seçici” olur. İkisi aynı görselde birlikte kullanılabilir. Bu uygulamadaki <code>OlcuSecimi</code> tablosu ve <code>[Seçili Ölçü]</code> ölçüsü, alan parametresi gelmeden önceki SWITCH tabanlı yöntemin benzetimidir.</p>
-<div class="note"><b>Bu oyun alanında</b>Hesaplama grupları ve görsel hesaplamalar model ya da görsel düzeyinde tanımlandığı için DAX Stüdyosu'nda çalıştırılamaz. Kavramları ve kalıpları bilmen sınav ve iş için yeterlidir.</div>
+<div class="note"><b>Bu oyun alanında</b>Hesaplama grupları ve görsel hesaplamalar model ya da görsel düzeyinde tanımlandığı için DAX Playground’da çalıştırılamaz. Kavramları ve kalıpları bilmen sınav ve iş için yeterlidir.</div>
 `,
   ex: [
     { t: 'mc', q: 'Hesaplama grubu öğesinde, görseldeki ölçüyü temsil eden fonksiyon hangisidir?', o: ['SELECTEDVALUE()', 'SELECTEDMEASURE()', 'ISINSCOPE()', 'VALUES()'], a: 1, why: 'SELECTEDMEASURE(), öğenin uygulandığı ölçünün yerine geçer.' },
-    { t: 'mc', q: 'Kullanıcının bir dilimleyiciyle grafiğin eksenini Kategori, Kanal ya da Segment arasında değiştirebilmesi için ne kullanılır?', o: ['Hesaplama grubu', 'Alan parametresi', 'Yer imi', 'RLS'], a: 1, why: 'Alan parametreleri eksen ya da değer alanını dinamik yapar.' },
+    { t: 'mc', q: 'Kullanıcının bir dilimleyiciyle grafiğin eksenini Kategori, Kanal ya da Segment arasında değiştirebilmesi için ne kullanılır?', o: ['Hesaplama grubu', 'Alan parametresi', 'Yer işareti', 'RLS'], a: 1, why: 'Alan parametreleri eksen ya da değer alanını dinamik yapar.' },
     { t: 'mc', q: '30 zaman ölçüsü yazmak yerine 6 varyasyonu tek yerde tanımlamak hangi soruna çözümdür?', o: ['Ölçü patlaması', 'Döngüsel bağımlılık', 'Sorgu katlama', 'Bağlam geçişi'], a: 0, why: 'Hesaplama grupları, her ölçü için aynı varyasyonları tekrar yazma ihtiyacını ortadan kaldırır.' }
   ]
 },
@@ -248,7 +248,7 @@ Yetkiler[Eposta] = USERPRINCIPALNAME()</pre>
   ex: [
     { t: 'mc', q: '200 bölge müdürünün her biri yalnızca kendi bölgesini görmeli ve kadro sık değişiyor. En sürdürülebilir çözüm?', o: ['200 ayrı statik rol', 'Yetkiler tablosu + USERPRINCIPALNAME() ile tek dinamik rol', 'Her müdüre ayrı rapor', 'Sayfa gizleme'], a: 1, why: 'Dinamik RLS\'de değişiklik yalnızca yetki tablosuna satır eklemektir; rol tanımı aynı kalır.' },
     { t: 'mc', q: 'Çalışma alanında “Üye” rolündeki bir kullanıcı için RLS uygulanır mı?', o: ['Evet, her zaman', 'Hayır; RLS yalnızca Görüntüleyici rolündekilere uygulanır', 'Yalnızca mobilde', 'Yalnızca DirectQuery\'de'], a: 1, why: 'Düzenleme yetkisi olan roller (Yönetici, Üye, Katkıda bulunan) RLS\'yi atlar.' },
-    { t: 'mc', q: 'Maaş sütununun belirli kullanıcılar için hiç görünmemesi gerekiyor (alan listesinde bile). Hangi özellik?', o: ['RLS', 'OLS', 'Gizli sayfa', 'Yer imi'], a: 1, why: 'Nesne düzeyinde güvenlik tablo ya da sütunu rol için tamamen gizler.' }
+    { t: 'mc', q: 'Maaş sütununun belirli kullanıcılar için hiç görünmemesi gerekiyor (alan listesinde bile). Hangi özellik?', o: ['RLS', 'OLS', 'Gizli sayfa', 'Yer işareti'], a: 1, why: 'Nesne düzeyinde güvenlik tablo ya da sütunu rol için tamamen gizler.' }
   ]
 },
 
@@ -262,7 +262,7 @@ Yetkiler[Eposta] = USERPRINCIPALNAME()</pre>
 <li><b>Çalışma alanı:</b> Ekip klasörü. Roller: Yönetici, Üye, Katkıda bulunan, Görüntüleyici.</li>
 <li><b>Anlam modeli</b> (semantic model, eski adıyla dataset): Tablolar, ilişkiler, ölçüler. Bir model birçok rapora hizmet edebilir.</li>
 <li><b>Rapor:</b> Bir modele bağlı, sayfalardan oluşan etkileşimli belge.</li>
-<li><b>Pano (dashboard):</b> Service'te farklı raporlardan sabitlenmiş kutucuklardan oluşan tek sayfa. Bu uygulamadaki “Dashboardlar” ise rapor sayfası düzeninde örneklerdir.</li>
+<li><b>Pano (dashboard):</b> Service'te farklı raporlardan sabitlenmiş kutucuklardan oluşan tek sayfa. Bu uygulamadaki Örnek raporlar sayfası ise pano değil, rapor örnekleri içerir.</li>
 <li><b>Uygulama (app):</b> Çalışma alanındaki içeriğin son kullanıcılara düzenli, menülü bir paket olarak dağıtılması. Kitle (audience) bazında farklı içerik gösterebilir.</li>
 </ul>
 <h2>Yenileme</h2>
@@ -348,8 +348,8 @@ in
 
 {
   id: 'dashboard-tasarim', lv: 'ileri', mod: 'Görselleştirme', min: 14,
-  title: 'Dashboard tasarımı: bir vaka çalışması',
-  sum: 'Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek dashboardları çözümle.',
+  title: 'Rapor tasarımı: bir vaka çalışması',
+  sum: 'Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek raporları çözümle.',
   body: `
 <h2>Önce kitle ve soru</h2>
 <div class="tbl-wrap"><table>
@@ -367,7 +367,7 @@ in
 <li><b>Boşluk:</b> Görseller arasında nefes alanı bırak; her yeri doldurma.</li>
 </ul>
 <h2>KPI'ı bağlamla ver</h2>
-<p>“Net Satış: 747 B ₺” tek başına iyi mi kötü mü bilinmez. Yanına <b>hedefe göre</b>, <b>geçen yıla göre</b> karşılaştırma ve küçük bir eğilim koy. Bu uygulamadaki Yönetici Özeti dashboardı tam olarak bunu yapıyor.</p>
+<p>“Net Satış: 747 B ₺” tek başına iyi mi kötü mü bilinmez. Yanına <b>hedefe göre</b>, <b>geçen yıla göre</b> karşılaştırma ve küçük bir eğilim koy. Bu uygulamadaki Yönetici Özeti raporu tam olarak bunu yapıyor.</p>
 <h2>Mobil düzen</h2>
 <p>Görünüm → <b>Mobil düzen</b>. Aynı rapor için telefon tuvaline görselleri sürükleyip dikey bir akış oluşturursun. Kartlar üstte, en önemli tek grafik altta, ayrıntı tabloları genellikle dışarıda.</p>
 <h2>Kontrol listesi</h2>
@@ -379,7 +379,7 @@ in
 <li>Filtrelerin hangi görselleri etkilediği açık mı?</li>
 <li>Rapor 3 saniyenin altında açılıyor mu (Performans Analizi)?</li>
 </ol>
-<p>Şimdi <b>Dashboardlar</b> sayfasına git ve dört örneği bu listeye göre incele. Her görselin “DAX” düğmesi, arkasındaki ölçüleri gösterir.</p>
+<p>Şimdi <b>Örnek raporlar</b> sayfasına git ve dört örneği bu listeye göre incele. Her görselin “DAX” düğmesi, arkasındaki ölçüleri gösterir.</p>
 `,
   ex: [
     { t: 'mc', q: 'Genel müdür için hazırlanan özet sayfasında en üst şeride ne konmalı?', o: ['Ürün bazında 40 satırlık tablo', '4–5 KPI kartı (hedef ve geçen yıl karşılaştırmasıyla)', 'Dağılım grafiği', 'Filtreler bölmesi'], a: 1, why: 'Özet sayfası “işler yolunda mı” sorusuna saniyeler içinde cevap vermeli.' },
@@ -399,7 +399,7 @@ in
 <tr><th>Alan</th><th>Kapsam</th><th>Bu uygulamada</th></tr>
 <tr><td><b>Veriyi hazırlama</b></td><td>Veri alma, bağlantı modları, profil çıkarma, temizleme, dönüştürme, birleştirme</td><td>Veri alma, Power Query dersleri, M dili</td></tr>
 <tr><td><b>Veriyi modelleme</b></td><td>Yıldız şema, ilişkiler, tarih tablosu, DAX ölçüleri, zaman zekâsı, performans</td><td>Modelleme, tüm DAX dersleri, Performans</td></tr>
-<tr><td><b>Görselleştirme ve analiz</b></td><td>Görsel seçimi, biçimlendirme, etkileşimler, yer imleri, yapay zekâ görselleri, mobil düzen</td><td>Görselleştirme dersleri, Görseller, Dashboardlar</td></tr>
+<tr><td><b>Görselleştirme ve analiz</b></td><td>Görsel seçimi, biçimlendirme, etkileşimler, yer işaretleri, yapay zekâ görselleri, mobil düzen</td><td>Görselleştirme dersleri, Görseller, Örnek raporlar</td></tr>
 <tr><td><b>Yönetme ve güvenlik</b></td><td>Çalışma alanları, uygulamalar, yenileme, ağ geçidi, RLS, duyarlılık etiketleri</td><td>Güvenlik, Yayımlama</td></tr>
 </table></div>
 <p>İlk üç alan ağırlığın büyük kısmını oluşturur; yönetme ve güvenlik daha küçük bir paydır. Güncel yüzdeler ve konu listesi için sınavın Microsoft Learn sayfasındaki “çalışma kılavuzu”na bak; Microsoft bu listeyi periyodik olarak günceller.</p>
@@ -415,7 +415,7 @@ in
   ex: [
     { t: 'mc', q: 'Bir rapor “her kategori için satışın genel toplam içindeki payını” göstermeli; dilimleyicide seçim yapılsa bile payda tüm kategoriler olmalı. Paydada ne kullanılır?', o: ['ALLSELECTED(Kategoriler)', 'ALL(Kategoriler)', 'VALUES(Kategoriler[Kategori])', 'KEEPFILTERS'], a: 1, why: 'ALL tüm filtreleri (dilimleyici dahil) kaldırır. ALLSELECTED dilimleyici seçimini korurdu.' },
     { t: 'mc', q: 'En az geliştirme çabasıyla, bir görselde aylık satışı geçen yılla karşılaştırmak istiyorsun. Tarih tablosu işaretli. En hızlı yol?', o: ['Power Query\'de geçen yıl sütunu hesaplamak', 'Hızlı ölçü → Yıldan yıla değişim', 'Ayrı bir geçen yıl tablosu oluşturmak', 'R betiği'], a: 1, why: 'Hızlı ölçüler, zaman zekâsı DAX\'ını sihirbazla üretir.' },
-    { t: 'mc', q: 'Kullanıcılar raporda Kategori → Ürün hiyerarşisinde aynı görsel içinde ilerlemek istiyor. Ne yapılandırılır?', o: ['Drill-through sayfası', 'Eksende iki alanlı hiyerarşi ve detaya inme', 'Yer imi', 'Araç ipucu sayfası'], a: 1, why: 'Aynı görselde düzeyler arası geçiş drill-down\'dur.' },
+    { t: 'mc', q: 'Kullanıcılar raporda Kategori → Ürün hiyerarşisinde aynı görsel içinde ilerlemek istiyor. Ne yapılandırılır?', o: ['Drill-through sayfası', 'Eksende iki alanlı hiyerarşi ve detaya inme', 'Yer işareti', 'Araç ipucu sayfası'], a: 1, why: 'Aynı görselde düzeyler arası geçiş drill-down\'dur.' },
     { t: 'mc', q: 'Bir CSV\'deki “Tutar” sütunu metin olarak geliyor ve bazı satırlarda “-” var. Modelde sayısal toplam gerekiyor. Ne yaparsın?', o: ['DAX\'ta VALUE kullanmak', 'Power Query\'de “-”i null ile değiştirip türü Ondalık Sayı yapmak', 'Sütunu silmek', 'Görselde örtük ölçü kullanmak'], a: 1, why: 'Tür ve temizlik sorunları kaynağa en yakın yerde, Power Query\'de çözülür.' }
   ]
 }

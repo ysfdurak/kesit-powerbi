@@ -91,8 +91,8 @@ ext('etkilesim', { min: 14, html: `
 
 <h2>Düğme eylemleri: hangi iş için hangisi?</h2>
 <div class="tbl-wrap"><table><tr><th>Eylem</th><th>Tipik kullanım</th></tr>
-<tr><td>Sayfa gezintisi</td><td>Menü şeridi; yer imi gerektirmez</td></tr>
-<tr><td>Yer imi</td><td>Grafik/Tablo geçişi, hazır filtre senaryoları</td></tr>
+<tr><td>Sayfa gezintisi</td><td>Menü şeridi; yer işareti gerektirmez</td></tr>
+<tr><td>Yer işareti</td><td>Grafik/Tablo geçişi, hazır filtre senaryoları</td></tr>
 <tr><td>Detaya git</td><td>Seçili ürünün ayrıntı sayfasına götüren düğme; seçim yokken devre dışı görünür</td></tr>
 <tr><td>Tüm dilimleyicileri uygula / temizle</td><td>Çok dilimleyicili filtre panelleri</td></tr>
 <tr><td>Geri</td><td>Detay sayfasından dönüş</td></tr>
@@ -107,8 +107,8 @@ IF(
 `, ex: [
   { t: 'mc', q: 'Kategori grafiğinde “Kitap”a tıklandığında yanındaki Kanal çubuk grafiği, çubukların tam boyunu soluk bırakıp Kitap payını koyu gösteriyor. Müdür ise Kitap’ta hangi kanalın lider olduğunu, eksen yeniden ölçeklenmiş hâlde görmek istiyor. Ne yaparsın?', o: ['Kanal grafiğini çizgi grafiğe çevir', 'Etkileşimi Filtrele yap', 'Kanal grafiğine Kategori dilimleyicisi ekle', 'Kanal grafiğinde detaya inmeyi aç'], a: 1, why: 'Gördüğü davranış çapraz vurgulamadır. Filtreleme seçilen kategoriyle çubukları yeniden çizer ve ekseni yeniden ölçekler. Çizgiye çevirmek soruyu değiştirir; ek dilimleyici aynı işi kullanıcıya yaptırır; detaya inme hiyerarşi içindir.' },
   { t: 'mc', q: 'Yıl → Çeyrek → Ay hiyerarşili sütun grafiğinde kullanıcı 2024’ün 2. çeyreğine indiğinde yan taraftaki kartların da o çeyreği göstermesi isteniyor. Hangisi?', o: ['Detaya inme filtrelerini Tüm sayfa’ya uygula', 'Kartları ayrı bir detay sayfasına taşıyıp bağla', 'Kartlarda etkileşimi Vurgula yap', 'Tarih dilimleyicisini tüm sayfalarla eşitle'], a: 0, why: 'Detaya inme varsayılan olarak diğer görselleri etkilemez; Biçim şeridindeki “Detaya inme filtrelerini uygula: Tüm sayfa” bunu açar. Detay sayfası başka bir sayfaya gider; kartlar vurgulanamaz; dilimleyici eşitleme detaya inme durumunu taşımaz.' },
-  { t: 'mc', q: 'Özet sayfasında açılır liste, Detay sayfasında döşeme biçiminde iki ayrı Kategori dilimleyicisi var. Birinde yapılan seçimin ötekine geçmesi gerekiyor. En temiz yol?', o: ['İki sayfayı tek sayfada birleştirmek', 'Her iki sayfaya aynı yer imini koymak', 'Kategoriyi rapor düzeyi filtreye taşıyıp kilitlemek', 'İkisine aynı eşitleme grubu adını vermek'], a: 3, why: 'Eşitleme grupları ayrı dilimleyicileri aynı grup adıyla bağlar ve “filtre değişikliklerini eşitle” seçimi taşır; biçimleri farklı kalabilir. Yer imi seçimi anlık kaydeder, canlı eşitlemez. Rapor düzeyi filtre kullanıcıya dilimleyici deneyimi vermez.' },
-  { t: 'mc', q: 'Filtre panelinde 6 dilimleyici var. Kullanıcı her seçimde tüm sayfanın yeniden yüklenmesinden şikâyet ediyor. Hangi düğme eylemi işe yarar?', o: ['Tüm dilimleyicileri uygula', 'Sayfa gezintisi düğmesi', 'Yer imi gezgini ile sekmeler', 'Detaya git düğmesi'], a: 0, why: '“Tüm dilimleyicileri uygula” seçimlerin önce toplanmasını, sorguların tek seferde gönderilmesini sağlar. Diğer eylemler gezinme içindir ve sorgu sayısını azaltmaz.' },
+  { t: 'mc', q: 'Özet sayfasında açılır liste, Detay sayfasında döşeme biçiminde iki ayrı Kategori dilimleyicisi var. Birinde yapılan seçimin ötekine geçmesi gerekiyor. En temiz yol?', o: ['İki sayfayı tek sayfada birleştirmek', 'Her iki sayfaya aynı yer işaretini koymak', 'Kategoriyi rapor düzeyi filtreye taşıyıp kilitlemek', 'İkisine aynı eşitleme grubu adını vermek'], a: 3, why: 'Eşitleme grupları ayrı dilimleyicileri aynı grup adıyla bağlar ve “filtre değişikliklerini eşitle” seçimi taşır; biçimleri farklı kalabilir. Yer işareti seçimi anlık kaydeder, canlı eşitlemez. Rapor düzeyi filtre kullanıcıya dilimleyici deneyimi vermez.' },
+  { t: 'mc', q: 'Filtre panelinde 6 dilimleyici var. Kullanıcı her seçimde tüm sayfanın yeniden yüklenmesinden şikâyet ediyor. Hangi düğme eylemi işe yarar?', o: ['Tüm dilimleyicileri uygula', 'Sayfa gezintisi düğmesi', 'Yer işareti gezgini ile sekmeler', 'Detaya git düğmesi'], a: 0, why: '“Tüm dilimleyicileri uygula” seçimlerin önce toplanmasını, sorguların tek seferde gönderilmesini sağlar. Diğer eylemler gezinme içindir ve sorgu sayısını azaltmaz.' },
   { t: 'dax', name: 'Seçim Özeti Metni', q: '<b>Seçim Özeti Metni</b>: Kategori süzülüyse <code>"Kategori: "</code> ve ardından seçili kategorilerin virgülle ayrılmış listesini, süzülmüyorsa <code>"Tüm kategoriler"</code> metnini döndür.', sol: 'IF(ISFILTERED(Kategoriler[Kategori]), "Kategori: " & CONCATENATEX(VALUES(Kategoriler[Kategori]), Kategoriler[Kategori], ", "), "Tüm kategoriler")', hint: 'ISFILTERED ile kategori sütununda doğrudan filtre olup olmadığına bak; CONCATENATEX(VALUES(...), sütun, ", ") listeyi birleştirir.' }
 ] });
 
@@ -235,14 +235,14 @@ RETURN Ad &amp; " satışın %" &amp; FORMAT(Pay * 100, "0") &amp; " kadarını 
 <p>Bu ölçü tüm dönemde “Elektronik satışın %27 kadarını taşıyor” üretir. FORMAT(Pay, "0%") yazsaydın sonuç “27%” olurdu; Türkçe yazımda yüzde işareti sayının önüne gelir. Ölçü kategori kırılımlı bir görselde kullanılmaz; her satırda kendi kategorisini %100 ile yazar. Başlık ve kart ölçüleri <b>görselin değil sayfanın bağlamında</b> çalışacak şekilde yazılır.</p>
 <div class="note"><b>Eşitlik durumu</b>TOPN eşit değerleri birlikte döndürür. İki kategori aynı satışta ise Ad “A, B” olur; CONCATENATEX’in ayırıcısı bu yüzden virgüldür. Eşitliği görmezden gelen bir ölçü, rapor yıllarca çalışırken bir gün tek bir adı rastgele seçer.</div>
 
-<h2>Yer imi stratejisi: az, adlı, bakımlı</h2>
-<p>Yer imi kurulumunu gördün; asıl sorun altı ay sonra gelir. Rapora yeni bir görsel eklenir, eski yer imleri onu bilmez: “Tablo” yer imine geçince yeni görsel de gizlenir ya da yanlış yerde kalır. Kurallar:</p>
+<h2>Yer işareti stratejisi: az, adlı, bakımlı</h2>
+<p>Yer işareti kurulumunu gördün; asıl sorun altı ay sonra gelir. Rapora yeni bir görsel eklenir, eski yer işaretleri onu bilmez: “Tablo” yer işaretine geçince yeni görsel de gizlenir ya da yanlış yerde kalır. Kurallar:</p>
 <ul>
-<li><b>Ad standardı:</b> <code>Sayfa | Durum</code> biçimi (“Özet | Grafik”, “Özet | Tablo”). Yer imi bölmesinde sırala, gruplara ayır.</li>
-<li><b>Kapsamı daralt:</b> Yalnızca değişen görselleri seçip “Seçili görseller” ile kaydet. Sayfaya eklenen yeni görsel yer iminden etkilenmez.</li>
-<li><b>Veri seçeneğini bilinçli seç:</b> Görünürlük değiştiren yer imlerinde Veri kapalı olsun; kullanıcının filtresi korunur.</li>
-<li><b>Patlamayı fark et:</b> 3 ölçü × 3 görsel türü için 9 yer imi yapıyorsan yanlış araçtasın. Ölçü değiştirmek için alan parametresi ya da ölçü seçici tablo (Seçili Ölçü kalıbı) daha az bakım ister.</li>
-<li><b>Kişisel yer imleri:</b> Okuyucu kendi filtre durumunu kişisel yer imi olarak kaydedebilir; rapor yer imleri tasarım içindir, kişisel yer imleri kullanıcı içindir.</li>
+<li><b>Ad standardı:</b> <code>Sayfa | Durum</code> biçimi (“Özet | Grafik”, “Özet | Tablo”). Yer işareti bölmesinde sırala, gruplara ayır.</li>
+<li><b>Kapsamı daralt:</b> Yalnızca değişen görselleri seçip “Seçili görseller” ile kaydet. Sayfaya eklenen yeni görsel yer işaretinden etkilenmez.</li>
+<li><b>Veri seçeneğini bilinçli seç:</b> Görünürlük değiştiren yer işaretlerinde Veri kapalı olsun; kullanıcının filtresi korunur.</li>
+<li><b>Patlamayı fark et:</b> 3 ölçü × 3 görsel türü için 9 yer işareti yapıyorsan yanlış araçtasın. Ölçü değiştirmek için alan parametresi ya da ölçü seçici tablo (Seçili Ölçü kalıbı) daha az bakım ister.</li>
+<li><b>Kişisel yer işaretleri:</b> Okuyucu kendi filtre durumunu kişisel yer işareti olarak kaydedebilir; rapor yer işaretleri tasarım içindir, kişisel yer işaretleri kullanıcı içindir.</li>
 </ul>
 
 <h2>Düğme gezintisi ve açıklama metni</h2>
@@ -255,9 +255,9 @@ RETURN Ad &amp; " satışın %" &amp; FORMAT(Pay * 100, "0") &amp; " kadarını 
 </ul>
 `, ex: [
   { t: 'dax', name: 'Lider Kategori Metni', q: '<b>Lider Kategori Metni</b>: Bağlamdaki en yüksek net satışlı kategorinin adını ve satıştaki payını yaz: <code>Ad & " satışın %" & FORMAT(Pay * 100, "0") & " kadarını taşıyor"</code> (Türkçede yüzde işareti sayının önüne gelir). Lideri <code>TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış])</code> ile bul; eşitlikte adlar virgülle birleşsin.', sol: 'VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış]) VAR Ad = CONCATENATEX(Lider, Kategoriler[Kategori], ", ") VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış]) RETURN Ad & " satışın %" & FORMAT(Pay * 100, "0") & " kadarını taşıyor"', hint: 'TOPN bir tablo döndürür; onu hem CONCATENATEX’e hem CALCULATE’in filtre argümanına verebilirsin.' },
-  { t: 'mc', q: 'Özet sayfasına yeni bir kart eklendi. “Özet | Tablo” yer imine geçildiğinde yeni kart da kayboluyor. Kalıcı çözüm?', o: ['Kartı ayrı bir sayfaya taşıyıp gizlemek', 'Seçili görsellerle yeniden kaydetmek', 'Yer iminde Veri seçeneğini de açmak', 'Kartı diğerleriyle gruplayıp kilitlemek'], a: 1, why: 'Tüm görseller kapsamındaki yer imi, kaydedildiği andaki görünürlüğü sayfadaki her nesneye uygular. Yalnızca değişen görselleri seçip kaydetmek, sonradan eklenen görselleri yer iminin dışında bırakır. Veri seçeneği filtreleri etkiler, görünürlüğü değil.' },
-  { t: 'mc', q: 'Bir rapor sahibi 4 ölçü × 3 görsel türü için 12 yer imi ve 12 düğme kurmuş. Bakım kâbusa dönmüş. Ne önerirsin?', o: ['Yer imlerini tek bir yer imi grubuna toplamak', 'Her kombinasyon için ayrı sayfa açmak', 'Ölçü seçimini alan parametresine taşımak', 'Yer imi gezginini sayfa gezginiyle değiştirmek'], a: 2, why: 'Ölçü değiştirme işi verinin işidir; alan parametresi ya da ölçü seçici tablo tek görselle aynı sonucu verir ve yer imi sayısını düşürür. Gruplamak ve gezgin değiştirmek sayıyı azaltmaz; ayrı sayfalar bakımı daha da büyütür.' },
-  { t: 'mc', q: 'Özet sayfasının başlığı elle “Elektronik lider kategori” yazılmış. Kullanıcı 2022’yi seçince başlık hâlâ aynı. Ne yaparsın?', o: ['Başlığı fx ile ölçüye bağlarım', 'Başlığı kaldırıp göstergeyi açarım', 'Sayfaya 2022 için ayrı bir yer imi eklerim', 'Yıl dilimleyicisini sayfadan kaldırırım'], a: 0, why: 'Bulgu başlığı veriye bağlı olmalı; fx → Alan değeri ile bir metin ölçüsüne bağlanan başlık her filtrede yeniden hesaplanır. Yer imi ve dilimleyiciyi kaldırmak sorunu çözmez, kullanıcıyı kısıtlar.' },
+  { t: 'mc', q: 'Özet sayfasına yeni bir kart eklendi. “Özet | Tablo” yer işaretine geçildiğinde yeni kart da kayboluyor. Kalıcı çözüm?', o: ['Kartı ayrı bir sayfaya taşıyıp gizlemek', 'Seçili görsellerle yeniden kaydetmek', 'Yer işaretinde Veri seçeneğini de açmak', 'Kartı diğerleriyle gruplayıp kilitlemek'], a: 1, why: 'Tüm görseller kapsamındaki yer işareti, kaydedildiği andaki görünürlüğü sayfadaki her nesneye uygular. Yalnızca değişen görselleri seçip kaydetmek, sonradan eklenen görselleri yer işaretinin dışında bırakır. Veri seçeneği filtreleri etkiler, görünürlüğü değil.' },
+  { t: 'mc', q: 'Bir rapor sahibi 4 ölçü × 3 görsel türü için 12 yer işareti ve 12 düğme kurmuş. Bakım kâbusa dönmüş. Ne önerirsin?', o: ['Yer işaretlerini tek bir yer işareti grubuna toplamak', 'Her kombinasyon için ayrı sayfa açmak', 'Ölçü seçimini alan parametresine taşımak', 'Yer işareti gezginini sayfa gezginiyle değiştirmek'], a: 2, why: 'Ölçü değiştirme işi verinin işidir; alan parametresi ya da ölçü seçici tablo tek görselle aynı sonucu verir ve yer işareti sayısını düşürür. Gruplamak ve gezgin değiştirmek sayıyı azaltmaz; ayrı sayfalar bakımı daha da büyütür.' },
+  { t: 'mc', q: 'Özet sayfasının başlığı elle “Elektronik lider kategori” yazılmış. Kullanıcı 2022’yi seçince başlık hâlâ aynı. Ne yaparsın?', o: ['Başlığı fx ile ölçüye bağlarım', 'Başlığı kaldırıp göstergeyi açarım', 'Sayfaya 2022 için ayrı bir yer işareti eklerim', 'Yıl dilimleyicisini sayfadan kaldırırım'], a: 0, why: 'Bulgu başlığı veriye bağlı olmalı; fx → Alan değeri ile bir metin ölçüsüne bağlanan başlık her filtrede yeniden hesaplanır. Yer işareti ve dilimleyiciyi kaldırmak sorunu çözmez, kullanıcıyı kısıtlar.' },
   { t: 'mc', q: 'Yönetici “Bu sayfadaki Net Satış iadeleri içeriyor mu?” diye her toplantıda soruyor. En iyi kalıcı çözüm?', o: ['Ölçünün adını “Net Satış (İptalsiz)” yapmak', 'Toplantıda sözlü olarak açıklamak', 'Ayrı bir “Tanımlar” raporu yayımlamak', 'Sayfaya kısa bir tanım notu koymak'], a: 3, why: 'Tanım, sayının yanında durmalı: kısa bir dipnot ya da bilgi düğmesinin araç ipucu soruyu kaynağında cevaplar. Ayrı rapor bulunmaz; sözlü açıklama kalıcı değildir; uzun ölçü adları görselleri kalabalıklaştırır ve iadeyi de açıklamaz.' }
 ] });
 
@@ -268,7 +268,7 @@ ext('mobil-erisilebilirlik', { min: 13, html: `
 <ul>
 <li>Var olan mobil düzenin <b>üzerine yazar</b>; elle yaptığın düzenleme gider.</li>
 <li>En iyi sonucu soldan sağa, yukarıdan aşağı okunan sayfalarda verir. Arka plan görselini taşıyamaz, üst üste binen görsellerde zorlanır.</li>
-<li>Gizli görselleri de yerleştirir; böylece yer imleriyle görünürlük değiştiren düğmeler telefonda da çalışır.</li>
+<li>Gizli görselleri de yerleştirir; böylece yer işaretleriyle görünürlük değiştiren düğmeler telefonda da çalışır.</li>
 <li>Yerleştiremediği görseller Sayfa görselleri bölmesinde kalır; elle sürüklersin.</li>
 </ul>
 <div class="warn"><b>Mobil tuvalde test ederken</b>Mobil tuvalde araç ipuçları kapalıdır (uygulamada çalışır). Tuvalde yaptığın dilimleyici seçimleri web düzenine taşınmaz; yayımlanan rapor, web düzenindeki dilimleyici seçimleriyle açılır. Yani “telefonda 2024 seçili açılsın” istiyorsan seçimi web düzeninde yap.</div>
@@ -297,7 +297,7 @@ IF(
 <li><b>Ctrl + F6</b> ile ana alanlar (tuval, sayfa sekmeleri, bölmeler) arasında geç; Tab ile görseller arasında dolaş. Sıra, gözün sayfayı okuduğu sırayla aynı mı?</li>
 <li>Bir görselde <b>Alt + Shift + F11</b> ile veriyi tablo olarak aç. Tablo görselin sıralamasını kullanır; sıralamayı bilinçli seçmediysen anlamsız bir sırayla okunur.</li>
 <li><b>Shift + ?</b> klavye kısayolları penceresini açar; kullanıcı eğitiminde bunu göster.</li>
-<li>Yer imi düğmeleriyle gezinen sayfaları yalnızca klavyeyle dene.</li>
+<li>Yer işareti düğmeleriyle gezinen sayfaları yalnızca klavyeyle dene.</li>
 <li>Önemli bilgiyi araç ipucuna saklama: rapor sayfası araç ipuçları ekran okuyucuyla okunamaz.</li>
 <li>Windows’ta yüksek karşıtlık temasını aç; Desktop bunu algılar. Service’te düzenleme modunda Görünüm → Yüksek karşıtlık renkleri ile dene.</li>
 </ol>

@@ -1,4 +1,4 @@
-/* Kesit Power BI — Alıştırma bankası: konu anlatımı olmadan, seviyeye ve konuya göre DAX, DAX sorgusu ve Power Query görevleri.
+/* Kesit Power BI — Pratik: konu anlatımı olmadan, seviyeye ve konuya göre DAX, DAX sorgusu ve Power Query görevleri.
    Görevler derslerdeki alıştırmalardan farklıdır; her biri motorda ve tarayıcıda doğrulanır. */
 (function (W) {
 'use strict';

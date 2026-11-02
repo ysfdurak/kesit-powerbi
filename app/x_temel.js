@@ -35,15 +35,15 @@ ext('tarih', { min: 9, html: `
 </table></div>
 <div class="tip"><b>Neden önemli?</b>Bir iş görüşmesinde “dataset'i yeniledim” diyen biriyle “anlam modelini yeniledim” diyen aynı işi anlatır. İkisini de anlarsan, sen de güncel adı kullanırsan hem eski hem yeni ekiplerle rahat konuşursun.</div>
 `, ex: [
-  { t: 'mc', q: 'Eski bir iç belgede “Raporu açmadan önce dataset’i yenile” yazıyor. Bugünkü Power BI hizmetinde neyi yenilersin?', o: ['Anlam modelini', 'Panoyu (dashboard)', 'Veri akışını (dataflow)', 'Uygulamayı (app)'], a: 0, why: 'Dataset kavramı Fabric ile birlikte anlam modeli (semantic model) adını aldı. Pano yalnızca sabitlenmiş kutuları gösterir, kendi verisi yoktur. Veri akışı ayrı bir hazırlık nesnesidir. Uygulama ise raporları dağıtmanın yoludur; yenilenecek bir verisi yoktur.' },
+  { t: 'mc', q: 'Eski bir iç belgede “Raporu açmadan önce dataset’i yenile” yazıyor. Bugünkü Power BI Service’te neyi yenilersin?', o: ['Anlam modelini', 'Panoyu (dashboard)', 'Veri akışını (dataflow)', 'Uygulamayı (app)'], a: 0, why: 'Dataset kavramı Fabric ile birlikte anlam modeli (semantic model) adını aldı. Pano yalnızca sabitlenmiş kutuları gösterir, kendi verisi yoktur. Veri akışı ayrı bir hazırlık nesnesidir. Uygulama ise raporları dağıtmanın yoludur; yenilenecek bir verisi yoktur.' },
   { t: 'mc', q: 'Satış müdürü, ekibin rapordaki veriye düz cümleyle soru sorup cevap almasını istiyor. Ekim 2026 itibarıyla hangi yolu önerirsin?', o: ['Her sayfaya doğal dil soru görseli koymayı', 'Copilot’u açıp modeli ona hazırlamayı', 'Raporu Excel’e aktarıp Power Pivot’ta sormayı', 'Her olası soru için ayrı bir sayfa açmayı'], a: 1, why: 'Doğal dil soru görseli Aralık 2026’da kaldırılıyor; yeni yatırım için doğru yol Copilot ve “Yapay zekâ için verileri hazırla” özelliğidir. Excel’e aktarmak soruyu cevaplamaz, her soru için sayfa açmak sürdürülemez.' },
   { t: 'mc', q: 'Ekip, modelin ölçülerini ve tablolarını Git’te sürüm sürüm izlemek ve değişikliği satır satır görmek istiyor. Hangi gelişme bunu kolaylaştırdı?', o: ['Otomatik tarih/saat tabloları', 'Dilimleyicileri eşitleme bölmesi', 'PBIP proje biçimi ve TMDL', 'Performans Analizi bölmesi'], a: 2, why: 'PBIP biçimi raporu ve modeli metin dosyaları olarak kaydeder; TMDL de modeli okunur kod hâline getirir. Böylece Git değişikliği satır satır gösterir. Diğer seçenekler tasarım ve performans araçlarıdır, sürüm izlemeyle ilgisi yoktur.' }
 ] });
 
 /* ───────────── aile ───────────── */
 ext('aile', { min: 9, html: `
-<h2>Hizmetteki nesneler: kim kimin içinde?</h2>
-<p>Raporunu yayımladığında Power BI hizmetinde (Service) tek bir dosya görmezsin; birkaç ayrı nesne oluşur. Bunları bilmek, “raporu sildim, veri de gitti mi?” gibi soruları cevaplamanı sağlar.</p>
+<h2>Service’teki nesneler: kim kimin içinde?</h2>
+<p>Raporunu yayımladığında Power BI Service’te (Service) tek bir dosya görmezsin; birkaç ayrı nesne oluşur. Bunları bilmek, “raporu sildim, veri de gitti mi?” gibi soruları cevaplamanı sağlar.</p>
 <div class="tbl-wrap"><table>
 <tr><th>Nesne</th><th>Ne tutar?</th><th>Anadolu Market örneği</th></tr>
 <tr><td>Çalışma alanı (Workspace)</td><td>Bir ekibin klasörü. İçindeki her şeye erişimi yönetir.</td><td>“Satış Analitiği” çalışma alanı</td></tr>
@@ -102,7 +102,7 @@ ext('arayuz', { min: 8, html: `
 <li><b>Yakınlaştırma:</b> Sağ alttaki kaydırıcı ve “Sayfaya sığdır” düğmesi. Küçük ekranda tuvali bütün görmek için.</li>
 </ul>
 <h2>Kaybolan bölmeler ve formül çubuğu</h2>
-<p>Bölmeler, başlıklarındaki ok ile daraltılır. Tamamen kapanan bir bölmeyi <b>Görünüm</b> sekmesindeki Bölmeleri göster grubundan (Filtreler, Yer imleri, Seçim, Performans Analizi…) geri açarsın. Formül çubuğu ise yalnızca bir ölçü, hesaplanmış sütun ya da tablo seçiliyken şeridin hemen altında belirir. Veri bölmesinde ölçünün adına tıkla; formülü orada görürsün.</p>
+<p>Bölmeler, başlıklarındaki ok ile daraltılır. Tamamen kapanan bir bölmeyi <b>Görünüm</b> sekmesindeki Bölmeleri göster grubundan (Filtreler, Yer işaretleri, Seçim, Performans Analizi…) geri açarsın. Formül çubuğu ise yalnızca bir ölçü, hesaplanmış sütun ya da tablo seçiliyken şeridin hemen altında belirir. Veri bölmesinde ölçünün adına tıkla; formülü orada görürsün.</p>
 <div class="note"><b>Arama kutusu</b>Veri bölmesinin üstündeki arama kutusu, onlarca tablonun olduğu modellerde sütunu ya da ölçüyü bulmanın en hızlı yoludur. “satış” yazınca adında satış geçen her alan süzülür.</div>
 `, ex: [
   { t: 'mc', q: 'Sağ taraftaki Filtreler bölmesini yanlışlıkla kapattın ve göremiyorsun. Onu nereden geri açarsın?', o: ['Dosya → Seçenekler', 'Görünüm sekmesi', 'Modelleme sekmesi', 'Giriş → Yenile'], a: 1, why: 'Bölmeler Görünüm sekmesindeki bölme düğmeleriyle açılıp kapanır. Seçenekler penceresi uygulama ayarlarıdır, Modelleme sekmesi ölçü ve ilişkiler içindir, Yenile ise veriyi yeniden yükler.' },
@@ -229,7 +229,7 @@ ext('ilk-rapor', { min: 9, html: `
 <li><b>Orta alan:</b> Solda kategoriye göre sıralı çubuk, sağda aylara göre çizgi grafik.</li>
 <li><b>Dilimleyici:</b> Üstte ya da solda tek bir yıl dilimleyicisi. Başlangıçta fazla dilimleyici koyma.</li>
 <li><b>Test et:</b> Rakamları bir kontrol değerine karşı doğrula (aşağıda).</li>
-<li><b>Yayımla:</b> Giriş → Yayımla → çalışma alanını seç. Hizmette raporu açıp bir kez daha dene.</li>
+<li><b>Yayımla:</b> Giriş → Yayımla → çalışma alanını seç. Service’te raporu açıp bir kez daha dene.</li>
 </ol>
 <h2>Sayfa düzeni: göz nereden başlar?</h2>
 <p>Soldan sağa okuyan biri sayfaya sol üstten girer, sağa ve aşağı doğru ilerler. Bu yüzden en önemli rakam sol üstte, ayrıntı sağ altta durur. Genelden özele: önce “ne kadar?”, sonra “nerede?”, en son “hangi kalemler?”. Görseller arasında eşit boşluk bırak; hizalamak için birden çok görseli seçip Biçim → Hizala komutunu kullan.</p>
@@ -357,7 +357,7 @@ ext('filtreler', { min: 10, html: `
 <p>Varsayılan olarak bir dilimleyici sayfadaki her görseli süzer. Bazen istemezsin. Örnek: sayfada “Tüm zamanların net satışı: 1.250.772 ₺” kartı var ve yıl seçilince değişmemeli. Dilimleyiciyi seç → <b>Biçim</b> sekmesi → <b>Etkileşimleri düzenle</b>. Her görselin üstünde küçük simgeler çıkar: <b>Filtrele</b>, <b>Vurgula</b> (yalnızca grafiklerde) ve <b>Hiçbiri</b>. Karttaki “Hiçbiri” simgesine bas; artık kart dilimleyiciyi dinlemez. Aynı ayar, bir grafiğe tıklayınca diğer grafiklerin nasıl tepki vereceği için de geçerlidir.</p>
 <h2>Okuyucu tarafında üç ayrıntı</h2>
 <ul>
-<li><b>Kalıcı filtreler:</b> Hizmette okuyucunun son seçimleri hatırlanır. Ertesi gün rapor aynı seçimle açılır. Sağ üstteki <b>Varsayılana sıfırla</b> düğmesi senin yayımladığın hâle döner.</li>
+<li><b>Kalıcı filtreler:</b> Service’te okuyucunun son seçimleri hatırlanır. Ertesi gün rapor aynı seçimle açılır. Sağ üstteki <b>Varsayılana sıfırla</b> düğmesi senin yayımladığın hâle döner.</li>
 <li><b>Uygula düğmesi:</b> Çok dilimleyicili sayfada her tıklama yeni bir hesap başlatır. İyileştir sekmesindeki sorgu azaltma ayarlarıyla dilimleyicilere ve filtrelere bir <b>Uygula</b> düğmesi eklenir; okuyucu seçimlerini bitirip bir kez hesaplatır.</li>
 <li><b>Yayımlarken seçim kalır:</b> Desktop'ta dilimleyicide 2023'ü seçili bırakıp yayımlarsan okuyucu raporu 2023 ile açar. Yayımlamadan önce dilimleyicileri istediğin başlangıç hâline getir.</li>
 </ul>
@@ -365,7 +365,7 @@ ext('filtreler', { min: 10, html: `
 <p>Filtre ilişkiler üzerinden akar. Bu modelde Hedefler tablosu Tarih ve Kategoriler'e bağlıdır ama kanal bilgisi yoktur. Satislar[Kanal] dilimleyicisinde “Web” seçtiğinde net satış küçülür, [Hedef] ise 1.299.300 ₺ olarak aynı kalır. Bu bir hata değil, hedefin kanal düzeyinde verilmemiş olmasıdır. Okuyucu “Web'in hedefi bu mu?” diye yanlış okumasın diye hedef görselinde kanal etkileşimini <b>Hiçbiri</b> yap ya da başlığa “Hedef kanal ayrımı içermez” yaz. Farklı ayrıntı düzeyleri Hedef ve gerçekleşen dersinde.</p>
 `, ex: [
   { t: 'mc', q: 'Sayfadaki “Tüm zamanların net satışı” kartı, yıl dilimleyicisinde seçim yapılınca değişiyor. Kart hiç etkilenmesin istiyorsun. Ne yaparsın?', o: ['Kartı rapor düzeyi filtreye eklerim', 'Dilimleyiciyi açılır menü yaparım', 'Etkileşimleri düzenle → kartta Hiçbiri', 'Kartı başka bir sayfaya taşıyıp eşitlerim'], a: 2, why: 'Etkileşimleri düzenle ile dilimleyicinin bu kartı süzmesi kapatılır. Rapor filtresi kartı yine süzer, dilimleyici stili davranışı değiştirmez; başka sayfaya taşıyıp eşitlemek ise kartın yine süzülmesine yol açar.' },
-  { t: 'mc', q: 'Kanal dilimleyicisinde “Web” seçilince net satış değişiyor ama hedef 1.299.300 ₺ olarak sabit kalıyor. En olası açıklama nedir?', o: ['Hedef ölçüsü yanlış tabloyu topluyor', 'Hedeflerde kanal sütunu yok', 'Dilimleyici tek seçim moduna ayarlı', 'Rapor hizmette henüz yenilenmemiş'], a: 1, why: 'Filtre ilişkiler üzerinden akar; Hedefler tablosu Tarih ve Kategoriler’e bağlıdır, kanalla bir yolu yoktur. Bu yüzden kanal seçimi hedefi değiştirmez. Ölçü doğrudur, tek seçim ayarı ve yenileme bu davranışı açıklamaz.' },
+  { t: 'mc', q: 'Kanal dilimleyicisinde “Web” seçilince net satış değişiyor ama hedef 1.299.300 ₺ olarak sabit kalıyor. En olası açıklama nedir?', o: ['Hedef ölçüsü yanlış tabloyu topluyor', 'Hedeflerde kanal sütunu yok', 'Dilimleyici tek seçim moduna ayarlı', 'Rapor Service’te henüz yenilenmemiş'], a: 1, why: 'Filtre ilişkiler üzerinden akar; Hedefler tablosu Tarih ve Kategoriler’e bağlıdır, kanalla bir yolu yoktur. Bu yüzden kanal seçimi hedefi değiştirmez. Ölçü doğrudur, tek seçim ayarı ve yenileme bu davranışı açıklamaz.' },
   { t: 'mc', q: 'Sayfada beş dilimleyici var; okuyucu her tıkladığında tüm görseller yeniden hesaplanıyor ve sayfa yavaşlıyor. Hangi ayar yardımcı olur?', o: ['Dilimleyicilere Uygula düğmesi eklemek', 'Görsellerin gölgesini kapatmak', 'Dilimleyicileri döşeme stiline çevirmek', 'Filtre bölmesini okuyucuya gizlemek'], a: 0, why: 'Sorgu azaltma ayarlarıyla eklenen Uygula düğmesi, okuyucu seçimlerini bitirene kadar hesaplamayı bekletir. Gölge ve stil yalnızca görünüştür; filtre bölmesini gizlemek dilimleyicilerin yarattığı yükü azaltmaz.' }
 ] });
 
@@ -383,7 +383,7 @@ ext('veri-alma', { min: 12, html: `
 <h3>Excel çalışma kitabı</h3>
 <p>Gezgin penceresinde hem sayfalar hem de <b>Excel tabloları</b> görünür. Mümkünse tabloyu seç: tablo büyüyünce yeni satırlar kendiliğinden gelir ve başlık satırı nettir. Birleştirilmiş hücreler, üstteki başlık-logo satırları ve alt toplam satırları Power BI için gürültüdür; Power Query ile temizlenir (Power Query ile veri temizleme dersi).</p>
 <h3>Klasör</h3>
-<p>Her ay aynı yapıda bir dosya geliyorsa (“satis_2024_09.xlsx”, “satis_2024_10.xlsx”…) dosyaları tek tek eklemek yerine <b>Klasör</b> bağlayıcısını kullan. Birleştir ve Dönüştür dediğinde Power BI bir örnek dosyadaki adımları tüm dosyalara uygular. Yeni ayın dosyasını klasöre bırakman yeterli: bir sonraki yenilemede rapora girer. Dosyalar şirketin SharePoint'indeyse <b>SharePoint klasörü</b> bağlayıcısını seç; kaynak bulutta olduğu için hizmette yenilemek için ağ geçidine gerek kalmaz.</p>
+<p>Her ay aynı yapıda bir dosya geliyorsa (“satis_2024_09.xlsx”, “satis_2024_10.xlsx”…) dosyaları tek tek eklemek yerine <b>Klasör</b> bağlayıcısını kullan. Birleştir ve Dönüştür dediğinde Power BI bir örnek dosyadaki adımları tüm dosyalara uygular. Yeni ayın dosyasını klasöre bırakman yeterli: bir sonraki yenilemede rapora girer. Dosyalar şirketin SharePoint'indeyse <b>SharePoint klasörü</b> bağlayıcısını seç; kaynak bulutta olduğu için Service’te yenilemek için ağ geçidine gerek kalmaz.</p>
 <h2>Web kaynakları</h2>
 <p><b>Web</b> bağlayıcısına bir adres verirsin. Adres bir HTML sayfasıysa Power BI sayfadaki tabloları listeler; bir CSV ya da JSON dosyasıysa onu doğrudan okur. Örnek: Merkez bankasının yayımladığı döviz kuru tablosu. İki uyarı: sayfanın düzeni değişirse sorgu bozulabilir ve bazı siteler otomatik okumaya izin vermez. Kalıcı bir iş için sitenin sunduğu resmi dosya ya da API adresini tercih et.</p>
 <h2>Gizlilik düzeyleri: veri nereye gidebilir?</h2>
@@ -396,7 +396,7 @@ ext('veri-alma', { min: 12, html: `
 <tr><td>Yok (None)</td><td>Ayar yok; yalnızca kontrollü deneme için.</td><td>—</td></tr>
 </table></div>
 <p>Ayarlamak için: <b>Dosya → Seçenekler ve ayarlar → Veri kaynağı ayarları</b> → kaynağı seç → <b>İzinleri düzenle</b> → Gizlilik düzeyi. Yalnızca açık dosya için Giriş sekmesindeki Veri kaynağı ayarları da aynı pencereyi açar. Düzeyler uyumsuzsa Power Query birleştirmeyi durdurur ve bir “Formula.Firewall” hatası verir.</p>
-<div class="warn"><b>“Yok say” kestirmesi</b>Seçenekler → Gizlilik bölümünde gizlilik düzeylerini yok sayma seçeneği vardır ve hatayı susturur. Ama hassas verinin dışarı gitmesine izin verebilir ve hizmette yayımlanan rapor bu ayara uymaz. Doğru yol, her kaynağa gerçek düzeyini vermektir.</div>
+<div class="warn"><b>“Yok say” kestirmesi</b>Seçenekler → Gizlilik bölümünde gizlilik düzeylerini yok sayma seçeneği vardır ve hatayı susturur. Ama hassas verinin dışarı gitmesine izin verebilir ve Service’te yayımlanan rapor bu ayara uymaz. Doğru yol, her kaynağa gerçek düzeyini vermektir.</div>
 <p>Dosyanın yeri değiştiğinde (ör. masaüstünden ortak klasöre) aynı Veri kaynağı ayarları penceresindeki <b>Kaynağı değiştir</b> ile yeni yolu gösterirsin; sorgunun adımları korunur.</p>
 `, ex: [
   { t: 'mc', q: 'Bölge ofisleri her ay aynı yapıda bir Excel dosyası gönderiyor ve bunlar bir klasörde birikiyor. Raporun her ay elle uğraşmadan güncellenmesi için ne yaparsın?', o: ['Her ay yeni dosyayı ayrı bir sorgu olarak eklerim', 'Klasör bağlayıcısıyla dosyaları birleştiririm', 'Dosyaları elle tek bir Excel’e kopyalarım', 'Her ayı ayrı bir .pbix dosyasında tutarım'], a: 1, why: 'Klasör bağlayıcısı klasördeki tüm dosyalara aynı adımları uygular; yeni dosya bir sonraki yenilemede kendiliğinden gelir. Ayrı sorgular ve ayrı dosyalar bakım yükü yaratır, elle kopyalama hataya açıktır.' },
@@ -433,7 +433,7 @@ Satılmış Ürün Sayısı = DISTINCTCOUNT(Satislar[UrunNo])</pre>
 <li>Model görünümünde <b>bir</b> tarafındaki sütunu (Urunler[UrunNo]) <b>çok</b> tarafındaki sütunun (Satislar[UrunNo]) üzerine sürükle.</li>
 <li>Açılan pencerede kardinaliteyi (Bire çok), çapraz filtre yönünü (Tek) ve “Bu ilişkiyi etkin yap” kutusunu kontrol et.</li>
 <li>İki sütunun veri türü aynı olmalı. Biri metin “27”, diğeri tam sayı 27 ise ilişki kurulmaz ya da eşleşme olmaz; türü Power Query'de eşitle.</li>
-<li>Kurduktan sonra bir tablo görselinde Urunler[Kategori] ile [Net Satış]'ı yan yana koy; boş (BLANK) bir kategori satırı görürsen olgu tablosunda boyutta karşılığı olmayan anahtarlar var demektir.</li>
+<li>Kurduktan sonra bir tablo görselinde Kategoriler[Kategori] ile [Net Satış]'ı yan yana koy; boş (BLANK) bir kategori satırı görürsen olgu tablosunda boyutta karşılığı olmayan anahtarlar var demektir.</li>
 </ol>
 <div class="tip"><b>Model sağlık kontrolü</b>Her boyut anahtarı benzersiz mi? Her ilişki bire-çok ve tek yönlü mü? Boş boyut satırı var mı? Bu üç soruya “evet, evet, hayır” diyorsan temel model sağlamdır. İleri konular Model tasarımı II dersinde.</div>
 `, ex: [

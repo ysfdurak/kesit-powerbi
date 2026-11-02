@@ -30,7 +30,7 @@
 <p><b>Soru:</b> Yeni ürün eklemenin etkisi olmadan organik büyüme ne? Her iki dönemde de satılan ürün kümesi bulunur, iki dönemin satışı yalnızca bu kümeyle hesaplanır.</p>
 <h2>4 · Para birimi dönüşümü</h2>
 <p><b>Soru:</b> Satışı USD/EUR olarak göster. <b>Kural:</b> Dönüşüm işlemin tanecikte (ay) yapılır, sonra toplanır. Yıllık TL toplamı yıllık ortalama kura bölünmez.</p>
-<p>Dört kalıbın tam kodu ve satır satır açıklaması <button class="lnk" data-go="lab">Ölçü Laboratuvarı</button>'nda. Aşağıdaki alıştırmalarda bunları sen yazacaksın; iskelet verildi.</p>
+<p>Dört kalıbın tam kodu ve satır satır açıklaması <button class="lnk" data-go="lab">Measure Lab</button>'nda. Aşağıdaki alıştırmalarda bunları sen yazacaksın; iskelet verildi.</p>
 `,
   ex: [
     { t: 'dax', q: '<b>Satış (Top N + Diğer)</b>: Eksende <code>UrunlerVeDiger[Urun]</code>, dilimleyicide <code>TopNSecim[N]</code> (varsayılan 5). İlk N üründe ürünün satışı, “Diğer”de genel toplam − ilk N toplamı, toplam satırında genel toplam, ilk N dışındaki ürünlerde boş.', name: 'Satış (Top N + Diğer)',
@@ -176,7 +176,7 @@ RETURN DIVIDE(Kov, SX * SY)</pre>
 <li>Ölçüyü değiştir, aynı koşulda tekrar ölç. Tek değişiklik, tek ölçüm.</li>
 <li>Sonuçların aynı olduğunu doğrula (performans için doğruluktan vazgeçme).</li>
 </ol>
-<div class="note"><b>Bu oyun alanında</b>DAX Stüdyosu her çalıştırmada süreyi milisaniye olarak gösterir. Motor VertiPaq değildir ama kalıplar aynı yönde davranır: Ölçü Laboratuvarı'ndaki RFM segment sayımı, segment satırı başına tüm müşterileri dolaştığı için diğerlerinden çok daha yavaştır.</div>
+<div class="note"><b>Bu oyun alanında</b>DAX Playground her çalıştırmada süreyi milisaniye olarak gösterir. Motor VertiPaq değildir ama kalıplar aynı yönde davranır: Measure Lab’deki RFM segment sayımı, segment satırı başına tüm müşterileri dolaştığı için diğerlerinden çok daha yavaştır.</div>
 `,
   ex: [
     { t: 'mc', q: 'DAX Studio\'da bir ölçünün 2.000 küçük depolama motoru sorgusu ürettiğini görüyorsun. En olası neden?', o: ['Tarih tablosu işaretli değil', 'Büyük bir tabloda yineleyicinin içinde ölçü çağrısı (her satırda bağlam geçişi)', 'Tema dosyası', 'Çok fazla görsel'], a: 1, why: 'Her satırdaki bağlam geçişi ayrı bir SE sorgusu doğurabilir; boyutun anahtarı üzerinde dolaşmak sayıyı azaltır.' },
@@ -271,7 +271,7 @@ AnadoluMarket.Report/
 `,
   ex: [
     { t: 'mc', q: 'İki geliştirici aynı modelde farklı ölçüler üzerinde çalışıyor ve değişikliklerini incelemek istiyorlar. Doğru başlangıç?', o: ['Aynı .pbix dosyasını e-postayla göndermek', 'Projeyi .pbip olarak kaydedip Git deposunda dallarla çalışmak', 'Web\'de yayımla', 'Her şeyi tek bir ölçüye yazmak'], a: 1, why: 'PBIP modeli TMDL metni olarak saklar; Git dalları ve pull request ile birleştirme yapılır.' },
-    { t: 'mc', q: 'Test aşamasında test veritabanına, Üretim\'de canlı veritabanına bağlanmayı otomatik yapan özellik?', o: ['Dağıtım kuralları', 'RLS', 'Yer imi', 'Sertifikalama'], a: 0, why: 'Dağıtım işlem hattı kuralları veri kaynağını ya da parametreyi aşamaya göre değiştirir.' },
+    { t: 'mc', q: 'Test aşamasında test veritabanına, Üretim\'de canlı veritabanına bağlanmayı otomatik yapan özellik?', o: ['Dağıtım kuralları', 'RLS', 'Yer işareti', 'Sertifikalama'], a: 0, why: 'Dağıtım işlem hattı kuralları veri kaynağını ya da parametreyi aşamaya göre değiştirir.' },
     { t: 'mc', q: 'Kullanıcının dosyayı açınca doğrudan şirket SQL veritabanına bağlanmış boş bir rapor görmesi için hangi dosya?', o: ['.pbit', '.pbids', '.pbip', '.rdl'], a: 1, why: '.pbids yalnızca veri kaynağı bağlantı bilgisini taşır.' }
   ]
 },
@@ -288,7 +288,7 @@ AnadoluMarket.Report/
 <tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
 <tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Güvenlik, Yönetişim, Yaşam döngüsü, Kurumsal model</td></tr>
 <tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
-<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Ölçü Laboratuvarı, Kurumsal model, DAX optimizasyonu</td></tr>
+<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, DAX optimizasyonu</td></tr>
 </table></div>
 <h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
 <ul>
@@ -317,10 +317,10 @@ AnadoluMarket.Report/
 {
   id: 'final-hazirlik', lv: 'C2', mod: 'Bitirme', min: 10,
   title: 'Bitirme projesine hazırlık',
-  sum: 'Final Projesi\'nin aşamaları, değerlendirme ölçütleri ve profesyonel bir dashboard teslim kontrol listesi.',
+  sum: 'Bitirme projesi\'nin aşamaları, değerlendirme ölçütleri ve profesyonel bir rapor teslim kontrol listesi.',
   body: `
 <h2>Ne yapacaksın?</h2>
-<p><button class="lnk" data-go="final">Final Projesi</button>, Anadolu Market yönetimi için ham veriden yayımlanmış bir Power BI uygulamasına kadar uçtan uca bir çözüm kurmanı ister. Her aşama Power BI'ın belirli menülerini kullanır; sonunda Desktop'ın tüm şerit sekmelerini, Power Query menülerini, tüm bölmeleri ve Service'in yönetim özelliklerini kullanmış olursun. Proje sayfasında bir “menü kapsama” tablosu var: hangi aşamada hangi menü kullanılıyor.</p>
+<p><button class="lnk" data-go="final">Bitirme projesi</button>, Anadolu Market yönetimi için ham veriden yayımlanmış bir Power BI uygulamasına kadar uçtan uca bir çözüm kurmanı ister. Her aşama Power BI'ın belirli menülerini kullanır; sonunda Desktop'ın tüm şerit sekmelerini, Power Query menülerini, tüm bölmeleri ve Service'in yönetim özelliklerini kullanmış olursun. Proje sayfasında bir “menü kapsama” tablosu var: hangi aşamada hangi menü kullanılıyor.</p>
 <h2>Değerlendirme ölçütleri</h2>
 <div class="tbl-wrap"><table>
 <tr><th>Ölçüt</th><th>Ağırlık</th><th>Profesyonel düzey</th></tr>
@@ -328,7 +328,7 @@ AnadoluMarket.Report/
 <tr><td>Model</td><td>%20</td><td>Yıldız şema, tek yönlü ilişkiler, işaretli tarih tablosu, gizlenmiş anahtarlar, görüntü klasörleri</td></tr>
 <tr><td>DAX</td><td>%25</td><td>Temel ölçüler üzerine kurulu ölçüler, VAR, doğru toplam satırları, biçim dizeleri, açıklamalar</td></tr>
 <tr><td>Görsel tasarım</td><td>%20</td><td>Z deseni, tutarlı renkler, doğru görsel türleri, okunur başlıklar, erişilebilirlik</td></tr>
-<tr><td>Etkileşim ve hikâye</td><td>%10</td><td>Gezinme, yer imi, detay sayfası, araç ipucu sayfası, eşitlenmiş dilimleyiciler</td></tr>
+<tr><td>Etkileşim ve hikâye</td><td>%10</td><td>Gezinme, yer işareti, detay sayfası, araç ipucu sayfası, eşitlenmiş dilimleyiciler</td></tr>
 <tr><td>Yönetim</td><td>%10</td><td>RLS test edilmiş, uygulama yayımlanmış, yenileme zamanlanmış, etiket ve onay</td></tr>
 </table></div>
 <h2>Teslim kontrol listesi</h2>

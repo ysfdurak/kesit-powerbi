@@ -118,7 +118,7 @@
   'pl-n39': ['sinav', 'Sorun giderme: M365 grubu RLS’de desteklenmez (doğrulandı: learn.microsoft.com/power-bi/enterprise/service-admin-rls)'],
   'pl-n40': ['sinav', 'Dinamik RLS filtresi kodu; CUSTOMDATA/USERCULTURE inandırıcı çeldiriciler'],
   'pl-n41': ['sinav', 'Gereksinimden pano + veri uyarısı kararı; abonelik çeldiricisi'],
-  'pl-n42': ['sinav', 'Prosedürel: panonun hizmette oluşturulması'],
+  'pl-n42': ['sinav', 'Prosedürel: panonun Service’te oluşturulması'],
   'pl-n43': ['sinav', 'Kime RLS uygulanır: rol ve Derleme izni ayrımı (doğrulandı: service-admin-rls)'],
   'pl-m01': ['alistirma', 'Çok kolay kod: Table.Group + List.Sum'],
   'pl-m02': ['sinav', 'İlişki kurulamama sorunu; çoka-çok ve LOOKUPVALUE gerçek kestirmeler'],
