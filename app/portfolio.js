@@ -1,5 +1,5 @@
 /* Kesit Power BI — portföy sürümü: karşılama kapıları, Hakkında, geri bildirim formu, ders yorumları (Giscus),
-   ziyaret sayacı (GoatCounter, çerezsiz), kalıcı depolama isteği ve yedekleme hatırlatması.
+   ziyaret sayacı (GoatCounter, çerezsiz; config ile açılırsa), kalıcı depolama isteği ve yedekleme hatırlatması.
    Ayarların tamamı config.js (window.KESIT_CONFIG) içinde; boş bırakılan özellik görünmez. */
 (function () {
 'use strict';
@@ -7,9 +7,16 @@ const C = window.PBI_CORE, P = C.P, esc = C.esc, VIEWS = C.views;
 const CFG = () => window.KESIT_CONFIG || {};
 
 /* ---------- Geri bildirim formu ---------- */
-function feedbackUrl(ders) { const u = (CFG().feedbackFormUrl || '').trim(); if (!u) return ''; return u.indexOf('{ders}') >= 0 ? u.replace('{ders}', encodeURIComponent(ders || 'Genel')) : u; }
-function openFeedback(ders) { const u = feedbackUrl(ders); gcEvent('geri-bildirim-acildi', 'Geri bildirim formu açıldı'); if (u) window.open(u, '_blank', 'noopener'); else C.toast('Geri bildirim formu henüz eklenmedi.'); }
-const fbBtn = (ders, label, cls) => feedbackUrl('x') ? '<button class="btn ' + (cls || 'ghost sm') + '" data-kfb="' + esc(ders) + '">' + (label || 'Geri bildirim') + '</button>' : '';
+const REPO = () => (CFG().author && CFG().author.repo) || C.REPO_URL || 'https://github.com/ysfdurak/kesit-powerbi';
+function issueUrl(ders) {
+  const w = String(ders || 'Genel'), st = C.state();
+  const where = st.view === 'lesson' && st.id ? 'Ders: ' + (C.LMAP[st.id] ? C.LMAP[st.id].title : st.id) + ' (' + st.id + ')' + (st.step ? ', alıştırma ' + st.step : '') : 'Sayfa: ' + st.view + (st.id ? ' / ' + st.id : '');
+  const body = where + '\nKonu: ' + w + '\nAdres: ' + location.href + '\n\nNe gördün, ne bekliyordun?\n\n';
+  return REPO() + '/issues/new?title=' + encodeURIComponent(w.slice(0, 120)) + '&body=' + encodeURIComponent(body);
+}
+function feedbackUrl(ders) { const u = (CFG().feedbackFormUrl || '').trim(); if (!u) return issueUrl(ders); return u.indexOf('{ders}') >= 0 ? u.replace('{ders}', encodeURIComponent(ders || 'Genel')) : u; }
+function openFeedback(ders) { gcEvent('geri-bildirim-acildi', 'Geri bildirim açıldı'); window.open(feedbackUrl(ders), '_blank', 'noopener'); }
+const fbBtn = (ders, label, cls) => '<button class="btn ' + (cls || 'ghost sm') + '" data-kfb="' + esc(ders) + '">' + (label || 'Geri bildirim') + '</button>';
 
 /* ---------- Ders yorumları: Giscus (GitHub Discussions) ---------- */
 function giscusOn() { const g = CFG().giscus || {}; return !!(g.repo && g.repoId && g.category && g.categoryId); }
@@ -67,7 +74,7 @@ if (VIEWS.lesson) {
   const base = VIEWS.lesson.render, mount = VIEWS.lesson.mount;
   VIEWS.lesson.render = id => {
     let h = base(id); const l = C.LMAP[id]; if (!l) return h; const st = C.state();
-    if (feedbackUrl('x')) { const i = h.indexOf('</h1>'); if (i > 0) h = h.slice(0, i + 5) + '<p class="lfb">' + fbBtn(l.title + ' (' + l.id + ')', 'Bu ders hakkında geri bildirim') + '</p>' + h.slice(i + 5); }
+    { const i = h.indexOf('</h1>'); if (i > 0) h = h.slice(0, i + 5) + '<p class="lfb">' + fbBtn('Ders: ' + l.title, 'Bu ders hakkında geri bildirim') + '</p>' + h.slice(i + 5); }
     if (giscusOn() && !st.step) { const j = h.lastIndexOf('</div>'); const box = '<section class="panel gs-wrap"><div class="sec-head"><h3>Yorumlar</h3><span class="muted" style="font-size:.82rem">GitHub hesabınla yorum yapabilirsin</span></div><div id="gsBox"><div class="empty">Yorumlar yükleniyor…</div></div></section>'; h = j > 0 ? h.slice(0, j) + box + h.slice(j) : h + box; }
     return h;
   };
@@ -79,13 +86,14 @@ function viewAbout() {
   const c = CFG(), A = c.author || {}; const ex = C.LESSONS.reduce((a, l) => a + (l.ex || []).length, 0);
   const link = (u, t) => u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener">' + t + '</a>' : '';
   const nDash = (window.PBI_DASHES || []).length, nData = (window.PBI_DATASETS || []).length + 1, nPr = (window.PBI_PRACTICE || []).length;
-  let h = '<div class="wrap" style="max-width:880px;gap:18px"><div><span class="eyebrow">Hakkında</span><h1>Kesit Power BI</h1><p class="muted" style="max-width:68ch;margin:6px 0 0">Sıfırdan işe hazır seviyeye Türkçe Power BI, DAX ve Fabric eğitimi. Kurulum yok, hesap yok: tarayıcında çalışan bir DAX motoruyla ölçü yazarsın, her alıştırma anında denetlenir.</p></div>';
+  let h = '<div class="wrap" style="max-width:880px;gap:18px"><div><h1>Hakkında</h1><p class="muted" style="max-width:68ch;margin:6px 0 0">Kesit Power BI, sıfırdan işe hazır seviyeye Türkçe Power BI, DAX ve Fabric eğitimi. Kurulum yok, hesap yok: tarayıcında çalışan, DAX’ı benzeten bir motorla ölçü yazarsın, her alıştırma anında denetlenir.</p></div>';
   h += '<div class="kpis about-kpis"><div class="kpi"><b>' + C.LESSONS.length + '</b><span>ders</span></div><div class="kpi"><b>' + ex + '</b><span>alıştırma</span></div><div class="kpi"><b>' + nPr + '</b><span>pratik görevi</span></div><div class="kpi"><b>' + nDash + '</b><span>örnek rapor</span></div><div class="kpi"><b>' + nData + '</b><span>veri seti</span></div></div>';
-  if (A.name) h += '<section class="panel about-card"><div class="sec-head"><h3>Yapan</h3></div><p style="margin:0"><b style="font-size:1.1rem">' + esc(A.name) + '</b>' + (A.title ? '<br><span class="muted">' + esc(A.title) + '</span>' : '') + '</p>' + (A.bio ? '<p style="margin:0">' + esc(A.bio) + '</p>' : '') + '<div class="row" style="gap:8px">' + link(A.linkedin, 'LinkedIn') + link(A.github, 'GitHub') + link(A.repo, 'Kaynak kod') + fbBtn('Hakkında / iletişim', 'Bana yaz', 'sm') + '</div></section>';
+  if (A.name) h += '<section class="panel about-card"><div class="sec-head"><h3>Yapan</h3></div><p style="margin:0"><b style="font-size:1.1rem">' + esc(A.name) + '</b>' + (A.title ? '<br><span class="muted">' + esc(A.title) + '</span>' : '') + '</p>' + (A.bio ? '<p style="margin:0">' + esc(A.bio) + '</p>' : '') + '<div class="row" style="gap:8px">' + link(A.linkedin, 'LinkedIn') + link(A.github, 'GitHub') + link(A.repo ? A.repo + '/tree/kaynak' : '', 'Kaynak kod') + fbBtn('Hakkında / iletişim', 'Bana yaz', 'sm') + '</div></section>';
   if (c.story) h += '<section class="panel about-card"><div class="sec-head"><h3>Nasıl yapıldı</h3></div><p style="margin:0">' + esc(c.story) + '</p></section>';
-  h += '<section class="panel about-card"><div class="sec-head"><h3>Görüşün önemli</h3></div><p style="margin:0">Bu ücretsiz bir paylaşım ve portföy projesi. Bir hata gördüysen, anlatımı eksik bulduğun bir ders varsa ya da bir fikrin varsa yaz.</p><div class="row" style="gap:8px">' + fbBtn('Genel', 'Geri bildirim formu', 'pri sm') + (giscusOn() ? '<a class="btn sm" href="https://github.com/' + esc(c.giscus.repo) + '/discussions" target="_blank" rel="noopener">GitHub tartışmaları</a>' : '') + (!feedbackUrl('x') && !giscusOn() ? '<span class="muted">Geri bildirim kanalları yakında eklenecek.</span>' : '') + '</div>' + (feedbackUrl('x') || giscusOn() ? '<p class="muted" style="margin:0;font-size:.85rem">' + (feedbackUrl('x') ? 'Her dersin başlığının altında “Bu ders hakkında geri bildirim” bağlantısı' : '') + (feedbackUrl('x') && giscusOn() ? ', ' : '') + (giscusOn() ? 'konu anlatımının altında yorum alanı' : '') + ' var.</p>' : '') + '</section>';
-  const sib = [c.sqlUrl ? '<a href="' + esc(c.sqlUrl) + '" target="_blank" rel="noopener">Kesit SQL</a>' : '', c.pythonUrl ? '<a href="' + esc(c.pythonUrl) + '" target="_blank" rel="noopener">Kesit Python</a>' : ''].filter(Boolean);
-  if (sib.length) h += '<section class="panel about-card"><div class="sec-head"><h3>Kardeş uygulamalar</h3></div><p style="margin:0">Aynı mantıkla hazırlanmış diğer eğitimler: ' + sib.join(' ve ') + '. Buradaki vaka veri setleri bu uygulamalarda da kullanılıyor.</p></section>';
+  h += '<section class="panel about-card"><div class="sec-head"><h3>Görüşün önemli</h3></div><p style="margin:0">Bu ücretsiz bir paylaşım ve portföy projesi. Bir hata gördüysen, anlatımı eksik bulduğun bir ders varsa ya da bir fikrin varsa yaz. Geri bildirim, GitHub’da bir kayıt (Issue) olarak açılır.</p><div class="row" style="gap:8px">' + fbBtn('Genel', 'Geri bildirim gönder', 'pri sm') + (giscusOn() ? '<a class="btn sm" href="https://github.com/' + esc(c.giscus.repo) + '/discussions" target="_blank" rel="noopener">GitHub tartışmaları</a>' : '') + '</div><p class="muted" style="margin:0;font-size:.85rem">Her dersin başlığının altında “Bu ders hakkında geri bildirim” bağlantısı' + (giscusOn() ? ', konu anlatımının altında yorum alanı' : '') + ' var.</p></section>';
+  h += '<section class="panel about-card"><div class="sec-head"><h3>DAX motoru ve bilinen sınırları</h3></div><p style="margin:0">Tarayıcıda çalışan motor DAX’ı <b>benzetir</b>; Microsoft’un motoru (VertiPaq) değildir. Filtre ve satır bağlamı, bağlam geçişi, zaman zekâsı, tablo ve pencere fonksiyonlarının büyük bölümü dersler için yeterince aslına uygun çalışır, ' + Object.keys(C.X.FN).length + ' fonksiyon destekler. Yine de sonuçları gerçek Power BI Desktop’ta da doğrula.</p><ul style="margin:0;padding-left:20px"><li>Çoka çok ilişki kurma ve çift yönlü model ilişkisi yok (ölçü içinde CROSSFILTER ve TREATAS çalışır).</li><li>Takvim tabanlı zaman zekâsı yok.</li><li>Pencere fonksiyonlarının toplam satırı boş döner.</li><li>SUMMARIZECOLUMNS içinde IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL yok.</li><li>Depolama motoru, sorgu planı, gerçek performans ölçümü yok: Performans Analizi (Performance Analyzer) ve DAX Studio dersleri bu nedenle anlatımla ve Desktop ödevleriyle işlenir.</li><li>Büyük tabloda (Pedal İzmir, yaklaşık 116.517 satır) satır satır bağlam geçişi saniyeler sürebilir.</li><li>Power Query Lab M dilini çalıştırmaz, seçili komutları benzetir ve M kodunu üretir.</li></ul></section>';
+  const sib = ['<a href="' + esc(C.SITE.sql) + '">Kesit SQL</a>', '<a href="' + esc(C.SITE.python) + '">Kesit Python</a>'];
+  if (sib.length) h += '<section class="panel about-card"><div class="sec-head"><h3>Kardeş uygulamalar</h3></div><p style="margin:0">Aynı mantıkla hazırlanmış diğer eğitimler: ' + sib.join(' ve ') + '. Beş vaka veri seti üç uygulamada satır satır aynıdır. Anadolu Market Kesit SQL ile aynı şirket ve siparişleri kullanır; Power BI modeli zenginleştirildi.</p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>Sorumluluk notu</h3></div><p style="margin:0">Kesit Power BI ücretsiz, ticari olmayan bir eğitim ve bilgi paylaşımı projesidir. İçerik özenle hazırlandı ve alıştırmalar otomatik testlerden geçirildi; yine de hatasız olduğu garanti edilmez ve içerik “olduğu gibi” sunulur. Profesyonel bir eğitim, danışmanlık ya da resmî bir sertifika yerine geçmez; uygulamanın verdiği belgeler kendi beyanına dayalıdır.</p><p style="margin:0">Veri setlerindeki tüm şirketler, kişiler ve kayıtlar hayalidir; gerçek kişi ve kurumlarla benzerlik tesadüftür. Microsoft ile bir bağımız yoktur; Microsoft, Power BI, Fabric, Excel ve sınav adları Microsoft Corporation’ın markalarıdır. Sınav denemeleri özgün olarak yazılmıştır, gerçek sınav soruları değildir.</p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>Gizlilik</h3></div><p style="margin:0">Hesap yok ve kişisel veri toplanmaz. İlerlemen yalnızca kendi tarayıcında saklanır; istersen Profil sayfasından dosyaya kaydedip başka cihazda yükleyebilirsin.' + (window.claude ? ' Bu sayfa claude.ai içinde açıldığında, yazma izni olan kullanıcıların ilerlemesi kendi hesaplarına ait gizli alanda da tutulabilir.' : '') + (giscusOn() ? ' Yorumlar GitHub Discussions üzerinden (Giscus) yapılır ve GitHub’ın koşullarına tabidir.' : '') + (feedbackUrl('x') ? ' Geri bildirim formu harici bir form hizmetiyle toplanır; formda yalnızca yazdıklarını paylaşırsın.' : '') + (GC.code ? ' Ziyaretler GoatCounter ile çerezsiz ve anonim olarak sayılır: hangi sayfaların kaç kez açıldığı, ülke, tarayıcı türü ve ekran boyutu gibi toplu bilgiler; kişiyi tanımlayan bir kimlik tutulmaz.' : '') + '' + (document.querySelector('link[href*="fonts.googleapis"]') ? ' Yazı tipleri Google Fonts’tan yüklenir.' : ' Yazı tipleri bu sitenin kendi dosyalarından yüklenir; üçüncü taraf bir yazı tipi sunucusu kullanılmaz.') + '</p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>Lisans</h3></div><p style="margin:0">' + esc(c.license || 'Ders içerikleri ve veri setleri CC BY-NC 4.0 (kaynak göstererek, ticari olmayan amaçlarla paylaşılabilir); uygulama kodu MIT lisansıyla sunulur.') + '</p></section>';
@@ -95,17 +103,15 @@ C.view('hakkinda', { render: viewAbout, hash: 'hakkinda' });
 
 /* ---------- Tıklamalar ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-kfb],[data-kdoor],[data-kbk],[data-rep]'); if (!t) return;
+  const t = ev.target.closest('[data-kfb],[data-kdoor],[data-kbk]'); if (!t) return;
   const d = t.dataset;
   if (d.kfb !== undefined) { ev.preventDefault(); openFeedback(d.kfb); return; }
   if (d.kdoor) { gcEvent('karsilama/' + d.kdoor, 'Karşılama: ' + d.kdoor); P.welcomed = true; C.save();
     if (d.kdoor === 'yeni') C.go('lesson', 'ilk-olcu', { ctx: 'profesyonel' }); else if (d.kdoor === 'biraz') C.go('test'); else C.go('hedef'); return; }
   if (d.kbk) { P.bkDone = doneCount(); C.save(); setTimeout(() => { if (C.state().view === 'home') C.render(); }, 300); return; }
-  /* "Sorun bildir": form ayarlıysa doğrudan forma, ders adı dolu olarak */
-  if (d.rep !== undefined && feedbackUrl('x') && !window.claude) { ev.stopImmediatePropagation(); ev.preventDefault(); openFeedback('Sorun: ' + d.rep); }
 }, true);
 
 gcInit();
-try { const fb = document.getElementById('footFb'); if (fb && feedbackUrl('x')) fb.hidden = false; } catch (e) {}
+try { const fb = document.getElementById('footFb'); if (fb) fb.hidden = false; } catch (e) {}
 window.KESIT_PORTFOLIO = { feedbackUrl, openFeedback, giscusOn, gcEvent };
 })();

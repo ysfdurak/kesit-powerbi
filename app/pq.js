@@ -1,4 +1,4 @@
-/* Kesit Power BI — Power Query Atölyesi arayüzü: şerit, formül çubuğu, sütun kalitesi, uygulanan adımlar, Gelişmiş Düzenleyici.
+/* Kesit Power BI — Power Query Lab arayüzü: şerit, formül çubuğu, sütun kalitesi, uygulanan adımlar, Gelişmiş Düzenleyici.
    Hem kendi sayfasında (#pq) hem de derslerin içinde “pq” türündeki alıştırmalarda kullanılır. */
 (function () {
 'use strict';
@@ -99,11 +99,11 @@ function mountLesson(e, k, onSolved) {
   paint();
 }
 
-/* ---------- Atölye sayfası ---------- */
+/* ---------- Power Query Lab sayfası ---------- */
 const PQS = { src: 'bayi' };
 function viewPQ() {
   const exs = C.LESSONS.flatMap(l => (l.ex || []).map((e, i) => ({ l, e, i })).filter(x => x.e.t === 'pq'));
-  let h = '<div class="wrap" style="gap:16px">' + C.head('Uygula', 'Power Query Atölyesi', 'Kirli bir tabloyu adım adım temizle; her adım gerçek M koduna dönüşür. ' + Object.keys(OPS).length + ' komut, ' + Object.keys(Q.SOURCES).length + ' örnek kaynak, derslerde ' + exs.length + ' alıştırma.', 'pq');
+  let h = '<div class="wrap" style="gap:16px">' + C.head('Araçlar', 'Power Query Lab', 'Kirli bir tabloyu adım adım temizle; her adım gerçek M koduna dönüşür. ' + Object.keys(OPS).length + ' komut, ' + Object.keys(Q.SOURCES).length + ' örnek kaynak, derslerde ' + exs.length + ' alıştırma.', 'pq');
   h += '<div class="pqsrcs" role="tablist">' + Object.keys(Q.SOURCES).map(id => '<button role="tab" data-pqsrc="' + id + '" aria-selected="' + (PQS.src === id) + '"><b>' + esc(Q.SOURCES[id].name) + '</b><small>' + Q.SOURCES[id].table.rows.length + ' satır · ' + Q.SOURCES[id].table.cols.length + ' sütun</small></button>').join('') + '</div>';
   h += '<p class="muted" style="margin:0;max-width:80ch">' + esc(Q.SOURCES[PQS.src].desc) + '</p><div class="panel pqwrap" id="pqHost"></div>';
   h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Derslerdeki alıştırmalar</span><h2>Hedef tabloya ulaş, kontrol ettir</h2></div></div><div class="panel lessons">' + exs.map(x => '<button class="litem" data-lesson="' + x.l.id + '" data-pqstep="' + (x.i + 1) + '"><span class="check ' + (P.ex[x.l.id + ':' + x.i] ? 'done' : '') + '">' + (P.ex[x.l.id + ':' + x.i] ? C.ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(x.e.q.replace(/<[^>]+>/g, '').split('.')[0]) + '</b><small>' + esc(x.l.title) + ' · ' + esc(Q.SOURCES[x.e.src].name) + ' · örnek çözüm ' + x.e.sol.length + ' adım</small></span>' + C.lvBadge(x.l.lvl) + '</button>').join('') + '</div></section>';

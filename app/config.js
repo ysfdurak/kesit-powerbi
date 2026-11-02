@@ -13,10 +13,13 @@ window.KESIT_CONFIG = {
   story: '',
   license: '',           // boşsa: içerik CC BY-NC 4.0, kod MIT
 
-  /* Kardeş uygulamanın adresi (Kesit SQL). Örnek: 'https://kullaniciadi.github.io/kesit-sql/' */
+  /* Kesit ailesi (menünün altındaki bağlantılar). Boşsa yayındaki adresler kullanılır. */
+  homeUrl: '',
   sqlUrl: '',
+  pbiUrl: '',
+  pythonUrl: '',
 
-  /* Geri bildirim formu (Google Forms ya da Tally). Adreste {ders} yazan yere ders adı otomatik gelir.
+  /* Boşsa geri bildirim GitHub Issues'a gider. Form kullanılacaksa (Google Forms, Tally) adresi yaz; {ders} yazan yere ders adı gelir.
      Google Forms: formda "Ders" adlı kısa yanıt sorusu aç → ⋮ → "Önceden doldurulmuş bağlantı al" → Ders alanına {ders} yaz → bağlantıyı kopyala.
      Tally: formun adresinin sonuna ?ders={ders} ekle ve formda "ders" adlı gizli alan tanımla. */
   feedbackFormUrl: '',

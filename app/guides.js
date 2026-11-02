@@ -1,4 +1,4 @@
-/* Kesit Power BI — Karıştırılanlar, Sık yapılan hatalar ve Mülakat bölümleri. Veriler: confused.js (PBI_CONFUSED, PBI_MISTAKES), interview.js (PBI_IV_*). */
+/* Kesit Power BI — Karıştırılanlar, Sık hatalar ve Mülakat bölümleri. Veriler: confused.js (PBI_CONFUSED, PBI_MISTAKES), interview.js (PBI_IV_*). */
 (function () {
 'use strict';
 const C = window.PBI_CORE, X = C.X, V = C.V, esc = C.esc, $ = C.$, P = C.P;
@@ -6,13 +6,13 @@ const fm = s => esc(String(s == null ? '' : s)).replace(/`([^`]+)`/g, '<code>$1<
 const fmB = s => String(s || '').split(/\n+/).filter(x => x.trim()).map(x => /^\s*-\s+/.test(x) ? '<li>' + fm(x.replace(/^\s*-\s+/, '')) + '</li>' : '<p>' + fm(x) + '</p>').join('').replace(/(<li>.*?<\/li>)+/g, m => '<ul>' + m + '</ul>');
 const KC = window.PBI_CONFUSED || [], MS = window.PBI_MISTAKES || [];
 const KMAP = {}; KC.forEach(c => KMAP[c.id] = c); const MMAP = {}; MS.forEach(m => MMAP[m.id] = m);
-const AREAS = ['DAX', 'Model', 'Power Query', 'Rapor', 'Hizmet'];
+const AREAS = ['DAX', 'Model', 'Power Query', 'Rapor', 'Service'];
 const save = () => C.save();
 
 /* Tekrar ve alıştırma anahtarları: kq:<kart>:<i> ve mt:<hata> */
 const quizEx = (c, i) => { const q = c.quiz[i]; return { t: 'mc', q: fm(q.q), o: q.o.map(fm), a: q.a, why: fm(q.why), lesson: c.lesson }; };
 const taskEx = m => { const t = m.task; return Object.assign({ t: 'dax', lesson: m.lesson }, t, { q: fm(t.q), hint: t.hint || 'Belirtiyi ve “Neden?” açıklamasını yeniden oku.' }); };
-window.PBI_GUIDEX = k => { const p = k.split(':'); if (p[0] === 'kq') { const c = KMAP[p[1]]; return c && c.quiz[+p[2]] ? { e: quizEx(c, +p[2]), title: 'Karıştırılanlar · ' + c.title, lv: (C.LMAP[c.lesson] || {}).lvl || 'orta' } : null; } if (p[0] === 'mt') { const m = MMAP[p[1]]; return m && m.task ? { e: taskEx(m), title: 'Sık yapılan hatalar · ' + m.task.name, lv: (C.LMAP[m.lesson] || {}).lvl || 'B1' } : null; } return null; };
+window.PBI_GUIDEX = k => { const p = k.split(':'); if (p[0] === 'kq') { const c = KMAP[p[1]]; return c && c.quiz[+p[2]] ? { e: quizEx(c, +p[2]), title: 'Karıştırılanlar · ' + c.title, lv: (C.LMAP[c.lesson] || {}).lvl || 'orta' } : null; } if (p[0] === 'mt') { const m = MMAP[p[1]]; return m && m.task ? { e: taskEx(m), title: 'Sık hatalar · ' + m.task.name, lv: (C.LMAP[m.lesson] || {}).lvl || 'B1' } : null; } return null; };
 const solve = k => { if (!P.ex[k]) { P.ex[k] = true; C.trackRv(k); C.addXP(5); C.toast('+5 XP · Tekrar listesine eklendi'); save(); } };
 
 /* ---------- Karıştırılanlar ---------- */
@@ -27,7 +27,7 @@ function demoTable(c) {
 function karisList() {
   const q = trFold(KF.q);
   const list = KC.filter(c => (!KF.area || c.area === KF.area) && (!q || trFold(c.title + ' ' + c.rule + ' ' + c.items.map(i => i.n + ' ' + i.d).join(' ')).includes(q)));
-  let h = '<div class="wrap" style="gap:16px">' + C.head('Başvuru', 'Sık karıştırılanlar', 'Birbirine benzeyen fonksiyonlar, ayarlar ve kavramlar: tek cümlelik fark, ne zaman hangisi, canlı karşılaştırma ve mini test.', 'karis');
+  let h = '<div class="wrap" style="gap:16px">' + C.head('Referans', 'Sık hatalar ve ipuçları', 'Birbirine benzeyen fonksiyonlar, ayarlar ve kavramlar: tek cümlelik fark, ne zaman hangisi, canlı karşılaştırma ve mini test.', 'karis') + C.tipsTabs('karis');
   h += '<div class="row" style="gap:10px"><input class="input" id="kcQ" placeholder="Ara: ALLSELECTED, Merge, Direct Lake…" value="' + esc(KF.q) + '" style="max-width:340px" aria-label="Karıştırılanlarda ara"><div class="filters">' + [''].concat(AREAS).map(a => '<button data-kca="' + a + '" aria-pressed="' + (KF.area === a) + '">' + (a || 'Tümü') + ' <small>' + (a ? KC.filter(c => c.area === a).length : KC.length) + '</small></button>').join('') + '</div></div>';
   h += '<div class="kc-grid" id="kcList">' + kcCards(list) + '</div>';
   return h + '</div>';
@@ -47,12 +47,12 @@ function karisOne(id) {
 }
 C.view('karis', { render: id => id ? karisOne(id) : karisList(), mount: id => { if (id) C.exMount(); }, hash: 'karistirilanlar' });
 
-/* ---------- Sık yapılan hatalar ---------- */
+/* ---------- Sık hatalar ---------- */
 let MF = { area: '', q: '' };
 function hataList() {
   const q = trFold(MF.q);
   const list = MS.filter(m => (!MF.area || m.area === MF.area) && (!q || trFold(m.sym + ' ' + m.cause + ' ' + (m.tags || []).join(' ')).includes(q)));
-  let h = '<div class="wrap" style="gap:16px">' + C.head('Başvuru', 'Sık yapılan hatalar', 'Gördüğün belirtiyi yaz: neden olduğunu, nasıl düzeltileceğini ve ilgili dersi bul. Görevli kayıtlarda bozuk bir ölçüyü kendin düzeltirsin.', 'hatalar');
+  let h = '<div class="wrap" style="gap:16px">' + C.head('Referans', 'Sık hatalar ve ipuçları', 'Gördüğün belirtiyi yaz: neden olduğunu, nasıl düzeltileceğini ve ilgili dersi bul. Görevli kayıtlarda bozuk bir ölçüyü kendin düzeltirsin.', 'hatalar') + C.tipsTabs('hatalar');
   h += '<div class="row" style="gap:10px"><input class="input" id="mtQ" placeholder="Belirti yaz: toplam yanlış, boş çıkıyor, her satırda aynı…" value="' + esc(MF.q) + '" style="max-width:420px" aria-label="Belirtiye göre ara"><div class="filters">' + [''].concat(AREAS).map(a => '<button data-mta="' + a + '" aria-pressed="' + (MF.area === a) + '">' + (a || 'Tümü') + ' <small>' + (a ? MS.filter(m => m.area === a).length : MS.length) + '</small></button>').join('') + '</div></div>';
   h += '<div class="panel mt-list" id="mtList">' + mtRows(list) + '</div>';
   return h + '</div>';
@@ -60,7 +60,7 @@ function hataList() {
 const mtRows = list => list.map(m => '<details class="mt-row"><summary><span class="chip">' + esc(m.area) + '</span><b>' + fm(m.sym) + '</b>' + (m.task ? '<span class="chip dx">' + (P.ex['mt:' + m.id] ? 'düzeltildi ✓' : 'düzelt') + '</span>' : '') + '</summary><div class="mt-body"><p><b>Neden?</b> ' + fm(m.cause) + '</p><p><b>Düzeltme:</b> ' + fm(m.fix) + '</p><div class="row" style="gap:8px">' + (m.task ? '<button class="btn sm pri" data-go="hatalar" data-id="' + m.id + '">Bozuk ölçüyü düzelt</button>' : '') + (m.lesson && C.LMAP[m.lesson] ? '<button class="btn sm ghost" data-go="lesson" data-id="' + m.lesson + '">Ders: ' + esc(C.LMAP[m.lesson].title) + '</button>' : '') + '</div></div></details>').join('') || '<p class="muted" style="padding:14px">Bu belirtiyle eşleşen kayıt yok. Daha genel bir kelime dene (ör. “toplam”, “boş”, “tarih”).</p>';
 function hataOne(id) {
   const m = MMAP[id]; if (!m) return hataList();
-  let h = '<div class="wrap" style="gap:16px"><div class="lhead"><div class="crumbs"><button data-go="hatalar">Sık yapılan hatalar</button><span>/</span><span>' + esc(m.area) + '</span></div><h1 style="font-size:clamp(1.3rem,3vw,1.8rem)">' + fm(m.sym) + '</h1></div>';
+  let h = '<div class="wrap" style="gap:16px"><div class="lhead"><div class="crumbs"><button data-go="hatalar">Sık hatalar</button><span>/</span><span>' + esc(m.area) + '</span></div><h1 style="font-size:clamp(1.3rem,3vw,1.8rem)">' + fm(m.sym) + '</h1></div>';
   h += '<div class="panel mt-body" style="padding:16px 18px"><p><b>Neden?</b> ' + fm(m.cause) + '</p><p style="margin:0"><b>Düzeltme:</b> ' + fm(m.fix) + '</p></div>';
   if (m.task) h += '<div class="note" style="margin:0"><b>Görev</b>Düzenleyicide bozuk ölçü hazır. Belirtiyi gör (“Yalnızca çalıştır”), sonra düzelt ve kontrol et.</div>' + C.exView(taskEx(m), 'mt:' + m.id, () => solve('mt:' + m.id));
   const rel = KC.filter(c => c.lesson && c.lesson === m.lesson).slice(0, 3);
@@ -101,7 +101,7 @@ function ivTake() {
   const LIST = [['satis', TH]].concat(Object.keys(TH).filter(k => TH[k] && typeof TH[k] === 'object' && TH[k].title && Array.isArray(TH[k].tasks)).map(k => [k, TH[k]]));
   const cur = LIST.find(x => x[0] === IVF.th) || LIST[0]; const K = cur[1];
   let pick = LIST.length > 1 ? '<div class="filters" role="tablist" aria-label="Ev ödevi seç">' + LIST.map(([k, o]) => '<button role="tab" data-ivth="' + k + '" aria-selected="' + (k === cur[0]) + '" aria-pressed="' + (k === cur[0]) + '">' + esc(String(o.title).replace(/^Ev ödevi:\s*/i, '')) + '</button>').join('') + '</div>' : '';
-  let h = pick + '<div class="panel th-brief"><span class="eyebrow">Ev ödevi vakası</span><h3>' + fm(K.title) + '</h3>' + fmB(K.brief) + '<ol>' + K.tasks.map(t => '<li><b>' + fm(t.t) + '</b> ' + fm(t.detail || '') + '</li>').join('') + '</ol><div class="row" style="gap:8px"><button class="btn" data-go="studio">DAX Stüdyosu’nda çalış</button><button class="btn ghost" data-go="model">Veri modeli</button></div></div>';
+  let h = pick + '<div class="panel th-brief"><span class="eyebrow">Ev ödevi vakası</span><h3>' + fm(K.title) + '</h3>' + fmB(K.brief) + '<ol>' + K.tasks.map(t => '<li><b>' + fm(t.t) + '</b> ' + fm(t.detail || '') + '</li>').join('') + '</ol><div class="row" style="gap:8px"><button class="btn" data-go="studio">DAX Playground’da çalış</button><button class="btn ghost" data-go="model">Veri modeli</button></div></div>';
   h += '<section class="lvl-block"><h3>Değerlendirme ölçütleri</h3><div class="panel coltable"><table><thead><tr><th>Ölçüt</th><th class="numc">Puan</th><th>İyi bir teslim</th></tr></thead><tbody>' + K.rubric.map(r => '<tr><td>' + fm(r.c) + '</td><td class="numc">' + r.w + '</td><td>' + fm(r.good) + '</td></tr>').join('') + '</tbody></table></div></section>';
   if (K.pitfalls) h += '<section class="lvl-block"><h3>Adayların sık yaptığı hatalar</h3><ul class="panel th-pit">' + K.pitfalls.map(p => '<li>' + fm(p) + '</li>').join('') + '</ul></section>';
   h += '<details class="panel th-sol"><summary><b>Örnek çözüm</b> <span class="muted">(önce kendin dene)</span></summary>';
@@ -110,7 +110,7 @@ function ivTake() {
   return h;
 }
 function ivAsk() { return '<p class="muted" style="margin:0">Mülakatın sonunda “Sizin sorunuz var mı?” sorusu bir değerlendirme fırsatıdır. İyi bir soru, işi gerçekten anlamaya çalıştığını gösterir.</p><div class="panel lessons">' + ASK.map(a => '<div class="litem prof" style="cursor:default;grid-template-columns:minmax(0,1fr)"><span><b>' + fm(a.q) + '</b><small>' + fm(a.why) + '</small></span></div>').join('') + '</div>'; }
-/* Dashboard eleştirisi: bilerek hatalı kurulmuş bir sayfa; 8 sorunu bul */
+/* Rapor eleştirisi: bilerek hatalı kurulmuş bir sayfa; 8 sorunu bul */
 const CRIT = [
   ['c1', 'Başlık ile filtre çelişiyor', 'Başlık “2024” diyor ama sayfa filtresi 2023’ü gösteriyor. Okuyucu yanlış yılın rakamlarıyla karar verir.', 'Başlığı seçime göre dinamik yap: `"Satış performansı · " & SELECTEDVALUE(Tarih[Yil])`; gizli sayfa filtrelerini filtre bölmesinde görünür bırak.'],
   ['c2', 'Bağlamsız, okunamaz KPI kartı', 'Kuruşlu, birimsiz bir sayı; hedef, geçen yıl ya da eğilim yok. “İyi mi kötü mü?” sorusuna cevap vermiyor.', 'Kısaltılmış birim (ör. “400,9 B ₺”), hedefe ya da geçen yıla göre fark ve küçük bir eğilim çizgisi ekle.'],
@@ -135,7 +135,7 @@ function critBoard() {
   const hb = catA.map((c, i) => '<div class="cr-hb"><span>' + esc(c[0]) + '</span><i style="width:' + Math.round((c[1] || 0) / cmx * 100) + '%"></i></div>').join('');
   const web = (ch.find(c => c[0] === 'Web') || [0, 0])[1];
   const spot = (id, inner, cls) => '<button class="cr-spot ' + (cls || '') + (CFOUND[id] || CSHOW ? ' found' : '') + '" data-crit="' + id + '" aria-label="Bu alanda bir sorun ara">' + (CFOUND[id] || CSHOW ? '<em>' + (CRIT.findIndex(x => x[0] === id) + 1) + '</em>' : '') + inner + '</button>';
-  return '<div class="cr-board" aria-label="Hatalı örnek dashboard">' +
+  return '<div class="cr-board" aria-label="Hatalı örnek rapor">' +
     '<div class="cr-top">' + spot('c1', '<h3>2024 Satış Performansı</h3>') + '<span class="cr-filter">Sayfa filtresi: Yıl = 2023</span></div>' +
     '<div class="cr-row">' + spot('c2', '<div class="cr-kpi"><b>' + esc(String(Math.round(tot * 100) / 100).replace('.', ',')) + '</b><span>Net Satış</span></div>') + spot('c7', '<div class="cr-kpi sm"><b>' + esc(V.fmt(tot, 'para', true)) + '</b><span>Toplam</span><b style="font-size:1rem">' + esc(String(Math.round(web * 10) / 10).replace('.', ',')) + '</b><span>Web</span></div>') + '</div>' +
     '<div class="cr-row">' + spot('c3', '<div class="cr-tile"><small>Kategori dağılımı</small><svg viewBox="0 0 120 120" width="130" height="130">' + pie + '</svg></div>') + spot('c4', '<div class="cr-tile"><small>Kanal</small><svg viewBox="0 0 190 130" width="190" height="130">' + bars + '</svg></div>') + '</div>' +
@@ -143,17 +143,17 @@ function critBoard() {
 }
 function ivCrit() {
   const n = Object.keys(CFOUND).length;
-  let h = '<p class="muted" style="margin:0;max-width:80ch">Mülakatlarda sık gelen bir görev: “Bu dashboard’a bak, neyi değiştirirdin?” Aşağıdaki sayfada bilerek yapılmış <b>8 tasarım ve doğruluk hatası</b> var. Şüphelendiğin alana tıkla; bulduğun her sorun açıklamasıyla listelenir.</p>';
+  let h = '<p class="muted" style="margin:0;max-width:80ch">Mülakatlarda sık gelen bir görev: “Bu rapora bak, neyi değiştirirdin?” Aşağıdaki sayfada bilerek yapılmış <b>8 tasarım ve doğruluk hatası</b> var. Şüphelendiğin alana tıkla; bulduğun her sorun açıklamasıyla listelenir.</p>';
   h += '<div class="cr-wrap">' + critBoard() + '<div class="panel cr-found"><span class="eyebrow">Bulduğun sorunlar · ' + n + ' / 8</span>' + CRIT.filter(c => CFOUND[c[0]] || CSHOW).map(c => '<div class="cr-item"><b>' + (CRIT.indexOf(c) + 1) + '. ' + esc(c[1]) + '</b><p>' + fm(c[2]) + '</p><p><b>Düzeltme:</b> ' + fm(c[3]) + '</p></div>').join('') + (n < 8 && !CSHOW ? '<button class="btn sm ghost" data-crall="1">Hepsini göster</button>' : '') + (n || CSHOW ? '<button class="btn sm ghost" data-crreset="1">Baştan başla</button>' : '') + '</div></div>';
   return h;
 }
 function viewIV() {
-  const tabs = [['banka', 'Soru bankası (' + IVB.length + ')'], ['star', 'Davranışsal (' + STAR.length + ')'], ['vaka', 'Ev ödevi vakası'], ['elestiri', 'Dashboard eleştirisi'], ['sor', 'Sen ne sormalısın?'], ['canli', 'Canlı DAX']];
-  let h = '<div class="wrap" style="gap:16px">' + C.head('Kariyer', 'Mülakat hazırlığı', 'Rol bazlı kavram soruları (zayıf ve güçlü cevaplarla), davranışsal sorular, ev ödevi vakası, dashboard eleştirisi ve canlı DAX provası.', 'iv');
+  const tabs = [['banka', 'Soru bankası (' + IVB.length + ')'], ['star', 'Davranışsal (' + STAR.length + ')'], ['vaka', 'Ev ödevi vakası'], ['elestiri', 'Rapor eleştirisi'], ['sor', 'Sen ne sormalısın?'], ['canli', 'Canlı DAX']];
+  let h = '<div class="wrap" style="gap:16px">' + C.head('Kariyer', 'Mülakat', 'Rol bazlı kavram soruları (zayıf ve güçlü cevaplarla), davranışsal sorular, ev ödevi vakası, rapor eleştirisi ve canlı DAX provası.', 'iv');
   h += '<div class="filters iv-tabs">' + tabs.map(([k, t]) => '<button data-ivtab="' + k + '" aria-pressed="' + (IVF.tab === k) + '">' + t + '</button>').join('') + '</div>';
   const tb = IVF.tab;
   if (tb === 'banka') h += ivBank(); else if (tb === 'star') h += ivStar(); else if (tb === 'vaka') h += ivTake(); else if (tb === 'elestiri') h += ivCrit(); else if (tb === 'sor') h += ivAsk();
-  else h += '<div class="tools"><button class="tool" data-ivsim="1"><b>Teknik mülakat simülasyonu</b><small>4 klasik DAX sorusu, 45 dakika, her çözümden sonra takip sorusu.</small></button><button class="tool" data-go="lesson" data-id="mulakat"><b>Mülakat dersi</b><small>Mülakatın yapısı, 12 kavram sorusu ve canlı DAX sorusuna 5 adımlı yaklaşım.</small></button><button class="tool" data-go="arena"><b>DAX Arena</b><small>Gizli testli meydan okumalar: sabit sayı ya da eksik filtre yakalanır.</small></button><button class="tool" data-go="hatalar"><b>Bozuk ölçüyü düzelt</b><small>Sık yapılan hatalar kataloğundaki görevler; mülakatta “bu ölçüde ne yanlış?” sorusunun provası.</small></button></div>';
+  else h += '<div class="tools"><button class="tool" data-ivsim="1"><b>Teknik mülakat simülasyonu</b><small>4 klasik DAX sorusu, 45 dakika, her çözümden sonra takip sorusu.</small></button><button class="tool" data-go="lesson" data-id="mulakat"><b>Mülakat dersi</b><small>Mülakatın yapısı, 12 kavram sorusu ve canlı DAX sorusuna 5 adımlı yaklaşım.</small></button><button class="tool" data-go="arena"><b>DAX Arena</b><small>Gizli testli meydan okumalar: sabit sayı ya da eksik filtre yakalanır.</small></button><button class="tool" data-go="hatalar"><b>Bozuk ölçüyü düzelt</b><small>Sık hatalar kataloğundaki görevler; mülakatta “bu ölçüde ne yanlış?” sorusunun provası.</small></button></div>';
   return h + '</div>';
 }
 C.view('iv', { render: viewIV, hash: 'kariyer' });

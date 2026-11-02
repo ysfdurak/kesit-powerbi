@@ -5,19 +5,44 @@
 (function () {
 'use strict';
 const C = window.PBI_CORE, P = C.P, esc = C.esc;
-const SY = { state: 'kapali', note: 'İlerlemen bu tarayıcıda saklanıyor; tarayıcıyı kapatmak silmez. Tarayıcı verisini temizlersen, gizli pencere kullanırsan ya da Safari siteye 7 gün girilmediğinde verileri sildiğinde kaybolabilir. Ara ara dosyaya kaydet; başka cihazda ya da veri silindikten sonra dosyadan yükleyip devam edersin (yüklenen ilerleme mevcut olanla birleştirilir).', at: null, ref: null, busy: false, last: '' };
+const SY = { state: 'kapali', note: 'İlerlemen bu tarayıcıda saklanıyor; tarayıcıyı kapatmak silmez. Tarayıcı verisini temizlersen ya da gizli pencere kullanırsan kaybolabilir. Ara ara dosyaya kaydet; başka cihazda dosyadan yükleyip devam edersin. Yüklenen dosya mevcut ilerlemeyle birleştirilir, üzerine yazılmaz.', at: null, ref: null, busy: false, last: '' };
 const label = () => ({ kapali: 'Yalnızca bu tarayıcı', baglaniyor: 'Bağlanıyor…', acik: 'Bulutta eşitleniyor', hata: 'Eşitlenemedi' })[SY.state];
 function panel() {
-  return '<section class="lvl-block"><div class="sec-head"><h2>Yedek ve eşitleme</h2><span class="chip' + (SY.state === 'acik' ? ' on' : '') + '">' + esc(label()) + '</span></div><div class="panel syncbox"><p class="muted" style="margin:0">' + esc(SY.note) + (SY.at ? ' Son eşitleme: ' + SY.at.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) + '.' : '') + (C.storeOk() ? '' : ' <b>Uyarı:</b> tarayıcın şu an kaydetmeye izin vermiyor; çıkmadan önce ilerlemeni dosya olarak indir.') + '</p><div class="row"><button class="btn" data-act="prog-export">İlerlemeyi indir (.json)</button><label class="btn ghost" style="cursor:pointer">Dosyadan geri yükle<input type="file" accept="application/json,.json" data-act="prog-import" class="sr-only"></label>' + (SY.state === 'acik' ? '<button class="btn ghost" data-act="prog-sync">Şimdi eşitle</button>' : '') + '</div></div></section>';
+  return '<section class="lvl-block"><div class="sec-head"><h2>Yedek</h2><span class="chip' + (SY.state === 'acik' ? ' on' : '') + '">' + esc(label()) + '</span></div><div class="panel syncbox"><p class="muted" style="margin:0">' + esc(SY.note) + (SY.at ? ' Son eşitleme: ' + SY.at.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) + '.' : '') + (C.storeOk() ? '' : ' <b>Uyarı:</b> tarayıcın şu an kaydetmeye izin vermiyor; çıkmadan önce ilerlemeni dosya olarak indir.') + '</p><div class="row"><button class="btn" data-act="prog-export">İlerlemeyi indir (.json)</button><label class="btn ghost" style="cursor:pointer">Dosyadan yükle ve birleştir<input type="file" accept="application/json,.json" data-act="prog-import" class="sr-only"></label>' + (SY.state === 'acik' ? '<button class="btn ghost" data-act="prog-sync">Şimdi eşitle</button>' : '') + '<span id="ioMsg" class="muted" style="font-size:.85rem"></span></div></div></section>';
 }
+/* Yedek dosyası: { app, v, date, data }. Dosyayı indir ve dosyadan yükle aynı biçimi kullanır. */
+const APP_ID = 'kesit-powerbi', APP_VER = 3;
 async function exportProgress() {
-  const name = 'kesit-powerbi-ilerleme-' + C.today() + '.json', data = JSON.stringify(P, null, 1);
+  const name = 'kesit-powerbi-ilerleme-' + C.today() + '.json', data = JSON.stringify({ app: APP_ID, v: APP_VER, date: C.today(), data: P }, null, 1);
   if (window.PBI_CAREER && window.PBI_CAREER.saveFile) return window.PBI_CAREER.saveFile(name, data);
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; a.click();
 }
-function importProgress(file) {
-  const r = new FileReader(); r.onload = () => { try { const o = JSON.parse(r.result); if (!o || typeof o !== 'object' || (!o.done && !o.ex && !o.xp)) throw new Error('biçim'); C.replaceProgress(merge(P, o)); C.toast('İlerleme yüklendi ve bu cihazdakiyle birleştirildi.'); pushSoon(); } catch (e) { C.toast('Bu dosya bir Kesit Power BI ilerleme dosyası değil.'); } }; r.readAsText(file);
+/* Önce doğrula: başka uygulamanın ya da bozuk bir dosyanın hiçbir alanı ilerlemeye dokunmaz */
+function parseBackup(text) {
+  let o; try { o = JSON.parse(text); } catch (e) { return { err: 'Dosya okunamadı: geçerli bir JSON değil.' }; }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return { err: 'Bu dosya bir Kesit Power BI yedeği değil.' };
+  const app = typeof o.app === 'string' ? o.app : '';
+  if (/^kesit-(sql|python)$/.test(app) || /Kesit (SQL|Python)/i.test(app)) return { err: 'Bu dosya ' + (/sql/i.test(app) ? 'Kesit SQL' : 'Kesit Python') + ' yedeği. Hiçbir şey değiştirilmedi; onu kendi uygulamasına yükle.' };
+  const data = o.data && typeof o.data === 'object' && !Array.isArray(o.data) ? o.data : o;
+  if (app && app !== APP_ID && app !== 'Kesit Power BI') return { err: 'Bu dosya bir Kesit Power BI yedeği değil. Hiçbir şey değiştirilmedi.' };
+  const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+  if (!isObj(data.done) && !isObj(data.ex) && typeof data.xp !== 'number') return { err: 'Bu dosya bir Kesit Power BI yedeği değil. Hiçbir şey değiştirilmedi.' };
+  /* Kimliksiz eski dosya: ders kimliklerinin çoğu bu uygulamada yoksa başka uygulamanındır */
+  const ids = Object.keys(data.done || {}).concat(Object.keys(data.ex || {}).map(k => k.split(':')[0]));
+  if (ids.length) { const known = ids.filter(id => C.LMAP[id]).length; if (known / ids.length < 0.5) return { err: 'Bu dosyadaki derslerin çoğu bu uygulamada yok; başka bir uygulamanın yedeği olabilir. Hiçbir şey değiştirilmedi.' }; }
+  return { data };
 }
+function importProgress(file) {
+  const r = new FileReader(); r.onload = () => {
+    const res = parseBackup(r.result);
+    if (res.err) { C.toast(res.err); const m = document.getElementById('ioMsg'); if (m) m.textContent = res.err; return; }
+    const before = Object.keys(P.done || {}).filter(k => C.LMAP[k]).length;
+    C.replaceProgress(merge(P, cleanIds(res.data))); const after = Object.keys(P.done || {}).filter(k => C.LMAP[k]).length;
+    C.toast('Yedek bu cihazdakiyle birleştirildi: ' + before + ' → ' + after + ' ders.'); pushSoon();
+  }; r.onerror = () => C.toast('Dosya okunamadı.'); r.readAsText(file);
+}
+/* Bilinmeyen ders kimlikleri ilerlemeye girmez */
+function cleanIds(d) { const o = Object.assign({}, d); if (o.done && typeof o.done === 'object') { o.done = {}; Object.keys(d.done).forEach(k => { if (C.LMAP[k]) o.done[k] = d.done[k]; }); } if (o.ex && typeof o.ex === 'object') { o.ex = {}; Object.keys(d.ex).forEach(k => { if (C.LMAP[k.split(':')[0]] || !/^[\w-]+:\d+$/.test(k)) o.ex[k] = d.ex[k]; }); } return o; }
 /* İki ilerlemeyi birleştir: bitenler ve çözülenler birleşir, sayılar büyük olanı alır; ayarlarda bu cihazdaki kalır */
 function merge(a, b) {
   const out = JSON.parse(JSON.stringify(a || {})); b = b || {};
@@ -61,5 +86,5 @@ setTimeout(connect, 600);
 /* Sorun bildirimi: yazma izni olan görünümlerde paylaşılan `feedback` koleksiyonuna gider; sahibi okur */
 let DB = null;
 async function feedback(rep) { try { if (!DB) { const cl = window.claude; DB = cl && cl.use ? await cl.use('db') : null; } if (!DB) return false; await DB.collection('feedback').add({ w: String(rep.w).slice(0, 200), t: rep.t, d: rep.d, at: Date.now(), ua: navigator.userAgent.slice(0, 120) }); return true; } catch (e) { return false; } }
-window.PBI_SYNC = { panel, exportProgress, push, feedback, merge };
+window.PBI_SYNC = { panel, exportProgress, push, feedback, merge, parseBackup };
 })();
