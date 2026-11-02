@@ -182,6 +182,8 @@ const skippedLv = l => !!P.placement && LVI(l.lvl) >= 0 && LVI(l.lvl) <= LVI(P.p
 const isSkipped = l => skippedLv(l) && !P.done[l.id];
 const firstOpen = list => list.find(l => !P.done[l.id] && !skippedLv(l)) || list.find(l => !P.done[l.id]) || null;
 const goalPath = () => (P.goal && PMAP[P.goal.path] ? P.goal.path : null);
+/* Seviye testi sonucu ve ana sayfa aynı yolu önerir: hedef varsa o yol, yoksa geçilen seviyeye uyan yol */
+const placementPath = () => goalPath() || (!P.testDone ? null : !P.testDone.lv ? 'profesyonel' : P.testDone.lv === 'temel' ? 'analist' : P.testDone.lv === 'orta' ? 'pl300' : 'gelistirici');
 function nextLesson(ctxPath) { const list = ctxPath && PMAP[ctxPath] ? PMAP[ctxPath].lessons.map(id => LMAP[id]).filter(Boolean) : LESSONS; return firstOpen(list); }
 /* Dersin yol bağlamı: yolda yoksa bağlam yok; verilmediyse hedefteki yol kullanılır */
 function lessonCtx(id, ctx) { if (ctx && PMAP[ctx] && PMAP[ctx].lessons.includes(id)) return ctx; const g = goalPath(); return g && PMAP[g].lessons.includes(id) ? g : null; }
@@ -311,7 +313,7 @@ const lessonMin = l => Math.max(5, Math.round(((l.min || 10) + (l.ex || []).leng
 /* Referans: Sık hatalar, Sık karıştırılanlar, Püf noktaları tek sayfanın sekmeleri */
 const tipsTabs = cur => '<nav class="filters tipstabs" aria-label="Bölümler">' + [['hatalar', 'Sık hatalar'], ['karis', 'Sık karıştırılanlar'], ['tricks', 'Püf noktaları']].map(([v, t]) => '<button data-go="' + v + '" aria-pressed="' + (v === cur) + '">' + t + '</button>').join('') + '</nav>';
 function viewHome() {
-  const st = streak(), td = P.days[today()] || 0, hctx = goalPath(), nx = (P.last && LMAP[P.last] && !P.done[P.last] && !skippedLv(LMAP[P.last])) ? LMAP[P.last] : nextLesson(hctx);
+  const st = streak(), td = P.days[today()] || 0, hctx = placementPath(), nx = (P.last && LMAP[P.last] && !P.done[P.last] && !skippedLv(LMAP[P.last])) ? LMAP[P.last] : nextLesson(hctx);
   const done = Object.keys(P.done).filter(k => LMAP[k]).length, C = counts();
   let h = '<div class="wrap">';
   const GOAL = window.PBI_CAREER && P.goal && PMAP[P.goal.path];
@@ -333,7 +335,7 @@ function viewHome() {
   [['studio', 'term', 'DAX Playground', 'Ölçü yaz, ekseni ve dilimleyicileri seç, matris ve grafikte gör. EVALUATE sorguları da çalışır.'], ['pq', 'pq', 'Power Query Lab', 'Kirli tabloyu şeritten komutlarla temizle; her adım M koduna dönüşür, sütun kalitesi anında güncellenir.'], ['lab', 'flask', 'Measure Lab', C.pat + ' uzun kalıp (Orta → İleri): problem, tam formül, satır satır mantık ve canlı sonuç.'], ['dash', 'dash', 'Örnek raporlar', C.dash + ' rapor: her görselin alanları, biçimi, nedeni ve raporun adım adım yapılışı.'], ['projeler', 'flag', 'Bitirme projeleri', 'Her öğrenme yolunun portföy projesi; tam program için 10 aşamalı uygulama kılavuzu.'], ['menus', 'menu', 'Power BI arayüzü', C.cmds + ' komut: Desktop şeridi, bölmeler, Power Query ve Service.'], ['visuals', 'chart', 'Görseller ve biçim', 'Biçim bölmesi benzetimi: her seçenek ne yapar, ne zaman kullanılır, anında gör.'], ['tricks', 'bulb', 'Püf noktaları', C.tricks + ' teknik: araç ipucu sayfası, yer işareti, SVG, alan parametresi…'], ['formulas', 'fx', 'DAX fonksiyonları', window.PBI_CATALOG.length + ' fonksiyon ve ölçü kütüphanesi.']].forEach(([v, i, t, d]) => { h += '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + d + '</small></button>'; });
   h += '</div></section>';
   h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Öğrenme yolları</span><h2>Hedefine göre yol seç</h2></div><button class="btn sm ghost" data-go="paths">Tümünü gör</button></div><div class="paths">' + PATHS.map(pathCard).join('') + '</div></section>';
-  h += '<section class="row" style="justify-content:space-between"><span class="muted" style="font-size:.85rem">SQL tarafını da öğrenmek ister misin? Aynı şirket ve siparişler <a href="' + SQL_URL + '">Kesit SQL</a>\'de SQL ile sorgulanıyor; Power BI modeli zenginleştirildi.</span><span id="resetBox" class="confirm"><button class="btn sm ghost" data-act="reset-ask">İlerlemeyi sıfırla</button></span></section>';
+  h += '<section class="row" style="justify-content:space-between"><span class="muted" style="font-size:.85rem">SQL tarafını da öğrenmek ister misin? Aynı şirket ve siparişler <a href="' + SQL_URL + '">Kesit SQL</a>\'de SQL ile sorgulanıyor; Power BI modeli zenginleştirildi.</span></section>';
   return h + '</div>';
 }
 function pathCard(p) {
@@ -355,7 +357,7 @@ function viewPath(id) {
 }
 function viewMore() {
   const tool = ([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc(NAVSUB[v] || '') + '</small></button>';
-  return '<div class="wrap"><div class="phead"><span class="eyebrow">Menü</span><h1>Tüm bölümler</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools morelist">' + items.map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a></div></section></div>';
+  return '<div class="wrap"><div class="phead"><h1>Menü</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools morelist">' + items.map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a></div></section></div>';
 }
 
 /* ---------- Müfredat ---------- */
@@ -713,9 +715,9 @@ let T = null;
 /* Sonuç: kişinin hedefi varsa o yol, yoksa geçtiği seviyeye uyan yol */
 function testResult(res) {
   const Q2 = window.PBI_PLACEMENT, lv = res.lv, nextL = LEVELS[lv ? LVI(lv) + 1 : 0];
-  const rec = goalPath() || (!lv ? 'profesyonel' : lv === 'temel' ? 'analist' : lv === 'orta' ? 'pl300' : 'gelistirici');
+  const rec = placementPath();
   const start = nextLesson(rec), skipped = PMAP[rec] ? PMAP[rec].lessons.filter(id => LMAP[id] && isSkipped(LMAP[id])).length : 0;
-  return '<div class="wrap"><div class="panel hero-main"><span class="eyebrow">Seviye testi · sonuç</span><h1>' + res.total + '/' + Q2.length + ' doğru · <em>' + (lv ? lvName(lv) : 'Başlangıç') + '</em></h1><p>' + (lv ? lvName(lv) + ' seviyesini geçtin. Bu seviyenin dersleri sıradaki ders listesinden atlanır' + (skipped ? ' (' + esc(PMAP[rec].name) + ' yolunda ' + skipped + ' ders)' : '') + '; istersen yine açabilirsin. İlerleme yüzdesine ve belgeye tamamlanmış sayılmazlar. ' : 'Temel seviyeden başlamak en hızlı yol olacak. ') + (nextL ? 'Sıradaki seviye: <b>' + nextL.name + '</b>. ' + esc(nextL.desc) : 'Tüm seviyeleri geçtin; bitirme projesiyle kendini sına.') + '</p><div class="row">' + (start ? '<button class="btn pri" data-lesson="' + start.id + '" data-ctx="' + rec + '">Şuradan başla: ' + esc(start.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>') + '<button class="btn" data-go="path" data-id="' + rec + '">' + esc(PMAP[rec] ? PMAP[rec].name : 'Öğrenme yolu') + ' yolunu gör</button><button class="btn ghost" data-act="test-again">Testi yeniden çöz</button>' + (lv ? '<button class="btn ghost" data-act="test-clear">Atlamayı kaldır</button>' : '') + '</div></div>' +
+  return '<div class="wrap"><div class="panel hero-main"><span class="eyebrow">Seviye testi · sonuç</span><h1>' + res.total + '/' + Q2.length + ' doğru · <em>' + (lv ? lvName(lv) : 'Başlangıç') + '</em></h1><p>' + (lv ? lvName(lv) + ' seviyesini geçtin. Bu seviyenin dersleri sıradaki ders listesinden atlanır' + (skipped ? ' (önerilen yol ' + esc(PMAP[rec].name) + ': ' + skipped + ' ders)' : '') + '; istersen yine açabilirsin. İlerleme yüzdesine ve belgeye tamamlanmış sayılmazlar. ' : 'Temel seviyeden başlamak en hızlı yol olacak. ') + (nextL ? 'Sıradaki seviye: <b>' + nextL.name + '</b>. ' + esc(nextL.desc) : 'Tüm seviyeleri geçtin; bitirme projesiyle kendini sına.') + '</p><div class="row">' + (start ? '<button class="btn pri" data-lesson="' + start.id + '" data-ctx="' + rec + '">Şuradan başla: ' + esc(start.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>') + '<button class="btn" data-go="path" data-id="' + rec + '">' + esc(PMAP[rec] ? PMAP[rec].name : 'Öğrenme yolu') + ' yolunu gör</button><button class="btn ghost" data-act="test-again">Testi yeniden çöz</button>' + (lv ? '<button class="btn ghost" data-act="test-clear">Atlamayı kaldır</button>' : '') + '</div></div>' +
     '<div class="panel lessons">' + LEVELS.map(L => { const n = Q2.filter(q => q.lv === L.id).length; const sc = (res.score || {})[L.id] || 0; return '<div class="litem" style="cursor:default"><span>' + lvBadge(L.id) + '</span><span><b>' + L.name + ' seviye</b><small>' + sc + '/' + n + ' doğru · ' + (sc >= Math.ceil(n * 0.75) ? 'geçildi' : 'çalışılmalı') + '</small></span><span class="bar" style="width:120px"><i style="width:' + (sc / n * 100) + '%"></i></span></div>'; }).join('') + '</div></div>';
 }
 function viewTest() {
@@ -724,7 +726,7 @@ function viewTest() {
   if (!T) T = { i: 0, score: {}, ans: [] };
   if (T.i >= Q2.length) {
     let lv = null; for (const L of LEVELS) { const n = Q2.filter(q => q.lv === L.id).length; if (n && (T.score[L.id] || 0) >= Math.ceil(n * 0.75)) lv = L.id; else break; }
-    P.placement = lv; P.testDone = { lv, total: T.ans.filter(Boolean).length, score: Object.assign({}, T.score), at: today() }; save(); try { document.dispatchEvent(new CustomEvent('pbi-placement', { detail: { lv: lv || 'baslangic' } })); } catch (e) {}
+    P.placement = lv; P.last = null; P.testDone = { lv, total: T.ans.filter(Boolean).length, score: Object.assign({}, T.score), at: today() }; save(); try { document.dispatchEvent(new CustomEvent('pbi-placement', { detail: { lv: lv || 'baslangic' } })); } catch (e) {}
     const res = P.testDone; T = null; return testResult(res);
   }
   const q = Q2[T.i];

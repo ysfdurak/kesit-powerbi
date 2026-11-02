@@ -67,7 +67,7 @@ function backupHTML() {
   const d = doneCount(); if (d < 10 || d - (P.bkDone || 0) < 10) return '';
   return '<section class="panel bkcard"><div class="grow"><b>İlerlemeni yedekle</b><span class="muted" style="font-size:.88rem">' + d + ' ders bitirdin. İlerlemen bu tarayıcıda saklanıyor; küçük bir dosyaya kaydedersen kaybolmaz, başka cihazda da devam edersin.</span></div><button class="btn sm pri" data-act="prog-export" data-kbk="1">Dosyaya kaydet</button></section>';
 }
-if (VIEWS.home) { const base = VIEWS.home.render; VIEWS.home.render = id => { let h = base(id); const show = !P.welcomed && !P.goal && doneCount() === 0; const add = (show ? welcomeHTML() : '') + backupHTML(); if (add) h = h.replace('<div class="wrap">', '<div class="wrap">' + add); return h; }; }
+if (VIEWS.home) { const base = VIEWS.home.render; VIEWS.home.render = id => { let h = base(id); if (!P.welcomed && (P.testDone || P.last || doneCount() > 0)) { P.welcomed = true; C.save(); } const show = !P.welcomed && !P.goal; const add = (show ? welcomeHTML() : '') + backupHTML(); if (add) h = h.replace('<div class="wrap">', '<div class="wrap">' + add); return h; }; }
 
 /* ---------- Ders sayfası: geri bildirim bağlantısı ve yorumlar ---------- */
 if (VIEWS.lesson) {
