@@ -148,6 +148,11 @@ W.PBI_SKILL_LESSON = {
   'dp-op1': ['dax-opt', 'performans'], 'dp-op2': ['kurumsal-model'], 'dp-op3': ['kurumsal-model'], 'dp-op4': ['buyuk-model']
 };
 })(window);
+/* Başlıkta sektör terimi (ilk geçiş kuralı); arama İngilizceyi de bulur */
+(function (W) {
+  const T = { baglam: 'Filtre bağlamı (filter context) ve satır bağlamı (row context)', iteratorler: 'Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED', 'baglam-gecisi': 'Bağlam geçişi (context transition)', pencere: 'Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations)', 'tarih-tablosu': 'Tarih tablosu (date table)', 'yari-toplanabilir': 'Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış', sayfalandirilmis: 'Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl?', 'hizli-olcu': 'Hızlı ölçüler (quick measures) ve Copilot ile DAX' };
+  (W.PBI_LESSONS || []).forEach(l => { if (T[l.id]) l.title = T[l.id]; });
+})(window);
 /* Yalnız çoktan seçmeli derslerde elle deneme yönlendirmesi */
 (function (W) {
   const add = (id, html) => { const l = (W.PBI_LESSONS || []).find(x => x.id === id); if (l) l.body += html; };

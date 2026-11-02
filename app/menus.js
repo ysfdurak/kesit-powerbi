@@ -115,7 +115,7 @@ W.PBI_MENUS = [
       ['Sonraki düzeye git (Go to the next level, çift ok)', 'Tüm görseli bir alt düzeye indirir.', 'Yıl → tüm aylar.', 'etkilesim'],
       ['Hiyerarşide bir düzey aşağı genişlet (Expand all down one level, çatallı ok)', 'Alt düzeyi üst düzeyle birlikte gösterir (2024 Oca, 2024 Şub…).', 'Etiketlerde üst düzeyi korumak için.', 'etkilesim'],
       ['Detaya git (Drill through)', 'Seçili veri noktasıyla detay sayfasına gider.', 'Ürün/müşteri ayrıntı sayfaları.', 'hikaye'],
-      ['Verileri göster / Kayıtları göster (Show as a table / See records)', 'Veri noktasının arkasındaki özet ya da satır verisini tablo olarak gösterir.', 'Bir sayının kaynağını doğrulamak için.', 'etkilesim']
+      ['Verileri göster / Kayıtları göster (Show as a table / Data point table)', 'Veri noktasının arkasındaki özet ya da satır verisini tablo olarak gösterir.', 'Bir sayının kaynağını doğrulamak için.', 'etkilesim']
     ] }
   ] },
   { grp: 'Görünümler ve bölmeler', tabs: [

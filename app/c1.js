@@ -64,7 +64,7 @@
 <li><b>Görselleştir:</b> Grafikleri, kartları, dilimleyicileri sayfaya yerleştir.</li>
 <li><b>Yayımla ve paylaş:</b> Service'e gönder, yenilemeyi zamanla, uygulama olarak dağıt.</li>
 </ol>
-<p>Bu uygulamadaki menü de aynı sırayı izler: <b>Anadolu Market modeli</b> (2–3. adım), <b>DAX Playground</b> ve <b>DAX fonksiyonları</b> (4. adım), <b>Görseller</b> ve <b>Örnek raporlar</b> (5. adım).</p>
+<p>Bu uygulamadaki menü de aynı sırayı izler: <b>Anadolu Market modeli</b> (2–3. adım), <b>DAX Playground</b> ve <b>DAX fonksiyonları</b> (4. adım), <b>Görseller ve biçim</b> ile <b>Örnek raporlar</b> (5. adım).</p>
 `,
   ex: [
     { t: 'mc', q: 'Bir analist raporu Desktop\'ta hazırladı ve 5 meslektaşıyla Service üzerinden paylaşmak istiyor. Kurumda kapasite yok. Neye ihtiyaç var?', o: ['Hiçbir şeye, Desktop ücretsiz', 'Sadece analistin Pro lisansı', 'Analistin ve 5 meslektaşın her birinin Pro (ya da PPU) lisansı', 'Report Server kurulumu'], a: 2, why: 'Kapasite yoksa paylaşım için hem paylaşanın hem görüntüleyenlerin Pro ya da PPU lisansı olmalıdır.' },
@@ -343,7 +343,7 @@ Sipariş Sayısı = DISTINCTCOUNT(Satislar[SiparisNo])</pre>
 <div class="note"><b>Önce veri ve ölçüler</b>Bu dersi Desktop’ta yapacaksan: <button class="lnk" data-act="data-zip">veri setini indir</button>, zip’i aç, <b>Giriş → Veri al → Metin/CSV</b> ile <code>Satislar</code>, <code>Urunler</code>, <code>Kategoriler</code> ve <code>Tarih</code> dosyalarını yükle. Model görünümünde <code>Satislar[UrunNo] → Urunler[UrunNo]</code>, <code>Urunler[Kategori] → Kategoriler[Kategori]</code> ve <code>Satislar[Tarih] → Tarih[Tarih]</code> ilişkilerini kur (bu adımların nedenini “Veri modelleme” dersinde göreceksin). Sonra <b>Yeni ölçü (New measure)</b> ile şu iki ölçüyü ekle:<pre class="dax" data-notry>Net Satış = CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal")
 Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Desktop’un yoksa aynı görselleri <button class="lnk" data-go="visuals">Görseller ve biçim</button> sayfasında dene.</div>
 <h2>Üç görsel, bir hikâye</h2>
-<p>İyi bir ilk sayfa üç soruya cevap verir: <b>Ne kadar?</b> (kart), <b>Nerede?</b> (kategori karşılaştırması), <b>Nasıl gidiyor?</b> (zaman içindeki eğilim). <b>Görseller</b> sayfasında hepsini bu verilerle canlı görebilirsin.</p>
+<p>İyi bir ilk sayfa üç soruya cevap verir: <b>Ne kadar?</b> (kart), <b>Nerede?</b> (kategori karşılaştırması), <b>Nasıl gidiyor?</b> (zaman içindeki eğilim). <b>Görseller ve biçim</b> sayfasında hepsini bu verilerle canlı görebilirsin.</p>
 <ol>
 <li><b>Kart:</b> Görselleştirmeler → Kart. Alanlar kutusuna <code>[Net Satış]</code>. Biçim → Belirtici → Görüntü birimleri: Milyon.</li>
 <li><b>Kümelenmiş çubuk grafik:</b> Y eksenine <code>Kategoriler[Kategori]</code>, X eksenine <code>[Net Satış]</code>. Görselin “…” menüsünden <i>Ekseni sırala (Sort axis) → Net Satış, azalan</i>.</li>
@@ -372,7 +372,7 @@ Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Des
   sum: 'Karşılaştırma, eğilim, parça-bütün, dağılım, ilişki: her soru için bir görsel türü.',
   body: `
 <h2>Önce soru, sonra grafik</h2>
-<p>Görsel türünü verinin şekli değil, <b>cevaplanacak soru</b> belirler. Aşağıdaki tabloyu bir karar ağacı gibi kullan. Her türün canlı örneği <b>Görseller</b> sayfasında.</p>
+<p>Görsel türünü verinin şekli değil, <b>cevaplanacak soru</b> belirler. Aşağıdaki tabloyu bir karar ağacı gibi kullan. Her türün canlı örneği <b>Görseller ve biçim</b> sayfasında.</p>
 <div class="tbl-wrap"><table>
 <tr><th>Soru</th><th>İlk tercih</th><th>Alternatif</th><th>Kaçın</th></tr>
 <tr><td>Tek bir sayı ne?</td><td>Kart</td><td>KPI (hedefle), gösterge</td><td>Tek dilimli pasta</td></tr>

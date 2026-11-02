@@ -1091,3 +1091,5 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 .vd-limit summary{cursor:pointer}
 @media (max-width:760px),(pointer:coarse){.kbdhint{display:none}}
 @media (max-width:760px){.morelist{gap:6px}.morelist .tool{display:grid; grid-template-columns:34px 1fr; column-gap:10px; align-items:center; padding:9px 12px}.morelist .tool .tic{grid-row:span 2; width:34px; height:34px}.morelist .tool b{font-size:.95rem}.morelist .tool small{font-size:.78rem}}
+.lhead .row{flex-wrap:wrap}
+.lfb{order:3; flex:1 1 100%; margin:0}

@@ -61,7 +61,7 @@ ROW(
 <p>Bu basit ölçü bile Excel kullanıcısının işine yarar: Satislar tablosunda 1.620 satır var; pivotta hangi seçimde kaç satır olduğunu görmek, dışa aktarma sınırlarını tahmin etmeyi kolaylaştırır.</p>
 
 <h2>Dışa aktarma: özetlenmiş mi, temel veri mi?</h2>
-<p>Görselin <b>…</b> menüsündeki <b>Verileri dışa aktar</b> komutu birkaç seçenek sunar. Hizmet kullanıcısı tarafı için <b>Power BI Service’te rapor kullanmak</b>, ayarlar için <b>Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</b> derslerine bak; burada sınırları bir arada görelim:</p>
+<p>Görselin <b>…</b> menüsündeki <b>Verileri dışa aktar</b> komutu birkaç seçenek sunar. Service kullanıcısı tarafı için <b>Power BI Service’te rapor kullanmak</b>, ayarlar için <b>Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</b> derslerine bak; burada sınırları bir arada görelim:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Seçenek</th><th>Ne iner?</th><th>Sınır (Learn)</th></tr>
 <tr><td>Özetlenmiş veriler (.xlsx)</td><td>Görselin gösterdiği toplama düzeyi</td><td>150.000 satır</td></tr>

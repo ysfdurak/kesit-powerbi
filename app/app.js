@@ -830,7 +830,7 @@ function start() {
   window.addEventListener('popstate', () => { if (location.hash === lastHash) return; lastHash = location.hash; fromHash(); render(); window.scrollTo(0, 0); const m = $('#main'); if (m) m.focus({ preventScroll: true }); });
   window.addEventListener('hashchange', () => { if (location.hash === lastHash) return; lastHash = location.hash; fromHash(); render(); window.scrollTo(0, 0); });
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const d = VIEWS[S.view]; if (d && d.resize) d.resize(); }, 250); });
-  fromHash(); render();
+  fromHash(); writeOzet(); render();
 }
 window.PBI_CORE = { tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, lessonMin, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
 })();
