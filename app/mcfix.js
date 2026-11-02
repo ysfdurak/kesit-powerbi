@@ -1,4 +1,4 @@
-/* Kesit Power BI — şık dengeleme (SQLPatika'daki denetimin aynısı).
+/* Kesit Power BI — şık dengeleme (Kesit SQL’deki denetimin aynısı).
    Denetimde 141 sorunun 103'ünde doğru cevap en uzun şıktı. Burada yanlış şıklar aynı ayrıntı düzeyinde,
    makul gerekçelerle yeniden yazılır; doğru şık kısaltılır. Doğru şıkkın konumu (a) değişmez; ekranda sıra zaten karışık. */
 (function (W) {

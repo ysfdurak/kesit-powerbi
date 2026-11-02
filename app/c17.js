@@ -368,7 +368,7 @@ FILTER(
 FROM   Satislar
 GROUP BY YEAR(Tarih)
 ORDER BY Yil;</pre>
-<div class="tip"><b>Daha fazla SQL için SQLPatika</b>Bu uygulamanın kardeşi SQLPatika’da aynı sipariş verisiyle SELECT’ten pencere fonksiyonlarına kadar SQL alıştırmaları var. Mülakatlarda en sık istenen konular: JOIN türleri, GROUP BY ile HAVING farkı, alt sorgu ve CTE, ROW_NUMBER gibi pencere fonksiyonları.</div>
+<div class="tip"><b>Daha fazla SQL için Kesit SQL</b>Bu uygulamanın kardeşi Kesit SQL’de aynı sipariş verisiyle SELECT’ten pencere fonksiyonlarına kadar SQL alıştırmaları var. Mülakatlarda en sık istenen konular: JOIN türleri, GROUP BY ile HAVING farkı, alt sorgu ve CTE, ROW_NUMBER gibi pencere fonksiyonları.</div>
 `,
   ex: [
     { t: 'query', q: 'Bu SQL’i DAX sorgusuna çevir: <code>SELECT u.Kategori, SUM(s.Tutar) AS NetSatis FROM Satislar s JOIN Urunler u ON u.UrunNo = s.UrunNo WHERE s.Durum &lt;&gt; N\'İptal\' GROUP BY u.Kategori</code>. Sütun adı <b>"Net Satış"</b> olsun ve hazır [Net Satış] ölçüsünü kullan.',
@@ -464,7 +464,7 @@ add('vaka-pazar', {
 <tr><th>İlandaki madde</th><th>Tür</th><th>Hazırlığın</th></tr>
 <tr><td>Power BI ile rapor ve veri modeli geliştirme</td><td>Zorunlu</td><td>Bitirme projesi, yıldız şema</td></tr>
 <tr><td>DAX ile ölçü yazma</td><td>Zorunlu</td><td>Bağlam, CALCULATE ve zaman zekâsı dersleri</td></tr>
-<tr><td>SQL ile veri sorgulama</td><td>Zorunlu</td><td>“Power BI analisti için SQL” dersi ve SQLPatika</td></tr>
+<tr><td>SQL ile veri sorgulama</td><td>Zorunlu</td><td>“Power BI analisti için SQL” dersi ve Kesit SQL</td></tr>
 <tr><td>İş birimleriyle ihtiyaç analizi</td><td>Zorunlu</td><td>“Paydaşlarla çalışmak” dersi</td></tr>
 <tr><td>PL-300 sertifikası</td><td>Tercih sebebi</td><td>“PL-300 sınavına hazırlık” dersi</td></tr>
 <tr><td>Fabric, Python</td><td>Tercih sebebi</td><td>Giriş düzeyinde bilmek yeterli</td></tr>

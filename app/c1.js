@@ -25,7 +25,7 @@
 <li><b>Microsoft ekosistemi:</b> Excel, Teams, SharePoint, Azure ve Fabric ile doğal olarak bağlanır.</li>
 <li><b>Hızlı motor:</b> VertiPaq, verileri sütun sütun sıkıştırır. Birkaç yüz milyon satır bile dizüstü bilgisayarda çalışabilir.</li>
 </ul>
-<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. SQLPatika'daki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX formüllerin tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
+<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL’deki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX formüllerin tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
 `,
   ex: [
     { t: 'mc', q: 'DAX dili ilk olarak hangi ürünle kullanıcılara ulaştı?', o: ['Power BI Desktop (2015)', 'PowerPivot for Excel 2010', 'SQL Server 2000', 'Power View'], a: 1, why: 'DAX, 2010\'da PowerPivot eklentisiyle geldi. Power BI Desktop aynı motoru ve dili devraldı.' },
@@ -149,7 +149,7 @@
 <h2>Power Query nedir?</h2>
 <p>Power Query, veriyi modele yüklemeden önce temizlediğin <b>ETL</b> (çıkar, dönüştür, yükle) aracıdır. Giriş → <b>Verileri dönüştür</b> ile açılır. Yaptığın her tıklama sağdaki <b>Uygulanan Adımlar</b> listesine bir satır olarak eklenir ve arka planda <b>M</b> dilinde kod üretir. Yenilemede bu adımlar sırayla yeniden çalışır; yani temizliği bir kez tasarlarsın.</p>
 <h2>Kirli veri örneği</h2>
-<p>Anadolu Market'in web formundan gelen kayıt verisi şöyle görünüyor (SQLPatika'daki <code>raw_signups</code> tablosu):</p>
+<p>Anadolu Market'in web formundan gelen kayıt verisi şöyle görünüyor (Kesit SQL’deki <code>raw_signups</code> tablosu):</p>
 <div class="tbl-wrap"><table>
 <tr><th>id</th><th>full_name</th><th>email</th><th>city</th><th>signup_date</th></tr>
 <tr><td>3</td><td>"  Elif Kaya "</td><td>ELIF.KAYA@GMAIL.COM</td><td>istanbul</td><td>2024-03-05</td></tr>

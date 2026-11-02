@@ -1,5 +1,5 @@
 /* Düzen: solda patika menüsü, sağda çalışma alanı; telefonda alt sekme çubuğu.
-   Kimlik: SQLPatika ile aynı patika dili; işaret boyası kehribar (rapor sarısı), logo yükselen üç çubuk. */
+   Kimlik: Kesit SQL ile aynı patika dili; işaret boyası kehribar (rapor sarısı), logo yükselen üç çubuk. */
 :root{
   --bg:#F1F0EC; --surface:#FFFFFF; --surface-2:#F7F6F2; --ink:#1B1A16; --muted:#625F55; --line:#DEDBD2;
   --accent:#E9B10C; --accent-text:#8A6200; --accent-soft:#FBF1D2; --accent-ink:#1B1505;

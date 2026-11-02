@@ -6,7 +6,7 @@ window.trFold = window.trFold || (s => String(s == null ? '' : s).toLocaleLowerC
 const X = window.PBI_DAX, V = window.PBIViz, MODEL = window.PBI_MODEL;
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const SQL_URL = ((window.KESIT_CONFIG || {}).sqlUrl) || 'https://claude.ai/artifact/AShrAGhBC2VnLCiFGaBtUX';
+const SQL_URL = ((window.KESIT_CONFIG || {}).sqlUrl) || 'https://ysfdurak.github.io/kesit-sql/';
 
 /* ---------- Seviyeler ve dersler ---------- */
 const LEVELS = window.PBI_LEVELS; const LVI = id => LEVELS.findIndex(L => L.id === id);
@@ -182,7 +182,7 @@ function renderNav() {
 }
 function renderStats() {
   const st = streak(), done = Object.keys(P.done).filter(k => LMAP[k]).length; const lv = myLevel();
-  const ss = $('#sideStats'); if (ss) ss.innerHTML = '<div class="stat"><b>' + P.xp + '</b><span>XP</span></div><div class="stat"><b>' + st + '</b><span>günlük seri</span></div><div class="stat"><b>' + done + '/' + LESSONS.length + '</b><span>ders</span></div><div class="stat"><b>' + (lv || '—') + '</b><span>' + (lv ? lvName(lv) : 'seviye') + '</span></div><a class="sibling" href="' + SQL_URL + '" target="_blank" rel="noopener">SQLPatika\'ya geç ↗</a>';
+  const ss = $('#sideStats'); if (ss) ss.innerHTML = '<div class="stat"><b>' + P.xp + '</b><span>XP</span></div><div class="stat"><b>' + st + '</b><span>günlük seri</span></div><div class="stat"><b>' + done + '/' + LESSONS.length + '</b><span>ders</span></div><div class="stat"><b>' + (lv || '—') + '</b><span>' + (lv ? lvName(lv) : 'seviye') + '</span></div><a class="sibling" href="' + SQL_URL + '" target="_blank" rel="noopener">Kesit SQL\'e geç ↗</a>';
   const ms = $('#miniStats'); if (ms) ms.innerHTML = '<b>' + P.xp + '</b>&nbsp;XP · <b>' + st + '</b>&nbsp;gün';
 }
 let lastHash = location.hash;
@@ -322,7 +322,7 @@ function viewPath(id) {
   return h + '</div>';
 }
 function viewMore() {
-  return '<div class="wrap"><div class="phead"><span class="eyebrow">Menü</span><h1>Tüm bölümler</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools">' + items.map(([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc((GUIDES[v] || ['', ''])[0]) + '</small></button>').join('') + '</div></section>').join('') + '<a class="tool" href="' + SQL_URL + '" target="_blank" rel="noopener"><span class="tic">' + ic('term') + '</span><b>SQLPatika ↗</b><small>Aynı veriyle SQL öğren</small></a></div>';
+  return '<div class="wrap"><div class="phead"><span class="eyebrow">Menü</span><h1>Tüm bölümler</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools">' + items.map(([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc((GUIDES[v] || ['', ''])[0]) + '</small></button>').join('') + '</div></section>').join('') + '<a class="tool" href="' + SQL_URL + '" target="_blank" rel="noopener"><span class="tic">' + ic('term') + '</span><b>Kesit SQL ↗</b><small>Aynı veriyle SQL öğren</small></a></div>';
 }
 
 /* ---------- Müfredat ---------- */
