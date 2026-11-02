@@ -124,6 +124,8 @@ if (roles.hizli && roles.hizli.ready && roles.hizli.ready[0]) roles.hizli.ready[
 /* Tam program belgesi seviye bazlı listeyi kullanır; isteğe bağlı ders hariç */
 if (roles.profesyonel && roles.profesyonel.ready) { const tier = W.PBI_TIER || (x => x); const by = t => W.PBI_LESSONS.filter(l => tier(W.PBI_LEVEL_OF[l.id] || l.lv) === t && !W.PBI_OPTIONAL.includes(l.id)).map(l => l.id); ['temel', 'orta', 'ileri'].forEach((t, i) => { roles.profesyonel.ready[i].lessons = by(t); }); }
 
+paths.forEach(p => { const r = roles[p.id]; if (r && r.title) p.name = r.title; });
+
 /* Kapsam haritası: resmî madde → ana ders */
 W.PBI_SKILL_LESSON = {
   'pl-gc1': ['veri-alma'], 'pl-gc2': ['veri-baglantilari'], 'pl-gc3': ['veri-alma', 'model-ileri'], 'pl-gc4': ['pq-model'],
