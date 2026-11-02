@@ -11,7 +11,7 @@ meta='''<meta name="theme-color" content="#E9B10C">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="Kesit Power BI">
 <meta property="og:title" content="Kesit Power BI: sıfırdan işe hazır Power BI">
-<meta property="og:description" content="Kurulum yok, hesap yok. Tarayıcında çalışan DAX motoruyla 115 ders, 900'ü aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
+<meta property="og:description" content="Kurulum yok, hesap yok. DAX'ı benzeten tarayıcı motoruyla 118 ders, 900'ü aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
 <meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png">
 <meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/">
 <meta name="twitter:card" content="summary_large_image">

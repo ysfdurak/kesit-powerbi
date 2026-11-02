@@ -4,9 +4,9 @@
 
 ## Kalanlar
 - [ ] Pages açık değilse: Settings → Pages → Branch `main` / root → Save (adım 2).
-- [ ] Geri bildirim formunun bağlantısını `config.js` → `feedbackFormUrl`'e yaz (adım 4; Kesit SQL formunu da kullanabilirsin).
-- [ ] Discussions'ı aç, Giscus'u kur, `repoId` ve `categoryId`'yi yaz (adım 5).
-- [ ] GoatCounter kodunu yaz (adım 6).
+- [ ] İstersen form kur: `feedbackFormUrl` boşken geri bildirim GitHub Issues'a gider (adım 4).
+- [ ] İstersen ders yorumları: Discussions'ı aç, Giscus'u kur, `repoId` ve `categoryId`'yi yaz (adım 5). Boşken yorum alanı görünmez.
+- [ ] İstersen ziyaret sayacı: GoatCounter kodunu yaz (adım 6). Boşken sayaç çalışmaz.
 
 Ücretsiz, hesapsız, portföy amaçlı yayın. Yaklaşık 30–45 dakika sürer. Kod yazman gerekmiyor; yalnızca `config.js` dosyasını düzenleyeceksin.
 
@@ -28,7 +28,9 @@ Depoda `config.js` dosyasını aç → sağ üstteki kalem simgesi (**Edit**) �
 - `README.md`: `ysfdurak` yazan yeri kendi kullanıcı adınla değiştir.
 - `LICENSE` ve `LICENSE-ICERIK.md`: `AD SOYAD` yerine adını yaz.
 
-## 4. Geri bildirim formu (Google Forms)
+## 4. Geri bildirim formu (Google Forms, isteğe bağlı)
+Bu adım atlanırsa “Geri bildirim” ve “Sorun bildir” düğmeleri GitHub Issues'ta ders adı dolu bir kayıt açar.
+
 1. https://forms.google.com → boş form. Başlık: *Kesit Power BI geri bildirim*.
 2. Sorular:
    - **Ders** (kısa yanıt)
@@ -63,7 +65,7 @@ GitHub Pages ziyaretçi istatistiği vermez. GoatCounter ticari olmayan kullanı
 3. Siteyi aç, birkaç sayfa gez; birkaç dakika içinde panelde görünür.
 
 Panelde göreceklerin:
-- **Sayfalar:** her ders, patika, rapor ve vaka paketi ayrı satır; görüntülenme ve tekil ziyaretçi sayısı.
+- **Sayfalar:** her ders, öğrenme yolu, rapor ve vaka paketi ayrı satır; görüntülenme ve tekil ziyaretçi sayısı.
 - **Olaylar:** `karsilama/yeni` (Hiç bilmiyorum'u seçenler), `ders-bitti/<ders>`, `seviye-testi/<seviye>`, `veri-indir/<paket>`, `geri-bildirim-acildi`.
 - **Nereden geldiler:** LinkedIn, GitHub, arama motoru; ülke, tarayıcı, cihaz.
 Kişiyi tanımlayan bir bilgi tutulmaz; yalnızca toplu sayıları görürsün. Sayaç yalnızca yayındaki sitede çalışır; bilgisayarında dosyayı açarken saymaz.
@@ -71,8 +73,8 @@ Kişiyi tanımlayan bir bilgi tutulmaz; yalnızca toplu sayıları görürsün. 
 ## 7. Yayından sonra kontrol listesi
 - [ ] Sayfa açılıyor; karşılama ekranında üç kapı var.
 - [ ] “Hiç bilmiyorum” → “1 dakikada ilk ölçün” → ilk alıştırmada **Kontrol et** çalışıyor.
-- [ ] **Vaka veri setleri** sayfasında bir paketi indir; zip açılıyor, içinde CSV'ler ve BENIOKU.md var.
-- [ ] **Dashboardlar** sayfasında bir rapor çiziliyor.
+- [ ] **Veri setleri** sayfasında bir paketi indir; zip açılıyor, içinde CSV'ler ve BENIOKU.md var.
+- [ ] **Raporlar** sayfasında bir rapor çiziliyor.
 - [ ] Hakkında sayfasında adın ve bağlantıların doğru.
 - [ ] Bir derste geri bildirim formu, ders adı dolu olarak açılıyor.
 - [ ] Bir dersin konu anlatımının altında yorum alanı görünüyor; deneme yorumu yaz, sonra sil.
