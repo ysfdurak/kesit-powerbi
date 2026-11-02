@@ -7856,7 +7856,7 @@ W.PBI_FINAL = {
 <li><b>Microsoft ekosistemi:</b> Excel, Teams, SharePoint, Azure ve Fabric ile doğal olarak bağlanır.</li>
 <li><b>Hızlı motor:</b> VertiPaq, verileri sütun sütun sıkıştırır. Birkaç yüz milyon satır bile dizüstü bilgisayarda çalışabilir.</li>
 </ul>
-<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. SQLPatika'daki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX formüllerin tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
+<div class="note"><b>Bu uygulamada</b>Tüm dersler aynı örnek şirketi kullanır: <b>Anadolu Market</b>. Kesit SQL’deki sipariş verisinin aynısı burada Power BI'ın sevdiği <b>yıldız şemaya</b> dönüştürüldü. DAX formüllerin tarayıcında, bu veri üzerinde gerçekten çalışır.</div>
 `,
   ex: [
     { t: 'mc', q: 'DAX dili ilk olarak hangi ürünle kullanıcılara ulaştı?', o: ['Power BI Desktop (2015)', 'PowerPivot for Excel 2010', 'SQL Server 2000', 'Power View'], a: 1, why: 'DAX, 2010\'da PowerPivot eklentisiyle geldi. Power BI Desktop aynı motoru ve dili devraldı.' },
@@ -7980,7 +7980,7 @@ W.PBI_FINAL = {
 <h2>Power Query nedir?</h2>
 <p>Power Query, veriyi modele yüklemeden önce temizlediğin <b>ETL</b> (çıkar, dönüştür, yükle) aracıdır. Giriş → <b>Verileri dönüştür</b> ile açılır. Yaptığın her tıklama sağdaki <b>Uygulanan Adımlar</b> listesine bir satır olarak eklenir ve arka planda <b>M</b> dilinde kod üretir. Yenilemede bu adımlar sırayla yeniden çalışır; yani temizliği bir kez tasarlarsın.</p>
 <h2>Kirli veri örneği</h2>
-<p>Anadolu Market'in web formundan gelen kayıt verisi şöyle görünüyor (SQLPatika'daki <code>raw_signups</code> tablosu):</p>
+<p>Anadolu Market'in web formundan gelen kayıt verisi şöyle görünüyor (Kesit SQL’deki <code>raw_signups</code> tablosu):</p>
 <div class="tbl-wrap"><table>
 <tr><th>id</th><th>full_name</th><th>email</th><th>city</th><th>signup_date</th></tr>
 <tr><td>3</td><td>"  Elif Kaya "</td><td>ELIF.KAYA@GMAIL.COM</td><td>istanbul</td><td>2024-03-05</td></tr>
@@ -10303,7 +10303,7 @@ AnadoluMarket.Report/
 <div class="tbl-wrap"><table>
 <tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
 <tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Güvenlik, Yönetişim, Yaşam döngüsü, Kurumsal model</td></tr>
-<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>Power Query dersleri, DAX sorguları; SQL için <a href="https://claude.ai/artifact/AShrAGhBC2VnLCiFGaBtUX" target="_blank" rel="noopener">SQLPatika</a></td></tr>
+<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
 <tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Ölçü Laboratuvarı, Kurumsal model, DAX optimizasyonu</td></tr>
 </table></div>
 <h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
@@ -15568,7 +15568,7 @@ FILTER(
 FROM   Satislar
 GROUP BY YEAR(Tarih)
 ORDER BY Yil;</pre>
-<div class="tip"><b>Daha fazla SQL için SQLPatika</b>Bu uygulamanın kardeşi SQLPatika’da aynı sipariş verisiyle SELECT’ten pencere fonksiyonlarına kadar SQL alıştırmaları var. Mülakatlarda en sık istenen konular: JOIN türleri, GROUP BY ile HAVING farkı, alt sorgu ve CTE, ROW_NUMBER gibi pencere fonksiyonları.</div>
+<div class="tip"><b>Daha fazla SQL için Kesit SQL</b>Bu uygulamanın kardeşi Kesit SQL’de aynı sipariş verisiyle SELECT’ten pencere fonksiyonlarına kadar SQL alıştırmaları var. Mülakatlarda en sık istenen konular: JOIN türleri, GROUP BY ile HAVING farkı, alt sorgu ve CTE, ROW_NUMBER gibi pencere fonksiyonları.</div>
 `,
   ex: [
     { t: 'query', q: 'Bu SQL’i DAX sorgusuna çevir: <code>SELECT u.Kategori, SUM(s.Tutar) AS NetSatis FROM Satislar s JOIN Urunler u ON u.UrunNo = s.UrunNo WHERE s.Durum &lt;&gt; N\'İptal\' GROUP BY u.Kategori</code>. Sütun adı <b>"Net Satış"</b> olsun ve hazır [Net Satış] ölçüsünü kullan.',
@@ -15664,7 +15664,7 @@ add('vaka-pazar', {
 <tr><th>İlandaki madde</th><th>Tür</th><th>Hazırlığın</th></tr>
 <tr><td>Power BI ile rapor ve veri modeli geliştirme</td><td>Zorunlu</td><td>Bitirme projesi, yıldız şema</td></tr>
 <tr><td>DAX ile ölçü yazma</td><td>Zorunlu</td><td>Bağlam, CALCULATE ve zaman zekâsı dersleri</td></tr>
-<tr><td>SQL ile veri sorgulama</td><td>Zorunlu</td><td>“Power BI analisti için SQL” dersi ve SQLPatika</td></tr>
+<tr><td>SQL ile veri sorgulama</td><td>Zorunlu</td><td>“Power BI analisti için SQL” dersi ve Kesit SQL</td></tr>
 <tr><td>İş birimleriyle ihtiyaç analizi</td><td>Zorunlu</td><td>“Paydaşlarla çalışmak” dersi</td></tr>
 <tr><td>PL-300 sertifikası</td><td>Tercih sebebi</td><td>“PL-300 sınavına hazırlık” dersi</td></tr>
 <tr><td>Fabric, Python</td><td>Tercih sebebi</td><td>Giriş düzeyinde bilmek yeterli</td></tr>
@@ -22899,7 +22899,7 @@ W.PBI_VISUALS = [
 ;
 
 /* ===== mcfix.js ===== */
-/* Kesit Power BI — şık dengeleme (SQLPatika'daki denetimin aynısı).
+/* Kesit Power BI — şık dengeleme (Kesit SQL’deki denetimin aynısı).
    Denetimde 141 sorunun 103'ünde doğru cevap en uzun şıktı. Burada yanlış şıklar aynı ayrıntı düzeyinde,
    makul gerekçelerle yeniden yazılır; doğru şık kısaltılır. Doğru şıkkın konumu (a) değişmez; ekranda sıra zaten karışık. */
 (function (W) {
@@ -28036,7 +28036,7 @@ window.trFold = window.trFold || (s => String(s == null ? '' : s).toLocaleLowerC
 const X = window.PBI_DAX, V = window.PBIViz, MODEL = window.PBI_MODEL;
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const SQL_URL = ((window.KESIT_CONFIG || {}).sqlUrl) || 'https://claude.ai/artifact/AShrAGhBC2VnLCiFGaBtUX';
+const SQL_URL = ((window.KESIT_CONFIG || {}).sqlUrl) || 'https://ysfdurak.github.io/kesit-sql/';
 
 /* ---------- Seviyeler ve dersler ---------- */
 const LEVELS = window.PBI_LEVELS; const LVI = id => LEVELS.findIndex(L => L.id === id);
@@ -28212,7 +28212,7 @@ function renderNav() {
 }
 function renderStats() {
   const st = streak(), done = Object.keys(P.done).filter(k => LMAP[k]).length; const lv = myLevel();
-  const ss = $('#sideStats'); if (ss) ss.innerHTML = '<div class="stat"><b>' + P.xp + '</b><span>XP</span></div><div class="stat"><b>' + st + '</b><span>günlük seri</span></div><div class="stat"><b>' + done + '/' + LESSONS.length + '</b><span>ders</span></div><div class="stat"><b>' + (lv || '—') + '</b><span>' + (lv ? lvName(lv) : 'seviye') + '</span></div><a class="sibling" href="' + SQL_URL + '" target="_blank" rel="noopener">SQLPatika\'ya geç ↗</a>';
+  const ss = $('#sideStats'); if (ss) ss.innerHTML = '<div class="stat"><b>' + P.xp + '</b><span>XP</span></div><div class="stat"><b>' + st + '</b><span>günlük seri</span></div><div class="stat"><b>' + done + '/' + LESSONS.length + '</b><span>ders</span></div><div class="stat"><b>' + (lv || '—') + '</b><span>' + (lv ? lvName(lv) : 'seviye') + '</span></div><a class="sibling" href="' + SQL_URL + '" target="_blank" rel="noopener">Kesit SQL\'e geç ↗</a>';
   const ms = $('#miniStats'); if (ms) ms.innerHTML = '<b>' + P.xp + '</b>&nbsp;XP · <b>' + st + '</b>&nbsp;gün';
 }
 let lastHash = location.hash;
@@ -28352,7 +28352,7 @@ function viewPath(id) {
   return h + '</div>';
 }
 function viewMore() {
-  return '<div class="wrap"><div class="phead"><span class="eyebrow">Menü</span><h1>Tüm bölümler</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools">' + items.map(([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc((GUIDES[v] || ['', ''])[0]) + '</small></button>').join('') + '</div></section>').join('') + '<a class="tool" href="' + SQL_URL + '" target="_blank" rel="noopener"><span class="tic">' + ic('term') + '</span><b>SQLPatika ↗</b><small>Aynı veriyle SQL öğren</small></a></div>';
+  return '<div class="wrap"><div class="phead"><span class="eyebrow">Menü</span><h1>Tüm bölümler</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools">' + items.map(([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc((GUIDES[v] || ['', ''])[0]) + '</small></button>').join('') + '</div></section>').join('') + '<a class="tool" href="' + SQL_URL + '" target="_blank" rel="noopener"><span class="tic">' + ic('term') + '</span><b>Kesit SQL ↗</b><small>Aynı veriyle SQL öğren</small></a></div>';
 }
 
 /* ---------- Müfredat ---------- */
