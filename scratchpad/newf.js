@@ -12,7 +12,7 @@ const { chromium } = require('playwright');
   for (let s = 1; s < n; s++) { await p.click('.steps button[data-step="' + s + '"]'); await p.waitForTimeout(150); if (await p.$('#daxEditor')) break; }
   await p.fill('#daxEditor', '= SUM(Satislar[Tutar]; 1)'); await p.click('[data-act="check"]'); await p.waitForTimeout(400); console.log('errtip', await p.$$eval('.errtip', x => x.length));
   await p.focus('#daxEditor'); await p.keyboard.press('Escape'); console.log('esc active', await p.evaluate(() => document.activeElement.id));
-  await go('dashboard'); console.log('det open', await p.$eval('.dpick-det', d => d.open)); await p.click('[data-dash="finans"]'); await p.waitForTimeout(800); console.log('det after', await p.$eval('.dpick-det', d => d.open), 'scrollY', await p.evaluate(() => scrollY), await p.$eval('.dash-card h2', x => x.textContent));
+  await go('dashboard'); console.log('det open', await p.$eval('.dpick-det', d => d.open)); await p.$eval('.dpick-det', d => { d.open = true; }); await p.waitForTimeout(100); await p.click('[data-dash="finans"]'); await p.waitForTimeout(800); console.log('det after', await p.$eval('.dpick-det', d => d.open), 'scrollY', await p.evaluate(() => scrollY), await p.$eval('.dash-card h2', x => x.textContent));
   console.log('aria', await p.$$eval('.dash-card svg.viz', x => x.slice(0, 3).map(s => s.getAttribute('aria-label'))));
   await go('sertifika'); console.log('cert list', await p.$$eval('main .card', x => x.length), (await p.textContent('main h1')));
   console.log('footer', !!(await p.$('.sitefoot')));

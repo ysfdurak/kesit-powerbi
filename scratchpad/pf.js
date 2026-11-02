@@ -17,7 +17,7 @@ const CFG = "window.KESIT_CONFIG={author:{name:'Örnek Ad',title:'Veri Analisti'
   await p.fill('#daxEditor', 'SUM(Satislar[Tutar])'); await p.click('[data-act="check"]'); await p.waitForTimeout(500); console.log('ex1', (await p.textContent('#out')).slice(0, 30));
   await p.evaluate(() => { location.hash = ''; }); await p.waitForTimeout(600); console.log('doors after', await p.$$eval('[data-kdoor]', x => x.length));
   await p.evaluate(() => { location.hash = 'hakkinda'; }); await p.waitForTimeout(600); console.log('about', await p.textContent('main h1'), '|', await p.$$eval('.about-card h3', x => x.map(y => y.textContent).join(', ')));
-  await p.evaluate(() => { location.hash = 'veri-setleri'; }); await p.waitForTimeout(600); console.log('veriler', await p.textContent('main h1'), await p.$$eval('.vd-card', x => x.length));
+  await p.evaluate(() => { location.hash = 'veriler'; }); await p.waitForTimeout(600); console.log('veriler', await p.textContent('main h1'), await p.$$eval('.vd-card', x => x.length));
   // yedek hatırlatma
   await p.evaluate(() => { const C = window.PBI_CORE; const ids = C.LESSONS.slice(0, 12).map(l => l.id); ids.forEach(id => C.P.done[id] = true); C.save(); location.hash = ''; }); await p.waitForTimeout(700);
   console.log('bkcard', !!(await p.$('.bkcard')));
@@ -26,6 +26,6 @@ const CFG = "window.KESIT_CONFIG={author:{name:'Örnek Ad',title:'Veri Analisti'
   await p.evaluate(() => { const C = window.PBI_CORE; C.replaceProgress(Object.assign(C.FRESH(), { done: { 'calculate': true }, xp: 3, welcomed: true })); location.hash = 'profil'; }); await p.waitForTimeout(700);
   const inp = await p.$('[data-act="prog-import"]'); console.log('import input', !!inp); if (inp) { await inp.setInputFiles(f); await p.waitForTimeout(800); }
   console.log('merged done', await p.evaluate(() => Object.keys(window.PBI_CORE.P.done).length), 'calculate kept', await p.evaluate(() => !!window.PBI_CORE.P.done.calculate));
-  await p.setViewportSize({ width: 390, height: 844 }); for (const h of ['', 'hakkinda', 'veri-setleri', 'ders-ilk-olcu']) { await p.evaluate(x => { location.hash = x; }, h); await p.waitForTimeout(600); console.log('mobil', h || 'home', await p.evaluate(() => document.documentElement.scrollWidth - innerWidth)); }
+  await p.setViewportSize({ width: 390, height: 844 }); for (const h of ['', 'hakkinda', 'veriler', 'ders-ilk-olcu']) { await p.evaluate(x => { location.hash = x; }, h); await p.waitForTimeout(600); console.log('mobil', h || 'home', await p.evaluate(() => document.documentElement.scrollWidth - innerWidth)); }
   await p.evaluate(() => { localStorage.clear(); location.hash = ''; }); await p.reload(); await p.waitForTimeout(1000); await p.screenshot({ path: 'pf_home_m.png' });
   console.log('errs', errs); await b.close(); })();

@@ -821,7 +821,7 @@ function fromHash() {
   const h = decodeURIComponent((location.hash || '').slice(1));
   const i = h.indexOf('-'); const pre = i < 0 ? h : h.slice(0, i); const id = i < 0 ? null : h.slice(i + 1);
   const v = Object.keys(VIEWS).find(k => k !== 'home' && (VIEWS[k].hash || k) === pre);
-  if (!v) { S = { view: 'home', id: null, step: 0, ctx: null }; if (h) setTimeout(() => toast('Bu sayfa bulunamadı; ana sayfa açıldı.'), 300); return; }
+  if (!v) { S = { view: 'home', id: null, step: 0, ctx: null }; if (h && h !== 'home') setTimeout(() => toast('Bu sayfa bulunamadı; ana sayfa açıldı.'), 300); return; }
     if (v === 'lesson') { const m = String(id).match(/^(.+?)(?:@([\w-]+))?(?:\/(\d+))?$/) || [], lid = m[1] || id; if (!LMAP[lid]) { S = { view: 'curr', id: null, step: 0, ctx: null }; setTimeout(() => toast('Bu ders bulunamadı; dersler açıldı.'), 300); return; } const n = (LMAP[lid].ex || []).length, st = Math.min(n, +m[3] || 0); S = { view: v, id: lid, step: st, ctx: lessonCtx(lid, m[2] || null) }; return; }
   S = { view: v, id, step: 0, ctx: v === 'path' ? id : null };
 }
