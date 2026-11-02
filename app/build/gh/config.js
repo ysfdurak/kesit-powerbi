@@ -18,6 +18,8 @@ window.KESIT_CONFIG = {
 
   /* Kardeş uygulama (Kesit SQL). */
   sqlUrl: 'https://ysfdurak.github.io/kesit-sql/',
+  /* Kardeş uygulama (Kesit Python). */
+  pythonUrl: 'https://ysfdurak.github.io/kesit-python/',
 
   /* Geri bildirim formu (Google Forms ya da Tally). Adreste {ders} yazan yere ders adı otomatik gelir (YAYIN.md, adım 4). */
   feedbackFormUrl: '',

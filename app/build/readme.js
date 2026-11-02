@@ -34,8 +34,8 @@ const t = `# Kesit Power BI
 - İlerleme yalnızca kullanıcının tarayıcısında saklanıyor; Profil sayfasından dosyaya kaydedilip başka cihazda yüklenebiliyor. Kişisel veri toplanmıyor; ziyaretler yalnızca çerezsiz ve anonim olarak sayılıyor (GoatCounter, açıksa).
 - Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor.
 
-## Kardeş proje
-Aynı mantıkla hazırlanmış SQL eğitimi: **[Kesit SQL](https://ysfdurak.github.io/kesit-sql/)** ([kaynak](https://github.com/ysfdurak/kesit-sql)). Vaka veri setlerinin SQL karşılıkları orada.
+## Kardeş projeler
+Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak.github.io/kesit-sql/)** ve **[Kesit Python](https://ysfdurak.github.io/kesit-python/)**. Vaka veri setleri bu uygulamalarda da kullanılıyor.
 
 ## Geri bildirim
 Her dersin başlığının altında geri bildirim bağlantısı, konu anlatımının altında yorum alanı var. Genel fikirler için bu deponun **Discussions** sekmesini kullanabilirsin.
