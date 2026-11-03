@@ -89,6 +89,14 @@ const STAGES = {
     G('Rapor ve karar', '', ['gorsel-ilkeler', 'etkilesim', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'dashboard-tasarim']),
     G('İşte uygulamak', '', ['paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar', 'portfoy-kariyer'])
   ],
+  'is-analisti': [
+    G('Power BI’ı tanı', 'İlk ölçü, ilk rapor, Service', ['ilk-olcu', 'ilk-rapor', 'hizmet-kullanici']),
+    G('Modeli okumak', 'Yıldız şema, ölçü, tarih tablosu', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama']),
+    G('Ölçüyü okumak', 'Yazmaktan çok ne hesapladığını anlamak', ['baglam', 'calculate', 'var-mantik', 'zaman']),
+    G('Talepten KPI’a', 'Rapor brifi ve KPI tanımı', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi']),
+    G('Paydaşa rapor', 'Doğru görsel, doğru görüşme', ['gorsel-secimi', 'paydas-iletisim']),
+    G('Kabul ve yayım', 'Mutabakat, kabul testi, paylaşım', ['kalite-test', 'yayinlama'])
+  ],
   hizli: [
     G('Tanış', 'İlk ölçü, kurulum, ilk rapor', ['ilk-olcu', 'kurulum', 'ilk-rapor']),
     G('İlk model', 'Temizle, ilişkilendir, tarih tablosu ekle', ['pq-temel', 'model-temel', 'dax-giris', 'tarih-tablosu']),
@@ -115,6 +123,7 @@ RO('dp600', { long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) 
   prereq: { t: 'PL-300 düzeyi varsayılır', d: 'Bu yol filtre bağlamını, CALCULATE’i ve yıldız şemayı bildiğini varsayar; bu dersler yolun içinde değildir ve belge şartına girmez. Rahat değilsen önce şu dersleri bitir ya da PL-300 yolunu izle.', path: 'pl300', lessons: ['model-temel', 'pq-temel', 'dax-giris', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'baglam-gecisi', 'tablo-fonk'] } });
 T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600): veri hazırlama, kurumsal anlam modeli, çözümün yönetimi.', skills: ['Lakehouse ve ambar', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
 T('dax', {});
+RO('is-analisti', { prereq: { t: 'Önce SQL', d: 'Bu yol iş analistliğinin kendisini anlatmaz; talep, gereksinim, süreç ve UAT Kesit SQL’deki BT İş Analisti yolundadır. SQL biliyorsan buradan başlayabilirsin, bilmiyorsan önce o yolun SQL bölümünü bitirmeni öneririz.', sqlYol: 'is-analisti', lessons: [] } });
 RO('yonetici', { level: 'Temel → Orta' });
 T('yonetici', { desc: 'Pivot tablo bilen raporlama ve finans ekipleri için hızlı geçiş.', long: 'Excel’de pivot tablo ve grafiklerle rapor hazırlayanlar için. Excel alışkanlıklarını Power BI’ın model, ölçü ve rapor mantığına çevirir.', skills: ['Power Query', 'Model', 'Filtre bağlamı', 'Ölçüler', 'Biçim bölmesi', 'Rapor'] });
 const nH = (P('hizli') || { lessons: [] }).lessons.length;

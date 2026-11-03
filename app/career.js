@@ -125,7 +125,7 @@ function stateBlock(p, mine) {
 function prereqBlock(r) {
   const q = r.prereq; if (!q) return '';
   const ids = (q.lessons || []).filter(id => C.LMAP[id]); const d = ids.filter(id => P.done[id]).length;
-  return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
+  return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + (q.sqlYol ? ' <a class="lnk" href="' + esc(((window.KESIT_CONFIG || window.PBI_CONFIG || {}).sqlUrl || 'https://ysfdurak.github.io/kesit-sql/') + '#patika-' + q.sqlYol) + '">Kesit SQL: BT İş Analisti yolu</a>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
 }
 function capBlock(id) {
   const c = capOf(id), st = P.cap[id] || {}, cs = capState(id);
