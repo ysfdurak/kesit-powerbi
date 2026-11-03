@@ -335,5 +335,4 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
   @keyframes pop{from{opacity:0; transform:translate(-50%,8px)}}
 }
 
-.skip{position:absolute;left:-999px;top:8px;z-index:999;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}.skip:focus{left:12px}
 .ed-top{color:#A8A392}
