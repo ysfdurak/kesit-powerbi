@@ -22,7 +22,7 @@ const gp = id => PBI_PATHS.find(p => p.id === id);
 ['baglam', 'filter-all', 'tarih-tablosu'].forEach(id => { if (!gp('yonetici').lessons.includes(id)) fail('excel eksik ' + id); });
 if (!gp('hizli').lessons.includes('tarih-tablosu')) fail('bir günde: tarih tablosu yok'); if (!new RegExp('^' + gp('hizli').lessons.length + ' derste').test(gp('hizli').desc)) fail('bir günde sayısı');
 if (!PBI_ROLES.dp600.prereq) fail('DP-600 ön koşul yok'); PBI_ROLES.dp600.prereq.lessons.forEach(id => { if (!L[id]) fail('ön koşul ' + id); });
-const dp = gp('dp600').lessons, tot = dp.reduce((a, id) => a + est(L[id]), 0), DATA = ['fabric-giris', 'veri-baglantilari', 'veri-akislari', 'fabric-veri-alma', 'pq-orta', 'sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz', 'kql-gercek-zaman', 'dax-sorgu'], dat = DATA.reduce((a, id) => a + est(L[id]), 0);
+const dp = gp('dp600').lessons, tot = dp.reduce((a, id) => a + est(L[id]), 0), DATA = ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-data-factory', 'fabric-pipeline', 'gateway', 'veri-baglantilari', 'veri-akislari', 'fabric-veri-alma', 'pq-orta', 'sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz', 'kql-gercek-zaman', 'dax-sorgu'], dat = DATA.reduce((a, id) => a + est(L[id]), 0);
 console.log('DP-600 veri hazırlama payı %' + Math.round(dat / tot * 100) + ' (' + dat + '/' + tot + ' dk)');
 if (dat / tot < 0.4) fail('DP-600 veri hazırlama payı düşük');
 const SK = PBI_SKILL_LESSON || {}; const ids = Object.keys(SK);
