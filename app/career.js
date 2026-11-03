@@ -143,7 +143,7 @@ function readyBlock(id) {
 }
 function certBlock(id) {
   const ok = certReady(id), s = stats(PMAP[id]), it = readyItems(id);
-  return '<section class="lvl-block"><div class="panel certcta' + (ok ? ' on' : '') + '"><div class="cc-seal" aria-hidden="true">' + ic('trophy', 1.6) + '</div><div class="grow"><b>' + (ok ? 'Tamamlama belgen hazır' : 'Tamamlama belgesi') + '</b><small>' + (ok ? 'Adını yaz, yazdır ya da PDF olarak kaydet; portföyüne ve LinkedIn profiline ekle.' : 'Tüm dersler (' + s.done + '/' + s.n + ') ve işe hazırlık listesi (' + it.filter(x => x.ok).length + '/' + it.length + ') tamamlanınca açılır.') + '</small></div><button class="btn' + (ok ? ' pri' : '') + '" data-go="sertifika" data-id="' + id + '"' + (ok ? '' : ' disabled') + '>Belgeyi aç</button></div></section>';
+  return '<section class="lvl-block"><div class="panel certcta' + (ok ? ' on' : '') + '"><div class="cc-seal" aria-hidden="true">' + ic('trophy', 1.6) + '</div><div class="grow"><b>' + (ok ? 'Tamamlama belgen hazır' : 'Tamamlama belgesi') + '</b><small>' + (ok ? 'Adını yaz, yazdır ya da PDF olarak kaydet. Kendi beyanına dayanır, resmî sertifika değildir.' : 'Tüm dersler (' + s.done + '/' + s.n + ') ve işe hazırlık listesi (' + it.filter(x => x.ok).length + '/' + it.length + ') tamamlanınca açılır.') + '</small></div><button class="btn' + (ok ? ' pri' : '') + '" data-go="sertifika" data-id="' + id + '"' + (ok ? '' : ' disabled') + '>Belgeyi aç</button></div></section>';
 }
 
 /* ---------- Belge ---------- */
