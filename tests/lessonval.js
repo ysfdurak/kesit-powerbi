@@ -37,5 +37,5 @@ NEW.forEach(l => {
 });
 console.log('YENİ DERS', NEW.length, NEW.map(l => l.id + '(' + l.lv + ')').join(' '));
 console.log('ALIŞTIRMA', JSON.stringify(counts));
-if (len.n) { const pl = Math.round(len.longest / len.n * 100), ps = Math.round(len.shortest / len.n * 100); console.log('ŞIK DENGESİ', len.n, 'mc · doğru=en uzun %' + pl, '· en kısa %' + ps); if (len.n >= 6 && pl > 30) err('ŞIK: doğru şık çok sık en uzun'); if (len.n >= 6 && ps < 15) err('ŞIK: doğru şık neredeyse hiç en kısa değil'); }
+if (len.n) { const pl = Math.round(len.longest / len.n * 100), ps = Math.round(len.shortest / len.n * 100); console.log('ŞIK DENGESİ', len.n, 'mc · doğru=en uzun %' + pl, '· en kısa %' + ps); if (len.n >= 6 && pl > 35) err('ŞIK: doğru şık çok sık en uzun'); if (len.n >= 6 && pl < 15) err('ŞIK: doğru şık neredeyse hiç en uzun değil (en uzun elenerek cevap daralır)'); if (len.n >= 6 && ps < 15) err('ŞIK: doğru şık neredeyse hiç en kısa değil'); }
 console.log('SORUN', bad);

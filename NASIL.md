@@ -83,7 +83,7 @@ node yolval.js                # öğrenme yolları: sıra, aşama, belge şartı
 node termval.js               # ürün dili: eski adlar (patika, Stüdyo, yer imi…) görünür metinde kalmadı
 node extval.js /home/claude/pbi/x_*.js             # ders genişletme dosyaları (şablon A)
 for f in ilgaz kanat lezzet pusula pedal; do node vdval.js /home/claude/pbi/vd_$f.js | tail -1; done   # vaka paketleri: DAX = beklenen = SQLite
-node longest.js               # çoktan seçmeli şık dengesi (bilgi)
+node longest.js               # şık uzunluğu ipucu vermesin: doğru şık en uzun ve en kısa %15-35, yanlış şık yapay uzun değil (c25, c26, Pratik Senaryo, Sınav ek); son satır SORUN 0. Yeni içerik dosyasını GROUPS listesine ekle
 node dups.js                  # yinelenen adlar (bilgi)
 ```
 
