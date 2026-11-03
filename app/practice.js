@@ -6,7 +6,7 @@ const PR = window.PBI_PRACTICE || [], PRT = window.PBI_PR_TOPICS || {}, PRMAP = 
 const prKey = p => 'pr:' + p.id;
 const prDone = p => !!P.ex[prKey(p)];
 const plain = s => String(s || '').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query' };
+const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mc: 'Senaryo' };
 P.rv = P.rv || {}; P.reports = P.reports || []; P.exams = P.exams || {};
 
 /* ---------- Tema (Otomatik / Açık / Koyu) ---------- */
@@ -39,7 +39,7 @@ function prListHTML() {
 function viewPratik() {
   let h = '<div class="wrap" style="gap:16px">' + C.head('Pratik', 'Pratik', PR.length + ' görev; konu anlatımı yok. Dersin içindeki soruya alıştırma, dersten bağımsız göreve pratik diyoruz.', 'pratik');
   h += '<div class="prstats">' + C.LEVELS.map(L => { const a = PR.filter(p => p.L === L.id), n = a.filter(prDone).length; return '<button class="panel prstat' + (PF.L === L.id ? ' on' : '') + '" data-prl="' + L.id + '">' + C.lvBadge(L.id) + '<b>' + n + '/' + a.length + '</b><span class="bar"><i style="width:' + (a.length ? n / a.length * 100 : 0) + '%"></i></span></button>'; }).join('') + '</div>';
-  h += '<div class="prfilters"><input class="input" id="prQ" placeholder="Görev ara: YTD, RANKX, sepet…" value="' + esc(PF.q) + '" aria-label="Görev ara"><select class="input" id="prT" aria-label="Konu"><option value="">Tüm konular</option>' + Object.keys(PRT).filter(k => PR.some(p => p.tp === k)).map(k => '<option value="' + k + '"' + (PF.tp === k ? ' selected' : '') + '>' + esc(PRT[k]) + ' (' + PR.filter(p => p.tp === k).length + ')</option>').join('') + '</select><select class="input" id="prY" aria-label="Tür"><option value="">Tüm türler</option>' + Object.keys(TYPEN).map(k => '<option value="' + k + '"' + (PF.ty === k ? ' selected' : '') + '>' + TYPEN[k] + '</option>').join('') + '</select><label class="row" style="gap:6px;font-size:.86rem"><input type="checkbox" id="prO"' + (PF.open ? ' checked' : '') + '> Yalnızca çözülmemiş</label></div>';
+  h += '<div class="prfilters"><input class="input" id="prQ" placeholder="Görev ara: YTD, RANKX, ağ geçidi…" value="' + esc(PF.q) + '" aria-label="Görev ara"><select class="input" id="prT" aria-label="Konu"><option value="">Tüm konular</option>' + Object.keys(PRT).filter(k => PR.some(p => p.tp === k)).map(k => '<option value="' + k + '"' + (PF.tp === k ? ' selected' : '') + '>' + esc(PRT[k]) + ' (' + PR.filter(p => p.tp === k).length + ')</option>').join('') + '</select><select class="input" id="prY" aria-label="Tür"><option value="">Tüm türler</option>' + Object.keys(TYPEN).map(k => '<option value="' + k + '"' + (PF.ty === k ? ' selected' : '') + '>' + TYPEN[k] + '</option>').join('') + '</select><label class="row" style="gap:6px;font-size:.86rem"><input type="checkbox" id="prO"' + (PF.open ? ' checked' : '') + '> Yalnızca çözülmemiş</label></div>';
   return h + '<div id="prList">' + prListHTML() + '</div></div>';
 }
 function viewPratikSoru(id) {

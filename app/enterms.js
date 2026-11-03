@@ -73,7 +73,7 @@ W.PBI_EN_TERMS = [
   ['Sayfalandırılmış rapor', 'Paginated report', 'Report Builder, .rdl'],
   ['Anahtar etkileyiciler', 'Key influencers', 'AI görseli'],
   ['Ayrıştırma ağacı', 'Decomposition tree', 'AI görseli'],
-  ['Soru-Cevap (kaldırılıyor)', 'Q&A', 'Aralık 2026’da kalkıyor; yerine Copilot'],
+  ['Soru-Cevap (kaldırılıyor)', 'Q&A', 'Learn: Şubat 2027’de kalkıyor (önceki duyuru Aralık 2026); yerine Copilot'],
   ['Yapay zekâ için verileri hazırla', 'Prep data for AI', 'Copilot için veri şeması, onaylı cevaplar, talimatlar'],
   ['Anlatı (Copilot)', 'Narrative visual with Copilot', ''],
   ['Analiz et', 'Analyze (Explain the increase/decrease)', ''],
@@ -118,4 +118,25 @@ W.PBI_EN_TERMS = [
   ['Büyük anlam modeli depolama biçimi', 'Large semantic model storage format', ''],
   ['V-Order yazma iyileştirmesi', 'V-Order', 'Delta dosyalarını hızlı okunacak biçimde yazar']
 ];
+
+W.PBI_EN_TERMS.push(
+  ['Çalışma alanım', 'My workspace', 'Kişisel deneme alanı; rol ve uygulama yok'],
+  ['Kuruluş uygulaması', 'Org app', 'Alan başına birden çok; canlı içerik'],
+  ['Çalışma alanı uygulaması', 'Workspace app', 'Alan başına bir; sürümlü'],
+  ['Kitle', 'Audience', 'Uygulamada görünürlük grubu; güvenlik değildir'],
+  ['Yorum', 'Comment', 'Filtreyi yer işareti olarak yakalar'],
+  ['Kurtarma anahtarı', 'Recovery key', 'Ağ geçidi taşıma ve küme için; geri alınamaz'],
+  ['Ağ geçidi kümesi', 'Gateway cluster', 'Yüksek erişilebilirlik ve yük dağıtma'],
+  ['Sanal ağ veri ağ geçidi', 'VNet data gateway', 'Microsoft yönetir; özel ağ kaynakları'],
+  ['Kullanım ölçümleri', 'Usage metrics', 'Son 30 gün; önizleme'],
+  ['İşlem hattı', 'Data pipeline', 'Etkinlikleri sıralar, zamanlar'],
+  ['Kopyalama işi', 'Copy job', 'Toplu, artımlı, CDC taşıma'],
+  ['Yansıtma', 'Mirroring', 'Yakın gerçek zamanlı çoğaltma; hedef salt okunur'],
+  ['Filigran', 'Watermark', 'Artımlı yüklemede son işlenen değer'],
+  ['Çerçeveleme', 'Framing', 'Direct Lake’te Delta sürümünü güncelleme'],
+  ['Kapasite birimi', 'Capacity unit (CU)', 'Fabric işlem gücü ölçüsü'],
+  ['Kısıtlama', 'Throttling', 'Kapasite aşımında işlemlerin geciktirilmesi'],
+  ['Sorguları ekle', 'Append queries', 'Satırları alt alta koyar'],
+  ['Sorguları birleştir', 'Merge queries', 'Anahtarla sütun getirir']
+);
 })(window);

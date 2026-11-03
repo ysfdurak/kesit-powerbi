@@ -8,7 +8,7 @@ W.PBI_MENUS = [
       ['İçeri aktar (Import)', 'Power BI şablonu (.pbit), Excel çalışma kitabı içeriği (Power Pivot modeli) ya da özel görsel (.pbiviz) içeri aktarır.', 'Excel\'deki Power Pivot modelini Power BI\'a taşırken; AppSource dışı özel görsel eklerken.', 'aile'],
       ['Dışa aktar → Power BI şablonu (Export → Power BI template)', 'Veri olmadan model, ölçüler ve rapor tasarımını .pbit dosyasına kaydeder.', 'Standart bir rapor başlangıcını ekiple paylaşmak için.', 'yasam-dongusu'],
       ['Dışa aktar → PDF (Export → PDF)', 'Görünür sayfaları PDF\'e aktarır.', 'Hızlı paylaşım; resmî belge için sayfalandırılmış rapor daha uygundur.', 'sayfalandirilmis'],
-      ['Yayımla (Publish)', 'Raporu ve modeli Power BI Service\'te bir çalışma alanına gönderir.', 'Geliştirme bitince; önce kaydet.', 'yayinlama'],
+      ['Yayımla (Publish)', 'Raporu ve modeli Power BI Service\'te bir çalışma alanına gönderir.', 'Geliştirme bitince; önce kaydet.', 'calisma-alani'],
       ['Seçenekler ve ayarlar → Seçenekler (Options and settings → Options)', 'Genel (Genel: önizleme özellikleri, bölgesel ayarlar, güvenlik) ve Geçerli dosya (Veri yükleme: otomatik tarih/saat, ilişkileri otomatik algıla; Rapor ayarları: dışa aktarma, kişiselleştirme) ayarları.', 'Her yeni projede: otomatik tarih/saati kapat, bölgesel ayarı kontrol et.', 'tarih-tablosu'],
       ['Seçenekler ve ayarlar → Veri kaynağı ayarları (Options and settings → Data source settings)', 'Kaynakların kimlik bilgilerini ve gizlilik düzeylerini düzenler; kaynağı değiştirir.', 'Sunucu/dosya yolu değiştiğinde, “Formula.Firewall” hatasında.', 'pq-model']
     ] },
@@ -25,13 +25,13 @@ W.PBI_MENUS = [
       ['Metin kutusu / Daha fazla görsel (Text box / More visuals)', 'Metin ya da AppSource\'tan özel görsel ekler.', 'Açıklama metni, madde grafiği gibi özel görseller.', 'gorsel-secimi'],
       ['Yeni ölçü / Hızlı ölçü (New measure / Quick measure)', 'DAX ölçüsü ya da sihirbazla hızlı ölçü oluşturur.', 'Her hesap için açık ölçü yaz.', 'dax-giris'],
       ['Duyarlılık (Sensitivity)', 'Rapora Microsoft Purview duyarlılık etiketi uygular.', 'Gizli veri içeren raporlarda.', 'yonetisim'],
-      ['Yayımla (Publish)', 'Service\'e yayımlar.', 'Geliştirme sonu.', 'yayinlama'],
+      ['Yayımla (Publish)', 'Service\'e yayımlar.', 'Geliştirme sonu.', 'calisma-alani'],
       ['Copilot', 'Copilot bölmesini açar: rapor sayfası önerisi, anlatı, model özeti, DAX yardımı.', 'Fikir ve ilk taslak için; sonucu her zaman doğrula.', 'hizli-olcu']
     ] },
     { id: 'ekle', name: 'Ekle', desc: 'Sayfaya eklenen öğeler: sayfalar, görseller, yapay zekâ görselleri, şekiller, düğmeler.', cmds: [
       ['Yeni sayfa / Sayfayı çoğalt (New page / Duplicate page)', 'Boş sayfa ya da mevcut sayfanın kopyası.', 'Aynı düzende farklı konu için çoğalt.', 'tema-sayfa'],
       ['Yeni görsel (New visual)', 'Boş görsel.', 'Tasarım.', 'gorsel-temel'],
-      ['Soru-Cevap (Q&A; kaldırılıyor)', 'Doğal dil sorusuyla görsel üreten eski Soru-Cevap görseli. Microsoft Aralık 2026’da tamamen kaldırıyor; mevcut Soru-Cevap görselleri de çalışmayacak.', 'Yeni raporlarda kullanma; yerine Copilot (raporla sohbet) kullanılır.', 'analiz-ozellikleri'],
+      ['Soru-Cevap (Q&A; kaldırılıyor)', 'Doğal dil sorusuyla görsel üreten eski Soru-Cevap görseli. Microsoft kaldırıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026); mevcut Soru-Cevap görselleri de çalışmayacak.', 'Yeni raporlarda kullanma; yerine Copilot (raporla sohbet) kullanılır.', 'analiz-ozellikleri'],
       ['Anahtar etkileyiciler (Key influencers)', 'Bir sonucu en çok etkileyen alanları bulan yapay zekâ görseli.', '“İadeyi ne artırıyor?”', 'analiz-ozellikleri'],
       ['Ayrıştırma ağacı (Decomposition tree)', 'Bir ölçüyü boyutlara dallandırarak ayrıştırır.', 'Kök neden analizi, sunumda canlı keşif.', 'analiz-ozellikleri'],
       ['Anlatı (Narrative)', 'Sayfanın verisini özetleyen dinamik metin (Copilot / akıllı anlatı).', 'Yönetici özetine bir paragraf.', 'analiz-ozellikleri'],
@@ -53,7 +53,7 @@ W.PBI_MENUS = [
       ['Hesaplama grubu (Calculation group)', 'Ölçülere uygulanan hesaplama öğeleri (SELECTEDMEASURE) oluşturur.', 'Zaman zekâsı varyasyonları, para birimi.', 'hesaplama-gruplari'],
       ['Rolleri yönet (Manage roles)', 'RLS rolleri ve DAX filtre ifadeleri.', 'Statik/dinamik satır düzeyi güvenlik.', 'guvenlik'],
       ['Farklı görüntüle (View as)', 'Raporu bir rolün ya da kullanıcının gözünden gösterir.', 'RLS testi.', 'guvenlik'],
-      ['Soru-Cevap kurulumu (Q&A setup; kaldırılıyor)', 'Eş anlamlılar ve dil öğretme. Aralık 2026’da Soru-Cevap ile birlikte kalkıyor; yerini Giriş → Yapay zekâ için verileri hazırla (Prep data for AI) alıyor.', 'Copilot’un modeli doğru anlaması için yapay zekâ veri şeması, onaylı cevaplar ve yapay zekâ talimatları tanımla.', 'analiz-ozellikleri']
+      ['Soru-Cevap kurulumu (Q&A setup; kaldırılıyor)', 'Eş anlamlılar ve dil öğretme. Soru-Cevap ile birlikte kalkıyor; yerini Giriş → Yapay zekâ için verileri hazırla (Prep data for AI) alıyor.', 'Copilot’un modeli doğru anlaması için yapay zekâ veri şeması, onaylı cevaplar ve yapay zekâ talimatları tanımla.', 'analiz-ozellikleri']
     ] },
     { id: 'gorunum', name: 'Görünüm', desc: 'Tema, düzen, mobil görünüm ve yardımcı bölmeler.', cmds: [
       ['Temalar (Themes)', 'Hazır tema seç, özelleştir, JSON yükle/kaydet.', 'Proje başında kurumsal tema.', 'tema-sayfa'],
@@ -196,17 +196,17 @@ W.PBI_MENUS = [
   { grp: 'Power BI Service', tabs: [
     { id: 'srv-calisma', name: 'Çalışma alanı', desc: 'İçeriklerin ve ekibin yönetildiği alan.', cmds: [
       ['Yeni öğe (New item)', 'Rapor, pano, sayfalandırılmış rapor, anlam modeli, veri akışı (Fabric\'te lakehouse, not defteri…).', '—', 'yayinlama'],
-      ['Erişimi yönet (Manage access)', 'Yönetici, Üye, Katkıda bulunan, Görüntüleyici rolleri.', 'Ekip yetkileri.', 'yonetisim'],
+      ['Erişimi yönet (Manage access)', 'Yönetici, Üye, Katkıda bulunan, Görüntüleyici rolleri.', 'Ekip yetkileri.', 'calisma-alani'],
       ['Çalışma alanı ayarları (Workspace settings)', 'Ad, açıklama, kapasite/lisans modu, Git tümleştirmesi, OneLake.', 'Kurulum.', 'yasam-dongusu'],
-      ['Uygulama oluştur / güncelle (Create / Update app)', 'İçeriği kitlelere paketler; gezinme ve izinler.', 'Son kullanıcı dağıtımı.', 'yayinlama'],
+      ['Uygulama oluştur / güncelle (Create / Update app)', 'İçeriği kitlelere paketler; gezinme ve izinler.', 'Son kullanıcı dağıtımı.', 'power-bi-apps'],
       ['Dağıtım işlem hattı oluştur (Create deployment pipeline)', 'Geliştirme → Test → Üretim.', 'Kurumsal yaşam döngüsü.', 'yasam-dongusu'],
       ['Soy görünümü (Lineage view)', 'Kaynaktan rapora öğeler arası bağımlılıklar.', 'Etki analizi.', 'yasam-dongusu']
     ] },
     { id: 'srv-model', name: 'Anlam modeli ayarları', desc: 'Yayımlanmış modelin ayarları.', cmds: [
-      ['Ağ geçidi ve bulut bağlantıları (Gateway and cloud connections)', 'Kaynakların hangi ağ geçidi/bağlantı ile kullanılacağı.', 'Şirket içi kaynaklar.', 'yonetisim'],
-      ['Veri kaynağı kimlik bilgileri (Data source credentials)', 'Yenileme için kimlik bilgisi.', 'İlk yayımdan sonra.', 'yayinlama'],
+      ['Ağ geçidi ve bulut bağlantıları (Gateway and cloud connections)', 'Kaynakların hangi ağ geçidi/bağlantı ile kullanılacağı.', 'Şirket içi kaynaklar.', 'gateway'],
+      ['Veri kaynağı kimlik bilgileri (Data source credentials)', 'Yenileme için kimlik bilgisi.', 'İlk yayımdan sonra.', 'veri-yenileme'],
       ['Parametreler (Parameters)', 'Power Query parametrelerinin değerleri.', 'Ortam değişimi.', 'pq-model'],
-      ['Zamanlanmış yenileme (Scheduled refresh)', 'Gün/saat ve başarısızlık bildirimi.', 'Import modeller.', 'yayinlama'],
+      ['Zamanlanmış yenileme (Scheduled refresh)', 'Gün/saat ve başarısızlık bildirimi.', 'Import modeller.', 'veri-yenileme'],
       ['Satır düzeyi güvenlik (Row-level security)', 'Rollere kullanıcı ve grup atama; Rol olarak test et.', 'RLS dağıtımı.', 'guvenlik'],
       ['Onaylama (Endorsement)', 'Tanıt ya da sertifikala.', 'Doğru modeli bulunur kılmak.', 'yonetisim'],
       ['Büyük anlam modeli depolama biçimi (Large semantic model storage format)', 'Büyük model biçimini açar.', 'Kapasitede büyük modeller.', 'kurumsal-model'],
@@ -215,17 +215,19 @@ W.PBI_MENUS = [
     { id: 'srv-rapor', name: 'Rapor menüsü', desc: 'Service\'te bir rapor açıkken üst çubuk.', cmds: [
       ['Dosya → Kopyasını kaydet / İndir (.pbix) / Yazdır (File → Save a copy / Download / Print)', 'Rapor dosyası işlemleri.', '—', 'yayinlama'],
       ['Dışa aktar → PowerPoint / PDF / Excel\'de analiz et (Export → PowerPoint / PDF / Analyze in Excel)', 'Excel\'de analiz et: modele Excel pivot tablosuyla bağlanır (Derleme izni gerekir).', 'Excel kullanıcıları için.', 'yonetisim'],
-      ['Paylaş / Sohbet (Teams) / Bağlantı kopyala (Share / Chat in Teams / Copy link)', 'Kişi ya da grupla paylaşma.', 'Hızlı paylaşım.', 'yonetisim'],
+      ['Paylaş / Sohbet (Teams) / Bağlantı kopyala (Share / Chat in Teams / Copy link)', 'Kişi ya da grupla paylaşma.', 'Hızlı paylaşım.', 'paylasim'],
       ['Abone ol (Subscribe)', 'Düzenli e-posta anlık görüntüsü.', 'Yöneticilere haftalık özet.', 'yonetisim'],
       ['Düzenle (Edit)', 'Raporu tarayıcıda düzenler.', 'Küçük değişiklikler.', 'yayinlama'],
       ['Görünüm → Kişisel yer işaretleri / Odak modu / Sayfayı tam ekran (View → Personal bookmarks / Focus mode / Full screen)', 'Okuyucu özellikleri.', '—', 'hikaye'],
-      ['Sabitle (Pin visual)', 'Görseli bir panoya sabitler.', 'Pano oluşturma.', 'yonetisim'],
-      ['Uyarı ayarla (Set alert, pano kutucuğu)', 'Eşik aşılınca bildirim.', 'Kart, KPI, gösterge kutucuklarında.', 'yonetisim']
+      ['Sabitle (Pin visual)', 'Görseli bir panoya sabitler.', 'Pano oluşturma.', 'panolar'],
+      ['Uyarı ayarla (Set alert, pano kutucuğu)', 'Eşik aşılınca bildirim.', 'Kart, KPI, gösterge kutucuklarında.', 'panolar'],
+      ['Yorum (Comment)', 'Rapora ya da görsele konuşma ekler; @ ile kişiye bildirim gider, filtreler saklanır.', 'Bir sayıyı kişiye sorarken.', 'yorum-isbirligi'],
+      ['Kullanım ölçümlerini aç (Open usage metrics)', 'Rapor görüntüleme, tekil kişi ve açılma süresi; son 30 gün.', 'Kullanımı ölçerken.', 'kullanim-izleme']
     ] },
     { id: 'srv-yonetici', name: 'Yönetici portalı', desc: 'Kiracı yöneticisinin ayarları (özet).', cmds: [
       ['Kiracı ayarları (Tenant settings)', 'Web\'de yayımla, dışa aktarma, Copilot, özel görseller, sertifikalama kimlerin yapabileceği.', 'Kuruluş politikaları.', 'yonetisim'],
       ['Kapasite ayarları (Capacity settings)', 'Fabric/Premium kapasiteleri, iş yükleri, XMLA okuma-yazma.', 'Kurumsal model.', 'kurumsal-model'],
-      ['Denetim ve kullanım ölçümleri (Audit and usage metrics)', 'Kim neye ne zaman baktı.', 'Benimseme ve güvenlik.', 'yonetisim']
+      ['Denetim ve kullanım ölçümleri (Audit and usage metrics)', 'Kim neye ne zaman baktı.', 'Benimseme ve güvenlik.', 'kullanim-izleme']
     ] }
   ] }
 ];

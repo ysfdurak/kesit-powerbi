@@ -245,6 +245,27 @@ W.PBI_CATALOG.push(
   ['CEILING / FLOOR / MROUND', 'Matematik', 'FLOOR(Sayı, Kat)', 'Bir sayıyı verilen kata yuvarlar: histogram kutuları ve fiyat bantları.', 'FLOOR(1234, 500)']
 );
 W.PBI_GLOSSARY.push(
+  ['OneLake', 'Kiracı başına tek veri gölü. Tablolar açık biçimde (Delta, Iceberg) tutulur; Spark, T-SQL ve Power BI aynı dosyayı kopyalamadan okur.'],
+  ['Lakehouse', 'Files (her dosya) ve Tables (Delta) bölümleri olan Fabric öğesi. Spark ile yazılır, SQL analiz uç noktasıyla salt okunur sorgulanır.'],
+  ['SQL analiz uç noktası', 'Her lakehouse ile gelen salt okunur T-SQL katmanı. Görünüm ve yordam tanımlanır, tablo verisi değiştirilemez.'],
+  ['Kısayol (shortcut)', 'Başka yerdeki veriyi kopyasız gösteren işaretçi. Kısayolu silmek hedefi silmez; içindeki dosyayı silmek siler.'],
+  ['Yansıtma (mirroring)', 'Operasyonel veritabanını yakın gerçek zamanlı OneLake’e çoğaltır. Hedef salt okunurdur.'],
+  ['Data Factory', 'Fabric’in veri alma ve düzenleme iş yükü: işlem hattı, Copy job, Dataflow Gen2, yansıtma.'],
+  ['İşlem hattı (data pipeline)', 'Etkinlikleri sıraya koyan, zamanlayan, hata yollarını yöneten akış. Kendisi dönüştürmez.'],
+  ['Copy job', 'İşlem hattı kurmadan toplu, artımlı ya da CDC kopyalama.'],
+  ['Dataflow Gen2', 'Power Query adımlarını bulutta çalıştırıp sonucu seçilen hedefe yazan Fabric öğesi.'],
+  ['Filigran (watermark)', 'Artımlı yüklemede son işlenen değer. Sonraki çalışma bu değerden devam eder.'],
+  ['Çerçeveleme (framing)', 'Direct Lake’te modelin baktığı Delta sürümünü güncelleme. Veri kopyalanmaz, saniyeler sürer.'],
+  ['Kapasite birimi (CU)', 'Fabric işlem gücü ölçüsü. Rapor, yenileme, not defteri aynı havuzdan tüketir.'],
+  ['Kuruluş uygulaması (org app)', 'Alan başına birden çok olabilen Fabric öğesi. İçerik kaydedilince görünür, model erişimi otomatik verilir.'],
+  ['Kitle (audience)', 'Uygulamada farklı gruba farklı içerik gösterme. Görünürlüktür, güvenlik değildir.'],
+  ['Yorum (comment)', 'Rapor ya da panoda konuşma. İlk yorum filtreleri yer işareti olarak yakalar; @ kişiye bildirim gönderir.'],
+  ['Ağ geçidi kümesi', 'Aynı kurtarma anahtarıyla bağlı birden çok standart ağ geçidi. Bir düğüm düşerse istek sıradakine gider.'],
+  ['Kullanım ölçümleri', 'Rapor görüntüleme, tekil kişi, açılma süresi; son 30 gün. En az Katkıda bulunan görür.'],
+  ['Monitor hub', 'Fabric’te iş çalıştırmalarını, uyarıları ve kapasiteyi gösteren izleme ekranı. Kullanıcı yalnız izinli olduğu öğeleri görür.'],
+  ['Capacity Metrics', 'Fabric kapasite tüketimini, kısıtlamayı ve işlem matrisini gösteren uygulama.']
+);
+W.PBI_GLOSSARY.push(
   ['Can-do (yapabilirim) ifadesi', 'Bu programda her seviyenin sonunda neleri yapabileceğini anlatan ölçülebilir hedef cümleleri (Avrupa dil çerçevesindeki gibi).'],
   ['Rol oynayan boyut', 'Aynı boyut tablosunun bir olgu tablosuyla birden çok ilişkisi olması (Sipariş tarihi, Teslim tarihi). Biri aktif, diğerleri pasif; USERELATIONSHIP ile etkinleşir.'],
   ['Yarı toplanabilir ölçü', 'Bazı boyutlarda toplanabilen, zamanda toplanamayan ölçü (stok, bakiye, çalışan sayısı). Dönem sonu ya da ortalama alınır.'],
