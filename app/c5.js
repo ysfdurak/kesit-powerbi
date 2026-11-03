@@ -233,7 +233,7 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <tr><th>Görsel</th><th>Soru</th><th>Kurulum</th></tr>
 <tr><td><b>Anahtar etkileyiciler</b></td><td>“İade olasılığını en çok ne artırıyor?”</td><td>Çözümle: hedef (Durum = İade ya da bir ölçü). Açıklayan: Kanal, Kategori, İndirim bandı…</td></tr>
 <tr><td><b>Ayrıştırma ağacı</b></td><td>“Bu toplam hangi parçalardan oluşuyor?”</td><td>Çözümle: ölçü. Açıklama ölçütü: boyutlar. Kullanıcı istediği sırayla dallanır; “Yüksek değer” yapay zekâ bölmesi en büyük dalı kendisi seçer.</td></tr>
-<tr><td><b>Copilot (Soru-Cevap’ın yerine)</b></td><td>Doğal dil soruları, rapor özeti</td><td>Soru-Cevap Aralık 2026’da kaldırılıyor. Copilot’un doğru cevap vermesi için Giriş → Yapay zekâ için verileri hazırla: veri şeması, onaylı cevaplar, yapay zekâ talimatları (ciro = Net Satış).</td></tr>
+<tr><td><b>Copilot (Soru-Cevap’ın yerine)</b></td><td>Doğal dil soruları, rapor özeti</td><td>Soru-Cevap kaldırılıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026). Copilot’un doğru cevap vermesi için Giriş → Yapay zekâ için verileri hazırla: veri şeması, onaylı cevaplar, yapay zekâ talimatları (ciro = Net Satış).</td></tr>
 <tr><td><b>Anlatı</b> (Copilot / akıllı anlatı)</td><td>Sayfanın özetini metin olarak yaz</td><td>Ekle → Anlatı. Metin filtrelerle güncellenir.</td></tr>
 </table></div>
 <h2>Aykırı değer ve anomali</h2>

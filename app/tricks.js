@@ -103,7 +103,7 @@ W.PBI_TRICKS = [
     steps: ['Çizgi grafik (sürekli tarih ekseni) → Analiz → Anomali bul.', 'Duyarlılığı ayarla.', 'İşaretli noktaya tıkla: Power BI olası açıklamaları (en çok katkı veren boyutları) listeler.'],
     why: 'Gözden kaçan sapmaları bulur; açıklama bölmesi kök neden aramayı hızlandırır.' },
   { id: 'qa-synonyms', cat: 'Analiz', lv: 'B2', title: 'Copilot için modeli hazırla (Soru-Cevap’ın yerine)',
-    desc: 'Soru-Cevap ve Soru-Cevap kurulumu Aralık 2026’da kaldırılıyor. Doğal dille soru sormanın yeni yolu Copilot; onun doğru cevap vermesi de modelin “okunabilir” olmasına bağlı.',
+    desc: 'Soru-Cevap ve kurulumu kaldırılıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026). Doğal dille soru sormanın yeni yolu Copilot; onun doğru cevap vermesi de modelin “okunabilir” olmasına bağlı.',
     steps: ['Giriş → Yapay zekâ için verileri hazırla (Prep data for AI): Copilot’un kullanacağı tabloları ve alanları seç (yapay zekâ veri şeması).', 'Sık sorulan sorular için onaylı cevaplar (verified answers) tanımla: soru ifadesi + doğru görsel.', 'Yapay zekâ talimatlarına iş terimlerini yaz: “ciro = [Net Satış]”, “mali yıl Temmuz’da başlar”.', 'Ölçülere ve sütunlara anlaşılır ad ve açıklama ver; teknik anahtarları gizle.'],
     why: 'Eskiden Soru-Cevap eş anlamlılarıyla yapılan iş artık bu hazırlıkla yapılıyor; kötü adlandırılmış bir model Copilot’ta da kötü cevap üretir.' },
   { id: 'interactions', cat: 'Etkileşim', lv: 'B1', title: 'Etkileşimleri düzenle',

@@ -97,7 +97,7 @@ ext('etkilesim', { min: 14, html: `
 <tr><td>Tüm dilimleyicileri uygula / temizle</td><td>Çok dilimleyicili filtre panelleri</td></tr>
 <tr><td>Geri</td><td>Detay sayfasından dönüş</td></tr>
 <tr><td>Web URL’si</td><td>Kaynak sisteme, belge sayfasına bağlantı</td></tr></table></div>
-<p>Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik Aralık 2026’da kaldırılacağı için yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.</p>
+<p>Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik kaldırılacağı için (Learn: Şubat 2027) yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.</p>
 <pre class="dax">Seçim Özeti Metni =
 IF(
     ISFILTERED(Kategoriler[Kategori]),

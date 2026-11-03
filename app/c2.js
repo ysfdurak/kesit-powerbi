@@ -361,7 +361,7 @@ CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
 <ul>
 <li><b>Anahtar etkileyiciler:</b> Bir ölçüyü en çok neyin artırıp azalttığını bulur.</li>
 <li><b>Ayrıştırma ağacı:</b> Bir toplamı istediğin sırayla alt boyutlara böler.</li>
-<li><b>Copilot:</b> “2024'te kategoriye göre net satış” gibi doğal dil soruları. (Eski Soru-Cevap özelliği Aralık 2026'da kaldırılıyor.)</li>
+<li><b>Copilot:</b> “2024'te kategoriye göre net satış” gibi doğal dil soruları. (Eski Soru-Cevap özelliği kaldırılıyor; Learn: Şubat 2027.)</li>
 </ul>
 `,
   ex: [
