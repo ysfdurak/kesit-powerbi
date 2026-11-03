@@ -34,7 +34,7 @@ AVERAGEX(VALUES(Urunler[Kategori]), [Ortalama Sepet])</pre>
 <p>Bu modelde <code>[Ortalama Sepet]</code> <b>1.493 ₺</b>, kategori ortalamalarının ortalaması ise <b>893 ₺</b>. AVERAGEX her kategoriye eşit ağırlık verir: 20 siparişlik bir kategori ile 300 siparişlik bir kategori ortalamayı aynı ölçüde etkiler. Bir sipariş birden çok kategoriden ürün içerdiğinde, kategori düzeyinde siparişler parçalandığı için ortalama daha da düşer.</p>
 <p>Kural: ortalamayı her zaman <b>pay ve paydanın oranı</b> olarak hesapla (<code>DIVIDE([Net Satış], [Sipariş Sayısı])</code>). AVERAGEX’i yalnızca soru gerçekten “grupların ortalaması” olduğunda kullan, ör. “bir mağazanın ortalama aylık cirosu”.</p>
 <h3>Bir iteratör kaç kez hesaplar?</h3>
-<p><code>SUMX(Satislar, ...)</code> her satırda ifadeyi bir kez hesaplar. İfade bir ölçü ise her satırda bağlam geçişi de olur. Satır sayısı 1.000’i geçtiğinde bunun maliyeti hissedilir. Aynı sonucu daha az satır üzerinde döndürebilirsen (ör. <code>VALUES(Urunler[Urun])</code> üzerinde) her zaman tercih et.</p>`);
+<p><code>SUMX(Satislar, ...)</code> her satırda ifadeyi bir kez hesaplar. İfade bir ölçü ise her satırda bağlam geçişi de olur. Satır sayısı arttıkça bu maliyet büyür; eşiği modelin ve ifadenin belirler, Performans Analizi ile ölç. Aynı sonucu daha az satır üzerinde döndürebilirsen (ör. <code>VALUES(Urunler[Urun])</code> üzerinde) her zaman tercih et.</p>`);
 
 deep('var-mantik', 'VAR, tanımlandığı yerde ve bir kez hesaplanır', `
 <p>Mülakatlarda en sık sorulan DAX tuzaklarından biri:</p>

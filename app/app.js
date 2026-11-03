@@ -309,7 +309,10 @@ function counts() {
   return { ex, dx, pq, cmds, pat: (window.PBI_PATTERNS || []).length, dash: (window.PBI_DASHES || []).length, tricks: (window.PBI_TRICKS || []).length };
 }
 /* Ders süresi: okuma + alıştırma başına 3 dk, 5'e yuvarlı. Yol süreleri de aynı hesaptan çıkar. */
-const lessonMin = l => Math.max(5, Math.round(((l.min || 10) + (l.ex || []).length * 3) / 5) * 5);
+/* Süre tahmini (üç uygulamada aynı formül): okuma + kod görevi başına 2-3 dk + çoktan seçmeli başına 0,5-1 dk. Ölçülmüş değil; ekranda aralık ve "tahmin" olarak görünür. */
+function sureDk(l) { if (l._sr) return l._sr; const ch = String(l.body || '').replace(/<[^>]+>/g, '').length, ex = (l.ex || []).filter(e => e), kolay = ex.filter(e => e.t === 'mc').length, kod = ex.length - kolay, r = Math.max(3, ch / 600); return (l._sr = [r + 2 * kod + .5 * kolay, r + 3 * kod + kolay]); }
+function dkAralik(l) { const [a, b] = sureDk(l); if (b < 90) return Math.max(5, Math.floor(a / 5) * 5) + '-' + Math.ceil(b / 5) * 5 + ' dk'; const y = x => (Math.round(x / 30) / 2).toLocaleString('tr-TR'); return y(a) + '-' + y(b) + ' saat'; }
+function saatAralik(ls) { if (!ls.length) return '0 dk'; const a = ls.reduce((s, l) => s + sureDk(l)[0], 0) / 60, b = ls.reduce((s, l) => s + sureDk(l)[1], 0) / 60; if (b < 1) return 'yaklaşık ' + Math.max(5, Math.floor(a * 12) * 5) + '-' + Math.ceil(b * 12) * 5 + ' dk'; const st = b < 10 ? 1 : 5, lo = Math.max(1, Math.floor(a / st) * st), hi = Math.ceil(b / st) * st; return 'yaklaşık ' + lo + '-' + (hi > lo ? hi : lo + st) + ' saat'; }
 /* Referans: Sık hatalar, Sık karıştırılanlar, Püf noktaları tek sayfanın sekmeleri */
 const tipsTabs = cur => '<nav class="filters tipstabs" aria-label="Bölümler">' + [['hatalar', 'Sık hatalar'], ['karis', 'Sık karıştırılanlar'], ['tricks', 'Püf noktaları']].map(([v, t]) => '<button data-go="' + v + '" aria-pressed="' + (v === cur) + '">' + t + '</button>').join('') + '</nav>';
 function viewHome() {
@@ -324,7 +327,7 @@ function viewHome() {
   h += '</div></div>' + (GOAL ? '</div>' : '');
   h += '<div class="panel today"><div class="sec-head"><h3>Bugün</h3><span class="muted" style="font-size:.85rem">Günlük hedef ' + DAILY_GOAL + ' XP</span></div><div class="bar"><i style="width:' + Math.min(100, td / DAILY_GOAL * 100) + '%"></i></div>';
   h += '<div class="kpis"><div class="kpi"><b>' + P.xp + '</b><span>toplam XP</span></div><div class="kpi"><b>' + st + '</b><span>gün seri</span></div><div class="kpi"><b>' + done + '</b><span>biten ders</span></div></div>';
-  if (nx) h += '<div class="continue">' + lvBadge(nx.lvl) + '<div class="grow"><b>' + esc(nx.title) + '</b><span class="muted" style="font-size:.85rem">' + esc(nx.mod) + ' · ~' + lessonMin(nx) + ' dk</span></div><button class="btn sm" data-lesson="' + nx.id + '"' + (hctx ? ' data-ctx="' + hctx + '"' : '') + '>Aç</button></div>';
+  if (nx) h += '<div class="continue">' + lvBadge(nx.lvl) + '<div class="grow"><b>' + esc(nx.title) + '</b><span class="muted" style="font-size:.85rem">' + esc(nx.mod) + ' · ' + dkAralik(nx) + '</span></div><button class="btn sm" data-lesson="' + nx.id + '"' + (hctx ? ' data-ctx="' + hctx + '"' : '') + '>Aç</button></div>';
   h += '<span class="muted" style="font-size:.8rem">İlerlemen bu tarayıcıda saklanır.</span></div></section>';
   if (window.PBI_CAREER && !GOAL) h += window.PBI_CAREER.homeGoal();
   h += guide('home');
@@ -388,7 +391,7 @@ function viewLesson() {
   P.last = l.id; save(); const ex = l.ex || [];
   let h = '<div class="wrap" style="gap:18px"><div class="lhead"><div class="crumbs">' + (S.ctx && PMAP[S.ctx] ? '<button data-go="path" data-id="' + S.ctx + '">' + esc(PMAP[S.ctx].name) + '</button>' : '<button data-go="curr">Dersler</button>') + '<span>/</span>' + lvBadge(l.lvl) + '<span>' + esc(l.mod) + '</span></div>';
   if (S.ctx && PMAP[S.ctx] && PMAP[S.ctx].lessons.includes(l.id)) { const arr = PMAP[S.ctx].lessons, pos = arr.indexOf(l.id), dn = arr.filter(x => P.done[x]).length; let msn = ''; if (window.PBI_CAREER) { const ms = window.PBI_CAREER.milestones(PMAP[S.ctx]); const mi = ms.findIndex(m => m.ids.includes(l.id)); if (mi >= 0 && ms.length > 1) msn = ' · Aşama ' + (mi + 1) + ': ' + ms[mi].t; } h += '<div class="lctx"><span>' + esc(PMAP[S.ctx].name) + ' ' + (pos + 1) + '/' + arr.length + msn + '</span><span class="bar"><i style="width:' + Math.round(dn / arr.length * 100) + '%"></i></span></div>'; }
-  h += '<div class="row" style="justify-content:space-between;align-items:end"><h1 style="font-size:clamp(1.5rem,3.4vw,2.1rem)">' + esc(l.title) + '</h1><span class="muted" style="font-size:.85rem" title="Okuma ve alıştırmalar dahil">~' + lessonMin(l) + ' dk</span></div>';
+  h += '<div class="row" style="justify-content:space-between;align-items:end"><h1 style="font-size:clamp(1.5rem,3.4vw,2.1rem)">' + esc(l.title) + '</h1><span class="muted" style="font-size:.85rem" title="Tahmin: okuma ve alıştırmalar dahil">' + dkAralik(l) + '</span></div>';
   h += '<div class="steps"><button data-step="0" aria-current="' + (S.step === 0) + '" class="' + (P.seen[l.id] ? 'done' : '') + '">Konu</button>' + ex.map((e, i) => '<button data-step="' + (i + 1) + '" aria-current="' + (S.step === i + 1) + '" class="' + (P.ex[exKey(l, i)] ? 'done' : '') + '" aria-label="Alıştırma ' + (i + 1) + '">' + (i + 1) + (e.t === 'pq' ? '<i class="dxdot pq" title="Power Query"></i>' : e.t !== 'mc' ? '<i class="dxdot" title="DAX"></i>' : '') + '</button>').join('') + '</div></div>';
   if (S.step === 0) {
     h += '<article class="panel theory">' + l.body + '</article><div class="pager"><span></span>' + (ex.length ? '<button class="btn pri" data-step="1">Alıştırmalara geç (' + ex.length + ')</button>' : (P.done[l.id] ? nextBtn(l) : '<button class="btn pri" data-act="read-done">Okudum, dersi tamamla</button>')) + '</div>';
@@ -764,7 +767,7 @@ document.addEventListener('click', ev => {
     const CX = curX(), e = CX.e, k = CX.k; const ch = +d.mc;
     document.querySelectorAll('#mc button').forEach(b => b.classList.remove('right', 'wrong'));
     if (ch === e.a) { t.classList.add('right'); $('#mcFb').innerHTML = '<div class="msg ok"><b>Doğru.</b>' + (e.why || '') + (e.explain ? '<div class="explain">' + e.explain + '</div>' : '') + '</div>'; CX.onSolved(); }
-    else { t.classList.add('wrong'); $('#mcFb').innerHTML = '<div class="msg err"><b>Tekrar dene.</b>Bu seçenek doğru değil.</div>'; noteWrong(CX); }
+    else { t.classList.add('wrong'); const box = $('#mc'), yn = (+box.dataset.yanlis || 0) + 1; box.dataset.yanlis = yn; $('#mcFb').innerHTML = '<div class="msg err"><b>Tekrar dene.</b>' + (yn >= 2 && e.why ? e.why : 'Bu seçenek doğru değil.') + '</div>'; noteWrong(CX); }
     return;
   }
   if (d.tq !== undefined) { const q = window.PBI_PLACEMENT[T.i]; const ok = +d.tq === q.a; if (ok) T.score[q.lv] = (T.score[q.lv] || 0) + 1; T.ans.push(ok); T.i++; render(); return; }
@@ -834,5 +837,5 @@ function start() {
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const d = VIEWS[S.view]; if (d && d.resize) d.resize(); }, 250); });
   fromHash(); writeOzet(); render();
 }
-window.PBI_CORE = { tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, lessonMin, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
+window.PBI_CORE = { tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, sureDk, dkAralik, saatAralik, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
 })();

@@ -91,9 +91,9 @@ const STAGES = {
   ],
   'is-analisti': [
     G('Power BI’ı tanı', 'İlk ölçü, ilk rapor, Service', ['ilk-olcu', 'ilk-rapor', 'hizmet-kullanici']),
+    G('Talepten KPI’a', 'Rapor brifi ve KPI tanımı: önce ne istendiği', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi']),
     G('Modeli okumak', 'Yıldız şema, ölçü, tarih tablosu', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama']),
     G('Ölçüyü okumak', 'Yazmaktan çok ne hesapladığını anlamak', ['baglam', 'calculate', 'var-mantik', 'zaman']),
-    G('Talepten KPI’a', 'Rapor brifi ve KPI tanımı', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi']),
     G('Paydaşa rapor', 'Doğru görsel, doğru görüşme', ['gorsel-secimi', 'paydas-iletisim']),
     G('Kabul ve yayım', 'Mutabakat, kabul testi, paylaşım', ['kalite-test', 'yayinlama'])
   ],
