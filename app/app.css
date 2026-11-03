@@ -1096,3 +1096,6 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 
 /* Pratik listesi telefonda: rozetler başlığın altına iner, başlık sütunu daralmaz */
 @media (max-width:560px){ #prList .litem{grid-template-columns:28px minmax(0,1fr)} #prList .litem>.row{grid-column:2; flex-wrap:wrap} }
+
+.ic{color:#000}
+.ed-top{color:#A8A392}
