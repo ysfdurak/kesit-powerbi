@@ -426,7 +426,7 @@ add('kademeli-tasarim', {
 <p>Keşif ve kabul kriterlerinin ayrıntısı “Talepten rapor brifine” dersinde; yayımlama ve yenileme “Yayımlama, yenileme ve yaşam döngüsü” dersinde; geliştirme / test / üretim ayrımı ve Git “Yaşam döngüsü” dersinde; test yöntemleri “Rapor kalitesi” konusunda.</p>
 
 <h2>Dört haftalık sprint planı</h2>
-<p>Küçük bir BI projesi için ağır bir çevik (agile) kurulum gerekmez. Haftalık sprint, her hafta sonunda kullanıcıya kısa bir gösterim yeter:</p>
+<p>Küçük bir BI projesi için ağır bir Agile (çevik) kurulum gerekmez. Haftalık sprint, her hafta sonunda kullanıcıya kısa bir gösterim yeter:</p>
 <div class="tbl-wrap"><table>
 <tr><th>Hafta</th><th>Hedef</th><th>İşler</th><th>Hafta sonu gösterimi</th></tr>
 <tr><td>1</td><td>Keşif ve veri</td><td>Brif görüşmesi; KPI tanımları (“net satış iptaller hariç”); kaynak erişimi; veri kalitesi taraması</td><td>Brif onayı, veri kalitesi notları</td></tr>
