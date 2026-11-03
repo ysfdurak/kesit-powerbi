@@ -248,8 +248,28 @@ const SOURCES = {
       ['102', 'mehmet kaya', 'mehmet.kaya@hotmail.com', '2023-05-02'],
       ['104', 'ALİ ŞAHİN', null, '2024-01-09'],
       ['105', 'Elif Çelik', 'elif.celik@icloud.com', '2024-02-30']
-    ]) }
+    ]) },
+  bayi_sub: { name: 'Bayi satışları: Şubat (CSV)', qn: 'Bayi_Subat', desc: 'İkinci kaynak: muhasebenin ortak klasöre bıraktığı Şubat dosyası. Temiz ve türleri belli. Ocak raporuna “Sorguları ekle” ile eklenir.',
+    m: 'Csv.Document(File.Contents("\\\\\\\\sunucu\\\\ortak\\\\bayi_subat.csv"), [Delimiter = ";", Encoding = 65001])',
+    table: { cols: [{ name: 'Bayi', type: 'text' }, { name: 'Şehir', type: 'text' }, { name: 'Tarih', type: 'date' }, { name: 'Tutar', type: 'number' }], rows: [
+      ['Merkez Bayi', 'İstanbul', D(2024, 2, 2), 1410.5], ['Kızılay Bayi', 'Ankara', D(2024, 2, 3), 1125], ['Nilüfer Bayi', 'Bursa', D(2024, 2, 5), 1880.25], ['Alsancak Bayi', 'İzmir', D(2024, 2, 6), 960]] } },
+  sehir_bolge: { name: 'Şehir ve bölge eşlemesi (SharePoint)', qn: 'Sehir_Bolge', key: 'Şehir', desc: 'İkinci kaynak: satış operasyonunun SharePoint Online listesi. Şehir başına bir satır. Şehir sütunu temiz; bayi raporundaki şehirler ise kirli olabilir.',
+    m: 'SharePoint.Tables("https://sirket.sharepoint.com/sites/satis"){[Title = "SehirBolge"]}[Items]',
+    table: { cols: [{ name: 'Şehir', type: 'text' }, { name: 'Bölge', type: 'text' }], rows: [
+      ['İstanbul', 'Marmara'], ['Bursa', 'Marmara'], ['Ankara', 'İç Anadolu'], ['Konya', 'İç Anadolu'], ['İzmir', 'Ege'], ['Antalya', 'Akdeniz'], ['Trabzon', 'Karadeniz']] } }
 };
+
+/* ---------- İki sorguyla çalışan komutlar: Sorguları ekle (append), Sorguları birleştir (merge) ---------- */
+OPS.append = { name: 'Sorguları ekle', group: 'Birleştir', step: 'Eklenen Sorgu',
+  form: [{ k: 'with', label: 'Eklenecek sorgu', type: 'sel', o: [['bayi_sub', 'Bayi satışları: Şubat (CSV)']], d: 'bayi_sub' }],
+  run: (t, s) => { const b = SOURCES[s.with] && SOURCES[s.with].table; if (!b) throw ERR('Expression.Error: “' + s.with + '” sorgusu bulunamadı.'); const out = clone(t); b.cols.forEach(c => { if (!out.cols.some(x => x.name === c.name)) { out.cols.push({ name: c.name, type: c.type }); out.rows.forEach(r => r.push(null)); } }); b.rows.forEach(r => { const row = out.cols.map(c => { const i = b.cols.findIndex(x => x.name === c.name); return i < 0 ? null : (r[i] instanceof Date ? r[i] : r[i]); }); out.rows.push(row); }); out.cols.forEach(c => { const o = b.cols.find(x => x.name === c.name); if (o && o.type !== c.type && !(o.type === 'int' && c.type === 'number')) c.type = 'any'; }); return out; },
+  m: (p, s) => 'Table.Combine({' + p + ', ' + ((SOURCES[s.with] || {}).qn || s.with) + '})',
+  what: 'İkinci sorgunun satırlarını altına ekler. Sütunlar ada göre eşleşir: “Şehir” ile “Sehir” iki ayrı sütun olur ve boşluklar null kalır. Aynı yapıdaki aylık dosyalar, şube dosyaları için.' };
+OPS.merge = { name: 'Sorguları birleştir', group: 'Birleştir', step: 'Birleştirilen Sorgular', sel: 1, single: true,
+  form: [{ k: 'with', label: 'İkinci sorgu', type: 'sel', o: [['sehir_bolge', 'Şehir ve bölge eşlemesi (SharePoint)']], d: 'sehir_bolge' }, { k: 'kind', label: 'Birleştirme türü', type: 'sel', o: [['left', 'Sol dış (tüm satırlar)'], ['inner', 'İç (yalnız eşleşenler)'], ['anti', 'Sol karşıt (yalnız eşleşmeyenler)']], d: 'left' }],
+  run: (t, s) => { const src = SOURCES[s.with]; const b = src && src.table; if (!b) throw ERR('Expression.Error: “' + s.with + '” sorgusu bulunamadı.'); const i = idx(t, s.cols[0]), kb = b.cols.findIndex(c => c.name === src.key); const others = b.cols.map((c, j) => j).filter(j => j !== kb); const map = new Map(); b.rows.forEach(r => { const k = keyOf(r[kb]); if (!map.has(k)) map.set(k, r); }); const out = { cols: t.cols.map(c => Object.assign({}, c)), rows: [] }; if (s.kind !== 'anti') others.forEach(j => { if (out.cols.some(c => c.name === b.cols[j].name)) throw ERR('Expression.Error: “' + b.cols[j].name + '” sütunu tabloda zaten var.'); out.cols.push(Object.assign({}, b.cols[j])); }); t.rows.forEach(r => { const hit = !isErr(r[i]) && !isBlank(r[i]) ? map.get(keyOf(r[i])) : undefined; if (s.kind === 'inner' && !hit) return; if (s.kind === 'anti') { if (!hit) out.rows.push(r.slice()); return; } out.rows.push(r.concat(others.map(j => hit ? hit[j] : null))); }); return out; },
+  m: (p, s) => { const src = SOURCES[s.with] || {}; const b = src.table ? src.table.cols.map(c => c.name).filter(n => n !== src.key) : []; const kind = s.kind === 'inner' ? 'JoinKind.Inner' : s.kind === 'anti' ? 'JoinKind.LeftAnti' : 'JoinKind.LeftOuter'; const j = 'Table.NestedJoin(' + p + ', {' + mStr(s.cols[0]) + '}, ' + (src.qn || s.with) + ', {' + mStr(src.key || '') + '}, "Eşleşen", ' + kind + ')'; return s.kind === 'anti' ? 'Table.RemoveColumns(' + j + ', {"Eşleşen"})' : 'Table.ExpandTableColumn(' + j + ', "Eşleşen", ' + mList(b) + ')'; },
+  what: 'Seçili sütunu ikinci sorgunun anahtarıyla eşleştirir, eşleşen sütunları ekler. Eşleşme büyük/küçük harfe ve boşluğa duyarlıdır: “ANKARA” ile “Ankara” eşleşmez. Bu yüzden önce temizle, sonra birleştir.' };
 
 /* ---------- Alıştırmalar ---------- */
 const S = (op, cols, extra) => Object.assign({ op, cols: cols || [] }, extra || {});

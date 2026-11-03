@@ -4,7 +4,7 @@
 'use strict';
 const C = window.PBI_CORE, Q = window.PBI_PQ, esc = C.esc, $ = C.$;
 const OPS = Q.OPS, TYPES = Q.TYPES;
-const TABS = [['home', 'Giriş', ['Giriş', 'Satırları kaldır']], ['tr', 'Dönüştür', ['Dönüştür', 'Biçim']]];
+const TABS = [['home', 'Giriş', ['Giriş', 'Satırları kaldır', 'Birleştir']], ['tr', 'Dönüştür', ['Dönüştür', 'Biçim']]];
 const P = C.P; P.pq = P.pq || {}; P.pqFree = P.pqFree || {};
 
 let E = null; // etkin düzenleyici
@@ -33,7 +33,7 @@ function grid(t, opt) {
 function state() { const r = Q.run(E.src, E.steps); const vi = E.view == null ? r.states.length - 1 : Math.min(E.view, r.states.length - 1); return { r, vi, cur: r.states[vi] }; }
 function stepLabel(s) {
   const op = OPS[s.op]; const c = s.cols && s.cols.length ? ' · ' + s.cols.join(', ') : '';
-  const extra = s.op === 'type' ? ' → ' + TYPES[s.to].name : s.op === 'replace' ? ' · “' + s.find + '” → ' + (String(s.repl).toLowerCase() === 'null' ? 'null' : '“' + s.repl + '”') : s.op === 'rename' ? ' → ' + s.to : s.op === 'removeTop' ? ' · ' + s.n : s.op === 'filter' ? ' · ' + ({ notnull: 'boş değil', null: 'boş', contains: 'içerir “' + s.v + '”' })[s.cmp] || ' ' + s.cmp + ' ' + s.v : s.op === 'group' ? ' · ' + s.name : '';
+  const extra = s.op === 'type' ? ' → ' + TYPES[s.to].name : s.op === 'replace' ? ' · “' + s.find + '” → ' + (String(s.repl).toLowerCase() === 'null' ? 'null' : '“' + s.repl + '”') : s.op === 'rename' ? ' → ' + s.to : s.op === 'removeTop' ? ' · ' + s.n : s.op === 'filter' ? ' · ' + ({ notnull: 'boş değil', null: 'boş', contains: 'içerir “' + s.v + '”' })[s.cmp] || ' ' + s.cmp + ' ' + s.v : s.op === 'group' ? ' · ' + s.name : s.op === 'append' || s.op === 'merge' ? ' ← ' + ((Q.SOURCES[s.with] || {}).name || s.with) + (s.op === 'merge' ? ' (' + ({ left: 'sol dış', inner: 'iç', anti: 'sol karşıt' })[s.kind] + ')' : '') : '';
   return op.name + c + extra;
 }
 function ribbon() {
@@ -110,7 +110,7 @@ function viewPQ() {
   h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Komut listesi</span><h2>Her komut ne yapar?</h2></div></div><div class="fgrid">' + Object.keys(OPS).map(k => '<div class="panel fcard"><b>' + esc(OPS[k].name) + ' <span class="chip">' + esc(OPS[k].group) + '</span></b><p>' + esc(OPS[k].what) + '</p><code class="syn">' + esc(OPS[k].m('#"Önceki Adım"', sample(k))) + '</code></div>').join('') + '</div></section>';
   return h + '</div>';
 }
-function sample(k) { return { cols: ['Sütun'], n: 1, to: k === 'type' ? 'number' : 'Yeni Ad', find: '-', repl: 'null', whole: true, v: '0', d: ' ', mode: 'first', cmp: '>', name: 'Toplam', agg: 'sum', src: 'Tutar' }; }
+function sample(k) { return { cols: ['Sütun'], with: k === 'merge' ? 'sehir_bolge' : 'bayi_sub', kind: 'left', n: 1, to: k === 'type' ? 'number' : 'Yeni Ad', find: '-', repl: 'null', whole: true, v: '0', d: ' ', mode: 'first', cmp: '>', name: 'Toplam', agg: 'sum', src: 'Tutar' }; }
 function mountPQ() {
   const id = PQS.src; E = fresh({ src: Q.SOURCES[id], steps: (P.pqFree[id] || []).map(s => Object.assign({}, s)), store: st => { P.pqFree[id] = st; C.save(); } });
   paint();
