@@ -41,7 +41,7 @@ sh build/ghpack.sh           # GitHub Pages paketi → scratchpad/gh/kesit-power
 
 ### Vaka veri setleri
 
-Beş vaka setinin kaynağı Kesit SQL üreteçleridir (Kesit SQL `NASIL.md` → Ortak veri setleri). `scratchpad/sqlsrc/` onların kopyasıdır. Değişiklikten sonra: dosyaları kopyala, `scratchpad/ds` içinde `node seed.js <sqlsrc yolu> && python3 mk.py` (`kur.sh` SQLite kopyalarını da üretir), `vdval.js` ile beklenen değerleri denetle, `node build/vdpack.js` ve `.b64.txt` kopyaları, `sh build/build.sh`, `sh build/ghpack.sh`. Bilerek bırakılanlar ve bilinen sınırlamalar `app/bilinen-sinirlar.js`; metin üç uygulamada aynıdır.
+Beş vaka setinin kaynağı Kesit SQL üreteçleridir (Kesit SQL `NASIL.md` → Ortak veri setleri). `scratchpad/sqlsrc/` onların kopyasıdır. Değişiklikten sonra: dosyaları kopyala, `scratchpad/ds` içinde `node seed.js <sqlsrc yolu> && python3 mk.py` (`kur.sh` SQLite kopyalarını da üretir), `vdval.js` ile beklenen değerleri denetle, `node build/vdpack.js` ve `.b64.txt` kopyaları, `sh build/build.sh`, `sh build/ghpack.sh`. Bilerek bırakılanlar ve bilinen sınırlamalar `app/bilinen-sinirlar.js`; metin üç uygulamada aynıdır. Yeni tablo eklendiyse `vd_*.js` içindeki `tables` listesine de ekle (`hv_repositioning`, `bk_rebalancing`); pakete yalnız o liste girer. Uçak ve bisiklet ataması `hv.js`, `bk.js` içine gömülüdür, burada yeniden hesaplanmaz.
 
 ### Yayın
 
