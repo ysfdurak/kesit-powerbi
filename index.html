@@ -11,13 +11,13 @@
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="Kesit Power BI">
 <meta property="og:title" content="Kesit Power BI: sıfırdan işe hazır Power BI">
-<meta property="og:description" content="Kurulum yok, hesap yok. Tarayıcında çalışan DAX motoruyla 115 ders, 900'ü aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
+<meta property="og:description" content="Kurulum yok, hesap yok. DAX'ı benzeten tarayıcı motoruyla 118 ders, 900'ü aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
 <meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png">
 <meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/">
 <meta name="twitter:card" content="summary_large_image">
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Power BI, DAX ve Fabric’i Türkçe, sıfırdan işe hazır seviyeye: rol patikaları, tarayıcıda çalışan DAX motoru, vaka çalışmaları ve bitirme projeleri.">
+<meta name="description" content="Power BI, DAX ve Fabric’i Türkçe, sıfırdan işe hazır seviyeye: rol odaklı öğrenme yolları, tarayıcıda çalışan DAX motoru, vaka çalışmaları ve bitirme projeleri.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="vendor/fonts.css">
 <style>
@@ -28,7 +28,7 @@
   --accent:#E9B10C; --accent-text:#8A6200; --accent-soft:#FBF1D2; --accent-ink:#1B1505;
   --ok:#17855A; --ok-soft:#E1F3EA; --warn:#A86A12; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
   --code-bg:#17150F; --code-ink:#E8E4D8; --code-kw:#F2C14E; --code-fn:#8FC8FF; --code-str:#B8E07A; --code-num:#F5A86B; --code-com:#7D7868; --code-var:#E2A8FF; --code-line:#2A271E; --code-tab:#201D16;
-  --l1:#2F9A5A; --l3:#3866D1; --l5:#B8418F; --l6:#C2410C;
+  --ic-shade:rgba(0,0,0,.38); --l1:#1F7F47; --l3:#3866D1; --l5:#B8418F; --l6:#C2410C;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
   --grid:#E8E6DF; --axis:#8E8A7E;
   --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
@@ -41,7 +41,7 @@
   --accent:#F2C230; --accent-text:#F2C94C; --accent-soft:#3A3014; --accent-ink:#1B1505;
   --ok:#45C08A; --ok-soft:#14302A; --warn:#E3A84B; --warn-soft:#352A16; --err:#FF7B6E; --err-soft:#3A1F1E;
   --code-bg:#0E0D09; --code-line:#2A271E; --code-tab:#16140F;
-  --l1:#4CC27E; --l3:#6E93F0; --l5:#E06BB6; --l6:#F07A45;
+  --ic-shade:rgba(0,0,0,.45); --l1:#4CC27E; --l3:#6E93F0; --l5:#E06BB6; --l6:#F07A45;
   --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
   --grid:#2C2A23; --axis:#857F70;
   --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark }}
@@ -50,7 +50,7 @@
   --accent:#F2C230; --accent-text:#F2C94C; --accent-soft:#3A3014; --accent-ink:#1B1505;
   --ok:#45C08A; --ok-soft:#14302A; --warn:#E3A84B; --warn-soft:#352A16; --err:#FF7B6E; --err-soft:#3A1F1E;
   --code-bg:#0E0D09; --code-line:#2A271E; --code-tab:#16140F;
-  --l1:#4CC27E; --l3:#6E93F0; --l5:#E06BB6; --l6:#F07A45;
+  --ic-shade:rgba(0,0,0,.45); --l1:#4CC27E; --l3:#6E93F0; --l5:#E06BB6; --l6:#F07A45;
   --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
   --grid:#2C2A23; --axis:#857F70;
   --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark }
@@ -153,7 +153,7 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .paths{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px}
 .pcard{padding:18px; display:flex; flex-direction:column; gap:10px; text-align:left; cursor:pointer; border:1px solid var(--line); background:var(--surface); border-radius:var(--r)}
 .pcard:hover{border-color:var(--muted)}
-.ic{min-width:38px; height:38px; padding:0 8px; border-radius:8px; display:grid; place-items:center; color:#fff; font-family:var(--f-display); font-weight:800; font-size:.9rem}
+.ic{min-width:38px; height:38px; padding:0 8px; border-radius:8px; display:grid; place-items:center; color:#fff; box-shadow:inset 0 0 0 99px var(--ic-shade); font-family:var(--f-display); font-weight:800; font-size:.9rem}
 .pcard p{margin:0; color:var(--muted); font-size:.9rem}
 .pcard .foot{display:flex; justify-content:space-between; font-size:.8rem; color:var(--muted); margin-top:auto}
 
@@ -533,7 +533,7 @@ tr.vmark.sel td{background:var(--accent-soft)}
 }
 
 /* ===== Kesit Power BI v2: 6 seviye, rehberler, biçim bölmesi, dashboard çekmecesi, laboratuvar, püf noktaları, menüler, final ===== */
-:root{ --lv1:#2F9A5A; --lv2:#1E8A8A; --lv3:#3866D1; --lv4:#7A4FD0; --lv5:#B8418F; --lv6:#C2410C; --muted-mark:#C9C5BA }
+:root{ --lv1:#1F7F47; --lv2:#1E8A8A; --lv3:#3866D1; --lv4:#7A4FD0; --lv5:#B8418F; --lv6:#C2410C; --muted-mark:#C9C5BA }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --lv1:#4CC27E; --lv2:#3CB8B8; --lv3:#6E93F0; --lv4:#A784F0; --lv5:#E06BB6; --lv6:#F07A45; --muted-mark:#4A473E }}
 :root[data-theme="dark"]{ --lv1:#4CC27E; --lv2:#3CB8B8; --lv3:#6E93F0; --lv4:#A784F0; --lv5:#E06BB6; --lv6:#F07A45; --muted-mark:#4A473E }
 
@@ -1608,6 +1608,28 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 .vd-body, .vd-task{overflow-wrap:anywhere} .vd-body pre, .vd-body .codebox{max-width:100%; overflow-x:auto} .vd-hero .grow{min-width:0}
 .vd-body .theory{padding:0; max-width:none; box-shadow:none; border:0; background:none}
 .vd-before{padding:16px 18px; border-left:4px solid var(--accent)} .vd-before h3{margin:0 0 6px} .vd-before ol{margin:0; padding-left:20px; line-height:1.6} .vd-before li{margin-bottom:6px}
+
+/* --- düzeltme turu: odak, aile bağlantıları, sekmeler, atlanan ders --- */
+#main:focus,#main:focus-visible{outline:none}
+.navfoot{margin-top:10px; padding-top:8px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:2px}
+.fam{display:flex; flex-direction:column; gap:2px; margin-top:10px; padding:8px 10px 0; border-top:1px solid var(--line)}
+.fam .eyebrow{margin-bottom:2px}
+.fam a{font-size:.84rem; color:var(--muted); text-decoration:none; padding:3px 0}
+.fam a:hover,.fam a:focus-visible{color:var(--accent-text); text-decoration:underline}
+.tipstabs{margin:0}
+.chip.skipc{background:var(--surface-2); color:var(--muted); border-style:dashed}
+.skipnote{padding:12px 16px; font-size:.92rem; display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.moddet>summary{cursor:pointer; list-style-position:inside}
+.cov-les{display:block; margin-top:3px; font-size:.8rem}
+.vd-limit{padding:6px 0; border-top:1px solid var(--line)}
+.vd-limit summary{cursor:pointer}
+@media (max-width:760px),(pointer:coarse){.kbdhint{display:none}}
+@media (max-width:760px){.morelist{gap:6px}.morelist .tool{display:grid; grid-template-columns:34px 1fr; column-gap:10px; align-items:center; padding:9px 12px}.morelist .tool .tic{grid-row:span 2; width:34px; height:34px}.morelist .tool b{font-size:.95rem}.morelist .tool small{font-size:.78rem}}
+.lhead .row{flex-wrap:wrap}
+.lfb{order:3; flex:1 1 100%; margin:0}
+
+/* Pratik listesi telefonda: rozetler başlığın altına iner, başlık sütunu daralmaz */
+@media (max-width:560px){ #prList .litem{grid-template-columns:28px minmax(0,1fr)} #prList .litem>.row{grid-column:2; flex-wrap:wrap} }
 </style>
 <a class="skip" href="#main" onclick="document.getElementById('main').focus();return false;">İçeriğe geç</a>
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
@@ -1620,7 +1642,7 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
   <div class="grow" style="min-width:0">
     <header class="topbar"><a class="brand" href="#" data-go="home" style="padding:0"><span class="marker k" aria-hidden="true"><svg viewBox="0 0 26 26" width="26" height="26"><rect x="0.5" y="0.5" width="25" height="25" rx="7" fill="var(--accent)"/><path d="M0.5 15.5 L15.5 0.5 H20.5 L0.5 20.5 Z" fill="var(--bg)"/><rect x="13.4" y="14.5" width="2.6" height="6.5" rx="1.1" fill="var(--accent-ink)"/><rect x="17.2" y="11.5" width="2.6" height="9.5" rx="1.1" fill="var(--accent-ink)"/><rect x="21" y="8.5" width="2.6" height="12.5" rx="1.1" fill="var(--accent-ink)"/></svg></span><b>Kesit<span> Power BI</span></b></a><div class="mini"><span id="miniStats"></span></div></header>
     <main id="main" tabindex="-1"></main>
-    <footer class="legal sitefoot"><p><b>Kesit Power BI</b> bağımsız bir eğitim uygulamasıdır; Microsoft ile bağlantılı değildir, Microsoft tarafından onaylanmamış ya da desteklenmemiştir. Microsoft, Power BI, Fabric, Excel ve PL-300/DP-600/DP-700 adları Microsoft Corporation’ın ticari markalarıdır.</p><p>Sınav ve alıştırma soruları özgün olarak yazılmıştır; gerçek sınav sorusu ya da sınav dökümü değildir. Örnek veriler kurgusaldır. İlerlemen bu tarayıcıda saklanır; buluta eşitleme açıksa yalnızca ilerleme kaydın senin hesabına ait alanda tutulur. Profil sayfasından yedeğini indirebilir ya da silebilirsin.</p><p class="row" style="gap:12px"><button class="linkbtn" data-go="hakkinda">Hakkında</button><button class="linkbtn" data-go="veriler">Vaka veri setleri</button><button class="linkbtn" data-kfb="Genel" hidden id="footFb">Geri bildirim</button></p></footer>
+    <footer class="legal sitefoot"><p><b>Kesit Power BI</b> bağımsız bir eğitim uygulamasıdır; Microsoft ile bağlantılı değildir, Microsoft tarafından onaylanmamış ya da desteklenmemiştir. Microsoft, Power BI, Fabric, Excel ve PL-300/DP-600 adları Microsoft Corporation’ın ticari markalarıdır.</p><p>Sınav ve alıştırma soruları özgün olarak yazılmıştır; gerçek sınav sorusu ya da sınav dökümü değildir. Örnek veriler kurgusaldır. İlerlemen yalnızca bu tarayıcıda saklanır. Profil sayfasından yedeğini indirebilirsin.</p><p class="row" style="gap:12px"><button class="linkbtn" data-go="hakkinda">Hakkında</button><button class="linkbtn" data-go="veriler">Veri setleri</button><button class="linkbtn" data-kfb="Genel" id="footFb">Geri bildirim</button></p></footer>
   </div>
   <nav class="tabbar" id="tabbar" aria-label="Alt menü"></nav>
 </div>

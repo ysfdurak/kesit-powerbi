@@ -1,8 +1,9 @@
 /* Kesit Power BI service worker: önce ağ, ağ yoksa son kaydedilen kopya.
-   Güncellemeler hemen görünür; internet yokken de son açılan içerikle çalışır. */
-const CACHE = 'kesit-powerbi-v1';
-self.addEventListener('install', e => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+   Kurulumda uygulama dosyaları önbelleğe alınır; yeni sürümde eski önbellekler silinir. Sürüm ghpack.sh ile yazılır. */
+const CACHE = 'kesit-powerbi-f2f9abbbca';
+const CORE = ['./', './index.html', './kesit.js', './config.js', './vendor/fonts.css', './favicon.svg', './manifest.webmanifest'];
+self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {}).then(() => self.skipWaiting())));
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('kesit-powerbi-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
