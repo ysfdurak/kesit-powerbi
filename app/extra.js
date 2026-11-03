@@ -262,6 +262,8 @@ W.PBI_GLOSSARY.push(
   ['Yorum (comment)', 'Rapor ya da panoda konuşma. İlk yorum filtreleri yer işareti olarak yakalar; @ kişiye bildirim gönderir.'],
   ['Ağ geçidi kümesi', 'Aynı kurtarma anahtarıyla bağlı birden çok standart ağ geçidi. Bir düğüm düşerse istek sıradakine gider.'],
   ['Kullanım ölçümleri', 'Rapor görüntüleme, tekil kişi, açılma süresi; son 30 gün. En az Katkıda bulunan görür.'],
+  ['Copilot', 'Doğal dille soru, özet, sayfa ve kod üreten yardımcı. Ücretli F2+ ya da P kapasite ister; denemede çalışmaz. Çıktısı doğrulanmalıdır.'],
+  ['Veri ajanı (data agent)', 'Hazırlanan kaynaklar üzerinden soruları cevaplayan Fabric öğesi. Denemede çalışmaz.'],
   ['Monitor hub', 'Fabric’te iş çalıştırmalarını, uyarıları ve kapasiteyi gösteren izleme ekranı. Kullanıcı yalnız izinli olduğu öğeleri görür.'],
   ['Capacity Metrics', 'Fabric kapasite tüketimini, kısıtlamayı ve işlem matrisini gösteren uygulama.']
 );

@@ -71,12 +71,12 @@ cd /home/claude/recover
 node cross.js                 # 70 ölçünün motor sonucu ↔ bağımsız hesap
 node exval.js                 # tüm ders DAX/sorgu alıştırmaları çözülebiliyor mu
 node snip.js                  # derslerdeki ve püf noktalarındaki çalıştırılabilir DAX blokları
-node bankval.js               # alıştırma bankası
+node bankval.js               # Pratik: DAX, sorgu, Power Query ve Senaryo (mc) görevleri
 node codeval.js /home/claude/pbi/interview2.js     # kod havuzu + canlı mülakat görevleri
 node arenaval.js              # DAX Arena
 node agentval.js /home/claude/pbi/confused.js /home/claude/pbi/confused2.js /home/claude/pbi/interview.js /home/claude/pbi/interview2.js
 node dashval.js               # 24 rapor, tüm sayfalar, yer imleri, parametreler, mobil
-node lessonval.js /home/claude/pbi/c21.js /home/claude/pbi/c22.js /home/claude/pbi/c23.js /home/claude/pbi/c24.js   # yeni ders dosyası (şablon B)
+node lessonval.js /home/claude/pbi/c21.js /home/claude/pbi/c22.js /home/claude/pbi/c23.js /home/claude/pbi/c24.js /home/claude/pbi/c25.js /home/claude/pbi/c26.js   # yeni ders dosyası (şablon B)
 node argval.js                # DAX motoru: bağımsız değişken sayısı, tür hataları, ham JS hatası yok
 node hiddenval.js             # gizli dilimleyici testleri, teknik şartı, sorgu karşılaştırması, ipucu temizliği, ALL↔ALLSELECTED mutasyonları
 node yolval.js                # öğrenme yolları: sıra, aşama, belge şartı, PL-300 dersleri, DP-600 payı, kapsam haritası
@@ -113,6 +113,13 @@ GitHub paketi testi: `scratchpad/gh/kesit-powerbi` klasörünü 8793 portunda su
 - `scratchpad/VD_SPEC.md`: vaka veri seti paketi (`vd_*.js`) şeması.
 - `scratchpad/LESSON_SPEC.md`, `scratchpad/DASH_SPEC.md`: eski ders ve rapor kuralları.
 - Model ve fonksiyon listeleri: `node scratchpad/gen.js scratchpad` → `model.txt`, `daxfn.txt`, `curriculum.txt`; bir dersi okumak: `node scratchpad/show.js <ders-id>`.
+
+## Service ve Fabric içeriği (c25, c26)
+
+- Bu konular tarayıcıda çalışmaz: alıştırmalar karar, teşhis ve sıralama sorar; DAX karşılığı olan yerde (mutabakat, tazelik, günlük tablosu) gerçek DAX ya da sorgu sorulur. Arayüz taklit edilmez. Kuran adımlar “Kendi ortamında dene” kutusundadır, deneme koşulu Learn’den alınır.
+- Ürün durumları (önizleme, sınır, lisans) Kasım 2026’da Microsoft Learn’den okundu; dersin içinde “resmî belgeye bak” diye işaretlidir. Soru-Cevap tarihi: Learn güncel uyarısı Şubat 2027, önceki duyuru Aralık 2026.
+- Power Query Lab iki kaynak bilir: `append` ve `merge` komutları (`pqdata.js`), ikinci kaynaklar `bayi_sub`, `sehir_bolge`. Yeni ikinci kaynak `SOURCES` içine `qn` ve (merge için) `key` ile eklenir, form listesine yazılır.
+- Pratik `t: 'mc'` görevlerini de taşır (`tp: 'servis' | 'fabric'`, “Senaryo” türü). `bank.js` sonundaki blok.
 
 ## Bilinen motor sınırları (tarayıcı DAX motoru)
 
