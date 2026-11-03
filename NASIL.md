@@ -52,6 +52,10 @@ Beş vaka setinin kaynağı Kesit SQL üreteçleridir (Kesit SQL `NASIL.md` → 
   ```
   claude.ai sürümü `app/config.js` (boş) ile çalışır; GitHub sürümü `app/build/gh/config.js` (dolu) kullanır.
 
+### Süre tahmini
+
+`app.js` içindeki `sureDk`, `dkAralik`, `saatAralik`: okuma (600 karakter/dk, en az 3 dk) + DAX ya da sorgu görevi başına 2-3 dk + çoktan seçmeli başına 0,5-1 dk. Üç uygulamada aynı formül; ölçülmüş değildir.
+
 ## Testler
 
 Önce yerel sunucu (tarayıcı testleri için):
