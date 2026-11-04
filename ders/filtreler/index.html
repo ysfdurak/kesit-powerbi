@@ -1,0 +1,72 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filtreler bölmesi ve dilimleyiciler | Kesit Power BI</title><meta name="description" content="Görsel, sayfa ve rapor düzeyi filtreler; temel, gelişmiş, İlk N, göreli tarih; dilimleyici türleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/filtreler/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Filtreler bölmesi ve dilimleyiciler"><meta property="og:description" content="Görsel, sayfa ve rapor düzeyi filtreler; temel, gelişmiş, İlk N, göreli tarih; dilimleyici türleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/filtreler/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Filtreler bölmesi ve dilimleyiciler","description":"Görsel, sayfa ve rapor düzeyi filtreler; temel, gelişmiş, İlk N, göreli tarih; dilimleyici türleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/filtreler/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>Filtreler bölmesi ve dilimleyiciler</h1><p class="st-l">Görsel, sayfa ve rapor düzeyi filtreler; temel, gelişmiş, İlk N, göreli tarih; dilimleyici türleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-filtreler">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Üç düzey filtre</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Düzey</th><th>Etkilediği</th><th>Örnek</th></tr>
+<tr><td><b>Bu görseldeki filtreler</b></td><td>Yalnızca seçili görsel</td><td>“İlk 10 ürün” tablosu</td></tr>
+<tr><td><b>Bu sayfadaki filtreler</b></td><td>Sayfadaki tüm görseller</td><td>Bu sayfa yalnızca 2024</td></tr>
+<tr><td><b>Tüm sayfalardaki filtreler</b></td><td>Rapordaki tüm sayfalar</td><td>İptal edilen siparişleri tüm rapordan çıkar</td></tr>
+<tr><td><b>Detaylandırma filtreleri</b></td><td>Detay sayfasına gelen filtre</td><td>Sağ tık → Detaya git → Ürün Detayı</td></tr>
+</table></div>
+<h2>Filtre türleri</h2>
+<ul>
+<li><b>Temel filtreleme:</b> Değer listesinden onay kutusuyla seçim. “Tümünü seç” ve “Seçimi ters çevir” (Hariç tut).</li>
+<li><b>Gelişmiş filtreleme:</b> “içerir”, “ile başlar”, “boş değil”, “büyüktür” gibi koşullar; VE/VEYA ile iki koşul.</li>
+<li><b>İlk N:</b> Bir alanı bir ölçüye göre sıralayıp ilk/son N değeri tutar. Yalnızca görsel düzeyinde.</li>
+<li><b>Göreli tarih:</b> “Son 3 ay”, “Bu yıl”, “Son 12 tam ay” gibi bugüne göre değişen tarih aralıkları.</li>
+<li><b>Göreli saat:</b> “Son 60 dakika”; gerçek zamanlı ve otomatik sayfa yenilemeli raporlarda.</li>
+</ul>
+<h2>Filtre bölmesi ayarları</h2>
+<ul>
+<li><b>Kilitle:</b> Okuyucu filtreyi göremez ya da değiştiremez. Zorunlu iş kuralları için.</li>
+<li><b>Gizle:</b> Okuyucu filtreyi görmez ama filtre çalışır.</li>
+<li><b>Ölçüye filtre:</b> Görsel düzeyinde bir ölçü koşulu (ör. Net Satış &gt; 10.000). Satırları ölçü sonucuna göre gizler.</li>
+<li>Filtre bölmesini okuyucuya kapatmak: Görünüm → Filtreler bölmesinin göz simgesi.</li>
+</ul>
+<h2>Dilimleyici türleri ve ne zaman kullanılır?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Stil</th><th>Ne zaman?</th></tr>
+<tr><td>Dikey liste</td><td>Çok değer, kaydırılabilir; arama kutusu açılabilir</td></tr>
+<tr><td>Açılır menü</td><td>Yer darsa</td></tr>
+<tr><td>Döşeme (düğmeler)</td><td>2–6 değer: yıl, kanal, segment</td></tr>
+<tr><td>Arasında (kaydırıcı)</td><td>Sayı ya da tarih aralığı</td></tr>
+<tr><td>Göreli tarih</td><td>“Son N gün” seçimi</td></tr>
+<tr><td>Hiyerarşi</td><td>Kategori → Ürün gibi iç içe seçim</td></tr>
+<tr><td>Düğme dilimleyici (yeni)</td><td>Görsel olarak zengin, görüntülü düğmeler</td></tr>
+</table></div>
+<p>Dilimleyici ayarları: <b>Tek seçim</b> (yalnızca bir değer), <b>Ctrl ile çoklu seçim</b>, <b>“Tümünü seç” seçeneğini göster</b>. Görünüm → <b>Dilimleyicileri eşitle</b> ile bir dilimleyiciyi başka sayfalara bağlarsın.</p>
+<div class="warn"><b>Filtre mi, dilimleyici mi?</b>Okuyucunun sık değiştireceği seçimler için dilimleyici; değişmeyecek iş kuralları için kilitli filtre. Her sayfaya 8 dilimleyici koymak yerine filtre bölmesini açmak da bir seçenektir.</div>
+<h2>DAX açısından</h2>
+<p>Hangi yoldan gelirse gelsin (dilimleyici, filtre bölmesi, çapraz filtre), hepsi ölçünün <b>filtre bağlamına</b> eklenir. Ölçünün içinde bunu <code>ISFILTERED</code>, <code>SELECTEDVALUE</code>, <code>VALUES</code> ile okuyabilir, <code>ALL</code>/<code>REMOVEFILTERS</code> ile yok sayabilirsin.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Filtre mi, dilimleyici mi? Yan yana karşılaştırma</h2>
+<p>Dört yol da sonunda aynı şeyi yapar: ölçünün hesaplandığı satırları daraltır. Farkları kimin değiştirdiği, nerede durduğu ve neyi etkilediğidir.</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Görsel filtresi</th><th>Sayfa filtresi</th><th>Rapor filtresi</th><th>Dilimleyici (Slicer)</th></tr>
+<tr><td>Nerede durur?</td><td>Filtreler bölmesi</td><td>Filtreler bölmesi</td><td>Filtreler bölmesi</td><td>Tuvalin üzerinde</td></tr>
+<tr><td>Neyi etkiler?</td><td>Tek görsel</td><td>O sayfadaki görseller</td><td>Tüm sayfalar</td><td>Sayfadaki görseller (eşitlenirse başka sayfalar da)</td></tr>
+<tr><td>Kim değiştirir?</td><td colspan="3">Okuyucu (kilitli ya da gizli değilse)</td><td>Okuyucu, tek tıkla</td></tr>
+<tr><td>Görsel bazında kapatılabilir mi?</td><td>Gerekmez</td><td colspan="2">Hayır</td><td>Evet: Etkileşimleri düzenle</td></tr>
+<tr><td>Ölçüye göre filtre</td><td>Evet</td><td colspan="2">Hayır</td><td>Hayır</td></tr>
+</table></div>
+<p>Pratik kural: okuyucunun sık değiştireceği bir seçimse ve göz önünde olmalıysa dilimleyici; arka planda duran bir iş kuralıysa kilitli bir filtre. “Bu sayfa yalnızca 2024” gibi okuyucunun değiştirmemesi gereken bir şeyi dilimleyiciyle yaparsan biri mutlaka başka yıla tıklar.</p>
+<h2>Etkileşimleri düzenle</h2>
+<p>Varsayılan olarak bir dilimleyici sayfadaki her görseli süzer. Bazen istemezsin. Örnek: sayfada “Tüm zamanların net satışı: 1.250.772 ₺” kartı var ve yıl seçilince değişmemeli. Dilimleyiciyi seç → <b>Biçim</b> sekmesi → <b>Etkileşimleri düzenle</b>. Her görselin üstünde küçük simgeler çıkar: <b>Filtrele</b>, <b>Vurgula</b> (yalnızca grafiklerde) ve <b>Hiçbiri</b>. Karttaki “Hiçbiri” simgesine bas; artık kart dilimleyiciyi dinlemez. Aynı ayar, bir grafiğe tıklayınca diğer grafiklerin nasıl tepki vereceği için de geçerlidir.</p>
+<h2>Okuyucu tarafında üç ayrıntı</h2>
+<ul>
+<li><b>Kalıcı filtreler:</b> Service’te okuyucunun son seçimleri hatırlanır. Ertesi gün rapor aynı seçimle açılır. Sağ üstteki <b>Varsayılana sıfırla</b> düğmesi senin yayımladığın hâle döner.</li>
+<li><b>Uygula düğmesi:</b> Çok dilimleyicili sayfada her tıklama yeni bir hesap başlatır. İyileştir sekmesindeki sorgu azaltma ayarlarıyla dilimleyicilere ve filtrelere bir <b>Uygula</b> düğmesi eklenir; okuyucu seçimlerini bitirip bir kez hesaplatır.</li>
+<li><b>Yayımlarken seçim kalır:</b> Desktop'ta dilimleyicide 2023'ü seçili bırakıp yayımlarsan okuyucu raporu 2023 ile açar. Yayımlamadan önce dilimleyicileri istediğin başlangıç hâline getir.</li>
+</ul>
+<h2>Dilimleyici her şeyi süzmez</h2>
+<p>Filtre ilişkiler üzerinden akar. Bu modelde Hedefler tablosu Tarih ve Kategoriler'e bağlıdır ama kanal bilgisi yoktur. Satislar[Kanal] dilimleyicisinde “Web” seçtiğinde net satış küçülür, [Hedef] ise 1.299.300 ₺ olarak aynı kalır. Bu bir hata değil, hedefin kanal düzeyinde verilmemiş olmasıdır. Okuyucu “Web'in hedefi bu mu?” diye yanlış okumasın diye hedef görselinde kanal etkileşimini <b>Hiçbiri</b> yap ya da başlığa “Hedef kanal ayrımı içermez” yaz. Farklı ayrıntı düzeyleri Hedef ve gerçekleşen dersinde.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-filtreler">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../bicim-temel/">← Biçim bölmesi: her ayar ne işe yarar?</a><a href="../istatistik/">Temel istatistik, gruplama ve kutulama →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

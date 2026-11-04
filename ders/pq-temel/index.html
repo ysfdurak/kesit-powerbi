@@ -1,0 +1,45 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Query ile veri temizleme | Kesit Power BI</title><meta name="description" content="Uygulanan adımlar, veri türleri, kırpma, bölme, yinelenenleri kaldırma ve sütun kalitesi."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-temel/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Query ile veri temizleme"><meta property="og:description" content="Uygulanan adımlar, veri türleri, kırpma, bölme, yinelenenleri kaldırma ve sütun kalitesi."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-temel/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Query ile veri temizleme","description":"Uygulanan adımlar, veri türleri, kırpma, bölme, yinelenenleri kaldırma ve sütun kalitesi.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-temel/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Veri Hazırlama</span><h1>Power Query ile veri temizleme</h1><p class="st-l">Uygulanan adımlar, veri türleri, kırpma, bölme, yinelenenleri kaldırma ve sütun kalitesi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-temel">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Power Query nedir?</h2>
+<p>Power Query, veriyi modele yüklemeden önce temizlediğin <b>ETL</b> (çıkar, dönüştür, yükle) aracıdır. Giriş → <b>Verileri dönüştür</b> ile açılır. Yaptığın her tıklama sağdaki <b>Uygulanan Adımlar</b> listesine bir satır olarak eklenir ve arka planda <b>M</b> dilinde kod üretir. Yenilemede bu adımlar sırayla yeniden çalışır; yani temizliği bir kez tasarlarsın.</p>
+<h2>Kirli veri örneği</h2>
+<p>Anadolu Market'in web formundan gelen kayıt verisi şöyle görünüyor (Kesit SQL’deki <code>raw_signups</code> tablosu):</p>
+<div class="tbl-wrap"><table>
+<tr><th>id</th><th>full_name</th><th>email</th><th>city</th><th>signup_date</th></tr>
+<tr><td>3</td><td>"  Elif Kaya "</td><td>ELIF.KAYA@GMAIL.COM</td><td>istanbul</td><td>2024-03-05</td></tr>
+<tr><td>3</td><td>"  Elif Kaya "</td><td>elif.kaya@gmail.com</td><td>istanbul</td><td>2024-03-05</td></tr>
+<tr><td>7</td><td>MEHMET DEMİR</td><td>mehmet.demir@gmail.com</td><td>" Ankara"</td><td>14.07.2024</td></tr>
+</table></div>
+<h2>Temizlik adımları</h2>
+<ol>
+<li><b>Veri türlerini belirle:</b> Sütun başlığındaki simgeye tıkla. Tarih, Tam Sayı, Ondalık Sayı, Metin. Yanlış tür, ileride en çok hata çıkaran şeydir.</li>
+<li><b>Kırp ve temizle:</b> Dönüştür → Biçim → <b>Kırp</b> (baştaki ve sondaki boşlukları siler) ve <b>Temizle</b> (yazdırılamayan karakterleri siler).</li>
+<li><b>Büyük/küçük harf:</b> Biçim → <b>Her Sözcüğün İlk Harfi Büyük</b> (ad soyad için), <b>küçük harf</b> (e-posta için).</li>
+<li><b>Değerleri değiştir:</b> “istanbul” → “İstanbul”. Türkçe büyük İ/ı harflerine dikkat.</li>
+<li><b>Yinelenenleri kaldır:</b> Anahtar sütunu (id ya da e-posta) seçip Giriş → Satırları Kaldır → <b>Yinelenenleri Kaldır</b>.</li>
+<li><b>Karışık tarih biçimi:</b> Sütun türünü <b>Yerel ayarı kullanarak</b> Tarih'e çevir (Türkçe, gg.aa.yyyy) ya da önce metni ayrıştır.</li>
+<li><b>Sütunu böl:</b> “Ad Soyad” sütununu Sınırlayıcıya göre böl → en sağdaki boşluk: Ad ve Soyad.</li>
+</ol>
+<h2>Arka plandaki M kodu</h2>
+<pre class="m">let
+    Kaynak = Csv.Document(File.Contents("kayitlar.csv"), [Delimiter=",", Encoding=65001]),
+    Basliklar = Table.PromoteHeaders(Kaynak),
+    Kirpilmis = Table.TransformColumns(Basliklar, {{"full_name", Text.Trim}, {"city", Text.Trim}}),
+    BuyukHarf = Table.TransformColumns(Kirpilmis, {{"full_name", Text.Proper}, {"email", Text.Lower}}),
+    Tekil = Table.Distinct(BuyukHarf, {"email"}),
+    Turler = Table.TransformColumnTypes(Tekil, {{"id", Int64.Type}, {"signup_date", type date}}, "tr-TR")
+in
+    Turler</pre>
+<p>Her satır bir adımdır; bir adım bir önceki adımın adını girdi olarak alır. <code>let … in</code> bloğunun sonundaki ad, sorgunun çıktısıdır.</p>
+<div class="tip"><b>Sütun kalitesi</b>Görünüm sekmesinde <b>Sütun kalitesi</b>, <b>Sütun dağılımı</b> ve <b>Sütun profili</b>ni aç. Her sütunun yüzde kaçının geçerli, hatalı ya da boş olduğunu, kaç farklı değeri olduğunu anında görürsün. Varsayılan olarak ilk 1000 satıra bakar; alt çubuktan “Tüm veri kümesine göre sütun profili oluşturma”yı seçebilirsin.</div>
+<div class="warn"><b>Erken temizle, geç hesapla</b>Satır düzeyinde düzeltmeleri (boşluk, tür, harf) Power Query'de yap. Toplama ve oran gibi hesapları DAX ölçülerine bırak.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-temel">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../veri-alma/">← Veri alma ve bağlantı modları</a><a href="../model-temel/">Veri modelleme: yıldız şema ve ilişkiler →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

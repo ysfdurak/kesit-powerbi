@@ -1,0 +1,60 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek | Kesit Power BI</title><meta name="description" content="Varsayılan modelin kalkması, modeli lakehouse üstünde oluşturmak, Direct Lake’in iki biçimi arasında karar, çerçeveleme ve otomatik güncelleme, kapasite…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-anlam-modeli/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek"><meta property="og:description" content="Varsayılan modelin kalkması, modeli lakehouse üstünde oluşturmak, Direct Lake’in iki biçimi arasında karar, çerçeveleme ve otomatik güncelleme, kapasite…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-anlam-modeli/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek","description":"Varsayılan modelin kalkması, modeli lakehouse üstünde oluşturmak, Direct Lake’in iki biçimi arasında karar, çerçeveleme ve otomatik güncelleme, kapasite…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-anlam-modeli/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek</h1><p class="st-l">Varsayılan modelin kalkması, modeli lakehouse üstünde oluşturmak, Direct Lake’in iki biçimi arasında karar, çerçeveleme ve otomatik güncelleme, kapasite sınırları, izinler, Desktop ve web modelleme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-anlam-modeli">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Altın tablolar hazır. Şimdi rapor yazarlarına anlam katmanı gerekiyor. Power BI’ın modeli Fabric’te de <b>anlam modeli</b>dir; ölçü ve ilişki aynıdır. Değişen, verinin modele nasıl geldiğidir. Depolama modlarının mimari karşılaştırması “Kurumsal model” dersinde; burada modeli <b>kurmak ve işletmek</b> var.</p>
+<h2>Model kurmak</h2>
+<p>Learn’e göre lakehouse ve ambarlarda varsayılan anlam modeli 5 Eylül 2025’ten sonra otomatik oluşturulmuyor. Akış:</p>
+<ol><li>Lakehouse ya da ambarda yeni bir anlam modeli oluştur ve tabloları seç. Service ya da Desktop’tan kurulabilir; hangi Direct Lake biçiminin oluştuğunu model ayarlarından kontrol et, arayüz değişebilir.</li><li>İlişkileri kur, tarih tablosunu işaretle.</li><li>Ölçüleri yaz. DAX aynıdır.</li><li>Biçim, görüntüleme klasörü, açıklama, gizli sütunlar.</li><li>RLS varsa rol ve üye; sınamayı Görüntüleyici ile yap.</li></ol>
+<p>Çalışma alanım’da Direct Lake modeli olmaz. Model, kaynakla aynı bölgede olmalıdır. Birden çok Fabric kaynağı OneLake biçiminde olur.</p>
+<h2>Hangi Direct Lake?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL</th></tr>
+<tr><td>Kaynak</td><td>Bir ya da çok Fabric öğesi</td><td>Tek öğenin SQL uç noktası</td></tr>
+<tr><td>DirectQuery’ye düşme</td><td>Hiç; sınır aşılırsa sorgu hata verir</td><td>Var; görünüm, SQL RLS, sınır aşımı</td></tr>
+<tr><td>SQL görünümü</td><td>Desteklenmez (somut değilse)</td><td>DirectQuery’ye düşer</td></tr>
+<tr><td>SQL tarafı RLS/OLS</td><td>Uygulanmaz</td><td>RLS düşürür; OLS hata verebilir</td></tr>
+<tr><td>Import ile bileşik</td><td>Var</td><td>Aynı modelde yok</td></tr>
+<tr><td>Hesaplanmış sütun</td><td>Yalnız kullanıcı bağlamı (önizleme)</td><td>Yok (hesaplama grubu, alan parametresi var)</td></tr>
+<tr><td>Otomatik tarih/saat</td><td>Var</td><td>Yok</td></tr></table></div>
+<p>Pratik karar: SQL güvenliğini model kapısında istemiyor ve tahmin edilebilir performans istiyorsan OneLake biçimi. Bir SQL görünümü üzerinde çalışmak zorundaysan ya da mevcut uç nokta güvenliği şartsa SQL biçimi; ama düşmeyi izle. Kalıcı çözüm görünümü Delta tablosuna çevirmektir.</p>
+<h2>Çerçeveleme ve otomatik güncelleme</h2>
+<p>Direct Lake’te “yenileme”, modelin hangi Delta dosyalarına baktığını güncellemektir (çerçeveleme, framing). Veri kopyalanmaz, saniyeler sürer.</p>
+<div class="tbl-wrap"><table><tr><th>Yöntem</th><th>Ne zaman?</th><th>Dikkat</th></tr>
+<tr><td>Otomatik güncellemeler (açık)</td><td>Delta değiştikçe yansısın</td><td>Toplu yazma ortasında yarım veri görünebilir</td></tr>
+<tr><td>Otomatik kapalı + hat sonunda yenileme</td><td>Veri bittikten sonra tek seferde</td><td>Rakamlar tutarlı değişir; gece hatları için iyi</td></tr>
+<tr><td>Zamanlanmış</td><td>Düzenli, olaysız</td><td>Hattan bağımsızsa sıra riski</td></tr></table></div>
+<p>Gece hattında otomatik güncellemeyi kapatmak yaygın bir karardır: gümüş ve altın yazılırken rapor yarım veri göstermez, hat sonundaki anlam modeli yenileme etkinliği çerçeveyi bir kerede değiştirir. Çerçeveleme sonrası ilk sorgu soğuktur; sütunlar belleğe yüklenir.</p>
+<h2>Kapasite sınırları (guardrail)</h2>
+<div class="tbl-wrap"><table><tr><th>SKU</th><th>Tablo başına dosya/satır grubu</th><th>Tablo başına satır</th><th>Model boyutu</th><th>Bellek</th></tr>
+<tr><td>F2, F4, F8</td><td>1.000</td><td>300 milyon</td><td>10 GB</td><td>3 GB</td></tr>
+<tr><td>F16</td><td>1.000</td><td>300 milyon</td><td>20 GB</td><td>5 GB</td></tr>
+<tr><td>F32</td><td>1.000</td><td>300 milyon</td><td>40 GB</td><td>10 GB</td></tr>
+<tr><td>F64</td><td>5.000</td><td>1,5 milyar</td><td>Sınırsız</td><td>25 GB</td></tr>
+<tr><td>F128</td><td>5.000</td><td>3 milyar</td><td>Sınırsız</td><td>50 GB</td></tr></table></div>
+<p>Learn, Eylül 2026. Bellek sınırı gerçek bir “guardrail” değildir: aşılırsa yavaşlar. Sınır aşılınca davranış biçime göre değişir: OneLake biçiminde yenileme başarısız olur, tablo iyileştirilene kadar sorgu çalışmaz; SQL biçiminde düşme açıksa DirectQuery ile çalışır, uyarıyla. Küçük dosyaları birleştirmek (OPTIMIZE) çoğu zaman SKU büyütmekten önce gelir.</p>
+<h2>İzinler ve ağ</h2>
+<ul><li>Kullanıcının modeli sorgulaması için modelde okuma izni yeterli değildir; biçime göre Delta dosyalarına ya da uç noktaya da erişim gerekir. Uygulamayla dağıtımda “Direct Lake izin gereksinimleri” sayfasını oku.</li><li>Bağlantı yalnız bulut bağlantısıdır; şirket içi ağ geçidi kullanılmaz.</li><li>SQL biçiminde kimlik, sahibin kimliğidir; son kullanıcı kimliğiyle geçiş için OneLake biçimi ya da uç noktanın kullanıcı kimliği modu gerekir (“OneLake” dersi).</li></ul>
+<h2>Nereden düzenlenir?</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>Güçlü yanı</th><th>Sınır</th></tr>
+<tr><td>Desktop canlı düzenleme</td><td>Tanıdık arayüz, TMDL görünümü, hesaplama grubu, alan parametresi</td><td>Değişiklik doğrudan Service’teki modele gider; dikkatli ol</td></tr>
+<tr><td>Web modelleme</td><td>Tarayıcıda, Copilot (önizleme)</td><td>Doğrulama sınırlı: kardinalite ve yön sorguyla denetlenmez</td></tr>
+<tr><td>XMLA, Tabular Editor</td><td>Toplu değişiklik, BPA</td><td>Kapasite ve okuma-yazma ayarı</td></tr>
+<tr><td>Git, PBIP</td><td>Sürüm, inceleme</td><td>“Yerel geliştirme” ve “Yaşam döngüsü” dersleri</td></tr></table></div>
+<p>Canlı düzenleme, üretim modeline doğrudan yazmaktır. Geliştirmede kendi çalışma alanını kullan.</p>
+<h2>DAX aynı, kontrol farklı</h2>
+<p>Bu uygulamadaki ölçülerin hepsi Direct Lake’te de geçerlidir. Ama model kurarken bakılacak şey başka: sütun türleri kaynakla aynı mı (ilişkilerde tür birebir olmalı), bir tarafın anahtarı tekil mi, GUID ve ikili türler var mı? Tekilliği sorguyla sınarsın:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(Urunler),
+    "Tekil Anahtar", DISTINCTCOUNT(Urunler[UrunNo]),
+    "Yetim Satış Satırı", COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Urunler[UrunNo]))))
+)</pre>
+<div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Denemede “Ambar ödevi”ndeki tablolardan yeni bir anlam modeli oluştur, üç ilişki kur, iki ölçü ekle ve bir rapor sayfası çiz. Toplam: Net Satış 1.250.772,45 çıkmalı. Otomatik güncellemeleri kapatıp bir hat sonunda yenilemeyi dene. F4 sınırları küçük; büyük veri denemesi yapma.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-anlam-modeli">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-pipeline/">← İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata</a><a href="../fabric-copilot/">Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,167 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: tedarik — üret mi, satın al mı? | Kesit Power BI</title><meta name="description" content="Satın alma ve üretim ekibi bakım ürünleri hattı için üç seçeneği kıyaslıyor: mevcut tedarikçi, yeni tedarikçi teklifi ve kendi üretim. Ürünlerin birim…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-tedarik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: tedarik — üret mi, satın al mı?"><meta property="og:description" content="Satın alma ve üretim ekibi bakım ürünleri hattı için üç seçeneği kıyaslıyor: mevcut tedarikçi, yeni tedarikçi teklifi ve kendi üretim. Ürünlerin birim…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-tedarik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: tedarik — üret mi, satın al mı?","description":"Satın alma ve üretim ekibi bakım ürünleri hattı için üç seçeneği kıyaslıyor: mevcut tedarikçi, yeni tedarikçi teklifi ve kendi üretim. Ürünlerin birim…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-tedarik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Vaka Çalışmaları</span><h1>Vaka: tedarik — üret mi, satın al mı?</h1><p class="st-l">Satın alma ve üretim ekibi bakım ürünleri hattı için üç seçeneği kıyaslıyor: mevcut tedarikçi, yeni tedarikçi teklifi ve kendi üretim. Ürünlerin birim maliyeti ve satış adetleriyle her seçeneğin toplam maliyetini, artımlı ve batık maliyet ayrımını, adet parametresiyle ne olur analizini, başabaş adedini ve senaryoları hesaplar, kararı varsayımlarıyla birlikte sunarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-tedarik">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Satın alma müdürü ve finans ekibi. Kozmetik kategorisindeki dört bakım ürünü (Nemlendirici Krem, Güneş Kremi SPF50, Şampuan, Dudak Balmı) son iki yılda hızla büyüdü. Bu “bakım hattı” için iki yeni seçenek masada.</p>
+<p><b>Hangi karar?</b> 2025’te bu hattı kimden ve nasıl tedarik edeceğiz? Brifin soruları:</p>
+<ol>
+<li>Bugünkü adetle her seçeneğin yıllık toplam maliyeti ne?</li>
+<li>Hangi maliyetler karara girmeli, hangileri girmemeli?</li>
+<li>Kendi üretim hangi adetten sonra kâra geçer (başabaş)?</li>
+<li>Satış büyürse ya da durursa karar değişir mi?</li>
+</ol>
+<p>Ne olur parametresinin temeli <b>Finansal raporlama</b> dersinin “Ne olur parametresiyle duyarlılık” bölümünde ve <b>Segmentasyon</b> dersinde var; burada onu bir yatırım kararına bağlıyoruz.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Kaynak</th><th>Kullanım</th></tr>
+<tr><td><code>Urunler[BirimMaliyet]</code></td><td>Bugünkü tedarikçiden alış fiyatı. <code>Satislar[Maliyet]</code> = adet × birim maliyet.</td></tr>
+<tr><td><code>Satislar</code></td><td>Satılan adet (<code>[Satılan Adet]</code>) ve satılan malın maliyeti (<code>[Net Maliyet]</code>); iptaller hariç.</td></tr>
+<tr><td>Teklif tablosu (örnek)</td><td>Seçeneklerin yıllık sabit maliyeti, birim maliyet oranı ve en az sipariş adedi. Ders için uydurulmuştur.</td></tr>
+</table></div>
+<pre class="dax">Teklifler =
+DATATABLE(
+    "Secenek", STRING, "YillikSabit", CURRENCY, "BirimOran", DOUBLE, "MinAdet", INTEGER,
+    {
+        {"Mevcut tedarikçi", 0, 1.00, 0},
+        {"Yeni tedarikçi", 3000, 0.88, 250},
+        {"Kendi üretim", 18000, 0.55, 0}
+    }
+)</pre>
+<p><code>BirimOran</code>, bugünkü birim maliyete göre çarpandır: yeni tedarikçi her ürünü %12 ucuza veriyor (0,88) ama yıllık 3.000 ₺ sözleşme bedeli istiyor ve yılda en az 250 adet şartı koyuyor. Kendi üretimde birim maliyet (hammadde, ambalaj, enerji) bugünkünün %55’i, ama yıllık 18.000 ₺ sabit gider var. Oran kullanmak, dört ürünün farklı maliyetlerini tek bir kuralla taşımamızı sağlar.</p>
+<p><b>Hat bugün:</b> 2024’te 299 adet satıldı, satılan malın maliyeti 39.072 ₺, satış 62.219 ₺. Ortalama birim maliyet 130,68 ₺. 2023’te 143 adet satılmıştı.</p>
+<pre class="dax">Hat Satın Alma Maliyeti =
+CALCULATE([Net Maliyet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+Hat Adedi =
+CALCULATE([Satılan Adet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+Hat Birim Maliyeti =
+DIVIDE([Hat Satın Alma Maliyeti], [Hat Adedi])</pre>
+<p><b>Veri sınırları:</b> Model geçmiş alış fiyatlarını tutmuyor; <code>BirimMaliyet</code> bugünkü fiyattır ve geçmiş yıllara da uygulanır. Ürün karmasının 2025’te 2024’teki gibi kalacağını varsayıyoruz. Teklif rakamları örnektir.</p>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Hangi maliyet karara girer?</b> Kendi üretim için ekip şu kalemleri listeledi:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kalem (yıllık)</th><th>Tutar</th><th>Tür</th><th>Karara girer mi?</th></tr>
+<tr><td>Küçük üretim alanı kirası</td><td>9.600 ₺</td><td>Artımlı</td><td>Evet</td></tr>
+<tr><td>Yarı zamanlı teknisyen</td><td>7.200 ₺</td><td>Artımlı</td><td>Evet</td></tr>
+<tr><td>Ruhsat ve kalite testleri</td><td>1.200 ₺</td><td>Artımlı</td><td>Evet</td></tr>
+<tr><td>Geçen yıl ödenen formül geliştirme</td><td>12.000 ₺</td><td>Batık</td><td>Hayır</td></tr>
+<tr><td>Merkez depo kirasından dağıtılan pay</td><td>6.000 ₺</td><td>Dağıtılmış</td><td>Hayır</td></tr>
+</table></div>
+<ul>
+<li><b>Artımlı (incremental) maliyet:</b> yalnızca bu seçeneği seçersek ortaya çıkar. Toplam 18.000 ₺.</li>
+<li><b>Batık (sunk) maliyet:</b> çoktan harcandı; hangi seçeneği seçersek seçelim geri gelmez. Karara katılmaz.</li>
+<li><b>Dağıtılmış maliyet:</b> depo kirası zaten ödeniyor ve seçenekle değişmez. Muhasebe bunu hatta dağıtabilir ama karar için farksızdır.</li>
+</ul>
+<p><b>Bulgu:</b> Bütün kalemler karara katılsaydı sabit gider 36.000 ₺ olur ve başabaş adedi 612’ye çıkardı: kendi üretim hiç cazip görünmezdi. Doğru sabit gider 18.000 ₺; başabaş 306 adet. Yanlış sınıflama kararı tek başına değiştirebilir.</p>
+
+<p><b>Adım 2: Bugünkü adetle toplam maliyet.</b> Satış fiyatı üç seçenekte de aynı olduğu için gelir karara girmez; yalnızca maliyeti kıyaslarız. Sabit gider yıllıktır; ölçü aya ya da çeyreğe bakılırken de doğru çalışsın diye sabit gideri aylara yayarız (aylık 1.500 ₺):</p>
+<pre class="dax">Kendi Üretim Maliyeti =
+VAR Alim = CALCULATE([Net Maliyet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+VAR Ay = DISTINCTCOUNT(Tarih[YilAy])
+RETURN IF(NOT ISBLANK(Alim), 1500 * Ay + 0.55 * Alim)
+Üretim Tasarrufu =
+CALCULATE([Net Maliyet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"}) - [Kendi Üretim Maliyeti]</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek (2024, 299 adet)</th><th>Sabit</th><th>Değişken</th><th>Toplam</th><th>Bugüne göre</th></tr>
+<tr><td>Mevcut tedarikçi</td><td>0 ₺</td><td>39.072 ₺</td><td>39.072 ₺</td><td>—</td></tr>
+<tr><td><b>Yeni tedarikçi</b></td><td>3.000 ₺</td><td>34.383 ₺</td><td><b>37.383 ₺</b></td><td>−1.689 ₺</td></tr>
+<tr><td>Kendi üretim</td><td>18.000 ₺</td><td>21.490 ₺</td><td>39.490 ₺</td><td>+418 ₺</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Bugünkü adetle en ucuz seçenek yeni tedarikçi (yılda 1.689 ₺ tasarruf, %4,3). Kendi üretim 2024’te 418 ₺ pahalıya gelirdi; 2023’ün 143 adedinde ise 9.494 ₺ pahalıya. Üretimin avantajı adet arttıkça büyür.</p>
+
+<p><b>Adım 3: Adet parametresi.</b> Kararın adete ne kadar duyarlı olduğunu görmek için Power BI’da <b>Modelleme → Yeni parametre → Sayısal aralık (Numeric range)</b> ile bir parametre kurulur. Arka planda bu bir <code>GENERATESERIES</code> tablosu ve bir <code>SELECTEDVALUE</code> ölçüsüdür:</p>
+<pre class="dax" data-notry>Yıllık Adet = GENERATESERIES(0, 800, 25)
+Seçili Adet = SELECTEDVALUE('Yıllık Adet'[Value], 299)
+Senaryo Kendi Üretim =
+18000 + 0.55 * [Seçili Adet] * [Hat Birim Maliyeti]
+Senaryo Yeni Tedarikçi =
+IF([Seçili Adet] &gt;= 250, 3000 + 0.88 * [Seçili Adet] * [Hat Birim Maliyeti])</pre>
+<p>Kullanıcı kaydırıcıyla adedi değiştirdikçe kartlar ve çizgi grafiği güncellenir. Parametre tablosu modelde hiçbir tabloyla ilişkili değildir (bağlantısız tablo). Aynı eğriyi sorguyla da üretebiliriz:</p>
+<pre class="dax">EVALUATE
+VAR Birim = CALCULATE(DIVIDE([Net Maliyet], [Satılan Adet]), Tarih[Yil] = 2024, Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+RETURN
+    ADDCOLUMNS(
+        GENERATESERIES(150, 450, 50),
+        "Mevcut", [Value] * Birim,
+        "Yeni", IF([Value] &gt;= 250, 3000 + 0.88 * [Value] * Birim),
+        "Kendi", 18000 + 0.55 * [Value] * Birim,
+        "En ucuz",
+            VAR M = [Value] * Birim
+            VAR Y = IF([Value] &gt;= 250, 3000 + 0.88 * [Value] * Birim, M)
+            VAR K = 18000 + 0.55 * [Value] * Birim
+            RETURN SWITCH(TRUE(), K &lt;= MIN(M, Y), "Kendi üretim", Y &lt; M, "Yeni tedarikçi", "Mevcut tedarikçi")
+    )</pre>
+<p><b>Bulgu:</b> 150 ve 200 adette mevcut tedarikçi en ucuz (yeni tedarikçi 250 adet şartı yüzünden seçilemez). 250 ve 300 adette yeni tedarikçi, 350 adetten itibaren kendi üretim önde. 450 adette kendi üretim mevcut tedarikçiye göre 8.462 ₺ daha ucuz.</p>
+
+<p><b>Adım 4: Başabaş adedi.</b> İki seçeneğin maliyeti eşit olduğunda: sabit gider farkı = adet × birim maliyet farkı. Buradan adet = sabit gider farkı ÷ (birim oran farkı × birim maliyet).</p>
+<pre class="dax">Başabaş Adedi (Üret / Mevcut) =
+VAR Birim =
+    DIVIDE(
+        CALCULATE([Net Maliyet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"}),
+        CALCULATE([Satılan Adet], Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+    )
+RETURN DIVIDE(18000, (1 - 0.55) * Birim)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Karşılaştırma</th><th>Sabit fark</th><th>Birim fark</th><th>Başabaş</th></tr>
+<tr><td>Yeni tedarikçi ↔ Mevcut</td><td>3.000 ₺</td><td>0,12 × 130,68 ₺</td><td>192 adet (ama en az 250 şartı var)</td></tr>
+<tr><td>Kendi üretim ↔ Mevcut</td><td>18.000 ₺</td><td>0,45 × 130,68 ₺</td><td><b>307 adet</b></td></tr>
+<tr><td>Kendi üretim ↔ Yeni tedarikçi</td><td>15.000 ₺</td><td>0,33 × 130,68 ₺</td><td><b>348 adet</b></td></tr>
+</table></div>
+<p><b>Bulgu:</b> Asıl rakip yeni tedarikçi olduğu için kendi üretimin geçmesi gereken eşik 348 adet. 2024’ün 299 adedi bunun %14 altında. Başabaş adedi ürün karmasına da bağlı: ortalama birim maliyet 2023’te 132,19 ₺ olduğu için o yılın karmasıyla eşik 303 adet olurdu. Ucuz ürünlerin (Dudak Balmı, Şampuan) payı arttıkça birim maliyet düşer ve eşik yükselir.</p>
+
+<p><b>Adım 5: Senaryolar.</b> Üç 2025 senaryosunu teklif tablosuyla çaprazlarız. <code>GENERATE</code>, her senaryo satırını her seçenekle eşleştirir:</p>
+<pre class="dax">EVALUATE
+VAR Teklifler = DATATABLE(
+        "Secenek", STRING, "YillikSabit", CURRENCY, "BirimOran", DOUBLE, "MinAdet", INTEGER,
+        {
+            {"Mevcut tedarikçi", 0, 1.00, 0},
+            {"Yeni tedarikçi", 3000, 0.88, 250},
+            {"Kendi üretim", 18000, 0.55, 0}
+        }
+    )
+VAR Birim = CALCULATE(DIVIDE([Net Maliyet], [Satılan Adet]), Tarih[Yil] = 2024, Urunler[Urun] IN {"Nemlendirici Krem", "Güneş Kremi SPF50", "Şampuan", "Dudak Balmı"})
+VAR Senaryolar =
+    DATATABLE("Senaryo", STRING, "Adet", INTEGER,
+        {{"Durgun", 299}, {"Temel (+%25)", 374}, {"İyimser (+%50)", 449}})
+RETURN
+    ADDCOLUMNS(
+        GENERATE(Senaryolar, Teklifler),
+        "Uygun", IF([Adet] &gt;= [MinAdet], "Evet", "Hayır"),
+        "Toplam Maliyet", [YillikSabit] + [BirimOran] * [Adet] * Birim
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Senaryo (adet)</th><th>Mevcut</th><th>Yeni tedarikçi</th><th>Kendi üretim</th><th>En ucuz</th></tr>
+<tr><td>Durgun (299)</td><td>39.072 ₺</td><td><b>37.383 ₺</b></td><td>39.490 ₺</td><td>Yeni tedarikçi</td></tr>
+<tr><td>Temel, +%25 (374)</td><td>48.873 ₺</td><td>46.008 ₺</td><td><b>44.880 ₺</b></td><td>Kendi üretim (1.128 ₺ farkla)</td></tr>
+<tr><td>İyimser, +%50 (449)</td><td>58.673 ₺</td><td>54.633 ₺</td><td><b>50.270 ₺</b></td><td>Kendi üretim (4.362 ₺ farkla)</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Karar büyümeye bağlı. Satış yerinde sayarsa yeni tedarikçi, %25 ya da daha fazla büyürse kendi üretim kazanıyor. Hat 2024’te iki katından fazla büyüdü (143’ten 299’a); ama bu hızın sürmesi garanti değil.</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Sol üst</td><td>Dilimleyici (parametre)</td><td>Yıllık Adet kaydırıcısı (varsayılan 299)</td></tr>
+<tr><td>Üst şerit</td><td>3 kart</td><td>Senaryo maliyeti: Mevcut, Yeni tedarikçi, Kendi üretim; en ucuz seçenek koşullu renkte</td></tr>
+<tr><td>Orta</td><td>Çizgi grafik</td><td>X: Yıllık Adet; üç maliyet çizgisi; 307 ve 348’de sabit çizgiler; bugünkü adet (299) işaretli</td></tr>
+<tr><td>Sağ</td><td>Tablo</td><td>Senaryo × seçenek toplam maliyeti, Uygun sütunu</td></tr>
+<tr><td>Alt</td><td>Metin kutusu</td><td>Varsayımlar listesi (aşağıda) ve kaynakları</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>2025 için öneri:</b> yeni tedarikçiyle bir yıllık sözleşme. Bugünkü adetle yılda 1.689 ₺ tasarruf; 250 adet şartı 2024 adediyle (299) karşılanıyor.</li>
+<li><b>Kendi üretimi tetikleyiciye bağla:</b> son 12 ayın adedi 348’i geçerse (temel senaryo 374) kendi üretim yeni tedarikçiden ucuza gelir. Raporda bu eşiği izleyen bir kart olsun.</li>
+<li><b>Batık ve dağıtılmış maliyeti karara katma:</b> katılsaydı başabaş 612 adet görünür ve doğru seçenek haksız yere elenirdi.</li>
+<li><b>Varsayımları kararın yanına yaz:</b> (a) ürün karması 2024 gibi kalır; (b) satış fiyatı seçenekten bağımsız; (c) teklif rakamları örnektir ve bir yıl sabit; (d) kalite, kapasite ve teslim riski bu hesapta yok. Bu dört varsayımdan biri değişirse hesabı parametreyle yeniden yap.</li>
+<li><b>Sayısal olmayan riskler:</b> kendi üretimde ruhsat süresi ve kalite sorumluluğu şirkete geçer; yeni tedarikçide tek kaynağa bağımlılık artar. Karar sunumunda bunları ayrı bir satırda göster.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-tedarik">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-pazar/">← Vaka: pazar payı ve rakip karşılaştırması</a><a href="../vaka-kredi/">Vaka: kredi portföyü ve geri ödeme planı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

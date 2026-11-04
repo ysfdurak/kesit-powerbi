@@ -1,0 +1,98 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar | Kesit Power BI</title><meta name="description" content="Raporu kod gibi yönetmek: proje biçimi, sürüm denetimi, ortamlar arası dağıtım, etki analizi ve yeniden kullanılabilir varlıklar."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yasam-dongusu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar"><meta property="og:description" content="Raporu kod gibi yönetmek: proje biçimi, sürüm denetimi, ortamlar arası dağıtım, etki analizi ve yeniden kullanılabilir varlıklar."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yasam-dongusu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar","description":"Raporu kod gibi yönetmek: proje biçimi, sürüm denetimi, ortamlar arası dağıtım, etki analizi ve yeniden kullanılabilir varlıklar.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yasam-dongusu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar</h1><p class="st-l">Raporu kod gibi yönetmek: proje biçimi, sürüm denetimi, ortamlar arası dağıtım, etki analizi ve yeniden kullanılabilir varlıklar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yasam-dongusu">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>PBIP: rapor bir klasör olur</h2>
+<p>Dosya → Farklı kaydet → <b>Power BI Projesi (.pbip)</b>. Tek bir ikili .pbix yerine bir klasör yapısı oluşur:</p>
+<pre class="dax" data-notry>AnadoluMarket.pbip
+AnadoluMarket.SemanticModel/
+    definition/            -- TMDL: tablolar, ölçüler, ilişkiler metin olarak
+        tables/Satislar.tmdl
+        relationships.tmdl
+AnadoluMarket.Report/
+    definition/            -- PBIR: sayfalar ve görseller JSON olarak</pre>
+<p>Model <b>TMDL</b> (Tabular Model Definition Language) ile yazılır; bir ölçü şöyle görünür:</p>
+<pre class="dax" data-notry>measure 'Net Satış' = CALCULATE([Toplam Satış], Satislar[Durum] &lt;&gt; "İptal")
+    formatString: #,0 ₺
+    displayFolder: Temel</pre>
+<p>Artık her değişiklik satır satır görülebilir, kod incelemesi (pull request) yapılabilir, iki geliştiricinin değişiklikleri birleştirilebilir. Desktop'taki <b>TMDL görünümü</b> modeli doğrudan metin olarak düzenlemeyi sağlar.</p>
+<h2>Git entegrasyonu</h2>
+<p>Fabric çalışma alanı ayarları → <b>Git tümleştirmesi</b>: Azure DevOps ya da GitHub deposu ve dalı bağlanır. Çalışma alanındaki öğeler depoya işlenir (commit), depodaki değişiklikler çalışma alanına alınır (update). Tipik akış: her geliştirici kendi dalında Desktop'ta çalışır → pull request → ana dal → bağlı geliştirme çalışma alanı güncellenir.</p>
+<h2>Dağıtım işlem hatları</h2>
+<ol>
+<li>Geliştirme → Test → Üretim aşamaları, her biri bir çalışma alanı.</li>
+<li><b>Dağıt</b>: içerik bir sonraki aşamaya kopyalanır; aşamalar arasında fark karşılaştırılır.</li>
+<li><b>Dağıtım kuralları</b>: Test'te test veritabanı, Üretim'de canlı veritabanı (veri kaynağı ya da parametre kuralı).</li>
+<li>Otomasyon: Fabric REST API ve Azure DevOps/GitHub Actions ile.</li>
+</ol>
+<h2>Etki analizi</h2>
+<p>Bir lakehouse tablosunu, veri akışını ya da anlam modelini değiştirmeden önce <b>Soy (lineage) görünümü</b> ve <b>etki analizi</b>: bu öğeye bağlı kaç model, rapor, pano ve kullanıcı var? Değişikliği bağlı öğelerin sahiplerine bildirebilirsin.</p>
+<h2>Yeniden kullanılabilir varlıklar</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Dosya</th><th>İçerik</th><th>Kullanım</th></tr>
+<tr><td>.pbit (şablon)</td><td>Model, ölçüler, rapor; veri yok; isteğe bağlı parametre istemi</td><td>Standart rapor başlangıcı, müşteriye dağıtılan çözüm</td></tr>
+<tr><td>.pbids (veri kaynağı)</td><td>Bağlantı bilgisi (JSON)</td><td>Kullanıcı açınca doğru kaynağa bağlanmış boş rapor</td></tr>
+<tr><td>Paylaşılan anlam modeli</td><td>Yayımlanmış, onaylı model</td><td>Birçok raporun tek doğru kaynağı (Derleme izni ile)</td></tr>
+<tr><td>Tema JSON</td><td>Renk ve stil</td><td>Kurumsal görünüm</td></tr>
+</table></div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Dal stratejisi: kim nerede çalışır?</h2>
+<p>BI ekibi üç kişi: biri yeni RFM ölçüleri yazıyor, biri tarih tablosunu düzeltiyor, biri rapor sayfalarını yeniliyor. Hepsi aynı geliştirme çalışma alanına yayımlarsa son yayımlayan diğerlerinin işini ezer. Git tümleştirmesinde temel fikir şudur: <b>bir çalışma alanı bir dala bağlıdır</b>; dal değiştirmek, bağlı çalışma alanının içeriğini o dalın içeriğine göre güncellemektir.</p>
+<div class="tbl-wrap"><table><tr><th>Strateji</th><th>Nasıl işler?</th><th>Ne zaman uygun?</th></tr>
+<tr><td>Ana dal + Desktop'ta kısa özellik dalları</td><td>Geliştirici dalı yerelde açar, PBIP'i Desktop'ta düzenler, çekme isteği (pull request) açar; birleşince Dev çalışma alanı ana daldan güncellenir</td><td>Küçük ekipler; en yaygın başlangıç</td></tr>
+<tr><td>Özellik dalı başına çalışma alanı</td><td>Kaynak denetimi panelinden “başka bir çalışma alanına dallan” ile dal ve ona bağlı bir çalışma alanı oluşur</td><td>Service'te test edilmesi gereken değişiklikler; Fabric öğeleriyle çalışan ekipler</td></tr>
+<tr><td>Doğrudan ana dala işleme</td><td>Herkes Dev çalışma alanında çalışır, oradan işler (commit)</td><td>Tek kişilik ekip; kod incelemesi yok</td></tr></table></div>
+<p>Git tümleştirmesi Azure DevOps, GitHub ve GitHub Enterprise'ın bulut sürümleriyle çalışır. Raporlar, anlam modelleri ve sayfalandırılmış raporlar Git tümleştirmesinde hâlâ <b>önizleme</b> etiketlidir; desteklenmeyen öğeler (ör. panolar) çalışma alanında kalır ama depoya yazılmaz. Desteklenmeyen öğe yok sayılır, silinmez.</p>
+<h3>Çekme isteğinde neye bakılır?</h3>
+<ul>
+<li><b>TMDL farkları:</b> ölçünün ifadesi, biçim dizesi, görüntüleme klasörü, açıklama. Bir satırlık değişiklik bir satırlık fark olarak görünmelidir.</li>
+<li><b>Gürültü:</b> diyagram yerleşimi dosyaları sık değişir ve çakışma üretir. Belgelenmemiş dosyalarda (ör. <code>diagramLayout.json</code>, <code>report.json</code>) elle değişiklik desteklenmez.</li>
+<li><b>Yasak dosyalar:</b> <code>.pbi/cache.abf</code> (yerel veri önbelleği) ve <code>.pbi/localSettings.json</code> depoya girmemeli; Desktop'ın oluşturduğu <code>.gitignore</code> bunları zaten dışlar.</li>
+</ul>
+
+<h2>Git ve dağıtım işlem hatları birlikte</h2>
+<p>Git <b>geliştirme</b> sürecini (kim neyi değiştirdi, inceleme, birleştirme), dağıtım işlem hattı ise <b>ortamlar arası taşıma</b> sürecini yönetir. Yaygın kurgu: Dev çalışma alanı Git'e bağlı; Test ve Prod çalışma alanları bir dağıtım işlem hattının aşamaları.</p>
+<ul>
+<li>İşlem hattı 2 ile 10 aşama arasında olabilir; varsayılan Geliştirme → Test → Üretim'dir.</li>
+<li>Dağıtımda kaynak aşamadaki öğe, hedefte <b>eşleştiği</b> öğenin üzerine yazar. Eşleşmemiş ama aynı ad ve türde bir öğe hedefte varsa üzerine yazılmaz; kopya oluşur. Kaynakta olmayan hedef öğeler dokunulmadan kalır.</li>
+<li><b>Dağıtım kuralları</b> ile Test'te test veritabanı, Üretim'de canlı veritabanı kullanılır (veri kaynağı ya da parametre kuralı).</li>
+<li>Dağıtım meta veriyi taşır, veriyi değil. Import modelde yeni bir tablo eklendiyse hedefte yenileme ve kimlik bilgisi ayarı gerekir; RLS rol <b>üyelikleri</b> her ortamda ayrıca yönetilir.</li>
+</ul>
+
+<h2>Tabular Editor ve Best Practice Analyzer</h2>
+<p>Best Practice Analyzer (BPA), modeli JSON olarak yazılmış kurallara göre tarar: “her ölçünün biçim dizesi olsun”, “olgu tablosundaki anahtarlar gizli olsun”, “IFERROR kullanma”, “bölmede DIVIDE kullan”, “çift yönlü ilişkiden kaçın”, “açıklaması olmayan ölçü kalmasın”. Kuralların bir kısmı otomatik düzeltme de önerir. Ekip kuralları depoda tutar; aynı kural seti hem geliştiricinin bilgisayarında hem de çekme isteğinde komut satırından çalışır ve kural ihlali birleştirmeyi durdurur.</p>
+<p>Örnek bir ihlal ve düzeltilmiş hâli:</p>
+<pre class="dax">Sipariş Başı Kâr (eski) =
+IFERROR([Brüt Kâr] / [Sipariş Sayısı], 0)
+Sipariş Başı Kâr =
+DIVIDE([Brüt Kâr], [Sipariş Sayısı])</pre>
+<p>Bu modelde iki ölçü kategori düzeyinde aynı sayıyı verir (Elektronik 596,97 ₺, Kitap 174,84 ₺). Fark kenar durumdadır: sipariş olmayan bir hücrede eski ölçü <b>0</b> döndürür ve satır matriste kalır; yeni ölçü BLANK döndürür, satır düşer. IFERROR ayrıca gerçek bir hatayı da 0'a çevirip saklar. BPA'nın bu kuralı bu yüzden yalnızca stil değil, doğruluk kuralıdır.</p>
+
+<h2>Sürüm notları ve geri alma</h2>
+<p>Üretime çıkan her değişikliğin üç sorusu olmalı: <b>Ne değişti?</b> (ölçü tanımı, biçim, yeni tablo) · <b>Kim etkileniyor?</b> (etki analizi: hangi raporlar, kaç görüntüleme) · <b>Nasıl test edildi?</b> (kırılım testi, RLS test kullanıcıları). Bunlar çekme isteği açıklamasına yazılır ve sürüm notu oradan derlenir. Kullanıcıya görünen bir iz bırakmak için modelde basit bir sürüm ölçüsü tutulabilir:</p>
+<pre class="dax">Model Sürümü =
+"2026.10-3"</pre>
+<p>Raporun alt bilgisindeki bir kart bu değeri gösterir; destek talebinde kullanıcı “hangi sürümü görüyorum?” sorusuna cevap verir.</p>
+<h3>Geri alma</h3>
+<ol>
+<li>Hatalı değişikliği Git'te geri al (revert) ve ana dala birleştir; geçmiş silinmez, yeni bir commit oluşur.</li>
+<li>Dev çalışma alanını depodan güncelle (update).</li>
+<li>İşlem hattında Test'e, sonra Üretim'e yeniden dağıt. Gerekirse yenile.</li>
+</ol>
+<p>Bu zincir, “dünkü .pbix dosyası kimdeydi?” sorusunu ortadan kaldırır. Ama geri alma, verideki değişikliği geri almaz: yanlış bir Power Query adımı yüzünden yüklenmiş veri, düzeltilmiş tanımla yeniden yenilenmelidir.</p>
+<h3>PBIP'in sınırları</h3>
+<ul>
+<li>Duyarlılık etiketleri desteklenmez; etiketli içerik için süreci ayrıca düşün (Yönetişim dersi).</li>
+<li>PBIP doğrudan OneDrive ya da SharePoint'e kaydedilemez. Windows'un 260 karakterlik yol sınırına takılmamak için depo kökünü kısa tut.</li>
+<li>Dosyalar BOM'suz UTF-8'dir ve Desktop CRLF satır sonu kullanır; Git'te <code>autocrlf</code> ayarını ekipçe aynı yap.</li>
+<li>Desktop'tan yayımlamak yerel önbelleği (veriyi) de gönderir; Git ya da işlem hattıyla dağıtım yalnızca meta veriyi taşır.</li>
+</ul>
+<div class="tip"><b>Kontrol listesi</b>Dev çalışma alanı Git'e, Test/Prod işlem hattına bağlı mı? · .gitignore önbelleği dışlıyor mu? · BPA kuralları depoda ve çekme isteğinde çalışıyor mu? · Dağıtım kuralları her aşamada doğru kaynağı gösteriyor mu? · Sürüm notu üç soruyu cevaplıyor mu? · Geri alma adımları denendi mi?</div>
+</section><div class="note"><b>Önce</b>Tek başına PBIP ve yerel Git akışı <a href="../yerel-gelistirme/">Yerel geliştirme</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-yasam-dongusu">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kurumsal-model/">← Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA</a><a href="../dp600/">DP-600 Fabric Analytics Engineer hazırlığı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

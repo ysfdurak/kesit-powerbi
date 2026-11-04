@@ -1,0 +1,287 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: kredi portföyü ve geri ödeme planı | Kesit Power BI</title><meta name="description" content="Bir finansman şirketinin risk yöneticisi on kredilik portföyün durumunu soruyor. Her kredi için PMT ve GENERATESERIES ile aylık geri ödeme planı kurar,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kredi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: kredi portföyü ve geri ödeme planı"><meta property="og:description" content="Bir finansman şirketinin risk yöneticisi on kredilik portföyün durumunu soruyor. Her kredi için PMT ve GENERATESERIES ile aylık geri ödeme planı kurar,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kredi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: kredi portföyü ve geri ödeme planı","description":"Bir finansman şirketinin risk yöneticisi on kredilik portföyün durumunu soruyor. Her kredi için PMT ve GENERATESERIES ile aylık geri ödeme planı kurar,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kredi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Vaka Çalışmaları</span><h1>Vaka: kredi portföyü ve geri ödeme planı</h1><p class="st-l">Bir finansman şirketinin risk yöneticisi on kredilik portföyün durumunu soruyor. Her kredi için PMT ve GENERATESERIES ile aylık geri ödeme planı kurar, taksiti faiz ve anaparaya ayırır, rapor tarihindeki kalan bakiyeyi, segmentlere göre gecikme oranını, sözleşme ve riskten arındırılmış portföy getirisini hesaplar ve kredi düzeyinde bir detay sayfası tasarlarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kredi">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Küçük bir finansman şirketinin risk yöneticisi. Kurul toplantısından önce portföyün 31.12.2024 itibarıyla fotoğrafını istiyor.</p>
+<p><b>Hangi karar?</b> 2025’te hangi segmentte yeni kredi verilmeye devam edilecek, hangisinde koşullar sıkılaştırılacak? Brifin soruları:</p>
+<ol>
+<li>Her kredinin aylık taksiti ne, taksitin ne kadarı faiz, ne kadarı anapara?</li>
+<li>Rapor tarihinde portföyde ne kadar bakiye var?</li>
+<li>Gecikme ve takip (30+ ve 90+ gün) bakiyenin yüzde kaçı; segmentlere göre fark var mı?</li>
+<li>Portföy ne getiriyor? Riskli krediler hesaba katılınca getiri ne olur?</li>
+<li>Bir krediye tıklayınca açılan, o kredinin ödeme planını gösteren bir detay sayfası.</li>
+</ol>
+<p>Paranın zaman değeri ve <code>PMT</code> fonksiyonunun mantığı <b>Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar</b> dersinde anlatıldı; burada tekrar etmiyoruz, onu bir portföye uyguluyoruz.</p>
+<div class="warn"><b>Bu vakadaki krediler örnektir</b>Uygulamanın modelinde kredi verisi yok. Aşağıdaki on kredi <b>ders için uydurulmuştur</b>; gerçek kişi, şirket ya da kurumla ilgisi yoktur.</div>
+
+<h2>2. Veri ve model</h2>
+<pre class="dax">Krediler =
+DATATABLE(
+    "KrediNo", STRING, "Segment", STRING, "Tutar", CURRENCY, "YillikFaiz", DOUBLE,
+    "Vade", INTEGER, "Baslangic", DATETIME, "GecikmeGun", INTEGER,
+    {
+        {"K01", "KOBİ", 400000, 0.42, 24, "2024-01-15", 0},
+        {"K02", "KOBİ", 250000, 0.45, 12, "2024-06-01", 45},
+        {"K03", "Bireysel", 120000, 0.48, 36, "2023-09-01", 0},
+        {"K04", "Bireysel", 80000, 0.50, 24, "2024-03-01", 120},
+        {"K05", "Kurumsal", 1000000, 0.38, 36, "2023-04-01", 0},
+        {"K06", "Kurumsal", 600000, 0.40, 24, "2024-09-01", 0},
+        {"K07", "KOBİ", 300000, 0.44, 18, "2023-12-01", 0},
+        {"K08", "Bireysel", 60000, 0.52, 12, "2024-02-01", 35},
+        {"K09", "KOBİ", 150000, 0.46, 24, "2024-04-01", 95},
+        {"K10", "Kurumsal", 450000, 0.39, 12, "2024-07-01", 0}
+    }
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Sütun</th><th>Anlamı</th></tr>
+<tr><td><code>Tutar</code>, <code>YillikFaiz</code>, <code>Vade</code></td><td>Kullandırılan anapara, yıllık sözleşme faizi, ay cinsinden vade. Eşit taksitli (anüite) kredi.</td></tr>
+<tr><td><code>Baslangic</code></td><td>Kullandırım tarihi; ilk taksit bir ay sonra.</td></tr>
+<tr><td><code>GecikmeGun</code></td><td>Rapor tarihinde en eski ödenmemiş taksitin gecikme günü. 30+ “gecikmede”, 90+ “takipte”.</td></tr>
+</table></div>
+<p>Modelde ikinci tablo <b>ödeme planıdır</b>: her kredi için her ay bir satır. Krediler ile ödeme planı arasında bire-çok ilişki kurulur (<code>KrediNo</code>), plandaki ödeme tarihi de tarih tablosuna bağlanır.</p>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li><b>Sözleşme bakiyesi:</b> bakiyeyi ödeme planına göre hesaplıyoruz, yani her taksitin zamanında ödendiğini varsayıyoruz. Gecikmedeki kredilerde gerçek bakiye daha yüksektir (ödenmeyen taksitler ve gecikme faizi). Gerçek işte tahsilat tablosu ayrıca gelir.</li>
+<li><b>Tarih tablosu kısa:</b> uygulamanın <code>Tarih</code> tablosu 31.12.2024’te bitiyor; portföyün son taksiti ise Eylül 2026’da. 222 taksitin 123’ü 2024’ten sonra. Modelde ödeme planını tarih tablosuna bağlayacaksan tarih tablosunu vadelerin sonuna kadar uzat.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Ödeme planı (amortisman tablosu).</b> Aylık faiz i = yıllık faiz ÷ 12, taksit A = <code>PMT(i, Vade, -Tutar)</code>. k. taksitten sonra kalan bakiye için kapalı formül: B<sub>k</sub> = P·(1+i)<sup>k</sup> − A·((1+i)<sup>k</sup> − 1) ÷ i. k. taksitin faizi bir önceki bakiyenin faizidir: B<sub>k−1</sub> × i; anapara = A − faiz. <code>GENERATE</code> her kredi satırı için <code>GENERATESERIES(1, Vade)</code> ile taksit satırlarını üretir:</p>
+<pre class="dax" data-notry>Ödeme Planı =
+GENERATE(
+    Krediler,
+    VAR i = [YillikFaiz] / 12
+    VAR A = PMT(i, [Vade], -[Tutar])
+    VAR P0 = [Tutar]
+    VAR Bas = [Baslangic]
+    RETURN
+        SELECTCOLUMNS(
+            GENERATESERIES(1, [Vade]),
+            "TaksitNo", [Value],
+            "OdemeTarihi", EDATE(Bas, [Value]),
+            "Taksit", A,
+            "Faiz", (P0 * POWER(1 + i, [Value] - 1) - A * (POWER(1 + i, [Value] - 1) - 1) / i) * i,
+            "Kalan", P0 * POWER(1 + i, [Value]) - A * (POWER(1 + i, [Value]) - 1) / i
+        )
+)</pre>
+<p>Uygulamanın motorunda <code>Krediler</code> modelde olmadığı için aynı tabloyu sorguda değişkenle deneriz. Önce tek bir kredi (K03):</p>
+<pre class="dax">EVALUATE
+VAR Krediler =
+    DATATABLE(
+        "KrediNo", STRING, "Tutar", CURRENCY, "YillikFaiz", DOUBLE, "Vade", INTEGER, "Baslangic", DATETIME,
+        {{"K03", 120000, 0.48, 36, "2023-09-01"}}
+    )
+VAR Plan = GENERATE(
+        Krediler,
+        VAR i = [YillikFaiz] / 12
+        VAR A = PMT(i, [Vade], -[Tutar])
+        VAR P0 = [Tutar]
+        VAR Bas = [Baslangic]
+        RETURN
+            SELECTCOLUMNS(
+                GENERATESERIES(1, [Vade]),
+                "TaksitNo", [Value],
+                "OdemeTarihi", EDATE(Bas, [Value]),
+                "Taksit", A,
+                "Faiz", (P0 * POWER(1 + i, [Value] - 1) - A * (POWER(1 + i, [Value] - 1) - 1) / i) * i,
+                "Kalan", P0 * POWER(1 + i, [Value]) - A * (POWER(1 + i, [Value]) - 1) / i
+            )
+    )
+RETURN
+    SELECTCOLUMNS(
+        FILTER(Plan, [TaksitNo] &lt;= 2 || [TaksitNo] = 15 || [TaksitNo] = 36),
+        "Taksit No", [TaksitNo], "Tarih", [OdemeTarihi], "Taksit", [Taksit],
+        "Faiz", [Faiz], "Anapara", [Taksit] - [Faiz], "Kalan", [Kalan]
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>K03 taksit</th><th>Tarih</th><th>Taksit</th><th>Faiz</th><th>Anapara</th><th>Kalan bakiye</th></tr>
+<tr><td>1</td><td>01.10.2023</td><td>6.346,43 ₺</td><td>4.800,00 ₺</td><td>1.546,43 ₺</td><td>118.453,57 ₺</td></tr>
+<tr><td>2</td><td>01.11.2023</td><td>6.346,43 ₺</td><td>4.738,14 ₺</td><td>1.608,28 ₺</td><td>116.845,29 ₺</td></tr>
+<tr><td>15</td><td>01.12.2024</td><td>6.346,43 ₺</td><td>3.668,52 ₺</td><td>2.677,91 ₺</td><td>89.035,02 ₺</td></tr>
+<tr><td>36</td><td>01.09.2026</td><td>6.346,43 ₺</td><td>244,09 ₺</td><td>6.102,33 ₺</td><td>0,00 ₺</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Taksit sabit, içeriği değişiyor. K03’ün ilk taksitinin %76’sı faiz; son taksitin %96’sı anapara. Kredi boyunca toplam 228.471 ₺ ödenecek; bunun 108.471 ₺’si faiz. Son satırda kalan bakiyenin tam 0 çıkması planın doğru kurulduğunun testidir; bu kontrolü her kredi için yap.</p>
+
+<p><b>Adım 2: Rapor tarihinde kalan bakiye ve 2024 faiz geliri.</b> Her kredi için rapor tarihine kadar vadesi gelen taksitleri sayar, son taksitten sonraki bakiyeyi alırız. Henüz taksiti gelmemiş kredinin bakiyesi tutarın kendisidir.</p>
+<pre class="dax">DEFINE
+VAR Krediler = DATATABLE(
+    "KrediNo", STRING, "Segment", STRING, "Tutar", CURRENCY, "YillikFaiz", DOUBLE,
+    "Vade", INTEGER, "Baslangic", DATETIME, "GecikmeGun", INTEGER,
+    {
+        {"K01", "KOBİ", 400000, 0.42, 24, "2024-01-15", 0},
+        {"K02", "KOBİ", 250000, 0.45, 12, "2024-06-01", 45},
+        {"K03", "Bireysel", 120000, 0.48, 36, "2023-09-01", 0},
+        {"K04", "Bireysel", 80000, 0.50, 24, "2024-03-01", 120},
+        {"K05", "Kurumsal", 1000000, 0.38, 36, "2023-04-01", 0},
+        {"K06", "Kurumsal", 600000, 0.40, 24, "2024-09-01", 0},
+        {"K07", "KOBİ", 300000, 0.44, 18, "2023-12-01", 0},
+        {"K08", "Bireysel", 60000, 0.52, 12, "2024-02-01", 35},
+        {"K09", "KOBİ", 150000, 0.46, 24, "2024-04-01", 95},
+        {"K10", "Kurumsal", 450000, 0.39, 12, "2024-07-01", 0}
+    }
+)
+VAR Plan = GENERATE(
+    Krediler,
+    VAR i = [YillikFaiz] / 12
+    VAR A = PMT(i, [Vade], -[Tutar])
+    VAR P0 = [Tutar]
+    VAR Bas = [Baslangic]
+    RETURN
+        SELECTCOLUMNS(
+            GENERATESERIES(1, [Vade]),
+            "TaksitNo", [Value],
+            "OdemeTarihi", EDATE(Bas, [Value]),
+            "Taksit", A,
+            "Faiz", (P0 * POWER(1 + i, [Value] - 1) - A * (POWER(1 + i, [Value] - 1) - 1) / i) * i,
+            "Kalan", P0 * POWER(1 + i, [Value]) - A * (POWER(1 + i, [Value]) - 1) / i
+        )
+)
+VAR Rapor = DATE(2024, 12, 31)
+EVALUATE
+ADDCOLUMNS(
+    Krediler,
+    "Durum", SWITCH(TRUE(), [GecikmeGun] &gt;= 90, "Takipte", [GecikmeGun] &gt;= 30, "Gecikmede", "Düzenli"),
+    "Odenen", VAR k = [KrediNo] RETURN COUNTROWS(FILTER(Plan, [KrediNo] = k &amp;&amp; [OdemeTarihi] &lt;= Rapor)) + 0,
+    "Bakiye",
+        VAR k = [KrediNo]
+        VAR t = [Tutar]
+        VAR p = FILTER(Plan, [KrediNo] = k &amp;&amp; [OdemeTarihi] &lt;= Rapor)
+        RETURN IF(ISEMPTY(p), t, MINX(p, [Kalan])),
+    "Faiz2024", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k &amp;&amp; YEAR([OdemeTarihi]) = 2024), [Faiz]),
+    "Tahsilat2025", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k &amp;&amp; YEAR([OdemeTarihi]) = 2025), [Taksit])
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kredi</th><th>Segment</th><th>Tutar</th><th>Durum</th><th>Ödenen taksit</th><th>Kalan bakiye</th><th>2024 faiz</th></tr>
+<tr><td>K01</td><td>KOBİ</td><td>400.000 ₺</td><td>Düzenli</td><td>11 / 24</td><td>256.632 ₺</td><td>130.633 ₺</td></tr>
+<tr><td>K02</td><td>KOBİ</td><td>250.000 ₺</td><td>Gecikmede (45)</td><td>6 / 12</td><td>138.749 ₺</td><td>46.268 ₺</td></tr>
+<tr><td>K03</td><td>Bireysel</td><td>120.000 ₺</td><td>Düzenli</td><td>15 / 36</td><td>89.035 ₺</td><td>50.019 ₺</td></tr>
+<tr><td>K04</td><td>Bireysel</td><td>80.000 ₺</td><td>Takipte (120)</td><td>9 / 24</td><td>58.652 ₺</td><td>26.683 ₺</td></tr>
+<tr><td>K05</td><td>Kurumsal</td><td>1.000.000 ₺</td><td>Düzenli</td><td>20 / 36</td><td>582.299 ₺</td><td>282.409 ₺</td></tr>
+<tr><td>K06</td><td>Kurumsal</td><td>600.000 ₺</td><td>Düzenli</td><td>3 / 24</td><td>548.172 ₺</td><td>58.310 ₺</td></tr>
+<tr><td>K07</td><td>KOBİ</td><td>300.000 ₺</td><td>Düzenli</td><td>12 / 18</td><td>122.209 ₺</td><td>98.934 ₺</td></tr>
+<tr><td>K08</td><td>Bireysel</td><td>60.000 ₺</td><td>Gecikmede (35)</td><td>10 / 12</td><td>12.234 ₺</td><td>17.408 ₺</td></tr>
+<tr><td>K09</td><td>KOBİ</td><td>150.000 ₺</td><td>Takipte (95)</td><td>8 / 24</td><td>114.086 ₺</td><td>41.453 ₺</td></tr>
+<tr><td>K10</td><td>Kurumsal</td><td>450.000 ₺</td><td>Düzenli</td><td>5 / 12</td><td>283.204 ₺</td><td>62.630 ₺</td></tr>
+</table></div>
+<p><b>Bulgu:</b> 3.410.000 ₺ kullandırılmış, rapor tarihinde 2.205.272 ₺ bakiye var. 2024’te vadesi gelen taksitlerin faiz kısmı 814.747 ₺, anapara kısmı 1.063.190 ₺: tahsil edilmesi gerekenin %43’ü faiz. 2025’te planlanan tahsilat 2.189.223 ₺; bunun 350.646 ₺’si (%16) 30 gün ve üstü gecikmedeki kredilerden.</p>
+
+<p><b>Adım 3: Segmentlere göre risk ve getiri.</b> Gecikme oranını kredi sayısıyla değil <b>bakiyeyle</b> ölçeriz: küçük bir kredinin gecikmesi büyük bir kredininkiyle aynı ağırlığı taşımamalı. Getiri için iki ölçü: <b>sözleşme getirisi</b> (bakiye ağırlıklı faiz) ve takipteki kredileri getirisiz sayan <b>riskten arındırılmış getiri</b>.</p>
+<pre class="dax">DEFINE
+VAR Krediler = DATATABLE(
+    "KrediNo", STRING, "Segment", STRING, "Tutar", CURRENCY, "YillikFaiz", DOUBLE,
+    "Vade", INTEGER, "Baslangic", DATETIME, "GecikmeGun", INTEGER,
+    {
+        {"K01", "KOBİ", 400000, 0.42, 24, "2024-01-15", 0},
+        {"K02", "KOBİ", 250000, 0.45, 12, "2024-06-01", 45},
+        {"K03", "Bireysel", 120000, 0.48, 36, "2023-09-01", 0},
+        {"K04", "Bireysel", 80000, 0.50, 24, "2024-03-01", 120},
+        {"K05", "Kurumsal", 1000000, 0.38, 36, "2023-04-01", 0},
+        {"K06", "Kurumsal", 600000, 0.40, 24, "2024-09-01", 0},
+        {"K07", "KOBİ", 300000, 0.44, 18, "2023-12-01", 0},
+        {"K08", "Bireysel", 60000, 0.52, 12, "2024-02-01", 35},
+        {"K09", "KOBİ", 150000, 0.46, 24, "2024-04-01", 95},
+        {"K10", "Kurumsal", 450000, 0.39, 12, "2024-07-01", 0}
+    }
+)
+VAR Plan = GENERATE(
+    Krediler,
+    VAR i = [YillikFaiz] / 12
+    VAR A = PMT(i, [Vade], -[Tutar])
+    VAR P0 = [Tutar]
+    VAR Bas = [Baslangic]
+    RETURN
+        SELECTCOLUMNS(
+            GENERATESERIES(1, [Vade]),
+            "TaksitNo", [Value],
+            "OdemeTarihi", EDATE(Bas, [Value]),
+            "Taksit", A,
+            "Faiz", (P0 * POWER(1 + i, [Value] - 1) - A * (POWER(1 + i, [Value] - 1) - 1) / i) * i,
+            "Kalan", P0 * POWER(1 + i, [Value]) - A * (POWER(1 + i, [Value]) - 1) / i
+        )
+)
+VAR Rapor = DATE(2024, 12, 31)
+VAR Ozet = ADDCOLUMNS(
+    Krediler,
+    "Durum", SWITCH(TRUE(), [GecikmeGun] &gt;= 90, "Takipte", [GecikmeGun] &gt;= 30, "Gecikmede", "Düzenli"),
+    "Odenen", VAR k = [KrediNo] RETURN COUNTROWS(FILTER(Plan, [KrediNo] = k &amp;&amp; [OdemeTarihi] &lt;= Rapor)) + 0,
+    "Bakiye",
+        VAR k = [KrediNo]
+        VAR t = [Tutar]
+        VAR p = FILTER(Plan, [KrediNo] = k &amp;&amp; [OdemeTarihi] &lt;= Rapor)
+        RETURN IF(ISEMPTY(p), t, MINX(p, [Kalan])),
+    "Faiz2024", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k &amp;&amp; YEAR([OdemeTarihi]) = 2024), [Faiz]),
+    "Tahsilat2025", VAR k = [KrediNo] RETURN SUMX(FILTER(Plan, [KrediNo] = k &amp;&amp; YEAR([OdemeTarihi]) = 2025), [Taksit])
+)
+EVALUATE
+ADDCOLUMNS(
+    DISTINCT(SELECTCOLUMNS(Krediler, "Segment", [Segment])),
+    "Bakiye", VAR s = [Segment] RETURN SUMX(FILTER(Ozet, [Segment] = s), [Bakiye]),
+    "Gecikme 30+ %", VAR s = [Segment]
+        RETURN DIVIDE(SUMX(FILTER(Ozet, [Segment] = s &amp;&amp; [GecikmeGun] &gt;= 30), [Bakiye]), SUMX(FILTER(Ozet, [Segment] = s), [Bakiye])) + 0,
+    "Takip 90+ %", VAR s = [Segment]
+        RETURN DIVIDE(SUMX(FILTER(Ozet, [Segment] = s &amp;&amp; [GecikmeGun] &gt;= 90), [Bakiye]), SUMX(FILTER(Ozet, [Segment] = s), [Bakiye])) + 0,
+    "Sözleşme Getirisi", VAR s = [Segment]
+        RETURN DIVIDE(SUMX(FILTER(Ozet, [Segment] = s), [Bakiye] * [YillikFaiz]), SUMX(FILTER(Ozet, [Segment] = s), [Bakiye])),
+    "Riskten Arındırılmış", VAR s = [Segment]
+        RETURN DIVIDE(SUMX(FILTER(Ozet, [Segment] = s &amp;&amp; [GecikmeGun] &lt; 90), [Bakiye] * [YillikFaiz]), SUMX(FILTER(Ozet, [Segment] = s), [Bakiye]))
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Segment</th><th>Kredi</th><th>Bakiye (pay)</th><th>Gecikme 30+</th><th>Takip 90+</th><th>Sözleşme getirisi</th><th>Riskten arındırılmış</th></tr>
+<tr><td>Kurumsal</td><td>3</td><td>1.413.675 ₺ (%64,1)</td><td>%0</td><td>%0</td><td>%39,0</td><td><b>%39,0</b></td></tr>
+<tr><td>KOBİ</td><td>4</td><td>631.677 ₺ (%28,6)</td><td>%40,0</td><td>%18,1</td><td>%43,8</td><td>%35,5</td></tr>
+<tr><td>Bireysel</td><td>3</td><td>159.921 ₺ (%7,3)</td><td><b>%44,3</b></td><td><b>%36,7</b></td><td><b>%49,0</b></td><td>%30,7</td></tr>
+<tr><td><b>Portföy</b></td><td>10</td><td>2.205.272 ₺</td><td>%14,7</td><td>%7,8</td><td>%41,1</td><td>%37,4</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Kâğıt üzerinde en kârlı segment Bireysel (%49,0), ama takipteki K04 hesaba katılınca getirisi %30,7’ye iniyor ve en düşük segment oluyor. Kurumsal hiç gecikme olmadan %39,0 getiriyor. Yüksek faiz riskin bedelidir; risk gerçekleşince getiri kaybolur. Portföy düzeyinde takip oranı %7,8 ve bu bakiye 2024 faizinin 68.136 ₺’sini oluşturuyor; bu faiz büyük olasılıkla tahsil edilemeyecek.</p>
+<div class="note"><b>Neden 10 kredi az?</b>Gerçek bir portföyde binlerce kredi olur ve oranlar daha durağandır. Burada tek bir kredi (K04) Bireysel segmentin takip oranını %36,7’ye çıkarıyor. Küçük segmentlerde kredi sayısını tablonun yanında göster; <b>Vaka: şehir ve temsilci kıyaslaması</b>’ndaki örnek büyüklüğü uyarısı burada da geçerli.</div>
+
+<p><b>Adım 4: Model ölçüleri ve kredi detay sayfası.</b> Gerçek modelde <code>Krediler</code> ve <code>Ödeme Planı</code> iki tablodur; ölçüler ilişki üzerinden çalışır. Kalan bakiye yarı toplanabilir bir değerdir: krediler üzerinden toplanır ama aylar üzerinden toplanmaz (<b>Yarı toplanabilir ölçüler: stok, bakiye, nüfus</b>).</p>
+<pre class="dax" data-notry>Kalan Bakiye =
+VAR Rapor = MAX(Tarih[Tarih])
+RETURN
+    SUMX(
+        VALUES(Krediler[KrediNo]),
+        VAR Son = CALCULATE(MIN('Ödeme Planı'[Kalan]), REMOVEFILTERS(Tarih), 'Ödeme Planı'[OdemeTarihi] &lt;= Rapor)
+        RETURN IF(ISBLANK(Son), CALCULATE(SUM(Krediler[Tutar])), Son)
+    )
+Gecikme 30+ % =
+DIVIDE(CALCULATE([Kalan Bakiye], Krediler[GecikmeGun] &gt;= 30), [Kalan Bakiye])
+Kredi Başlığı =
+VAR No = SELECTEDVALUE(Krediler[KrediNo])
+VAR Gun = SELECTEDVALUE(Krediler[GecikmeGun])
+VAR Durum = SWITCH(TRUE(), Gun &gt;= 90, "Takipte", Gun &gt;= 30, "Gecikmede", "Düzenli")
+RETURN
+    IF(
+        ISBLANK(No), "Bir kredi seçin",
+        No &amp; " · " &amp; SELECTEDVALUE(Krediler[Segment]) &amp; " · " &amp; FORMAT(SELECTEDVALUE(Krediler[Tutar]), "#,##0") &amp; " ₺ · yıllık %"
+            &amp; FORMAT(SELECTEDVALUE(Krediler[YillikFaiz]) * 100, "0") &amp; " · " &amp; Durum &amp; IF(Gun &gt; 0, " (" &amp; Gun &amp; " gün)")
+    )</pre>
+<p>Portföy sayfasındaki kredi tablosunda bir satıra sağ tıklayıp <b>Detaya git</b> denince <b>Kredi detayı</b> sayfası açılır; detay alanı <code>Krediler[KrediNo]</code>. K04 için başlık “K04 · Bireysel · 80.000 ₺ · yıllık %50 · Takipte (120 gün)” olur. Sayfada ödeme planı tablosu (taksit no, tarih, faiz, anapara, kalan), faiz ve anaparayı yığılmış sütunla gösteren grafik ve rapor tarihini işaretleyen bir sabit çizgi bulunur.</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Sayfa / konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Portföy, üst şerit</td><td>4 kart</td><td>Kalan bakiye (2.205.272 ₺), Gecikme 30+ % (%14,7), Takip 90+ % (%7,8), Riskten arındırılmış getiri (%37,4)</td></tr>
+<tr><td>Portföy, sol</td><td>Kümelenmiş çubuk</td><td>Segment; Sözleşme getirisi ve riskten arındırılmış getiri yan yana</td></tr>
+<tr><td>Portföy, sağ</td><td>Yığılmış sütun</td><td>2025 ayları; planlanan tahsilat, Durum’a göre renkli (Düzenli / Gecikmede / Takipte)</td></tr>
+<tr><td>Portföy, alt</td><td>Tablo</td><td>Kredi; Segment, Tutar, Ödenen taksit, Kalan bakiye, Durum (koşullu ikon)</td></tr>
+<tr><td>Kredi detayı</td><td>Detay sayfası</td><td>Başlık: Kredi Başlığı; ödeme planı tablosu; faiz/anapara yığılmış sütunu; “Geri” düğmesi</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Portföyün %14,7’si 30 gün ve üstü gecikmede, %7,8’i takipte.</b> Takipteki iki kredi (K04, K09) için yapılandırma ya da hukuki takip kararı ve karşılık ayrılması gerekiyor.</li>
+<li><b>Bireysel segmentte koşulları sıkılaştır:</b> en yüksek sözleşme faizine (%49,0) rağmen riskten arındırılmış getiri en düşük (%30,7). Faizi artırmak yerine kredi onay kriterlerini gözden geçir.</li>
+<li><b>Kurumsal segment portföyün bel kemiği:</b> bakiyenin %64,1’i, gecikme yok, getiri %39,0. Büyüme bu segmentte daha güvenli; ama tek bir kredinin (K05) bakiyenin %26’sı olduğu yoğunlaşma riski not edilmeli.</li>
+<li><b>2025 nakit planını riske göre ayır:</b> planlanan 2.189.223 ₺ tahsilatın 350.646 ₺’si gecikmedeki kredilerden; nakit planında bu kısmı ayrı satırda ve iskontolu göster.</li>
+<li><b>Modeli tamamla:</b> gerçek tahsilat tablosu ve vadelerin sonuna kadar uzanan tarih tablosu olmadan bakiye sözleşme varsayımına dayanır.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kredi">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-tedarik/">← Vaka: tedarik — üret mi, satın al mı?</a><a href="../paydas-iletisim/">Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

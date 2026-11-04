@@ -1,0 +1,98 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme | Kesit Power BI</title><meta name="description" content="Yer işaretleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hikaye/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme"><meta property="og:description" content="Yer işaretleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hikaye/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme","description":"Yer işaretleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hikaye/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme</h1><p class="st-l">Yer işaretleri ve düğmeler, rapor sayfası araç ipuçları, detay sayfaları, sayfa gezgini, seçim bölmesi ve katmanlar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hikaye">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Seçim bölmesi: katmanlar ve gruplar</h2>
+<p>Görünüm → <b>Seçim</b>. Sayfadaki her nesne (görsel, şekil, düğme) listelenir. Buradan:</p>
+<ul>
+<li>Nesneleri <b>gizle/göster</b> (göz simgesi). Yer işaretleri bu görünürlüğü kaydeder.</li>
+<li><b>Katman sırasını</b> değiştir (arka plan kutusu altta, grafik üstte).</li>
+<li><b>Grupla</b> (Ctrl + G): bir kart, başlığı ve arka planı tek nesne gibi taşınır ve gizlenir.</li>
+<li><b>Sekme sırası</b>: klavyeyle gezinme sırası (erişilebilirlik).</li>
+</ul>
+<h2>Yer işaretleri</h2>
+<p>Görünüm → <b>Yer işaretleri</b> → Ekle. Bir yer işareti sayfanın o anki durumunu kaydeder. Yer işaretinin <b>…</b> menüsünde neleri kaydedeceğini seçersin:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek</th><th>Kaydeder</th><th>Kapalıysa</th></tr>
+<tr><td>Veri</td><td>Filtreler, dilimleyiciler, sıralama, detaya inme durumu</td><td>Yer işaretine geçince filtreler değişmez</td></tr>
+<tr><td>Görüntü</td><td>Görünürlük (Seçim bölmesi), odak modu</td><td>Görünürlük değişmez</td></tr>
+<tr><td>Geçerli sayfa</td><td>Hangi sayfada olunduğu</td><td>Yer işareti bulunulan sayfada uygulanır</td></tr>
+<tr><td>Tüm görseller / Seçili görseller</td><td>Kapsam</td><td>Yalnızca seçili görsellere uygulanır</td></tr>
+</table></div>
+<h3>Klasik kalıp: Grafik ↔ Tablo geçişi</h3>
+<ol>
+<li>Aynı yere bir grafik ve aynı veriyi gösteren bir tablo koy.</li>
+<li>Seçim bölmesinde tabloyu gizle → “Grafik” yer işareti (yalnızca <b>Görüntü</b> açık, Veri kapalı; böylece kullanıcının filtreleri korunur).</li>
+<li>Grafiği gizle, tabloyu göster → “Tablo” yer işareti.</li>
+<li>İki düğme ekle (Ekle → Düğmeler) → Biçim → <b>Eylem</b> → Tür: Yer işareti → ilgili yer işareti.</li>
+</ol>
+<p>Birden çok yer işaretini bir <b>yer işareti grubu</b>na koyup Ekle → Düğmeler → <b>Yer işareti gezgini</b> ile sekme gibi görünen bir düğme şeridi oluşturabilirsin.</p>
+<h2>Rapor sayfası araç ipuçları</h2>
+<ol>
+<li>Yeni sayfa → Biçim → Sayfa bilgileri → <b>Araç ipucu olarak kullan</b>: Açık. Tuval ayarları → Tür: <b>Araç ipucu</b> (küçük boyut).</li>
+<li>Bu sayfaya küçük görseller koy (ör. kategorinin aylık eğilimi + iki kart).</li>
+<li>Ana sayfadaki görselin Biçim → Genel → <b>Araç ipuçları</b> → Tür: Rapor sayfası → Sayfa: bu sayfa.</li>
+</ol>
+<p>Fareyle bir çubuğun üzerine gelince, mini sayfa o çubuğun filtresiyle (ör. Kategori = Kitap) açılır. <a href="../../">Örnek raporlar</a>'da kategori grafiklerinin üzerine gelince açılan mini eğilim grafiği bu özelliğin benzetimidir.</p>
+<h2>Detay sayfası (drillthrough)</h2>
+<ol>
+<li>“Ürün Detayı” sayfası oluştur; <code>Urunler[Urun]</code> alanını Görselleştirmeler bölmesindeki <b>Detaylandırma</b> kutusuna sürükle.</li>
+<li>“Tüm filtreleri koru” açıksa kaynak sayfadaki diğer filtreler (yıl, kanal) de taşınır.</li>
+<li>Power BI sayfaya otomatik bir <b>geri</b> düğmesi ekler.</li>
+<li>Kullanıcı herhangi bir sayfada bir ürüne sağ tık → <b>Detaya git</b> → Ürün Detayı.</li>
+<li>Daha keşfedilebilir yol: bir düğmenin Eylem türünü <b>Detaya git</b> yap; düğme, kullanıcı bir ürün seçince etkin olur. Düğme metnini ölçüyle dinamik yapabilirsin: <code>"Ayrıntı: " &amp; SELECTEDVALUE(Urunler[Urun], "bir ürün seç")</code>.</li>
+</ol>
+<h2>Gezinme</h2>
+<ul>
+<li><b>Sayfa gezgini</b> (Ekle → Düğmeler → Gezgin → Sayfa gezgini): Tüm görünür sayfalar için otomatik düğmeler. Gizli sayfalar dahil edilmez.</li>
+<li><b>Düğme eylemleri:</b> Geri, Yer işareti, Detaya git, Sayfa gezintisi, Web URL'si, Tüm dilimleyicileri temizle (yeni “Filtreleri temizle” eylemi).</li>
+<li><b>Dilimleyicileri eşitle:</b> Bir dilimleyiciyi seç → Görünüm → Dilimleyicileri eşitle → hangi sayfalarda eşitleneceğini ve görüneceğini işaretle. “Görünür değil ama eşitlenmiş” bir dilimleyici, seçimi sayfadan sayfaya taşır.</li>
+</ul>
+<div class="tip"><b>Hikâye akışı</b>İyi bir rapor bir soru zinciridir: Özet sayfası (ne oldu?) → Analiz sayfası (neden?) → Detay sayfası (hangi kayıtlar?). Gezinmeyi bu sıraya göre kur; kullanıcı her zaman bir “Geri” ve “Filtreleri temizle” düğmesi bulsun.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Anlatı akışı: dört soruluk iskelet</h2>
+<p>Bölge müdürü toplantıya 10 dakika ayırıyor. Rapor ona dört soruyu sırayla cevaplamalı:</p>
+<ol>
+<li><b>Bağlam:</b> Neye bakıyoruz? (Dönem, kapsam, hedef.)</li>
+<li><b>Bulgu:</b> Ne oldu? Tek cümle: “2024’te net satış hedefin yaklaşık %2 altında kaldı.”</li>
+<li><b>Neden:</b> Kim ya da ne sürükledi? Kategori, kanal, temsilci kırılımı.</li>
+<li><b>Eylem:</b> Ne yapılmalı? Sahip ve tarih (Rapordan karara dersinde bunu ayrıntılı gördün).</li>
+</ol>
+<p>Bu iskelet sayfa düzenine doğrudan çevrilir: üst şeritte bağlam (dönem dilimleyicisi + hedef kartı), altında bulgu başlığı, ortada neden grafikleri, sağ altta eylem notu. Hikâye sayfadan sayfaya da akar: Özet → Analiz → Detay. Modelde 2024 için Hedef Gerçekleşme % yaklaşık %97,9; 2023 için %99,6. Yani bulgu cümlesi “hedefe çok yaklaştık ama iki yıldır altındayız” olabilir; grafik bu cümleyi kanıtlamak için oradadır.</p>
+
+<h2>Bulgu başlığını ölçüye bağlamak</h2>
+<p>Elle yazılmış bulgu başlığı ilk filtrede yalan söyler. “Elektronik lider” başlığı, kullanıcı 2022’yi seçtiğinde de durur. Başlığı ölçüyle üret: Biçim → Genel → Başlık → metnin yanındaki fx → Alan değeri.</p>
+<pre class="dax">Lider Kategori Metni =
+VAR Lider = TOPN(1, VALUES(Kategoriler[Kategori]), [Net Satış])
+VAR Ad = CONCATENATEX(Lider, Kategoriler[Kategori], ", ")
+VAR Pay = DIVIDE(CALCULATE([Net Satış], Lider), [Net Satış])
+RETURN Ad &amp; " satışın %" &amp; FORMAT(Pay * 100, "0") &amp; " kadarını taşıyor"</pre>
+<p>Bu ölçü tüm dönemde “Elektronik satışın %27 kadarını taşıyor” üretir. FORMAT(Pay, "0%") yazsaydın sonuç “27%” olurdu; Türkçe yazımda yüzde işareti sayının önüne gelir. Ölçü kategori kırılımlı bir görselde kullanılmaz; her satırda kendi kategorisini %100 ile yazar. Başlık ve kart ölçüleri <b>görselin değil sayfanın bağlamında</b> çalışacak şekilde yazılır.</p>
+<div class="note"><b>Eşitlik durumu</b>TOPN eşit değerleri birlikte döndürür. İki kategori aynı satışta ise Ad “A, B” olur; CONCATENATEX’in ayırıcısı bu yüzden virgüldür. Eşitliği görmezden gelen bir ölçü, rapor yıllarca çalışırken bir gün tek bir adı rastgele seçer.</div>
+
+<h2>Yer işareti stratejisi: az, adlı, bakımlı</h2>
+<p>Yer işareti kurulumunu gördün; asıl sorun altı ay sonra gelir. Rapora yeni bir görsel eklenir, eski yer işaretleri onu bilmez: “Tablo” yer işaretine geçince yeni görsel de gizlenir ya da yanlış yerde kalır. Kurallar:</p>
+<ul>
+<li><b>Ad standardı:</b> <code>Sayfa | Durum</code> biçimi (“Özet | Grafik”, “Özet | Tablo”). Yer işareti bölmesinde sırala, gruplara ayır.</li>
+<li><b>Kapsamı daralt:</b> Yalnızca değişen görselleri seçip “Seçili görseller” ile kaydet. Sayfaya eklenen yeni görsel yer işaretinden etkilenmez.</li>
+<li><b>Veri seçeneğini bilinçli seç:</b> Görünürlük değiştiren yer işaretlerinde Veri kapalı olsun; kullanıcının filtresi korunur.</li>
+<li><b>Patlamayı fark et:</b> 3 ölçü × 3 görsel türü için 9 yer işareti yapıyorsan yanlış araçtasın. Ölçü değiştirmek için alan parametresi ya da ölçü seçici tablo (Seçili Ölçü kalıbı) daha az bakım ister.</li>
+<li><b>Kişisel yer işaretleri:</b> Okuyucu kendi filtre durumunu kişisel yer işareti olarak kaydedebilir; rapor yer işaretleri tasarım içindir, kişisel yer işaretleri kullanıcı içindir.</li>
+</ul>
+
+<h2>Düğme gezintisi ve açıklama metni</h2>
+<p>Gezinme şeridi tüm sayfalarda aynı yerde, aynı sırada durmalı; bir sayfadaki şeridi kopyalayıp diğerlerine yapıştırmak konumu korur. Etkin sayfa düğmesi farklı görünmeli: Sayfa gezgini bunu “Seçili” durum biçimiyle kendisi yapar. Düğme hedefini sabit bir sayfa yerine bir ölçüye bağlayabilirsin (Eylem → Hedef → fx): ölçü, kullanıcının seçimine göre sayfa adını metin olarak döndürür. Sayfa adı değişirse ölçü bozulur; sayfa adlarını sabitle ve belgeye yaz.</p>
+<p>Açıklama metni için üç katman kullan:</p>
+<ul>
+<li><b>Bulgu başlığı:</b> Ölçüyle üretilen tek cümle.</li>
+<li><b>Metin kutusu + değer:</b> Metin kutusunda “+ Değer” ile cümlenin içine canlı bir sayı yerleştirilir; filtre değişince sayı güncellenir.</li>
+<li><b>Tanım notu:</b> “Net Satış: iptaller hariç, KDV hariç.” Sayfanın altında küçük puntoyla ya da bir bilgi (i) düğmesinin araç ipucunda. Tanımı olmayan KPI toplantıda tartışma çıkarır.</li>
+</ul>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-hikaye">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yari-toplanabilir/">← Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış</a><a href="../analiz-ozellikleri/">Analiz özellikleri ve yapay zekâ görselleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,100 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Görsel algı: bilişsel yük, küçük katlar, kombo ve dağılım grafikleri | Kesit Power BI</title><meta name="description" content="Göz neyi önce görür, okuyucunun zihnini ne yorar? Ön-dikkat özellikleri, vurgu, küçük katlar, ikincil eksen tuzağı, dağılım ve kabarcık grafiği, yığılmış…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-algi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Görsel algı: bilişsel yük, küçük katlar, kombo ve dağılım grafikleri"><meta property="og:description" content="Göz neyi önce görür, okuyucunun zihnini ne yorar? Ön-dikkat özellikleri, vurgu, küçük katlar, ikincil eksen tuzağı, dağılım ve kabarcık grafiği, yığılmış…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-algi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Görsel algı: bilişsel yük, küçük katlar, kombo ve dağılım grafikleri","description":"Göz neyi önce görür, okuyucunun zihnini ne yorar? Ön-dikkat özellikleri, vurgu, küçük katlar, ikincil eksen tuzağı, dağılım ve kabarcık grafiği, yığılmış…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-algi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Görsel algı: bilişsel yük, küçük katlar, kombo ve dağılım grafikleri</h1><p class="st-l">Göz neyi önce görür, okuyucunun zihnini ne yorar? Ön-dikkat özellikleri, vurgu, küçük katlar, ikincil eksen tuzağı, dağılım ve kabarcık grafiği, yığılmış ve %100 yığılmış farkı, gösterge ve KPI görselinin yerinde kullanımı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-algi">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Görselleştirme ilkeleri” dersi neyi yapman gerektiğini söyledi: az öğe, tutarlı renk, sıfırdan başlayan eksen. Bu ders <b>nedenini</b> anlatıyor: insan gözü bazı farkları aramadan görür, bazılarını ise ancak tek tek okuyarak bulur. Tasarım, önemli bilgiyi birinci gruba koymaktır.</p>
+
+<h2>Ön-dikkat özellikleri</h2>
+<p><b>Ön-dikkat özellikleri (preattentive attributes)</b>, beynin bilinçli olarak aramaya başlamadan önce fark ettiği görsel farklardır. Yirmi gri noktanın arasındaki tek turuncu noktayı aramazsın; o kendini gösterir. Ancak her özellik büyüklüğü aynı doğrulukla taşımaz:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Özellik</th><th>Büyüklük karşılaştırmasında</th><th>En iyi kullanım</th><th>Power BI’da</th></tr>
+<tr><td>Ortak eksende konum</td><td>En doğru</td><td>Değer karşılaştırma</td><td>Çizgi, nokta, dağılım</td></tr>
+<tr><td>Uzunluk</td><td>Çok iyi</td><td>Kategori karşılaştırma</td><td>Çubuk ve sütun</td></tr>
+<tr><td>Açı ve alan</td><td>Zayıf</td><td>Kaba pay (2–3 dilim)</td><td>Pasta, halka, kabarcık boyutu</td></tr>
+<tr><td>Renk koyuluğu</td><td>Kaba</td><td>Isı haritası, yoğunluk</td><td>Matriste renk skalası</td></tr>
+<tr><td>Renk tonu</td><td>Büyüklük taşımaz</td><td>Grup kimliği, vurgu</td><td>Gösterge, veri renkleri</td></tr>
+</table></div>
+<p>Sonuç: Kesin karşılaştırma istiyorsan <b>konum ve uzunluk</b> kullan. Renk tonunu “bu grup farklı” ya da “buraya bak” demek için sakla.</p>
+
+<h2>Bilişsel yükü azaltmak</h2>
+<p>Okuyucunun zihni, grafiği okurken bir yandan göstergedeki rengi eşleştiriyor, eksendeki sayıyı tahmin ediyor, birimi çeviriyorsa mesaja yer kalmaz. Kategoriye göre net satış grafiğinde şu adımları uygula:</p>
+<ol>
+<li><b>Doğrudan etiketle:</b> Göstergeyi kaldır, seri adını çizginin ucuna ya da çubuğun yanına yaz. Göz ileri geri gitmez.</li>
+<li><b>Veri etiketi ya da eksen, ikisi değil:</b> Çubuklarda değer yazıyorsa y eksenini kapat; ekseni tutuyorsan etiketleri kaldır.</li>
+<li><b>Birimi başlığa taşı:</b> Her etikette “339.303,65 ₺” yerine başlıkta “bin ₺” yaz, etikette 339 kalsın.</li>
+<li><b>Izgara çizgilerini soluklaştır</b> ya da kaldır; kenarlık ve gölgeyi kapat.</li>
+<li><b>Sırala:</b> Kategoriler büyükten küçüğe. Okuyucu sıralamayı kendi kafasında yapmak zorunda kalmasın.</li>
+</ol>
+
+<h2>Vurgu: tek renk ve bulgu başlığı</h2>
+<p>2024’te kategorilerin hedef gerçekleşme oranları %83,6 (Hediye) ile %100,2 (Kitap) arasında. Yedi çubuğu yedi renge boyarsan okuyucu “hangisi önemli?” diye sorar. Bunun yerine:</p>
+<ul>
+<li>Tüm çubuklar açık gri, yalnızca <b>Kitap</b> vurgu renginde.</li>
+<li>Başlık konuyu değil <b>bulguyu</b> söylesin: “Kategoriye göre hedef gerçekleşme” değil, “2024’te hedefi yalnızca Kitap tuttu”.</li>
+<li>Hedef çizgisini (%100) Analiz bölmesinden sabit çizgi olarak ekle; çubukların çizgiyi geçip geçmediği konumla okunur.</li>
+</ul>
+<p>Vurgu rengini dinamik yapmak için çubuk renginde “Alan değeri” ile renk kodu döndüren bir ölçü kullanılır (“Koşullu biçimlendirme ve KPI’lar” dersi).</p>
+
+<h2>Küçük katlar ne zaman?</h2>
+<p><b>Küçük katlar (small multiples)</b>, aynı grafiği bir alanın her değeri için yan yana çizer. Çizgi grafiğinde üç kanalın aylık satışını tek grafikte üst üste çizmek yerine üç küçük panel kullanırsın.</p>
+<ul>
+<li><b>İyi olduğu durum:</b> 3–12 grup, her grubun <b>şekli</b> (mevsimsellik, eğilim) merak ediliyor, seriler üst üste binince spagetti oluyor.</li>
+<li><b>Ortak eksen:</b> Paneller aynı ölçeği paylaşır; karşılaştırma dürüst kalır. Bedeli: küçük grup ezilir. Bizim modelde 2024’te Mobil 346.353 ₺, Mağaza 123.997 ₺; Mağaza paneli düz bir çizgi gibi görünebilir. Şekil merak ediliyorsa her paneli kendi payı (%) ile göster.</li>
+<li><b>Kötü olduğu durum:</b> Tek bir sayıyı karşılaştırmak (her panelde bir çubuk). Bu durumda tek bir sıralı çubuk grafik daha iyidir.</li>
+</ul>
+
+<h2>Kombo grafik ve ikincil eksen tuzağı</h2>
+<p>“Çizgi ve kümelenmiş sütun” grafiği, sütunda bir ölçüyü, çizgide başka bir ölçüyü gösterir. Farklı birimler (₺ ve %) için ikincil y ekseni açılır. Tuzak şurada: her eksen kendi verisine göre <b>otomatik ölçeklenir</b>.</p>
+<p>2024’te aylık net satış 34.233,55 ₺ (Nisan) ile 94.000,95 ₺ (Aralık) arasında, yani yaklaşık üç kat oynuyor. Kâr marjı ise %36,3 ile %40,8 arasında, 4,5 puan. İkincil eksen otomatik olarak yaklaşık %36–%41 aralığına sıkışınca, marjdaki küçük oynama satıştaki üç katlık değişimle aynı yükseklikte görünür. İki çizginin kesiştiği nokta da hiçbir anlam taşımaz: kesişme, iki eksenin nereden başladığının bir sonucudur.</p>
+<ul>
+<li>İkincil eksenin başlangıcını (Biçim → Y ekseni (ikincil) → Aralık) <b>0</b>’a sabitle; marjın aslında ne kadar sabit olduğu görünür.</li>
+<li>Ya da iki ayrı grafiği aynı x ekseniyle alt alta hizala.</li>
+<li>Ya da marjı yalnızca araç ipucuna koy.</li>
+</ul>
+<div class="warn"><b>Kural</b>İkincil eksen ancak iki ölçünün <b>birlikte hareketi</b> konuşulacaksa ve okuyucu iki ölçeği bilinçli okuyacaksa kullanılır. “Daha az yer kaplasın” bir gerekçe değildir.</div>
+
+<h2>Dağılım ve kabarcık grafiği</h2>
+<p><b>Dağılım grafiği (scatter)</b>, iki ölçü arasındaki <b>ilişkiyi</b> gösterir. Soru: “Çok indirim yaptığımız ürünlerde marj düşük mü?” Değerler kutusuna <code>Urunler[Urun]</code>, X eksenine indirim oranı, Y eksenine <code>[Kâr Marjı %]</code>, Boyut kutusuna <code>[Net Satış]</code> koyarsın; grafik bir <b>kabarcık grafiğine</b> dönüşür.</p>
+<p>Satışı olan 38 ürün için korelasyon yaklaşık <b>−0,23</b>: zayıf, negatif bir ilişki. Grafikte bunun anlamı, bulutun hafif aşağı eğik olması ama çok dağınık kalmasıdır. Örneğin Robot Süpürge %6,8 indirimle %43 marj yaparken, Termos 750ml %6,2 indirimle %29 marjda. “İndirim marjı öldürüyor” demek için bu grafik yetmez.</p>
+<p>X eksenindeki indirim oranının iki tanımı vardır ve nokta konumları buna göre değişir:</p>
+<pre class="dax">Tutar Ağırlıklı İndirim =
+[Ortalama İndirim %]
+
+Satır Ortalaması İndirim =
+CALCULATE(AVERAGE(Satislar[Indirim]), Satislar[Durum] &lt;&gt; "İptal")</pre>
+<p>İlki indirim tutarını brüt tutara oranlar; büyük siparişler daha çok ağırlık taşır (tüm model: %3,2). İkincisi her satış satırını eşit sayar (%3,3). Kategorilerde fark daha belirgin: Elektronik’te %2,3’e karşı %3,0. Hangisini kullandığını eksen başlığına yaz.</p>
+<ul>
+<li><b>Ortalama çizgileri:</b> Analiz bölmesinden X ve Y için ortalama çizgisi ekle; grafik dört bölgeye ayrılır (“yüksek indirim, düşük marj” köşesi aksiyon listesidir).</li>
+<li><b>Kabarcık boyutu:</b> Göz alanı kötü karşılaştırır. Boyutu “önemli olanı fark et” için kullan, kesin sıralama için değil.</li>
+<li><b>Oynatma ekseni (Play axis):</b> <code>Tarih[Yil]</code> koyunca noktalar yıldan yıla hareket eder. Sunumda etkileyicidir; analizde zordur, çünkü göz aynı anda 38 noktanın yolunu izleyemez. Tek bir ürünü seçip izini göstermek daha okunur.</li>
+</ul>
+
+<h2>Yığılmış mı, %100 yığılmış mı?</h2>
+<p>Kanallara göre yıllık net satış:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl</th><th>Mobil</th><th>Web</th><th>Mağaza</th><th>Mobil payı</th><th>Mağaza payı</th></tr>
+<tr><td>2022</td><td>51.296,80</td><td>35.879,90</td><td>15.660,50</td><td>%49,9</td><td>%15,2</td></tr>
+<tr><td>2023</td><td>202.191,70</td><td>144.735,10</td><td>53.942,75</td><td>%50,4</td><td>%13,5</td></tr>
+<tr><td>2024</td><td>346.352,70</td><td>276.715,90</td><td>123.997,10</td><td>%46,4</td><td>%16,6</td></tr>
+</table></div>
+<ul>
+<li><b>Yığılmış sütun:</b> Toplam yükseklik ve en alttaki seri kolay okunur. Mesaj: “Satış yedi kattan fazla büyüdü.” Ortadaki ve üstteki seriler ortak bir taban çizgisinden başlamadığı için zor karşılaştırılır.</li>
+<li><b>%100 yığılmış sütun:</b> Her sütun 100’e tamamlanır; toplam büyüklük kaybolur. Mesaj: “Mobilin payı 2024’te geriledi, Mağaza toparlandı.” Mutlak satış büyüdüğü hâlde payın düştüğünü yalnızca bu görünüm gösterir.</li>
+<li>Her ikisinde de en önemli seriyi tabana koy; taban ortak eksen gibi çalışır.</li>
+</ul>
+
+<h2>Gösterge ve KPI görseli</h2>
+<p>Kurulum adımları “Koşullu biçimlendirme ve KPI’lar” dersinde. Algı açısından:</p>
+<ul>
+<li><b>Gösterge (gauge)</b>, tek bir sayı için çok yer kaplar ve değeri açıyla okutur (zayıf özellik). Kullanacaksan <b>maksimumu</b> anlamlı belirle: otomatik maksimum, değerin iki katı olabilir ve %97,9’luk gerçekleşmeyi yarım gibi gösterir. Maksimumu hedefin %120’si gibi sabit bir değere bağla.</li>
+<li><b>KPI görseli</b> değer, hedef ve eğilimi birlikte verir; eğilim ekseni (ay) olmadan kullanma.</li>
+<li>Birden çok KPI için çoğu zaman <b>kart + referans etiketi</b> (“Hedef: 763.200 ₺ · %97,9”) daha az yer kaplar ve sayıyı doğrudan okutur.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-algi">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../rapor-brifi/">← Talepten rapor brifine: ihtiyaç toplama ve sayfa planı</a><a href="../kademeli-tasarim/">Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

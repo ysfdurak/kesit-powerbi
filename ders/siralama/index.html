@@ -1,0 +1,84 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sıralama ve ilk N: RANKX ve TOPN | Kesit Power BI</title><meta name="description" content="Ürünleri sıralamak, ilk 5'in toplamını almak, eşitliklerle başa çıkmak."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/siralama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Sıralama ve ilk N: RANKX ve TOPN"><meta property="og:description" content="Ürünleri sıralamak, ilk 5'in toplamını almak, eşitliklerle başa çıkmak."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/siralama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sıralama ve ilk N: RANKX ve TOPN","description":"Ürünleri sıralamak, ilk 5'in toplamını almak, eşitliklerle başa çıkmak.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/siralama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>Sıralama ve ilk N: RANKX ve TOPN</h1><p class="st-l">Ürünleri sıralamak, ilk 5'in toplamını almak, eşitliklerle başa çıkmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-siralama">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>RANKX</h2>
+<pre class="dax">Ürün Sırası = RANKX(ALL(Urunler[Urun]), [Net Satış])</pre>
+<p><code>RANKX(tablo, ifade)</code> tablodaki her satır için ifadeyi hesaplar, sonra geçerli bağlamdaki değerin bu listede kaçıncı olduğunu bulur. <code>ALL</code> burada şarttır: görselin satır filtresi kalırsa tabloda tek ürün kalır ve her ürün 1. olur.</p>
+<p>İsteğe bağlı bağımsız değişkenler: <code>RANKX(tablo, ifade, , ASC)</code> küçükten büyüğe; son bağımsız değişken <code>DENSE</code> olursa eşitliklerden sonra numara atlanmaz: iki ürün 1. ise sıradaki 3. değil 2. olur.</p>
+<div class="warn"><b>Toplam satırı</b>Toplam satırında da RANKX çalışır ve anlamsız bir “1” üretir. <code>IF(HASONEVALUE(Urunler[Urun]), RANKX(...))</code> ya da <code>ISINSCOPE</code> ile yalnızca ürün düzeyinde göster.</div>
+<h2>TOPN</h2>
+<pre class="dax">İlk 5 Ürün Satışı =
+CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
+<p><code>TOPN(n, tablo, sıralamaİfadesi)</code> en yüksek n satırı tablo olarak döndürür. <code>CALCULATE</code> içinde filtre olarak kullanılınca “yalnızca bu ürünler” anlamına gelir.</p>
+<h2>Görselde ilk N</h2>
+<p>Kod yazmadan da yapılabilir: Filtreler bölmesinde ürün alanını seç → Filtre türü: <b>İlk N</b> → 5 → Değere göre: Net Satış. Ama ölçüyle yapılan ilk N, kart ve KPI gibi her görselde kullanılabilir.</p>
+
+<h2>Eşitlikler ve sıralama türleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Net satış</th><th>RANKX (varsayılan, SKIP)</th><th>RANKX(..., DENSE)</th></tr>
+<tr><td>900</td><td>1</td><td>1</td></tr>
+<tr><td>700</td><td>2</td><td>2</td></tr>
+<tr><td>700</td><td>2</td><td>2</td></tr>
+<tr><td>500</td><td>4</td><td>3</td></tr>
+</table></div>
+<p>Yarışma sıralaması için SKIP, “kaçıncı fiyat düzeyi” gibi sorular için DENSE kullanılır. Yeni <code>RANK</code> fonksiyonu (pencere fonksiyonları ailesi) eşitliği ikinci bir sıralama sütunuyla bozabilir: <code>RANK(ALL(Urunler[Urun]), ORDERBY([Net Satış], DESC, Urunler[Urun], ASC))</code>.</p>
+<h2>Seçime göre sıra: ALLSELECTED</h2>
+<pre class="dax">Seçimdeki Sıra =
+IF(
+    HASONEVALUE(Urunler[Urun]),
+    RANKX(ALLSELECTED(Urunler[Urun]), [Net Satış])
+)</pre>
+<p><code>ALL</code> tüm ürünler arasındaki sırayı verir; dilimleyicide yalnızca Elektronik seçiliyse bile “Kulaklık 7. sırada” der. <code>ALLSELECTED</code> ise yalnızca seçili ürünler arasında sıralar: Elektronik içinde 2. Hangisinin doğru olduğu soruya bağlıdır; başlıkta hangisini gösterdiğini yaz.</p>
+<h2>Kategori içinde sıra</h2>
+<pre class="dax">Kategori İçi Sıra =
+IF(
+    HASONEVALUE(Urunler[Urun]),
+    RANKX(ALLEXCEPT(Urunler, Urunler[Kategori]), [Net Satış])
+)</pre>
+<p><code>ALLEXCEPT</code> ürün filtresini kaldırır ama kategori filtresini korur: her ürün kendi kategorisindeki diğer ürünlerle yarışır.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bağlar: kim beşinci?</h2>
+<p>Satış ekibi “sipariş sayısına göre ilk 5 ürün” listesini prim hesabında kullanacak. Liste beşinci sırada bir bağla karşılaşıyor:</p>
+<div class="tbl-wrap"><table><tr><th>Ürün</th><th>[Sipariş Sayısı]</th><th>RANKX (varsayılan, SKIP)</th><th>RANKX (DENSE)</th><th>Bağ bozmalı</th></tr>
+<tr><td>Nemlendirici Krem</td><td>55</td><td>5</td><td>5</td><td>5</td></tr>
+<tr><td>Dudak Balmı</td><td>55</td><td>5</td><td>5</td><td>6</td></tr>
+<tr><td>Yün Atkı</td><td>54</td><td>7</td><td>6</td><td>7</td></tr>
+<tr><td>İstatistiğe Giriş</td><td>53</td><td>8</td><td>7</td><td>8</td></tr>
+<tr><td>Basic Tişört</td><td>53</td><td>8</td><td>7</td><td>9</td></tr>
+<tr><td>Suç ve Ceza</td><td>53</td><td>8</td><td>7</td><td>10</td></tr></table></div>
+<p>“İlk 5” filtresi SKIP sıralamasıyla 6 ürün döndürür (iki tane 5.), DENSE ile ise 9 ürün (7. sıraya kadar 6 sıra numarası var). İş kuralı bir bağ bozucu ister: “Eşitlikte cirosu yüksek olan önde.” RANKX’te bunun en sade yolu, ikinci ölçüyü ilk ölçüye küçük bir ağırlıkla eklemektir:</p>
+<pre class="dax">Bağ Bozmalı Sıra =
+IF(
+    HASONEVALUE(Urunler[Urun]),
+    RANKX(ALL(Urunler[Urun]), [Sipariş Sayısı] * 1000000 + [Net Satış])
+)</pre>
+<p>Çarpan, ikinci ölçünün alabileceği en büyük değerden büyük olmalı. Bu modelde bir ürünün net satışı 102.000 ₺’yi geçmiyor, 1.000.000 güvenli. Çarpan küçük kalırsa ciro sipariş farkını ezer ve sıra bozulur. Okunurluk istiyorsan Pencere fonksiyonları dersindeki <code>RANK</code> + <code>ORDERBY</code> kalıbı aynı işi açıkça yapar.</p>
+<h3>Satışı olmayanlar da sıralanır</h3>
+<p>40 üründen 2’si (Koşu Bandı ve Gurme Lokum Kutusu) hiç satmamış. RANKX ikisine de <b>39</b> verir; tabloda “39. sırada” iki ürün görünür. Çoğu raporda bu satırlar gizlenmeli:</p>
+<pre class="dax">Satışlı Ürün Sırası =
+IF(NOT ISBLANK([Net Satış]), RANKX(ALL(Urunler[Urun]), [Net Satış]))</pre>
+
+<h2>TOPN dış bağlamda değerlendirilir</h2>
+<p>Temel bölümdeki <code>İlk 5 Ürün Satışı</code> ölçüsü tüm şirkette 315.381 ₺ verir. Aynı ölçüyü kategori satırlarına koyunca ne olur? <code>TOPN</code>’in içindeki <code>[Net Satış]</code>, kategori filtresi altında hesaplanır. Başka kategorilerin ürünleri o hücrede BLANK değer alır. Sonuçta TOPN o kategorinin ilk 5 ürününü seçer. Elektronik satırında “Elektronik’in ilk 5’i” görürsün, “şirketin ilk 5’inden Elektronik’e düşenler” değil.</p>
+<pre class="dax">İlk 5 Dışı Satış =
+[Net Satış] - CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
+<p>Bu ölçü Elektronik’te 68.487 ₺ verir, Hediye, Kozmetik ve Spor’da 0. Bu üç kategoride satışı olan ürün sayısı zaten 5 ya da daha az. Hangisini istediğini bil: kategori içi ilk N ise bu davranış doğru; şirketin ilk N’i ise listeyi kategori filtresi kaldırılmış bir bağlamda hesaplamalısın.</p>
+
+<h2>Top N + Diğer</h2>
+<p>Yönetim kurulu sunumunda 40 çubuklu grafik yerine “ilk 5 ürün + Diğer” isteniyor. Sorun: Diğer bir ürün değil, ürün ekseninde böyle bir değer yok. Çözümün iki parçası var:</p>
+<ol><li><b>Eksen tablosu:</b> <code>UrunlerVeDiger</code>, 40 ürün adına bir “Diğer” satırı eklenmiş 41 satırlık bağlantısız bir tablo. Grafiğin eksenine bu tablonun <code>Urun</code> sütunu konur.</li>
+<li><b>Ölçü:</b> hazır <code>[Satış (Top N + Diğer)]</code> ölçüsü her eksen değeri için karar verir. Değer ilk N’deyse o ürünün satışını, “Diğer” ise genel toplam eksi ilk N toplamını döndürür, kalan ürünler için BLANK döndürür ve çubuk görünmez.</li></ol>
+<p>N = 5 iken grafik şöyle görünür: 27" Monitör 101.986 ₺, Akıllı Saat 61.757 ₺, Türk Kahvesi Makinesi 53.963 ₺, Robot Süpürge 49.494 ₺, Kamp Çadırı 48.181 ₺ ve Diğer 935.391 ₺. Sağlama: ilk 5’in toplamı 315.381 ₺ + Diğer 935.391 ₺ = 1.250.772 ₺, yani [Net Satış]’ın tamamı. Grafik hiçbir satışı kaybetmez.</p>
+<h3>Dinamik N</h3>
+<p><code>TopNSecim</code> tablosu 3’ten 15’e kadar N değerlerini tutar. Bu tabloyu bir dilimleyiciye koyarsın, ölçü <code>SELECTEDVALUE(TopNSecim[N], 5)</code> ile seçimi okur; seçim yoksa 5 kullanır. Kullanıcı 10 seçerse Diğer 727.113 ₺’ye iner.</p>
+<div class="warn"><b>Sıralama tuzağı</b>Grafiği değere göre azalan sıralarsan “Diğer” en büyük çubuk olur ve en başa geçer. Çözüm: Diğer için büyük bir sıra numarası döndüren bir yardımcı sıra ölçüsü yazıp araç ipucu (Tooltip) alanına eklemek ve grafiği o alana göre sıralamak.</div>
+<div class="note"><b>Üretim notu: RANKX’in maliyeti</b>RANKX her hücrede, sıralama tablosundaki her satır için ölçüyü yeniden hesaplar. 40 ürünlük bir tabloda bu 40 × 40 = 1.600 hesaptır ve fark edilmez. 20.000 müşterilik bir tabloda ise yüz milyonlarca hesaba çıkar. Büyük boyutlarda sıralama tablosunu daralt (<code>ALLSELECTED</code>, ya da yalnızca satışı olanlar), sıra numarasını görselde değil yalnızca gereken sayfada kullan ve süreyi Performans Analizi (Performance analyzer) ile ölç.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-siralama">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../var-mantik/">← VAR / RETURN, IF ve SWITCH</a><a href="../pq-orta/">Power Query: birleştirme, ekleme, özetten çıkarma →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,54 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz? | Kesit Power BI</title><meta name="description" content="İş yüküne göre Copilot, durum etiketleri, kapasite ve bölge şartları, gönderilen veri, Data Factory’deki sınırlar; “Copilot yaptı” dedikten sonra…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-copilot/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz?"><meta property="og:description" content="İş yüküne göre Copilot, durum etiketleri, kapasite ve bölge şartları, gönderilen veri, Data Factory’deki sınırlar; “Copilot yaptı” dedikten sonra…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-copilot/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz?","description":"İş yüküne göre Copilot, durum etiketleri, kapasite ve bölge şartları, gönderilen veri, Data Factory’deki sınırlar; “Copilot yaptı” dedikten sonra…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-copilot/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz?</h1><p class="st-l">İş yüküne göre Copilot, durum etiketleri, kapasite ve bölge şartları, gönderilen veri, Data Factory’deki sınırlar; “Copilot yaptı” dedikten sonra doğrulama akışı ve veri ajanı ile farkı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-copilot">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Copilot’un en büyük riski, yapamadıkları değil, <b>yaptığını doğru sanman</b>dır. Rapor bölmesi, model hazırlığı ve “Yapay zekâ için verileri hazırla” “Copilot ile çalışmak” dersinde anlatıldı. Bu ders Fabric’in geri kalanına bakar ve abartmadan ne bekleyeceğini gösterir.</p>
+<div class="warn"><b>Bu tablo hızla eskir</b>Bilgiler Kasım 2026’da Learn’den okundu. Learn’ün iki sayfası her zaman aynı terimi kullanmıyor; bir özellik “genel kullanım” derken diğeri tüm yapay zekâ özelliklerini “önizleme” olarak anabilir. Karar vermeden önce resmî sayfayı aç.</div>
+<h2>Nerede ne yapar?</h2>
+<div class="tbl-wrap"><table><tr><th>İş yükü</th><th>Copilot ne yapabilir?</th><th>Durum (Learn)</th></tr>
+<tr><td>Power BI rapor bölmesi</td><td>Veriyle sohbet, özet, görsel; düzenlemede sayfa önerisi</td><td>Genel kullanım</td></tr>
+<tr><td>Bağımsız Power BI ajanı</td><td>Rapor ve modelleri arar, soruyu yönlendirir</td><td>Önizleme</td></tr>
+<tr><td>Uygulama içi Copilot</td><td>Yalnız uygulama içeriği ve kullanıcının izni</td><td>Önizleme</td></tr>
+<tr><td>Web modelleme</td><td>Model sorunlarını bulur, ölçü ve nesne düzenler</td><td>Önizleme</td></tr>
+<tr><td>Data Factory</td><td>Dataflow Gen2’de sorgu ve adım; işlem hattında üretme, özetleme, hata ve ifade yardımı</td><td>Ayrıntı sayfası etiketlemiyor; Copilot genel sayfası önizleme diyor</td></tr>
+<tr><td>Not defteri</td><td>Kod üretme, düzenleme, hata düzeltme (Fix with Copilot önizleme)</td><td>Önizleme</td></tr>
+<tr><td>Ambar</td><td>Doğal dilden SQL, kod tamamlama</td><td>Önizleme</td></tr>
+<tr><td>Real-Time Intelligence</td><td>Doğal dilden KQL</td><td>Önizleme</td></tr></table></div>
+<h2>Şartlar</h2>
+<ul><li><b>Kapasite:</b> ücretli Fabric F2 ve üstü ya da Power BI Premium P SKU. <b>Pro ya da PPU tek başına yetmez.</b> Yeni açılan ya da büyütülen kapasitede 24 saate kadar gecikebilir.</li><li><b>Deneme:</b> Copilot, veri ajanı ve yapay zekâ fonksiyonları deneme kapasitesinde çalışmaz. Öğrenirken bunu kapasitesiz deneyemezsin.</li><li><b>Kiracı:</b> “Users can use Copilot and other features powered by Azure OpenAI” açık olmalı. Bazı önizlemeler ayrı ayara bağlıdır.</li><li><b>Bölge:</b> ABD ve AB veri sınırı dışındaki kapasitelerde kapalı başlar; bölgeler arası işleme ayarı yöneticidedir. Bağımsız deneyim bazı bölgelerde yoktur; güncel listeye bak.</li><li><b>Tüketim:</b> kapasite birimi harcar. Ayrı Fabric Copilot kapasitesi faturayı ayırır.</li></ul>
+<h2>Veri nereye gider?</h2>
+<p>Learn’ün iki sayfası bu konuda aynı kesinlikte değil. Genel bakış sayfası prompt, sistem istemi, şema ve sohbet geçmişinin gittiğini, tablo içeriğinin kullanıcı yönlendirmedikçe gitmediğini yazar. Gizlilik ve güvenlik sayfası ise temel alma verisinin (grounding) “şema, belirli veri noktaları ve göreve ilişkin başka bilgiler” içerebileceğini söyler ve ayrıntıyı her iş yükünün kendi sayfasına bırakır. Yani “satır gitmez” diye kesin konuşma: hassas veride kullandığın iş yükünün sayfasını oku. Aynı sayfaya göre veri model eğitiminde kullanılmaz, Copilot yalnız kullanıcının izinli olduğu veriye erişir. Veri sınıflandırma ve hukuk kuralları için yine kuruluşun onayını al. Prompta <b>gerçek müşteri listesi yapıştırma</b>. RLS kullanıcının izinleriyle çalışır; ama veri şemasında maaş gibi alanları açmak gerekmiyorsa açma.</p>
+<h2>Data Factory’de sınırlar</h2>
+<p>Dataflow Gen2 Copilot’u için Learn şunları açıkça yazar:</p>
+<ul><li>Bir istekte birden çok sorgu üzerinde dönüşüm yapamaz: “tüm sorgularda başlıkları büyüt” olmaz.</li><li>Önceki istemin bağlamını korumaz; onaylanan değişikliği geri alamaz (arayüzden silersin).</li><li>Örneklenmiş veri dışındaki sorularda yanlış cevap verebilir.</li><li><b>Desteklemediği isteği her zaman söylemez.</b> İstatistik analizi gibi bir istek hata göstermeden sonuçsuz kalabilir.</li></ul>
+<p>Son madde en önemlisidir: “hiçbir şey olmadı” sonucu “bir şey doğru yapıldı” demek değildir.</p>
+<h2>Doğrulama akışı</h2>
+<ol><li><b>Ne istediğini ölçülebilir yaz.</b> “Satışları temizle” değil, “Tutar’ı decimal yap, Durum İptal olanları çıkar”.</li><li><b>Üretileni oku.</b> Adım, SQL, kod. Anlamadığını kabul etme.</li><li><b>Bilinen sayıyla sına.</b> Bu modelde Net Satış 1.250.772,45.</li><li><b>Kenar durum:</b> boş, sıfır, çoklu seçim, toplam satırı.</li><li><b>Sahipliği devretme.</b> Üretime giden her şeyi bir kişi anlamış olmalı. “Copilot yazdı” bir mazeret değildir.</li></ol>
+<p>DAX üretimi için kontrol listesi “Yapay zekânın yazdığı DAX’ı denetlemek” dersinde. Copilot’tan gelen tipik hata iptalleri atlamaktır. Doğru sayıyla kıyasla:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Copilot Önerisi", SUM(Satislar[Tutar]),
+    "Doğru Tanım", [Net Satış],
+    "Fark", SUM(Satislar[Tutar]) - [Net Satış]
+)</pre>
+<p>Fark 95.417,40 ₺. Bu büyüklükte bir hata toplantıda fark edilir; küçük olsa fark edilmezdi.</p>
+<h2>Copilot, Fabric veri ajanı, Soru-Cevap</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Ne?</th><th>Dikkat</th></tr>
+<tr><td>Rapor Copilot’u</td><td>Açık raporla sohbet</td><td>Rapor bağlamı</td></tr>
+<tr><td>Veri ajanı (data agent)</td><td>Hazırladığın kaynaklar üzerinden sorulan soruları cevaplayan öğe</td><td>Denemede yok; talimat ve örnek sorularla kurulur, ayrı değerlendir</td></tr>
+<tr><td>Soru-Cevap (Q&amp;A)</td><td>Eski doğal dil</td><td>Learn: Şubat 2027’de kalkıyor (önceki duyurularda Aralık 2026). Yeni tasarımda kullanma</td></tr></table></div>
+<h2>Ne zaman kullan, ne zaman kullanma?</h2>
+<div class="tbl-wrap"><table><tr><th>İyi</th><th>Zayıf</th></tr>
+<tr><td>Başlangıç iskeleti, açıklama, hata iletisini okumak</td><td>Doğruluğu kritik mali tablo, tek başına</td></tr>
+<tr><td>Ölçü açıklaması, ifade yazmak</td><td>İş kuralını bilmesi gereken yorumlar</td></tr>
+<tr><td>Bilinmeyen sözdizimini hatırlatmak</td><td>İngilizce dışı dilde önemli sorular (resmî olarak desteklenmez)</td></tr></table></div>
+<p>Türkçe istemler çoğu zaman çalışır, ama resmî destek yoktur. Önemli soruda İngilizce sor ve cevabı doğrula.</p>
+<div class="tip"><b>Deneyemezsen</b>Copilot için ücretli kapasite gerekir; bu uygulamada Copilot yoktur. Yine de doğrulama akışını burada öğrenebilirsin: “Yapay zekânın yazdığı DAX’ı denetlemek” dersindeki bozuk ölçüleri düzelt, aynı refleksi gerçek Copilot’ta kullan.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-copilot">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-anlam-modeli/">← Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek</a><span></span></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

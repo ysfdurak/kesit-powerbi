@@ -3366,7 +3366,7 @@ W.PBI_MENUS = [
       ['İçeri aktar (Import)', 'Power BI şablonu (.pbit), Excel çalışma kitabı içeriği (Power Pivot modeli) ya da özel görsel (.pbiviz) içeri aktarır.', 'Excel\'deki Power Pivot modelini Power BI\'a taşırken; AppSource dışı özel görsel eklerken.', 'aile'],
       ['Dışa aktar → Power BI şablonu (Export → Power BI template)', 'Veri olmadan model, ölçüler ve rapor tasarımını .pbit dosyasına kaydeder.', 'Standart bir rapor başlangıcını ekiple paylaşmak için.', 'yasam-dongusu'],
       ['Dışa aktar → PDF (Export → PDF)', 'Görünür sayfaları PDF\'e aktarır.', 'Hızlı paylaşım; resmî belge için sayfalandırılmış rapor daha uygundur.', 'sayfalandirilmis'],
-      ['Yayımla (Publish)', 'Raporu ve modeli Power BI Service\'te bir çalışma alanına gönderir.', 'Geliştirme bitince; önce kaydet.', 'yayinlama'],
+      ['Yayımla (Publish)', 'Raporu ve modeli Power BI Service\'te bir çalışma alanına gönderir.', 'Geliştirme bitince; önce kaydet.', 'calisma-alani'],
       ['Seçenekler ve ayarlar → Seçenekler (Options and settings → Options)', 'Genel (Genel: önizleme özellikleri, bölgesel ayarlar, güvenlik) ve Geçerli dosya (Veri yükleme: otomatik tarih/saat, ilişkileri otomatik algıla; Rapor ayarları: dışa aktarma, kişiselleştirme) ayarları.', 'Her yeni projede: otomatik tarih/saati kapat, bölgesel ayarı kontrol et.', 'tarih-tablosu'],
       ['Seçenekler ve ayarlar → Veri kaynağı ayarları (Options and settings → Data source settings)', 'Kaynakların kimlik bilgilerini ve gizlilik düzeylerini düzenler; kaynağı değiştirir.', 'Sunucu/dosya yolu değiştiğinde, “Formula.Firewall” hatasında.', 'pq-model']
     ] },
@@ -3383,13 +3383,13 @@ W.PBI_MENUS = [
       ['Metin kutusu / Daha fazla görsel (Text box / More visuals)', 'Metin ya da AppSource\'tan özel görsel ekler.', 'Açıklama metni, madde grafiği gibi özel görseller.', 'gorsel-secimi'],
       ['Yeni ölçü / Hızlı ölçü (New measure / Quick measure)', 'DAX ölçüsü ya da sihirbazla hızlı ölçü oluşturur.', 'Her hesap için açık ölçü yaz.', 'dax-giris'],
       ['Duyarlılık (Sensitivity)', 'Rapora Microsoft Purview duyarlılık etiketi uygular.', 'Gizli veri içeren raporlarda.', 'yonetisim'],
-      ['Yayımla (Publish)', 'Service\'e yayımlar.', 'Geliştirme sonu.', 'yayinlama'],
+      ['Yayımla (Publish)', 'Service\'e yayımlar.', 'Geliştirme sonu.', 'calisma-alani'],
       ['Copilot', 'Copilot bölmesini açar: rapor sayfası önerisi, anlatı, model özeti, DAX yardımı.', 'Fikir ve ilk taslak için; sonucu her zaman doğrula.', 'hizli-olcu']
     ] },
     { id: 'ekle', name: 'Ekle', desc: 'Sayfaya eklenen öğeler: sayfalar, görseller, yapay zekâ görselleri, şekiller, düğmeler.', cmds: [
       ['Yeni sayfa / Sayfayı çoğalt (New page / Duplicate page)', 'Boş sayfa ya da mevcut sayfanın kopyası.', 'Aynı düzende farklı konu için çoğalt.', 'tema-sayfa'],
       ['Yeni görsel (New visual)', 'Boş görsel.', 'Tasarım.', 'gorsel-temel'],
-      ['Soru-Cevap (Q&A; kaldırılıyor)', 'Doğal dil sorusuyla görsel üreten eski Soru-Cevap görseli. Microsoft Aralık 2026’da tamamen kaldırıyor; mevcut Soru-Cevap görselleri de çalışmayacak.', 'Yeni raporlarda kullanma; yerine Copilot (raporla sohbet) kullanılır.', 'analiz-ozellikleri'],
+      ['Soru-Cevap (Q&A; kaldırılıyor)', 'Doğal dil sorusuyla görsel üreten eski Soru-Cevap görseli. Microsoft kaldırıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026); mevcut Soru-Cevap görselleri de çalışmayacak.', 'Yeni raporlarda kullanma; yerine Copilot (raporla sohbet) kullanılır.', 'analiz-ozellikleri'],
       ['Anahtar etkileyiciler (Key influencers)', 'Bir sonucu en çok etkileyen alanları bulan yapay zekâ görseli.', '“İadeyi ne artırıyor?”', 'analiz-ozellikleri'],
       ['Ayrıştırma ağacı (Decomposition tree)', 'Bir ölçüyü boyutlara dallandırarak ayrıştırır.', 'Kök neden analizi, sunumda canlı keşif.', 'analiz-ozellikleri'],
       ['Anlatı (Narrative)', 'Sayfanın verisini özetleyen dinamik metin (Copilot / akıllı anlatı).', 'Yönetici özetine bir paragraf.', 'analiz-ozellikleri'],
@@ -3411,7 +3411,7 @@ W.PBI_MENUS = [
       ['Hesaplama grubu (Calculation group)', 'Ölçülere uygulanan hesaplama öğeleri (SELECTEDMEASURE) oluşturur.', 'Zaman zekâsı varyasyonları, para birimi.', 'hesaplama-gruplari'],
       ['Rolleri yönet (Manage roles)', 'RLS rolleri ve DAX filtre ifadeleri.', 'Statik/dinamik satır düzeyi güvenlik.', 'guvenlik'],
       ['Farklı görüntüle (View as)', 'Raporu bir rolün ya da kullanıcının gözünden gösterir.', 'RLS testi.', 'guvenlik'],
-      ['Soru-Cevap kurulumu (Q&A setup; kaldırılıyor)', 'Eş anlamlılar ve dil öğretme. Aralık 2026’da Soru-Cevap ile birlikte kalkıyor; yerini Giriş → Yapay zekâ için verileri hazırla (Prep data for AI) alıyor.', 'Copilot’un modeli doğru anlaması için yapay zekâ veri şeması, onaylı cevaplar ve yapay zekâ talimatları tanımla.', 'analiz-ozellikleri']
+      ['Soru-Cevap kurulumu (Q&A setup; kaldırılıyor)', 'Eş anlamlılar ve dil öğretme. Soru-Cevap ile birlikte kalkıyor; yerini Giriş → Yapay zekâ için verileri hazırla (Prep data for AI) alıyor.', 'Copilot’un modeli doğru anlaması için yapay zekâ veri şeması, onaylı cevaplar ve yapay zekâ talimatları tanımla.', 'analiz-ozellikleri']
     ] },
     { id: 'gorunum', name: 'Görünüm', desc: 'Tema, düzen, mobil görünüm ve yardımcı bölmeler.', cmds: [
       ['Temalar (Themes)', 'Hazır tema seç, özelleştir, JSON yükle/kaydet.', 'Proje başında kurumsal tema.', 'tema-sayfa'],
@@ -3554,17 +3554,17 @@ W.PBI_MENUS = [
   { grp: 'Power BI Service', tabs: [
     { id: 'srv-calisma', name: 'Çalışma alanı', desc: 'İçeriklerin ve ekibin yönetildiği alan.', cmds: [
       ['Yeni öğe (New item)', 'Rapor, pano, sayfalandırılmış rapor, anlam modeli, veri akışı (Fabric\'te lakehouse, not defteri…).', '—', 'yayinlama'],
-      ['Erişimi yönet (Manage access)', 'Yönetici, Üye, Katkıda bulunan, Görüntüleyici rolleri.', 'Ekip yetkileri.', 'yonetisim'],
+      ['Erişimi yönet (Manage access)', 'Yönetici, Üye, Katkıda bulunan, Görüntüleyici rolleri.', 'Ekip yetkileri.', 'calisma-alani'],
       ['Çalışma alanı ayarları (Workspace settings)', 'Ad, açıklama, kapasite/lisans modu, Git tümleştirmesi, OneLake.', 'Kurulum.', 'yasam-dongusu'],
-      ['Uygulama oluştur / güncelle (Create / Update app)', 'İçeriği kitlelere paketler; gezinme ve izinler.', 'Son kullanıcı dağıtımı.', 'yayinlama'],
+      ['Uygulama oluştur / güncelle (Create / Update app)', 'İçeriği kitlelere paketler; gezinme ve izinler.', 'Son kullanıcı dağıtımı.', 'power-bi-apps'],
       ['Dağıtım işlem hattı oluştur (Create deployment pipeline)', 'Geliştirme → Test → Üretim.', 'Kurumsal yaşam döngüsü.', 'yasam-dongusu'],
       ['Soy görünümü (Lineage view)', 'Kaynaktan rapora öğeler arası bağımlılıklar.', 'Etki analizi.', 'yasam-dongusu']
     ] },
     { id: 'srv-model', name: 'Anlam modeli ayarları', desc: 'Yayımlanmış modelin ayarları.', cmds: [
-      ['Ağ geçidi ve bulut bağlantıları (Gateway and cloud connections)', 'Kaynakların hangi ağ geçidi/bağlantı ile kullanılacağı.', 'Şirket içi kaynaklar.', 'yonetisim'],
-      ['Veri kaynağı kimlik bilgileri (Data source credentials)', 'Yenileme için kimlik bilgisi.', 'İlk yayımdan sonra.', 'yayinlama'],
+      ['Ağ geçidi ve bulut bağlantıları (Gateway and cloud connections)', 'Kaynakların hangi ağ geçidi/bağlantı ile kullanılacağı.', 'Şirket içi kaynaklar.', 'gateway'],
+      ['Veri kaynağı kimlik bilgileri (Data source credentials)', 'Yenileme için kimlik bilgisi.', 'İlk yayımdan sonra.', 'veri-yenileme'],
       ['Parametreler (Parameters)', 'Power Query parametrelerinin değerleri.', 'Ortam değişimi.', 'pq-model'],
-      ['Zamanlanmış yenileme (Scheduled refresh)', 'Gün/saat ve başarısızlık bildirimi.', 'Import modeller.', 'yayinlama'],
+      ['Zamanlanmış yenileme (Scheduled refresh)', 'Gün/saat ve başarısızlık bildirimi.', 'Import modeller.', 'veri-yenileme'],
       ['Satır düzeyi güvenlik (Row-level security)', 'Rollere kullanıcı ve grup atama; Rol olarak test et.', 'RLS dağıtımı.', 'guvenlik'],
       ['Onaylama (Endorsement)', 'Tanıt ya da sertifikala.', 'Doğru modeli bulunur kılmak.', 'yonetisim'],
       ['Büyük anlam modeli depolama biçimi (Large semantic model storage format)', 'Büyük model biçimini açar.', 'Kapasitede büyük modeller.', 'kurumsal-model'],
@@ -3573,17 +3573,19 @@ W.PBI_MENUS = [
     { id: 'srv-rapor', name: 'Rapor menüsü', desc: 'Service\'te bir rapor açıkken üst çubuk.', cmds: [
       ['Dosya → Kopyasını kaydet / İndir (.pbix) / Yazdır (File → Save a copy / Download / Print)', 'Rapor dosyası işlemleri.', '—', 'yayinlama'],
       ['Dışa aktar → PowerPoint / PDF / Excel\'de analiz et (Export → PowerPoint / PDF / Analyze in Excel)', 'Excel\'de analiz et: modele Excel pivot tablosuyla bağlanır (Derleme izni gerekir).', 'Excel kullanıcıları için.', 'yonetisim'],
-      ['Paylaş / Sohbet (Teams) / Bağlantı kopyala (Share / Chat in Teams / Copy link)', 'Kişi ya da grupla paylaşma.', 'Hızlı paylaşım.', 'yonetisim'],
+      ['Paylaş / Sohbet (Teams) / Bağlantı kopyala (Share / Chat in Teams / Copy link)', 'Kişi ya da grupla paylaşma.', 'Hızlı paylaşım.', 'paylasim'],
       ['Abone ol (Subscribe)', 'Düzenli e-posta anlık görüntüsü.', 'Yöneticilere haftalık özet.', 'yonetisim'],
       ['Düzenle (Edit)', 'Raporu tarayıcıda düzenler.', 'Küçük değişiklikler.', 'yayinlama'],
       ['Görünüm → Kişisel yer işaretleri / Odak modu / Sayfayı tam ekran (View → Personal bookmarks / Focus mode / Full screen)', 'Okuyucu özellikleri.', '—', 'hikaye'],
-      ['Sabitle (Pin visual)', 'Görseli bir panoya sabitler.', 'Pano oluşturma.', 'yonetisim'],
-      ['Uyarı ayarla (Set alert, pano kutucuğu)', 'Eşik aşılınca bildirim.', 'Kart, KPI, gösterge kutucuklarında.', 'yonetisim']
+      ['Sabitle (Pin visual)', 'Görseli bir panoya sabitler.', 'Pano oluşturma.', 'panolar'],
+      ['Uyarı ayarla (Set alert, pano kutucuğu)', 'Eşik aşılınca bildirim.', 'Kart, KPI, gösterge kutucuklarında.', 'panolar'],
+      ['Yorum (Comment)', 'Rapora ya da görsele konuşma ekler; @ ile kişiye bildirim gider, filtreler saklanır.', 'Bir sayıyı kişiye sorarken.', 'yorum-isbirligi'],
+      ['Kullanım ölçümlerini aç (Open usage metrics)', 'Rapor görüntüleme, tekil kişi ve açılma süresi; son 30 gün.', 'Kullanımı ölçerken.', 'kullanim-izleme']
     ] },
     { id: 'srv-yonetici', name: 'Yönetici portalı', desc: 'Kiracı yöneticisinin ayarları (özet).', cmds: [
       ['Kiracı ayarları (Tenant settings)', 'Web\'de yayımla, dışa aktarma, Copilot, özel görseller, sertifikalama kimlerin yapabileceği.', 'Kuruluş politikaları.', 'yonetisim'],
       ['Kapasite ayarları (Capacity settings)', 'Fabric/Premium kapasiteleri, iş yükleri, XMLA okuma-yazma.', 'Kurumsal model.', 'kurumsal-model'],
-      ['Denetim ve kullanım ölçümleri (Audit and usage metrics)', 'Kim neye ne zaman baktı.', 'Benimseme ve güvenlik.', 'yonetisim']
+      ['Denetim ve kullanım ölçümleri (Audit and usage metrics)', 'Kim neye ne zaman baktı.', 'Benimseme ve güvenlik.', 'kullanim-izleme']
     ] }
   ] }
 ];
@@ -3697,7 +3699,7 @@ W.PBI_TRICKS = [
     steps: ['Çizgi grafik (sürekli tarih ekseni) → Analiz → Anomali bul.', 'Duyarlılığı ayarla.', 'İşaretli noktaya tıkla: Power BI olası açıklamaları (en çok katkı veren boyutları) listeler.'],
     why: 'Gözden kaçan sapmaları bulur; açıklama bölmesi kök neden aramayı hızlandırır.' },
   { id: 'qa-synonyms', cat: 'Analiz', lv: 'B2', title: 'Copilot için modeli hazırla (Soru-Cevap’ın yerine)',
-    desc: 'Soru-Cevap ve Soru-Cevap kurulumu Aralık 2026’da kaldırılıyor. Doğal dille soru sormanın yeni yolu Copilot; onun doğru cevap vermesi de modelin “okunabilir” olmasına bağlı.',
+    desc: 'Soru-Cevap ve kurulumu kaldırılıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026). Doğal dille soru sormanın yeni yolu Copilot; onun doğru cevap vermesi de modelin “okunabilir” olmasına bağlı.',
     steps: ['Giriş → Yapay zekâ için verileri hazırla (Prep data for AI): Copilot’un kullanacağı tabloları ve alanları seç (yapay zekâ veri şeması).', 'Sık sorulan sorular için onaylı cevaplar (verified answers) tanımla: soru ifadesi + doğru görsel.', 'Yapay zekâ talimatlarına iş terimlerini yaz: “ciro = [Net Satış]”, “mali yıl Temmuz’da başlar”.', 'Ölçülere ve sütunlara anlaşılır ad ve açıklama ver; teknik anahtarları gizle.'],
     why: 'Eskiden Soru-Cevap eş anlamlılarıyla yapılan iş artık bu hazırlıkla yapılıyor; kötü adlandırılmış bir model Copilot’ta da kötü cevap üretir.' },
   { id: 'interactions', cat: 'Etkileşim', lv: 'B1', title: 'Etkileşimleri düzenle',
@@ -8625,7 +8627,7 @@ CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış]))</pre>
 <ul>
 <li><b>Anahtar etkileyiciler:</b> Bir ölçüyü en çok neyin artırıp azalttığını bulur.</li>
 <li><b>Ayrıştırma ağacı:</b> Bir toplamı istediğin sırayla alt boyutlara böler.</li>
-<li><b>Copilot:</b> “2024'te kategoriye göre net satış” gibi doğal dil soruları. (Eski Soru-Cevap özelliği Aralık 2026'da kaldırılıyor.)</li>
+<li><b>Copilot:</b> “2024'te kategoriye göre net satış” gibi doğal dil soruları. (Eski Soru-Cevap özelliği kaldırılıyor; Learn: Şubat 2027.)</li>
 </ul>
 `,
   ex: [
@@ -9679,7 +9681,7 @@ AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
 <tr><th>Görsel</th><th>Soru</th><th>Kurulum</th></tr>
 <tr><td><b>Anahtar etkileyiciler</b></td><td>“İade olasılığını en çok ne artırıyor?”</td><td>Çözümle: hedef (Durum = İade ya da bir ölçü). Açıklayan: Kanal, Kategori, İndirim bandı…</td></tr>
 <tr><td><b>Ayrıştırma ağacı</b></td><td>“Bu toplam hangi parçalardan oluşuyor?”</td><td>Çözümle: ölçü. Açıklama ölçütü: boyutlar. Kullanıcı istediği sırayla dallanır; “Yüksek değer” yapay zekâ bölmesi en büyük dalı kendisi seçer.</td></tr>
-<tr><td><b>Copilot (Soru-Cevap’ın yerine)</b></td><td>Doğal dil soruları, rapor özeti</td><td>Soru-Cevap Aralık 2026’da kaldırılıyor. Copilot’un doğru cevap vermesi için Giriş → Yapay zekâ için verileri hazırla: veri şeması, onaylı cevaplar, yapay zekâ talimatları (ciro = Net Satış).</td></tr>
+<tr><td><b>Copilot (Soru-Cevap’ın yerine)</b></td><td>Doğal dil soruları, rapor özeti</td><td>Soru-Cevap kaldırılıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026). Copilot’un doğru cevap vermesi için Giriş → Yapay zekâ için verileri hazırla: veri şeması, onaylı cevaplar, yapay zekâ talimatları (ciro = Net Satış).</td></tr>
 <tr><td><b>Anlatı</b> (Copilot / akıllı anlatı)</td><td>Sayfanın özetini metin olarak yaz</td><td>Ekle → Anlatı. Metin filtrelerle güncellenir.</td></tr>
 </table></div>
 <h2>Aykırı değer ve anomali</h2>
@@ -10329,11 +10331,13 @@ AnadoluMarket.Report/
 <h2>Sınav hakkında</h2>
 <p><b>DP-600: Implementing Analytics Solutions Using Microsoft Fabric</b> sınavını geçenler <i>Microsoft Certified: Fabric Analytics Engineer Associate</i> unvanını alır. PL-300'ün bir üst basamağı gibi düşünülebilir: rapor yazmaktan çok veriyi hazırlamak, kurumsal anlam modeli kurmak ve çözümü yönetmek ölçülür. Geçme puanı 1000 üzerinden 700'dür.</p>
 <h2>Ölçülen beceriler (Ekim 2026)</h2>
+<div class="warn"><b>Listeyi kendin kontrol et</b>Sertifika sayfası (Ekim 2026) üç alan gösteriyor ve aşağıdaki tablo ona dayanıyor. Kasım 2026’daki kontrolde çalışma kılavuzunun bazı dil sürümleri eski dört alanlı listeyi gösterdi. Sınava girmeden önce resmî kılavuzda “Skills measured” tarihini kendin oku.</div>
+
 <div class="tbl-wrap"><table>
 <tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
-<tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Güvenlik, Yönetişim, Yaşam döngüsü, Kurumsal model</td></tr>
-<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
-<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, DAX optimizasyonu</td></tr>
+<tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yerel geliştirme, Yaşam döngüsü, Kurumsal model, Kullanım ve izleme</td></tr>
+<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>OneLake, Lakehouse, Data Factory, İşlem hatları, Ağ geçidi, ödevler, Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
+<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
 </table></div>
 <h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
 <ul>
@@ -10820,7 +10824,7 @@ add('gorsel-temel', {
 
 <h2>Copilot’a soru sormak</h2>
 <p>Rapor açıkken <b>Copilot</b> bölmesini açıp doğal dille sorabilirsin: “Bu sayfayı özetle”, “2024’te hangi kategori hedefin üstünde?”. Bizim modelde doğru cevap <b>Kitap</b>’tır (hedef gerçekleşme %100,2); diğer altı kategori hedefin altında. Copilot cevabını rapordaki görsellerle karşılaştır; özellikle “neden” sorularında yorum yapar, kanıt göstermez.</p>
-<div class="warn"><b>Copilot herkese açık değil</b>Copilot, çalışma alanı ücretli bir Fabric (F2 ve üstü) ya da Power BI Premium (P1 ve üstü) kapasitesindeyse ya da kurumda bir Fabric Copilot kapasitesi tanımlıysa çalışır. Deneme kapasitelerinde çalışmaz; yönetici kiracı ya da kapasite ayarından kapatmış olabilir. Yalnızca Pro lisanslı paylaşılan bir çalışma alanındaki raporda Copilot bölmesi görünmüyorsa sebep genellikle budur. Eski Soru-Cevap (Q&amp;A) özelliği Aralık 2026’da kaldırılıyor; doğal dil soruları Copilot’la soruluyor.</div>
+<div class="warn"><b>Copilot herkese açık değil</b>Copilot, çalışma alanı ücretli bir Fabric (F2 ve üstü) ya da Power BI Premium (P1 ve üstü) kapasitesindeyse ya da kurumda bir Fabric Copilot kapasitesi tanımlıysa çalışır. Deneme kapasitelerinde çalışmaz; yönetici kiracı ya da kapasite ayarından kapatmış olabilir. Yalnızca Pro lisanslı paylaşılan bir çalışma alanındaki raporda Copilot bölmesi görünmüyorsa sebep genellikle budur. Eski Soru-Cevap (Q&amp;A) özelliği kaldırılıyor (Learn: Şubat 2027); doğal dil soruları Copilot’la soruluyor.</div>
 <div class="tip"><b>Kullanıcı gibi test et</b>Raporu yayımladıktan sonra Service’te bir “Görüntüleyici” hesabıyla aç: filtreleri değiştir, varsayılana sıfırla, Excel’e aktar, kişisel yer işareti ekle. Kullanıcının takıldığı yer, tasarımın düzeltilecek yeridir.</div>
 `,
   ex: [
@@ -18157,6 +18161,1045 @@ DESCRIBE DETAIL Musteriler_Temiz;</pre>
 
 ;
 
+/* ===== c25.js ===== */
+/* Kesit Power BI — c25: Service, paylaşım, yenileme, ağ geçidi, çoklu kaynak ve yerel geliştirme dersleri.
+   Ürün ayrıntıları Kasım 2026'da Microsoft Learn'den doğrulandı; emin olunamayan yerde "resmî belgeye bak" yazar. */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O && !O.includes(lesson.id)) { const i = O.indexOf(after); O.splice(i < 0 ? O.length : i + 1, 0, lesson.id); } };
+const S = (op, cols, x) => Object.assign({ op, cols: cols || [] }, x || {});
+const BA = [S('removeTop', [], { n: 1 }), S('promote'), S('removeCols', ['Not'])];
+const BB = [S('trim', ['Şehir']), S('proper', ['Şehir']), S('replace', ['Tutar'], { find: '-', repl: 'null', whole: true }), S('type', ['Tutar'], { to: 'number' })];
+const BC = [S('removeBlank'), S('distinct'), S('type', ['Tarih'], { to: 'date' }), S('removeErrors', ['Tarih'])];
+const TEMIZ = BA.concat(BB, BC);
+const ORTAM = '<div class="tip"><b>Kendi ortamında dene</b>';
+
+/* ---------- Çoklu veri kaynağı ---------- */
+add('pq-orta', {
+  id: 'coklu-kaynak', lv: 'B1', mod: 'Veri Hazırlama', min: 30,
+  title: 'Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir',
+  sum: 'SQL, Excel, SharePoint ve web kaynağını tek modelde toplamak. Sorguları eklemek mi, birleştirmek mi, ilişki kurmak mı? Gizlilik düzeyi, sorgu katlama ve yenileme sonuçları; Power Query Lab’de iki kaynakla çalışan alıştırmalar.',
+  body: `
+<p>Gerçek bir raporda veri tek yerden gelmez. Anadolu Market’te satış satırları şirket içindeki SQL Server’da, hedefler finansın SharePoint’teki Excel dosyasında, bayi raporları ortak klasördeki CSV’lerde, döviz kuru ise merkez bankasının sitesinde. <b>Birden çok kaynağı bağlamak kolaydır; zor olan, hangi işi nerede yapacağına karar vermektir.</b> Bu ders dört kaynağı tek modele indirirken sorulması gereken soruları ve yanlış kararın sonuçlarını anlatır.</p>
+<h2>Üç yol: ekle, birleştir, ilişkilendir</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne yapar?</th><th>Ne zaman?</th><th>Yanlış kullanılırsa</th></tr>
+<tr><td><b>Sorguları ekle (Append)</b></td><td>Aynı yapıdaki tabloları alt alta koyar; satır sayısı artar.</td><td>Ocak ve Şubat dosyaları, şube dosyaları</td><td>Sütun adı farklıysa (“Şehir” ve “Sehir”) iki sütun oluşur, boşluklar null kalır.</td></tr>
+<tr><td><b>Sorguları birleştir (Merge)</b></td><td>Bir anahtarla yan yana getirir; sütun sayısı artar.</td><td>Boyutu düzleştirmek, olguya tek bir öznitelik eklemek</td><td>Sağ tabloda anahtar yinelenirse satırlar çoğalır, toplamlar şişer.</td></tr>
+<tr><td><b>Model ilişkisi</b></td><td>Tablolar ayrı kalır; filtre ilişkiden akar.</td><td>Olgu ve boyut, farklı taneciklikte hedef tablosu</td><td>Anahtar türleri uyuşmazsa ilişki kurulmaz; yetim satırlar boş satırda toplanır.</td></tr>
+</table></div>
+<p>Kural: <b>yeni bir olgu satırı geliyorsa ekle; bir boyutu ya da özniteliği tamamlıyorsan önce model ilişkisini düşün</b>, ancak tablo gerçekten tek bir boyuta inecekse birleştir. Yıldız şemanın nedeni “Veri modelleme” dersinde. Join türleri “Power Query: join türleri, dizin sütunu ve gruplu sıra” dersinde.</p>
+<h2>Önce temizle, sonra birleştir</h2>
+<p>Merge eşleşmesi büyük/küçük harfe ve boşluğa duyarlıdır. Bayi raporunda “ ANKARA ” yazıyorsa SharePoint listesindeki “Ankara” ile eşleşmez; sorgu hata vermez, sütun sessizce null gelir. Bu en sık yapılan çoklu kaynak hatasıdır: rapor açılır, görünür hiçbir sorun yoktur, ama bölge kırılımında büyük bir “(Boş)” satırı çıkar.</p>
+<ol><li>İki taraftaki anahtarın türünü eşitle (metin ve sayı karışmasın).</li><li>Kırp, harf biçimini tekleştir, görünmeyen karakterleri temizle.</li><li>Sağ tablonun anahtarını yinelenenlere karşı kontrol et.</li><li>Birleştirmeden sonra eşleşmeyen satırları say: sol karşıt (left anti) birleştirme tam bu sayıyı verir.</li></ol>
+<p>Power Query Lab’de bu akışı gerçekten yapacaksın: alıştırmalarda ikinci kaynak olarak SharePoint listesi ve Şubat CSV dosyası var.</p>
+<h2>Gizlilik düzeyi ve Formula.Firewall</h2>
+<p>Farklı kaynaklı iki sorgu birleşince Power Query bir kaynağın verisini ötekine gönderebilir. Gizlilik düzeyleri (Özel, Kuruluş, Genel) bunu sınırlar; ayarın yeri “Veri alma ve bağlantı modları” dersinde. Üç sonuç genelde atlanır:</p>
+<ul><li><b>Sorgu katlama kırılabilir.</b> Özel düzeyli bir CSV ile SQL Server tablosu birleşiyorsa motor filtreyi SQL’e gönderemez; bütün tabloyu çeker, sonra yerelde birleştirir. Yenileme yavaşlar.</li>
+<li><b>Masaüstü ayarı Service’e taşınmaz.</b> Microsoft Learn, Desktop’taki gizlilik ayarlarının yayımlanmadığını söyler. Yayımdan sonra anlam modeli ayarlarında (ağ geçidi varsa ağ geçidi bağlantısında) yeniden ver.</li>
+<li><b>“Yok say” Service’te seni kurtarmaz.</b> Desktop’ta gizlilik düzeylerini yok sayarak çalışan sorgu Service’te hata verebilir.</li></ul>
+<h2>Yenileme açısından çoklu kaynak</h2>
+<p>Her kaynağın yenileme yolu farklıdır, ama bir anlam modeli yalnız <b>bir ağ geçidi bağlantısı</b> kullanır. Aynı sorguda şirket içi SQL ile SharePoint Online birleşiyorsa bulut kaynağı da ağ geçidinden geçmek zorundadır: ağ geçidinde bulut kaynağı için bir veri kaynağı tanımı eklenir ya da “kullanıcının bulut veri kaynaklarının bu ağ geçidi kümesinden yenilenmesine izin ver” seçeneği açılır. Ayrıntı “On-premises data gateway” dersinde.</p>
+<div class="tbl-wrap"><table><tr><th>Kaynak</th><th>Kimlik bilgisi nerede?</th><th>Ağ geçidi?</th></tr>
+<tr><td>Şirket içi SQL Server</td><td>Ağ geçidi bağlantısı</td><td>Evet</td></tr>
+<tr><td>SharePoint Online Excel</td><td>Anlam modeli ayarları, Veri kaynağı kimlik bilgileri</td><td>Hayır (aynı sorguda şirket içiyle birleşiyorsa evet)</td></tr>
+<tr><td>Ağ klasöründeki CSV</td><td>Ağ geçidi bağlantısı</td><td>Evet</td></tr>
+<tr><td>Web sayfası</td><td>Anlam modeli ayarları</td><td>Hayır</td></tr></table></div>
+<p>Pratik sonuç: ağ klasöründeki dosyayı SharePoint’e taşımak çoğu zaman bir ağ geçidi bağımlılığını ortadan kaldırır. Dinamik adresli kaynaklar da Service’te yenilenmeyebilir; web kaynağında <code>Web.Contents</code> ile <code>RelativePath</code> ya da <code>Query</code> kullan.</p>
+<h2>Bileşik model ne zaman?</h2>
+<p>Her kaynağı Import etmek zorunda değilsin. Satışlar DirectQuery, hedefler Import olabilir; bu bir bileşik modeldir. Ama farklı kaynak gruplarındaki tablolar arasındaki ilişki <b>sınırlı ilişki</b> olur. Tablo tablo karar “Kurumsal model” dersinde. Başlangıç kuralı: veri yeterince küçükse hepsini Import et, karmaşıklığı ancak bir gereksinim zorlarsa ekle.</p>
+<h2>Kaynaklar arası mutabakat</h2>
+<p>İki kaynak birleşince “hangi sayı doğru?” sorusu çıkar. Excel’den gelen bir tabloyu modele bağlamadan önce DAX sorgu görünümünde sınayabilirsin. Aşağıdaki sorgu, Excel’den gelmiş gibi küçük bir hedef tablosunu sanal ilişkiyle (TREATAS) modele bağlar:</p>
+<pre class="dax">EVALUATE
+VAR ExcelHedef =
+    DATATABLE("Kategori", STRING, "Plan", INTEGER, {{"Kitap", 150000}, {"Elektronik", 350000}, {"Giyim", 200000}})
+RETURN
+    ADDCOLUMNS(ExcelHedef, "Net", CALCULATE([Net Satış], TREATAS({[Kategori]}, Kategoriler[Kategori])))</pre>
+<p>Sonuçta Kitap 151.882 ₺, Elektronik 339.304 ₺ gelir. Excel’de “Kitaplar” yazsaydı o satır boş kalırdı; sorun rapora çıkmadan görülürdü.</p>
+<div class="note"><b>Kontrol listesi</b>Her kaynağın sahibi ve yenileme sıklığı yazılı mı? · Anahtarlar temizlendi mi, türleri aynı mı? · Eşleşmeyen satır sayısı biliniyor mu? · Gizlilik düzeyi her kaynakta doğru mu, Service’te yeniden verildi mi? · Birleşen sorgu hâlâ katlanıyor mu (Yerel sorguyu görüntüle)? · Ağ geçidi gerekiyorsa bulut kaynağı da tanımlı mı?</div>
+`,
+  ex: [
+    { t: 'pq', src: 'bayi', pre: TEMIZ, sol: [S('append', [], { with: 'bayi_sub' })], q: '<b>İki ayı tek tabloda topla.</b> Temizlenmiş Ocak bayi tablosunun altına Şubat CSV sorgusunu ekle. Sonuç 11 satır olmalı.', hint: 'Giriş sekmesi → Birleştir grubu → Sorguları ekle. Sütun seçmen gerekmez; sütunlar ada göre eşleşir.' },
+    { t: 'pq', src: 'bayi', pre: TEMIZ, sol: [S('merge', ['Şehir'], { with: 'sehir_bolge', kind: 'left' })], q: '<b>Bölgeyi getir.</b> SharePoint listesini kullanarak her bayi satırına <code>Bölge</code> sütununu ekle. Hiçbir satır kaybolmamalı; satır sayısı 7 kalmalı.', hint: 'Şehir sütununu seç → Sorguları birleştir → ikinci sorgu Şehir ve bölge eşlemesi, tür Sol dış.' },
+    { t: 'pq', src: 'bayi', pre: BA, sol: [S('trim', ['Şehir']), S('proper', ['Şehir']), S('merge', ['Şehir'], { with: 'sehir_bolge', kind: 'left' })], q: '<b>Sessiz hatayı yakala.</b> Bu tablo henüz temizlenmedi. Şehirler “ istanbul ”, “ANKARA” gibi. Doğrudan birleştirirsen <code>Bölge</code> her satırda null gelir ve hata görmezsin. Önce şehirleri temizle, sonra <code>Bölge</code>’yi getir. Hedef tablodaki gibi yalnızca boş satırda ve eşleşmesi olmayan yerde null kalsın.', hint: 'Sıra önemli: Kırp → Her Sözcüğün İlk Harfi → Sorguları birleştir (Sol dış). Önce birleştirirsen adımı sil, yeniden sırala.' },
+    { t: 'pq', src: 'bayi', pre: TEMIZ.concat([S('merge', ['Şehir'], { with: 'sehir_bolge', kind: 'left' })]), sol: [S('group', ['Bölge'], { name: 'Toplam Tutar', agg: 'sum', src: 'Tutar' })], q: '<b>Bölge özeti çıkar.</b> Birleştirilmiş tabloyu <code>Bölge</code>’ye göre gruplandır; <code>Tutar</code>’ın toplamını <code>Toplam Tutar</code> adlı sütunda hesapla.', hint: 'Bölge sütununu seç → Gruplandırma ölçütü: yeni sütun adı Toplam Tutar, işlem Toplam, sütun Tutar.' },
+    { t: 'query', q: 'Excel’den gelen hedef tablosunu modele bağlamadan sına. <code>DATATABLE</code> ile <b>Kategori</b> (STRING) ve <b>Plan</b> (INTEGER) sütunlu üç satır yaz: Kitap 150000, Spor 90000, Giyim 200000. <code>ADDCOLUMNS</code> ile her satıra <code>TREATAS</code> üzerinden <code>[Net Satış]</code> değerini <b>Net</b> adıyla ekle.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR ExcelPlan = DATATABLE("Kategori", STRING, "Plan", INTEGER, {{"Kitap", 150000}, {"Spor", 90000}, {"Giyim", 200000}})\nRETURN ADDCOLUMNS(ExcelPlan, "Net", CALCULATE([Net Satış], TREATAS({[Kategori]}, Kategoriler[Kategori])))', hint: 'CALCULATE içinde TREATAS({[Kategori]}, Kategoriler[Kategori]) satırdaki metni model sütununa filtre olarak uygular.' },
+    { t: 'mc', q: 'Her ay gelen bayi dosyası aynı yapıda. Finans “Şubat’ı rapora ekle” diyor. Bir analist Ocak ve Şubat’ı ayrı tablolar olarak modele alıp ilişki kurmak istiyor. Ne dersin?', o: ['İki tablo ayrı kalsın; daha hızlı çalışır', 'Sorguları ekle; yeni olgu satırı geliyor', 'Sorguları birleştir; anahtar Bayi olsun', 'Şubat’ı ayrı bir .pbix dosyasına koy'], a: 1, why: 'Aynı yapıdaki yeni satırlar eklenir. Merge satırları değil sütunları artırır ve Bayi tekil olmadığı için satır çoğaltır. Ayrı tablo ya da dosya her ölçüyü ikiye böler.' },
+    { t: 'mc', q: 'Birleştirmeden sonra toplam tutar 1,4 katına çıktı. Sol tablonun satır sayısı 10.000’den 14.200’e yükselmiş. En olası neden?', o: ['Sağ tabloda anahtar yineleniyor', 'Gizlilik düzeyi yanlış ayarlanmış', 'Birleştirme türü sol karşıt seçilmiş', 'Tür dönüşümü yuvarlama yapmış'], a: 0, why: 'Sağda aynı anahtardan birden çok satır varsa sol satır her eşleşme için çoğalır. Sol karşıt satır sayısını artırmaz; gizlilik düzeyi ve tür dönüşümü satır üretmez. Çözüm: sağ tabloyu anahtara göre tekilleştirmek.' },
+    { t: 'mc', q: 'Rapor Desktop’ta sorunsuz. Yayımdan sonra SQL Server ve web kaynağını birleştiren sorgu Service’te hata veriyor; Desktop’ta “gizlilik düzeylerini yok say” açık. Önce ne yaparsın?', o: ['Ağ geçidini baştan kurarım', 'Raporu DirectQuery’ye alırım', 'Her kaynağa gerçek düzeyini veririm', 'Web kaynağını elle tabloya yazarım'], a: 2, why: 'Yok sayma ayarı Desktop’a özgüdür ve yayımlanmaz. Doğru çözüm SQL’e Kuruluş, web’e Genel vermek ve bunu Service tarafında da uygulamaktır. Ağ geçidini kurmak gizlilik hatasını çözmez, DirectQuery’ye geçmek sorunu büyütür.' },
+    { t: 'mc', q: 'Bir sorgu ağ klasöründeki CSV ile şirket içi SQL’i birleştiriyor, sonuna da bir filtre ekledin. “Yerel sorguyu görüntüle” gri. Bu ne demek?', o: ['SQL Server filtreyi uygulamıştır', 'Katlama kırıldı, adım yerelde çalışıyor', 'Ağ geçidi çevrim dışı kalmıştır', 'Sorgu artık DirectQuery modundadır'], a: 1, why: 'Gri seçenek o adımın kaynağa SQL olarak gitmediğini gösterir. Filtre, tüm veri çekildikten sonra yerelde uygulanır. Filtreyi birleştirmeden önceye, SQL adımlarının üzerine taşımak genellikle katlamayı korur.' },
+    { t: 'mc', q: 'Şirket içi SQL ile SharePoint Online’daki hedef Excel’i aynı sorguda birleştiren model yenilenmiyor: “veri kaynağı tanımlı değil”. SQL ağ geçidinde tanımlı. Eksik olan ne?', o: ['SharePoint için ayrı bir kişisel ağ geçidi', 'Modeli iki ayrı modele bölmek', 'Kişisel modda ağ geçidi kurmak', 'Bulut kaynağını aynı ağ geçidine eklemek'], a: 3, why: 'Bir model tek ağ geçidi bağlantısı kullanır; aynı sorguda birleşen bulut kaynağı da o ağ geçidinden geçer. İkinci ağ geçidi bu kısıtı çözmez. Modeli bölmek gereksiz bir mimari değişikliktir.' }
+  ]
+});
+
+/* ---------- Çalışma alanı ve yayımlama ---------- */
+add('kalite-test', {
+  id: 'calisma-alani', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 30,
+  title: 'Çalışma alanı (workspace) kurmak ve raporu yayımlamak',
+  sum: 'Çalışma alanını kurmak, ayarları, dört rol ve lisans etkisi; Desktop’tan Service’e yayımlarken ne gider, ne gitmez; yayımdan sonra yapılacaklar ve adlandırma düzeni.',
+  body: `
+<p>Rapor bitti, Desktop’ta kusursuz çalışıyor. Şimdi başkaları görecek. İlk soru “nereye yayımlayacağım?”dır ve cevabı neredeyse her zaman <b>bir çalışma alanı</b>dır. Çalışma alanı (workspace), ekibin raporlarını, anlam modellerini ve panolarını birlikte tuttuğu paylaşılan bir kaptır.</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Çalışma alanım (My workspace)</th><th>Ekip çalışma alanı</th></tr>
+<tr><td>Kim için?</td><td>Yalnız sen; deneme alanı</td><td>Ekip; gerçek içerik</td></tr>
+<tr><td>Rol atama</td><td>Yok</td><td>Yönetici, Üye, Katkıda bulunan, Görüntüleyici</td></tr>
+<tr><td>Uygulama yayımlama</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Kullanım ölçümleri, Direct Lake</td><td>Desteklenmez</td><td>Var (Direct Lake için Fabric kapasitesi gerekir)</td></tr></table></div>
+<h2>Çalışma alanı kurmak</h2>
+<p>Çalışma alanı yalnız Service’te oluşturulur; Desktop var olan bir çalışma alanına yayımlar, yenisini açamaz. <b>Çalışma alanları → Yeni çalışma alanı</b> ile ad verirsin. Ad kiracıda benzersiz olmalı. Pro ya da PPU lisansı gerekir; yönetici, oluşturmayı bir güvenlik grubuna kısıtlamış olabilir. Düğmeyi göremiyorsan önce lisansına, sonra yöneticiye bak.</p>
+<div class="tbl-wrap"><table><tr><th>Ayar</th><th>Ne işe yarar?</th><th>İyi uygulama</th></tr>
+<tr><td>İletişim listesi (Contact list)</td><td>Sorun bildirimlerini alanlar; varsayılan yöneticiler</td><td>Kişi değil, ekip grubu ekle</td></tr>
+<tr><td>Workspace SharePoint (arayüzün bazı yerlerinde eski adıyla Workspace OneDrive)</td><td>Microsoft 365 grubunun belge kitaplığını bağlar</td><td>Erişimde de aynı grubu kullan; Power BI üyeliği eşitlemez</td></tr>
+<tr><td>Lisans modu (Pro, PPU, Fabric kapasitesi)</td><td>Hangi özellik var, okuyucu ne lisans ister</td><td>Fabric öğesi gerekiyorsa kapasite şart</td></tr>
+<tr><td>Katkıda bulunanların uygulamayı güncellemesine izin ver</td><td>Uygulamayı güncelleyebilirler; ilk yayını yapamaz, erişimi değiştiremezler</td><td>Rapor ekibi sürekli güncelliyorsa aç</td></tr></table></div>
+<p>Yönetici çalışma alanını siler ve bu içeriği de siler; bu yüzden en az iki yönetici bulundur. Bir çalışma alanında toplam en fazla 1.000 Fabric ve Power BI öğesi bulunabilir; pratikte çok daha önce bölmek gerekir.</p>
+<h2>Dört rol</h2>
+<div class="tbl-wrap"><table><tr><th>İş</th><th>Yönetici</th><th>Üye</th><th>Katkıda bulunan</th><th>Görüntüleyici</th></tr>
+<tr><td>Görüntüle, etkileşim</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>İçerik oluştur, düzenle, sil</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td>.pbix indir, Excel’de analiz et</td><td>✓</td><td>✓</td><td>✓</td><td>Yalnız Derleme izniyle Excel</td></tr>
+<tr><td>Yenilemeyi zamanla</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td>Uygulama yayımla, erişimini değiştir</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td>Düşük roller ekle</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td>Her kullanıcıyı ekle, çıkar; çalışma alanını sil</td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>Satır düzeyi güvenlik uygulanır</td><td></td><td></td><td></td><td>✓</td></tr></table></div>
+<p>İki ayrıntı sorun çıkarır. Üye, var olan birinin rolünü değiştiremez; önce yönetici kullanıcıyı çıkarır. RLS yalnız Görüntüleyici için çalışır: satış müdürüne “kolay olsun” diye Katkıda bulunan verirsen bütün bölgeleri görür. Son kullanıcıyı ise çalışma alanına değil, uygulamaya ekle (“Power BI uygulamaları” dersi).</p>
+<div class="warn"><b>Lisans etkisi</b>Çalışma alanı paylaşılan kapasitedeyse içeriği görecek herkes Pro ya da PPU ister. F64 ve üstü Fabric ya da Premium kapasitede Görüntüleyici rolü ücretsiz lisansla da görür. F2-F32 kapasitede yine Pro gerekir. Kurallar değişebilir; satın almadan önce resmî lisans sayfasına bak.</div>
+<h2>Desktop’tan yayımlamak</h2>
+<ol><li>Dosyayı kaydet. <b>Giriş → Yayımla</b>.</li><li>Oturum açtığın hesabın çalışma alanlarından birini seç.</li><li>Aynı adda rapor varsa <b>Değiştir</b> sorusu gelir: içerik üzerine yazılır, rapor ve modelin kimliği korunur.</li><li>Başarı iletisindeki bağlantıyla raporu Service’te aç.</li></ol>
+<div class="tbl-wrap"><table><tr><th>Yayımla ile giden</th><th>Gitmeyen: Service’te yeniden yapılır</th></tr>
+<tr><td>Rapor sayfaları, görseller, yer işaretleri</td><td>Veri kaynağı kimlik bilgileri</td></tr>
+<tr><td>Model: tablolar, ilişkiler, ölçüler, RLS rol tanımları</td><td>RLS rol üyeleri</td></tr>
+<tr><td>Import verisi, Power Query adımları</td><td>Gizlilik düzeyleri</td></tr>
+<tr><td>Parametreler</td><td>Yenileme zamanlaması, ağ geçidi bağlantısı</td></tr></table></div>
+<p>Yayımdan sonraki bu liste bir alışkanlık olmalı. Bir kişi unuttuğunda sonuç: rapor o günün verisiyle kalır, RLS rolü boş olduğu için görüntüleyici hiçbir şey göremez. Model ve raporu ayırmayı düşünüyorsan “ince rapor” deseni “Veri akışları ve paylaşılan anlam modelleri” dersinde.</p>
+<h3>Başka yollarla öğe eklemek</h3>
+<ul><li><b>Karşıya yükle:</b> çalışma alanında .pbix ya da Excel dosyası yüklenir.</li><li><b>OneDrive ya da SharePoint’ten:</b> dosyaya bağlı öğe saatte bir denetlenir, dosya değişince güncellenir (OneDrive yenilemesi).</li><li><b>Dağıtım işlem hattı ya da Git:</b> ekip büyüdüğünde elle yayımlamanın yerini alır (“Yaşam döngüsü” dersi).</li></ul>
+<h2>Adlandırma ve düzen</h2>
+<p>“BI”, “Rapor2”, “Yeni klasör” gibi alanlar altı ay sonra kimsenin silmeye cesaret edemediği çöplüktür. Basit bir standart yeter: <code>Birim - Konu [Dev|Test|Prod]</code>. Her alanın sahibi, açıklaması ve iletişim listesi olsun. Çalışma alanı içinde klasör de kullanılabilir. Model ve raporları ayrı alanlarda tutmanın tasarımı “Yayımlama, yenileme ve yaşam döngüsü” dersinde.</p>
+<h2>Yayım öncesi mutabakat</h2>
+<p>Yayımlamadan önce modelin ana sayılarını bir sorguyla sabitle; yayımdan sonra aynı sorguyu Service’teki modelde çalıştırıp karşılaştır. Fark varsa yenileme ya da kaynak farklıdır:</p>
+<pre class="dax">EVALUATE
+ROW("Net Satış", [Net Satış], "Sipariş", [Sipariş Sayısı], "Satır", COUNTROWS(Satislar))</pre>
+` + ORTAM + `Service için iş ya da okul hesabı gerekir; kişisel e-posta çoğu zaman kabul edilmez. Hesabın varsa <b>Çalışma alanım</b>a Desktop’tan bir rapor yayımla, sonra kimlik bilgisi ve yenileme ayarlarını gör. Ekip çalışma alanı için Pro, PPU ya da deneme lisansı gerekir. Hesabın yoksa bu dersin alıştırmalarıyla kararları çalış; Örnek raporlar sayfası Desktop’ta olanı taklit eder, Service’i taklit etmez.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Yeni gelen satış analisti Desktop’tan yayımlamak istiyor ama hedef listesinde kendi ekibinin çalışma alanı yok. Diğer alanları görüyor. En olası neden?', o: ['Desktop sürümü çok eski', 'Dosya .pbip olarak kaydedilmiş', 'O çalışma alanında rolü yok', 'Rapor RLS içerdiği için gizleniyor'], a: 2, why: 'Hedef listesi, hesabının yayımlama yetkisi olduğu çalışma alanlarını gösterir. Katkıda bulunan ya da üstü rol gerekir. .pbip ve RLS yayımlamayı engellemez.' },
+    { t: 'mc', q: 'Bölge müdürleri çalışma alanına Katkıda bulunan olarak eklendi. Model RLS’li ama hepsi tüm bölgeleri görüyor. Ne olmuş?', o: ['Katkıda bulunana RLS uygulanmaz', 'RLS üyeleri Service’te atanmamış', 'Rol tanımı yayımlanmamış', 'Filtre çift yönlü değil'], a: 0, why: 'Yönetici, Üye ve Katkıda bulunan modeli düzenleme yetkisi taşır, RLS onları süzmez. Üye atanmamış olsaydı Görüntüleyiciler hiç veri göremezdi. Çözüm: Görüntüleyici rolü ya da uygulama.' },
+    { t: 'mc', q: 'Yeni rapor yayımlandı, açılıyor, ama iki gün sonra rakamlar hâlâ eski. Yenileme geçmişi boş. Önce neye bakarsın?', o: ['Rapor temasının dosyasına', 'Zamanlama kurulmuş mu', 'Görsel etkileşim ayarlarına', 'Hedefler tablosu ilişkisine'], a: 1, why: 'Yayımlama zamanlama kurmaz. Geçmiş boşsa hiç yenileme denenmemiştir. Önce kimlik bilgileri ve ağ geçidi, sonra zamanlama kurulur.' },
+    { t: 'mc', q: 'Yayım sonrası işleri doğru sırayla hangisi veriyor?', o: ['Zamanla → kimlik bilgisi → RLS üyeleri → elle yenile', 'RLS üyeleri → zamanla → elle yenile → kimlik bilgisi', 'Test → zamanla → kimlik bilgisi → RLS üyeleri', 'Kimlik bilgisi → elle yenile → RLS üyeleri → zamanla'], a: 3, why: 'Kimlik bilgisi yoksa yenileme çalışmaz. Önce elle yenileyip çalıştığını görür, RLS üyelerini ekler, sonra zamanlarsın. Kimlik bilgisi olmadan zamanlamak art arda hata üretir; dört hatadan sonra zamanlama kapanır.' },
+    { t: 'mc', q: 'F32 kapasitedeki alanda Görüntüleyici rolü verilen ücretsiz lisanslı müdürler raporu açamıyor. F64’e geçmek bütçeyi aşıyor. Hangi çözüm kuralla uyumlu?', o: ['Müdürlere Pro ya da PPU atamak', 'Rolü Görüntüleyiciden Üye yapmak', 'Raporu Web’de yayımlamak', 'Raporu sertifikalamak'], a: 0, why: 'F64 altında Power BI içeriği görmek için ücretli kullanıcı lisansı gerekir. Rol değiştirmek lisans kuralını aşmaz. Web’de yayımla kurumsal veri için asla kullanılmaz, sertifika erişim vermez.' },
+    { t: 'mc', q: 'Bir Üye, Görüntüleyici olan arkadaşını Katkıda bulunana çıkarmak istiyor, ama rolünü değiştiremiyor. Doğru açıklama?', o: ['Üyeler kimseyi çalışma alanına ekleyemez', 'Rol yükseltme yalnız kapasitede yapılabilir', 'Üye mevcut rolü değiştiremez; yönetici çıkarır', 'Önce kullanıcıya Derleme izni verilmelidir'], a: 2, why: 'Learn’e göre Üye düşük rollerle kullanıcı ekleyebilir, ama var olan kullanıcının rolünü değiştiremez ya da onu çıkaramaz. Yönetici çıkardıktan sonra Üye yeni rolle ekleyebilir.' },
+    { t: 'query', q: 'Yayım öncesi mutabakat sorgusu yaz: her <code>Tarih[Yil]</code> için <b>Net Satış</b> ve <b>Sipariş</b> ([Sipariş Sayısı]) döndür. Yayımdan sonra aynı sorgu Service’teki modelde çalıştırılıp karşılaştırılacak.', start: 'EVALUATE\n', sol: 'EVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], "Net Satış", [Net Satış], "Sipariş", [Sipariş Sayısı])', hint: 'SUMMARIZECOLUMNS(Tarih[Yil], "Ad", [Ölçü], …)' }
+  ]
+});
+
+/* ---------- Panolar ---------- */
+add('calisma-alani', {
+  id: 'panolar', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 25,
+  title: 'Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı',
+  sum: 'Rapor ile pano farkı, görsel sabitlemek, canlı sayfa, farklı raporlardan tek bakış, veri uyarısı kurmak; kutucuğa uygun ölçü yazmak ve panonun bugün hâlâ nerede işe yaradığı.',
+  body: `
+<p>Service’te “pano” (dashboard) belirli bir nesnedir: farklı raporlardan sabitlenen kutucuklardan oluşan <b>tek sayfa</b>. Günlük dilde her rapora pano denir; sınavda ve iş görüşmesinde bu karışıklık puan kaybettirir. Bu uygulamadaki Örnek raporlar sayfası da pano değil, rapordur.</p>
+<h2>Rapor mu, pano mu?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Rapor</th><th>Pano</th></tr>
+<tr><td>Sayfa</td><td>Bir ya da çok</td><td>Tek</td></tr>
+<tr><td>Veri</td><td>Tek anlam modeli</td><td>Bir ya da çok rapor ve model</td></tr>
+<tr><td>Nerede yapılır?</td><td>Desktop ve Service</td><td>Yalnız Service</td></tr>
+<tr><td>Dilimleyici, filtre</td><td>Var</td><td>Yok (odak modundaki süzme kaydedilmez)</td></tr>
+<tr><td>Detaya inme</td><td>Var</td><td>Yalnız sayfanın tamamı sabitlenmişse</td></tr>
+<tr><td>Veri uyarısı</td><td>Klasik uyarı yok</td><td>Kart, KPI, gösterge kutucuklarında</td></tr>
+<tr><td>Kutucuğa tıklayınca</td><td>Yok</td><td>Kaynak rapora gider</td></tr></table></div>
+<h2>Ne zaman pano?</h2>
+<p>Her raporun panoya ihtiyacı yoktur. Üç durumda işe yarar:</p>
+<ul><li><b>Birden çok rapordan tek bakış.</b> Satış, stok ve kargo ayrı modellerde. Yönetici sabah üç raporu tek tek açmak istemez.</li><li><b>Veri uyarısı.</b> Klasik uyarılar yalnız panoda kurulur.</li><li><b>Ana sayfada öne çıkarma.</b> Yönetici için sade bir giriş.</li></ul>
+<p>Tek modelde özet ve ayrıntı istiyorsan <b>iyi tasarlanmış bir rapor sayfası genellikle daha iyidir</b>: dilimleyici var, etkileşim var, Desktop’ta kaynak denetimine girer. Panolar Git tümleştirmesinde desteklenmez.</p>
+<h2>Kutucuk sabitlemek</h2>
+<ol><li>Service’te raporu <b>düzenleme izniyle</b> aç. Size paylaşılan rapordan sabitleyemezsin.</li><li>Görselin üzerindeki raptiye simgesi: <b>Panoya sabitle</b>.</li><li>Var olan panoyu seç ya da yeni oluştur.</li><li>Panoda kutucuğun … menüsünden başlık, alt başlık ve özel bağlantıyı düzenle.</li></ol>
+<div class="tbl-wrap"><table><tr><th></th><th>Görsel sabitleme</th><th>Canlı sayfa sabitleme</th></tr>
+<tr><td>Ne gider?</td><td>Tek görsel</td><td>Sayfanın tamamı</td></tr>
+<tr><td>Etkileşim</td><td>Tıklayınca rapora gider</td><td>Sayfa içinde çapraz filtreleme çalışır</td></tr>
+<tr><td>Rapordaki değişiklik</td><td>Görselin biçimi değişirse kutucuk güncellenmeyebilir</td><td>Sayfa yenilenince yansır</td></tr>
+<tr><td>Mobil</td><td>Kutucuk olarak görünür</td><td>Rapor kutucukları mobilde etkileşimli değildir</td></tr></table></div>
+<p>Pano oluşturmak bir yazar işidir. Çalışma alanında Pro ya da PPU gerekir; Çalışma alanım’da bu lisans gerekmez. Panoya görsel sabitlemeden metin, resim, video da eklenebilir; ama gerçek sayılar rapordan gelmeli ki tıklayan ayrıntıya ulaşabilsin.</p>
+<h2>Veri uyarısı</h2>
+<p>“Net satış 50.000 ₺’nin altına düşünce haber ver.” Bu iş panoda kurulur:</p>
+<ul><li>Yalnız <b>gösterge, KPI ve kart</b> kutucuklarında.</li><li>Uyarıyı kuran kişiye özeldir; pano paylaşılmış olsa da başkası göremez. Ekip için her kişi kendi uyarısını kurar ya da Power Automate kullanılır.</li><li>Uyarı <b>veri yenilendiğinde</b> denetlenir. Model günde bir yenileniyorsa uyarı da günde bir kez bakar.</li><li>Sıklık sınırlıdır: saatte ya da 24 saatte en fazla bir bildirim. Bildirim merkezinde her zaman, e-postada isteğe bağlı görünür.</li></ul>
+<p>Fabric’te Activator, rapor görselinden kural tabanlı uyarı kurmayı sağlar (“Yayımlama” dersinde örnek var). Satın alma kararı değil, “kimin haber alması gerekiyor” sorusu belirleyicidir.</p>
+<h2>Kutucuğa uygun ölçü</h2>
+<p>Panoda dilimleyici olmadığı için <b>bağlamı ölçünün içine yazarsın</b>. Rapordaki bir kart seçili yıla bakar, panodaki kutucuk ise sabitlendiği hâlde kalır. “2024 net satışı” gibi sabit bir dönem için:</p>
+<pre class="dax">Kart 2024 Net Satış =
+CALCULATE([Net Satış], Tarih[Yil] = 2024)</pre>
+<p>Eşik uyarısı için sayısal bir sapma göstermek, metin göstermekten iyidir: “hedefin 12.000 ₺ gerisinde” gibi bir değer eşikle karşılaştırılabilir.</p>
+<div class="warn"><b>Soru-Cevap kalkıyor</b>Panonun üstündeki soru kutusu Soru-Cevap (Q&amp;A) ile çalışır ve emekliye ayrılıyor. Learn’deki güncel uyarı Şubat 2027 diyor; önceki duyurularda Aralık 2026 geçiyordu. Tarih için resmî sayfaya bak. Yeni pano tasarımını soru kutusuna dayandırma; yerine bağımsız Copilot önerilir (“Copilot ile çalışmak” dersi).</div>
+` + ORTAM + `Service’te herhangi bir raporu aç, bir kartı Çalışma alanım’daki yeni bir panoya sabitle, kutucukta uyarı kur. Ücretsiz lisansla Çalışma alanım’da denenebilir. Uyarının tetiklenmesi için verinin yenilenmesi gerekir; değişmeyen örnek veride uyarı gelmez.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Yönetim kurulu üyesi sabah tek ekranda satış, stok ve kargo KPI’larını görmek istiyor. Üçü ayrı anlam modellerinde. Hangisi?', o: ['Üç modeli tek modelde birleştirmek', 'Üç rapordan sabitlenen bir pano', 'Üç sayfalı tek bir rapor', 'Her rapordan ayrı abonelik'], a: 1, why: 'Rapor tek modele bağlıdır; pano farklı modellerden kutucuk toplar. Modelleri birleştirmek bu ihtiyaç için aşırı bir mimari değişikliktir. Abonelik üç ayrı e-posta üretir, tek bakış değildir.' },
+    { t: 'mc', q: 'Analist rapordaki kartta “Uyarı ayarla” bulamıyor. Rapor ona paylaşılmış. Panoya da sabitleyemiyor. Ne yapmalı?', o: ['Desktop’ı güncellemeli', 'Kartı KPI görseline çevirmeli', 'Düzenleme izni olan kişi sabitlemeli', 'Raporu Web’de yayımlamalı'], a: 2, why: 'Paylaşılan rapordan sabitleme yapılamaz; düzenleme izni gerekir. Klasik uyarı da panoda kurulur. Yazar kutucuğu panoya koyup panoyu paylaşırsa analist kendi uyarısını kurabilir.' },
+    { t: 'mc', q: 'Pano paylaşılan kullanıcı, senin kurduğun 50.000 ₺ uyarısını görmüyor. Neden?', o: ['Uyarı kişiye özeldir', 'Lisansı yetersizdir', 'Kutucuk canlı sayfa değildir', 'Model yenilenmemiştir'], a: 0, why: 'Uyarı yalnız kuran kişiye görünür, pano paylaşılsa da paylaşılmaz. Ekip bildirimi için herkes kendi uyarısını kurar ya da Power Automate kullanılır.' },
+    { t: 'mc', q: 'Model her gece 02:00’de yenileniyor. Müdür “öğlen eşik aşılırsa hemen haber ver” diyor. Sana sorsa?', o: ['Uyarı sıklığını saatliğe almak yeter', 'Uyarı yenilemede bakar; önce tazelik değişmeli', 'Kartı canlı sayfa olarak sabitlemek çözer', 'E-posta yerine bildirim merkezini seçmek'], a: 1, why: 'Uyarılar yeni veri geldiğinde denetlenir. Gün içi tepki için önce yenileme sıklığı ya da depolama modu değişmeli. Sıklık ayarı yalnız bildirimi sınırlar, veriyi güncellemez.' },
+    { t: 'mc', q: 'Tek modelli bir rapor için “özet ekranı” isteniyor; kullanıcı yılı ve bölgeyi seçebilmeli. Hangi öneri doğru?', o: ['Yıl başına bir pano', 'Dilimleyicili bir rapor sayfası', 'Canlı sayfa panosu ve odak modu', 'Yıl başına bir yer işareti panosu'], a: 1, why: 'Panoda dilimleyici yoktur, odak modundaki süzme kaydedilmez. İhtiyaç seçim ve tek model olduğunda rapor sayfası hem daha esnek hem daha kolay bakımlıdır.' },
+    { t: 'dax', name: 'Kutucuk 2024 Net Satış', q: '<b>Kutucuk 2024 Net Satış</b>: Panoda dilimleyici yok. Yılı ölçünün içine yaz: 2024 yılının net satışı. Kategori kırılımında çalışmaya devam etmeli.', sol: 'CALCULATE([Net Satış], Tarih[Yil] = 2024)', hint: 'CALCULATE([Net Satış], Tarih[Yil] = 2024)', grid: [{ t: 'Kategoriler', c: 'Kategori' }] },
+    { t: 'dax', name: 'Kutucuk Hedef Sapması', q: '<b>Kutucuk Hedef Sapması</b>: Veri uyarısı için sayısal sapma: <code>[Net Satış]</code> eksi <code>[Hedef]</code>. Hedefin altındaysa negatif çıkmalı. Hazır ölçüleri kullan.', sol: '[Net Satış] - [Hedef]', hint: 'İki hazır ölçüyü çıkar.', grid: [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }] }
+  ]
+});
+
+/* ---------- Paylaşım ---------- */
+add('panolar', {
+  id: 'paylasim', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 25,
+  title: 'Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi',
+  sum: 'Rapor paylaşmanın yolları ve hangisinin ne zaman doğru olduğu: bağlantı türleri, Yeniden paylaş ve Derleme izinleri, kuruluş dışı kullanıcılar, kaldırma; “paylaştım ama göremiyor” teşhisi.',
+  body: `
+<p>“Raporu paylaştım ama göremiyor.” Power BI desteğine gelen en sık cümlelerden biri. Sebep genellikle üç şeyden biridir: lisans, modele erişim ya da yanlış bağlantı türü. Bu ders doğru dağıtım yolunu seçmeyi ve paylaşım sorunlarını teşhis etmeyi öğretir.</p>
+<h2>Dağıtım yolları</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne zaman doğru?</th><th>Bedel</th></tr>
+<tr><td><b>Çalışma alanı rolü</b></td><td>Birlikte geliştiren ekip</td><td>Okuyucuya verilirse görünüm karışır, RLS rolle değişir</td></tr>
+<tr><td><b>Doğrudan paylaşım</b></td><td>Birkaç kişi, tek rapor, hızlı</td><td>Kişi kişi izlemek zorlaşır, bağlantılar birikir</td></tr>
+<tr><td><b>Uygulama (app)</b></td><td>Geniş kitle, düzenli menü, kitleler</td><td>Kurulum ve güncelleme disiplini gerekir</td></tr>
+<tr><td><b>Teams, SharePoint</b></td><td>Kullanıcı zaten orada çalışıyor</td><td>Bağlantı erişim vermez; izni ayrıca verilir</td></tr>
+<tr><td><b>Abonelik</b></td><td>Düzenli e-posta anlık görüntüsü</td><td>Etkileşim yok; görüntüleme sayısını şişirebilir</td></tr>
+<tr><td><b>Web’de yayımla</b></td><td>Yalnız herkese açık veri</td><td>Kimlik doğrulaması yok, alttaki tüm veri açığa çıkar</td></tr></table></div>
+<p>Kural: <b>bir kez, küçük: paylaş. Sürekli, büyük: uygulama. Yazan ekip: rol.</b> Uygulama “Power BI uygulamaları” dersinde.</p>
+<h2>Bağlantı türleri</h2>
+<p>Rapordaki <b>Paylaş</b> düğmesi “Bağlantı gönder” penceresini açar. Üç tür vardır:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Kim açabilir?</th><th>Dikkat</th></tr>
+<tr><td><b>Kuruluşundaki kişiler</b></td><td>Kuruluştan bağlantıyı alan herkes</td><td>Konuk ve dış kullanıcıda çalışmaz; yönetici kapatabilir</td></tr>
+<tr><td><b>Belirli kişiler</b></td><td>Yazdığın kişi ve gruplar, Entra B2B konukları dahil</td><td>Dış kullanıcı konuk olmalı</td></tr>
+<tr><td><b>Erişimi olan kişiler</b></td><td>Zaten erişimi olanlar</td><td>Erişim vermez; yalnız adres üretir</td></tr></table></div>
+<p>Her rapor için en fazla 1.000 paylaşım bağlantısı olabilir; sınıra gelirsen “Belirli kişiler” bağlantılarını silip doğrudan erişim verirsin. Pano doğrudan paylaşımında tek seferde en fazla 100 kullanıcı ya da grup yazılır; daha büyük kitlede grup ya da uygulama kullan.</p>
+<h2>İzinler: Yeniden paylaş ve Derleme</h2>
+<ul><li><b>Yeniden paylaş:</b> alan kişi başkasına da paylaşabilir. Rapor bağlantılarında varsayılan olarak açık gelir. Hassas raporda kapat.</li><li><b>Derleme (Build):</b> alan kişi modeli kullanarak kendi raporunu yapar, Excel’de analiz eder. Rapor bağlantısında varsayılan kapalı, pano paylaşımında varsayılan açıktır. RLS ve OLS yine geçerlidir.</li></ul>
+<div class="warn"><b>Gizleme güvenlik değildir</b>Gizli sütun, gizli sayfa ve kilitli filtre yalnız görünümü değiştirir. Derleme izni olan biri Excel’de modeli sorgular. Bir sütunu saklamak gerekiyorsa OLS, satırları saklamak gerekiyorsa RLS kullan.</div>
+<h2>Kuruluş dışı kullanıcılar</h2>
+<p>Yönetici kiracı ayarından dış paylaşımı açmış olmalı. Dış kullanıcı Microsoft Entra B2B konuğu olarak davet edilir, gönderilen e-posta adresiyle oturum açar. Bağlantıyı başkasına iletmek işe yaramaz; yalnız doğrudan alıcılar görür. Konuk panoyu yeniden paylaşamaz. İçerik Premium ya da F64+ kapasitede değilse konuğun da Pro ya da PPU lisansı gerekir.</p>
+<h2>“Paylaştım ama göremiyor” teşhisi</h2>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Olası neden</th><th>Çözüm</th></tr>
+<tr><td>“Lisans gerekiyor” iletisi</td><td>Paylaşılan kapasite ya da F64 altı, alıcı ücretsiz lisanslı</td><td>Pro/PPU ya da F64+ kapasite</td></tr>
+<tr><td>Rapor açılıyor, görseller hata veriyor</td><td>Model başka çalışma alanında, erişim yok</td><td>Modele erişim ver; zincirdeki her modele</td></tr>
+<tr><td>Rapor boş ya da bazı değerler yok</td><td>RLS rolüne eklenmemiş</td><td>Rol üyeliğini kontrol et; “Farklı görüntüle” ile test et</td></tr>
+<tr><td>“Benimle paylaşılanlar”da yok</td><td>Bağlantı “Erişimi olan kişiler” türünde</td><td>Doğru türle yeniden paylaş</td></tr>
+<tr><td>Teams sekmesinde “içerik kullanılamıyor”</td><td>Teams’e eklemek erişim vermez</td><td>Rapor iznini ayrıca ver; grup kullan</td></tr>
+<tr><td>Uygulamadaki raporu paylaşamıyor</td><td>Uygulama raporu yeniden paylaşılmaz</td><td>Uygulama sahibi kişiyi kitleye ekler</td></tr></table></div>
+<h2>Erişimi kaldırmak ve denetlemek</h2>
+<p>Raporda <b>İzinleri yönet</b> ekranından bağlantılar, doğrudan erişimler ve bekleyen talepler görülür. Pano erişimini kaldırırken ilgili rapor ve model erişimini de kaldırmayı düşün. Kullanıcıyı Entra’da devre dışı bırakmak erişim kayıtlarını silmez, yalnız kullanmasını engeller. Düzenli denetim için kimin hangi yolla geldiğini bilmek gerekir. Aşağıdaki sorgu örnek bir erişim envanterini özetler; ne kadar erişimin bağlantıyla dağıldığını gösterir:</p>
+<pre class="dax">EVALUATE
+VAR Envanter =
+    DATATABLE("Kisi", STRING, "Yol", STRING, {
+        {"ayse", "Uygulama"}, {"mert", "Uygulama"}, {"selin", "Uygulama"},
+        {"burak", "Bağlantı"}, {"kerem", "Bağlantı"}, {"deniz", "Rol"}
+    })
+RETURN
+    GROUPBY(Envanter, [Yol], "Kişi", SUMX(CURRENTGROUP(), 1))</pre>
+<p>Üç kişi uygulamadan, iki kişi tek tek bağlantıyla, bir kişi rolle geliyor. Bağlantıyla gelenler büyüyorsa uygulamaya geçme zamanıdır.</p>
+` + ORTAM + `Çalışma alanım’daki raporu Pro ya da deneme lisanslı bir meslektaşınla paylaş; “Belirli kişiler” bağlantısında Yeniden paylaş kutusunu kapat, İzinleri yönet ekranında sonucu gör. Paylaşım için ücretli lisans gerekir; lisansın yoksa senaryoları alıştırmalarla çalış.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Finans müdürü yönetim raporunu üç yöneticiye bugün göstermek istiyor. Model RLS’li, yöneticiler çalışma alanı üyesi değil. En uygun yol?', o: ['Üçüne çalışma alanında Üye rolü vermek', 'Belirli kişilere Yeniden paylaş kapalı bağlantı', 'Raporu Web’de yayımlayıp adres vermek', 'Uygulama açıp otomatik yüklemeyle vermek'], a: 1, why: 'Üç kişi ve tek seferlik ihtiyaç için doğrudan bağlantı yeterlidir; Yeniden paylaş kapatılarak yayılma önlenir. Üye rolü RLS’i aşar. Web’de yayımla kurumsal veri için kullanılmaz. Uygulama bu ölçek için ağırdır.' },
+    { t: 'mc', q: 'Tedarikçi firmadaki kişiye (kuruluş dışında) “Kuruluşundaki kişiler” bağlantısı gönderildi. Açamıyor. Neden?', o: ['Bu tür konuklarda çalışmaz', 'Rapor sertifikalı olmalı', 'Kişinin Derleme izni olmalı', 'Bağlantının süresi dolmuştur'], a: 0, why: 'Bu tür yalnız kuruluş içindir. Dış kişi Entra B2B konuğu olarak davet edilip “Belirli kişiler” ile paylaşılmalıdır; kiracıda dış paylaşım da açık olmalı.' },
+    { t: 'mc', q: 'Analiste yalnız görüntüleme verdiğini düşünüyordun, ama kendi raporunu yapıp Excel’de bağlandı. Paylaşırken neye bakmalıydın?', o: ['Filtreler bölmesi kilidine', 'Görsel üstbilgi ayarına', 'Derleme izni kutusuna', 'Sayfa gizleme ayarına'], a: 2, why: 'Excel’de analiz ve yeni rapor Derleme izniyle mümkün olur. Filtre kilidi, üstbilgi ve gizli sayfa güvenlik sağlamaz, bu erişimi de kapatmaz.' },
+    { t: 'mc', q: 'Maaş sütunu gizlendi ve rapor Derleme izniyle paylaşıldı. Bir kullanıcı Excel’den maaşı görebildi. Doğru düzeltme?', o: ['Sütunu rapor filtresinden kaldırmak', 'Dışa aktarmayı kapatmak', 'Sayfayı gizli yapmak', 'Maaş sütununa OLS kuralı vermek'], a: 3, why: 'Gizleme güvenlik değildir. Sütunu rol bazında kapatan OLS’dir. Dışa aktarma ayarı Excel’de analiz bağlantısını da çözmez.' },
+    { t: 'mc', q: 'Ekip kanalına bir rapor sekmesi eklendi. Bir kullanıcı “İçerik kullanılamıyor” görüyor. Lisansı var. Neye bakarsın?', o: ['Teams sürümüne', 'Rapordaki erişim iznine', 'Sekmenin adına', 'Tarayıcı önbelleğine'], a: 1, why: 'Teams’e eklemek ya da bağlantı göndermek erişim vermez. Learn lisanssız ya da izinsiz kullanıcıların bu iletiyi gördüğünü söyler. Kolay yol: ekibin Microsoft 365 grubuna erişim.' },
+    { t: 'mc', q: 'Bir kullanıcı uygulama içindeki raporu ekip arkadaşına paylaşmak istiyor, ama seçenek yok. Sana soruyor. Doğru cevap?', o: ['Rapor bağlantısını e-postayla göndersin', 'Uygulama sahibi kişiyi kitleye eklesin', 'Raporu indirip kendi alanına yüklesin', 'Tarayıcıda oturumu yenilesin'], a: 1, why: 'Uygulama üzerinden alınan rapor yeniden paylaşılmaz. Sahip kişiyi ekler, uygulamayı günceller. E-postayla gönderilen adres erişim vermez.' },
+    { t: 'query', q: 'Erişim envanteri: <b>Kisi</b>, <b>Yol</b> sütunlu DATATABLE yaz; satırlar ayse-Uygulama, mert-Uygulama, burak-Bağlantı, kerem-Bağlantı, selin-Bağlantı, deniz-Rol. Yol başına kişi sayısını <b>Kişi</b> adıyla döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR E = DATATABLE("Kisi", STRING, "Yol", STRING, {{"ayse", "Uygulama"}, {"mert", "Uygulama"}, {"burak", "Bağlantı"}, {"kerem", "Bağlantı"}, {"selin", "Bağlantı"}, {"deniz", "Rol"}})\nRETURN GROUPBY(E, [Yol], "Kişi", SUMX(CURRENTGROUP(), 1))', hint: 'GROUPBY(Tablo, [Yol], "Kişi", SUMX(CURRENTGROUP(), 1))' }
+  ]
+});
+
+/* ---------- Uygulamalar ---------- */
+add('paylasim', {
+  id: 'power-bi-apps', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 28,
+  title: 'Power BI uygulamaları (apps): kurmak, kitleler, güncellemek',
+  sum: 'Çalışma alanı uygulaması (workspace app) ve kuruluş uygulaması (org app) arasında seçim; yayımlama adımları, kitleler, gizli içerik tuzağı, izinler, güncelleme ve otomatik yükleme.',
+  body: `
+<p>Satış ekibinde 300 kişi var. Her birine bağlantı göndermek, çalışma alanına eklemek ya da e-postayla PDF atmak yerine menülü tek bir paket istiyorsun: işte <b>uygulama (app)</b>. Çalışma alanı mutfaktır, uygulama servistir. Yazarlar mutfakta değiştirir, okuyucu güncellenene kadar eski tabağı görür.</p>
+<h2>İki tür uygulama</h2>
+<p>Learn iki tür tanımlar. Klasik “Power BI uygulaması”nın resmî adı artık <b>çalışma alanı uygulaması</b>dır. <b>Kuruluş uygulaması</b> (org app) daha yeni bir Fabric öğesidir, genel kullanımdadır ve ikisi birlikte yaşayabilir. Mevcut uygulamalar kendiliğinden değişmez. Bilgiler Kasım 2026’da Learn’den kontrol edildi; ayrıntılar değişebilir.</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Çalışma alanı uygulaması</th><th>Kuruluş uygulaması</th></tr>
+<tr><td>Çalışma alanı başına</td><td>Bir</td><td>Birden çok</td></tr>
+<tr><td>İçerik</td><td>Sürümlü: “Uygulamayı güncelle” denene kadar eski kalır</td><td>Canlı: kaydedilince görünür</td></tr>
+<tr><td>Modele erişim</td><td>Yazar elle yönetir</td><td>Otomatik verilir; başka çalışma alanında olsa da</td></tr>
+<tr><td>Kullanıcıyı çıkarınca</td><td>Model erişimi elle kaldırılır</td><td>Uygulamadan gelen erişim otomatik kalkar</td></tr>
+<tr><td>Kullanıcı tarafı</td><td>Yükleme ister (ya da otomatik yükleme)</td><td>Yükleme yok; Uygulamalar listesinde görünür</td></tr>
+<tr><td>Yorum</td><td>Rapor araç çubuğunda var</td><td>Rapor araç çubuğunda yok</td></tr>
+<tr><td>Oluşturma</td><td>Çalışma alanı araç çubuğu: Uygulama oluştur</td><td>Yeni → Org app</td></tr></table></div>
+<p>Karar sorusu: <b>“Yazarın kaydettiği her değişiklik okuyucuya hemen gitmeli mi?”</b> Hayır ve test sonrası sürüm yayımlanacaksa çalışma alanı uygulaması. Aynı alandan birden çok paket, farklı alanlardaki modeller ve daha az izin işi isteniyorsa kuruluş uygulaması değerlendirilir. Bu derste sınavda da sorulan çalışma alanı uygulamasını adım adım işleyeceğiz.</p>
+<h2>Yayımlama: üç sekme</h2>
+<ol><li><b>Kurulum (Setup):</b> ad, açıklama, tema rengi, destek sitesi, iletişim. Gelişmiş ayarlarda rapor kopyalama, gizli içerik erişimi ve uygulamadaki Copilot.</li><li><b>İçerik (Content):</b> çalışma alanındaki öğeleri seç, sırala, dış bağlantı ekle.</li><li><b>Kitle (Audience):</b> kitleleri oluştur, içerik görünürlüğünü ve erişimi ver.</li></ol>
+<p>Sonra <b>Uygulamayı yayımla</b>. Yayımlamak ve güncellemek için Pro ya da PPU gerekir. Yönetici ve Üye yayımlar; Katkıda bulunan yalnız yönetici izin verirse günceller. Çalışma alanı başına bir uygulama vardır.</p>
+<h2>Kitleler</h2>
+<p>Kitle (audience), aynı uygulamada farklı grubun farklı içerik görmesini sağlar. “Temsilciler” Satış Performansı’nı, “Yönetim” ek olarak Kârlılık raporunu görür.</p>
+<ul><li>Uygulama başına en fazla 25 kitle; kişi ve grup toplamı 10.000; kitle başına 1.000 giriş. Grup tek giriş sayılır, bu yüzden kişi değil grup ekle.</li><li>Çalışma alanı kullanıcıları her kitlede sayılır: 4 kullanıcı ve 5 kitle 20 giriş eder.</li><li>Kullanıcı birden çok kitledeyse üstte sekme ve “Tümü” görür.</li></ul>
+<div class="warn"><b>Kitle güvenlik değildir</b>Gizlemek görünümü değiştirir. Gizli içeriğe erişim seçeneği açıksa, bağlantısı olan herkes gizli öğeleri açabilir. Kârlılık raporunda marjı saklamak gerekiyorsa RLS ya da OLS kullan. Ayrıca gizlenmiş bir rapora giden kutucuk hata verir, gizli detay sayfasına gidilemez.</div>
+<h2>Güncellemek ve tuzakları</h2>
+<ul><li><b>Çalışma alanı sahneleme alanıdır.</b> Rapor değişti, ama kullanıcı görmüyor: “Uygulamayı güncelle” dememişsindir.</li><li><b>Yeni içerik kitlelerde gizli gelir.</b> İlk yayımda hepsi görünür, sonradan eklenen elle açılır. “Yeni raporu ekledim, kimse göremiyor” şikâyetinin sebebi budur.</li><li><b>Raporu çıkarmak kişiselleştirmeleri siler.</b> Kullanıcının yer işaretleri ve yorumları gider, rapor geri eklense de dönmez.</li><li><b>İzni kaldırmak eski erişimi almaz.</b> Güncellemede izin kutusunu kapatmak yeni yükleyenleri etkiler; var olan Derleme ya da paylaşım iznini modelin Doğrudan erişim sekmesinden kaldır.</li><li><b>Başka alandaki model.</b> Uygulama, modeli başka çalışma alanındaysa o modele erişimi kendi vermez. Tüm kullanıcılar erişebilmeli; zincirli modellerde her halkaya izin ver.</li><li><b>Yayımdan çekmek</b> uygulamayı herkesten kaldırır, kişiselleştirmeleri siler. Çalışma alanı içeriği durur.</li></ul>
+<h2>Erişim ve otomatik yükleme</h2>
+<p>Erişimi olmayan kullanıcı varsayılan olarak talep gönderebilir; talep sahibe e-postayla gider. <b>İzinleri yönet</b> ekranında Doğrudan erişim ve Bekleyen sekmeleri vardır. Fabric yöneticisi izin verdiyse <b>Bu uygulamayı otomatik yükle</b> seçeneği uygulamayı kitlelere iter; “Tüm kuruluş” için yapılamaz. Mesai dışında yayımla, birkaç kullanıcıyla doğrula.</p>
+<h2>Lisans</h2>
+<p>Çalışma alanı Premium ya da F64+ kapasitede değilse uygulamayı açmak için herkes Pro ya da PPU ister. Kapasitedeyse ücretsiz lisansla da görülür. Uygulamadaki Copilot önizlemededir ve Copilot gereksinimlerine bağlıdır (“Copilot ile çalışmak” dersi).</p>
+<h2>Yaşam döngüsü ile</h2>
+<p>Dağıtım işlem hatlarında çoklu kitle tam desteklenmez; yeni içeriğin görünürlüğünü elle yönet. Uygulama öğelerinin kimlikleri çalışma alanındakilerden farklıdır; kullanım günlüklerini okurken bunu hesaba kat. Yayımlama ya da güncelleme 1 dakikada zaman aşımına uğrarsa içerik sayısını azalt ya da raporları gelişmiş rapor biçimine (PBIR) çevir.</p>
+<p>Kaç giriş kullandığını hesaplamak kolaydır. Örnek bir kitle planında toplam girişi hesaplayan sorgu:</p>
+<pre class="dax">EVALUATE
+VAR CalismaAlaniKullanici = 4
+VAR Kitleler =
+    DATATABLE("Kitle", STRING, "Grup", INTEGER, {{"Temsilciler", 12}, {"Bölge Müdürleri", 3}, {"Yönetim", 1}})
+RETURN
+    ROW("Toplam Giriş", SUMX(Kitleler, [Grup] + CalismaAlaniKullanici), "Sınır", 10000)</pre>
+<p>Sonuç: 16 + 7 + 5 = 28 giriş. Grup yerine kişi ekleseydin 600 temsilci tek başına kitle başına 1.000 sınırına yaklaşırdı.</p>
+` + ORTAM + `Pro ya da deneme lisansıyla bir çalışma alanında iki raporla uygulama kur, iki kitle tanımla, bir raporu ikinci kitleden gizle, sonra rapora değişiklik yapıp <b>Uygulamayı güncelle</b> demeden görüntüle. Lisansın yoksa kararları alıştırmalarla çalış.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Rapor yazarı düzeltmeyi yayımladı, çalışma alanında görünüyor, ama uygulama kullanıcıları eski sayıları görüyor. Neden?', o: ['Yenileme başarısız oldu', 'Kitle tanımı bozuldu', 'Uygulama güncellenmedi', 'Otomatik yükleme kapalı'], a: 2, why: 'Çalışma alanı sahneleme alanıdır; değişiklik “Uygulamayı güncelle” denene kadar çalışma alanı uygulamasına gitmez. Veri yenilemesi ayrıdır: yeni veri model üzerinden görünür, ama rapor tasarımı değişikliği güncelleme ister.' },
+    { t: 'mc', q: 'Uygulamaya yeni bir “Kargo” raporu eklendi ve güncellendi. Temsilciler kitlesi raporu görmüyor. Önce neye bakarsın?', o: ['Rapor kitlede gizli mi', 'Model başka alanda mı', 'Temsilcilerin lisansı', 'Uygulamanın teması'], a: 0, why: 'Sonradan eklenen içerik her kitlede varsayılan gizli gelir, elle açılır. İlk yayımda hepsi görünür olduğu için bu sürpriz olur.' },
+    { t: 'mc', q: 'Yönetim kitlesine özel Kârlılık raporu var. “Gizli içeriğe erişim” açık. Temsilci bağlantıyı buldu, raporu açtı. Doğru sonuç?', o: ['Kitle bunu engellemeliydi; hata var', 'Ayarı kapat, RLS ya da OLS kullan', 'Kârlılık raporunu sertifikalamak', 'Temsilciler kitlesini yeniden kurmak'], a: 1, why: 'Learn uyarır: bu seçenek açıksa bağlantısı olan gizli öğeyi açabilir. Kitle güvenlik sınırı değildir. Hassas veri için ayarı kapatıp model güvenliği kullan.' },
+    { t: 'mc', q: 'Bir çalışma alanından üç departmana bağımsız takvimli üç paket dağıtılacak. Modeller başka alanlarda da var ve yazar erişim işini azaltmak istiyor. Hangisi en uygun?', o: ['Tek çalışma alanı uygulaması, üç kitle', 'Üç kuruluş uygulaması', 'Üç doğrudan paylaşım bağlantısı', 'Üç çalışma alanı, üç rol'], a: 1, why: 'Kuruluş uygulamasında çalışma alanı başına birden çok uygulama olur ve model erişimi çapraz alanda otomatik verilir. Tek uygulamanın üç kitlesi bağımsız güncellenemez. Ama içerik kaydedilince hemen görünür; sürüm kapısı yoktur, bu bedeli bil.' },
+    { t: 'mc', q: 'Yazar uygulamadaki “Modeli kullanarak içerik oluştur” iznini kapatıp güncelledi. Eski kullanıcılar hâlâ model üzerinde rapor yapabiliyor. Doğru açıklama?', o: ['Uygulama izinleri önbellekten okuyor', 'Kullanıcı Excel’den bağlanıyor', 'Çalışma alanı rolleri silinmeli', 'Mevcut izin modelden kaldırılmalı'], a: 3, why: 'Güncellemede izin kaldırmak var olan erişimi almaz; yalnız yeni yüklemeleri etkiler. Modelin Doğrudan erişim sekmesinden kaldırılır.' },
+    { t: 'mc', q: 'Eski bir rapor uygulamadan çıkarıldı. Bir hafta sonra geri eklendi. Kullanıcılar kişisel yer işaretlerinin kaybolduğunu söylüyor. Ne yaparsın?', o: ['Yedekten geri yüklerim', 'Geri gelmez; süreci düzeltirim', 'Uygulamayı çekip yeniden yayımlarım', 'Farklı tarayıcıda açmalarını öneririm'], a: 1, why: 'Learn: raporu çıkarıp uygulamayı güncellemek yer işareti ve yorumları siler, rapor geri eklense de geri gelmez. Yeniden yayımlamak kayıpları artırır. Ders: raporu çıkarmadan önce kullanıcıya haber ver, gerekiyorsa gizle.' },
+    { t: 'mc', q: '500 kişilik bir kitleye uygulama dağıtılacak. Kişileri tek tek mi eklersin?', o: ['Evet, izlemesi kolay olur', 'Evet, grup desteklenmez', 'Hayır, grup tek giriş sayılır', 'Hayır, kitle 100 kişiyle sınırlı'], a: 2, why: 'Grup tek giriş sayılır; uygulama toplamı 10.000, kitle başına 1.000 giriş sınırına takılmazsın. İşe giren ve ayrılan da grupta yönetilir.' },
+    { t: 'query', q: 'Kitle planını sına: <b>Kitle</b>, <b>Grup</b> sütunlu DATATABLE yaz (Satış 8, Finans 4, Yönetim 2). Çalışma alanında 3 kullanıcı var ve her kitlede sayılıyor. <code>ROW</code> ile <b>Toplam Giriş</b> döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR K = DATATABLE("Kitle", STRING, "Grup", INTEGER, {{"Satış", 8}, {"Finans", 4}, {"Yönetim", 2}})\nRETURN ROW("Toplam Giriş", SUMX(K, [Grup] + 3))', hint: 'SUMX(K, [Grup] + 3): her kitle için grup sayısı ve çalışma alanı kullanıcıları.' }
+  ]
+});
+
+/* ---------- Yorum ve iş birliği ---------- */
+add('power-bi-apps', {
+  id: 'yorum-isbirligi', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 20,
+  title: 'Yorum ve iş birliği: rapor üzerinde konuşmak, Teams ve PowerPoint',
+  sum: 'Rapora ve görsele yorum eklemek, @ ile bahsetmek, yorumun yakaladığı filtreler ve sınırlar; Teams sekmesi, sohbet, PowerPoint eklentisi; bir rapor gözden geçirme sürecini ekip olarak yürütmek.',
+  body: `
+<p>“Rapordaki Mart rakamı neden düştü?” sorusu genellikle Teams’te bir ekran görüntüsüyle başlar. Üç mesaj sonra kimse hangi filtrelerle bakıldığını bilmez. Power BI’da konuşmayı <b>verinin yanında</b> tutmanın yolları var; hangisinin ne zaman işe yaradığını bilmek ekibin zamanını kurtarır.</p>
+<h2>Yorumlar</h2>
+<p>Service’te rapor ya da panonun menü çubuğundaki <b>Yorum (Comment)</b> simgesi Yorumlar bölmesini açar. Yazar ve <b>Gönder</b> dersin.</p>
+<ul><li><b>Sayfa ya da pano düzeyi:</b> menü çubuğundan.</li><li><b>Görsel düzeyi:</b> görselin üstüne gel, <b>Diğer seçenekler (…) → Yorum ekle</b>. Grafik simgesi yorumun bir görsele bağlı olduğunu gösterir.</li><li><b>@ ile bahsetme:</b> @ ve meslektaşın adı. Kişiye yorum bağlantısıyla e-posta ya da anında bildirim gider.</li><li><b>Yanıt:</b> aynı konuşma altında kalır.</li></ul>
+<h3>Yorum filtreleri hatırlar</h3>
+<p>Rapora yorum eklediğinde Power BI o anki filtre ve dilimleyici değerlerini <b>yer işareti olarak yakalar</b>. Yoruma tıklayan kişi o görünüme döner. Bu özelliğin ekran görüntüsüne üstünlüğü budur: “2024, Mobil, Ege” görünümünü anlatmana gerek kalmaz. Yer işareti yalnız <b>konuşmanın ilk yorumunda</b> yakalanır, yanıtlarda değil. Bu yüzden başka bir filtreyle konuşacaksan yeni konuşma aç.</p>
+<h3>Sınırlar ve gereksinimler</h3>
+<div class="tbl-wrap"><table><tr><th>Konu</th><th>Kural (Learn, Temmuz 2026 sürümü)</th></tr>
+<tr><td>Lisans</td><td>Pro ya da PPU; içerik Premium ya da F64+ kapasitedeyse lisanssız da</td></tr>
+<tr><td>Uzunluk</td><td>Yorum başına 2.000 karakter (@ ve boşluklar dahil)</td></tr>
+<tr><td>Sayı</td><td>Pano ya da rapor başına 100 konuşma, konuşma başına 1.000 yorum</td></tr>
+<tr><td>Sayfalandırılmış rapor</td><td>Yalnız genel yorum, tek görsele yorum yok</td></tr>
+<tr><td>Kapatma</td><td>Rapor sahibi Dosya → Ayarlar’dan kapatabilir</td></tr>
+<tr><td>Kuruluş uygulaması</td><td>Rapor araç çubuğunda yorum yok</td></tr>
+<tr><td>Uygulamadan rapor çıkarmak</td><td>Yorumlar silinir, geri gelmez (“Power BI uygulamaları” dersi)</td></tr></table></div>
+<p>Yorumu kimin silebileceği bu sayfada yazmıyor; gerekirse resmî belgeye ve kendi kiracına bak.</p>
+<h2>Yorum neye yarar, neye yaramaz?</h2>
+<div class="tbl-wrap"><table><tr><th>İhtiyaç</th><th>Kanal</th><th>Neden?</th></tr>
+<tr><td>“Bu sapmayı açıklar mısın?” diye bir kişiye sormak</td><td>Görsel yorumu + @</td><td>Filtre korunur, bağlam rapordadır</td></tr>
+<tr><td>Hatalı sayı bildirmek</td><td>Destek kanalı, iş kaydı</td><td>Yorum kaybolur; hata takibe alınmalı, kimin düzeltti belli olmalı</td></tr>
+<tr><td>Rapor düzenleme önerisi, kabul testi</td><td>Çekme isteği ya da kayıt</td><td>Sürümle eşleşir; “Yaşam döngüsü” dersi</td></tr>
+<tr><td>Ay sonu açıklaması tüm okuyucu görsün</td><td>Rapor içindeki metin ya da açıklama tablosu</td><td>Yorum bölmesi kapalı olabilir, PDF’e çıkmaz</td></tr>
+<tr><td>Sayıyı ekipçe tartışmak</td><td>Teams kanalı ve rapor sekmesi</td><td>Toplantı ve karar aynı yerde</td></tr>
+<tr><td>Satır düzeyinde veri yazmak</td><td>Yorum değil; Power Apps ya da translytical akış</td><td>Yorum veriyi değiştirmez (“Power Platform” dersi)</td></tr></table></div>
+<p>Kötü yorum: “Bu sayılar yanlış.” İyi yorum: “@Mert 2024 Mart Mobil 42.100 görünüyor, ERP ekranında 39.800. Fark iadelerden mi? Cuma toplantısından önce lazım.” Sayı, kaynak, soru ve zaman yazılı.</p>
+<h2>Microsoft Teams</h2>
+<ul><li><b>Power BI sekmesi:</b> kanala ya da sohbete etkileşimli rapor gömer. Panolar sekmeye gömülemez.</li><li><b>Service’ten sohbet:</b> “Teams’te sohbet et” ile süzülmüş rapor görünümünü paylaşırsın.</li><li><b>Bağlantı önizlemesi:</b> rapor, pano ya da uygulama bağlantısı yapıştırınca önizleme çıkar; toplantı sohbetinde ve özel kanalda çalışmaz.</li><li><b>Etkinlik akışı:</b> @ bildirimleri ve uyarılar buraya düşebilir.</li></ul>
+<div class="warn"><b>Bağlantı erişim vermez</b>Teams’e eklemek ya da link göndermek kimseye izin vermez. Kullanıcının raporda izni ve lisansı olmalı. En kolay yol: ekip raporlarını tek çalışma alanına koymak, erişimi ekibin Microsoft 365 grubuna vermek. Power BI uygulaması Teams yönetim merkezinde etkin olmalı.</div>
+<h2>PowerPoint ve Excel</h2>
+<p><b>Power BI eklentisi</b> ile PowerPoint slaytına canlı rapor sayfası eklenir; sunum sırasında filtre değiştirebilirsin. Görüntüleyenin yine rapor erişimi ve lisans koşulu gerekir, eklenti yönetici tarafından kısıtlanabilir. Durağan görüntü gerekiyorsa PDF ya da PowerPoint’e dışa aktarım vardır. Excel tarafı “Power BI ve Excel birlikte” dersinde.</p>
+<h2>Ekipçe gözden geçirme akışı</h2>
+<p>Yeni bir rapor yayımlanmadan önce paydaşla çalışmanın temiz bir yolu:</p>
+<ol><li>Rapor Test çalışma alanında yayımlanır, gözden geçirene erişim verilir.</li><li>Gözden geçiren görsel yorumlarıyla notlarını bırakır; her konu ayrı konuşmadır.</li><li>Yazar kabul edilenleri kayda çevirir, Dev’de düzeltir.</li><li>Yorumlar kapanmadan üretime geçilmez; kabul listesi “Rapor kalitesi” dersindeki gibi yazılı tutulur.</li></ol>
+<p>Yorumlar rapor sürümüne bağlı değildir: rapor değişse de eski yorum durur ve yanlış sayıyı gösteriyor olabilir. O yüzden yorumu <b>hangi tarihte hangi sayıya baktığını</b> yazarak bırak. Raporda filtre bağlamını gösteren küçük bir ölçü de işe yarar: ekran görüntüsü ve PDF yorumu kaybeder, ama kart kalır.</p>
+<pre class="dax">Görünüm Etiketi =
+"Yıl: " & IF(HASONEVALUE(Tarih[Yil]), VALUES(Tarih[Yil]), "Tümü")
+    & " | Kanal: " & IF(HASONEVALUE(Satislar[Kanal]), VALUES(Satislar[Kanal]), "Tümü")</pre>
+` + ORTAM + `Service’te bir raporu Pro ya da deneme lisansıyla aç, bir dilimleyici seç, görsele yorum ekle; dilimleyiciyi değiştir, yoruma tıkla, görünüme dönüşünü gör. İkinci bir kullanıcı yoksa @ bildirimini deneyemezsin; bu senaryoları alıştırmalarla çalış.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Satış müdürü “Elektronik Mart’ta neden düştü?” diye sormak istiyor; Mobil kanal ve Ege seçili. Sorunun filtreyle birlikte kalması için en iyi yol?', o: ['Ekran görüntüsünü e-postayla atmak', 'Görsel yorumu ve @ ile bahsetmek', 'Raporu PDF olarak dışa aktarmak', 'Yeni bir rapor yer işareti eklemek'], a: 1, why: 'Yorum eklenince filtre ve dilimleyici değerleri yer işareti olarak yakalanır, @ kişiye bildirim gönderir. E-posta ve PDF bağlamı kaybeder. Rapor yer işareti herkese görünür ve yazar izni ister.' },
+    { t: 'mc', q: 'Konuşmanın ilk yorumu 2023’e bakıyordu. Müdür 2024 filtresiyle yanıt yazdı ve yanıtına tıklayan görünümün değişmediğini fark etti. Neden?', o: ['Yanıtlar filtre yakalamaz', 'Sayfalandırılmış raporda yorum yok', 'Müdürün PPU lisansı yoktur', 'Konuşma 1.000 yoruma ulaşmıştır'], a: 0, why: 'Learn: yer işareti yalnız konuşmanın ilk yorumunda yakalanır. Farklı filtre için yeni konuşma açılır.' },
+    { t: 'mc', q: 'Rapordaki bir sayının yanlış olduğu yorumla bildirildi, üç hafta kimse görmedi. Süreci nasıl düzeltirsin?', o: ['Herkese @ yazmasını söylemek', 'Yorumları kapatmak', 'Hataları kayıt kanalına almak', 'Rapora “yorum okuyun” kutusu koymak'], a: 2, why: 'Yorum tartışma içindir; sorumlu, öncelik, kapanış içermez. Hatalar iş kaydına girmeli. Yorum bağlam ve açıklama için kalır.' },
+    { t: 'mc', q: 'Rapor sekmesi Teams kanalına eklendi. Ekipten birine “erişim” gerekiyor. Yönetici “sekmede zaten var” diyor. Doğrusu ne?', o: ['Doğru, sekme erişim verir', 'Sekme erişim vermez; izin gerekir', 'Sekme yalnız sahibine açılır', 'Teams konukları her zaman görür'], a: 1, why: 'Learn açık: gömme ya da link erişim vermez. Kullanıcının lisansı ve rapor izni olmalı; yoksa “İçerik kullanılamıyor” görür.' },
+    { t: 'mc', q: 'Ay sonu kapanışında “Mart’ta iade rakamı düzeltildi” notunu tüm okuyucular görmeli, PDF dışa aktarımlarında da kalmalı. Nereye yazarsın?', o: ['Rapor yorumu', 'Teams kanalına', 'Kişisel yer işaretine', 'Rapor sayfasındaki metne'], a: 3, why: 'Yorum bölmesi herkese açık olmayabilir ve dışa aktarıma girmez. Kişisel yer işareti yalnız kişiye görünür. Sayfadaki metin ya da açıklama tablosu her kullanıcıya ve dışa aktarıma gider.' },
+    { t: 'mc', q: 'Kuruluş uygulaması olarak dağıtılan raporda kullanıcılar yorum düğmesini bulamıyor. Doğru bilgi?', o: ['Lisansları yetersizdir', 'Sahip yorumları kapatmıştır', 'Org app’te bu düğme yok', 'Rapor sertifikalı olmalıdır'], a: 2, why: 'Learn, org app’te rapor araç çubuğundaki yorum gibi bazı yeteneklerin bulunmadığını belirtir. Yorum şartsa çalışma alanı uygulaması ya da raporu doğrudan açmak düşünülür.' },
+    { t: 'dax', name: 'Yorum Görünüm Etiketi', q: '<b>Yorum Görünüm Etiketi</b>: Ekran görüntüsünde filtre kaybolmasın. Metin döndür: <code>"Yıl: "</code>, ardından tek yıl seçiliyse o yıl, değilse <code>"Tümü"</code>. <code>HASONEVALUE</code> ve <code>VALUES</code> kullan.', sol: '"Yıl: " & IF(HASONEVALUE(Tarih[Yil]), VALUES(Tarih[Yil]), "Tümü")', hint: 'IF(HASONEVALUE(Tarih[Yil]), VALUES(Tarih[Yil]), "Tümü") ve önüne "Yıl: " &', grid: [{ t: 'Tarih', c: 'Yil' }] }
+  ]
+});
+
+/* ---------- Veri yenileme ---------- */
+add('yorum-isbirligi', {
+  id: 'veri-yenileme', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 30,
+  title: 'Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi',
+  sum: 'Yenilemenin altı türü ve depolama moduna göre hangisinin geçerli olduğu; zamanlama, lisans sınırları, zamanlamanın neden kendiliğinden kapandığı; yenileme geçmişini okumak ve tazelik ölçüleri.',
+  body: `
+<p>Sabah 09:00. Genel müdür dünkü satışı soruyor, rapor üç gün öncesini gösteriyor. Yenileme “başarılı”, kimse e-posta almadı. Sorun nerede? Power BI’da <b>tek bir yenileme yoktur</b>; altı farklı şey aynı adla anılır. Doğru teşhis önce hangisinden söz ettiğini ayırmakla başlar.</p>
+<h2>Yenilemenin türleri</h2>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Ne yapar?</th><th>Dikkat</th></tr>
+<tr><td><b>Veri yenileme</b></td><td>Kaynaktan veriyi Import modele alır</td><td>DirectQuery ve canlı bağlantıda yoktur</td></tr>
+<tr><td><b>OneDrive yenilemesi</b></td><td>.pbix, .xlsx, .csv dosyasıyla eşitler; yaklaşık saatte bir</td><td>Asıl kaynaktan veri çekmez</td></tr>
+<tr><td><b>Sorgu önbelleği</b></td><td>Kapasitede sorgu sonuçlarını saklar</td><td>Her veri yenilemesi geçersiz kılar</td></tr>
+<tr><td><b>Kutucuk yenileme</b></td><td>Pano kutucuklarını günceller</td><td>Import’ta veriyle birlikte; DirectQuery’de yaklaşık saatte bir</td></tr>
+<tr><td><b>Görsel yenileme</b></td><td>Rapor görsellerini yeniden sorgular</td><td>Canlı bağlantı için geçerlidir</td></tr>
+<tr><td><b>Şema yenileme</b></td><td>Sütun ekleme, silme, ad değişikliğini alır</td><td>Import, DirectQuery ve Direct Lake’te</td></tr></table></div>
+<div class="tbl-wrap"><table><tr><th>Mod</th><th>Veri yenileme</th><th>“Güncel” ne demek?</th></tr>
+<tr><td>Import</td><td>Zamanlanmış, isteğe bağlı</td><td>Son yenileme anı</td></tr>
+<tr><td>DirectQuery</td><td>Yok</td><td>Sorgu anı; kutucuklar saatlik</td></tr>
+<tr><td>Canlı bağlantı</td><td>Yok</td><td>Kaynak modelin tazeliği</td></tr>
+<tr><td>Direct Lake</td><td>Çerçeveleme (framing)</td><td>Delta’nın işaret edilen sürümü; “Fabric’te anlam modeli” dersi</td></tr></table></div>
+<h2>Yenileme yolları</h2>
+<ul><li><b>Zamanlanmış:</b> anlam modeli ayarları → Yenileme → Yenilemeyi zamanla. Saat dilimini bilinçli seç.</li><li><b>Şimdi yenile:</b> elle, isteğe bağlı.</li><li><b>Power Automate:</b> olaya bağlı (dosya geldi, onay verildi).</li><li><b>REST API, XMLA:</b> tablo düzeyinde, bölüm düzeyinde, kapasitede geniş denetim.</li><li><b>İşlem hattı:</b> Fabric’te veri hazır olunca (“İşlem hatları” dersi).</li></ul>
+<h2>Sınırlar</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Pro (paylaşılan)</th><th>PPU, Premium, Fabric</th></tr>
+<tr><td>Zamanlanmış yenileme</td><td>Günde 8</td><td>Günde 48</td></tr>
+<tr><td>API ile tetikleme</td><td>8’e dahil</td><td>Sabit sayı yok; kapasiteye bağlı, kuyruğa girebilir</td></tr>
+<tr><td>Şimdi yenile</td><td>8’e dahil değil</td><td>Kapasiteye bağlı</td></tr>
+<tr><td>Süre</td><td>2 saat</td><td>5 saat (XMLA ile aşılabilir)</td></tr>
+<tr><td>Başlama</td><td colspan="2">Seçilen saatten en fazla 5 dk önce, hedef 15 dk içinde; kaynak azsa 1 saate kadar gecikebilir</td></tr></table></div>
+<p>Tam yenileme bellekte modelin yaklaşık iki katını ister, çünkü sorgulara hizmet için eski kopya durur. 1 GB’ı aşan ya da saatler süren modelde “Büyük modeller” dersindeki artımlı yenilemeyi düşün. Günde 48 slotunu doldurmak iyi bir hedef değildir: veri sık değişiyor ve kaynak dayanıyorsa DirectQuery daha doğru olabilir.</p>
+<h2>Zamanlama neden kendiliğinden kapanır?</h2>
+<div class="tbl-wrap"><table><tr><th>Olay</th><th>Sonuç</th><th>Ne yapılır?</th></tr>
+<tr><td><b>Art arda 4 hata</b> ya da süresi dolmuş kimlik bilgisi</td><td>Zamanlama kapanır</td><td>Kök nedeni çöz, zamanlamayı yeniden aç. Eşik değiştirilemez.</td></tr>
+<tr><td><b>2 ay görüntülenmeme</b></td><td>Zamanlama duraklar, sahibe e-posta gider</td><td>Raporu aç ya da Şimdi yenile</td></tr></table></div>
+<p>Hata e-postasını kişisel kutuya değil ekip listesine yönlendir; biri izne çıktığında rapor sessizce eskir.</p>
+<h2>Yenileme geçmişini okumak</h2>
+<p>Anlam modeli ayarları → <b>Yenileme geçmişi</b>. Tür, başlangıç, bitiş, durum ve hata iletisi burada. Teşhis sırası:</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Kök neden</th><th>Çözüm</th></tr>
+<tr><td>Kimlik bilgileri geçersiz</td><td>Parola değişti, OAuth süresi doldu</td><td>Veri kaynağı kimlik bilgilerini güncelle, zamanlamayı aç</td></tr>
+<tr><td>Veri kaynağı tanımlı değil, ağ geçidi çevrim dışı</td><td>Bağlantı eşleşmemiş, makine kapalı</td><td>“On-premises data gateway” dersi</td></tr>
+<tr><td>Sütun bulunamadı</td><td>Kaynak şeması değişti</td><td>Power Query adımını düzelt, yeniden yayımla</td></tr>
+<tr><td>Zaman aşımı</td><td>Model büyük, katlama yok</td><td>Sütun azalt, katlamayı koru, artımlı yenileme</td></tr>
+<tr><td>Bellek hatası</td><td>Kapasite dolu, eşzamanlı yenileme</td><td>Saatleri yay, gereksiz sütun çıkar</td></tr>
+<tr><td>Başlangıç gecikiyor</td><td>Kapasite yük altında</td><td>Saatleri kaydır, “Kullanım ve izleme” dersi</td></tr>
+<tr><td>“Başarılı” ama eski veri</td><td>Üst adım bitmeden çalıştı ya da kaynak eski</td><td>Olaya bağlı zincir, tazelik göstergesi</td></tr></table></div>
+<p>En tehlikelisi son satırdır: yenileme başarılıdır ve veri yine eskidir. “Son yenileme” zaman damgası yanlış güven verir. Doğru sinyal, <b>olgu tablosundaki en son iş tarihidir</b>:</p>
+<pre class="dax">Veri Gecikmesi (gün) =
+DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), DATE(2024, 12, 31), DAY)</pre>
+<p>Uygulama verisi 2024 sonunda bittiği için referans tarih sabit; gerçek modelde <code>TODAY()</code> yazılır. <b>Eşiği sıfır yapma.</b> Gece yenilenen modelde en son iş tarihi dündür: fark her sabah 1 çıkar, kart hep kırmızı kalır ve sürekli yanan alarma kimse bakmaz. Kabul edilen gecikmeyi işin sahibiyle konuş. Her gün satış olan ve günlük yenilenen modelde fark 1’den büyükse kırmızıya çevir. Hafta sonu satış yoksa Pazartesi farkı 3 olur: eşiği buna göre ver ya da iş günü takvimiyle say. Az satan kategoride daha geniş eşik gerekir; “Bayat Rapor” vakasında 7 gün kullanılıyor.</p>
+<pre class="dax">Tazelik Rengi =
+VAR Gecikme = DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), DATE(2024, 12, 31), DAY)
+RETURN IF(Gecikme &gt; 1, "#C0392B", "#2E7D32")</pre>
+<h2>Geçmişi sayıya çevirmek</h2>
+<p>Yenileme geçmişi REST API ile alınabilir, bir tabloya yazılabilir. Elde edince “hangi model kaç kez düştü?” bir DAX sorgusu olur:</p>
+<pre class="dax">EVALUATE
+VAR Gecmis =
+    DATATABLE("Model", STRING, "Durum", STRING, "Dakika", INTEGER, {
+        {"Satış", "Başarılı", 12}, {"Satış", "Başarılı", 14}, {"Satış", "Hata", 2},
+        {"Stok", "Başarılı", 41}, {"Stok", "Hata", 120}, {"Stok", "Hata", 120}
+    })
+RETURN
+    GROUPBY(Gecmis, [Model], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)), "Süre", SUMX(CURRENTGROUP(), [Dakika]))</pre>
+<p>Pro’da 120 dakikayı gören Stok modeli büyük olasılıkla süre sınırına çarpıyor. Bu tablo gerçek değil, sorgunun kalıbını göstermek için yazıldı.</p>
+<div class="note"><b>Kontrol listesi</b>Hangi tür yenilemeden söz edildiği belli mi? · Kimlik bilgisi kişiye değil, kurumsal hesaba mı bağlı? · Hata bildirimi ekip listesine gidiyor mu? · Saatler zirve dışına yayıldı mı? · Yenileme sırası (veri akışı → model) olaya mı bağlı? · Raporda iş tarihi gösteren tazelik kartı var mı? · Gizlilik düzeyi Service’te yeniden verildi mi?</div>
+`,
+  ex: [
+    { t: 'mc', q: 'OneDrive’daki .pbix’e bağlı rapor saatte bir “yenileniyor”, ama satışlar SQL’de değişmesine rağmen eski. Neden?', o: ['Kaynaktan veri çekmez', 'SQL ağ geçidi bozulmuştur', 'Saatlik sınır aşılmıştır', 'Rapor DirectQuery’dedir'], a: 0, why: 'OneDrive yenilemesi modeli dosyayla eşitler; asıl kaynağa gitmez. Dosya içindeki veri eskiyse model de eski kalır. Veri yenilemesi ayrıca zamanlanmalı.' },
+    { t: 'mc', q: 'DirectQuery modeline bağlı panoda kutucuklar 40 dakika eski görünüyor. Ne bekliyordun?', o: ['Kutucuklar her tıklamada canlıdır', 'Kutucuklar saatlik yenilenir', 'DirectQuery kutucuğu desteklenmez', 'Günde 8 yenileme sınırına girer'], a: 1, why: 'DirectQuery’de rapor görselleri sorgu anındadır, pano kutucukları ise önbellekten gelir ve yaklaşık saatte bir yenilenir. Bunu bilmeyen kullanıcı “rakam tutmuyor” der.' },
+    { t: 'mc', q: 'Pro çalışma alanında model her saat elle “Şimdi yenile”yle yenileniyor, zamanlama 8 slotta dolu. Bir analist API ile 9. yenilemeyi tetiklemek istiyor. Olur mu?', o: ['Olur; API sınırsızdır', 'Olur; ama yalnız mesai dışında', 'Olmaz; API de günlük 8’e girer', 'Olmaz; API yalnız Fabric’te vardır'], a: 2, why: 'Learn: paylaşılan kapasitede günlük sınır zamanlanmış ve API yenilemelerini kapsar. Arayüzdeki Şimdi yenile bu sayıya girmez. Kapasitede API için sabit sayı yoktur.' },
+    { t: 'mc', q: 'Zamanlama bir sabah kapalı bulundu. Geçmişte dört kırmızı satır, “kimlik bilgileri geçersiz”. Doğru sıra?', o: ['Zamanlamayı aç → kimliği güncelle → bekle', 'Modeli yeniden yayımla → zamanlamayı aç', 'Kimliği güncelle → yenile → zamanlamayı aç', 'Ağ geçidini yeniden kur → zamanlamayı aç'], a: 2, why: 'Önce kök neden: kimlik bilgisi. Elle yenilemeyle çalıştığını gör, sonra zamanlamayı aç. Aksi hâlde yeniden hata alıp kapanır. Eşik dört hatadır, değiştirilemez.' },
+    { t: 'mc', q: 'Veri akışı 02:00, model 03:00. Geçmiş iki aydır “Başarılı”, ama pazartesileri rakamlar bir gün eski. Kök neden büyük olasılıkla?', o: ['Veri akışı zamanında bitmiyor', 'Pro lisansının süresi doluyor', 'Tarih tablosu eksik kalmış', 'RLS rolü hafta başı satır gizliyor'], a: 0, why: 'Hafta sonu verisiyle veri akışı uzuyor, model eski veriyi alıyor ve başarılı dönüyor. Saate dayalı zincir kırılgandır. Çözüm olaya bağlı zincir ve iş tarihini gösteren kart.' },
+    { t: 'mc', q: 'Yalnız Pro’da olan 800 MB’lık Import model yenilemede 2 saati aşıyor. Önce hangisini denersin?', o: ['Sütun azalt, katlamaya bak', 'Modeli ikiye bölüp iki zamanlama kur', 'Kapasite satın al', 'Günde 8 kez yenilemeyi dene'], a: 0, why: 'Kapasiteye para harcamadan önce modeli küçült, sorgunun kaynağa katlanıp katlanmadığına bak, sonra artımlı yenilemeyi değerlendir. Modeli bölmek ölçüleri de böler.' },
+    { t: 'dax', name: 'Gecikmeli Veri Uyarısı', q: '<b>Gecikmeli Veri Uyarısı</b>: Görünen satırlardaki en son satış tarihi 31.12.2024’ten kaç gün geride? Fark 3 günden büyükse farkı, değilse BLANK döndür. Kartta yalnız sorun varken sayı görünsün.', sol: 'VAR Fark = DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)\nRETURN IF(Fark > 3, Fark)', hint: 'VAR Fark = DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY), sonra IF(Fark > 3, Fark).', grid: [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Urunler', c: 'Urun' }], noTotal: true },
+    { t: 'query', q: 'Yenileme günlüğünü özetle. <b>Model</b>, <b>Durum</b> sütunlu DATATABLE yaz: Satış-Başarılı, Satış-Hata, Stok-Hata, Stok-Hata, Kargo-Başarılı. Model başına hata sayısını <b>Hata</b> adıyla döndür. Hatası olmayan modelde boş kalabilir.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR G = DATATABLE("Model", STRING, "Durum", STRING, {{"Satış", "Başarılı"}, {"Satış", "Hata"}, {"Stok", "Hata"}, {"Stok", "Hata"}, {"Kargo", "Başarılı"}})\nRETURN GROUPBY(G, [Model], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))', hint: 'GROUPBY(G, [Model], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))' },
+    { t: 'mc', q: 'Model her gece yenileniyor, her gün satış var. Tazelik kartı <code>TODAY()</code> ile farkı ölçüyor, kural “sıfırdan büyükse kırmızı”. Kart her sabah kırmızı. Ne yaparsın?', o: ['Yenilemeyi gece yarısına almak', 'Kabul edilen eşiği 1 gün yapmak', 'Kartı rapordan kaldırmak', 'Yenilemeyi saatlik yapmak'], a: 1, why: 'Gece yenilenen modelde son iş tarihi dündür, fark normalde 1’dir. Eşik işle konuşulur; 1’den büyükse gerçek sorun vardır. Saati kaydırmak ya da sıklığı artırmak dünün satırlarının bugünün tarihine geçmesini sağlamaz.' }
+  ]
+});
+
+/* ---------- Ağ geçidi ---------- */
+add('veri-yenileme', {
+  id: 'gateway', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 30,
+  title: 'On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir',
+  sum: 'Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata teşhisi.',
+  body: `
+<p>Service bulutta, Anadolu Market’in SQL Server’ı ise şirket içinde bir sunucuda. Service oraya internetten ulaşamaz. <b>Ağ geçidi (on-premises data gateway)</b>, şirket ağında bir bilgisayara kurulan köprü yazılımıdır: buluttan gelen sorguyu alır, yerel kaynağa gider, sonucu geri gönderir. Giden bağlantı kullanır; bu yüzden gelen port açılmaz.</p>
+<h2>Gerekir mi?</h2>
+<div class="tbl-wrap"><table><tr><th>Kaynak</th><th>Ağ geçidi</th></tr>
+<tr><td>Şirket içi SQL Server, Oracle, ağ klasörü</td><td>Gerekir</td></tr>
+<tr><td>Şirket içi Analysis Services canlı bağlantı</td><td>Gerekir (standart)</td></tr>
+<tr><td>Azure SQL, SharePoint Online, OneDrive, Fabric</td><td>Genelde gerekmez</td></tr>
+<tr><td>Özel ağdaki (VNet, özel uç nokta) Azure kaynağı</td><td>VNet veri ağ geçidi</td></tr>
+<tr><td>Aynı sorguda şirket içi ve bulut</td><td>Gerekir; bulut da ağ geçidinden geçer</td></tr>
+<tr><td>Bilgisayarındaki yerel Excel</td><td>Kişisel mod ile olur, ama dosyayı SharePoint’e taşımak daha iyidir</td></tr></table></div>
+<h2>Üç tür</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Standart</th><th>Kişisel</th><th>VNet</th></tr>
+<tr><td>Kim kullanır?</td><td>Çok kullanıcı, merkezî bağlantı</td><td>Tek kişi</td><td>Çok kullanıcı</td></tr>
+<tr><td>Kurulum</td><td>Sürekli açık sunucu</td><td>Kullanıcı bilgisayarı</td><td>Microsoft yönetir, kurulum yok</td></tr>
+<tr><td>DirectQuery, canlı bağlantı</td><td>Var</td><td>Yok; Import yenileme</td><td>Desteklenen kaynaklarda</td></tr>
+<tr><td>Fabric öğeleri (işlem hattı, Dataflow Gen2)</td><td>Var</td><td>Yok</td><td>Desteklenenlerde</td></tr>
+<tr><td>Yüksek erişilebilirlik</td><td>Küme</td><td>Yok</td><td>Sabit yapılandırma</td></tr>
+<tr><td>Gereksinim</td><td>Pro yeterli</td><td>Pro yeterli</td><td>Fabric ya da Premium kapasite, ek ücret</td></tr></table></div>
+<p>Learn kişisel moddan <b>mümkünse kaçınmayı</b> önerir: kullanıcının bilgisayarı kapanınca yenileme durur ve yönetilmesi zordur. Kısıtlamak için ağ geçidi kiracı ilkesi vardır. Bir bilgisayarda en çok bir standart ve bir kişisel kurulum olur.</p>
+<h2>Kurulum şartları</h2>
+<ul><li>64 bit Windows Server 2019, 2022 ya da 2025 önerilir; 8 çekirdek, 8 GB bellek, biriktirme için SSD. En düşük şart: Windows 10 ya da 11, .NET Framework 4.8.</li><li>Etki alanı denetleyicisi, Server Core ve Windows kapsayıcısına kurulmaz.</li><li>Dizüstü bilgisayar ya da uyuyan makine olmaz; kablolu ağ yeğlenir.</li><li>Kuran kişi makinede yönetici olmalı, iş hesabıyla oturum açmalı.</li><li>Aynı veri merkezine, kaynağa yakın kurmak gecikmeyi azaltır.</li></ul>
+<h3>Kurtarma anahtarı</h3>
+<p>Kurulum sırasında verdiğin <b>kurtarma anahtarı</b>, ağ geçidini taşımak ya da kümeye makine eklemek için gerekir. Microsoft geri getiremez. Parola kasasına koy; kişinin not defterinde olmasın. Ağ geçidi yöneticisi şirketten ayrıldığında anahtar da gittiyse gerçek sorun yaşarsın.</p>
+<h3>Küme (cluster)</h3>
+<p>Üretim için Learn küme kullanmayı güçlü biçimde önerir: birincil düğüm düşerse istek sıradakine gider, yük paylaşılır, güncelleme tek tek yapılır. İkinci kurulumda <b>Var olan bir ağ geçidi kümesine ekle</b> seçilir ve birincinin kurtarma anahtarı girilir. Üyeler aynı sürümde olmalı, çevrim dışı üye kaldırılmalı. Üretim ve test için ayrı küme kur.</p>
+<h2>Bağlantı ve roller</h2>
+<p>Yazılımı kurmak yetmez. Service’te <b>Ayarlar → Bağlantıları ve ağ geçitlerini yönet</b> ekranında kaynak için bağlantı oluşturursun: sunucu, veritabanı, kimlik bilgisi, gizlilik düzeyi. Sonra anlam modeli ayarlarında <b>Ağ geçidi ve bulut bağlantıları</b> altında bu bağlantıyla eşlersin.</p>
+<div class="tbl-wrap"><table><tr><th>Rol</th><th>Ne yapar?</th></tr>
+<tr><td>Ağ geçidi: Yönetici</td><td>Ağ geçidini ve üyeleri yönetir</td></tr>
+<tr><td>Ağ geçidi: Bağlantı oluşturucu (paylaşımlı ya da paylaşımsız)</td><td>Bağlantı oluşturur</td></tr>
+<tr><td>Bağlantı: Sahip, Paylaşabilen kullanıcı, Kullanıcı</td><td>Bağlantıyı kullanır, paylaşır</td></tr></table></div>
+<p>Dikkat: çalışma alanında Yönetici olmak ağ geçidi izni vermez. Yenilemeyi zamanlamak için bağlantının kullanıcı listesinde olman gerekir. Tek kurumsal hesapla bağlantı kurmak, herkesin o kimlikle sorgu göndermesi demektir; kaynak sistemde kullanıcıya göre güvenlik gerekiyorsa Entra SSO (DirectQuery) düşünülür.</p>
+<div class="warn"><b>Sık unutulan ayar</b>Desktop’taki gizlilik düzeylerine ağ geçidi uymaz; bağlantıda ayrıca ver. Bir model tek ağ geçidi bağlantısı kullanır; aynı sorgudaki bulut kaynağını da ağ geçidinde tanımla.</div>
+<h2>Bakım</h2>
+<ul><li>Her ay yeni sürüm çıkar; yalnız son altı sürüm desteklenir. Önce test kümesinde dene, sonra üretimde düğüm düğüm güncelle. Geri alma yoktur, öncesinde makine görüntüsü al.</li><li>Günlükleri ve Windows performans sayaçlarını izle. Yavaşlıkta biriktirme yerine akış, antivirüs dışlaması değerlendirilir.</li><li>Parola değişimi takvimini bağlantılarla eşle.</li></ul>
+<h2>Fabric’te ağ geçidi</h2>
+<p>Dataflow Gen2, işlem hattı ve Copy job aynı standart ağ geçidini kullanır. Fark:</p>
+<ul><li>İşlem hatları için sürüm <b>3000.214.2 ya da sonrası</b> gerekir, güvenlik duvarında <code>*.frontend.clouddatahub.net</code> çıkışı açılmalı.</li><li>Dataflow Gen2 lakehouse’a yazarken 443 yetmeyebilir: ara depodan (staging) okuma SQL analiz uç noktasına <b>TCP 1433</b> kullanır. Yenileme tablosu “Başarılı” derken <code>WriteToDatabaseTableFrom_...</code> etkinliği “Başarısız” görünebilir.</li><li>Direct Lake yalnız bulut bağlantısı kullanır, ağ geçidi kullanmaz.</li><li>Özel bağlantı (private link) açıksa şirket içi ağ geçidi desteklenmez; VNet ağ geçidi gerekir.</li></ul>
+<h2>Teşhis</h2>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Kontrol</th></tr>
+<tr><td>“Ağ geçidi çevrim dışı”</td><td>Makine açık mı, servis çalışıyor mu, küme üyesi var mı?</td></tr>
+<tr><td>“Veri kaynağı tanımlı değil”</td><td>Bağlantı adı, sunucu ve veritabanı .pbix’teki ile harfi harfine aynı mı? Bulut kaynağı da tanımlı mı?</td></tr>
+<tr><td>Kullanıcı bağlantıyı listede görmüyor</td><td>Bağlantı kullanıcı listesine eklenmemiş</td></tr>
+<tr><td>Yenileme başlıyor, sorgu zaman aşımı</td><td>Kaynak yavaş, CPU dolu; Import ve DirectQuery için ayrı küme</td></tr>
+<tr><td>Kimlik doğrulama hatası (Windows)</td><td>Makine kaynakla aynı etki alanında mı, servis hesabı yetkili mi?</td></tr>
+<tr><td>Eski sürüm uyarısı, Fabric bağlantısı olmuyor</td><td>Sürüm ve <code>*.frontend.clouddatahub.net</code> çıkışı</td></tr></table></div>
+<p>Ağ geçidi günlüğünden hangi düğümün sorun çıkardığını bulmak bir sorgudur. Örnek bir günlük tablosu üzerinde:</p>
+<pre class="dax">EVALUATE
+VAR Gunluk =
+    DATATABLE("Dugum", STRING, "Durum", STRING, {
+        {"GW-01", "Tamam"}, {"GW-01", "Tamam"}, {"GW-02", "Hata"}, {"GW-02", "Hata"}, {"GW-02", "Tamam"}
+    })
+RETURN
+    GROUPBY(Gunluk, [Dugum], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))</pre>
+` + ORTAM + `Windows bir bilgisayara standart ya da kişisel ağ geçidi kurmak için ücretsiz yazılımı indirmen yeter, ama kaydetmek için iş hesabı ve Service’i kullanmak için Pro ya da deneme lisansı gerekir. Şirket sunucusunda yönetici izni olmadan deneme; kendi bilgisayarında kişisel modda küçük bir Excel ile yenileme kurup Service’te izleyebilirsin. Üretimde kişisel mod önerilmez.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Stajyer ağ geçidini kendi dizüstü bilgisayarına kurup üretim modelini ona bağladı. Hafta sonu rapor yenilenmedi. Ne önerirsin?', o: ['Dizüstünü hafta sonu açık bırakmasını', 'Sürekli açık sunucuda standart mod', 'Yenilemeyi hafta içine almasını', 'VNet ağ geçidi kurmasını'], a: 1, why: 'Learn uyuyan ya da kapanan makineyi önermez. Üretimde sürekli açık sunucuda standart mod, kritik iş için küme kullanılır. VNet ağ geçidi özel ağ kaynakları içindir, şirket içi SQL için değil.' },
+    { t: 'mc', q: 'Şirket içi Analysis Services’e canlı bağlanan bir rapor yayımlanacak. Hangi tür?', o: ['Kişisel mod', 'Ağ geçidi gerekmez', 'Standart mod', 'İkisi birlikte'], a: 2, why: 'Canlı bağlantı ve DirectQuery kişisel modda yoktur. Şirket içi kaynak için ağ geçidi de şarttır. Bu yüzden standart mod.' },
+    { t: 'mc', q: 'Eski BI yöneticisi ayrıldı. İkinci düğüm eklenmek isteniyor, ama kimse kurtarma anahtarını bilmiyor. Microsoft desteği ne yapabilir?', o: ['Anahtarı kiracı yöneticisine verir', 'Faturadan doğrulayıp sıfırlar', 'Geri getiremez; yeniden planlanır', 'Azure portaldan indirilir'], a: 2, why: 'Learn: Microsoft kurtarma anahtarını geri getiremez. Ağ geçidi sürekli çalışıyorsa düğüm durur ama anahtar olmadan küme büyütülemez. Yeni ağ geçidi kurup bağlantıları taşımak gerekebilir. Ders: anahtar kurumsal kasada durur.' },
+    { t: 'mc', q: 'Çalışma alanında Yönetici olan analist yenilemeyi zamanlıyor, ama ağ geçidi bağlantısını listede göremiyor. Sebep?', o: ['Çalışma alanı F64 altında', 'Modelde RLS var', 'Zamanlama kapalı', 'Bağlantıda kullanıcı değil'], a: 3, why: 'Ağ geçidi izinleri çalışma alanı rollerinden bağımsızdır. Bağlantı sahibinden kullanıcı olarak eklenmen gerekir.' },
+    { t: 'mc', q: 'Üretim küme güncellemesi için doğru sıra hangisi?', o: ['Test → görüntü al → düğüm düğüm', 'Tüm düğümler aynı anda → test', 'Kurtarma anahtarı değiştir → güncelle', 'Kapat → yeni küme aç → bağlantı sil'], a: 0, why: 'Learn test kümesinde denemeyi, geri alma olmadığı için görüntü almayı, düğümleri tek tek düşük kullanım saatinde güncellemeyi önerir. Aynı anda güncellemek kümenin faydasını yok eder.' },
+    { t: 'mc', q: 'Dataflow Gen2 ağ geçidiyle şirket içi kaynaktan lakehouse’a yazıyor. Yenileme satırı “Başarılı”, ama yazma etkinliği 10013 ile başarısız: “erişim izni engellendi”. Önce neye bakarsın?', o: ['Kapasite boyutuna', 'TCP 1433 çıkışına', 'Lakehouse şemasına', 'Kurtarma anahtarına'], a: 1, why: 'Learn bu belirtiyi tanımlar: ara depodan okuma SQL analiz uç noktasına TDS 1433 ile gider, proxy ya da güvenlik duvarı engellerse yazma başarısız görünür. Alternatif: staging ve fast copy kapatmak, sorguları yeniden düzenlemek.' },
+    { t: 'mc', q: 'Kurum özel bağlantıyı (private link) açtı. Ağ geçidi kaydı hata veriyor. Doğru yorum?', o: ['Ağ geçidi sürümü çok yeni', 'Desteklenmez; VNet kullan', 'Küme üye sayısı yetmiyor', 'Windows 11’e kurulamaz'], a: 1, why: 'Learn: şirket içi ağ geçitlerinde özel bağlantı desteklenmez, bu durumda VNet veri ağ geçidi önerilir.' },
+    { t: 'mc', q: 'Bir çalışan masaüstündeki Excel’i Service’te yenilemek için kişisel ağ geçidi istiyor. Daha iyi öneri?', o: ['Dosyayı SharePoint’e taşımak', 'Standart küme kurmak', 'Raporu Web’de yayımlamak', 'Excel’i CSV’ye çevirmek'], a: 0, why: 'Dosya buluta taşınınca ağ geçidi gereksinimi kalkar; Learn de kişisel moda alternatif olarak bunu verir. Tek dosya için küme aşırıdır. CSV’ye çevirmek yerini değiştirmez.' },
+    { t: 'query', q: 'Ağ geçidi günlüğünü oku. <b>Dugum</b>, <b>Durum</b> sütunlu DATATABLE yaz: GW-01 Tamam, GW-01 Hata, GW-02 Hata, GW-02 Hata, GW-03 Tamam. Düğüm başına hata sayısını <b>Hata</b> adıyla döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR G = DATATABLE("Dugum", STRING, "Durum", STRING, {{"GW-01", "Tamam"}, {"GW-01", "Hata"}, {"GW-02", "Hata"}, {"GW-02", "Hata"}, {"GW-03", "Tamam"}})\nRETURN GROUPBY(G, [Dugum], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))', hint: 'GROUPBY(G, [Dugum], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))' }
+  ]
+});
+
+/* ---------- Kullanım ve izleme ---------- */
+add('gateway', {
+  id: 'kullanim-izleme', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 28,
+  title: 'Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor?',
+  sum: 'Kullanım ölçümleri, etkinlik günlüğü, Monitor hub, Capacity Metrics, çalışma alanı izleme ve Performans Analizi: hangi soruyu hangi araç cevaplar; sınırlar ve kullanım verisiyle karar vermek.',
+  body: `
+<p>Altı aydır her ay güncellenen rapora emek veriyorsun. Kaç kişi açıyor? Sen bilmiyorsan “rapor başarılı” demek cesaret ister. Bu ders üç soruyu cevaplar: <b>kim kullanıyor, ne yavaş, kapasite nereye gidiyor?</b> Benimseme planı ve kültür tarafı “Power BI ortamını yönetmek” dersinde; burada araçları ve kararları işliyoruz.</p>
+<h2>Hangi soru, hangi araç?</h2>
+<div class="tbl-wrap"><table><tr><th>Soru</th><th>Araç</th><th>Kim?</th><th>Sınır</th></tr>
+<tr><td>Bu raporu kim, ne sıklıkla açıyor?</td><td><b>Kullanım ölçümleri raporu</b></td><td>Yönetici, Üye, Katkıda bulunan; Pro ya da PPU</td><td>Son 30 gün, önizleme</td></tr>
+<tr><td>Kiracıda kim neyi yaptı, 6 ay önce kim dışa aktardı?</td><td><b>Etkinlik günlüğü, denetim</b></td><td>Fabric yöneticisi, uyumluluk</td><td>Kendi depona biriktir</td></tr>
+<tr><td>Bu gece hangi iş düştü?</td><td><b>Monitor hub</b></td><td>Fabric kullanıcıları; yalnız görme izni olan öğeler</td><td>Learn’de önizleme etiketli sayfa</td></tr>
+<tr><td>Yenileme neden düştü?</td><td><b>Yenileme geçmişi</b></td><td>Model erişimi olan</td><td>“Veri yenileme” dersi</td></tr>
+<tr><td>Kapasite neden kısıtlıyor?</td><td><b>Fabric Capacity Metrics uygulaması</b></td><td>Kapasite yöneticisi</td><td>İşlem 14, depolama 30 gün görünüm</td></tr>
+<tr><td>Bu görsel neden yavaş?</td><td><b>Performans Analizi</b></td><td>Yazar, Desktop’ta</td><td>Service koşulları farklıdır</td></tr>
+<tr><td>Modele hangi sorgular geliyor?</td><td><b>Çalışma alanı izleme</b></td><td>Sorgu için en az Katkıda bulunan</td><td>Önizleme; varsayılan 30 gün, kapasite tüketir</td></tr></table></div>
+<h2>Kullanım ölçümleri raporu</h2>
+<p>Çalışma alanında raporun <b>Diğer seçenekler (…) → Kullanım ölçümleri raporunu görüntüle</b>. Görüntüleyici rolü yetmez. Yöneticinin “içerik oluşturucular için kullanım ölçümleri” ayarı açık olmalı. Çalışma alanım’da ve Azure Private Link arkasında çalışmaz.</p>
+<ul><li><b>Gösterir:</b> rapor görüntüleme, sayfa görüntüleme, tekil görüntüleyen, eğilim, dağıtım yolu (çalışma alanı, paylaşım, uygulama), platform (web, gömülü, mobil), tipik açılma süresi (yüzde 50’lik dilim).</li><li><b>Bugünü saymaz.</b> Model günde bir yenilenir; yeni veri 24 saate kadar gecikir.</li><li><b>30 günden eskisi silinir.</b> Uzun eğilim için düzenli dışarı aktar.</li><li><b>Kopya al:</b> Dosya → Kopya kaydet düzenlenebilir rapor üretir; Desktop’tan “Usage Metrics Report” modeline bağlanılabilir. Model önizleme olduğu için ufak değişebilir.</li></ul>
+<div class="warn"><b>Sayıyı doğru oku</b>Sayfa görüntüleme istemci izlemesinden gelir; reklam engelleyici ya da ağ sorunu farklılık yaratır. Abonelik anlık görüntüleri görüntülemeyi şişirebilir. Uygulamadaki rapor çalışma alanındakiyle farklı kimlik taşır, ayrı görünebilir. Pano kullanımı yeni raporda yok. Bir ayarla kullanıcı adları “adsız kullanıcı” olarak maskelenebilir.</div>
+<h2>Etkinlik günlüğü ve denetim</h2>
+<p>Birden çok çalışma alanı, 30 günden uzun geçmiş ya da tüm etkinlikler için kullanım ölçümleri yetmez. Etkinlik günlüğünü her gün kendi deponda biriktir (“Yönetişim” dersi). Böylece “kim dışa aktardı?” aylar sonra cevaplanır.</p>
+<h2>Monitor hub</h2>
+<p>Fabric’in birleşik izleme ekranı. İş çalıştırmaları, uygulamalar, kapasite ve maliyet, ajanlar, uyarılar sayfaları var. Herkes açabilir, ama yalnız görme izni olduğu öğeleri görür. İşlem hattı hatasını adım adım okumak “İşlem hatları” dersinde. Learn’de Kasım 2026 itibarıyla önizleme etiketi taşıyor.</p>
+<h2>Capacity Metrics</h2>
+<p>Kapasite kapasite birimi (CU) ile ölçülür. Rapor sorguları, yenileme, not defteri, Copilot aynı havuzdan tüketir. Uygulamanın <b>Sistem durumu</b> sayfası hangi kapasitenin kısıtlandığını, <b>İşlem</b> sayfası 14 günlük eğilimi ve işlem matrisini, <b>Zaman noktası</b> sayfaları 30 saniyelik aralıkları gösterir.</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Yorum</th><th>Önce dene</th></tr>
+<tr><td>Her gece 02:00’de zirve, sabah rapor yavaş</td><td>Yenilemeler üst üste</td><td>Saatleri yay</td></tr>
+<tr><td>Öğlen bir not defteri kapasitenin çoğunu yiyor</td><td>Geliştirme işi üretim havuzunda</td><td>Ayrı kapasite, iş saatini kaydır</td></tr>
+<tr><td>Kısıtlama (throttling), sorgu reddi</td><td>Uzun süre kapasite üstünde tüketim</td><td>Ağır işi bul, sonra SKU düşün</td></tr>
+<tr><td>Rapor yavaş, kapasite rahat</td><td>Kapasite sorunu değil, DAX ya da model</td><td>Performans Analizi</td></tr></table></div>
+<p>Son satır önemli: SKU büyütmek yavaş ölçüyü düzeltmez. Sıra “önce hangi işlem, sonra neden, en son para”dır.</p>
+<h2>Çalışma alanı izleme</h2>
+<p>İsteğe bağlı bir izleme öğesi, çalışma alanı olaylarını Eventhouse içindeki tablolara yazar. Anlam modeli işlem günlükleri, işlem hattı, Dataflow Gen2 ve ambar kayıtları buraya gelir; KQL ile sorgulanır, Activator ile uyarıya bağlanır. Önizlemededir, kapasite tüketir, açılmadan önceki etkinlik geriye dönük dolmaz.</p>
+<h2>Kullanım verisiyle karar</h2>
+<div class="tbl-wrap"><table><tr><th>Bulgu</th><th>Karar</th></tr>
+<tr><td>30 günde hiç açılmayan rapor</td><td>Sahibine sor, tek açan yoksa arşivle</td></tr>
+<tr><td>Çok açılıyor, tek kişi</td><td>Kişisel iş; aboneliğe ya da kendi alanına</td></tr>
+<tr><td>Çok görüntüleme, ilk sayfa dışı neredeyse hiç</td><td>Sayfaları azalt, özeti güçlendir</td></tr>
+<tr><td>Tipik açılma süresi yüksek</td><td>Sayfadaki görsel sayısını, ölçüleri incele</td></tr>
+<tr><td>Çoğu erişim mobil</td><td>Mobil düzeni önceliklendir</td></tr></table></div>
+<p>Kullanım tablosunu Desktop’a aldığında sorular DAX’a dönüşür. Örnek kullanım tablosu:</p>
+<pre class="dax">EVALUATE
+VAR Kullanim =
+    DATATABLE("Rapor", STRING, "Kisi", STRING, "Goruntuleme", INTEGER, {
+        {"Satış", "ayse", 22}, {"Satış", "mert", 14}, {"Satış", "selin", 9},
+        {"Stok", "ayse", 40}, {"Kargo", "mert", 1}
+    })
+RETURN
+    GROUPBY(Kullanim, [Rapor], "Toplam", SUMX(CURRENTGROUP(), [Goruntuleme]), "Kisi Sayisi", SUMX(CURRENTGROUP(), 1))</pre>
+<p>Stok 40 görüntülenmiş ama tek kişi; Satış 45 görüntülenmiş, üç kişi. Sadece toplama bakan kişi Stok’u “popüler” sanır. Tablolar örnek amaçlıdır.</p>
+` + ORTAM + `Bir çalışma alanında (Pro ya da deneme) kendi raporunun kullanım ölçümlerini aç; verinin gelmesi bir gün sürebilir. Capacity Metrics ve çalışma alanı izleme için Fabric kapasitesi gerekir; Fabric deneme kapasitesi Capacity Metrics uygulamasını destekler. Yönetici ayarına bağlı olabilir.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Rapor yazarı Görüntüleyici rolüyle raporun kullanım ölçümlerini açamıyor. Neden?', o: ['Yalnız kapasitede çalışır', 'En az Katkıda bulunan olmalı', 'Rapor uygulamada olmalı', 'Rapor 30 günden yeni olmalı'], a: 1, why: 'Düzenleme yetkisi (Yönetici, Üye, Katkıda bulunan) ve Pro ya da PPU gerekir. Pro’da paylaşılan alanda da çalışır, kapasite şart değildir.' },
+    { t: 'mc', q: 'Güvenlik ekibi: “5 ay önce bu raporu kim dışa aktardı?” Kullanım ölçümleri 30 gün tutuyor. Doğru hazırlık?', o: ['Kullanım raporunu her ay okumak', 'Etkinlik günlüğünü biriktirmek', 'Raporu sertifikalamak', 'Dışa aktarmayı tamamen kapatmak'], a: 1, why: 'Dışa aktarma olayı etkinlik günlüğündedir ve geçmişi sınırlıdır. Her gün kendi depona alırsan aylar sonra sorgulayabilirsin. Dışa aktarmayı kapatmak geçmiş soruyu cevaplamaz.' },
+    { t: 'mc', q: 'Kullanıcılar raporun yavaş açıldığını söylüyor. Capacity Metrics kapasitenin rahat olduğunu gösteriyor. Ekip F64’e geçmek istiyor. Sen?', o: ['Geçelim, sorunu çözer', 'Önce Performans Analizi’ne bak', 'Aboneliği kapatalım', 'Kullanım ölçümlerini silelim'], a: 1, why: 'Kapasite rahatsa sorun büyük olasılıkla model, DAX ya da sayfa tasarımıdır. SKU büyütmek yavaş ölçüyü düzeltmez; “önce neden, en son para”.' },
+    { t: 'mc', q: 'Kullanım raporunda bir rapor sabit bir saatte çok görüntüleniyor, ama tekil kişi az. En olası açıklama?', o: ['RLS çalışmıyor', 'Rapor mobil açılıyor', 'Abonelikler şişiriyor', 'Rapor başka alana taşınmış'], a: 2, why: 'Learn: abonelik anlık görüntüleri görüntüleme sayısını şişirebilir. Toplam yerine tekil görüntüleyene bak.' },
+    { t: 'mc', q: 'İşlem hattı gece düştü. Fabric’te en hızlı nereden bakarsın?', o: ['Monitor hub', 'Kullanım ölçümleri raporu', 'Kiracı ayarları', 'OneLake kataloğu'], a: 0, why: 'İş çalıştırmaları Monitor hub’da görünür, buradan çalıştırmanın ayrıntısına inilir. Kullanım ölçümleri rapor görüntülemesi içindir.' },
+    { t: 'mc', q: 'Çalışma alanı izlemeyi bugün açtın ve dünkü sorguyu arıyorsun. Bulamıyorsun. Neden?', o: ['Kapasite yetersiz', 'Geriye dönük dolmaz', 'KQL Türkçe çalışmaz', 'Silme ilkesi 1 gündür'], a: 1, why: 'Learn: toplama açıldıktan sonra veri akar, önceki etkinlik için doldurma yoktur. Varsayılan saklama süresi 30 gündür.' },
+    { t: 'query', q: 'Kullanım tablosunu özetle. <b>Rapor</b>, <b>Goruntuleme</b> sütunlu DATATABLE yaz: Satış 22, Satış 14, Stok 40, Kargo 1. Her rapor için <b>Toplam</b> görüntülemeyi döndür; toplamı 5’in altındakiler emeklilik adayı.', start: 'EVALUATE\n', sol: 'EVALUATE\nVAR K = DATATABLE("Rapor", STRING, "Goruntuleme", INTEGER, {{"Satış", 22}, {"Satış", 14}, {"Stok", 40}, {"Kargo", 1}})\nRETURN GROUPBY(K, [Rapor], "Toplam", SUMX(CURRENTGROUP(), [Goruntuleme]))', hint: 'GROUPBY(K, [Rapor], "Toplam", SUMX(CURRENTGROUP(), [Goruntuleme]))' }
+  ]
+});
+
+/* ---------- Yerel geliştirme ---------- */
+add('kullanim-izleme', {
+  id: 'yerel-gelistirme', lv: 'B2', mod: 'Yönetim ve Güvenlik', min: 30,
+  title: 'Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git',
+  sum: 'Bilgisayarında düzenli çalışmak: .pbix ile .pbip farkı, klasör yapısı, DAX sorgu görünümünde ölçüyü denemek, TMDL görünümü, VS Code ve Git ile ilk akış, harici araçlar; kendi Desktop’unda adım adım.',
+  body: `
+<p>“Rapor_son_son2_GERCEK.pbix”. Tanıdık mı? Power BI Desktop ücretsiz ve Windows üzerinde çalışır; rapor geliştirmenin büyük kısmı burada, kendi bilgisayarında olur. Bu ders, ekibe girmeden önce <b>tek başına bile olsan</b> düzenli yerel çalışma alışkanlığını kurar. Dallar, çekme isteği ve dağıtım gibi ekip süreçleri “Yaşam döngüsü” dersinde.</p>
+<h2>.pbix mi, .pbip mi?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>.pbix</th><th>.pbip (Power BI projesi)</th></tr>
+<tr><td>Biçim</td><td>Tek ikili dosya</td><td>Metin dosyalarından oluşan klasör</td></tr>
+<tr><td>Fark görme</td><td>Yok</td><td>Satır satır, Git ile</td></tr>
+<tr><td>Veri</td><td>Dosyanın içinde</td><td>Yerel önbellekte (<code>.pbi/cache.abf</code>), depoya girmez</td></tr>
+<tr><td>Dış düzenleyici</td><td>Yok</td><td>VS Code ile TMDL ve PBIR</td></tr>
+<tr><td>Duyarlılık etiketi</td><td>Var</td><td>Desteklenmez</td></tr>
+<tr><td>OneDrive/SharePoint’e doğrudan</td><td>Var</td><td>Önerilmez; eşitleme sorunu çıkarır</td></tr></table></div>
+<p>Dönüşüm yalnız Desktop’ta <b>Dosya → Farklı kaydet</b> ile yapılır, otomatikleştirilemez. Klasör şöyle olur:</p>
+<pre class="dax" data-notry>AnadoluMarket/
+  AnadoluMarket.pbip               // kısayol, isteğe bağlı
+  AnadoluMarket.SemanticModel/
+    definition/                    // TMDL: tablolar, ölçüler, ilişkiler
+  AnadoluMarket.Report/
+    definition.pbir                // modeli gösterir
+    definition/                    // PBIR: sayfa, görsel, yer işareti
+  .gitignore                       // cache.abf ve localSettings.json dışarıda</pre>
+<p>Windows’un 260 karakter yol sınırına takılmamak için kısa kök klasör seç (<code>C:\\bi\\</code>). Dosyalar BOM’suz UTF-8, satır sonu CRLF’tir; Git’te <code>autocrlf</code> ayarını ekipçe aynı yap. Elle değişiklik desteklenmeyen dosyalar var (<code>report.json</code>, diyagram düzeni). Yayımdan önce bunlara dokunma.</p>
+<h2>DAX sorgu görünümü: ölçüyü yazmadan dene</h2>
+<p>Desktop’ta sol şeritteki <b>DAX sorgu görünümü</b>, modele EVALUATE sorgusu gönderir. Ölçüyü modele eklemeden önce <code>DEFINE MEASURE</code> ile yerel olarak yazıp sınayabilirsin. Doğruysa görünümdeki model güncelleme komutuyla modele eklersin. Bu uygulamadaki DAX Playground aynı mantıkla çalışır:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Deneme Marj] = DIVIDE([Brüt Kâr], [Net Satış])
+EVALUATE
+SUMMARIZECOLUMNS(Kategoriler[Kategori], "Net", [Net Satış], "Marj", [Deneme Marj])</pre>
+<p>Alışkanlık: yeni ölçü yazmadan önce kenar durumları sor. Sıfır bölme var mı, boş kategoride ne dönüyor, toplam satırı anlamlı mı? Sorgu dosyalarını projede saklarsan aynı testi sonra da çalıştırırsın.</p>
+<h2>TMDL görünümü</h2>
+<p>Modeli metin olarak düzenleyen görünümdür. Elli ölçünün biçimini tek tek tıklamak yerine betikle değiştirirsin, görüntüleme klasörü toplu verilir. Bir ölçü şöyle görünür (“Yaşam döngüsü” dersinde tam örnek var):</p>
+<pre class="dax" data-notry>measure 'Net Satış' = CALCULATE([Toplam Satış], Satislar[Durum] &lt;&gt; "İptal")
+    formatString: #,0 ₺
+    displayFolder: Temel</pre>
+<p>Desktop dış değişikliği algılar ve uygulamak için sorar. Açık değişiklik varken dışarıdan düzenleme yaparsan bazı değişiklikler kaybolabilir: önce Desktop’ta kaydet.</p>
+<h2>Git ile ilk yerel akış</h2>
+<ol><li>Projeyi .pbip olarak kaydet, klasörde <code>git init</code>.</li><li>Oluşan <code>.gitignore</code>’da <code>cache.abf</code> ve <code>localSettings.json</code> olduğunu kontrol et.</li><li>İlk işleme: <code>git add .</code>, <code>git commit -m "İlk sürüm"</code>.</li><li>Bir ölçüyü değiştir, Desktop’ta kaydet, <code>git diff</code> ile tek satırlık farkı gör.</li><li>Beğenmediysen <code>git restore</code> ile geri dön; Desktop’ı yeniden aç.</li></ol>
+<p>Bu kadarı bile “dün neyi bozdum?” sorusunu çözer. Uzak depo, dal ve çekme isteği ekip konusudur.</p>
+<h2>Harici araçlar</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>Ne için?</th><th>Bağlantı</th></tr>
+<tr><td>DAX Studio</td><td>Sorgu planı, sunucu zamanlaması</td><td>Desktop’ın yerel modeli</td></tr>
+<tr><td>Tabular Editor</td><td>Toplu ölçü, hesaplama grubu, Best Practice Analyzer</td><td>Yerel model ya da dosya</td></tr>
+<tr><td>VS Code</td><td>TMDL, PBIR, Git</td><td>Proje klasörü</td></tr></table></div>
+<p>Bu araçlar Desktop’ın çalıştırdığı yerel Analysis Services örneğine bağlanır. Üretimde kuruluşunun izin verdiği sürümleri kullan. Performans ölçümünde Desktop sonucu Service ile aynı olmaz: veri hacmi, eşzamanlılık, kapasite ve RLS farklıdır.</p>
+<h2>Yayımla mı, Git mi?</h2>
+<p>Desktop’ta Yayımla geçici bir .pbix ile yerel önbelleği de gönderir. Fabric Git tümleştirmesi ve REST API yalnız meta veriyi taşır; veri için yenileme gerekir. Tek başına çalışırken Yayımla yeterlidir; ekipte düzenli dağıtıma geç. PBIP’in sınırları: duyarlılık etiketi yok, Report Server sürümünde yok, AAS veya SSAS’a dağıtılamaz.</p>
+<div class="warn"><b>Sürümleri takip et</b>PBIP ve PBIR hızlı değişiyor. Gelişmiş rapor biçimi PBIR’ın durumu ve varsayılan olup olmadığı için Learn’deki güncel sayfaya bak; bu derste kesin tarih vermiyoruz. Eski PBIR-legacy biçimi belgesiz tek <code>report.json</code> kullanır.</div>
+` + ORTAM + `Power BI Desktop’u (Windows) Microsoft Store’dan ya da İndirme Merkezi’nden ücretsiz kur (“Power BI Desktop kurulumu” dersi). Hesap gerekmeden çalışır. Veri setleri sayfasından Anadolu Market CSV’lerini indir, ilk rapor dersindeki modeli kur, .pbip olarak kaydet. Yukarıdaki Git adımlarını dene. Mac’te Desktop çalışmaz; alıştırmalar tarayıcıda çözülür.</div>
+`,
+  ex: [
+    { t: 'query', q: 'Ölçüyü modele eklemeden dene. <code>DEFINE MEASURE Satislar[Deneme İade Payı]</code> ile <code>DIVIDE([İade Tutarı], [Net Satış])</code> tanımla. <code>SUMMARIZECOLUMNS</code> ile her <code>Kategoriler[Kategori]</code> için <b>Net</b> ve <b>Pay</b> döndür.', start: 'DEFINE\n    MEASURE Satislar[Deneme İade Payı] = \nEVALUATE\n', sol: 'DEFINE\n    MEASURE Satislar[Deneme İade Payı] = DIVIDE([İade Tutarı], [Net Satış])\nEVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], "Net", [Net Satış], "Pay", [Deneme İade Payı])', hint: 'DEFINE bloğu EVALUATE’ten önce gelir. Yerel ölçüye [Deneme İade Payı] diye başvurursun.' },
+    { t: 'query', q: 'İki sürümü yan yana karşılaştır: <code>DEFINE MEASURE</code> ile <b>Eski</b> (<code>[Toplam Satış]</code>) ve <b>Yeni</b> (<code>[Net Satış]</code>) ölçülerini tanımla. Her <code>Tarih[Yil]</code> için ikisini ve farkı (<b>Fark</b> = Eski eksi Yeni) döndür. Ölçü değişikliğinden önce etkisini böyle ölç.', start: 'DEFINE\n', sol: 'DEFINE\n    MEASURE Satislar[Eski] = [Toplam Satış]\n    MEASURE Satislar[Yeni] = [Net Satış]\nEVALUATE\nSUMMARIZECOLUMNS(Tarih[Yil], "Eski", [Eski], "Yeni", [Yeni], "Fark", [Eski] - [Yeni])', hint: 'İki MEASURE satırı yaz. SUMMARIZECOLUMNS içinde "Fark", [Eski] - [Yeni].' },
+    { t: 'mc', q: 'Tek başına çalışan analist her değişiklikten sonra farklı adla .pbix kaydediyor; hangi sürümde neyi değiştirdiğini bilmiyor. İlk iyileştirme?', o: ['Bulut klasöründe sürümleri saklamak', '.pbip ve yerel Git', 'Her gece e-postayla yedek', 'Dosya adına tarih eklemek'], a: 1, why: '.pbip metin dosyaları üretir; Git hangi ölçünün değiştiğini satır satır gösterir, geri dönmek kolaydır. Bulut sürümü ikili dosyanın farkını göstermez. PBIP’i doğrudan OneDrive’a kaydetmek de önerilmez.' },
+    { t: 'mc', q: 'Çekme isteğinde 300 MB’lık <code>cache.abf</code> görünüyor. Ne yaparsın?', o: ['Depodan çıkarırım', 'Sıkıştırıp bırakırım', 'Model için depoda bırakırım', 'Yayımlayıp silerim'], a: 0, why: 'cache.abf yerel veri önbelleğidir. Model tanımı için gerekmez ve depoya veri sızdırır. Desktop’ın .gitignore’u bunu zaten dışlar; dosya zorla eklenmiş ya da .gitignore silinmiştir.' },
+    { t: 'mc', q: 'Gizli etiketli bir model projesi .pbip’e çevrilecek. Neye dikkat edersin?', o: ['PBIP etiket desteklemez', 'PBIP yalnız Fabric’te açılır', 'TMDL RLS’i siler', 'Etiket .gitignore’a yazılmalı'], a: 0, why: 'Learn: PBIP’te duyarlılık etiketi desteklenmez. Etiketli içerik depoya taşınmadan önce süreç düşünülmelidir. Yerel klasör ve depo erişimi de veri sınıfına uymalıdır.' },
+    { t: 'mc', q: 'Desktop’ta açık olan projede VS Code ile TMDL’de ölçü değiştirdin, Desktop’ta da kaydetmediğin değişiklik vardı. Risk?', o: ['VS Code dosyayı kilitler', 'Desktop değişiklikleri birleştirir', 'Dış değişiklik kaybolabilir', 'Model bozulup silinir'], a: 2, why: 'Learn: unappliedChanges.json olan projede dışarıdan yapılan düzenleme, bu değişiklikler uygulanınca kaybolur. Önce Desktop’ta kaydet, sonra dışarıda düzenle.' },
+    { t: 'mc', q: 'Yayımladığın model Service’te dolu, ama Git ile dağıtılan aynı model boş. Fark ne?', o: ['Git TMDL okuyamıyor', 'Git veriyi taşımaz', 'Service önbelleği bozuk', 'RLS satırları süzüyor'], a: 1, why: 'Desktop Yayımla yerel önbelleği de gönderir. Git ve REST API yalnız meta veriyi taşır; veri için yenileme ve kimlik bilgisi gerekir.' },
+    { t: 'mc', q: 'DAX Studio’da sorgu 200 ms, kullanıcılar Service’te 5 saniye bekliyor. Yorum?', o: ['DAX Studio yanlış ölçer', 'Service koşulları farklıdır', 'Kullanıcı interneti yavaştır', 'Ölçüyü silmek gerekir'], a: 1, why: 'Veri hacmi, eşzamanlılık, kapasite, RLS ve önbellek farklıdır. Desktop sonucu tek başına kanıt değildir; Service’te Performans Analizi benzeri ölçümlerle ya da kullanım ölçümleriyle doğrula.' }
+  ]
+});
+})(window);
+
+;
+
+/* ===== c26.js ===== */
+/* Kesit Power BI — c26: Microsoft Fabric derinleştirme: OneLake, Lakehouse, Data Factory, işlem hatları, anlam modeli, Copilot.
+   Fabric hızlı değişiyor: bilgiler Kasım 2026'da Microsoft Learn'den alındı; önizleme durumları derste belirtilir. Sayılar uygulama verisinden hesaplandı. */
+(function (W) {
+'use strict';
+const L = W.PBI_LESSONS = W.PBI_LESSONS || [];
+const add = (after, lesson) => { L.push(lesson); const O = W.PBI_ORDER; if (O && !O.includes(lesson.id)) { const i = O.indexOf(after); O.splice(i < 0 ? O.length : i + 1, 0, lesson.id); } };
+const ORTAM = '<div class="tip"><b>Kendi Fabric ortamında dene</b>';
+const TRIAL = 'Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. ';
+
+/* ---------- OneLake ---------- */
+add('fabric-giris', {
+  id: 'fabric-onelake', lv: 'C1', mod: 'Fabric', min: 30,
+  title: 'OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik',
+  sum: 'OneLake’in yapısı, açık biçimler, kısayol türleri ve kimlik davranışı, yansıtma, OneLake kataloğu, dosya gezgini; OneLake güvenlik rolleri kime uygulanır, kime uygulanmaz.',
+  body: `
+<p>Anadolu Market’te dört ekip, aynı satış verisini dört ayrı kopya olarak tutuyor: BI, pazarlama, finans ve veri bilimi. Her kopyanın yenileme zamanı farklı, hepsi farklı sayı üretiyor. <b>OneLake’in vaadi şudur: tek göl, tek kopya, çok motor.</b> “Microsoft Fabric’e giriş” dersinde adını gördün; burada nasıl çalıştığını, nerede tuzak olduğunu öğreneceksin.</p>
+<h2>Yapı</h2>
+<div class="tbl-wrap"><table><tr><th>Düzey</th><th>Ne?</th><th>Karşılığı</th></tr>
+<tr><td>Kiracı (tenant)</td><td>Kuruluş başına <b>tek</b> OneLake; silinmez, ikincisi açılmaz</td><td>Kök; kiracı ilkeleri</td></tr>
+<tr><td>Çalışma alanı</td><td>Sahiplik ve erişim sınırı; bir kapasiteye ve bölgeye bağlıdır</td><td>Kapsayıcı (container)</td></tr>
+<tr><td>Öğe</td><td>Lakehouse, ambar, eventhouse…</td><td>Kapsayıcı içinde klasör</td></tr></table></div>
+<p>OneLake, Azure Data Lake Storage üzerine kuruludur ve ADLS Gen2 API’lerini destekler. Bu yüzden ADLS’le konuşan araç genelde OneLake’le de konuşur. Tablolar Delta Parquet ya da Apache Iceberg biçimindedir; açık biçim demek, Spark, T-SQL ve Power BI’ın aynı dosyaları kopyalamadan okuması demektir. Silinen dosyalar 7 gün yumuşak silme ile tutulur. Kısa adres kalıbı için Learn’deki “OneLake access and APIs” sayfasına bak.</p>
+<h2>Kısayol (shortcut) kuralları</h2>
+<p>Kısayol, başka yerdeki veriyi yerindeymiş gibi gösteren işaretçidir. Kaynak değişince hemen görünür, kopya oluşmaz. “Fabric’e veri getirmek” dersindeki dört gerçeğe ek olarak üç konu üretimde önemlidir.</p>
+<h3>Kimlik: kim adına okunuyor?</h3>
+<div class="tbl-wrap"><table><tr><th>Mod</th><th>Ne zaman?</th><th>Sonuç</th></tr>
+<tr><td><b>Geçiş (passthrough)</b></td><td>OneLake’ten OneLake’e varsayılan</td><td>Çağıranın kimliği kullanılır. Etkin izin: kısayol yolundaki ve hedef yolundaki iznin kesişimi.</td></tr>
+<tr><td><b>Devredilen (delegated)</b></td><td>Dış sistemlere her zaman</td><td>Bir bağlantı kimliğiyle okunur. Kullanıcının kendi kaynak izni aranmaz.</td></tr></table></div>
+<p>Devredilen kısayolda <b>bağlantı kimliği ne görüyorsa kısayolu görebilen de onu görür</b>. Dış S3 klasörüne “finans okuyucu” hesabıyla açılan kısayolu tüm çalışma alanına göstermek, finans verisini herkese açmak demektir.</p>
+<h3>Sınırlar ve dönüşümler</h3>
+<ul><li>Tables altında yalnız en üst düzeyde; Delta ise tablo olarak tanınır. Files altında her düzeyde.</li><li>Kısayol dönüşümleri CSV’yi Delta’ya çevirebilir ya da metne yapay zekâ uygulayabilir; durumunu Learn’den kontrol et.</li><li>Silme farkı önemli: kısayolu silmek veriyi silmez; <b>kısayolun içindeki dosyayı silmek hedefteki dosyayı siler</b>.</li></ul>
+<h2>Yansıtma (mirroring)</h2>
+<p>Yansıtma, dış veritabanını neredeyse gerçek zamanlı olarak OneLake’e çoğaltır; işlem hattı kurmak gerekmez. Learn üç tür sayar:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Ne yapar?</th><th>Örnek</th></tr>
+<tr><td>Veritabanı yansıtma</td><td>Sürekli Delta’ya çoğaltır</td><td>Azure SQL, Snowflake gibi desteklenen kaynaklar</td></tr>
+<tr><td>Meta veri yansıtma</td><td>Dış kataloğu eşitler, veri yerinde kalır (kısayol)</td><td>Unity Catalog gibi</td></tr>
+<tr><td>Açık yansıtma</td><td>Uygulaman API ile Delta yazar</td><td>Kendi CDC süreci</td></tr></table></div>
+<p>Learn’e göre yansıtma işlemi Fabric kapasite birimi tüketmez, depolama SKU’ya bağlı bir sınıra kadar ücretsizdir (F64 için 64 TB). Fiyat kuralları değişebilir; kesin hesap için resmî fiyat sayfasına bak. Yansıtılan veri salt okunurdur. Dönüştürmek istediğinde başka öğe gerekir.</p>
+<h2>Kısayol, yansıtma, kopyalama: hangisi?</h2>
+<div class="tbl-wrap"><table><tr><th>Durum</th><th>Seçim</th></tr>
+<tr><td>Veri zaten Delta, ADLS ya da başka çalışma alanında; kopya istemiyorsun</td><td>Kısayol</td></tr>
+<tr><td>Operasyonel veritabanı; yakın gerçek zamanlı ve hazır kurulum</td><td>Yansıtma</td></tr>
+<tr><td>Dönüşümlü, zamanlanmış, çok adımlı</td><td>İşlem hattı, Dataflow Gen2, not defteri</td></tr>
+<tr><td>Basit toplu ya da artımlı taşıma</td><td>Copy job</td></tr></table></div>
+<p>Ayrıntılı seçim “Data Factory” dersinde.</p>
+<h2>OneLake kataloğu ve dosya gezgini</h2>
+<p><b>OneLake kataloğu</b> veriyi bulma ve yönetme yeridir: etki alanı, çalışma alanı, öğe türü, onaya göre süz; açıklama, sahip, şema, soy gör. Sahip için etiket ve onay önerileri çıkarır. <b>OneLake dosya gezgini</b> ise Windows’ta dosya gezgini gibi çalışan, teknik olmayan kullanıcılar için bir istemcidir. Finans ekibi aylık dosyayı buraya bırakır, lakehouse’tan okunur.</p>
+<h2>OneLake güvenlik rolleri</h2>
+<p>OneLake güvenliği rol tabanlıdır ve varsayılan olarak reddeder: rol vermezsen veri erişimi yoktur. Reddeden rol yoktur, yalnız verir. Rol, klasör, tablo, satır ve sütun düzeyinde kapsam tanımlar; Spark, SQL ve Power BI’da tutarlı uygulanması hedeflenir.</p>
+<div class="tbl-wrap"><table><tr><th>Kullanıcı</th><th>Roller uygulanır mı?</th></tr>
+<tr><td>Yönetici, Üye, Katkıda bulunan</td><td><b>Hayır.</b> Yazma izinleri rollerin üstündedir.</td></tr>
+<tr><td>Görüntüleyici</td><td>Evet; roller ve varsayılan rol geçerli</td></tr></table></div>
+<ul><li><b>DefaultReader:</b> yeni lakehouse’larda otomatik gelir, ReadAll sahiplerini okur. Silersen ReadAll tek başına veri vermez.</li><li><b>Çoklu rol:</b> rol içi kapsamlar kesişir, roller arası birleşir. Bu yüzden birlikte uygulanması gereken RLS ve sütun kuralını aynı rolde tut.</li><li><b>SQL uç noktası:</b> birden çok rolde RLS koşulları VEYA ile birleşir; sütun kuralları daha katıdır, bir rol sütunu gizliyorsa engeller.</li><li><b>Direct Lake:</b> SQL üzerindeki Direct Lake sahibin kimliğini kullanır; son kullanıcı kimliğiyle uçtan uca için OneLake üzerindeki Direct Lake ya da kullanıcı kimliği modlu uç nokta gerekir.</li></ul>
+<div class="warn"><b>Durum notu</b>Learn’deki sayfa bu özelliğin önizleme mi genel kullanım mı olduğunu açık yazmıyor. Rol değişikliği yaklaşık 5 dakika, grup üyeliği değişikliği 1 saat ve üstü sürebilir; 250 rol, rol başına 500 üye gibi sınırlar var. Üretime almadan önce resmî sayfayı kontrol et.</div>
+<h2>Satır yetkisini model tarafıyla karıştırma</h2>
+<p>Modeldeki DAX RLS raporun kapısıdır; OneLake rolü gölün kapısıdır. Veri bilimci not defterinden Delta dosyasını okuyorsa DAX RLS onu durdurmaz. İkisini birlikte düşün. Modelde RLS sınaması “Satır ve nesne düzeyinde güvenlik” dersinde.</p>
+` + ORTAM + TRIAL + `Denemede bir lakehouse aç, başka bir lakehouse tablosuna kısayol oluştur, kısayolu sil, hedefin durduğunu gör. Silme denemesini kendi test verinde yap.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Pazarlama çalışma alanı, BI çalışma alanındaki satış Delta tablosunu kopya oluşturmadan kullanacak. BI verisini görmek için kimde izin aranır?', o: ['Yalnız kısayolu açanda', 'Çağıranda; iki yolda da', 'Bağlantı hesabında', 'Kiracı yöneticisinde'], a: 1, why: 'OneLake’ten OneLake’e kısayol varsayılan olarak geçiş modunda çalışır; çağıranın kimliği kullanılır ve iki yoldaki iznin kesişimi geçerlidir. Bağlantı kimliği dış sistemlere giden devredilen modda kullanılır.' },
+    { t: 'mc', q: 'S3’teki finans klasörüne kısayolu “finans-okuyucu” hesabıyla açtın ve çalışma alanındaki herkes lakehouse’u okuyabiliyor. Risk?', o: ['Kısayol S3’te çalışmaz', 'Kısayolu silmek S3’ü siler', 'Herkes bağlantı kimliğiyle görür', 'Yalnız Delta dosyaları görünür'], a: 2, why: 'Dış sistem kısayolları devredilen modda çalışır. Kullanıcı S3 izni taşımasa da bağlantı kimliğinin gördüğünü görür. Erişimi OneLake rolü ya da ayrı öğe ile sınırla.' },
+    { t: 'mc', q: 'Bir analist kısayol klasöründeki eski bir CSV’yi “temizlik için” sildi. Sonra kaynak ekip dosyanın kaybolduğunu bildirdi. Ne olmuştur?', o: ['Dosya kaynaktan da silindi', 'Yalnız OneLake kopyası gitti', 'Kaynak dosya salt okunur kalır', 'OneLake 30 gün sonra siler'], a: 0, why: 'Kısayolu silmek hedefe dokunmaz; ama içindeki dosyayı silmek, iznin varsa hedefteki dosyayı siler. Kısayolları temizlerken bu ayrımı kaçırmamak gerekir.' },
+    { t: 'mc', q: 'Operasyonel Azure SQL verisini düşük gecikmeyle OneLake’te görmek istiyorsun, dönüşüm yok, ekip ETL bilmiyor. Hangisi?', o: ['Not defteri', 'Yansıtma', 'Veri akışı Gen2', 'Eventstream'], a: 1, why: 'Yansıtma hazır kurulumla yakın gerçek zamanlı çoğaltma yapar, kod gerektirmez. Eventstream olay akışı içindir, operasyonel tabloyu çoğaltmaz. Not defteri ve veri akışı bu işe fazla emek ister.' },
+    { t: 'mc', q: 'Satış müdürü çalışma alanında Katkıda bulunan. OneLake güvenlik rolünde yalnız Ege bölgesini görmesi tanımlandı. Yine de hepsini görüyor. Neden?', o: ['Rol koşulu yanlış yazılmış', 'Rol yayımlanmamış', 'Spark desteklemiyor', 'Bu rol Katkıda bulunanı süzmez'], a: 3, why: 'Learn: Yönetici, Üye ve Katkıda bulunan yazma izniyle erişir; OneLake rolleri onları kısıtlamaz. Görüntüleyici yapıp öğe izni ver.' },
+    { t: 'mc', q: 'Lakehouse’ta DefaultReader rolü “gereksiz” diye silindi. ReadAll izinli kullanıcılar veriyi göremiyor. Doğru yorum?', o: ['Beklenen davranıştır', 'Hata; ReadAll yeter', 'Kapasite sorunu', 'SQL uç noktası kapanmış'], a: 0, why: 'OneLake güvenliği açıkken ReadAll veri erişimini DefaultReader üzerinden sağlar. Silince erişim gider. Başka role atayarak geri verilir.' },
+    { t: 'mc', q: 'Veri bilimci not defteriyle tabloyu okuyor ve modelde DAX RLS ile kapalı satırları görüyor. Kullanıcı Görüntüleyici değil, Üye. Karar?', o: ['DAX RLS’i sıkılaştırmak', 'Rolü düşürüp göl kuralı vermek', 'Modeli silmek', 'Raporu sertifikalamak'], a: 1, why: 'DAX RLS modelin kapısıdır, Spark’ı durdurmaz. Yazma rolü olan kullanıcı dosyaları okuyabilir. Rolü düşürüp OneLake rolü ya da ayrı öğeyle sınırla.' }
+  ]
+});
+
+/* ---------- Lakehouse ---------- */
+add('fabric-onelake', {
+  id: 'fabric-lakehouse', lv: 'C1', mod: 'Fabric', min: 30,
+  title: 'Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari',
+  sum: 'Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın düzeni ve dosya bölümleme.',
+  body: `
+<p>Lakehouse, gölün esnekliğini ambarın sorgu kolaylığıyla birleştirir: her türlü dosyayı koyarsın, Delta tablolarını hem Spark hem T-SQL ile sorgularsın. Bu ders lakehouse’u kurmayı değil, <b>ne zaman doğru seçim olduğunu ve tuzaklarını</b> anlatır. Elle kurulum adımları “Fabric’e veri getirmek” ve “Lakehouse ödevi” derslerinde.</p>
+<h2>İki bölüm</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Files</th><th>Tables</th></tr>
+<tr><td>Ne durur?</td><td>CSV, JSON, resim, Parquet; Delta olmayan her şey</td><td>Yönetilen Delta tabloları</td></tr>
+<tr><td>Keşif</td><td>Yok; dosyadır</td><td>Otomatik: meta veri çıkarılır, sütunlar kaydedilir</td></tr>
+<tr><td>SQL uç noktası</td><td>Görünmez</td><td>Görünür</td></tr>
+<tr><td>Kullanım</td><td>Ham iniş, arşiv</td><td>Analiz, model kaynağı</td></tr></table></div>
+<p>Tables’a Delta olmayan dosya koymak işe yaramaz; Learn şu an yalnız Delta’yı doğruladığını söyler. Parquet ya da CSV’yi sorgulamak istiyorsan önce Delta’ya çevir.</p>
+<h2>Veri yükleme yolları</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Kim için?</th><th>Örnek</th></tr>
+<tr><td>Lakehouse gezgini (karşıya yükle, Load to Tables)</td><td>Tek dosya, deneme</td><td>Aylık Excel’i bir kez</td></tr>
+<tr><td>Kısayol</td><td>Kopya istemeyen</td><td>Başka alandaki Delta</td></tr>
+<tr><td>Dataflow Gen2</td><td>Power Query bilen</td><td>SharePoint listesini temizleyip yaz</td></tr>
+<tr><td>İşlem hattı, Copy job</td><td>Taşıma ve düzen</td><td>ERP’den gece kopyası</td></tr>
+<tr><td>Not defteri, Spark iş tanımı</td><td>Kod bilen</td><td>Karmaşık dönüşüm, üretim ETL’i</td></tr></table></div>
+<h2>SQL analiz uç noktası</h2>
+<p>Her lakehouse ile otomatik gelir. Salt okunurdur: <b>SELECT evet; INSERT, UPDATE, DELETE hayır.</b> Tablo oluşturamazsın, ama görünüm, satır içi fonksiyon, saklı yordam tanımlayabilirsin ve bunlar kalıcıdır. Veriyi değiştirmek için Spark gerekir. Ayrıca:</p>
+<ul><li>Yalnız Tables altındaki Delta tabloları görünür. Spark ile oluşturulan dış Delta tablolar ek kısayol olmadan görünmez.</li><li>Meta veri otomatik eşitlenir; ama anlık değildir. Yeni yazılan tablo hemen görünmediyse eşitleme sürüyor olabilir, manuel başlatma seçeneği için “SQL analytics endpoint metadata sync” sayfasına bak. İşlem hattında <b>Refresh SQL analytics endpoint</b> etkinliği vardır.</li><li>Burada tanımlanan SQL güvenliği yalnız uç noktadan erişimde geçerlidir; Spark’ı etkilemez.</li><li>Çok tablolu işlem (transaction) yoktur; ambarda vardır.</li></ul>
+<div class="warn"><b>Varsayılan anlam modeli kalktı</b>Eski dokümanlar her lakehouse’un otomatik bir anlam modeli olduğunu yazar. Learn’e göre 5 Eylül 2025’ten beri bu model oluşturulmuyor; var olanlar 30 Kasım 2025’e kadar ayrılarak bağımsız modele dönüştü. Model artık elle oluşturulur (“Fabric’te anlam modeli” dersi).</div>
+<h2>Lakehouse mi, ambar mı, eventhouse mu?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Lakehouse</th><th>Ambar</th><th>Eventhouse</th><th>SQL veritabanı</th></tr>
+<tr><td>Amaç</td><td>Esnek depo, büyük veri işleme</td><td>Yönetilen SQL analitiği, BI</td><td>Yüksek hacimli olay</td><td>İşlemsel uygulama</td></tr>
+<tr><td>Sorgu</td><td>Spark + salt okunur T-SQL</td><td>Tam T-SQL</td><td>KQL</td><td>Tam T-SQL</td></tr>
+<tr><td>Yazma</td><td>Spark, veri akışı, işlem hattı</td><td>T-SQL, işlem hattı</td><td>Doğal alım</td><td>Uygulama</td></tr>
+<tr><td>Ne zaman?</td><td>Çeşitli biçim, mühendislik, keşif</td><td>Yıldız şema, saklı yordam, çok tablolu işlem</td><td>Telemetri, log</td><td>Operasyon ve üstünde analiz</td></tr></table></div>
+<p>Doğru soru genelde “hangisi?” değil, “hangi katman nerede?”dir.</p>
+<h2>Katmanlı düzen: tunç, gümüş, altın</h2>
+<p>Learn lakehouse’u bu mimari için uygun bulur; Microsoft’un sabit bir tanımı olmadığı için ekipler kendi kurallarını yazar. Yaygın kullanım:</p>
+<div class="tbl-wrap"><table><tr><th>Katman</th><th>İçerik</th><th>Anadolu Market örneği</th></tr>
+<tr><td>Tunç (bronze)</td><td>Ham veri, değişmeden</td><td>ERP’den gelen <code>Satislar.csv</code>, Files/ham</td></tr>
+<tr><td>Gümüş (silver)</td><td>Temiz, türü doğru, tekil</td><td><code>satis_temiz</code> Delta tablosu</td></tr>
+<tr><td>Altın (gold)</td><td>İşe hazır yıldız şema</td><td><code>FactSatis</code>, <code>DimUrun</code>; modelin kaynağı</td></tr></table></div>
+<p>Kural: raporlar altından okur. Ham veriyi silme; hatalı dönüşümde en baştan yeniden üretebilmek için gerekir. Üç katmanı üç lakehouse ya da aynı lakehouse’ta şema olarak tutmak ekip ölçeğine bağlıdır. Altın katmanın doğruluğunu DAX ile de sınarsın: toplamları ham veriyle karşılaştır.</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Ham Tutar", SUM(Satislar[Tutar]),
+    "İptal Hariç", CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal"),
+    "Net Ölçü", [Net Satış]
+)</pre>
+<p>Bu veride ham 1.346.190 ₺, iptal hariç ve [Net Satış] 1.250.772 ₺’dir. Altın toplam ölçüyle tutmuyorsa kural farklıdır.</p>
+<h2>Bölümleme ve dosya sağlığı</h2>
+<p>DP-600 dosya bölümlemeyi ayrıca sorar. Bölümleme, sorgunun gereksiz dosyaları atlamasını sağlar: sorgular çoğunlukla ay süzüyorsa aya göre bölmek yardımcı olur. Düşük kardinaliteli bir sütun seç; günlük ve müşteri düzeyi gibi yüksek kardinalite çok küçük dosya üretir. Küçük dosya sorunu ve <code>OPTIMIZE</code>, <code>VACUUM</code> “Lakehouse ödevi” dersinde. Direct Lake’in dosya ve satır grubu sınırları “Fabric’te anlam modeli” dersinde.</p>
+` + ORTAM + TRIAL + `Denemede “Lakehouse ödevi”ni yap. SQL uç noktasında <code>INSERT</code> dene, hatayı oku. Sonuç için beklenen değerler o derste.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Ham CSV dosyaları lakehouse’a kondu. SQL analiz uç noktasında görünmüyor. Neden?', o: ['Kapasite yetersizdir', 'Files’ta duruyor', 'Şema etkin değildir', 'T-SQL CSV okuyamaz'], a: 1, why: 'Uç nokta yalnız Tables’taki Delta tablolarını gösterir. Load to Tables, veri akışı ya da not defteriyle Delta’ya çevrilir.' },
+    { t: 'mc', q: 'Ekip SQL analiz uç noktasında MERGE ile tabloları güncellemek istiyor. Sana soruyorlar.', o: ['Mümkün; önce kilit al', 'Uç nokta salt okunurdur', 'Görünüm üzerinden olur', 'Saklı yordam içinde olur'], a: 1, why: 'Uç noktada görünüm ve yordam tanımlanır ama lakehouse tablolarını değiştiremezsin. Veriyi değiştirmek için Spark, T-SQL ile yazmak için ambar gerekir.' },
+    { t: 'mc', q: 'İki tabloyu aynı işlem içinde güncellemek, biri düşünce ikisini de geri almak şart. Hangi depo?', o: ['Lakehouse', 'Eventhouse', 'Ambar', 'Kısayol'], a: 2, why: 'Learn: lakehouse çok tablolu işlem desteklemez, ambar destekler. Eventhouse olay verisi içindir.' },
+    { t: 'mc', q: 'Eski bir rehber “lakehouse açınca hazır anlam modeli gelir” diyor. Bugün yeni bir lakehouse açtın, model yok. Ne yaparsın?', o: ['Hata bildiririm', 'Elle model oluştururum', 'Eski lakehouse’tan kopyalarım', 'Kapasiteyi büyütürüm'], a: 1, why: 'Varsayılan modeller 5 Eylül 2025’ten beri oluşturulmuyor; yeni modeli kendin oluşturursun. Fazladan öğe olmadığı için kontrol sende olur.' },
+    { t: 'mc', q: 'Spark’ta yeni tablo yazıldı. Uç noktada hemen görünmüyor, işlem hattının sonraki adımı onu sorguluyor. Çözüm?', o: ['Refresh SQL analytics endpoint', 'Tablo adını değiştirmek', 'Sorguyu saat başına almak', 'Bir saatlik Wait eklemek'], a: 0, why: 'Meta veri eşitlemesi anlık değildir. İşlem hattında bu etkinlik eşitlemeyi açıkça tetikler. Sabit bekleme kırılgandır.' },
+    { t: 'mc', q: 'Rapor doğrudan gümüş katmandaki bir tabloya bağlanmış. Her Spark düzeltmesinde raporda sütun adı bozuluyor. Mimari öneri?', o: ['Raporu ham veriye bağlamak', 'Altın katman kurmak', 'Gümüşü silmek', 'Her düzeltmeyi kapatmak'], a: 1, why: 'Rapor kararlı bir sunum katmanından okumalıdır. Altın tablolar ad ve anlam sözleşmesidir; gümüşteki iç değişiklik raporu kırmaz.' },
+    { t: 'mc', q: 'Sorgular çoğunlukla ay süzüyor; satır milyar. Bölümleme sütunu?', o: ['SiparisNo', 'Ay', 'Müşteri', 'Tam zaman damgası'], a: 1, why: 'Sorgunun süzdüğü düşük kardinaliteli sütun dosya atlamayı sağlar. Yüksek kardinaliteli sütun çok küçük dosya üretir, sorunu büyütür.' },
+    { t: 'query', q: 'Altın katmanı sına. Tek satırda <b>Ham</b> (<code>SUM(Satislar[Tutar])</code>), <b>Net</b> (<code>[Net Satış]</code>) ve <b>İptal Farkı</b> (Ham eksi Net) döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nROW("Ham", SUM(Satislar[Tutar]), "Net", [Net Satış], "İptal Farkı", SUM(Satislar[Tutar]) - [Net Satış])', hint: 'ROW("Ad", ifade, …)' }
+  ]
+});
+
+/* ---------- Data Factory ---------- */
+add('fabric-veri-alma', {
+  id: 'fabric-data-factory', lv: 'C1', mod: 'Fabric', min: 30,
+  title: 'Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?',
+  sum: 'Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2, not defteri arasında gerçek senaryolarla karar.',
+  body: `
+<p>“Fabric’e veri nasıl gelir?” sorusunun tek cevabı yok; aynı işi yapan beş araç var ve yanlış olanı seçmek haftalarca emek ya da kapasite israfı demek. <b>Data Factory</b>, Fabric’in veri alma ve düzenleme iş yüküdür. Bu ders araçları tanıtmaktan çok, seçim yapmayı öğretir. İşlem hattının içi bir sonraki derste.</p>
+<h2>Parçalar</h2>
+<div class="tbl-wrap"><table><tr><th>Öğe</th><th>Ne yapar?</th><th>Kod</th></tr>
+<tr><td><b>İşlem hattı (pipeline)</b></td><td>Etkinlikleri sıraya koyar, zamanlar, koşullar; kendi başına dönüştürmez</td><td>Az</td></tr>
+<tr><td><b>Copy job</b></td><td>Basit toplu, artımlı, CDC kopyalama; Learn’ün önerdiği taşıma yolu</td><td>Az</td></tr>
+<tr><td><b>Kopyalama etkinliği</b></td><td>İşlem hattı içinde büyük ölçekli, ayarı çok kopyalama</td><td>Az</td></tr>
+<tr><td><b>Dataflow Gen2</b></td><td>Power Query ile dönüştürür, hedefe yazar</td><td>Az</td></tr>
+<tr><td><b>Yansıtma (mirroring)</b></td><td>Operasyonel veritabanını OneLake’e yakın gerçek zamanlı çoğaltır</td><td>Yok</td></tr>
+<tr><td><b>dbt job</b></td><td>SQL tabanlı dönüşüm, ambar üzerinde</td><td>SQL</td></tr>
+<tr><td><b>Apache Airflow job</b></td><td>Python ile DAG düzenleme</td><td>Python</td></tr></table></div>
+<p>Spark not defteri ve Eventstream başka iş yüklerindendir, ama seçimde onlarla da karşılaşırsın. Azure Data Factory ayrı bir üründür, Fabric Data Factory’nin aynısı değildir; Learn’de “differences” sayfası var.</p>
+<h2>Veri kaynakları</h2>
+<p>Data Factory 170’ten fazla kaynağa bağlanır (Learn, Ağustos 2026). Sayı değil, üç soru önemli:</p>
+<div class="tbl-wrap"><table><tr><th>Kaynak nerede?</th><th>Nasıl erişilir?</th></tr>
+<tr><td>Bulutta, herkese açık uç nokta</td><td>Doğrudan bulut bağlantısı</td></tr>
+<tr><td>Şirket içinde</td><td>Şirket içi veri ağ geçidi: işlem hattı, Dataflow Gen2 ve Copy job için (“On-premises data gateway” dersi)</td></tr>
+<tr><td>Özel sanal ağda</td><td>VNet veri ağ geçidi ya da özel uç nokta</td></tr>
+<tr><td>Başka Fabric öğesinde, ADLS’te, S3’te</td><td>Önce kısayol düşün</td></tr>
+<tr><td>Akış, IoT, Kafka</td><td>Eventstream</td></tr></table></div>
+<p>Bağlantılar Power BI’dakiyle aynı <b>Bağlantıları ve ağ geçitlerini yönet</b> ekranındadır. Bağlayıcı desteği araca göre değişir: bir bağlayıcı Dataflow Gen2’de varken kopyalamada olmayabilir. Önce “Connector overview” sayfasına bak.</p>
+<h2>Karar tablosu</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>En iyi olduğu iş</th><th>Dönüşüm</th><th>Beceri</th></tr>
+<tr><td>Yansıtma</td><td>Hazır kurulumla yakın gerçek zamanlı çoğaltma; hedef salt okunur</td><td>Yok</td><td>Gerekmez</td></tr>
+<tr><td>Copy job</td><td>Çok tablolu, artımlı ya da CDC taşıma</td><td>Az</td><td>ETL, SQL</td></tr>
+<tr><td>Kopyalama etkinliği</td><td>İşlem hattının parçası, elle ayar, filigran</td><td>Az</td><td>ETL, SQL</td></tr>
+<tr><td>Eventstream</td><td>Akan olay, gerçek zamanlı yönlendirme</td><td>Orta</td><td>KQL, SQL</td></tr>
+<tr><td>Dataflow Gen2</td><td>Kod yazmadan temizlik, profil</td><td>Yüksek</td><td>M, Power Query</td></tr>
+<tr><td>Not defteri</td><td>Karmaşık, büyük ölçekli, kodlu dönüşüm</td><td>Yüksek</td><td>Spark, Python</td></tr>
+<tr><td>Kısayol</td><td>Kopyasız erişim</td><td>Kısıtlı</td><td>Gerekmez</td></tr></table></div>
+<p>Dört soru: <b>Kopya gerekli mi? Ne kadar taze? Dönüşüm ne kadar karmaşık? Ekip ne biliyor?</b></p>
+<h2>Anadolu Market senaryoları</h2>
+<div class="tbl-wrap"><table><tr><th>İhtiyaç</th><th>Seçim</th><th>Neden öteki değil?</th></tr>
+<tr><td>Azure SQL’deki sipariş tablosunu yöneticiler dakikalar içinde görsün, dönüşüm yok</td><td>Yansıtma</td><td>Copy job zamanlamaya bağlı; işlem hattı gereksiz emek</td></tr>
+<tr><td>Şirket içi ERP’den 40 tabloyu her gece artımlı kopyala</td><td>Copy job, ağ geçidi</td><td>Kırk kopyalama etkinliği bakım yükü</td></tr>
+<tr><td>SharePoint listesini temizle; analist Power Query biliyor</td><td>Dataflow Gen2</td><td>Spark öğrenmek gerekmez</td></tr>
+<tr><td>Web olaylarından gün başına oturum üret; JSON iç içe, 500 milyon satır</td><td>Not defteri</td><td>Veri akışı bu ölçekte zayıf ve pahalı kalabilir</td></tr>
+<tr><td>Mağaza kasalarından saniye saniye işlem akışı, anomaliye uyarı</td><td>Eventstream, Eventhouse</td><td>Toplu araç saniyeye inmez</td></tr>
+<tr><td>Kopyala, temizle, yordam çalıştır, model yenile, hata olursa haber ver</td><td>İşlem hattı</td><td>Tek araç sırayı yönetemez</td></tr>
+<tr><td>Bölge ekibinin lakehouse tablosunu pazarlama da okusun</td><td>Kısayol</td><td>Kopya tutarsızlık üretir</td></tr></table></div>
+<h2>Yaygın yanlış seçimler</h2>
+<ul><li><b>“Her şeyi not defteriyle yazalım.”</b> Ekipte tek Spark bilen varsa o tatile çıkınca hat durur.</li><li><b>“Yansıtılmış tablodaki kolonu değiştireyim.”</b> Yansıtma hedefi salt okunurdur; dönüşüm ayrı katmanda yapılır.</li><li><b>“Dataflow Gen2 işlem hattının yerine geçer.”</b> Sorgu bağımlılığı yönetir, ama yordam çalıştırma, koşul ve uyarı için işlem hattı gerekir.</li><li><b>“Veri zaten ADLS’te; kopyalayalım.”</b> Delta ise kısayol yeter.</li></ul>
+<p>Öğrenme yolunda aynı veriyi iki yolla yükleme ödevi “Fabric’e veri getirmek” dersinde. Copilot’un bu araçlarda ne yapabildiği “Fabric’te Copilot” dersinde. Veriyi modele getirmeden önce doğrulama, tüm yollar için aynıdır: satır sayısı ve toplam.</p>
+<pre class="dax">EVALUATE
+ROW("Satır", COUNTROWS(Satislar), "Tutar", SUM(Satislar[Tutar]), "İlk Tarih", MIN(Satislar[Tarih]), "Son Tarih", MAX(Satislar[Tarih]))</pre>
+` + ORTAM + TRIAL + `Pipeline, Dataflow Gen2 ve Copy job denemede çalışır. Şirket içi kaynak için ağ geçidi gerekir; yoksa Anadolu Market CSV’leriyle çalış.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Şirket içi ERP’de 60 tablo var. Her gece yalnız değişenler taşınacak, dönüşüm sonra. Az bakım önemli. Hangisi?', o: ['60 kopyalama etkinliği', 'Copy job ve ağ geçidi', 'Yansıtma', 'Her tablo için bir veri akışı'], a: 1, why: 'Copy job çok tablolu, artımlı ve CDC kopyalama için tasarlandı. Yansıtma kaynak desteğine bağlı olup şirket içi ERP için uygun olmayabilir. Altmış etkinlik ve akış bakım yüküdür.' },
+    { t: 'mc', q: 'Analist SharePoint listesini temizleyip lakehouse’a yazmak istiyor; Python bilmiyor. Hangisi?', o: ['Not defteri', 'Eventstream', 'Dataflow Gen2', 'Airflow job'], a: 2, why: 'Dataflow Gen2 kod yazmadan temizler ve hedefe yazar. Not defteri ve Airflow kod ister; Eventstream akış içindir.' },
+    { t: 'mc', q: 'Kasa işlemleri saniye saniye gelecek; eşik aşılınca uyarı gerekecek. Hangisi?', o: ['Saatlik Copy job', 'Eventstream ve Eventhouse', 'Gece işlem hattı', 'Dataflow Gen2 ve abonelik'], a: 1, why: 'Düşük gecikmeli olay akışı için Eventstream; saklama ve sorgu için Eventhouse; uyarı için Activator. Toplu araçlar saniyeye inmez.' },
+    { t: 'mc', q: 'Yansıtılmış tabloda bir sütunun türünü düzeltmek isteniyor. Doğru yol?', o: ['Yansıtma tablosunda ALTER', 'Tabloyu Excel üzerinden yüklemek', 'Aşağı katmanda dönüştürmek', 'Kısayolu silmek'], a: 2, why: 'Yansıtma hedefi salt okunurdur. Kaynakta düzelt ya da yansıtılmış tabloyu okuyan bir katmanda dönüştür: görünüm, not defteri, veri akışı.' },
+    { t: 'mc', q: 'Lakehouse tablosu 200 sütun; her gece tek ekip okuyor. Bir geliştirici başka alandaki lakehouse’a her gece kopyalayan hat kurmuş. Daha iyi öneri?', o: ['Kopyayı saatliğe almak', 'Kısayol oluşturmak', 'Kopyayı CSV’ye çevirmek', 'Yeni kapasite almak'], a: 1, why: 'Fabric içi Delta için kısayol kopyasız erişim verir, tutarsızlığı ve depolama maliyetini ortadan kaldırır. İzin geçiş modundadır.' },
+    { t: 'mc', q: 'Bağlayıcı listesinde Dataflow Gen2’de gördüğün kaynak, kopyalama etkinliğinde yok. Ne düşünürsün?', o: ['Araca göre değişir', 'Kaynak bozuk', 'Kapasite yetersiz', 'Ağ geçidi eksik'], a: 0, why: 'Bağlayıcı desteği araca göre farklıdır. Connector overview sayfasına bak; gerekirse ilk adımı veri akışıyla yap, sonra işlem hattında sırala.' },
+    { t: 'mc', q: 'Ekipte iki Power Query bilen var, Spark bilen yok. Veri 4 milyon satır, dönüşüm birkaç birleştirme. Danışman not defteri öneriyor. Senin cevabın?', o: ['Not defteri her zaman hızlıdır', 'Dataflow Gen2 ile başla, ölç', 'Eventstream kullan', 'Airflow ile baştan yaz'], a: 1, why: 'Karar yalnız performans değil, ekibin bakımıdır. Bu hacim ve dönüşümde Dataflow Gen2 uygun başlangıçtır; ölçüp yavaşlık görülürse not defteri düşünülür.' },
+    { t: 'query', q: 'Yükleme sonrası doğrulama sorgusu: tek satırda <b>Satır</b> (Satislar satır sayısı), <b>Sipariş</b> (farklı SiparisNo sayısı), <b>Son Tarih</b> (en son Tarih) döndür. Hangi yolla yüklersen yükle aynı olmalı.', start: 'EVALUATE\n', sol: 'EVALUATE\nROW("Satır", COUNTROWS(Satislar), "Sipariş", DISTINCTCOUNT(Satislar[SiparisNo]), "Son Tarih", MAX(Satislar[Tarih]))', hint: 'ROW("Satır", COUNTROWS(Satislar), …)' }
+  ]
+});
+
+/* ---------- İşlem hatları ---------- */
+add('fabric-data-factory', {
+  id: 'fabric-pipeline', lv: 'C1', mod: 'Fabric', min: 38,
+  title: 'İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata',
+  sum: 'Bir hattı doğru kurmak: etkinlik türleri, başarı ve hata yolları, parametre ve ifade, filigranla artımlı yükleme, zamanlama ve olay tetikleyicisi, yeniden deneme ve izleme; gece hattı teşhis senaryoları.',
+  body: `
+<p>Anadolu Market’in gece işi şu: ERP’den satışları kopyala, temizle, aylık özeti hesapla, modeli yenile, sorun olursa ekibe haber ver. Her adımı ayrı saate zamanlamak çalışır, ta ki bir gece biri uzayana kadar. <b>İşlem hattı (pipeline)</b> bu adımları tek akışa bağlar. Veri dönüştürmez, düzenler.</p>
+<div class="note"><b>Tarayıcı sınırı</b>Bu uygulama Fabric’in tuval arayüzünü taklit etmez. Alıştırmalar gerçek senaryolarda karar, ifade okuma ve hata teşhisi sorar. Uygulaması için aşağıdaki “Kendi Fabric ortamında dene” bölümüne bak.</div>
+<h2>Etkinlikler</h2>
+<div class="tbl-wrap"><table><tr><th>Grup</th><th>Etkinlik</th><th>Tipik kullanım</th></tr>
+<tr><td>Taşıma</td><td>Copy data, Copy job</td><td>Kaynaktan hedefe</td></tr>
+<tr><td>Dönüştürme</td><td>Dataflow Gen2, Fabric notebook, Stored procedure, SQL script, Spark job definition, Delete data</td><td>İş mantığı burada çalışır</td></tr>
+<tr><td>Denetim</td><td>If condition, Switch, ForEach, Until, Wait, Fail, Invoke pipeline, Set variable, Lookup, Get metadata, Filter</td><td>Akış</td></tr>
+<tr><td>Çevre</td><td>Teams, Web, Webhook, Functions, Refresh SQL analytics endpoint, Lakehouse maintenance</td><td>Bildirim, bakım</td></tr></table></div>
+<p>Hat başına varsayılan sınır 120 etkinliktir (iç etkinlikler dahil). Yaklaşıyorsan <b>Invoke pipeline</b> ile böl. Modeli yenilemek için <b>Semantic model refresh</b> etkinliği vardır (Direct Lake’te çerçeveleme yapar).</p>
+<h2>Bağımlılık: dört yol</h2>
+<p>Etkinlikler arasındaki oklar koşulludur:</p>
+<div class="tbl-wrap"><table><tr><th>Koşul</th><th>Sonraki etkinlik ne zaman çalışır?</th><th>Kullanım</th></tr>
+<tr><td><b>Başarıda (UponSuccess)</b></td><td>Önceki başarılıysa</td><td>Ana akış</td></tr>
+<tr><td><b>Hatada (UponFailure)</b></td><td>Önceki başarısızsa</td><td>Teams bildirimi</td></tr>
+<tr><td><b>Tamamlandığında (UponCompletion)</b></td><td>Başarılı ya da başarısız fark etmez</td><td>Temizlik, günlük yazma</td></tr>
+<tr><td><b>Atlandığında (UponSkip)</b></td><td>Önceki atlanmışsa</td><td>Nadir yollar</td></tr></table></div>
+<div class="warn"><b>Sık hata: hata yolu bütün hattı başarılı gösterir</b>Bir adım düşüp hata yolundaki Teams etkinliği başarılı olursa hat genel durumda “başarılı” görünebilir. Düşmüşse düşmüş görünmeli: hata yolunun sonuna bir <b>Fail</b> etkinliği koy. Böylece izleme doğru rengi gösterir ve zincir durur.</div>
+<p>Birden çok ok aynı etkinliğe bağlanırsa koşullar birlikte aranır. “A hata ya da B hata” için tek bir bildirim etkinliğine iki hata oku bağlamak, ikisinin de hata vermesini bekler; ayrı bildirim kullan ya da <b>Tamamlandığında</b> ve durum ifadesiyle kur. Ayrıntı için Learn’deki güncel belgeyi izle.</p>
+<h2>Yeniden deneme ve zaman aşımı</h2>
+<div class="tbl-wrap"><table><tr><th>Ayar</th><th>Varsayılan</th><th>Not</th></tr>
+<tr><td>Timeout</td><td>12 saat; en fazla 7 gün</td><td><code>0.12:00:00</code> biçiminde</td></tr>
+<tr><td>Yeniden deneme</td><td>Ayarlı değilse denemez; açılırsa 1 kez</td><td>Geçici ağ hatası için</td></tr>
+<tr><td>Yeniden deneme aralığı</td><td>30 saniye</td><td></td></tr>
+<tr><td>Secure input/output</td><td>Kapalı</td><td>Gizli değeri günlükten saklar</td></tr></table></div>
+<p>Yeniden deneme <b>güvenli olmayan adımı tehlikeye atar</b>: “ekle” yapan bir kopyalama yeniden denenirse satırlar iki kez yazılır. Bu yüzden hat <b>yeniden çalıştırılabilir (idempotent)</b> olmalı: tam yüklemede önce temizle, artımlı yüklemede anahtarla birleştir.</p>
+<h2>Parametre, değişken, ifade</h2>
+<p><b>Parametre</b> çalışma başına sabittir. <b>Değişken</b> çalışma sırasında değişir. Değerler dinamik içerik ifadesiyle kullanılır:</p>
+<pre class="dax" data-notry>@pipeline().parameters.Ortam                       // parametre
+@variables('SonTarih')                              // değişken
+@activity('Lookup1').output.firstRow.WatermarkValue // önceki etkinliğin çıktısı
+@pipeline().RunId                                   // bu çalışmanın kimliği
+@concat('satis_', formatDateTime(utcNow(), 'yyyyMMdd'), '.csv')
+"Ortam: @{pipeline().parameters.Ortam}"             // metin içine gömme</pre>
+<p>İki ayrıntı sınavda ve işte can sıkar. <b>Birincisi:</b> tek başına <code>@pipeline().parameters.Sayi</code> sayı döndürür, <code>@{pipeline().parameters.Sayi}</code> metin döndürür. <b>İkincisi:</b> zamanlamadan parametre geçerken ad birebir eşleşmeli; yanlış yazılan ad hata vermeden yok sayılır ve varsayılan değerle çalışır.</p>
+<h2>Filigranla artımlı yükleme</h2>
+<p>Her gece her şeyi kopyalamak yerine yalnız değişeni al. Learn’ün örneğindeki kalıp:</p>
+<ol><li><b>Lookup:</b> filigran tablosundan son değeri oku.</li><li><b>Lookup:</b> kaynağın en büyük değişim zamanını oku.</li><li><b>Copy data:</b> ikisi arasındaki satırları al.</li><li><b>Stored procedure:</b> filigranı yeni değere güncelle, yalnız kopyalama başarılıysa.</li></ol>
+<pre class="dax" data-notry>SELECT * FROM dbo.Satislar
+WHERE DegisimZamani &gt; '@{activity('EskiFiligran').output.firstRow.Deger}'
+  AND DegisimZamani &lt;= '@{activity('YeniFiligran').output.firstRow.Deger}'</pre>
+<p>Üst sınır neden şimdiki zaman değil? Çünkü Lookup ile kopya arasında gelen satırlar bir sonraki gece alınsın diye en büyük değer sabitlenir. Copy job bunun büyük kısmını kendiliğinden yapar; hattı yalnız çevresinde başka iş varsa kur. Silinen satırlar filigranla görünmez; CDC ya da karşılaştırma gerekir.</p>
+<h2>Zamanlama ve tetikleyici</h2>
+<ul><li><b>Zamanlama:</b> hat başına en çok 20. Başlangıç ve bitiş tarihi zorunlu; uzun süre için uzak bir bitiş ver. Saat dilimini bilinçli seç.</li><li><b>Aralık tabanlı zamanlama (önizleme):</b> pencere başlangıç ve bitişi parametresi verir; düzenlenemez, silip yeniden kurulur.</li><li><b>Olay tetikleyici:</b> OneLake ya da Blob’a dosya düşünce çalışır. Bir Reflex öğesi oluşur, olay akışı üstüne kuruludur.</li><li><b>Çalıştırma koşulları (önizleme):</b> üst hattın ya da verinin hazır olmasını bekler.</li></ul>
+<p>Olay ifadesinde boş değere dikkat: elle test edince değer gelmez, güvenli gösterim kullan: <code>@pipeline()?.TriggerEvent?.FileName</code>. Hata e-postası <b>Hata bildirimleri</b> ayarıyla kurulur ve yalnız zamanlanmış çalışmalarda gider; elle çalıştırmada gitmez.</p>
+<h2>İzleme ve teşhis</h2>
+<p>Tuvalin altındaki <b>Çıktı</b> sekmesi her etkinliğin durumunu, süresini, girdi ve çıktısını gösterir. Geçmiş çalışmalar Monitor hub’dadır. Teşhis sırası: ilk kırmızı etkinliği bul, hata iletisini oku, girdiyi kontrol et (ifadeler doğru çözüldü mü?), sonra çıktıya bak. İşlem hattı Copilot’u hatayı açıklayabilir ama nedeni kanıtlamaz (“Fabric’te Copilot” dersi).</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Olası neden</th><th>Çözüm</th></tr>
+<tr><td>Hat başarılı, satır 0</td><td>Filigran ifadesi hep aynı, parametre adı yanlış</td><td>Girdiyi aç; adı eşleştir</td></tr>
+<tr><td>Satırlar iki kat</td><td>Ekle modu ve yeniden deneme</td><td>Temizle ya da birleştir</td></tr>
+<tr><td>Model eski veriyi gösteriyor</td><td>Yenileme bağımsız saatte, ya da hatada da çalışıyor</td><td>Başarıda oku</td></tr>
+<tr><td>Sonraki adım yeni tabloyu görmüyor</td><td>SQL uç noktası eşitlenmedi</td><td>Refresh SQL analytics endpoint</td></tr>
+<tr><td>Hata var, kimse haber almadı</td><td>Elle çalıştırma, ya da hata yolu yok</td><td>Bildirim ve Fail</td></tr>
+<tr><td>Şirket içi kopyada bağlantı hatası</td><td>Ağ geçidi sürümü, güvenlik duvarı</td><td>Sürüm ve <code>*.frontend.clouddatahub.net</code></td></tr></table></div>
+` + ORTAM + TRIAL + `Denemede: AnadoluLH lakehouse’una bağlı boş bir hat aç; <b>Copy data</b> ile <code>Files/ham/Urunler.csv</code> dosyasını <code>Urunler_PL</code> tablosuna yaz (beklenen: 40 satır). Ardından bir <b>Notebook</b> etkinliği ekle ve okla bağla. Sonuna <b>Fail</b> ve hata yolu ekle, kasıtlı olarak yanlış dosya adıyla çalıştırıp <b>Çıktı</b> sekmesini oku.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Gece hattı: Kopyala → Yordam → Model yenile. Yordam başarısız olduğu gece model yine yenilendi. Hangi yanlış yapılmış?', o: ['Ok “Tamamlandığında”', 'Yordamda Secure output açık', 'Hat 120 etkinliği aşmış', 'Saat dilimi yanlış'], a: 0, why: 'Tamamlandığında koşulu başarı ve hatada çalışır. Yenilemeyi yalnız başarıya bağlamak gerekir. Secure output yalnız günlüğü etkiler.' },
+    { t: 'mc', q: 'Hata yolunda Teams mesajı atıyorsun. Bu gece kopyalama düştü, mesaj gitti, ama Monitor hub’da hat “Başarılı” görünüyor. İstenen “Başarısız”. Ne eklersin?', o: ['Yeniden deneme', 'Fail etkinliği', 'Daha uzun Timeout', 'Wait etkinliği'], a: 1, why: 'Hata yakalanıp başka etkinlik başarılı olunca hat başarılı sayılabilir. Fail etkinliği hattı açıkça başarısız yapar, üst zincir de doğru davranır.' },
+    { t: 'mc', q: 'Filigranlı yükleme doğru sırada hangisi?', o: ['Copy → eski oku → yeni oku → güncelle', 'Eski oku → yeni oku → Copy → güncelle', 'Güncelle → eski oku → Copy → yeni oku', 'Yeni oku → güncelle → eski oku → Copy'], a: 1, why: 'Önce iki sınır okunur, aralık kopyalanır, kopya başarılı olursa filigran güncellenir. Önce güncellemek başarısız kopyada veri kaçırır.' },
+    { t: 'mc', q: 'Zamanlamada parametreye “Tarih” yazdın; hattın parametresi “tarih”. Hata yok, ama hat hep varsayılan tarihle çalışıyor. Sebep?', o: ['Zamanlama parametre geçiremez', 'Ad birebir eşleşmeli', 'Parametre türü tarih olmalı', 'Önizleme özelliği kapalı'], a: 1, why: 'Learn: ad birebir eşleşmeli, uyuşmayan ad çalışma anında sessizce yok sayılır. Bu hata en zor bulunanlardandır; Çıktı’da girdiyi kontrol et.' },
+    { t: 'mc', q: '<code>@{pipeline().parameters.Adet}</code> ifadesi sayı beklenen bir alana yazıldı, tür hatası alındı. Düzeltme?', o: ['@pipeline().parameters.Adet', '@concat(Adet)', '@@pipeline().parameters.Adet', 'Parametreyi silmek'], a: 0, why: 'Tek başına ifade özgün türü döndürür; @{...} her zaman metin üretir. @@ ise gerçek @ karakteri demektir.' },
+    { t: 'mc', q: 'Kopyalama etkinliği ekle modunda. Retry 2 yapıldı. Ağ koptuğu gece satırların bir kısmı iki kez geldi. En sağlam çözüm?', o: ['Retry’ı kapatmak', 'Anahtarla birleştirmek', 'Timeout büyütmek', 'Copy’yi gece yarısına almak'], a: 1, why: 'Geçici hatada yeniden deneme iyidir; asıl sorun adımın yeniden çalıştırılamaması. Anahtarla birleştirme ya da aralığı önce silmek idempotent yapar.' },
+    { t: 'mc', q: 'Spark bir tablo yazdı, hemen ardından Stored procedure etkinliği uç noktadan okuyor ve tabloyu bulamıyor. İlk düzeltme?', o: ['60 dakika Wait eklemek', 'Refresh SQL analytics endpoint', 'Fail etkinliği', 'Aralık tabanlı zamanlama'], a: 1, why: 'Bu tam olarak o etkinliğin işi: meta veriyi eşitler. Sabit bekleme kırılgandır, Fail sorunu çözmez.' },
+    { t: 'mc', q: 'Geliştirici hattı elle çalıştırdı, düştü, e-posta gelmedi. Failure notifications’a ekip listesi ekli. Neden?', o: ['E-posta sunucusu arızalı', 'Yalnız zamanlıda gider', 'Ayrı Fabric kapasitesi gerekir', 'Liste güvenlik grubu olmalı'], a: 1, why: 'Learn: bu bildirimler yalnız zamanlanmış çalışmalar için geçerlidir, elle çalıştırmada gitmez. Test için bir zamanlama kullan.' },
+    { t: 'mc', q: 'Ofis saatlerinde farklı dosyalar farklı anda gelecek. Dosya düşünce hat çalışsın. Hangisi?', o: ['20 zamanlama', 'Olay tetikleyici', 'Until döngüsü', 'Aralık tabanlı zamanlama'], a: 1, why: 'OneLake dosya olayı tetikleyicisi tam bunun içindir. Sürekli çalışan döngü kapasite harcar, zamanlama saati bilir, olayı değil.' },
+    { t: 'query', q: 'Gece hattının sonuna bir mutabakat ekliyorsun. Modelde beklenen kontrol: her <code>Tarih[Yil]</code> için <b>Satır</b> ve <b>Net Satış</b> döndür; bugünkü çıktıyı hattın kaydıyla karşılaştıracaksın.', start: 'EVALUATE\n', sol: 'EVALUATE\nADDCOLUMNS(VALUES(Tarih[Yil]), "Satır", CALCULATE(COUNTROWS(Satislar)), "Net Satış", [Net Satış])', hint: 'ADDCOLUMNS(VALUES(Tarih[Yil]), "Satır", CALCULATE(COUNTROWS(Satislar)), "Net Satış", [Net Satış])' }
+  ]
+});
+
+/* ---------- Anlam modeli ---------- */
+add('fabric-yildiz', {
+  id: 'fabric-anlam-modeli', lv: 'C1', mod: 'Fabric', min: 30,
+  title: 'Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek',
+  sum: 'Varsayılan modelin kalkması, modeli lakehouse üstünde oluşturmak, Direct Lake’in iki biçimi arasında karar, çerçeveleme ve otomatik güncelleme, kapasite sınırları, izinler, Desktop ve web modelleme.',
+  body: `
+<p>Altın tablolar hazır. Şimdi rapor yazarlarına anlam katmanı gerekiyor. Power BI’ın modeli Fabric’te de <b>anlam modeli</b>dir; ölçü ve ilişki aynıdır. Değişen, verinin modele nasıl geldiğidir. Depolama modlarının mimari karşılaştırması “Kurumsal model” dersinde; burada modeli <b>kurmak ve işletmek</b> var.</p>
+<h2>Model kurmak</h2>
+<p>Learn’e göre lakehouse ve ambarlarda varsayılan anlam modeli 5 Eylül 2025’ten sonra otomatik oluşturulmuyor. Akış:</p>
+<ol><li>Lakehouse ya da ambarda yeni bir anlam modeli oluştur ve tabloları seç. Service ya da Desktop’tan kurulabilir; hangi Direct Lake biçiminin oluştuğunu model ayarlarından kontrol et, arayüz değişebilir.</li><li>İlişkileri kur, tarih tablosunu işaretle.</li><li>Ölçüleri yaz. DAX aynıdır.</li><li>Biçim, görüntüleme klasörü, açıklama, gizli sütunlar.</li><li>RLS varsa rol ve üye; sınamayı Görüntüleyici ile yap.</li></ol>
+<p>Çalışma alanım’da Direct Lake modeli olmaz. Model, kaynakla aynı bölgede olmalıdır. Birden çok Fabric kaynağı OneLake biçiminde olur.</p>
+<h2>Hangi Direct Lake?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL</th></tr>
+<tr><td>Kaynak</td><td>Bir ya da çok Fabric öğesi</td><td>Tek öğenin SQL uç noktası</td></tr>
+<tr><td>DirectQuery’ye düşme</td><td>Hiç; sınır aşılırsa sorgu hata verir</td><td>Var; görünüm, SQL RLS, sınır aşımı</td></tr>
+<tr><td>SQL görünümü</td><td>Desteklenmez (somut değilse)</td><td>DirectQuery’ye düşer</td></tr>
+<tr><td>SQL tarafı RLS/OLS</td><td>Uygulanmaz</td><td>RLS düşürür; OLS hata verebilir</td></tr>
+<tr><td>Import ile bileşik</td><td>Var</td><td>Aynı modelde yok</td></tr>
+<tr><td>Hesaplanmış sütun</td><td>Yalnız kullanıcı bağlamı (önizleme)</td><td>Yok (hesaplama grubu, alan parametresi var)</td></tr>
+<tr><td>Otomatik tarih/saat</td><td>Var</td><td>Yok</td></tr></table></div>
+<p>Pratik karar: SQL güvenliğini model kapısında istemiyor ve tahmin edilebilir performans istiyorsan OneLake biçimi. Bir SQL görünümü üzerinde çalışmak zorundaysan ya da mevcut uç nokta güvenliği şartsa SQL biçimi; ama düşmeyi izle. Kalıcı çözüm görünümü Delta tablosuna çevirmektir.</p>
+<h2>Çerçeveleme ve otomatik güncelleme</h2>
+<p>Direct Lake’te “yenileme”, modelin hangi Delta dosyalarına baktığını güncellemektir (çerçeveleme, framing). Veri kopyalanmaz, saniyeler sürer.</p>
+<div class="tbl-wrap"><table><tr><th>Yöntem</th><th>Ne zaman?</th><th>Dikkat</th></tr>
+<tr><td>Otomatik güncellemeler (açık)</td><td>Delta değiştikçe yansısın</td><td>Toplu yazma ortasında yarım veri görünebilir</td></tr>
+<tr><td>Otomatik kapalı + hat sonunda yenileme</td><td>Veri bittikten sonra tek seferde</td><td>Rakamlar tutarlı değişir; gece hatları için iyi</td></tr>
+<tr><td>Zamanlanmış</td><td>Düzenli, olaysız</td><td>Hattan bağımsızsa sıra riski</td></tr></table></div>
+<p>Gece hattında otomatik güncellemeyi kapatmak yaygın bir karardır: gümüş ve altın yazılırken rapor yarım veri göstermez, hat sonundaki anlam modeli yenileme etkinliği çerçeveyi bir kerede değiştirir. Çerçeveleme sonrası ilk sorgu soğuktur; sütunlar belleğe yüklenir.</p>
+<h2>Kapasite sınırları (guardrail)</h2>
+<div class="tbl-wrap"><table><tr><th>SKU</th><th>Tablo başına dosya/satır grubu</th><th>Tablo başına satır</th><th>Model boyutu</th><th>Bellek</th></tr>
+<tr><td>F2, F4, F8</td><td>1.000</td><td>300 milyon</td><td>10 GB</td><td>3 GB</td></tr>
+<tr><td>F16</td><td>1.000</td><td>300 milyon</td><td>20 GB</td><td>5 GB</td></tr>
+<tr><td>F32</td><td>1.000</td><td>300 milyon</td><td>40 GB</td><td>10 GB</td></tr>
+<tr><td>F64</td><td>5.000</td><td>1,5 milyar</td><td>Sınırsız</td><td>25 GB</td></tr>
+<tr><td>F128</td><td>5.000</td><td>3 milyar</td><td>Sınırsız</td><td>50 GB</td></tr></table></div>
+<p>Learn, Eylül 2026. Bellek sınırı gerçek bir “guardrail” değildir: aşılırsa yavaşlar. Sınır aşılınca davranış biçime göre değişir: OneLake biçiminde yenileme başarısız olur, tablo iyileştirilene kadar sorgu çalışmaz; SQL biçiminde düşme açıksa DirectQuery ile çalışır, uyarıyla. Küçük dosyaları birleştirmek (OPTIMIZE) çoğu zaman SKU büyütmekten önce gelir.</p>
+<h2>İzinler ve ağ</h2>
+<ul><li>Kullanıcının modeli sorgulaması için modelde okuma izni yeterli değildir; biçime göre Delta dosyalarına ya da uç noktaya da erişim gerekir. Uygulamayla dağıtımda “Direct Lake izin gereksinimleri” sayfasını oku.</li><li>Bağlantı yalnız bulut bağlantısıdır; şirket içi ağ geçidi kullanılmaz.</li><li>SQL biçiminde kimlik, sahibin kimliğidir; son kullanıcı kimliğiyle geçiş için OneLake biçimi ya da uç noktanın kullanıcı kimliği modu gerekir (“OneLake” dersi).</li></ul>
+<h2>Nereden düzenlenir?</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>Güçlü yanı</th><th>Sınır</th></tr>
+<tr><td>Desktop canlı düzenleme</td><td>Tanıdık arayüz, TMDL görünümü, hesaplama grubu, alan parametresi</td><td>Değişiklik doğrudan Service’teki modele gider; dikkatli ol</td></tr>
+<tr><td>Web modelleme</td><td>Tarayıcıda, Copilot (önizleme)</td><td>Doğrulama sınırlı: kardinalite ve yön sorguyla denetlenmez</td></tr>
+<tr><td>XMLA, Tabular Editor</td><td>Toplu değişiklik, BPA</td><td>Kapasite ve okuma-yazma ayarı</td></tr>
+<tr><td>Git, PBIP</td><td>Sürüm, inceleme</td><td>“Yerel geliştirme” ve “Yaşam döngüsü” dersleri</td></tr></table></div>
+<p>Canlı düzenleme, üretim modeline doğrudan yazmaktır. Geliştirmede kendi çalışma alanını kullan.</p>
+<h2>DAX aynı, kontrol farklı</h2>
+<p>Bu uygulamadaki ölçülerin hepsi Direct Lake’te de geçerlidir. Ama model kurarken bakılacak şey başka: sütun türleri kaynakla aynı mı (ilişkilerde tür birebir olmalı), bir tarafın anahtarı tekil mi, GUID ve ikili türler var mı? Tekilliği sorguyla sınarsın:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(Urunler),
+    "Tekil Anahtar", DISTINCTCOUNT(Urunler[UrunNo]),
+    "Yetim Satış Satırı", COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Urunler[UrunNo]))))
+)</pre>
+` + ORTAM + TRIAL + `Denemede “Ambar ödevi”ndeki tablolardan yeni bir anlam modeli oluştur, üç ilişki kur, iki ölçü ekle ve bir rapor sayfası çiz. Toplam: Net Satış 1.250.772,45 çıkmalı. Otomatik güncellemeleri kapatıp bir hat sonunda yenilemeyi dene. F4 sınırları küçük; büyük veri denemesi yapma.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Hat gece gümüş ve altını yazıyor. 02:30’da bir müdür raporu açtı, kategoriler toplamı tutmadı. 03:00’te düzeldi. En olası neden ve çözüm?', o: ['Otomatik güncellemeyi kapat', 'Tarih tablosunu yeniden işaretle', 'RLS rolü ekle', 'F64’e geçip belleği artır'], a: 0, why: 'Otomatik güncelleme açıksa çerçeve yazma sırasında değişir, tablolar farklı anlara bakar. Kapatıp hat sonunda yenilemek tutarlı anlık görüntü verir.' },
+    { t: 'mc', q: 'Yeni bir model SQL görünümü kullanacak ve kullanıcılar sayfa açılışının bazen çok yavaşladığını söylüyor. SQL biçiminde Direct Lake. Bulgu?', o: ['Görünüm DirectQuery’ye düşürür', 'Direct Lake görünümü önbelleğe alır', 'Bellek sınırı RLS’e bağlıdır', 'Çerçeveleme gecikmiştir'], a: 0, why: 'SQL biçiminde görünümler Delta dosyası olmadığı için sorgular DirectQuery ile çalışır. Çözüm görünümü Delta tablosuna çevirmek.' },
+    { t: 'mc', q: 'F8 kapasitede tablo 400 milyon satıra ulaştı. Model OneLake biçiminde Direct Lake. Sabah ne görürsün?', o: ['Yavaş ama çalışır', 'Yenileme başarısız olur', 'DirectQuery’ye düşer', 'Fazla satırlar atlanır'], a: 1, why: 'F8 sınırı 300 milyon. OneLake biçiminde düşme yoktur; yenileme başarısız olur ve Delta iyileştirilene ya da SKU büyüyene kadar sorgulanamaz.' },
+    { t: 'mc', q: 'Lakehouse’ta SQL RLS tanımladın. OneLake üzerinde Direct Lake model kullanıyorsun; kullanıcılar kısıtlanmıyor. Neden?', o: ['Hata; destek kaydı aç', 'Bu biçim SQL RLS uygulamaz', 'RLS ağ geçidi ister', 'Kullanıcı ReadAll olmalı'], a: 1, why: 'Learn: OneLake biçiminde SQL uç noktası RLS ve OLS’i uygulanmaz. Kuralı model RLS’i ya da OneLake rolüyle ver.' },
+    { t: 'mc', q: 'Aynı modele iki kaynak lakehouse’tan tablo alınacak. Hangisi?', o: ['SQL biçiminde tek uç nokta', 'OneLake biçimi', 'Görünümle birleştirmek', 'İkisini de Import’a çevirmek'], a: 1, why: 'OneLake biçimi birden çok Fabric öğesini kaynak alabilir; SQL biçimi tek öğeyle sınırlıdır.' },
+    { t: 'mc', q: 'Analist üretim modeline Desktop’tan canlı bağlanıp bir ilişkiyi “denemek için” değiştirdi. Sonra raporlar bozuldu. Süreç önerisi?', o: ['Desktop’ı yasaklamak', 'Geliştirme alanı ve Git', 'Her ay yedek almak', 'Yalnız web modelleme'], a: 1, why: 'Canlı düzenleme doğrudan modele yazar. Geliştirme alanı, sürüm kontrolü ve dağıtım kapısı bu riski kapatır. Web modelleme de aynı modele yazar.' },
+    { t: 'mc', q: 'İlişki Direct Lake’te hata veriyor: iki sütun da “MusteriNo” ama biri int, biri bigint. Çözüm?', o: ['Delta’da türü eşitlemek', 'Modelde hesaplanmış sütun', 'İlişkiyi çift yönlü yapmak', 'Önbelleği temizlemek'], a: 0, why: 'Learn: ilişki sütunları aynı veri türünde olmalı. Hesaplanmış sütun bu biçimde sınırlıdır. Dönüşüm kaynağa aittir.' },
+    { t: 'query', q: 'Model kurmadan önce anahtarları sına. Tek satırda <b>Müşteri Satırı</b> (<code>COUNTROWS(Musteriler)</code>), <b>Tekil No</b> (<code>DISTINCTCOUNT(Musteriler[MusteriNo])</code>) ve <b>Boş Bölge</b> (Bolge boş satır sayısı) döndür.', start: 'EVALUATE\n', sol: 'EVALUATE\nROW("Müşteri Satırı", COUNTROWS(Musteriler), "Tekil No", DISTINCTCOUNT(Musteriler[MusteriNo]), "Boş Bölge", COUNTROWS(FILTER(Musteriler, ISBLANK(Musteriler[Bolge]))))', hint: 'COUNTROWS(FILTER(Musteriler, ISBLANK(Musteriler[Bolge])))' }
+  ]
+});
+
+/* ---------- Copilot ---------- */
+add('fabric-anlam-modeli', {
+  id: 'fabric-copilot', lv: 'C1', mod: 'Fabric', min: 22,
+  title: 'Fabric ve Power BI’da Copilot: gerçekte ne yapar, neyi yapmaz?',
+  sum: 'İş yüküne göre Copilot, durum etiketleri, kapasite ve bölge şartları, gönderilen veri, Data Factory’deki sınırlar; “Copilot yaptı” dedikten sonra doğrulama akışı ve veri ajanı ile farkı.',
+  body: `
+<p>Copilot’un en büyük riski, yapamadıkları değil, <b>yaptığını doğru sanman</b>dır. Rapor bölmesi, model hazırlığı ve “Yapay zekâ için verileri hazırla” “Copilot ile çalışmak” dersinde anlatıldı. Bu ders Fabric’in geri kalanına bakar ve abartmadan ne bekleyeceğini gösterir.</p>
+<div class="warn"><b>Bu tablo hızla eskir</b>Bilgiler Kasım 2026’da Learn’den okundu. Learn’ün iki sayfası her zaman aynı terimi kullanmıyor; bir özellik “genel kullanım” derken diğeri tüm yapay zekâ özelliklerini “önizleme” olarak anabilir. Karar vermeden önce resmî sayfayı aç.</div>
+<h2>Nerede ne yapar?</h2>
+<div class="tbl-wrap"><table><tr><th>İş yükü</th><th>Copilot ne yapabilir?</th><th>Durum (Learn)</th></tr>
+<tr><td>Power BI rapor bölmesi</td><td>Veriyle sohbet, özet, görsel; düzenlemede sayfa önerisi</td><td>Genel kullanım</td></tr>
+<tr><td>Bağımsız Power BI ajanı</td><td>Rapor ve modelleri arar, soruyu yönlendirir</td><td>Önizleme</td></tr>
+<tr><td>Uygulama içi Copilot</td><td>Yalnız uygulama içeriği ve kullanıcının izni</td><td>Önizleme</td></tr>
+<tr><td>Web modelleme</td><td>Model sorunlarını bulur, ölçü ve nesne düzenler</td><td>Önizleme</td></tr>
+<tr><td>Data Factory</td><td>Dataflow Gen2’de sorgu ve adım; işlem hattında üretme, özetleme, hata ve ifade yardımı</td><td>Ayrıntı sayfası etiketlemiyor; Copilot genel sayfası önizleme diyor</td></tr>
+<tr><td>Not defteri</td><td>Kod üretme, düzenleme, hata düzeltme (Fix with Copilot önizleme)</td><td>Önizleme</td></tr>
+<tr><td>Ambar</td><td>Doğal dilden SQL, kod tamamlama</td><td>Önizleme</td></tr>
+<tr><td>Real-Time Intelligence</td><td>Doğal dilden KQL</td><td>Önizleme</td></tr></table></div>
+<h2>Şartlar</h2>
+<ul><li><b>Kapasite:</b> ücretli Fabric F2 ve üstü ya da Power BI Premium P SKU. <b>Pro ya da PPU tek başına yetmez.</b> Yeni açılan ya da büyütülen kapasitede 24 saate kadar gecikebilir.</li><li><b>Deneme:</b> Copilot, veri ajanı ve yapay zekâ fonksiyonları deneme kapasitesinde çalışmaz. Öğrenirken bunu kapasitesiz deneyemezsin.</li><li><b>Kiracı:</b> “Users can use Copilot and other features powered by Azure OpenAI” açık olmalı. Bazı önizlemeler ayrı ayara bağlıdır.</li><li><b>Bölge:</b> ABD ve AB veri sınırı dışındaki kapasitelerde kapalı başlar; bölgeler arası işleme ayarı yöneticidedir. Bağımsız deneyim bazı bölgelerde yoktur; güncel listeye bak.</li><li><b>Tüketim:</b> kapasite birimi harcar. Ayrı Fabric Copilot kapasitesi faturayı ayırır.</li></ul>
+<h2>Veri nereye gider?</h2>
+<p>Learn’ün iki sayfası bu konuda aynı kesinlikte değil. Genel bakış sayfası prompt, sistem istemi, şema ve sohbet geçmişinin gittiğini, tablo içeriğinin kullanıcı yönlendirmedikçe gitmediğini yazar. Gizlilik ve güvenlik sayfası ise temel alma verisinin (grounding) “şema, belirli veri noktaları ve göreve ilişkin başka bilgiler” içerebileceğini söyler ve ayrıntıyı her iş yükünün kendi sayfasına bırakır. Yani “satır gitmez” diye kesin konuşma: hassas veride kullandığın iş yükünün sayfasını oku. Aynı sayfaya göre veri model eğitiminde kullanılmaz, Copilot yalnız kullanıcının izinli olduğu veriye erişir. Veri sınıflandırma ve hukuk kuralları için yine kuruluşun onayını al. Prompta <b>gerçek müşteri listesi yapıştırma</b>. RLS kullanıcının izinleriyle çalışır; ama veri şemasında maaş gibi alanları açmak gerekmiyorsa açma.</p>
+<h2>Data Factory’de sınırlar</h2>
+<p>Dataflow Gen2 Copilot’u için Learn şunları açıkça yazar:</p>
+<ul><li>Bir istekte birden çok sorgu üzerinde dönüşüm yapamaz: “tüm sorgularda başlıkları büyüt” olmaz.</li><li>Önceki istemin bağlamını korumaz; onaylanan değişikliği geri alamaz (arayüzden silersin).</li><li>Örneklenmiş veri dışındaki sorularda yanlış cevap verebilir.</li><li><b>Desteklemediği isteği her zaman söylemez.</b> İstatistik analizi gibi bir istek hata göstermeden sonuçsuz kalabilir.</li></ul>
+<p>Son madde en önemlisidir: “hiçbir şey olmadı” sonucu “bir şey doğru yapıldı” demek değildir.</p>
+<h2>Doğrulama akışı</h2>
+<ol><li><b>Ne istediğini ölçülebilir yaz.</b> “Satışları temizle” değil, “Tutar’ı decimal yap, Durum İptal olanları çıkar”.</li><li><b>Üretileni oku.</b> Adım, SQL, kod. Anlamadığını kabul etme.</li><li><b>Bilinen sayıyla sına.</b> Bu modelde Net Satış 1.250.772,45.</li><li><b>Kenar durum:</b> boş, sıfır, çoklu seçim, toplam satırı.</li><li><b>Sahipliği devretme.</b> Üretime giden her şeyi bir kişi anlamış olmalı. “Copilot yazdı” bir mazeret değildir.</li></ol>
+<p>DAX üretimi için kontrol listesi “Yapay zekânın yazdığı DAX’ı denetlemek” dersinde. Copilot’tan gelen tipik hata iptalleri atlamaktır. Doğru sayıyla kıyasla:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Copilot Önerisi", SUM(Satislar[Tutar]),
+    "Doğru Tanım", [Net Satış],
+    "Fark", SUM(Satislar[Tutar]) - [Net Satış]
+)</pre>
+<p>Fark 95.417,40 ₺. Bu büyüklükte bir hata toplantıda fark edilir; küçük olsa fark edilmezdi.</p>
+<h2>Copilot, Fabric veri ajanı, Soru-Cevap</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Ne?</th><th>Dikkat</th></tr>
+<tr><td>Rapor Copilot’u</td><td>Açık raporla sohbet</td><td>Rapor bağlamı</td></tr>
+<tr><td>Veri ajanı (data agent)</td><td>Hazırladığın kaynaklar üzerinden sorulan soruları cevaplayan öğe</td><td>Denemede yok; talimat ve örnek sorularla kurulur, ayrı değerlendir</td></tr>
+<tr><td>Soru-Cevap (Q&amp;A)</td><td>Eski doğal dil</td><td>Learn: Şubat 2027’de kalkıyor (önceki duyurularda Aralık 2026). Yeni tasarımda kullanma</td></tr></table></div>
+<h2>Ne zaman kullan, ne zaman kullanma?</h2>
+<div class="tbl-wrap"><table><tr><th>İyi</th><th>Zayıf</th></tr>
+<tr><td>Başlangıç iskeleti, açıklama, hata iletisini okumak</td><td>Doğruluğu kritik mali tablo, tek başına</td></tr>
+<tr><td>Ölçü açıklaması, ifade yazmak</td><td>İş kuralını bilmesi gereken yorumlar</td></tr>
+<tr><td>Bilinmeyen sözdizimini hatırlatmak</td><td>İngilizce dışı dilde önemli sorular (resmî olarak desteklenmez)</td></tr></table></div>
+<p>Türkçe istemler çoğu zaman çalışır, ama resmî destek yoktur. Önemli soruda İngilizce sor ve cevabı doğrula.</p>
+<div class="tip"><b>Deneyemezsen</b>Copilot için ücretli kapasite gerekir; bu uygulamada Copilot yoktur. Yine de doğrulama akışını burada öğrenebilirsin: “Yapay zekânın yazdığı DAX’ı denetlemek” dersindeki bozuk ölçüleri düzelt, aynı refleksi gerçek Copilot’ta kullan.</div>
+`,
+  ex: [
+    { t: 'mc', q: 'Şirket Fabric deneme kapasitesiyle pilot yapıyor; Copilot görünmüyor. Yönetici “kiracı ayarı açık” diyor. Sebep?', o: ['Rapor sayfası az', 'Denemede desteklenmez', 'Dil Türkçe', 'Kullanıcı Görüntüleyici'], a: 1, why: 'Learn: deneme kapasitelerinde Copilot ve veri ajanı çalışmaz. F2 ve üstü ücretli kapasite gerekir.' },
+    { t: 'mc', q: 'Dataflow Gen2 Copilot’una “bütün sorgularda başlıkları büyük harf yap” dedin. Hiçbir şey olmadı, hata da yok. Doğru yorum?', o: ['Yapıldı, yenilemek gerek', 'Çoklu sorgu desteklenmez', 'Kapasite doldu', 'Önce sorgu grubu gerekir'], a: 1, why: 'Learn: bir girişte birden çok sorgu üzerinde işlem yapılamaz ve desteklenmeyen istek bildirilmeyebilir. Sessiz sonuç başarı sayılmaz.' },
+    { t: 'mc', q: 'Yönetici “Copilot Net Satış’ı 1.346.190 ₺ buldu, sen 1.250.772 ₺ diyorsun” diyor. İlk adımın?', o: ['Copilot’a inanırım', 'Hangi alanı kullandığına bakarım', 'Rapordaki sayıyı değiştiririm', 'Soruyu Türkçe yerine tekrar sorarım'], a: 1, why: 'Fark iptal tutarı kadar: Copilot büyük olasılıkla iptalleri dahil etti. Üretilen görselin alanını ve ölçüsünü aç, sonra talimatla [Net Satış]’a yönlendir.' },
+    { t: 'mc', q: 'Pro lisanslı bir ekip, Copilot için PPU almayı düşünüyor. Doğru bilgi?', o: ['PPU Copilot’u açar', 'PPU tek başına yetmez', 'Pro yeter', 'Copilot için ayrı lisans gerekir'], a: 1, why: 'Learn: Pro ya da PPU tek başına yeterli değildir, kuruluş kapasitesi gerekir.' },
+    { t: 'mc', q: 'Analist Copilot’a “maaşları analiz et” diye gerçek maaş dosyasını yapıştırmak istiyor. Yanıtın?', o: ['Sorun yok, Azure güvenli', 'Kurum onayı olmadan olmaz', 'İngilizce yazarsan olur', 'Yalnız RLS ile olur'], a: 1, why: 'Prompt verisi kuruluş kurallarına tabidir. Gizli veri, açık onay olmadan istemlere yazılmaz. İstemdeki metin Copilot’a gider; yapıştırdığın maaşlar da onunla gider. Otomatik temel alma verisinin kapsamı için iş yükü sayfasını oku.' },
+    { t: 'mc', q: 'Yeni büyütülen F64 kapasitede Copilot henüz açılmadı. Hemen ne yaparsın?', o: ['Kiracıyı sıfırlarım', '24 saate kadar beklerim', 'P SKU’ya geçerim', 'Çalışma alanını silerim'], a: 1, why: 'Learn: yeni ya da büyütülmüş kapasitede Copilot’un görünmesi 24 saate kadar sürebilir. Kiracı ayarı ve bölge kontrol edilir.' },
+    { t: 'mc', q: 'Yeni bir pano tasarımında soru kutusu için Soru-Cevap kullanılacak. Görüşün?', o: ['Kullan, sürekli destekleniyor', 'Kullanma; kaldırılıyor', 'Yalnız mobilde kullan', 'Önce Q&A kurulumunu tamamla'], a: 1, why: 'Learn güncel uyarısı Şubat 2027 diyor, önceki duyurular Aralık 2026. Tarihten bağımsız yeni tasarım buna dayanmamalı.' },
+    { t: 'dax', name: 'Copilot Düzeltilmiş Pay', q: '<b>Copilot Düzeltilmiş Pay</b>: Copilot şu ölçüyü önerdi: <code>DIVIDE(CALCULATE(SUM(Satislar[Tutar]), Satislar[Kanal] = "Web"), SUM(Satislar[Tutar]))</code>. İptalleri sayıyor. Hazır <code>[Net Satış]</code> ile Web kanalının payını yaz.', sol: 'DIVIDE(CALCULATE([Net Satış], Satislar[Kanal] = "Web"), [Net Satış])', hint: 'DIVIDE(CALCULATE([Net Satış], Satislar[Kanal] = "Web"), [Net Satış])' }
+  ]
+});
+})(window);
+
+;
+
 /* ===== x_temel.js ===== */
 /* Kesit Power BI — Temel seviye ders genişletmeleri (Ekim 2026): Başlangıç, Veri Hazırlama, Veri Modelleme, DAX Temelleri, Görselleştirme */
 (function (W) {
@@ -18171,7 +19214,7 @@ ext('tarih', { min: 9, html: `
 <h3>1. Fabric: Power BI artık bir platformun parçası</h3>
 <p>Power BI, Microsoft Fabric'in içindeki iş yüklerinden biridir. Rapor, anlam modeli, lakehouse, veri ambarı ve not defteri aynı <b>çalışma alanında (workspace)</b> yan yana durur. Veriler <b>OneLake</b> adlı ortak depoda tutulur. <b>Direct Lake</b> modu, OneLake'teki tabloları kopyalamadan okur. Kurumlar eskiden “Premium kapasite” alırdı; bugün Fabric kapasitesi (F SKU'ları) alır. Ayrıntılar Microsoft Fabric'e giriş dersinde.</p>
 <h3>2. Copilot ve yapay zekâya hazır modeller</h3>
-<p>Copilot rapor sayfasını özetleyebilir, soruya göre görsel önerebilir, DAX yazmana yardım eder. Copilot'un iyi cevap vermesi için modelin temiz olması gerekir. Bunun için <b>Yapay zekâ için verileri hazırla (Prep data for AI)</b> özelliği var: hangi tabloların kullanılacağını seçersin, doğrulanmış cevaplar ve yapay zekâ talimatları eklersin. Eski doğal dil soru görseli Aralık 2026'da kaldırılıyor; onun yerini Copilot alıyor. Copilot ile çalışmak dersinde adım adım göreceksin.</p>
+<p>Copilot rapor sayfasını özetleyebilir, soruya göre görsel önerebilir, DAX yazmana yardım eder. Copilot'un iyi cevap vermesi için modelin temiz olması gerekir. Bunun için <b>Yapay zekâ için verileri hazırla (Prep data for AI)</b> özelliği var: hangi tabloların kullanılacağını seçersin, doğrulanmış cevaplar ve yapay zekâ talimatları eklersin. Eski doğal dil soru görseli kaldırılıyor (Learn: Şubat 2027); onun yerini Copilot alıyor. Copilot ile çalışmak dersinde adım adım göreceksin.</p>
 <h3>3. Desktop'ta yeni görünümler ve görseller</h3>
 <div class="tbl-wrap"><table>
 <tr><th>Yenilik</th><th>Ne işe yarar?</th><th>Durum (Ekim 2026)</th></tr>
@@ -18196,7 +19239,7 @@ ext('tarih', { min: 9, html: `
 <div class="tip"><b>Neden önemli?</b>Bir iş görüşmesinde “dataset'i yeniledim” diyen biriyle “anlam modelini yeniledim” diyen aynı işi anlatır. İkisini de anlarsan, sen de güncel adı kullanırsan hem eski hem yeni ekiplerle rahat konuşursun.</div>
 `, ex: [
   { t: 'mc', q: 'Eski bir iç belgede “Raporu açmadan önce dataset’i yenile” yazıyor. Bugünkü Power BI Service’te neyi yenilersin?', o: ['Anlam modelini', 'Panoyu (dashboard)', 'Veri akışını (dataflow)', 'Uygulamayı (app)'], a: 0, why: 'Dataset kavramı Fabric ile birlikte anlam modeli (semantic model) adını aldı. Pano yalnızca sabitlenmiş kutuları gösterir, kendi verisi yoktur. Veri akışı ayrı bir hazırlık nesnesidir. Uygulama ise raporları dağıtmanın yoludur; yenilenecek bir verisi yoktur.' },
-  { t: 'mc', q: 'Satış müdürü, ekibin rapordaki veriye düz cümleyle soru sorup cevap almasını istiyor. Ekim 2026 itibarıyla hangi yolu önerirsin?', o: ['Her sayfaya doğal dil soru görseli koymayı', 'Copilot’u açıp modeli ona hazırlamayı', 'Raporu Excel’e aktarıp Power Pivot’ta sormayı', 'Her olası soru için ayrı bir sayfa açmayı'], a: 1, why: 'Doğal dil soru görseli Aralık 2026’da kaldırılıyor; yeni yatırım için doğru yol Copilot ve “Yapay zekâ için verileri hazırla” özelliğidir. Excel’e aktarmak soruyu cevaplamaz, her soru için sayfa açmak sürdürülemez.' },
+  { t: 'mc', q: 'Satış müdürü, ekibin rapordaki veriye düz cümleyle soru sorup cevap almasını istiyor. Ekim 2026 itibarıyla hangi yolu önerirsin?', o: ['Her sayfaya doğal dil soru görseli koymayı', 'Copilot’u açıp modeli ona hazırlamayı', 'Raporu Excel’e aktarıp Power Pivot’ta sormayı', 'Her olası soru için ayrı bir sayfa açmayı'], a: 1, why: 'Doğal dil soru görseli kaldırılıyor; yeni yatırım için doğru yol Copilot ve “Yapay zekâ için verileri hazırla” özelliğidir. Excel’e aktarmak soruyu cevaplamaz, her soru için sayfa açmak sürdürülemez.' },
   { t: 'mc', q: 'Ekip, modelin ölçülerini ve tablolarını Git’te sürüm sürüm izlemek ve değişikliği satır satır görmek istiyor. Hangi gelişme bunu kolaylaştırdı?', o: ['Otomatik tarih/saat tabloları', 'Dilimleyicileri eşitleme bölmesi', 'PBIP proje biçimi ve TMDL', 'Performans Analizi bölmesi'], a: 2, why: 'PBIP biçimi raporu ve modeli metin dosyaları olarak kaydeder; TMDL de modeli okunur kod hâline getirir. Böylece Git değişikliği satır satır gösterir. Diğer seçenekler tasarım ve performans araçlarıdır, sürüm izlemeyle ilgisi yoktur.' }
 ] });
 
@@ -19350,7 +20393,7 @@ ext('etkilesim', { min: 14, html: `
 <tr><td>Tüm dilimleyicileri uygula / temizle</td><td>Çok dilimleyicili filtre panelleri</td></tr>
 <tr><td>Geri</td><td>Detay sayfasından dönüş</td></tr>
 <tr><td>Web URL’si</td><td>Kaynak sisteme, belge sayfasına bağlantı</td></tr></table></div>
-<p>Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik Aralık 2026’da kaldırılacağı için yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.</p>
+<p>Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik kaldırılacağı için (Learn: Şubat 2027) yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.</p>
 <pre class="dax">Seçim Özeti Metni =
 IF(
     ISFILTERED(Kategoriler[Kategori]),
@@ -22286,8 +23329,8 @@ ext('pl300', { min: 16, html: `
 <tr><td>Veriyi hazırlama</td><td>%25–30</td><td>DirectLake / DirectQuery / Import seçimi, gizlilik düzeyleri, referans mı çoğaltma mı, ilişki anahtarları</td><td>Veri alma, Power Query dersleri, M dili</td></tr>
 <tr><td>Veriyi modelleme</td><td>%25–30</td><td>Rol oynayan boyutlar, yarı toplanabilir ölçüler, hesaplama grupları, Performans Analizi ve DAX sorgu görünümü</td><td>Modelleme, DAX dersleri, Performans</td></tr>
 <tr><td>Görselleştirme ve analiz</td><td>%25–30</td><td>Copilot ile anlatı görseli ve sayfa önerisi, görsel hesaplamalar, sayfalandırılmış rapor ne zaman, erişilebilirlik, otomatik sayfa yenileme</td><td>Görselleştirme dersleri, Copilot, Pencere fonksiyonları</td></tr>
-<tr><td>Power BI'ı yönetme ve güvenli hâle getirme</td><td>%15–20</td><td>Dağıtım yöntemi seçimi, abonelik ve uyarılar, ağ geçidi ne zaman, RLS grup üyeliği, duyarlılık etiketleri</td><td>Yayımlama, Güvenlik, Yönetişim</td></tr></table></div>
-<p>Geçme puanı 1000 üzerinden 700. Lab içermeyen rol tabanlı sınavlarda süre 100 dakika, oturum süresi 120 dakikadır. Sınav ana dilinde sunulmuyorsa 30 dakika ek süre istenebilir. Yapay zekâ görselleri maddesinde ayrıştırma ağacı ve anahtar etkileyiciler çalış. Soru-Cevap (Q&amp;A) görseli Aralık 2026'da kaldırılıyor; doğal dil soruları için Copilot'u ve modeli “Yapay zekâ için verileri hazırla” (Prep data for AI) ile hazırlamayı öğren.</p>
+<tr><td>Power BI'ı yönetme ve güvenli hâle getirme</td><td>%15–20</td><td>Dağıtım yöntemi seçimi, abonelik ve uyarılar, ağ geçidi ne zaman, RLS grup üyeliği, duyarlılık etiketleri</td><td>Çalışma alanı, Panolar, Paylaşım, Uygulamalar, Veri yenileme, Ağ geçidi, Yayımlama, Güvenlik, Yönetişim</td></tr></table></div>
+<p>Geçme puanı 1000 üzerinden 700. Lab içermeyen rol tabanlı sınavlarda süre 100 dakika, oturum süresi 120 dakikadır. Sınav ana dilinde sunulmuyorsa 30 dakika ek süre istenebilir. Yapay zekâ görselleri maddesinde ayrıştırma ağacı ve anahtar etkileyiciler çalış. Soru-Cevap (Q&amp;A) görseli kaldırılıyor (Learn: Şubat 2027); doğal dil soruları için Copilot'u ve modeli “Yapay zekâ için verileri hazırla” (Prep data for AI) ile hazırlamayı öğren.</p>
 
 <h2>Soru türleri ve her birinin çözüm yolu</h2>
 <p>Microsoft sınavdaki biçimleri önceden açıklamaz, ama deneme ortamında (exam sandbox) şu türleri gösterir:</p>
@@ -22771,8 +23814,28 @@ const SOURCES = {
       ['102', 'mehmet kaya', 'mehmet.kaya@hotmail.com', '2023-05-02'],
       ['104', 'ALİ ŞAHİN', null, '2024-01-09'],
       ['105', 'Elif Çelik', 'elif.celik@icloud.com', '2024-02-30']
-    ]) }
+    ]) },
+  bayi_sub: { name: 'Bayi satışları: Şubat (CSV)', qn: 'Bayi_Subat', desc: 'İkinci kaynak: muhasebenin ortak klasöre bıraktığı Şubat dosyası. Temiz ve türleri belli. Ocak raporuna “Sorguları ekle” ile eklenir.',
+    m: 'Csv.Document(File.Contents("\\\\\\\\sunucu\\\\ortak\\\\bayi_subat.csv"), [Delimiter = ";", Encoding = 65001])',
+    table: { cols: [{ name: 'Bayi', type: 'text' }, { name: 'Şehir', type: 'text' }, { name: 'Tarih', type: 'date' }, { name: 'Tutar', type: 'number' }], rows: [
+      ['Merkez Bayi', 'İstanbul', D(2024, 2, 2), 1410.5], ['Kızılay Bayi', 'Ankara', D(2024, 2, 3), 1125], ['Nilüfer Bayi', 'Bursa', D(2024, 2, 5), 1880.25], ['Alsancak Bayi', 'İzmir', D(2024, 2, 6), 960]] } },
+  sehir_bolge: { name: 'Şehir ve bölge eşlemesi (SharePoint)', qn: 'Sehir_Bolge', key: 'Şehir', desc: 'İkinci kaynak: satış operasyonunun SharePoint Online listesi. Şehir başına bir satır. Şehir sütunu temiz; bayi raporundaki şehirler ise kirli olabilir.',
+    m: 'SharePoint.Tables("https://sirket.sharepoint.com/sites/satis"){[Title = "SehirBolge"]}[Items]',
+    table: { cols: [{ name: 'Şehir', type: 'text' }, { name: 'Bölge', type: 'text' }], rows: [
+      ['İstanbul', 'Marmara'], ['Bursa', 'Marmara'], ['Ankara', 'İç Anadolu'], ['Konya', 'İç Anadolu'], ['İzmir', 'Ege'], ['Antalya', 'Akdeniz'], ['Trabzon', 'Karadeniz']] } }
 };
+
+/* ---------- İki sorguyla çalışan komutlar: Sorguları ekle (append), Sorguları birleştir (merge) ---------- */
+OPS.append = { name: 'Sorguları ekle', group: 'Birleştir', step: 'Eklenen Sorgu',
+  form: [{ k: 'with', label: 'Eklenecek sorgu', type: 'sel', o: [['bayi_sub', 'Bayi satışları: Şubat (CSV)']], d: 'bayi_sub' }],
+  run: (t, s) => { const b = SOURCES[s.with] && SOURCES[s.with].table; if (!b) throw ERR('Expression.Error: “' + s.with + '” sorgusu bulunamadı.'); const out = clone(t); b.cols.forEach(c => { if (!out.cols.some(x => x.name === c.name)) { out.cols.push({ name: c.name, type: c.type }); out.rows.forEach(r => r.push(null)); } }); b.rows.forEach(r => { const row = out.cols.map(c => { const i = b.cols.findIndex(x => x.name === c.name); return i < 0 ? null : (r[i] instanceof Date ? r[i] : r[i]); }); out.rows.push(row); }); out.cols.forEach(c => { const o = b.cols.find(x => x.name === c.name); if (o && o.type !== c.type && !(o.type === 'int' && c.type === 'number')) c.type = 'any'; }); return out; },
+  m: (p, s) => 'Table.Combine({' + p + ', ' + ((SOURCES[s.with] || {}).qn || s.with) + '})',
+  what: 'İkinci sorgunun satırlarını altına ekler. Sütunlar ada göre eşleşir: “Şehir” ile “Sehir” iki ayrı sütun olur ve boşluklar null kalır. Aynı yapıdaki aylık dosyalar, şube dosyaları için.' };
+OPS.merge = { name: 'Sorguları birleştir', group: 'Birleştir', step: 'Birleştirilen Sorgular', sel: 1, single: true,
+  form: [{ k: 'with', label: 'İkinci sorgu', type: 'sel', o: [['sehir_bolge', 'Şehir ve bölge eşlemesi (SharePoint)']], d: 'sehir_bolge' }, { k: 'kind', label: 'Birleştirme türü', type: 'sel', o: [['left', 'Sol dış (tüm satırlar)'], ['inner', 'İç (yalnız eşleşenler)'], ['anti', 'Sol karşıt (yalnız eşleşmeyenler)']], d: 'left' }],
+  run: (t, s) => { const src = SOURCES[s.with]; const b = src && src.table; if (!b) throw ERR('Expression.Error: “' + s.with + '” sorgusu bulunamadı.'); const i = idx(t, s.cols[0]), kb = b.cols.findIndex(c => c.name === src.key); const others = b.cols.map((c, j) => j).filter(j => j !== kb); const map = new Map(); b.rows.forEach(r => { const k = keyOf(r[kb]); if (!map.has(k)) map.set(k, r); }); const out = { cols: t.cols.map(c => Object.assign({}, c)), rows: [] }; if (s.kind !== 'anti') others.forEach(j => { if (out.cols.some(c => c.name === b.cols[j].name)) throw ERR('Expression.Error: “' + b.cols[j].name + '” sütunu tabloda zaten var.'); out.cols.push(Object.assign({}, b.cols[j])); }); t.rows.forEach(r => { const hit = !isErr(r[i]) && !isBlank(r[i]) ? map.get(keyOf(r[i])) : undefined; if (s.kind === 'inner' && !hit) return; if (s.kind === 'anti') { if (!hit) out.rows.push(r.slice()); return; } out.rows.push(r.concat(others.map(j => hit ? hit[j] : null))); }); return out; },
+  m: (p, s) => { const src = SOURCES[s.with] || {}; const b = src.table ? src.table.cols.map(c => c.name).filter(n => n !== src.key) : []; const kind = s.kind === 'inner' ? 'JoinKind.Inner' : s.kind === 'anti' ? 'JoinKind.LeftAnti' : 'JoinKind.LeftOuter'; const j = 'Table.NestedJoin(' + p + ', {' + mStr(s.cols[0]) + '}, ' + (src.qn || s.with) + ', {' + mStr(src.key || '') + '}, "Eşleşen", ' + kind + ')'; return s.kind === 'anti' ? 'Table.RemoveColumns(' + j + ', {"Eşleşen"})' : 'Table.ExpandTableColumn(' + j + ', "Eşleşen", ' + mList(b) + ')'; },
+  what: 'Seçili sütunu ikinci sorgunun anahtarıyla eşleştirir, eşleşen sütunları ekler. Eşleşme büyük/küçük harfe ve boşluğa duyarlıdır: “ANKARA” ile “Ankara” eşleşmez. Bu yüzden önce temizle, sonra birleştir.' };
 
 /* ---------- Alıştırmalar ---------- */
 const S = (op, cols, extra) => Object.assign({ op, cols: cols || [] }, extra || {});
@@ -23065,6 +24128,29 @@ W.PBI_CATALOG.push(
   ['FIND / SEARCH / SUBSTITUTE', 'Metin', 'SEARCH(Aranan, Metin [, Başlangıç, Bulunamazsa])', 'Metin içinde konum bulma (SEARCH büyük/küçük harfe duyarsız) ve değiştirme.', 'EVALUATE ROW("Konum", SEARCH("market", "Anadolu Market", 1, -1), "Yeni", SUBSTITUTE("Anadolu Market", "Market", "Pazar"))'],
   ['DATATABLE', 'Tablo', 'DATATABLE("Sütun", TÜR, …, {{…}})', 'Satır içi sabit tablo: küçük eşleme ve parametre tabloları için.', 'EVALUATE DATATABLE("Bant", STRING, "Alt", INTEGER, {{"Küçük", 0}, {"Orta", 500}, {"Büyük", 2000}})'],
   ['CEILING / FLOOR / MROUND', 'Matematik', 'FLOOR(Sayı, Kat)', 'Bir sayıyı verilen kata yuvarlar: histogram kutuları ve fiyat bantları.', 'FLOOR(1234, 500)']
+);
+W.PBI_GLOSSARY.push(
+  ['OneLake', 'Kiracı başına tek veri gölü. Tablolar açık biçimde (Delta, Iceberg) tutulur; Spark, T-SQL ve Power BI aynı dosyayı kopyalamadan okur.'],
+  ['Lakehouse', 'Files (her dosya) ve Tables (Delta) bölümleri olan Fabric öğesi. Spark ile yazılır, SQL analiz uç noktasıyla salt okunur sorgulanır.'],
+  ['SQL analiz uç noktası', 'Her lakehouse ile gelen salt okunur T-SQL katmanı. Görünüm ve yordam tanımlanır, tablo verisi değiştirilemez.'],
+  ['Kısayol (shortcut)', 'Başka yerdeki veriyi kopyasız gösteren işaretçi. Kısayolu silmek hedefi silmez; içindeki dosyayı silmek siler.'],
+  ['Yansıtma (mirroring)', 'Operasyonel veritabanını yakın gerçek zamanlı OneLake’e çoğaltır. Hedef salt okunurdur.'],
+  ['Data Factory', 'Fabric’in veri alma ve düzenleme iş yükü: işlem hattı, Copy job, Dataflow Gen2, yansıtma.'],
+  ['İşlem hattı (data pipeline)', 'Etkinlikleri sıraya koyan, zamanlayan, hata yollarını yöneten akış. Kendisi dönüştürmez.'],
+  ['Copy job', 'İşlem hattı kurmadan toplu, artımlı ya da CDC kopyalama.'],
+  ['Dataflow Gen2', 'Power Query adımlarını bulutta çalıştırıp sonucu seçilen hedefe yazan Fabric öğesi.'],
+  ['Filigran (watermark)', 'Artımlı yüklemede son işlenen değer. Sonraki çalışma bu değerden devam eder.'],
+  ['Çerçeveleme (framing)', 'Direct Lake’te modelin baktığı Delta sürümünü güncelleme. Veri kopyalanmaz, saniyeler sürer.'],
+  ['Kapasite birimi (CU)', 'Fabric işlem gücü ölçüsü. Rapor, yenileme, not defteri aynı havuzdan tüketir.'],
+  ['Kuruluş uygulaması (org app)', 'Alan başına birden çok olabilen Fabric öğesi. İçerik kaydedilince görünür, model erişimi otomatik verilir.'],
+  ['Kitle (audience)', 'Uygulamada farklı gruba farklı içerik gösterme. Görünürlüktür, güvenlik değildir.'],
+  ['Yorum (comment)', 'Rapor ya da panoda konuşma. İlk yorum filtreleri yer işareti olarak yakalar; @ kişiye bildirim gönderir.'],
+  ['Ağ geçidi kümesi', 'Aynı kurtarma anahtarıyla bağlı birden çok standart ağ geçidi. Bir düğüm düşerse istek sıradakine gider.'],
+  ['Kullanım ölçümleri', 'Rapor görüntüleme, tekil kişi, açılma süresi; son 30 gün. En az Katkıda bulunan görür.'],
+  ['Copilot', 'Doğal dille soru, özet, sayfa ve kod üreten yardımcı. Ücretli F2+ ya da P kapasite ister; denemede çalışmaz. Çıktısı doğrulanmalıdır.'],
+  ['Veri ajanı (data agent)', 'Hazırlanan kaynaklar üzerinden soruları cevaplayan Fabric öğesi. Denemede çalışmaz.'],
+  ['Monitor hub', 'Fabric’te iş çalıştırmalarını, uyarıları ve kapasiteyi gösteren izleme ekranı. Kullanıcı yalnız izinli olduğu öğeleri görür.'],
+  ['Capacity Metrics', 'Fabric kapasite tüketimini, kısıtlamayı ve işlem matrisini gösteren uygulama.']
 );
 W.PBI_GLOSSARY.push(
   ['Can-do (yapabilirim) ifadesi', 'Bu programda her seviyenin sonunda neleri yapabileceğini anlatan ölçülebilir hedef cümleleri (Avrupa dil çerçevesindeki gibi).'],
@@ -23409,6 +24495,37 @@ W.PBI_PRACTICE = [
   pq('pq-pahali', 'B2', '<b>Pahalı ürünler.</b> Ürün listesinde kategoriyi aşağı doldur, sonra yalnızca <code>Fiyat</code>’ı 400’den büyük ürünleri tut.', 'urun', [], [ST('fillDown', ['Kategori']), ST('filter', ['Fiyat'], { cmp: '>', v: '400' })], 'Aşağı doldur → Fiyat’ı seç → Satırları filtrele: büyüktür 400.'),
   pq('pq-sube', 'C1', '<b>Şube adını ayır.</b> “Merkez Bayi”, “Kızılay Bayi”… değerlerinden yalnızca ilk sözcüğü <code>Şube</code> adlı sütunda tut; ikinci parçayı sil.', 'bayi', BAYI_A, [ST('split', ['Bayi'], { d: ' ', mode: 'first' }), ST('removeCols', ['Bayi.2']), ST('rename', ['Bayi.1'], { to: 'Şube' })], 'Sütunu böl (en soldaki boşluk) → Bayi.2’yi kaldır → Bayi.1’i yeniden adlandır.')
 ];
+})(window);
+/* Service ve Fabric senaryoları: burada çalıştırılamayan konular için karar ve teşhis görevleri; ikinci kaynaklı Power Query görevleri */
+(function (W) {
+'use strict';
+const PR = W.PBI_PRACTICE; if (!PR) return;
+W.PBI_PR_TOPICS.servis = 'Service: paylaşım ve yenileme';
+W.PBI_PR_TOPICS.fabric = 'Fabric kararları';
+const m = (id, L, tp, name, q, o, a, why) => ({ id, L, tp, t: 'mc', name, q, o, a, why });
+const S = (op, cols, x) => Object.assign({ op, cols: cols || [] }, x || {});
+const TEMIZ = [S('removeTop', [], { n: 1 }), S('promote'), S('removeCols', ['Not']), S('trim', ['Şehir']), S('proper', ['Şehir']), S('replace', ['Tutar'], { find: '-', repl: 'null', whole: true }), S('type', ['Tutar'], { to: 'number' }), S('removeBlank'), S('distinct'), S('type', ['Tarih'], { to: 'date' }), S('removeErrors', ['Tarih'])];
+PR.push(
+  { id: 'pq-iki-ay-bolge', L: 'B2', tp: 'pq', t: 'pq', q: '<b>İki ay, bir bölge.</b> Temiz Ocak tablosuna Şubat sorgusunu ekle, sonra <code>Şehir</code> ile SharePoint listesinden <code>Bölge</code>’yi getir. Sonuç 11 satır olmalı.', src: 'bayi', pre: TEMIZ, sol: [S('append', [], { with: 'bayi_sub' }), S('merge', ['Şehir'], { with: 'sehir_bolge', kind: 'left' })], hint: 'Önce Sorguları ekle (ikinci sorgu Şubat), sonra Şehir’i seçip Sorguları birleştir (Sol dış).' },
+  { id: 'pq-eslesmeyen', L: 'C1', tp: 'pq', t: 'pq', q: '<b>Eşleşmeyeni bul.</b> Temizlenmemiş tabloda şehirleri yalnız kırp, harf biçimini düzeltme. Sonra <code>Şehir</code>’i SharePoint listesiyle <b>sol karşıt</b> birleştir: listede karşılığı olmayan satırlar kalsın. Bu sayı, doğrudan birleştirsen kaç satırın boş kalacağını gösterir.', src: 'bayi', pre: [S('removeTop', [], { n: 1 }), S('promote'), S('removeCols', ['Not'])], sol: [S('trim', ['Şehir']), S('merge', ['Şehir'], { with: 'sehir_bolge', kind: 'anti' })], hint: 'Şehir’i seç → Kırp. Sonra Sorguları birleştir → tür Sol karşıt.' },
+  m('sv-rol-rls', 'B2', 'servis', 'RLS kimi süzer?', 'Bölge müdürleri çalışma alanına “kolay olsun” diye <b>Üye</b> yapıldı. RLS’li raporda tüm bölgeleri görüyorlar. Müdür “RLS bozuk” diyor. Ne dersin?', ['RLS doğru; Üye rolü süzülmez, rolü düşür.', 'RLS tablosunda ilişkiler tek yönlü olduğu için çalışmıyor.', 'Model yenilenmeden RLS uygulanmaz, önce yenile.', 'Üyeler için ayrı bir RLS rolü tanımlamak gerekir.'], 0, 'Yönetici, Üye ve Katkıda bulunan modelde yazma yetkisi taşır, RLS onlara uygulanmaz. Son kullanıcı rolü Görüntüleyici’dir; daha iyisi uygulama.'),
+  m('sv-son-yayim', 'B2', 'servis', 'Yayımdan sonra boş rapor', 'Rapor yayımlandı. Geliştirici tüm sayıları görüyor, bir Görüntüleyici rapor açılıyor ama hiç veri görmüyor. Sebep büyük olasılıkla?', ['Görüntüleyici modelde Derleme izni istiyor.', 'RLS rolünde üyesi yok.', 'Görüntüleyici için rapor sertifikalı olmalı.', 'Zamanlanmış yenileme açılmadığı için boş.'], 1, 'RLS rol tanımı yayımla gelir, üyeler gelmez. Rol varsa ve kullanıcı hiçbir rolde değilse veri göremez. Zamanlama geliştiriciyi de etkilerdi.'),
+  m('sv-yeni-icerik', 'B2', 'servis', 'Uygulamaya eklenen rapor', 'Uygulamaya “Kargo” raporu eklendi ve <b>Uygulamayı güncelle</b> dendi. Kullanıcılar raporu görmüyor. İlk kontrol?', ['Kitlede görünür mü', 'Kargo modelinin yenilenme saati', 'Tarayıcı önbelleği', 'Raporun sertifika durumu'], 0, 'Yayım sonrası eklenen içerik her kitlede varsayılan gizli gelir. Görünürlüğü elle açarsın.'),
+  m('sv-paylasim-bag', 'B2', 'servis', 'Bağlantı erişim vermez', 'Kanal sekmesine rapor eklendi, e-postaya bağlantı kondu. Bir kullanıcı “içerik kullanılamıyor” görüyor. Kullanıcının Pro lisansı var. Doğru adım?', ['Tarayıcı önbelleğini temizlemesini söylemek', 'Rapor ya da çalışma alanı izni vermek', 'Sekmeyi kaldırıp yeniden eklemek', 'Raporu Web’de yayımlamak'], 1, 'Teams’e eklemek ya da bağlantı göndermek izin vermez. Gruba rapor ya da çalışma alanı erişimi vermek kalıcı çözümdür.'),
+  m('sv-yenileme-4', 'B2', 'servis', 'Kapanan zamanlama', 'Pazartesi sabahı zamanlama kapalı. Geçmişte Cumartesi’den beri dört hata, hepsi “kimlik bilgileri”. Ne olmuş?', ['Etkinlik olmadığı için durmuş', 'Dört hatada kapanmış; kimliği düzelt', 'Günlük 8 hak bitmiş; yarın açılır', 'Kapasite duraklatılmış'], 1, 'Learn: art arda dört hata ya da düzeltilemez hatada zamanlama kapanır, eşik değişmez. İki ay görüntülenmeme başka bir kuraldır.'),
+  m('sv-tazelik', 'B2', 'servis', 'Yenileme başarılı, veri eski', 'Yenileme geçmişi hep yeşil. Ama raporda dünkü satış yok. Hangisini önce kontrol edersin?', ['Rapor temasının renklerini', 'Son iş tarihini ve üst adımı', 'Kullanıcı lisansını', 'Pano kutucuklarının boyutunu'], 1, 'Yeşil yenileme yalnız yenilemenin bittiğini söyler. MAX(Tarih) ve üst işlem (veri akışı, kaynak dosya) gerçek tazeliği gösterir.'),
+  m('sv-gateway-kume', 'C1', 'servis', 'Tek düğümlü ağ geçidi', 'Kritik gece yenilemeleri tek ağ geçidi makinesine bağlı. Makine yamadan sonra açılmadı, tüm raporlar eski kaldı. Tekrar olmaması için?', ['Kişisel modda ikinci bir ağ geçidi', 'Aynı makineye ikinci standart kurulum', 'Ayrı sunucuda küme üyesi eklemek', 'Yenilemeyi öğlene almak'], 2, 'Küme, birincil düştüğünde isteği sıradakine gönderir. Her standart ağ geçidi ayrı makine ister; kişisel mod paylaşılamaz.'),
+  m('sv-pano-rapor', 'B2', 'servis', 'Pano mu, rapor mu?', 'Müdür yılı ve kanalı seçebileceği tek sayfalık özet istiyor; veri tek modelde. Bir arkadaşın pano öneriyor. Ne dersin?', ['Pano: tek sayfa zaten', 'Pano ve canlı sayfa zorunlu', 'Dilimleyicili rapor sayfası', 'Her seçim için ayrı pano'], 2, 'Panoda dilimleyici yok. Tek modelde seçim gerekiyorsa rapor sayfası doğru araçtır. Pano birden çok modelden tek bakış ve uyarı içindir.'),
+  m('sv-izleme-kapasite', 'C1', 'servis', 'Yavaş rapor, rahat kapasite', 'Yönetim “kapasiteyi büyütelim” diyor. Capacity Metrics’te zirve yok, ama iki rapor çok yavaş açılıyor. Önce ne yaparsın?', ['Performans Analizi ile ölçmek', 'F128’e geçmek', 'Kullanım raporunu kapatmak', 'Zamanlamayı iki katına çıkarmak'], 0, 'Kapasite rahatsa sorun DAX, model ya da sayfadadır. Önce nedeni ölç, en son para harca.'),
+  m('fb-kisayol-sil', 'C1', 'fabric', 'Kısayol ve silme', 'Stajyer lakehouse’ta kısayolun içindeki bir dosyayı sildi. Başka ekip verisinin kaybolduğunu söylüyor. Doğru mu?', ['Olamaz; kısayol salt okunur', 'Doğru: içteki dosya hedefte de silinir', 'Olamaz; OneLake 7 gün sonra siler', 'Doğru, ama yalnız Delta dosyalarında'], 1, 'Kısayolu silmek hedefe dokunmaz, ama içindeki dosyayı silmek izin varsa hedefte de siler. OneLake yumuşak silme 7 gün tutar, kurtarma kaynağa bağlıdır.'),
+  m('fb-yansitma-yaz', 'C1', 'fabric', 'Yansıtma hedefi', 'Azure SQL yansıtması kuruldu. Analist, yansıtılmış tabloya bir sütun eklemek istiyor. Doğru yol?', ['ALTER TABLE çalıştırmak', 'Not defterinde yansıtmaya yazmak', 'Ayrı bir katmanda eklemek', 'Yansıtmayı silip CSV’ye geçmek'], 2, 'Yansıtma hedefi salt okunurdur. Ek sütun, yansıtmayı okuyan bir katmanda üretilir ya da kaynakta eklenir.'),
+  m('fb-arac-sec', 'C1', 'fabric', 'Doğru aracı seç', 'Şirket içi ERP’den 80 tabloyu her gece değişenleriyle taşıyacaksın. Dönüşüm yok, ekip küçük.', ['80 Dataflow Gen2', 'Copy job ve ağ geçidi', 'Eventstream', '80 ayrı not defteri'], 1, 'Çok tablolu, artımlı taşıma Copy job’ın işidir. Dönüşüm olmadığı için veri akışı ve not defteri gereksiz emektir.'),
+  m('fb-hat-fail', 'C1', 'fabric', 'Yeşil görünen hat', 'Kopyalama düştü, hata yolundaki Teams mesajı gitti. Monitor hub hattı “Başarılı” gösteriyor ve üst zincir devam etti. Eksik olan?', ['Retry ayarı', 'Fail etkinliği', 'Daha uzun Timeout', 'Wait etkinliği'], 1, 'Hata yakalandığında hat başarılı sayılabilir. Hata yolunun sonuna Fail koyunca hat başarısız olur, üst zincir durur.'),
+  m('fb-hat-param', 'C1', 'fabric', 'Sessiz parametre', 'Zamanlamada <code>Ortam</code> adlı parametreye “Prod” verdin; hattın parametresi <code>ortam</code>. Hat hata vermeden Dev verisini kopyaladı. Neden?', ['Ad eşleşmedi; varsayılan kullanıldı', 'Prod bağlantısı silinmiş olduğu için', 'Zamanlama önizlemede kaldığı için', 'Dev çalışma alanı kilitli olduğu için'], 0, 'Learn: ad birebir eşleşmeli; uyuşmayan ad sessizce yok sayılır. Çıktı sekmesinde girdiyi kontrol et.'),
+  m('fb-dl-oto', 'C1', 'fabric', 'Yarım veri', 'Direct Lake’te otomatik güncellemeler açık, gece hattı tabloları sırayla yazıyor. 02:30’da rapor tutarsız. Karar?', ['Otomatiği kapat, sonda yenile', 'Modeli Import moduna çevir', 'Tablolara OPTIMIZE çalıştır', 'Bir üst SKU’ya geç'], 0, 'Otomatik güncelleme ara durumları da yansıtabilir. Hat sonunda tek çerçeveleme tutarlı görüntü verir.'),
+  m('fb-dl-sinir', 'C1', 'fabric', 'Sınır aşıldı', 'F16 kapasitede OneLake biçiminde Direct Lake. Tablo 2.000 satır grubuna çıktı. Sabah rapor açılmıyor. İlk müdahale?', ['Beklemek; DirectQuery’ye düşer', 'OPTIMIZE ile birleştirmek', 'RLS kapatmak', 'Rapor sayfasını azaltmak'], 1, 'F16’da tablo başına 1.000 dosya/satır grubu sınırı var. OneLake biçiminde düşme yoktur. Önce tablo sağlığı, SKU sonra.'),
+  m('fb-copilot-deneme', 'B2', 'fabric', 'Denemede Copilot', 'Ekip Fabric denemesinde Copilot’u pilotlayacak. Sen?', ['Denemede çalışmaz', 'PPU lisansıyla açılır', 'Kiracı ayarı yeter', 'Bölge değişikliği yeter'], 0, 'Learn: deneme kapasitelerinde Copilot ve veri ajanı desteklenmez. Pro ya da PPU tek başına yetmez.')
+);
 })(window);
 
 ;
@@ -24720,6 +25837,42 @@ df.write.format("{0}").mode("{1}").saveAsTable("PosSatis")`,
     why:'Git tümleştirmesi çalışma alanındaki öğeleri bir depo dalına bağlar; değişiklikler commit edilir, geçmiş tutulur ve dallarla birlikte çalışılabilir. Dağıtım işlem hattı içeriği aşamalar arasında taşır ama sürüm geçmişi tutmaz; SharePoint .pbix için satır düzeyi karşılaştırma sağlamaz.' } ]
 };
 })(window);
+/* Service ve Fabric: ek sınav soruları (Kasım 2026). Özgün senaryolar; gerçek sınav sorusu değildir. */
+(function (W) {
+'use strict';
+const PL = 'Yönet ve güvenli hâle getir', DP1 = 'Analitik çözümü yönet', DP2 = 'Veriyi hazırla', DP3 = 'Anlam modelini uygula';
+const q = (ex, id, k, s, text, o, a, why) => ({ ex, id, k, s, type: 'mc', q: text, o, a, why });
+W.PBI_CERTQ = (W.PBI_CERTQ || []).concat([
+  q('pl300', 'pl-t01', PL, 'pl-ws1', 'Yeni bir çalışma alanı oluşturmak istiyorsun, ama Power BI Desktop’ta bu seçeneği bulamıyorsun. Lisansın Pro. Ne yapmalısın?', ['Desktop’ı son sürüme güncellemek', 'Service’te Yeni çalışma alanı açmak', 'Yöneticiden PPU lisansı istemek', 'Excel’den bağlanmak'], 1, 'Çalışma alanı yalnız Service’te oluşturulur; Desktop var olan bir alana yayımlar. Pro bunun için yeterlidir.'),
+  q('pl300', 'pl-t02', PL, 'pl-ws1', 'Kullanıcılar çalışma alanında sorun bildireceği kişiyi bilmiyor; bildirimler de ayrılan bir yöneticiye gidiyor. Hangi ayar?', ['Workspace SharePoint', 'İletişim listesi', 'Özel kapasite', 'Lisans modu'], 1, 'İletişim listesi bildirimleri alanları belirler ve arayüzde gösterilir. Kişi yerine grup eklemek kalıcıdır.'),
+  q('pl300', 'pl-t03', PL, 'pl-ws2', 'Raporu çalışma alanında düzelttin, Görüntüleyici olarak uygulamadan bakınca eski hâlini görüyorsun. Ne eksik?', ['Anlam modelini yenilemek', 'Uygulamayı güncellemek', 'Kitleyi yeniden oluşturmak', 'Raporu sertifikalamak'], 1, 'Çalışma alanı uygulamasında çalışma alanı sahneleme alanıdır; değişiklik güncelleme ile yayımlanır.'),
+  q('pl300', 'pl-t04', PL, 'pl-ws2', 'Tek uygulamada Temsilciler ve Yönetim farklı raporlar görsün. Hassas marj verisi ek olarak korunmalı. En doğru tasarım?', ['İki kitle ve RLS ya da OLS', 'İki kitle yeterli', 'İki ayrı rapor bağlantısı', 'Tek kitle, gizli sayfalar'], 0, 'Kitle gezinme içindir, güvenlik değildir. Hassas veriyi model güvenliği korur.'),
+  q('pl300', 'pl-t05', PL, 'pl-ws3', 'Yayımdan sonra Görüntüleyici raporda veri göremiyor. Geliştirici görüyor. Model RLS’li. En olası neden?', ['Rol üyeleri atanmadı', 'Tema yayımlanmadı', 'Tarih tablosu işaretlenmedi', 'Yenileme zamanlanmadı'], 0, 'Rol tanımı .pbix ile gider, üyeler Service’te atanır. Görüntüleyici hiçbir rolde değilse veri göremez.'),
+  q('pl300', 'pl-t06', PL, 'pl-ws3', 'Yöneticiler üç farklı modelin KPI’larını tek ekranda izleyecek. Hangisi?', ['Pano', 'Rapor', 'Sayfalandırılmış rapor', 'Excel tablosu'], 0, 'Pano birden çok rapor ve modelden kutucuk toplar. Rapor tek modele bağlıdır.'),
+  q('pl300', 'pl-t07', PL, 'pl-ws4', 'Pano kutucuğunda eşik uyarısı kurmak istiyorsun. Hangi kutucuk türü uygundur?', ['Kart', 'Sütun grafik', 'Harita', 'Tablo'], 0, 'Klasik uyarı yalnız kart, KPI ve gösterge kutucuklarında kurulur.'),
+  q('pl300', 'pl-t08', PL, 'pl-ws4', 'Üç kişi aynı panoyu kullanıyor. Biri uyarı kurdu; diğer ikisi bildirim almıyor. Doğru açıklama?', ['Uyarı kuran kişiye özeldir', 'Pano paylaşımı yeniden gerekir', 'Lisansları yetersizdir', 'Kutucuk canlı değildir'], 0, 'Veri uyarısı yalnız kuran kişiye görünür ve onu uyarır. Ekip bildirimi için Power Automate ya da herkesin uyarısı gerekir.'),
+  q('pl300', 'pl-t09', PL, 'pl-ws6', 'Pro çalışma alanındaki modele günde 10 zamanlanmış yenileme gerekiyor. Ne önerirsin?', ['PPU ya da kapasite; önce ihtiyaç', 'Modeli iki kopyaya bölmek', 'Şimdi yenile’yi elle yapmak', 'Ağ geçidini ikiye çıkarmak'], 0, 'Pro’da sınır günde 8’dir; PPU ve kapasitede 48. Önce ihtiyacın gerçekliği sorgulanır.'),
+  q('pl300', 'pl-t10', PL, 'pl-ws6', 'Hangi kaynak zamanlanmış yenileme için ağ geçidi gerektirir?', ['Şirket sunucusundaki SQL Server', 'SharePoint Online Excel', 'Azure SQL Database (herkese açık)', 'OneDrive İş dosyası'], 0, 'Şirket içi kaynak ağ geçidi ister. Bulut kaynakları, şirket içiyle aynı sorguda birleşmiyorsa ağ geçidi istemez.'),
+  q('pl300', 'pl-t11', PL, 'pl-sg2', 'Bir kullanıcı rapora Paylaş ile erişiyor. Aynı modele kendi raporunu kurmak istiyor. Hangi izin?', ['Yeniden paylaş', 'Derleme', 'Yazma', 'Yönet'], 1, 'Derleme izni modeli kullanarak yeni rapor yapmayı ve Excel’de analizi sağlar. RLS ve OLS geçerli kalır.'),
+  q('pl300', 'pl-t13', 'Görselleştir ve analiz et', 'pl-cr3', 'Rapora Copilot ile anlatı görseli eklemek isteyen yazar, Pro lisanslı paylaşılan çalışma alanında düğmeyi kullanamıyor. Doğru adım?', ['F2+ ya da P kapasiteye almak', 'Kullanıcıya PPU atamak', 'Rapor sayfasını yeniden adlandırmak', 'Desktop’ı yeniden kurmak'], 0, 'Copilot kuruluş kapasitesi ister; Pro ve PPU tek başına yetmez. Deneme kapasitesi de desteklenmez.'),
+  q('pl300', 'pl-t14', 'Görselleştir ve analiz et', 'pl-pt5', 'Copilot model özetinde “ciro”yu iptaller dahil gösteriyor. Kalıcı olarak nerede düzeltirsin?', ['Rapordaki metin kutusunda', 'Yapay zekâ talimatlarında ve açıklamada', 'Sohbeti temizleyerek', 'Soruyu her seferinde yeniden sorarak'], 1, 'Talimat ve ölçü açıklaması modele kaydedilir, tüm raporlar yararlanır. Sohbeti temizlemek önbelleği de değiştirmez.'),
+  q('pl300', 'pl-t15', 'Görselleştir ve analiz et', 'pl-us8', 'Saha müdürleri raporu telefonda okuyamıyor. Web düzeni bozulmadan ne yaparsın?', ['Yazı tipini her yerde büyütmek', 'Sayfa için mobil düzen kurmak', 'Raporu PDF yapmak', 'Sayfayı daraltmak'], 1, 'Mobil düzen sayfa başına ayrı kurulur, web düzenini değiştirmez.'),
+  q('pl300', 'pl-t12', 'Veriyi hazırla', 'pl-tl4', 'Bayi raporuna SharePoint listesinden bölge getirdin; sütun boş geliyor, hata yok. İlk kontrol?', ['Anahtardaki boşluk ve harf', 'Gizlilik düzeyi', 'Sorgu bağımlılıklarının sırası', 'Ağ geçidi sürümü'], 0, 'Eşleşme büyük/küçük harf ve boşluğa duyarlıdır; eşleşmeyen satırlar null olur. Sol karşıt birleştirme eşleşmeyeni gösterir.'),
+  q('dp600', 'dp-t01', DP2, 'dp-gd3', 'Azure SQL veritabanı dakikalar içinde OneLake’te olmalı, dönüşüm yok, ekip ETL yazmak istemiyor. Hangisi?', ['Yansıtma', 'Kopyalama etkinliği', 'Not defteri', 'Dataflow Gen2'], 0, 'Yansıtma hazır kurulumla yakın gerçek zamanlı çoğaltır. Diğerleri kurulum ve zamanlama ister.'),
+  q('dp600', 'dp-t02', DP2, 'dp-gd3', 'Şirket içi 50 tablo her gece artımlı taşınacak; dönüşüm yok. En az bakım için?', ['Copy job, ağ geçidi', '50 ayrı Dataflow Gen2', 'Elle dosya yükleme', 'Eventstream'], 0, 'Copy job çok tablolu artımlı taşıma için tasarlandı, ağ geçidiyle şirket içi kaynağa ulaşır.'),
+  q('dp600', 'dp-t03', DP2, 'dp-gd3', 'Başka çalışma alanındaki lakehouse Delta tablosu kopya olmadan kullanılacak. Kullanıcının kısayolda ve hedefte izni var. Hangisi, hangi kimlikle?', ['Kısayol, geçiş', 'Kısayol, devredilen', 'Yansıtma, geçiş', 'Kopya, devredilen'], 0, 'OneLake’ten OneLake’e kısayol varsayılan olarak geçiş modundadır; çağıranın kimliği kullanılır.'),
+  q('dp600', 'dp-t04', DP2, 'dp-gd1', 'İşlem hattında şirket içi SQL’e bağlanırken hata alıyorsun; ağ geçidi var ve Power BI’da çalışıyor. Öncelikle?', ['Ağ geçidi sürümü ve çıkış adresi', 'Kapasiteyi büyütmek', 'Lakehouse şemasını açmak', 'Kurtarma anahtarını değiştirip kaydetmek'], 0, '*.frontend.clouddatahub.net adresi. Learn: işlem hatları için belirli bir ağ geçidi sürümü ve bu adrese çıkış gerekir.'),
+  q('dp600', 'dp-t05', DP2, 'dp-gd4', 'İki tabloyu aynı işlemde güncellemek, T-SQL yordamları ve yıldız şema isteniyor. Hangi depo?', ['Lakehouse', 'Ambar', 'Eventhouse', 'OneLake klasörü'], 1, 'Çok tablolu işlem ve tam T-SQL ambardadır. Lakehouse’un uç noktası salt okunur.'),
+  q('dp600', 'dp-t06', DP2, 'dp-gd2', 'Yeni bir analist hangi sertifikalı modelin olduğunu ve kimin sahibi olduğunu bulmak istiyor. Nereden başlar?', ['OneLake kataloğu', 'Monitor hub', 'Kiracı ayarları', 'Capacity Metrics'], 0, 'Katalog öğeleri arar, süzer, sahip ve onay bilgisini gösterir.'),
+  { ex: 'dp600', id: 'dp-t07', k: DP2, s: 'dp-tr4', type: 'order', q: 'Filigranla artımlı yükleme hattının adımlarını doğru sıraya koy.', items: ['Filigran tablosundan eski değeri oku', 'Kaynaktan en büyük değişim zamanını oku', 'Aralıktaki satırları kopyala', 'Filigranı yeni değerle güncelle'], why: 'Önce iki sınır, sonra kopya, en son güncelleme. Filigran önce güncellenirse başarısız kopyada veri kaçar.' },
+  q('dp600', 'dp-t08', DP2, 'dp-tr1', 'Hat sonunda ambar yordamı başarısızsa anlam modeli yenilenmemeli ve hat başarısız görünmeli. Doğru kurulum?', ['Başarıda yenile; hata yolunda Fail', 'Yenileme: Tamamlandığında; Teams', 'Yenileme ayrı saate', 'Yordama Secure output'], 0, 'Başarıda yolu yenilemeyi korur. Fail etkinliği hattı başarısız gösterir; aksi hâlde hata yolu başarılı sayılabilir.'),
+  q('dp600', 'dp-t09', DP3, 'dp-op2', 'OneLake biçiminde Direct Lake; hat tabloları sırayla yazıyor ve rapor gece tutarsız. Doğru ayar?', ['Otomatik güncellemeyi kapat', 'DirectQuery’ye düşmeyi açmak', 'RLS kaldır', 'V-Order kapat'], 0, 'Otomatik güncellemede çerçeve yazma sırasında değişebilir. Hat sonunda yenilemek tutarlı anlık görüntü verir. OneLake biçiminde düşme yoktur.'),
+  q('dp600', 'dp-t10', DP3, 'dp-op3', 'Modelde iki lakehouse’tan tablo ve bir Import tablosu olacak. Hangi seçim?', ['Direct Lake on OneLake', 'Direct Lake on SQL', 'Yalnız DirectQuery', 'Yansıtma'], 0, 'OneLake biçimi birden çok Fabric öğesini ve Import ile bileşimi destekler; SQL biçimi tek öğeyle sınırlıdır.'),
+  q('dp600', 'dp-t11', DP3, 'dp-op3', 'SQL biçiminde Direct Lake modelde görünüm kullanılıyor; kimi sayfalar yavaş. Kalıcı çözüm?', ['Görünümü tabloya çevirmek', 'F SKU büyütmek', 'Çerçevelemeyi sıklaştırmak', 'Görünümü gizlemek'], 0, 'Görünüm DirectQuery’ye düşürür. Tablolaştırmak Direct Lake okumasını sağlar.'),
+  q('dp600', 'dp-t12', DP1, 'dp-sg2', 'OneLake rolü bölgeye göre satır kısıtlıyor. Katkıda bulunan kullanıcı yine tüm satırları görüyor. Çözüm?', ['Rolü Görüntüleyici yapmak', 'Rol koşulunu düzeltmek', 'DefaultReader rolünü silmek', 'Modeli yenilemek'], 0, 'OneLake rolleri Yönetici, Üye ve Katkıda bulunana uygulanmaz.'),
+  q('dp600', 'dp-t13', DP1, 'dp-lc2', 'Git’e konacak .pbip projesinde hangi dosya depoya girmemeli?', ['definition.pbir', '.pbi/cache.abf', 'tables/Satislar.tmdl', 'relationships.tmdl'], 1, 'cache.abf yerel veri önbelleğidir; Desktop’ın .gitignore’u dışlar. Diğerleri tanımdır.')
+]);
+})(window);
 
 ;
 
@@ -25279,7 +26432,7 @@ W.PBI_EN_TERMS = [
   ['Sayfalandırılmış rapor', 'Paginated report', 'Report Builder, .rdl'],
   ['Anahtar etkileyiciler', 'Key influencers', 'AI görseli'],
   ['Ayrıştırma ağacı', 'Decomposition tree', 'AI görseli'],
-  ['Soru-Cevap (kaldırılıyor)', 'Q&A', 'Aralık 2026’da kalkıyor; yerine Copilot'],
+  ['Soru-Cevap (kaldırılıyor)', 'Q&A', 'Learn: Şubat 2027’de kalkıyor (önceki duyuru Aralık 2026); yerine Copilot'],
   ['Yapay zekâ için verileri hazırla', 'Prep data for AI', 'Copilot için veri şeması, onaylı cevaplar, talimatlar'],
   ['Anlatı (Copilot)', 'Narrative visual with Copilot', ''],
   ['Analiz et', 'Analyze (Explain the increase/decrease)', ''],
@@ -25324,6 +26477,27 @@ W.PBI_EN_TERMS = [
   ['Büyük anlam modeli depolama biçimi', 'Large semantic model storage format', ''],
   ['V-Order yazma iyileştirmesi', 'V-Order', 'Delta dosyalarını hızlı okunacak biçimde yazar']
 ];
+
+W.PBI_EN_TERMS.push(
+  ['Çalışma alanım', 'My workspace', 'Kişisel deneme alanı; rol ve uygulama yok'],
+  ['Kuruluş uygulaması', 'Org app', 'Alan başına birden çok; canlı içerik'],
+  ['Çalışma alanı uygulaması', 'Workspace app', 'Alan başına bir; sürümlü'],
+  ['Kitle', 'Audience', 'Uygulamada görünürlük grubu; güvenlik değildir'],
+  ['Yorum', 'Comment', 'Filtreyi yer işareti olarak yakalar'],
+  ['Kurtarma anahtarı', 'Recovery key', 'Ağ geçidi taşıma ve küme için; geri alınamaz'],
+  ['Ağ geçidi kümesi', 'Gateway cluster', 'Yüksek erişilebilirlik ve yük dağıtma'],
+  ['Sanal ağ veri ağ geçidi', 'VNet data gateway', 'Microsoft yönetir; özel ağ kaynakları'],
+  ['Kullanım ölçümleri', 'Usage metrics', 'Son 30 gün; önizleme'],
+  ['İşlem hattı', 'Data pipeline', 'Etkinlikleri sıralar, zamanlar'],
+  ['Kopyalama işi', 'Copy job', 'Toplu, artımlı, CDC taşıma'],
+  ['Yansıtma', 'Mirroring', 'Yakın gerçek zamanlı çoğaltma; hedef salt okunur'],
+  ['Filigran', 'Watermark', 'Artımlı yüklemede son işlenen değer'],
+  ['Çerçeveleme', 'Framing', 'Direct Lake’te Delta sürümünü güncelleme'],
+  ['Kapasite birimi', 'Capacity unit (CU)', 'Fabric işlem gücü ölçüsü'],
+  ['Kısıtlama', 'Throttling', 'Kapasite aşımında işlemlerin geciktirilmesi'],
+  ['Sorguları ekle', 'Append queries', 'Satırları alt alta koyar'],
+  ['Sorguları birleştir', 'Merge queries', 'Anahtarla sütun getirir']
+);
 })(window);
 
 ;
@@ -26799,6 +27973,52 @@ W.PBI_MISTAKES.push(
 }
 );
 })(window);
+/* Service ve Fabric: karıştırılan kavramlar ve sık hatalar (Kasım 2026, Microsoft Learn) */
+(function (W) {
+'use strict';
+const C = W.PBI_CONFUSED, M = W.PBI_MISTAKES; if (!C || !M) return;
+C.push(
+{ id: 'paylasim-uygulama-rol', area: 'Service', lesson: 'paylasim', title: 'Doğrudan paylaşım / Uygulama / Çalışma alanı rolü',
+  items: [{ n: 'Doğrudan paylaşım', d: 'Tek rapor ya da pano, birkaç kişi, hızlı. Bağlantılar birikir, izlemesi zorlaşır.' }, { n: 'Uygulama (app)', d: 'Geniş kitle, menü, kitleler. Okuyucu çalışma alanını görmez.' }, { n: 'Çalışma alanı rolü', d: 'Birlikte geliştiren ekip. Görüntüleyici dışındaki rollere RLS uygulanmaz.' }],
+  rule: 'Bir kez ve küçük ise paylaş; sürekli ve büyük ise uygulama; yazan ekip ise rol.',
+  quiz: [{ q: '300 kişilik satış ekibine düzenli dağıtım için?', o: ['Herkese Üye rolü', 'Uygulama ve gruplar', '300 ayrı bağlantı göndermek', 'Web’de yayımla'], a: 1, why: 'Geniş kitlede uygulama ve grup yönetimi sürdürülebilir. Üye rolü RLS’i aşar; Web’de yayımla herkese açıktır.' }, { q: 'Rapor yazarları raporu birlikte düzenleyecek. Hangisi?', o: ['Uygulama', 'Katkıda bulunan rolü', 'Rapor bağlantısı', 'Abonelik'], a: 1, why: 'Düzenleme için içerik oluşturan rol gerekir. Uygulama ve bağlantı görüntüleme içindir.' }] },
+{ id: 'calisma-org-uygulama', area: 'Service', lesson: 'power-bi-apps', title: 'Çalışma alanı uygulaması / Kuruluş uygulaması (org app)',
+  items: [{ n: 'Çalışma alanı uygulaması', d: 'Alan başına bir. Sürümlüdür: “Uygulamayı güncelle” denene kadar okuyucu eskiyi görür. Model erişimi elle.' }, { n: 'Kuruluş uygulaması', d: 'Alan başına birden çok Fabric öğesi. Canlıdır: kaydedilince görünür. Model erişimi otomatik. Yükleme yok.' }],
+  rule: 'Sürüm kapısı istiyorsan çalışma alanı uygulaması; alan başına çok paket ve az izin işi istiyorsan kuruluş uygulaması. İkisi birlikte yaşar.',
+  quiz: [{ q: 'Yazar her kaydettiğinde okuyucu hemen görmeli. Hangisi?', o: ['Çalışma alanı uygulaması', 'Kuruluş uygulaması', 'Abonelik', 'Yer işareti'], a: 1, why: 'Org app canlı içeriktir, kaydedilince görünür. Çalışma alanı uygulaması güncelleme ister.' }, { q: 'Rapor çubuğunda yorum şart. Hangisi hazır sunar?', o: ['Kuruluş uygulaması', 'Çalışma alanı uygulaması', 'Web’de yayımla', 'PDF'], a: 1, why: 'Learn: org app’te rapor araç çubuğu yorumu yoktur; çalışma alanı uygulamasında vardır.' }] },
+{ id: 'yenileme-turleri', area: 'Service', lesson: 'veri-yenileme', title: 'Veri yenileme / OneDrive yenilemesi / Kutucuk yenileme',
+  items: [{ n: 'Veri yenileme', d: 'Kaynaktan Import modele veri alır. Zamanlanır. Günde 8 ya da 48.' }, { n: 'OneDrive yenilemesi', d: 'Modeli dosyayla eşitler; saatlik. Asıl kaynağa gitmez.' }, { n: 'Kutucuk yenileme', d: 'Pano kutucuğunu günceller. DirectQuery’de saatlik; Import’ta veriyle birlikte.' }],
+  rule: '“Yenilendi” diyen kişiye hangisi diye sor. Gerçek tazelik için modeldeki son iş tarihine bak.',
+  quiz: [{ q: 'OneDrive’daki .pbix bağlı model her saat eşitleniyor, SQL’deki veri gelmiyor. Neden?', o: ['Saat sınırı doldu', 'Asıl kaynağa gitmez', 'RLS satırları engelliyor', 'Pano kapalı'], a: 1, why: 'OneDrive yenilemesi dosyayla eşitler. Dosyadaki veri eskiyse model de eskidir.' }, { q: 'DirectQuery’de pano kutucuğu rapordan 40 dakika eski. Normal mi?', o: ['Normal, saatlik', 'Hata, düzeltilmeli', 'Lisans sorunu', 'Filtre sorunu'], a: 0, why: 'Kutucuklar önbellekten gelir; DirectQuery’de yaklaşık saatte bir yenilenir.' }] },
+{ id: 'gateway-turleri', area: 'Service', lesson: 'gateway', title: 'Standart / Kişisel / VNet ağ geçidi',
+  items: [{ n: 'Standart', d: 'Sürekli açık sunucu, çok kullanıcı, DirectQuery, canlı bağlantı, küme, Fabric.' }, { n: 'Kişisel', d: 'Tek kullanıcı, kullanıcı makinesi, Import yenileme, yalnız Power BI. Learn kaçınılmasını önerir.' }, { n: 'VNet', d: 'Özel sanal ağdaki kaynaklar için Microsoft yönetir, kurulum yok; kapasite ve ek ücret gerekir.' }],
+  rule: 'Şirket içi üretim için standart ve küme; özel ağdaki Azure kaynağı için VNet; kişisel moddan önce dosyayı buluta taşımayı dene.',
+  quiz: [{ q: 'Şirket içi SQL’e DirectQuery raporu yayımlanacak. Hangisi?', o: ['Kişisel', 'Standart', 'Ağ geçidi gerekmez', 'OneDrive'], a: 1, why: 'DirectQuery kişisel modda yoktur; standart gerekir.' }, { q: 'Özel uç noktalı Azure SQL, kurulum istemeyen ekip. Hangisi?', o: ['VNet ağ geçidi', 'Kişisel mod', 'Web’de yayımla', 'Kısayol'], a: 0, why: 'VNet ağ geçidi Microsoft tarafından yönetilir, özel ağa erişir; kapasite gerektirir.' }] },
+{ id: 'kisayol-yansitma-kopya', area: 'Service', lesson: 'fabric-onelake', title: 'Kısayol / Yansıtma / Copy job',
+  items: [{ n: 'Kısayol', d: 'Kopya yok, yerinde erişim. Delta ise tablo gibi görünür.' }, { n: 'Yansıtma', d: 'Operasyonel veritabanını yakın gerçek zamanlı OneLake’e çoğaltır; hedef salt okunur.' }, { n: 'Copy job', d: 'Toplu, artımlı ya da CDC kopya; zamanlanır, 50’den fazla kaynak.' }],
+  rule: 'Kopya istemiyorsan kısayol; kod yazmadan yakın gerçek zamanlı çoğaltma için yansıtma; zamanlı çok tablolu taşıma için Copy job.',
+  quiz: [{ q: 'Başka alandaki Delta’yı kopyasız kullan. Hangisi?', o: ['Copy job', 'Kısayol', 'Yansıtma', 'Not defteri'], a: 1, why: 'Kopya oluşturmayan yol kısayoldur.' }, { q: 'Azure SQL verisi dakikalar içinde gölde, dönüşüm yok. Hangisi?', o: ['Yansıtma', 'Gece işlem hattı', 'Web’de yayımla', 'Abonelik'], a: 0, why: 'Yansıtma hazır kurulumla yakın gerçek zamanlı çoğaltır.' }] },
+{ id: 'hat-akis-not', area: 'Service', lesson: 'fabric-data-factory', title: 'İşlem hattı / Dataflow Gen2 / Not defteri',
+  items: [{ n: 'İşlem hattı', d: 'Düzenler: sıra, koşul, zamanlama, bildirim. Kendisi dönüştürmez.' }, { n: 'Dataflow Gen2', d: 'Power Query ile kod yazmadan dönüştürür, hedefe yazar.' }, { n: 'Not defteri', d: 'Spark ile kodlu, karmaşık ve büyük dönüşüm.' }],
+  rule: 'Ne yapılacağı için veri akışı ya da not defteri; ne zaman ve hangi sırayla için işlem hattı.',
+  quiz: [{ q: 'Kopyala, temizle, yordam çalıştır, hata olursa haber ver. Hangisi düzenler?', o: ['Dataflow Gen2', 'İşlem hattı', 'Not defteri', 'Kısayol'], a: 1, why: 'Sıra, koşul ve bildirim işlem hattının işidir. Diğerleri onun içinde adım olur.' }, { q: 'Analist Power Query biliyor, küçük liste temizlenecek. Hangisi?', o: ['Dataflow Gen2', 'Spark not defteri', 'Airflow', 'Eventstream'], a: 0, why: 'Kod yazmadan dönüştürme için Dataflow Gen2.' }] }
+);
+M.push(
+{ id: 'yayim-sonrasi-veri-yok', area: 'Service', lesson: 'calisma-alani', sym: 'Rapor yayımlandı; bir kullanıcı raporu açıyor ama hiç veri görmüyor', cause: 'RLS rol tanımları yayımla gider, rol üyeleri gitmez. Model RLS içeriyorsa ve kullanıcı hiçbir rolde değilse veri göremez.', fix: 'Anlam modeli ayarlarında Güvenlik altından rol üyelerini (tercihen grup) ekle, “Farklı görüntüle” ile sına.', tags: ['boş rapor', 'veri yok', 'rls üyeleri', 'yayımlama', 'görüntüleyici'] },
+{ id: 'uygulama-yeni-rapor-gizli', area: 'Service', lesson: 'power-bi-apps', sym: 'Uygulamaya eklenen yeni raporu kullanıcılar görmüyor', cause: 'Yayımdan sonra eklenen içerik her kitlede varsayılan olarak gizli gelir.', fix: 'Uygulamayı düzenle, Kitle sekmesinde her kitlenin görünürlüğünü aç, güncelle. Kullanıcıya haber ver.', tags: ['uygulama', 'app', 'kitle', 'audience', 'yeni rapor', 'gizli içerik'] },
+{ id: 'uygulama-eski-gorunum', area: 'Service', lesson: 'power-bi-apps', sym: 'Rapor değişti ama uygulamada eski hâli görünüyor', cause: 'Çalışma alanı sahneleme alanıdır; çalışma alanı uygulaması “Uygulamayı güncelle” denene kadar eski sürümü gösterir.', fix: 'Çalışma alanından Uygulamayı güncelle. Her kaydettiğinde gitsin istiyorsan kuruluş uygulamasını değerlendir.', tags: ['uygulama', 'güncelle', 'eski rapor', 'update app'] },
+{ id: 'zamanlama-kapandi', area: 'Service', lesson: 'veri-yenileme', sym: 'Zamanlanmış yenileme kendiliğinden kapanmış', cause: 'Art arda dört hata, kimlik bilgisi süresinin dolması gibi kurtarılamaz bir hata ya da iki ay görüntülenmeme.', fix: 'Yenileme geçmişini oku, kök nedeni çöz, elle yenile, zamanlamayı yeniden aç. Bildirimleri ekip listesine yönlendir.', tags: ['yenileme kapandı', 'zamanlama', 'refresh', 'dört hata', 'kimlik bilgisi', 'geçmiş'] },
+{ id: 'yesil-eski-veri', area: 'Service', lesson: 'veri-yenileme', sym: 'Yenileme başarılı görünüyor ama veri eski', cause: 'Üst adım (veri akışı, kaynak dosya) bitmeden model yenilenmiş ya da OneDrive yenilemesi veri yenilemesi sanılmıştır.', fix: 'Rapora son iş tarihini gösteren kart ekle: MAX(Satislar[Tarih]). Saat zincirini işlem hattıyla olaya bağla.', tags: ['eski veri', 'yeşil', 'tazelik', 'güncel değil', 'veri akışı', 'onedrive'], task: { name: 'Son İş Tarihi Kartı', q: 'Kart verideki gerçek son satış tarihini göstermeli ve seçim yapılınca değişmemeli. Bozuk ölçü süzgece uyuyor: Hediye seçilince farklı bir tarih gösteriyor.', start: 'MAX(Satislar[Tarih])', sol: 'CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS())', noTotal: false, grid: [{ t: 'Kategoriler', c: 'Kategori' }] } },
+{ id: 'veri-kaynagi-tanimli-degil', area: 'Service', lesson: 'gateway', sym: 'Yenileme: “veri kaynağı tanımlı değil”', cause: 'Ağ geçidindeki bağlantı .pbix’teki sunucu ya da veritabanı adıyla birebir aynı değil; ya da aynı sorguda birleşen bulut kaynağı ağ geçidinde tanımlı değil.', fix: 'Bağlantıyı adları birebir aynı yazarak oluştur, anlam modeli ayarlarında eşle. Bulut kaynağını da aynı ağ geçidinden tanımla.', tags: ['ağ geçidi', 'gateway', 'veri kaynağı', 'tanımlı değil', 'sharepoint', 'şirket içi'] },
+{ id: 'merge-null', area: 'Power Query', lesson: 'coklu-kaynak', sym: 'Birleştirmeden sonra eklenen sütun boş (null) geliyor, hata yok', cause: 'Merge büyük/küçük harfe ve boşluğa duyarlıdır. “ ANKARA ” ile “Ankara” eşleşmez, sorgu sessizce null döndürür.', fix: 'Önce anahtarı temizle: kırp, harf biçimini tekleştir, türü eşitle. Sonra birleştir ve sol karşıt birleştirmeyle eşleşmeyeni say.', tags: ['merge', 'birleştir', 'null', 'boş sütun', 'eşleşmiyor', 'kırp'] },
+{ id: 'merge-satir-cogaldi', area: 'Power Query', lesson: 'coklu-kaynak', sym: 'Birleştirmeden sonra satır sayısı ve toplamlar arttı', cause: 'Sağ tabloda anahtar yineleniyor; sol satır her eşleşme için çoğalır.', fix: 'Sağ tabloyu anahtara göre tekilleştir ya da model ilişkisi kur. Birleştirmeden önce ve sonra satır sayısını karşılaştır.', tags: ['merge', 'satır çoğaldı', 'yinelenen anahtar', 'toplam şişti'] },
+{ id: 'firewall', area: 'Power Query', lesson: 'veri-alma', sym: 'Formula.Firewall hatası ya da Desktop’ta çalışıp Service’te çalışmayan birleştirme', cause: 'İki kaynağın gizlilik düzeyi uyuşmuyor. Desktop’ta “yok say” açık olabilir; ayar yayımlanmaz.', fix: 'Her kaynağa gerçek düzeyini ver (şirket Kuruluş, herkese açık Genel), Service tarafında ya da ağ geçidi bağlantısında yeniden ayarla.', tags: ['firewall', 'gizlilik', 'privacy', 'service hata', 'çok kaynak'] },
+{ id: 'hat-yesil-hata', area: 'Service', lesson: 'fabric-pipeline', sym: 'İşlem hattında bir adım düştü ama hat “Başarılı” görünüyor', cause: 'Hata yolundaki etkinlik başarılı olduğu için hat başarılı sayılabilir; izleme ve üst zincir yanılır.', fix: 'Hata yolunun sonuna Fail etkinliği ekle. Doğru hata kodu ve iletisini Fail içinde ver.', tags: ['pipeline', 'işlem hattı', 'fail', 'başarılı', 'hata yolu', 'data factory'] },
+{ id: 'hat-parametre-sessiz', area: 'Service', lesson: 'fabric-pipeline', sym: 'Zamanlanmış işlem hattı verdiğin parametre yerine varsayılanla çalışıyor', cause: 'Zamanlamadaki parametre adı hat parametresiyle birebir aynı değil; uyuşmayan ad sessizce yok sayılır.', fix: 'Adları büyük küçük harfiyle eşitle. Çıktı sekmesinde etkinlik girdisini aç, ifadenin nasıl çözüldüğüne bak.', tags: ['pipeline', 'parametre', 'zamanlama', 'varsayılan'] },
+{ id: 'copilot-gorunmuyor', area: 'Service', lesson: 'fabric-copilot', sym: 'Copilot düğmesi görünmüyor ya da kullanılamıyor', cause: 'Çalışma alanı ücretli F2+ ya da P kapasitede değil, deneme kapasitesi kullanılıyor, kiracı ayarı kapalı ya da bölge işleme ayarı açık değil. Pro ya da PPU tek başına yetmez.', fix: 'Kapasiteyi, kiracı ayarını ve bölgeyi kontrol et. Yeni ya da büyütülmüş kapasitede 24 saate kadar bekle.', tags: ['copilot', 'görünmüyor', 'düğme yok', 'deneme', 'kapasite', 'ppu'] },
+{ id: 'lakehouse-sqlde-yok', area: 'Service', lesson: 'fabric-lakehouse', sym: 'Lakehouse’a konan dosya ya da yeni tablo SQL analiz uç noktasında görünmüyor', cause: 'Files bölümündeki dosyalar uç noktada görünmez; yalnız Tables altındaki Delta tabloları görünür. Yeni tablo için meta veri eşitlemesi anlık olmayabilir.', fix: 'Dosyayı Delta’ya çevir. İşlem hattında Refresh SQL analytics endpoint etkinliğini kullan.', tags: ['lakehouse', 'sql analytics', 'uç nokta', 'görünmüyor', 'delta', 'files'] }
+);
+})(window);
 
 ;
 
@@ -28139,6 +29359,24 @@ Object.assign(W.PBI_IV_TAKEHOME, {
   );
 })();
 })(window);
+/* Service ve Fabric mülakat soruları: kararı, teşhisi ve gerekçeyi ölçer */
+(function () {
+window.PBI_IV_BANK.push(
+{ id: 'iv-s01', role: 'analist', cat: 'Senaryo', q: 'Yeni bir raporu 200 kişiye dağıtacaksın. Paylaşım, uygulama ve çalışma alanı rolü arasında nasıl karar verirsin?', weak: 'Raporu paylaşırım, herkese bağlantı gönderirim.', strong: '200 kişi ve düzenli kullanım varsa uygulama açarım: okuyucu çalışma alanını görmez, kitleler var, grup yönetimi kolay. Rol yalnız birlikte geliştiren ekibe. Doğrudan paylaşımı birkaç kişilik tek seferlik işte kullanırım. Hangi kitlenin ne göreceğini önce yazar, RLS’i Görüntüleyici gibi sınarım; lisansı da unutmam: kapasite F64 altındaysa herkes Pro ister.', why: 'Sayı, sıklık, RLS ve lisansı birlikte düşünüyor.', follow: 'Uygulamaya sonradan eklediğin rapor neden kullanıcıya görünmeyebilir?' },
+{ id: 'iv-s02', role: 'analist', cat: 'Senaryo', q: 'Yönetici “rapor eski görünüyor” dedi. Yenileme geçmişi yeşil. Ne yaparsın?', weak: 'Elle yenilerim, olmazsa destek açarım.', strong: 'Önce modeldeki son iş tarihine bakarım, çünkü yeşil yalnız yenilemenin bittiğini söyler. Üst adım geç bitmiş, kaynak dosya gelmemiş ya da OneDrive yenilemesi veri yenilemesi sanılmış olabilir. Sonra zinciri saat yerine olaya bağlar, raporda iş tarihini gösteren bir kart bırakırım. Kullanıcıya hangi sayının ne zamana ait olduğunu açıkça yazarım.', why: 'Görünür belirtiden kök nedene gidiyor ve tekrarını önlüyor.', follow: 'Zamanlama kendiliğinden kapanmış olsaydı hangi iki kurala bakardın?' },
+{ id: 'iv-s03', role: 'gelistirici', cat: 'Güvenlik ve yönetişim', q: 'Bölge müdürleri RLS’e rağmen tüm bölgeleri görüyor. Neye bakarsın?', weak: 'DAX filtresini kontrol ederim.', strong: 'Önce nasıl geldiklerine bakarım: çalışma alanında Katkıda bulunan ya da üstü iseler RLS uygulanmaz. Sonra rol üyeliği, “Farklı görüntüle” ile sınama, kuralın doğru tablo üzerinde olması ve ilişki yönü. Son kullanıcıyı Görüntüleyici ya da uygulamadan getiririm. Kimin hangi yolla erişeceğini tablo olarak yazarım.', why: 'En sık gerçek nedeni, rolü, koda bakmadan önce kontrol ediyor.', follow: 'Görüntüleyici Derleme izni alırsa RLS yine çalışır mı?' },
+{ id: 'iv-s04', role: 'gelistirici', cat: 'Senaryo', q: 'Şirket içi SQL ile SharePoint’teki hedefleri birleştiren modelin yenilenmesini nasıl kurarsın?', weak: 'Ağ geçidi kurarım, olur.', strong: 'Sürekli açık sunucuda standart mod ağ geçidi, kritikse iki düğümlü küme kurarım; kurtarma anahtarı kurumsal kasada durur. SQL için bağlantı oluşturup adları .pbix ile aynı yazarım. SharePoint aynı sorguda birleşiyorsa bir model tek ağ geçidi bağlantısı kullandığı için bulut kaynağını da aynı kümede tanımlarım ve gizlilik düzeylerini bağlantıda veririm. Hata bildirimini ekip listesine yönlendirir, ilk yenilemeyi elle yaparım.', why: 'Mixed source kuralını, kümeyi ve gizlilik ayrıntısını biliyor.', follow: 'Bu birleştirme yüzünden sorgu katlanmazsa ne yaparsın?' },
+{ id: 'iv-s05', role: 'analist', cat: 'Power Query', q: 'Birleştirme sonrası yeni sütun boş geldi, hata yok. Teşhisin?', weak: 'Birleştirme türünü değiştiririm.', strong: 'Merge büyük/küçük harfe ve boşluğa duyarlı, türler de aynı olmalı. Sol karşıt birleştirmeyle eşleşmeyenleri sayar, örnek değerlere bakarım. Sonra iki tarafta da anahtarı kırpar, harf biçimini tekleştiririm. Ters durumda satır sayısı artmışsa sağda yinelenen anahtar var demektir. Birleştirmeden önce ve sonra satır sayısını karşılaştırmak alışkanlığımdır.', why: 'Sessiz hatayı ölçüyor ve ters belirtiyi de biliyor.', follow: 'Model ilişkisi mi kurarsın, birleştirir misin? Neye göre?' },
+{ id: 'iv-s06', role: 'hepsi', cat: 'Kavram', q: 'Pano ile rapor arasındaki farkı anlat. Bugün panoyu ne zaman seçersin?', weak: 'İkisi de aynı şey, biri daha özet.', strong: 'Pano Service’te tek sayfa, farklı model ve raporlardan kutucuk toplar, dilimleyicisi yoktur, klasik veri uyarısı burada kurulur. Rapor tek modele bağlı, çok sayfalı, etkileşimli. Tek modelde seçim gerekiyorsa rapor; birden çok modelden tek bakış ve uyarı gerekiyorsa pano. Yeni tasarımda Soru-Cevap’a dayanmam, kaldırılıyor.', why: 'Tanımı karara bağlıyor ve güncel durumu biliyor.', follow: 'Veri uyarısı model günde bir yenileniyorsa ne sıklıkla çalışır?' },
+{ id: 'iv-s07', role: 'gelistirici', cat: 'Performans', q: 'Kapasite kısıtlaması görüyorsun. İlk adımın?', weak: 'Bir üst SKU’ya geçeriz.', strong: 'Capacity Metrics’te Sistem durumu ve İşlem sayfalarından hangi öğenin ne zaman tükettiğini bulurum. Gece yenilemeleri üst üste mi, geliştirme not defteri üretim kapasitesinde mi? Saatleri yayar, ağır işi ayırırım. Rapor yavaş ama kapasite rahatsa sorun modeldedir; Performans Analizi kullanırım. SKU en son karardır ve gerekçesi yazılıdır.', why: 'Para harcamadan önce nedeni ölçüyor.', follow: 'Kullanım ölçümleri raporu bu soruda ne kadar işe yarar?' },
+{ id: 'iv-f11', role: 'fabric', cat: 'Fabric', q: 'Fabric’e veri getirmek için kısayol, yansıtma, Copy job, Dataflow Gen2 ve not defteri arasında nasıl seçersin?', weak: 'Genelde işlem hattı kullanırım.', strong: 'Dört soru sorarım: kopya gerekli mi, ne kadar taze olmalı, dönüşüm ne kadar karmaşık, ekip ne biliyor? Kopya istemiyorsam kısayol. Operasyonel veritabanını kodsuz yakın gerçek zamanlı için yansıtma, hedefi salt okunurdur. Çok tablolu artımlı taşıma için Copy job. Power Query bilen ekipte temizlik Dataflow Gen2; karmaşık ve büyükse not defteri. İşlem hattı bunları sıralar, kendisi dönüştürmez.', why: 'Araç listesi yerine karar ölçütü veriyor.', follow: 'Şirket içi kaynak varsa bu tablo nasıl değişir?' },
+{ id: 'iv-f12', role: 'fabric', cat: 'Fabric', q: 'Filigranla artımlı işlem hattını anlat. Neler bozulabilir?', weak: 'Yalnız yeni satırları alırım.', strong: 'Lookup ile eski filigranı, ikinci Lookup ile kaynağın en büyük değerini okurum. Copy aralığı alır, başarıda yordam filigranı günceller. Üst sınırı sabitlemek çalışma sırasında gelen satırı sonraki geceye bırakır. Riskler: yeniden denemede çift satır, silinenlerin görünmemesi, geç gelen satırlar. Hedefi anahtarla birleştirir, silme için CDC ya da karşılaştırma düşünürüm. Basitse Copy job yeterlidir.', why: 'Kalıbın yanında kenar durumları ve idempotentliği biliyor.', follow: 'Filigran neden kopyadan önce güncellenmez?' },
+{ id: 'iv-f13', role: 'fabric', cat: 'Fabric', q: 'Direct Lake on OneLake ile on SQL arasında nasıl seçersin?', weak: 'OneLake daha yeni, onu seçerim.', strong: 'Tek ölçüt değil. SQL biçimi uç nokta üzerinden izin denetler, görünüm ve SQL RLS varsa DirectQuery’ye düşer; sınır aşılırsa düşme açıksa çalışır. OneLake biçimi düşmez, sınır aşılırsa yenileme başarısız olur, SQL RLS uygulanmaz, birden çok öğe ve Import ile bileşik çalışır. Güvenlik uç noktadaysa ve görünüm şartsa SQL, ama düşmeyi izlerim; tahmin edilebilirlik ve çok kaynak istiyorsam OneLake. Görünümü Delta tabloya çevirmek kalıcı çözümdür.', why: 'Güvenlik, düşme ve sınır davranışını birlikte değerlendiriyor.', follow: 'Gece hattında otomatik güncellemeyi neden kapatırsın?' },
+{ id: 'iv-f14', role: 'fabric', cat: 'Fabric', q: 'OneLake güvenliği ve modeldeki RLS arasındaki fark ne?', weak: 'İkisi de satır güvenliği.', strong: 'Model RLS’i raporun kapısıdır, Spark’ı ya da uç noktayı durdurmaz. OneLake rolleri gölün kapısıdır, klasör, tablo, satır, sütun tanımlar ve varsayılan reddeder; ama Yönetici, Üye, Katkıda bulunana uygulanmaz. Bu yüzden veri bilimci Üye ise dosyayı okur. Ben erişim yollarını yazar, her yol için kapıyı belirlerim.', why: 'Rollerin istisnasını ve erişim yollarını biliyor.', follow: 'Devredilen kısayolda kullanıcının kaynak izni aranır mı?' },
+{ id: 'iv-f15', role: 'fabric', cat: 'Fabric', q: 'Copilot’u ekibe önerir misin? Ne söylersin?', weak: 'Evet, her şeyi yazar, işi hızlandırır.', strong: 'Başlangıç iskeleti, açıklama, hata okuma için evet. Şartları söylerim: ücretli F2+ ya da P kapasite, denemede yok, kiracı ayarı, tüketim. Bir özelliğin önizleme olabileceğini ve resmî sayfaya bakmak gerektiğini söylerim. Çıktıyı bilinen sayıyla sınarız, kritik işte kimin onayladığını yazarız. Data Factory’de desteklenmeyen istek sessiz kalabilir; bunu test ederiz.', why: 'Faydayı abartmıyor, şart ve doğrulamayı söylüyor.', follow: 'Copilot Net Satış’ı yanlış buldu. Nereden başlarsın?' },
+{ id: 'iv-f16', role: 'fabric', cat: 'Fabric', q: 'Lakehouse’ta tunç, gümüş, altın düzeni kuruyorsun. Rapor nereden okur, neden?', weak: 'En temiz olandan okur.', strong: 'Rapor altından okur: ad ve anlam sözleşmesi orada tutulur, gümüşteki içi değişiklik raporu kırmaz. Tunçta ham veri değişmeden durur, hatalı dönüşümde yeniden üretmek için. Gümüşte tür, tekillik, kurallar; altında yıldız şema. Geçişlerde satır ve toplam mutabakatı işlem hattının adımıdır. Düzen tek doğru değil, ekip kuralını yazar.', why: 'Katmanların nedenini ve mutabakatı açıklıyor.', follow: 'SQL analiz uç noktası bu düzende neyi yapamaz?' }
+);
+})();
 
 ;
 
@@ -28250,6 +29488,25 @@ W.PBI_AR_DET = [
 
 W.PBI_AR_RANKS = [[0, 'Çaylak'], [50, 'Ölçü Çırağı'], [150, 'Bağlam Kaşifi'], [350, 'CALCULATE Ustası'], [700, 'DAX Kalfası'], [1200, 'Model Mimarı'], [2000, 'DAX Efsanesi']];
 W.PBI_AR_PTS = { kolay: 10, orta: 25, zor: 50 };
+})(window);
+/* Veri tazeliği seti ve Bayat Rapor vakası: Service’te karşılaşılan soruların modelde çözülebilen kısmı */
+(function (W) {
+'use strict';
+W.PBI_AR_SETS.tazelik = 'Veri tazeliği ve mutabakat';
+const K2024 = [{ t: 'Tarih', c: 'Yil', values: [2024] }];
+W.PBI_AR_CH.push(
+  { id: 'ar-gecikme', set: 'tazelik', diff: 'kolay', t: 'dax', name: 'Kategori Gecikme Günü', q: '<b>Kategori Gecikme Günü</b>: Görünen satırlardaki son satış tarihi 31.12.2024’ten kaç gün geride?', sol: 'DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)', hint: 'DATEDIFF(baş, son, DAY)', hidden: [{ label: 'Yalnız 2023 yılı seçiliyken', slicers: [{ t: 'Tarih', c: 'Yil', values: [2023] }] }, { label: 'Mağaza kanalı seçiliyken', slicers: [{ t: 'Satislar', c: 'Kanal', values: ['Mağaza'] }] }] },
+  { id: 'ar-bayat-kat', set: 'tazelik', diff: 'orta', t: 'dax', name: 'Bayat Kategori Sayısı', q: '<b>Bayat Kategori Sayısı</b>: Son satışı 31.12.2024’ten 7 günden fazla geride olan kategori sayısı. Kategoriler üzerinde yinele; her kategori kendi son tarihiyle değerlendirilmeli.', sol: 'COUNTROWS(FILTER(VALUES(Kategoriler[Kategori]), DATEDIFF(CALCULATE(MAX(Satislar[Tarih])), DATE(2024, 12, 31), DAY) > 7))', hint: 'FILTER(VALUES(...), koşul) ve koşulda CALCULATE(MAX(...)) bağlam geçişi yapar.', grid: [{ t: 'Tarih', c: 'Yil' }, { t: 'Satislar', c: 'Kanal' }], hidden: [{ label: 'Yalnız Web kanalı seçiliyken', slicers: [{ t: 'Satislar', c: 'Kanal', values: ['Web'] }] }, { label: '2024 ve Mağaza seçiliyken', slicers: K2024.concat([{ t: 'Satislar', c: 'Kanal', values: ['Mağaza'] }]) }] },
+  { id: 'ar-mutabakat', set: 'tazelik', diff: 'orta', t: 'dax', name: 'Kaynak Mutabakat Farkı', q: '<b>Kaynak Mutabakat Farkı</b>: Kaynak toplamı (<code>SUM(Satislar[Tutar])</code>) ile <code>[Net Satış]</code> farkı. İptal tutarını göstermeli.', sol: 'SUM(Satislar[Tutar]) - [Net Satış]', hint: 'İki toplamı çıkar.', hidden: [{ label: 'Yalnız 2022 yılı seçiliyken', slicers: [{ t: 'Tarih', c: 'Yil', values: [2022] }] }, { label: 'Elektronik seçiliyken', slicers: [{ t: 'Kategoriler', c: 'Kategori', values: ['Elektronik'] }] }] },
+  { id: 'ar-son-gun', set: 'tazelik', diff: 'zor', t: 'dax', name: 'Son Satış Günü Cirosu', q: '<b>Son Satış Günü Cirosu</b>: Görünen satırlardaki son satış tarihinin net satışı. Tarihi değişkene al, sonra <code>Tarih[Tarih]</code> üzerinden o güne süz. Kategori seçimi korunmalı.', sol: 'VAR Son = MAX(Satislar[Tarih])\nRETURN CALCULATE([Net Satış], Tarih[Tarih] = Son)', hint: 'VAR Son = MAX(Satislar[Tarih]), sonra CALCULATE([Net Satış], Tarih[Tarih] = Son).', hidden: [{ label: 'Yalnız 2023 yılı seçiliyken', slicers: [{ t: 'Tarih', c: 'Yil', values: [2023] }] }, { label: 'Web kanalı seçiliyken', slicers: [{ t: 'Satislar', c: 'Kanal', values: ['Web'] }] }] }
+);
+W.PBI_AR_DET.push({ id: 'bayat', title: 'Bayat Rapor Dosyası', intro: 'Pazartesi 09:00. Genel müdür yazıyor: “Hediye kategorisinde iki haftadır satış yok mu? Rapor eski mi, işimiz mi durdu?” Yenileme geçmişi yeşil. Elinde yalnız model var. İzi sen süreceksin.',
+  steps: [
+    { title: 'Genel durum', story: 'Önce modelin genelinde son satış tarihinin yıl sonundan kaç gün geride olduğunu ölç.', clue: 'Genel fark {0} gün. Model genelde güncel görünüyor. Peki kategori kategori?', vals: [['DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)', 'adet']], t: 'dax', name: 'Model Genel Gecikme', q: '<b>Model Genel Gecikme</b>: Görünen satırlarda son satış tarihi 31.12.2024’ten kaç gün geride?', sol: 'DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)', hint: 'DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)' },
+    { title: 'Kategori kategori', story: 'Her kategorinin son satış tarihini listele. <b>Kategori</b> ve <b>Son Satış</b> sütunları.', clue: 'Altı kategori son iki gün içinde satmış; Hediye’nin son satışı 15.12.2024, 16 gün geride. Rapor eski olsaydı hepsi geride olurdu: sorun yenilemede değil.', vals: [], t: 'query', q: 'Kategori başına son satış tarihi: <b>Son Satış</b> adlı sütunla döndür.', sol: 'EVALUATE\nSUMMARIZECOLUMNS(Kategoriler[Kategori], "Son Satış", MAX(Satislar[Tarih]))', start: 'EVALUATE\n' },
+    { title: 'Hediye’nin ritmi', story: 'Hediye normalde kaç satır satıyor? 2024’te aylık satır sayısını gör.', clue: 'Hediye 2024’te bazı aylarda hiç, çoğu ayda 1 ila 4 satır satmış; Haziran ve Ağustos’ta satış yok. İki haftalık boşluk bu kategori için olağan.', vals: [], t: 'query', q: 'Hediye kategorisinin 2024 aylık satır sayısı: <code>Tarih[YilAy]</code> ve <b>Satır</b>. <code>CALCULATETABLE</code> ile süz.', sol: 'EVALUATE\nCALCULATETABLE(SUMMARIZECOLUMNS(Tarih[YilAy], "Satır", COUNTROWS(Satislar)), Kategoriler[Kategori] = "Hediye", Tarih[Yil] = 2024)', start: 'EVALUATE\n' },
+    { title: 'Kalıcı gösterge', story: 'Müdür bir daha aynı soruyu sormasın: rapora ne kadar kategorinin bayat olduğunu gösteren bir kart koy.', clue: 'Kart 1 gösteriyor: yalnız Hediye. Cevabın: “Rapor güncel; Hediye az satan bir kategori, iki haftalık boşluk ritmine uygun. Tazelik kartı artık raporda.”', vals: [], t: 'dax', name: 'Bayat Kategori Kartı', q: '<b>Bayat Kategori Kartı</b>: Son satışı 31.12.2024’ten 7 günden fazla geride olan kategori sayısı.', sol: 'SUMX(VALUES(Kategoriler[Kategori]), IF(DATEDIFF(CALCULATE(MAX(Satislar[Tarih])), DATE(2024, 12, 31), DAY) > 7, 1))', hint: 'Kategoriler üzerinde yinele; bağlam geçişi için CALCULATE(MAX(Satislar[Tarih])).', grid: [{ t: 'Tarih', c: 'Yil' }, { t: 'Satislar', c: 'Kanal' }] }
+  ] });
 })(window);
 
 ;
@@ -28421,8 +29678,8 @@ const INS = { gelistirici: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri
 /* Genel sıra: ilk saat (ölçü → kurulum → ilk rapor → arayüz), bitişik DAX yayı, kariyer ve sınav en sonda */
 W.PBI_ORDER = [
   'ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'veri-alma', 'pq-temel', 'pq-donusum', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'gorsel-secimi', 'bicim-temel', 'filtreler', 'rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi', 'menuler-turu', 'hizmet-kullanici', 'excel-entegrasyon', 'tarih',
-  'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa', 'pq-model', 'pq-orta', 'veri-baglantilari', 'sql-analist', 'veri-akislari', 'pq-ileri', 'rol-oynayan', 'yari-toplanabilir', 'vaka-stok', 'hedef', 'model-ileri', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'python-r', 'power-platform', 'mobil-erisilebilirlik', 'kalite-test', 'proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar',
-  'dashboard-tasarim', 'baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'finans-tablolar', 'istatistik-ileri', 'vaka-kayip', 'vaka-eticaret', 'vaka-kredi', 'vaka-tedarik', 'vaka-ik', 'm-dili', 'performans', 'dax-opt', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis', 'kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-hazirlama', 'fabric-veri-alma', 'fabric-tsql-odev', 'fabric-spark-odev', 'kql-gercek-zaman', 'fabric-yildiz', 'yasam-dongusu', 'embed-api', 'pl300', 'dp600', 'mulakat', 'portfoy-kariyer', 'final-hazirlik'
+  'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa', 'pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari', 'pq-ileri', 'rol-oynayan', 'yari-toplanabilir', 'vaka-stok', 'hedef', 'model-ileri', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'python-r', 'power-platform', 'mobil-erisilebilirlik', 'kalite-test', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'yerel-gelistirme', 'proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar',
+  'dashboard-tasarim', 'baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'finans-tablolar', 'istatistik-ileri', 'vaka-kayip', 'vaka-eticaret', 'vaka-kredi', 'vaka-tedarik', 'vaka-ik', 'm-dili', 'performans', 'dax-opt', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis', 'kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-hazirlama', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'fabric-tsql-odev', 'fabric-spark-odev', 'kql-gercek-zaman', 'fabric-yildiz', 'fabric-anlam-modeli', 'fabric-copilot', 'yasam-dongusu', 'embed-api', 'pl300', 'dp600', 'mulakat', 'portfoy-kariyer', 'final-hazirlik'
 ];
 W.PBI_LEVEL_OF = Object.assign(W.PBI_LEVEL_OF || {}, { 'fabric-giris': 'C1' });
 /* İsteğe bağlı ek okuma: hiçbir yolun zorunlu dersi değildir */
@@ -28441,6 +29698,7 @@ const STAGES = {
     G('Veri tarafında derinleş', 'Birleştirme, SQL, veri akışları', slice('pq-model', 'pq-ileri')),
     G('İş kalıpları', 'Rol oynayan tarih, stok, hedef, model', slice('rol-oynayan', 'model-ileri')),
     G('Rapor tasarımı ve hikâye', 'Etkileşim, analiz, kalite', slice('gorsel-ilkeler', 'kalite-test')),
+    G('Service’te yayımla, paylaş, izle', 'Çalışma alanı, pano, uygulama, yenileme, ağ geçidi, kullanım, yerel geliştirme', slice('calisma-alani', 'yerel-gelistirme')),
     G('Analist olarak işte', 'Proje, paydaş, vaka', slice('proje-yonetimi-bi', 'vaka-pazar')),
     G('İleri DAX ve analitik', 'Bağlam geçişi, pencere, müşteri, finans', slice('dashboard-tasarim', 'vaka-ik')),
     G('Performans, güvenlik, kurumsal model', 'M, optimizasyon, RLS, yönetişim', slice('m-dili', 'buyuk-model')),
@@ -28452,32 +29710,32 @@ const STAGES = {
     G('Veriyi hazırla ve modelle', '', ['veri-alma', 'pq-temel', 'pq-donusum', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar']),
     G('İlk rapor ve brif', '', ['gorsel-secimi', 'bicim-temel', 'filtreler', 'rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi']),
     G('DAX çekirdeği', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa']),
-    G('Veri tarafı: SQL ve Power Query', '', ['pq-model', 'pq-orta', 'sql-analist', 'veri-akislari', 'pq-ileri']),
+    G('Veri tarafı: SQL ve Power Query', '', ['pq-model', 'pq-orta', 'coklu-kaynak', 'sql-analist', 'veri-akislari', 'pq-ileri']),
     G('Yarı toplanabilir, rol oynayan, hedef', '', ['rol-oynayan', 'yari-toplanabilir', 'hedef']),
     G('Rapor tasarımı ve hikâye', '', ['gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'copilot', 'dashboard-tasarim']),
-    G('Yayımla ve paylaş', 'Çalışma alanı, uygulama, yenileme, RLS', ['kalite-test', 'yayinlama', 'guvenlik']),
+    G('Yayımla ve paylaş', 'Çalışma alanı, uygulama, yenileme, RLS', ['kalite-test', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'yayinlama', 'guvenlik']),
     G('İşte: paydaş ve vaka', '', ['proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama']),
     G('Müşteri analitiği ve bitirme', '', ['baglam-gecisi', 'musteri-analitigi', 'segmentasyon', 'portfoy-kariyer', 'final-hazirlik'])
   ],
   /* Sıra, resmî çalışma kılavuzundaki alan sırasıdır */
   pl300: [
     G('Başlangıç', '', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'menuler-turu']),
-    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-orta', 'pq-ileri', 'pq-model']),
+    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-orta', 'coklu-kaynak', 'pq-ileri', 'pq-model']),
     G('Modelle', '%25–30', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'rol-oynayan', 'model-ileri', 'coka-cok', 'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'istatistik', 'hizli-olcu', 'yari-toplanabilir', 'hedef', 'hesaplama-gruplari', 'performans']),
     G('Görselleştir ve analiz et', '%25–30', ['gorsel-temel', 'gorsel-secimi', 'bicim-temel', 'tema-sayfa', 'filtreler', 'kosullu-bicim', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'pencere', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'mobil-erisilebilirlik', 'eda', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'copilot']),
-    G('Yönet ve güvenli hâle getir', '%15–20', ['hizmet-kullanici', 'excel-entegrasyon', 'yayinlama', 'sayfalandirilmis', 'guvenlik', 'yonetisim']),
+    G('Yönet ve güvenli hâle getir', '%15–20', ['hizmet-kullanici', 'excel-entegrasyon', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'yayinlama', 'sayfalandirilmis', 'guvenlik', 'yonetisim']),
     G('Sınav', '', ['pl300'])
   ],
   gelistirici: [
     G('Model ve DAX temeli', '', ['veri-alma', 'pq-temel', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'hesap-tablolar']),
     G('Rapor kurmak', 'Geliştirici de rapor teslim eder', ['bicim-temel', 'kosullu-bicim', 'etkilesim', 'hikaye']),
     G('Bağlam ve CALCULATE', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama']),
-    G('Veri katmanı', '', ['pq-model', 'pq-orta', 'veri-baglantilari', 'sql-analist', 'veri-akislari']),
+    G('Veri katmanı', '', ['pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari']),
     G('İleri model kalıpları', '', ['rol-oynayan', 'yari-toplanabilir', 'model-ileri', 'kalite-test']),
     G('İleri DAX', '', ['baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi']),
-    G('Performans, güvenlik, yönetim', '', ['m-dili', 'performans', 'dax-opt', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis']),
-    G('Fabric ve kurumsal model', '', ['kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-hazirlama', 'fabric-yildiz']),
-    G('Yaşam döngüsü ve entegrasyon', '', ['yasam-dongusu', 'embed-api', 'python-r', 'power-platform']),
+    G('Performans, güvenlik, yönetim', '', ['m-dili', 'performans', 'dax-opt', 'calisma-alani', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis']),
+    G('Fabric ve kurumsal model', '', ['kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-hazirlama', 'fabric-data-factory', 'fabric-pipeline', 'fabric-yildiz', 'fabric-anlam-modeli']),
+    G('Yaşam döngüsü ve entegrasyon', '', ['yerel-gelistirme', 'yasam-dongusu', 'embed-api', 'python-r', 'power-platform']),
     G('Ekip içinde çalışmak ve bitirme', '', ['proje-yonetimi-bi', 'paydas-iletisim', 'portfoy-kariyer', 'final-hazirlik'])
   ],
   dax: [
@@ -28490,11 +29748,11 @@ const STAGES = {
   ],
   /* Süre payı sınava uyar: veri hazırlama en büyük aşama */
   dp600: [
-    G('Veriyi hazırla: al', 'Sınavın %45–50’si veri hazırlama', ['fabric-giris', 'veri-baglantilari', 'veri-akislari', 'fabric-veri-alma', 'pq-orta']),
+    G('Veriyi hazırla: al', 'Sınavın %45–50’si veri hazırlama', ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'veri-baglantilari', 'gateway', 'veri-akislari', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'pq-orta']),
     G('Veriyi hazırla: dönüştür', 'T-SQL ve PySpark ödevleri', ['sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
     G('Veriyi hazırla: sorgula', 'SQL, KQL, DAX', ['kql-gercek-zaman', 'dax-sorgu']),
-    G('Anlam modeli', '%25–30', ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model']),
-    G('Çözümü yönet', '%25–30', ['guvenlik', 'yonetisim', 'yasam-dongusu', 'kalite-test']),
+    G('Anlam modeli', '%25–30', ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model', 'fabric-anlam-modeli']),
+    G('Çözümü yönet', '%25–30', ['calisma-alani', 'guvenlik', 'yonetisim', 'yerel-gelistirme', 'yasam-dongusu', 'kalite-test', 'kullanim-izleme', 'fabric-copilot']),
     G('Sınav', '', ['dp600'])
   ],
   yonetici: [
@@ -28503,6 +29761,7 @@ const STAGES = {
     G('Raporu planla ve kur', '', ['rapor-brifi', 'dashboard-kavramlar', 'bicim-temel', 'filtreler', 'veri-okuryazarligi']),
     G('Pivot’un ötesi: bağlam', 'Excel’den gelenin en çok takıldığı yer', ['baglam', 'calculate', 'filter-all', 'zaman', 'hizli-olcu', 'kosullu-bicim', 'tema-sayfa', 'hedef']),
     G('Rapor ve karar', '', ['gorsel-ilkeler', 'etkilesim', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'dashboard-tasarim']),
+    G('Paylaş ve izle', 'Rapor bitti, sıra kullandırmada', ['calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme']),
     G('İşte uygulamak', '', ['paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar', 'portfoy-kariyer'])
   ],
   'is-analisti': [
@@ -28511,7 +29770,7 @@ const STAGES = {
     G('Modeli okumak', 'Yıldız şema, ölçü, tarih tablosu', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama']),
     G('Ölçüyü okumak', 'Yazmaktan çok ne hesapladığını anlamak', ['baglam', 'calculate', 'var-mantik', 'zaman']),
     G('Paydaşa rapor', 'Doğru görsel, doğru görüşme', ['gorsel-secimi', 'paydas-iletisim']),
-    G('Kabul ve yayım', 'Mutabakat, kabul testi, paylaşım', ['kalite-test', 'yayinlama'])
+    G('Kabul ve yayım', 'Mutabakat, kabul testi, paylaşım', ['kalite-test', 'yorum-isbirligi', 'paylasim', 'yayinlama'])
   ],
   hizli: [
     G('Tanış', 'İlk ölçü, kurulum, ilk rapor', ['ilk-olcu', 'kurulum', 'ilk-rapor']),
@@ -28535,9 +29794,9 @@ if (roles.profesyonel && roles.profesyonel.cap) { roles.profesyonel.cap.guide = 
 RO('pl300', { title: 'PL-300 sertifika hazırlığı', long: 'Sınavın dört alanı (veriyi hazırla, modelle, görselleştir ve analiz et, yönet ve güvenli hâle getir) çalışma kılavuzundaki sırayla, ders ders işlenir. Sınavlar sayfasındaki kapsam haritası her resmî maddeyi ilgili derse bağlar. Sınav tarzı sorular, vaka çalışmaları, seri sorular ve arayüz soruları deneme sınavlarında.' });
 T('pl300', { desc: 'Microsoft Power BI Data Analyst sertifikasının dört alanı.', long: 'Sınavın dört alanını resmî çalışma kılavuzundaki sırayla kapsar: veriyi hazırla %25–30, modelle %25–30, görselleştir ve analiz et %25–30, yönet ve güvenli hâle getir %15–20.', skills: ['Veriyi hazırla', 'Modelle', 'Görselleştir ve analiz et', 'Yönet ve güvenli hâle getir'] });
 RO('gelistirici', { prereq: { t: 'Önce analist temeli', d: 'Bu yol kurumsal model ve ileri DAX’a odaklanır; temel rapor derslerinin yalnız bir kısmını içerir. Rapor kurma ve görsel seçme rahat değilse önce şuradan başla:', path: 'analist', lessons: [] } });
-RO('dp600', { long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) en büyük aşamadır: OneLake, lakehouse, ambar, T-SQL ve PySpark ödevleri, kısayollar, KQL ve gerçek zamanlı analitik. Ardından kurumsal anlam modeli (%25–30), Direct Lake, performans, güvenlik ve yaşam döngüsü (%25–30). T-SQL, PySpark ve KQL tarayıcıda çalışmaz: ödevleri Fabric deneme kapasitesinde yapıp sonucu beklenen değerle karşılaştırırsın.',
+RO('dp600', { long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) en büyük aşamadır: OneLake, lakehouse, ambar, Data Factory ve işlem hatları, T-SQL ve PySpark ödevleri, kısayollar, KQL ve gerçek zamanlı analitik. Ardından kurumsal anlam modeli ve Direct Lake (%25–30), performans, güvenlik ve yaşam döngüsü (%25–30). T-SQL, PySpark ve KQL tarayıcıda çalışmaz: ödevleri Fabric deneme kapasitesinde yapıp sonucu beklenen değerle karşılaştırırsın.',
   prereq: { t: 'PL-300 düzeyi varsayılır', d: 'Bu yol filtre bağlamını, CALCULATE’i ve yıldız şemayı bildiğini varsayar; bu dersler yolun içinde değildir ve belge şartına girmez. Rahat değilsen önce şu dersleri bitir ya da PL-300 yolunu izle.', path: 'pl300', lessons: ['model-temel', 'pq-temel', 'dax-giris', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'baglam-gecisi', 'tablo-fonk'] } });
-T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600): veri hazırlama, kurumsal anlam modeli, çözümün yönetimi.', skills: ['Lakehouse ve ambar', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
+T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600): veri hazırlama, kurumsal anlam modeli, çözümün yönetimi.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
 T('dax', {});
 RO('is-analisti', { prereq: { t: 'Önce SQL', d: 'Bu yol iş analistliğinin kendisini anlatmaz; talep, gereksinim, süreç ve UAT Kesit SQL’deki BT İş Analisti yolundadır. SQL biliyorsan buradan başlayabilirsin, bilmiyorsan önce o yolun SQL bölümünü bitirmeni öneririz.', sqlYol: 'is-analisti', lessons: [] } });
 RO('yonetici', { level: 'Temel → Orta' });
@@ -28553,24 +29812,24 @@ paths.forEach(p => { const r = roles[p.id]; if (r && r.title) p.name = r.title; 
 
 /* Kapsam haritası: resmî madde → ana ders */
 W.PBI_SKILL_LESSON = {
-  'pl-gc1': ['veri-alma'], 'pl-gc2': ['veri-baglantilari'], 'pl-gc3': ['veri-alma', 'model-ileri'], 'pl-gc4': ['pq-model'],
+  'pl-gc1': ['veri-alma', 'coklu-kaynak'], 'pl-gc2': ['veri-baglantilari'], 'pl-gc3': ['veri-alma', 'model-ileri'], 'pl-gc4': ['pq-model'],
   'pl-pc1': ['pq-temel'], 'pl-pc2': ['pq-temel', 'pq-donusum'], 'pl-pc3': ['pq-temel'],
-  'pl-tl1': ['pq-temel'], 'pl-tl2': ['pq-donusum'], 'pl-tl3': ['pq-orta'], 'pl-tl4': ['pq-orta'], 'pl-tl5': ['pq-model'], 'pl-tl6': ['pq-model', 'model-temel'], 'pl-tl7': ['pq-model'], 'pl-tl8': ['pq-orta'], 'pl-tl9': ['pq-model'], 'pl-tl10': ['pq-model'],
+  'pl-tl1': ['pq-temel'], 'pl-tl2': ['pq-donusum'], 'pl-tl3': ['pq-orta'], 'pl-tl4': ['pq-orta', 'coklu-kaynak'], 'pl-tl5': ['pq-model'], 'pl-tl6': ['pq-model', 'model-temel'], 'pl-tl7': ['pq-model'], 'pl-tl8': ['pq-orta'], 'pl-tl9': ['pq-model'], 'pl-tl10': ['pq-model'],
   'pl-dm1': ['model-temel'], 'pl-dm2': ['rol-oynayan'], 'pl-dm3': ['model-temel', 'model-ileri'], 'pl-dm4': ['tarih-tablosu'], 'pl-dm5': ['dax-giris', 'hesap-tablolar'],
   'pl-dx1': ['toplama'], 'pl-dx2': ['calculate'], 'pl-dx3': ['zaman'], 'pl-dx4': ['istatistik'], 'pl-dx5': ['yari-toplanabilir'], 'pl-dx6': ['hizli-olcu'], 'pl-dx7': ['hesap-tablolar'], 'pl-dx8': ['hesaplama-gruplari'],
   'pl-op1': ['pq-temel', 'performans'], 'pl-op2': ['performans'], 'pl-op3': ['performans', 'model-ileri'],
   'pl-cr1': ['gorsel-secimi'], 'pl-cr2': ['bicim-temel'], 'pl-cr3': ['copilot'], 'pl-cr4': ['tema-sayfa'], 'pl-cr5': ['kosullu-bicim'], 'pl-cr6': ['filtreler'], 'pl-cr7': ['copilot'], 'pl-cr8': ['tema-sayfa'], 'pl-cr9': ['sayfalandirilmis'], 'pl-cr10': ['pencere'],
   'pl-us1': ['hikaye'], 'pl-us2': ['hikaye'], 'pl-us3': ['etkilesim'], 'pl-us4': ['hikaye'], 'pl-us5': ['filtreler', 'etkilesim'], 'pl-us6': ['etkilesim'], 'pl-us7': ['mobil-erisilebilirlik'], 'pl-us8': ['mobil-erisilebilirlik'], 'pl-us9': ['mobil-erisilebilirlik'],
   'pl-pt1': ['analiz-ozellikleri'], 'pl-pt2': ['istatistik'], 'pl-pt3': ['analiz-ozellikleri'], 'pl-pt4': ['analiz-ozellikleri', 'eda'], 'pl-pt5': ['copilot'],
-  'pl-ws1': ['yayinlama'], 'pl-ws2': ['yayinlama'], 'pl-ws3': ['yayinlama', 'hizmet-kullanici'], 'pl-ws4': ['yayinlama'], 'pl-ws5': ['yonetisim'], 'pl-ws6': ['yayinlama', 'veri-baglantilari'],
-  'pl-sg1': ['yonetisim'], 'pl-sg2': ['yonetisim'], 'pl-sg3': ['guvenlik'], 'pl-sg4': ['yonetisim'],
-  'dp-sg1': ['yonetisim'], 'dp-sg2': ['guvenlik'], 'dp-sg3': ['yonetisim'],
-  'dp-lc1': ['yasam-dongusu'], 'dp-lc2': ['yasam-dongusu'], 'dp-lc3': ['yasam-dongusu'], 'dp-lc4': ['yasam-dongusu'], 'dp-lc5': ['yasam-dongusu'], 'dp-lc6': ['yasam-dongusu'],
-  'dp-gd1': ['fabric-veri-alma', 'veri-baglantilari'], 'dp-gd2': ['fabric-hazirlama', 'kql-gercek-zaman'], 'dp-gd3': ['fabric-veri-alma'], 'dp-gd4': ['fabric-giris', 'fabric-hazirlama'], 'dp-gd5': ['kql-gercek-zaman'],
+  'pl-ws1': ['calisma-alani', 'yayinlama'], 'pl-ws2': ['power-bi-apps', 'paylasim', 'yayinlama'], 'pl-ws3': ['calisma-alani', 'panolar', 'yayinlama'], 'pl-ws4': ['panolar', 'yayinlama'], 'pl-ws5': ['yonetisim'], 'pl-ws6': ['gateway', 'veri-yenileme', 'veri-baglantilari'],
+  'pl-sg1': ['calisma-alani', 'yonetisim'], 'pl-sg2': ['paylasim', 'yonetisim'], 'pl-sg3': ['guvenlik'], 'pl-sg4': ['yonetisim'],
+  'dp-sg1': ['calisma-alani', 'yonetisim'], 'dp-sg2': ['fabric-onelake', 'guvenlik'], 'dp-sg3': ['yonetisim'],
+  'dp-lc1': ['yasam-dongusu'], 'dp-lc2': ['yerel-gelistirme', 'yasam-dongusu'], 'dp-lc3': ['yasam-dongusu'], 'dp-lc4': ['yasam-dongusu'], 'dp-lc5': ['yasam-dongusu'], 'dp-lc6': ['yasam-dongusu'],
+  'dp-gd1': ['fabric-data-factory', 'gateway', 'fabric-veri-alma', 'veri-baglantilari'], 'dp-gd2': ['fabric-onelake', 'fabric-hazirlama', 'kql-gercek-zaman'], 'dp-gd3': ['fabric-onelake', 'fabric-data-factory', 'fabric-veri-alma'], 'dp-gd4': ['fabric-lakehouse', 'fabric-giris', 'fabric-hazirlama'], 'dp-gd5': ['kql-gercek-zaman'],
   'dp-tr1': ['fabric-tsql-odev', 'fabric-hazirlama'], 'dp-tr2': ['fabric-spark-odev'], 'dp-tr3': ['fabric-yildiz', 'fabric-tsql-odev'], 'dp-tr4': ['fabric-hazirlama'], 'dp-tr5': ['fabric-tsql-odev', 'pq-orta'], 'dp-tr6': ['fabric-spark-odev'], 'dp-tr7': ['fabric-spark-odev', 'fabric-tsql-odev'],
   'dp-qa1': ['fabric-hazirlama'], 'dp-qa2': ['sql-analist', 'fabric-tsql-odev'], 'dp-qa3': ['kql-gercek-zaman'], 'dp-qa4': ['dax-sorgu'],
   'dp-sm1': ['kurumsal-model'], 'dp-sm2': ['fabric-yildiz', 'coka-cok'], 'dp-sm3': ['pencere'], 'dp-sm4': ['hesaplama-gruplari'], 'dp-sm5': ['buyuk-model'],
-  'dp-op1': ['dax-opt', 'performans'], 'dp-op2': ['kurumsal-model'], 'dp-op3': ['kurumsal-model'], 'dp-op4': ['buyuk-model']
+  'dp-op1': ['dax-opt', 'performans'], 'dp-op2': ['fabric-anlam-modeli', 'kurumsal-model'], 'dp-op3': ['fabric-anlam-modeli', 'kurumsal-model'], 'dp-op4': ['buyuk-model']
 };
 })(window);
 /* Başlıkta sektör terimi (ilk geçiş kuralı); arama İngilizceyi de bulur */
@@ -28582,6 +29841,29 @@ W.PBI_SKILL_LESSON = {
 (function (W) {
   const add = (id, html) => { const l = (W.PBI_LESSONS || []).find(x => x.id === id); if (l) l.body += html; };
   add('veri-alma', '<div class="tip"><b>Elle dene</b><button class="lnk" data-go="pq">Power Query Lab</button> sayfasında bir kaynak seç; türü düzelt, boş satırları kaldır, bir sütunu böl. Her adımın M koduna dönüştüğünü gör.</div>');
+  const go = (id, t) => '<button class="lnk" data-lesson="' + id + '">' + t + '</button>';
+  add('hizmet-kullanici', '<div class="note"><b>Yazar tarafı</b>Yayımlamak için ' + go('calisma-alani', 'Çalışma alanı kurmak') + ', yorum için ' + go('yorum-isbirligi', 'Yorum ve iş birliği') + ', pano için ' + go('panolar', 'Panolar') + ' derslerine bak.</div>');
+  add('veri-alma', '<div class="note"><b>İki kaynağı birleştirmek</b>Ekleme, birleştirme ve gizlilik kararları ' + go('coklu-kaynak', 'Birden çok veri kaynağıyla çalışmak') + ' dersinde; Power Query Lab’de alıştırması var.</div>');
+  add('veri-baglantilari', '<div class="note"><b>Devamı</b>Ağ geçidinin kurulumu ve teşhisi ' + go('gateway', 'On-premises data gateway') + ', yenilemenin türleri ve sınırları ' + go('veri-yenileme', 'Veri yenileme') + ' dersinde.</div>');
+  add('yayinlama', '<div class="note"><b>Bu ders toplu bakıştır</b>Adım adım anlatım: ' + go('calisma-alani', 'Çalışma alanı') + ', ' + go('paylasim', 'Paylaşım') + ', ' + go('power-bi-apps', 'Uygulamalar') + ', ' + go('veri-yenileme', 'Veri yenileme') + ', ' + go('gateway', 'Ağ geçidi') + '.</div>');
+  add('yonetisim', '<div class="note"><b>İlgili</b>Paylaşım kararları ' + go('paylasim', 'Paylaşım ve erişim') + ', izleme araçları ' + go('kullanim-izleme', 'Kullanım ve izleme') + ' dersinde.</div>');
+  add('bi-yonetimi', '<div class="note"><b>İlgili</b>Araçların ayrıntısı ' + go('kullanim-izleme', 'Kullanım ve izleme') + ' dersinde.</div>');
+  add('yasam-dongusu', '<div class="note"><b>Önce</b>Tek başına PBIP ve yerel Git akışı ' + go('yerel-gelistirme', 'Yerel geliştirme') + ' dersinde.</div>');
+  add('fabric-giris', '<div class="note"><b>Derinleş</b>' + go('fabric-onelake', 'OneLake') + ', ' + go('fabric-lakehouse', 'Lakehouse') + ', ' + go('fabric-data-factory', 'Data Factory') + ', ' + go('fabric-pipeline', 'İşlem hatları') + ', ' + go('fabric-anlam-modeli', 'Fabric’te anlam modeli') + ', ' + go('fabric-copilot', 'Fabric’te Copilot') + '.</div>');
+  add('fabric-hazirlama', '<div class="note"><b>İşlem hattının içi</b>Bağımlılık, parametre, filigran ve teşhis ' + go('fabric-pipeline', 'İşlem hatları') + ' dersinde.</div>');
+  add('kurumsal-model', '<div class="note"><b>Direct Lake’i işletmek</b>Çerçeveleme, sınırlar ve izinler ' + go('fabric-anlam-modeli', 'Fabric’te anlam modeli') + ' dersinde.</div>');
+  add('copilot', '<div class="note"><b>Fabric’in geri kalanı</b>Data Factory, not defteri ve ambarda Copilot ' + go('fabric-copilot', 'Fabric ve Power BI’da Copilot') + ' dersinde.</div>');
+  /* Power BI Mobile: tüketici tarafı (Learn, Kasım 2026) */
+  (function () { const l = (W.PBI_LESSONS || []).find(x => x.id === 'mobil-erisilebilirlik'); if (!l) return;
+    l.body += '<section class="deep"><span class="eyebrow">Uzmanlaş</span><h2>Power BI Mobile: kullanıcının cebinde</h2><p>Mobil düzen yazarın işi; okuyucu ise Power BI Mobile uygulamasını kullanır. iOS (iPhone, iPad, Apple Watch) ve Android için vardır. <b>Windows uygulaması 31 Aralık 2023’te emekli oldu</b>; Windows’ta app.powerbi.com kullanılır, Desktop bundan etkilenmez. Uygulamada rapor ve pano <b>görüntülenir ve kullanılır, yazılmaz</b>: rapor Desktop’ta, pano Service’te oluşturulur.</p>'
+      + '<div class="tbl-wrap"><table><tr><th>Yetenek</th><th>Not</th></tr><tr><td>Telefonda mobil düzen</td><td>Mobil düzen yoksa rapor sığdırılır, okunması zorlaşır</td></tr><tr><td>Uyarı, bildirim</td><td>Pano uyarıları Service, mobil ve Teams arasında eşitlenir</td></tr><tr><td>QR kod</td><td>Android telefonda rapor ya da panoyu doğrudan açar; toplantı odası için pratik</td></tr><tr><td>Konuma göre süzme</td><td>Android telefonda coğrafi veri ile</td></tr><tr><td>Rapor kutucukları</td><td>Canlı sayfa kutucukları mobilde etkileşimli değildir</td></tr><tr><td>Uygulama kitle sekmeleri</td><td>Kuruluş uygulamasında mobilde desteklenmez</td></tr><tr><td>Copilot</td><td>Rapor içi ve bağımsız Copilot önizlemede; rapor Copilot şartlarını karşılamalı. Sohbet rapor kapanınca silinir</td></tr><tr><td>Kurumsal yönetim</td><td>Microsoft Intune ile PIN, şifreleme ve veri kuralları</td></tr></table></div>'
+      + '<p>Test: raporu yalnız bilgisayarda değil, telefonda kullanıcı hesabıyla aç. Dilimleyiciler ulaşılabilir mi, ana sayı ilk ekranda mı? Kayıp telefonda uyarıları Service’ten kapat. Kullanım ölçümlerinde mobil payı yüksekse mobil düzeni öne al (' + go('kullanim-izleme', 'Kullanım ve izleme') + ').</p><div class="tip"><b>Kendi telefonunda dene</b>Uygulama ücretsiz indirilir; ama iş ya da okul hesabı ve içerik için lisans koşulu gerekir. Hesabın yoksa bu bölümü okumak yeterli.</div></section>';
+    l.ex = (l.ex || []).concat([
+      { t: 'mc', q: 'Saha ekibinin Windows tabletlerinde Power BI Windows uygulaması kurulmak isteniyor. Doğru cevap?', o: ['Mağazadan kurulur', 'Emekli oldu; tarayıcıdan aç', 'Desktop kurulur, aynı uygulamadır', 'Yalnız kapasitede kurulur'], a: 1, why: 'Learn: Windows uygulaması 31 Aralık 2023’te emekli oldu, mağazadan kaldırıldı. Windows’ta Service tarayıcıdan kullanılır. Desktop yazma aracıdır.' },
+      { t: 'mc', q: 'Müdür telefonda rapordan pano oluşturmak istiyor. Olur mu?', o: ['Olur, her uygulamada', 'Olur, ama yalnız iPad’de', 'Olmaz; oluşturma Service’te', 'Olmaz; pano mobilde görünmez'], a: 2, why: 'Mobil uygulama görüntüleme ve kullanım içindir. Pano Service’te oluşturulur; mobilde görülür ve paylaşılır.' },
+      { t: 'mc', q: 'Rapor telefonda küçük ve okunmuyor. Mobil düzen yapılmamış. Kullanıcı şikâyet ediyor. Çözüm?', o: ['Uygulamayı güncellemesini söylemek', 'Sayfa için mobil düzen kurmak', 'Yazı tipini her yerde büyütmek', 'Raporu PDF olarak göndermek'], a: 1, why: 'Mobil düzen sayfa başına ayrıca kurulur; web düzenini bozmaz. Yazı tipini büyütmek masaüstünü bozar. PDF etkileşimi kaldırır.' }
+    ]);
+  })();
   add('tema-sayfa', '<div class="tip"><b>Elle dene</b><button class="lnk" data-go="visuals">Görseller ve biçim</button> sayfasında bir görselin Genel sekmesinden başlık, kenarlık ve arka planı değiştir; “Ne değişti?” kutusunu oku.</div>');
 })(window);
 /* Model sayfası açıklamaları: kopya kategori sütunu ve ölçek notu (veri değişmez) */
@@ -29058,7 +30340,7 @@ function pathCard(p) {
   const ids = p.lessons, pc = pct(ids);
   return '<button class="pcard" data-go="path" data-id="' + p.id + '"><span class="row" style="justify-content:space-between"><span class="ic" style="background:' + p.color + '">' + p.short + '</span><span class="chip">' + ids.length + ' ders</span></span><h3>' + esc(p.name) + '</h3><p>' + esc(p.desc) + '</p><span class="bar"><i style="width:' + pc + '%;background:' + p.color + '"></i></span><span class="foot"><span>%' + pc + ' tamamlandı</span><span>~' + Math.max(1, Math.round(ids.reduce((a, id) => a + (LMAP[id].min || 10), 0) / 60)) + ' saat</span></span></button>';
 }
-function viewPaths() { const g = goalPath(); return '<div class="wrap">' + head('Öğren', 'Öğrenme yolları', 'Her yol, dersleri bir hedefe göre seçer ve sıralar. Bir yol açıp “Hedefim yap” de ya da üç adımda birlikte seçelim.', 'paths') + '<div class="row"><button class="btn pri" data-go="hedef">' + (g ? 'Hedefi değiştir' : 'Hedefimi seç') + '</button>' + (P.testDone ? '' : '<button class="btn" data-go="test">Bildiklerini atlamak için seviye testi</button>') + '</div>' + (() => { const ANA = ['analist', 'yonetici', 'pl300', 'is-analisti'], ana = ANA.map(id => PMAP[id]).filter(Boolean), dg = PATHS.filter(p => !ANA.includes(p.id)); return '<section class="lvl-block"><div class="sec-head"><div><h2>Buradan başla</h2><p class="muted" style="margin:4px 0 0">Çoğu kişi için doğru başlangıç bu dört yoldan biridir.</p></div></div><div class="paths">' + ana.map(pathCard).join('') + '</div></section><details class="path-more"><summary style="cursor:pointer;font-weight:600">Diğer yollar (' + dg.length + ')</summary><div class="paths" style="margin-top:16px">' + dg.map(pathCard).join('') + '</div></details>'; })() + '</div>'; }
+function viewPaths() { const g = goalPath(); return '<div class="wrap">' + head('Öğren', 'Öğrenme yolları', 'Her yol, dersleri bir hedefe göre seçer ve sıralar. Bir yol açıp “Hedefim yap” de ya da üç adımda birlikte seçelim.', 'paths') + '<div class="row"><button class="btn pri" data-go="hedef">' + (g ? 'Hedefi değiştir' : 'Hedefimi seç') + '</button>' + (P.testDone ? '' : '<button class="btn" data-go="test">Bildiklerini atlamak için seviye testi</button>') + '</div>' + (() => { const ANA = ['analist', 'gelistirici', 'yonetici', 'pl300'], ana = ANA.map(id => PMAP[id]).filter(Boolean), dg = PATHS.filter(p => !ANA.includes(p.id)); return '<section class="lvl-block"><div class="sec-head"><div><h2>Buradan başla</h2><p class="muted" style="margin:4px 0 0">Çoğu kişi için doğru başlangıç bu dört yoldan biridir.</p></div></div><div class="paths">' + ana.map(pathCard).join('') + '</div></section><details class="path-more"><summary style="cursor:pointer;font-weight:600">Diğer yollar (' + dg.length + ')</summary><div class="paths" style="margin-top:16px">' + dg.map(pathCard).join('') + '</div></details>'; })() + '</div>'; }
 function viewPath(id) {
   if (window.PBI_CAREER && PMAP[id]) return window.PBI_CAREER.viewPath(id);
   const p = PMAP[id]; if (!p) return viewPaths();
@@ -29162,7 +30444,7 @@ function daxView(e, k) {
   const exm = CUR && CUR.exam, arn = CUR && CUR.arena;
   if (!exm) h += '<div class="row" style="gap:8px">' + '<button class="btn sm" data-act="hint">' + (arn ? 'İpucu (−%30 puan)' : 'İpucu') + '</button>' + (arn ? '' : '<button class="btn sm ghost" data-act="sol">Çözümü göster</button><button class="btn sm ghost" data-act="ex-studio">Playground’da aç</button><button class="btn sm ghost" data-act="ai-copy" title="Görevi, kodunu ve hatanı bir isteme kopyalar. Hiçbir yere gönderilmez.">Yapay zekâ için kopyala</button>') + '</div>';
   h += '<div id="hintBox"></div><div id="solBox"></div></div>';
-  h += '<div class="work"><div class="ed-shell"><div class="ed-top"><span>' + (isQ ? 'EVALUATE sorgusu' : esc(e.name) + ' =') + '</span><span class="kbdhint">Ctrl/⌘ + Enter: kontrol et</span></div><div id="ed"></div></div><div class="ed-actions"><button class="btn pri" data-act="check">Kontrol et</button><button class="btn" data-act="run">Yalnızca çalıştır</button><button class="btn ghost sm" data-act="reset-ed">Baştan başla</button></div><div id="out"></div></div></div>';
+  h += '<div class="work"><div class="ed-shell"><div class="ed-top"><span>' + (isQ ? 'EVALUATE sorgusu' : esc(e.name) + ' =') + '</span><span class="kbdhint">Ctrl/⌘ + Enter: kontrol et</span></div><div id="ed"></div></div><div class="ed-actions"><button class="btn pri" data-act="check">Kontrol et</button><button class="btn" data-act="run">Yalnızca çalıştır</button><button class="btn ghost sm" data-act="reset-ed">Baştan başla</button></div><div id="out" aria-live="polite"></div></div></div>';
   return h;
 }
 function mountLesson() {
@@ -29566,7 +30848,7 @@ window.PBI_CORE = { tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPat
 'use strict';
 const C = window.PBI_CORE, Q = window.PBI_PQ, esc = C.esc, $ = C.$;
 const OPS = Q.OPS, TYPES = Q.TYPES;
-const TABS = [['home', 'Giriş', ['Giriş', 'Satırları kaldır']], ['tr', 'Dönüştür', ['Dönüştür', 'Biçim']]];
+const TABS = [['home', 'Giriş', ['Giriş', 'Satırları kaldır', 'Birleştir']], ['tr', 'Dönüştür', ['Dönüştür', 'Biçim']]];
 const P = C.P; P.pq = P.pq || {}; P.pqFree = P.pqFree || {};
 
 let E = null; // etkin düzenleyici
@@ -29595,7 +30877,7 @@ function grid(t, opt) {
 function state() { const r = Q.run(E.src, E.steps); const vi = E.view == null ? r.states.length - 1 : Math.min(E.view, r.states.length - 1); return { r, vi, cur: r.states[vi] }; }
 function stepLabel(s) {
   const op = OPS[s.op]; const c = s.cols && s.cols.length ? ' · ' + s.cols.join(', ') : '';
-  const extra = s.op === 'type' ? ' → ' + TYPES[s.to].name : s.op === 'replace' ? ' · “' + s.find + '” → ' + (String(s.repl).toLowerCase() === 'null' ? 'null' : '“' + s.repl + '”') : s.op === 'rename' ? ' → ' + s.to : s.op === 'removeTop' ? ' · ' + s.n : s.op === 'filter' ? ' · ' + ({ notnull: 'boş değil', null: 'boş', contains: 'içerir “' + s.v + '”' })[s.cmp] || ' ' + s.cmp + ' ' + s.v : s.op === 'group' ? ' · ' + s.name : '';
+  const extra = s.op === 'type' ? ' → ' + TYPES[s.to].name : s.op === 'replace' ? ' · “' + s.find + '” → ' + (String(s.repl).toLowerCase() === 'null' ? 'null' : '“' + s.repl + '”') : s.op === 'rename' ? ' → ' + s.to : s.op === 'removeTop' ? ' · ' + s.n : s.op === 'filter' ? ' · ' + ({ notnull: 'boş değil', null: 'boş', contains: 'içerir “' + s.v + '”' })[s.cmp] || ' ' + s.cmp + ' ' + s.v : s.op === 'group' ? ' · ' + s.name : s.op === 'append' || s.op === 'merge' ? ' ← ' + ((Q.SOURCES[s.with] || {}).name || s.with) + (s.op === 'merge' ? ' (' + ({ left: 'sol dış', inner: 'iç', anti: 'sol karşıt' })[s.kind] + ')' : '') : '';
   return op.name + c + extra;
 }
 function ribbon() {
@@ -29672,7 +30954,7 @@ function viewPQ() {
   h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Komut listesi</span><h2>Her komut ne yapar?</h2></div></div><div class="fgrid">' + Object.keys(OPS).map(k => '<div class="panel fcard"><b>' + esc(OPS[k].name) + ' <span class="chip">' + esc(OPS[k].group) + '</span></b><p>' + esc(OPS[k].what) + '</p><code class="syn">' + esc(OPS[k].m('#"Önceki Adım"', sample(k))) + '</code></div>').join('') + '</div></section>';
   return h + '</div>';
 }
-function sample(k) { return { cols: ['Sütun'], n: 1, to: k === 'type' ? 'number' : 'Yeni Ad', find: '-', repl: 'null', whole: true, v: '0', d: ' ', mode: 'first', cmp: '>', name: 'Toplam', agg: 'sum', src: 'Tutar' }; }
+function sample(k) { return { cols: ['Sütun'], with: k === 'merge' ? 'sehir_bolge' : 'bayi_sub', kind: 'left', n: 1, to: k === 'type' ? 'number' : 'Yeni Ad', find: '-', repl: 'null', whole: true, v: '0', d: ' ', mode: 'first', cmp: '>', name: 'Toplam', agg: 'sum', src: 'Tutar' }; }
 function mountPQ() {
   const id = PQS.src; E = fresh({ src: Q.SOURCES[id], steps: (P.pqFree[id] || []).map(s => Object.assign({}, s)), store: st => { P.pqFree[id] = st; C.save(); } });
   paint();
@@ -29736,7 +31018,7 @@ const PR = window.PBI_PRACTICE || [], PRT = window.PBI_PR_TOPICS || {}, PRMAP = 
 const prKey = p => 'pr:' + p.id;
 const prDone = p => !!P.ex[prKey(p)];
 const plain = s => String(s || '').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query' };
+const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mc: 'Senaryo' };
 P.rv = P.rv || {}; P.reports = P.reports || []; P.exams = P.exams || {};
 
 /* ---------- Tema (Otomatik / Açık / Koyu) ---------- */
@@ -29769,7 +31051,7 @@ function prListHTML() {
 function viewPratik() {
   let h = '<div class="wrap" style="gap:16px">' + C.head('Pratik', 'Pratik', PR.length + ' görev; konu anlatımı yok. Dersin içindeki soruya alıştırma, dersten bağımsız göreve pratik diyoruz.', 'pratik');
   h += '<div class="prstats">' + C.LEVELS.map(L => { const a = PR.filter(p => p.L === L.id), n = a.filter(prDone).length; return '<button class="panel prstat' + (PF.L === L.id ? ' on' : '') + '" data-prl="' + L.id + '">' + C.lvBadge(L.id) + '<b>' + n + '/' + a.length + '</b><span class="bar"><i style="width:' + (a.length ? n / a.length * 100 : 0) + '%"></i></span></button>'; }).join('') + '</div>';
-  h += '<div class="prfilters"><input class="input" id="prQ" placeholder="Görev ara: YTD, RANKX, sepet…" value="' + esc(PF.q) + '" aria-label="Görev ara"><select class="input" id="prT" aria-label="Konu"><option value="">Tüm konular</option>' + Object.keys(PRT).filter(k => PR.some(p => p.tp === k)).map(k => '<option value="' + k + '"' + (PF.tp === k ? ' selected' : '') + '>' + esc(PRT[k]) + ' (' + PR.filter(p => p.tp === k).length + ')</option>').join('') + '</select><select class="input" id="prY" aria-label="Tür"><option value="">Tüm türler</option>' + Object.keys(TYPEN).map(k => '<option value="' + k + '"' + (PF.ty === k ? ' selected' : '') + '>' + TYPEN[k] + '</option>').join('') + '</select><label class="row" style="gap:6px;font-size:.86rem"><input type="checkbox" id="prO"' + (PF.open ? ' checked' : '') + '> Yalnızca çözülmemiş</label></div>';
+  h += '<div class="prfilters"><input class="input" id="prQ" placeholder="Görev ara: YTD, RANKX, ağ geçidi…" value="' + esc(PF.q) + '" aria-label="Görev ara"><select class="input" id="prT" aria-label="Konu"><option value="">Tüm konular</option>' + Object.keys(PRT).filter(k => PR.some(p => p.tp === k)).map(k => '<option value="' + k + '"' + (PF.tp === k ? ' selected' : '') + '>' + esc(PRT[k]) + ' (' + PR.filter(p => p.tp === k).length + ')</option>').join('') + '</select><select class="input" id="prY" aria-label="Tür"><option value="">Tüm türler</option>' + Object.keys(TYPEN).map(k => '<option value="' + k + '"' + (PF.ty === k ? ' selected' : '') + '>' + TYPEN[k] + '</option>').join('') + '</select><label class="row" style="gap:6px;font-size:.86rem"><input type="checkbox" id="prO"' + (PF.open ? ' checked' : '') + '> Yalnızca çözülmemiş</label></div>';
   return h + '<div id="prList">' + prListHTML() + '</div></div>';
 }
 function viewPratikSoru(id) {
@@ -30727,6 +32009,8 @@ function viewPath(id) {
   const p = PMAP[id]; if (!p) return '<div class="wrap"><div class="panel empty">Öğrenme yolu bulunamadı.</div></div>';
   const r = R[id] || {}, s = stats(p), e = eta(p), nx = nextIn(p), mine = P.goal && P.goal.path === id;
   let h = '<div class="wrap"><div class="crumbs"><button data-go="paths">Öğrenme yolları</button><span>/</span><span>' + esc(p.name) + '</span></div>';
+  const GUNCEL = { pl300: ['Microsoft çalışma kılavuzu 3 Kasım 2026\'da kontrol edildi. Beceri listesi 20 Nisan 2026 tarihli, emeklilik duyurusu yok.', 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-300'], dp600: ['Microsoft çalışma kılavuzu 3 Kasım 2026\'da kontrol edildi. Sayfa 30 Ekim 2026\'da güncellenmiş, emeklilik duyurusu yok. Microsoft sayfaları sınav alanlarını farklı gösterebiliyor, sınavdan önce kendin bak.', 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600'] }[id];
+  if (GUNCEL) h += '<div class="note"><b>Güncellik</b>' + GUNCEL[0] + ' Bu hazırlık resmî değildir ve kapsamın tamamını karşıladığını garanti etmez. <a href="' + GUNCEL[1] + '" target="_blank" rel="noopener">Resmî sayfa</a></div>';
   h += '<section class="panel pathhero" style="--pc:' + p.color + '"><div class="ph-main"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="ic" style="background:' + p.color + ';height:46px;min-width:46px">' + p.short + '</span><div class="grow"><span class="eyebrow">' + (mine ? 'Hedefin' : 'Öğrenme yolu') + (r.jobs ? ' · ' + esc(r.jobs.join(' · ')) : '') + '</span><h1>' + esc(r.title || p.name) + '</h1></div></div><p>' + esc(r.long || p.long || p.desc) + '</p>';
   h += '<div class="ph-facts"><span><b>' + s.n + '</b> ders</span><span><b>' + s.totS + '</b> tahmini çalışma</span><span><b>' + milestones(p).length + '</b> aşama</span><span><b>' + (r.cap ? 1 : 0) + '</b> bitirme projesi</span>' + (r.level ? '<span><b>' + esc(r.level) + '</b></span>' : '') + '</div>';
   h += '<div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + id + '">' + (s.done || P.placement ? 'Devam et' : 'Yola başla') + ': ' + esc(nx.title) + '</button>' : '<span class="chip">Tüm dersler tamamlandı</span>') + (mine ? '' : '<button class="btn" data-setgoal="' + id + '">Hedefim yap</button>') + '</div></div>';
@@ -31051,7 +32335,7 @@ function viewAbout() {
   h += '<p class="muted" style="max-width:68ch;margin:0;font-size:.88rem">Süreler tahmindir: okuma, kod görevi başına 2-3 dakika ve çoktan seçmeli soru başına 0,5-1 dakikadan hesaplanır. Ölçülmüş değildir; hızın farklı olabilir.</p>';
   h += '<div class="kpis about-kpis"><div class="kpi"><b>' + C.LESSONS.length + '</b><span>ders</span></div><div class="kpi"><b>' + ex + '</b><span>alıştırma</span></div><div class="kpi"><b>' + nPr + '</b><span>pratik görevi</span></div><div class="kpi"><b>' + nDash + '</b><span>örnek rapor</span></div><div class="kpi"><b>' + nData + '</b><span>veri seti</span></div></div>';
   if (A.name) h += '<section class="panel about-card"><div class="sec-head"><h3>Yapan</h3></div><p style="margin:0"><b style="font-size:1.1rem">' + esc(A.name) + '</b>' + (A.title ? '<br><span class="muted">' + esc(A.title) + '</span>' : '') + '</p>' + (A.bio ? '<p style="margin:0">' + esc(A.bio) + '</p>' : '') + '<div class="row" style="gap:8px">' + link(A.linkedin, 'LinkedIn') + link(A.github, 'GitHub') + link(A.repo ? A.repo + '/tree/kaynak' : '', 'Kaynak kod') + fbBtn('Hakkında / iletişim', 'Bana yaz', 'sm') + '</div></section>';
-  if (c.story) h += '<section class="panel about-card"><div class="sec-head"><h3>Nasıl yapıldı</h3></div><p style="margin:0">' + esc(c.story) + '</p><p style="margin:10px 0 0"><a href="/vaka/">Vaka notunu oku: kararlar, ölçümler ve yanlış gidenler</a></p></section>';
+  if (c.story) h += '<section class="panel about-card"><div class="sec-head"><h3>Nasıl yapıldı</h3></div><p style="margin:0">' + esc(c.story) + '</p><p style="margin:10px 0 0"><a href="/vaka/">Vaka notunu oku: kararlar, ölçümler ve yanlış gidenler</a></p><p style="margin:10px 0 0"><a href="ders/">Ders metinlerinin tamamı</a></p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>Görüşün önemli</h3></div><p style="margin:0">Bu ücretsiz bir paylaşım ve portföy projesi. Bir hata gördüysen, anlatımı eksik bulduğun bir ders varsa ya da bir fikrin varsa yaz. Geri bildirim, GitHub’da bir kayıt (Issue) olarak açılır.</p><div class="row" style="gap:8px">' + fbBtn('Genel', 'Geri bildirim gönder', 'pri sm') + (giscusOn() ? '<a class="btn sm" href="https://github.com/' + esc(c.giscus.repo) + '/discussions" target="_blank" rel="noopener">GitHub tartışmaları</a>' : '') + '</div><p class="muted" style="margin:0;font-size:.85rem">Her dersin başlığının altında “Bu ders hakkında geri bildirim” bağlantısı' + (giscusOn() ? ', konu anlatımının altında yorum alanı' : '') + ' var.</p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>DAX motoru ve bilinen sınırları</h3></div><p style="margin:0">Tarayıcıda çalışan motor DAX’ı <b>benzetir</b>; Microsoft’un motoru (VertiPaq) değildir. Filtre ve satır bağlamı, bağlam geçişi, zaman zekâsı, tablo ve pencere fonksiyonlarının büyük bölümü dersler için yeterince aslına uygun çalışır, ' + Object.keys(C.X.FN).length + ' fonksiyon destekler. Yine de sonuçları gerçek Power BI Desktop’ta da doğrula.</p><ul style="margin:0;padding-left:20px"><li>Çoka çok ilişki kurma ve çift yönlü model ilişkisi yok (ölçü içinde CROSSFILTER ve TREATAS çalışır).</li><li>Takvim tabanlı zaman zekâsı yok.</li><li>Pencere fonksiyonlarının toplam satırı boş döner.</li><li>SUMMARIZECOLUMNS içinde IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL yok.</li><li>Depolama motoru, sorgu planı, gerçek performans ölçümü yok: Performans Analizi (Performance Analyzer) ve DAX Studio dersleri bu nedenle anlatımla ve Desktop ödevleriyle işlenir.</li><li>Büyük tabloda (Pedal İzmir, yaklaşık 116.517 satır) satır satır bağlam geçişi saniyeler sürebilir.</li><li>Power Query Lab M dilini çalıştırmaz, seçili komutları benzetir ve M kodunu üretir.</li></ul></section>';
   const sib = ['<a href="' + esc(C.SITE.sql) + '">Kesit SQL</a>', '<a href="' + esc(C.SITE.python) + '">Kesit Python</a>'];

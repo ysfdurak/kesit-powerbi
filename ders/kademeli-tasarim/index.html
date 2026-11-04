@@ -1,0 +1,130 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler | Kesit Power BI</title><meta name="description" content="Özeti önde tut, ayrıntıyı kullanıcı istedikçe aç: göster/gizle paneller, beş düğme durumu ve ölçüyle dinamik düğme metni, alan parametresiyle görsel…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kademeli-tasarim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler"><meta property="og:description" content="Özeti önde tut, ayrıntıyı kullanıcı istedikçe aç: göster/gizle paneller, beş düğme durumu ve ölçüyle dinamik düğme metni, alan parametresiyle görsel…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kademeli-tasarim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler","description":"Özeti önde tut, ayrıntıyı kullanıcı istedikçe aç: göster/gizle paneller, beş düğme durumu ve ölçüyle dinamik düğme metni, alan parametresiyle görsel…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kademeli-tasarim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler</h1><p class="st-l">Özeti önde tut, ayrıntıyı kullanıcı istedikçe aç: göster/gizle paneller, beş düğme durumu ve ölçüyle dinamik düğme metni, alan parametresiyle görsel değiştirme, UNICHAR ile durum okları, filtre bölmesi ve tema JSON varsayılanları, mobilde aynı ilke.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kademeli-tasarim">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Bir sayfaya koyabileceğin her şeyi koyarsan kullanıcı hiçbir şeyi görmez. <b>Kademeli açığa çıkarma (progressive disclosure)</b>, bilgiyi katmanlara ayırıp her katmanı kullanıcı bir adım attığında göstermektir. Yer işareti, Seçim bölmesi, detay sayfası ve araç ipucunun mekaniği “Raporla hikâye anlatmak” dersinde; burada bu araçlarla <b>kullanıcı odaklı</b> bir arayüz kuruyoruz.</p>
+
+<h2>Üç katman</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Katman</th><th>Soru</th><th>İçerik</th><th>Nasıl açılır?</th></tr>
+<tr><td>1 · Özet</td><td>İyi mi, kötü mü?</td><td>3–4 KPI kartı, durum okları</td><td>Sayfa açılınca görünür</td></tr>
+<tr><td>2 · Açıklama</td><td>Nerede, ne zaman?</td><td>Eğilim, kategori karşılaştırması</td><td>Kaydırma, sekme düğmesi, alan parametresi</td></tr>
+<tr><td>3 · Ayrıntı</td><td>Hangi kayıtlar?</td><td>Tablo, ürün listesi</td><td>Panel, detay sayfası, araç ipucu</td></tr>
+</table></div>
+<p>Kural: Bir katmanı açmak <b>tek bir tıklama</b> olmalı ve kullanıcı her zaman geri dönebilmeli. Gizlenen bilgi, gizlendiğini belli etmeli; aksi hâlde kullanıcı onun varlığından haberdar olmaz.</p>
+
+<h2>Göster/gizle paneli</h2>
+<p>En sık kalıp, sayfayı dolduran dilimleyicileri ve açıklama metinlerini bir <b>yan panele</b> toplamaktır. Kullanıcı “Filtreler” düğmesine basınca panel kayar gibi açılır.</p>
+<ol>
+<li>Bir dikdörtgen şekil (panel arka planı), dilimleyiciler ve bir “Kapat ×” düğmesi yerleştir.</li>
+<li>Seçim bölmesinde bunları seçip <b>grupla</b>; grubu “Filtre Paneli” diye adlandır.</li>
+<li>Panel açıkken bir yer işareti ekle: “Panel açık”. Panel grubunu gizleyip ikinci yer işaretini ekle: “Panel kapalı”.</li>
+<li>Her iki yer işaretinde <b>Veri</b> seçeneğini kapat (kullanıcının seçtiği filtreler korunur), <b>Görüntü</b> açık kalsın ve <b>Seçili görseller</b> ile yalnızca panel grubunu kapsa. Böylece yer işareti sayfadaki diğer görsellerin durumunu değiştirmez.</li>
+<li>“Filtreler” düğmesine Eylem → Yer işareti → “Panel açık”, “Kapat ×” düğmesine “Panel kapalı” bağla.</li>
+</ol>
+<div class="warn"><b>Gizli panel, gizli filtre demektir</b>Panel kapalıyken kullanıcı hangi filtrenin seçili olduğunu göremez. Bunu düğmenin metninde söyle (aşağıdaki ölçü) ya da sayfa başlığına seçimi yazan bir metin ölçüsü koy.</div>
+<pre class="dax">Filtre Düğmesi Metni =
+IF(
+    ISFILTERED(Satislar[Kanal]),
+    "Filtreler • " &amp; COUNTROWS(VALUES(Satislar[Kanal])) &amp; " kanal",
+    "Filtreler"
+)</pre>
+<p>Hiç kanal seçilmemişse düğmede yalnızca “Filtreler” yazar; Web ve Mobil seçiliyse “Filtreler • 2 kanal”. Kullanıcı panel kapalıyken de bir filtrenin etkin olduğunu anlar.</p>
+
+<h2>Düğme durumları ve dinamik düğme metni</h2>
+<p>Bir düğme beş durumda ayrı biçimlendirilebilir. Biçim → <b>Düğme</b> → <b>Stil</b> (ya da Şekil) kartında <b>Ayarları uygula: Durum</b> listesinden durumu seçip o durumun dolgusunu, metnini, kenarlığını ayarlarsın:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Ne zaman?</th><th>Tasarım önerisi</th></tr>
+<tr><td>Varsayılan (Default)</td><td>Düğmeye dokunulmuyor</td><td>Tema rengi, okunur metin</td></tr>
+<tr><td>Üzerine gelince (On hover)</td><td>Fare üstünde</td><td>Biraz koyulaşan dolgu; “tıklanabilirim” der</td></tr>
+<tr><td>Basıldığında (On press)</td><td>Tıklama anı</td><td>Daha koyu dolgu ya da içe basık kenarlık</td></tr>
+<tr><td>Devre dışı (Disabled)</td><td>Eylem yapılamıyor (ör. detaya git için seçim yok)</td><td>Gri dolgu ve ne yapılması gerektiğini söyleyen metin</td></tr>
+<tr><td>Yükleniyor (Loading)</td><td>Veri işlevi eylemi sürerken</td><td>Kısa “İşleniyor…” metni</td></tr>
+</table></div>
+<p><b>Dinamik metin:</b> Stil → Metin kutusunun yanındaki <b>fx</b> düğmesi → Biçim stili: <b>Alan değeri</b> → metin döndüren bir ölçü seç. Aynı yolla dolgu rengini de bir ölçüye bağlarsın. Detaya git düğmesi kullanıcı tek bir öğe seçene kadar zaten devre dışı kalır; metin ölçüsü ona ne seçmesi gerektiğini söyler, renk ölçüsü durumu görünür kılar (alıştırma 2 ve 3). Desktop’ta düğmeyi denemek için Ctrl + tıklama.</p>
+<div class="note"><b>Telefonda “üzerine gelme” yok</b>Dokunmatik ekranda üzerine gelince durumu hiç görünmez. Bir düğmenin tıklanabilir olduğunu yalnızca hover rengine bırakma; varsayılan durum da düğme gibi görünmeli.</div>
+
+<h2>Alan parametresiyle görsel değiştirme</h2>
+<p>“Grafik / Tablo” geçişi için iki görsel ve iki yer işareti gerekir. Aynı görselde yalnızca <b>ölçüyü ya da ekseni</b> değiştirmek istiyorsan alan parametresi daha sade bir katman sağlar: tek grafik, bir düğme dilimleyici (“Satış · Kâr · Sipariş”), hiç yer işareti yok. Oluşturma adımları “Hesaplama grupları, alan parametreleri, görsel hesaplamalar” dersinde. Arka planda oluşan tablo şuna benzer:</p>
+<pre class="dax" data-notry>Ölçü Seçimi = {
+    ("Net Satış", NAMEOF('Ölçüler'[Net Satış]), 0),
+    ("Brüt Kâr", NAMEOF('Ölçüler'[Brüt Kâr]), 1),
+    ("Sipariş Sayısı", NAMEOF('Ölçüler'[Sipariş Sayısı]), 2)
+}</pre>
+<ul>
+<li><b>Alan parametresi:</b> Aynı görsel türü, farklı alan. Filtreler doğal olarak korunur, bakımı kolaydır.</li>
+<li><b>Yer işareti geçişi:</b> Farklı görsel türleri (çizgi ↔ matris) ya da farklı düzenler arasında.</li>
+<li>Seçili alanı başlığa yazmayı unutma; aksi hâlde ekran görüntüsünde hangi ölçünün çizildiği anlaşılmaz.</li>
+</ul>
+
+<h2>Tablolarda simgeler: Unicode ve UNICHAR</h2>
+<p>Matriste bir sayının yanındaki küçük ok, satırı okumadan durumu söyler (katman 1’i tablonun içine taşır). <code>UNICHAR(kod)</code>, verilen Unicode kod noktasındaki karakteri döndürür:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Karakter</th><th>Kod</th><th>Kullanım</th></tr>
+<tr><td>▲</td><td>9650</td><td>Artış</td></tr>
+<tr><td>▼</td><td>9660</td><td>Azalış</td></tr>
+<tr><td>▬</td><td>9644</td><td>Yatay (eşik içinde)</td></tr>
+<tr><td>●</td><td>9679</td><td>Durum noktası (renkle birlikte)</td></tr>
+<tr><td>🟢</td><td>128994</td><td>Renkli emoji; yazı tipine ve cihaza göre farklı görünür</td></tr>
+</table></div>
+<pre class="dax">Aylık Eğilim Simgesi =
+VAR Degisim = [MoM %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Degisim), BLANK(),
+        Degisim &gt; 0.02, UNICHAR(9650),
+        Degisim &lt; -0.02, UNICHAR(9660),
+        UNICHAR(9644)
+    )</pre>
+<p>Matrise <code>Tarih[YilAy]</code> koyunca 2024-03’te ▲ (önceki aya göre +%41,5), 2024-04’te ▼ (−%45,9) görünür. ±%2 eşiği, gürültüyü “yatay” sayar; eşiği brifte iş birimiyle birlikte belirle.</p>
+<ul>
+<li><b>Renk:</b> Simge ölçüsü metin döndürür. Rengi, aynı koşulu kullanan ayrı bir renk ölçüsüyle Yazı rengi → fx → Alan değeri üzerinden ver. Renk + şekil birlikte renk körü kullanıcıyı da korur.</li>
+<li><b>Sıralama:</b> Metin ölçüsü alfabetik sıralanır. Sıralama gerekiyorsa sayısal ölçüyü ayrı sütunda tut.</li>
+<li><b>Emoji:</b> PDF, abonelik e-postası ve bazı cihazlarda farklı görünebilir. Kurumsal raporlarda geometrik şekiller (▲▼●) daha güvenlidir.</li>
+</ul>
+
+<h2>Filtre bölmesini kullanıcıya göre ayarlamak</h2>
+<p>Kilitleme ve gizlemenin anlamı “Filtreler bölmesi ve dilimleyiciler” dersinde. Kademeli açığa çıkarma açısından filtre bölmesi, sayfada yer kaplamayan hazır bir “3. katman” panelidir:</p>
+<ul>
+<li><b>Biçimlendir:</b> Tuvalin boş yerine tıkla → Biçim → <b>Filtreler bölmesi</b> (arka plan, simge, sol kenarlık) ve <b>Filtre kartları</b>. Kartlarda <b>Varsayılan</b> ve <b>Uygulanan</b> durumlara farklı renk ver; uygulanan filtre ilk bakışta fark edilsin.</li>
+<li><b>Sadeleştir:</b> Teknik filtreleri gizle, iş kurallarını kilitle, kartları çift tıklayıp anlaşılır adlarla yeniden adlandır, en sık kullanılanı sürükleyip en üste al.</li>
+<li><b>Sınırla:</b> Seçenekler → Rapor ayarları → “Kullanıcıların filtre türlerini değiştirmesine izin ver” kutusunu kaldır. Çok filtreli sayfada Sorgu azaltma ayarından tek bir <b>Uygula</b> düğmesi ekle.</li>
+<li><b>Bölmeyi tamamen gizlemek</b> için Filtreler başlığının yanındaki göz simgesi. Web’de yayımla raporlarında filtre bölmesi zaten görünmez; orada dilimleyici kullan.</li>
+</ul>
+
+<h2>Tema JSON ile varsayılanlar</h2>
+<p>Her düğmeyi, her filtre kartını tek tek biçimlendirmek yerine kuralları temaya yaz (tema dosyasının temel yapısı “Temalar, sayfa ayarları ve tuval tasarımı” dersinde). Filtre bölmesi ayarları <code>visualStyles</code> altında <code>page</code> girdisine yazılır:</p>
+<pre class="dax" data-notry>{
+  "name": "Kesit Sade",
+  "textClasses": {
+    "label":   { "fontFace": "Segoe UI", "fontSize": 10, "color": "#3B3A36" },
+    "callout": { "fontFace": "Segoe UI Semibold", "fontSize": 28 }
+  },
+  "visualStyles": {
+    "page": { "*": {
+      "outspacePane": [{ "backgroundColor": { "solid": { "color": "#F6F5F1" } }, "fontFamily": "Segoe UI" }],
+      "filterCard": [
+        { "$id": "Applied",   "backgroundColor": { "solid": { "color": "#DCE9F8" } }, "border": true },
+        { "$id": "Available", "backgroundColor": { "solid": { "color": "#FFFFFF" } } }
+      ]
+    } }
+  }
+}</pre>
+<p><code>Applied</code> uygulanmış filtre kartını, <code>Available</code> boştaki kartı biçimler. Tema bir kez yüklenince yeni eklenen her sayfa aynı varsayılanla gelir.</p>
+
+<h2>Mobilde kademeli açığa çıkarma</h2>
+<ul>
+<li>Telefon ekranında katman 1 (KPI kartları ve oklar) üstte kalır; ayrıntı tablosu mobil düzene konmaz, detay sayfasına bırakılır.</li>
+<li>Mobil düzen otomatik oluşturulduğunda gizli görseller de yerleştirilir; görünürlüğü değiştiren yer işaretleri mobilde de çalışır. Gizli bir görsel tuvalde yer kaplar, boşluk varmış gibi görünse de oraya başka şey koyma.</li>
+<li>Telefonda üzerine gelme olmadığı için araç ipucuna gömülü bilgi zor bulunur. Önemli ayrıntıyı dokunarak açılan bir panele ya da detay sayfasına taşı.</li>
+<li>Düğmeleri parmakla rahat basılacak kadar büyük yap; yan yana çok küçük düğme yanlış dokunmaya yol açar.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-kademeli-tasarim">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../gorsel-algi/">← Görsel algı: bilişsel yük, küçük katlar, kombo ve dağılım grafikleri</a><a href="../pq-donusum/">Power Query: metin, sayı ve tarih dönüşümleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

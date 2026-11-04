@@ -1,0 +1,65 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam | Kesit Power BI</title><meta name="description" content="Lakehouse’tan ambara CTAS ile taşımak, türü açıkça vermek, iptalleri ayıklayan görünüm, yükleme yordamı ve MERGE tuzakları; sonuçları beklenen değerlerle…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-tsql-odev/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam"><meta property="og:description" content="Lakehouse’tan ambara CTAS ile taşımak, türü açıkça vermek, iptalleri ayıklayan görünüm, yükleme yordamı ve MERGE tuzakları; sonuçları beklenen değerlerle…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-tsql-odev/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam","description":"Lakehouse’tan ambara CTAS ile taşımak, türü açıkça vermek, iptalleri ayıklayan görünüm, yükleme yordamı ve MERGE tuzakları; sonuçları beklenen değerlerle…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-tsql-odev/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam</h1><p class="st-l">Lakehouse’tan ambara CTAS ile taşımak, türü açıkça vermek, iptalleri ayıklayan görünüm, yükleme yordamı ve MERGE tuzakları; sonuçları beklenen değerlerle karşılaştır.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-tsql-odev">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Sınavdaki <b>Transform data</b> maddeleri (görünüm, fonksiyon, saklı yordam, yıldız şema, birleştirme, tür dönüşümü) ambar üzerinde T-SQL ile sorulur. Bu ödev önceki dersteki <code>AnadoluLH</code> lakehouse’unu kullanır. SQL’in kendisi eksikse aynı şirketin verisiyle <a href="https://ysfdurak.github.io/kesit-sql/">Kesit SQL</a>’de çalış: <code>JOIN</code>, <code>GROUP BY</code> ve pencere fonksiyonları orada alıştırmalı anlatılıyor.</p>
+
+<h2>T-SQL ile yükleme seçenekleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Komut</th><th>Ne yapar?</th><th>Dikkat</th></tr>
+<tr><td><code>CREATE TABLE AS SELECT</code> (CTAS)</td><td>Hedefi oluşturur ve doldurur</td><td>Türler sorgudan çıkarılır; kritik sütunda <code>CAST</code> yaz</td></tr>
+<tr><td><code>SELECT ... INTO</code></td><td>Sorgu sonucundan yeni tablo</td><td>Türler yine çıkarılır</td></tr>
+<tr><td><code>INSERT ... SELECT</code></td><td>Var olan tabloya ekler</td><td>Tablo tanımı senin denetiminde</td></tr>
+<tr><td><code>MERGE</code></td><td>Anahtara göre ekler, günceller, siler</td><td>Kaynakta anahtar başına en çok bir satır olmalı. Artımlı toplu veride <code>WHEN NOT MATCHED BY SOURCE THEN DELETE</code> geçerli satırları silebilir</td></tr>
+</table></div>
+<p>Aynı çalışma alanındaki bir lakehouse’un <code>Tables</code> altındaki tablosuna üç parçalı adla ulaşırsın: <code>AnadoluLH.dbo.Satislar</code>. Öğe, Explorer’a eklenmiş olmalı.</p>
+
+<h2>Ödev 1: Boyut ve olgu tablosu</h2>
+<p>Ambar oluştur (<code>AnadoluDW</code>), sonra çalıştır:</p>
+<pre data-notry>CREATE TABLE dbo.DimUrun AS
+SELECT CAST(u.UrunNo AS int)          AS UrunKey,
+       CAST(u.Urun AS varchar(100))   AS Urun,
+       CAST(u.Kategori AS varchar(50)) AS Kategori
+FROM AnadoluLH.dbo.Urunler AS u;
+
+CREATE TABLE dbo.FactSatis AS
+SELECT CAST(s.SatirNo AS int)         AS SatirNo,
+       CAST(s.SiparisNo AS int)       AS SiparisNo,
+       CAST(s.Tarih AS date)          AS Tarih,
+       CAST(s.UrunNo AS int)          AS UrunKey,
+       CAST(s.Durum AS varchar(20))   AS Durum,
+       CAST(s.Tutar AS decimal(18,2)) AS Tutar
+FROM AnadoluLH.dbo.Satislar AS s;</pre>
+<div class="tip"><b>Beklenen sonuç</b>DimUrun 40, FactSatis 1.620 satır. Tutar toplamı 1.346.189,85.</div>
+<p>Toplam tutmuyorsa önce <code>Tutar</code> sütununun metin mi yüklendiğine, sonra ondalık ayırıcıya bak.</p>
+
+<h2>Ödev 2: Temizlik kuralını görünümde tut</h2>
+<pre data-notry>CREATE VIEW dbo.vw_NetSatis AS
+SELECT f.SiparisNo, f.Tarih, d.Kategori, f.Tutar
+FROM dbo.FactSatis AS f
+JOIN dbo.DimUrun  AS d ON d.UrunKey = f.UrunKey
+WHERE f.Durum &lt;&gt; 'İptal';</pre>
+<p>Şunu çalıştır ve Elektronik satırını bul:</p>
+<pre data-notry>SELECT Kategori, SUM(Tutar) AS NetSatis, COUNT(DISTINCT SiparisNo) AS Siparis
+FROM dbo.vw_NetSatis
+GROUP BY Kategori
+ORDER BY NetSatis DESC;</pre>
+<div class="tip"><b>Beklenen sonuç</b>Görünümün toplamı 1.250.772,45 (121 iptal satırı çıktı). Elektronik 339.303,65 ile ilk sırada. Aynı sayılar bu uygulamadaki <code>[Net Satış]</code> ölçüsünden de çıkar.</div>
+
+<h2>Ödev 3: Saklı yordam</h2>
+<p>Yükleme adımlarını tek çağrıda toplayan bir yordam yaz: önce <code>DROP TABLE IF EXISTS</code>, sonra iki CTAS. Yordamı bir işlem hattına <b>Stored procedure</b> etkinliği olarak ekle ve zamanla. Bir not yaz: “Bu tam yükleme. Artımlı yüklemede ne değişir?” Cevabın <code>MERGE</code>, anahtar benzersizliği ve silme kuralını içermeli.</p>
+
+<h2>Sınavda neye bakılır?</h2>
+<ul>
+<li>Soru “aynı yerde güncellenebilir tablo” diyorsa ambar; SQL analiz uç noktası lakehouse tablolarında veri değiştirmez.</li>
+<li>“Kuralı tek yerde tut, kopya üretme” görünümdür.</li>
+<li>“Yinelenen satır” sorusunda önce anahtarı sor: hangi sütunlar bir satırı belirliyor?</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-tsql-odev">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-veri-alma/">← Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)</a><a href="../fabric-spark-odev/">Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,93 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yayımlama, yenileme ve yaşam döngüsü | Kesit Power BI</title><meta name="description" content="Çalışma alanları, uygulamalar, ağ geçidi, artımlı yenileme, dağıtım işlem hatları ve Git."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yayinlama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yayımlama, yenileme ve yaşam döngüsü"><meta property="og:description" content="Çalışma alanları, uygulamalar, ağ geçidi, artımlı yenileme, dağıtım işlem hatları ve Git."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yayinlama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yayımlama, yenileme ve yaşam döngüsü","description":"Çalışma alanları, uygulamalar, ağ geçidi, artımlı yenileme, dağıtım işlem hatları ve Git.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yayinlama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Yayımlama, yenileme ve yaşam döngüsü</h1><p class="st-l">Çalışma alanları, uygulamalar, ağ geçidi, artımlı yenileme, dağıtım işlem hatları ve Git.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yayinlama">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Service'teki yapı taşları</h2>
+<ul>
+<li><b>Çalışma alanı:</b> Ekip klasörü. Roller: Yönetici, Üye, Katkıda bulunan, Görüntüleyici.</li>
+<li><b>Anlam modeli</b> (semantic model, eski adıyla dataset): Tablolar, ilişkiler, ölçüler. Bir model birçok rapora hizmet edebilir.</li>
+<li><b>Rapor:</b> Bir modele bağlı, sayfalardan oluşan etkileşimli belge.</li>
+<li><b>Pano (dashboard):</b> Service'te farklı raporlardan sabitlenmiş kutucuklardan oluşan tek sayfa. Bu uygulamadaki Örnek raporlar sayfası ise pano değil, rapor örnekleri içerir.</li>
+<li><b>Uygulama (app):</b> Çalışma alanındaki içeriğin son kullanıcılara düzenli, menülü bir paket olarak dağıtılması. Kitle (audience) bazında farklı içerik gösterebilir.</li>
+</ul>
+<h2>Yenileme</h2>
+<ul>
+<li><b>Zamanlanmış yenileme:</b> Import modellerde günde belirli sayıda (Pro'da 8, PPU/kapasitede 48'e kadar).</li>
+<li><b>Ağ geçidi:</b> Şirket içi kaynaklar için.</li>
+<li><b>Artımlı yenileme:</b> <code>RangeStart</code> / <code>RangeEnd</code> parametreleriyle tablo bölümlere ayrılır; yalnızca son bölümler yenilenir. Kaynakta sorgu katlama gerektirir.</li>
+</ul>
+<h2>Paylaşma yolları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Ne zaman?</th></tr>
+<tr><td>Uygulama</td><td>Geniş kitleye, düzenli ve sürümlü dağıtım</td></tr>
+<tr><td>Doğrudan paylaşım</td><td>Birkaç kişiye hızlı paylaşım</td></tr>
+<tr><td>Çalışma alanı erişimi</td><td>Birlikte geliştiren ekip</td></tr>
+<tr><td>Teams / SharePoint'e ekleme</td><td>İşin yapıldığı yerde rapor</td></tr>
+<tr><td>Abonelik</td><td>Düzenli e-posta anlık görüntüsü</td></tr>
+<tr><td>Web'de yayımla</td><td>Yalnızca herkese açık veri. Herkes görebilir; kurumsal veri için asla.</td></tr>
+</table></div>
+<h2>Yaşam döngüsü</h2>
+<ul>
+<li><b>Dağıtım işlem hatları:</b> Geliştirme → Test → Üretim aşamaları; aşamalar arası içerik kopyalama ve kurallarla veri kaynağı değiştirme.</li>
+<li><b>PBIP ve Git:</b> Power BI Projesi biçimiyle rapor ve model metin dosyaları olarak kaydedilir (model TMDL olarak). Değişiklikler Git'te izlenir, kod incelemesi yapılır. Fabric çalışma alanları Git'e bağlanabilir.</li>
+<li><b>Onay:</b> Güvenilir modeller <b>tanıtılmış</b> (promoted) ya da <b>sertifikalı</b> (certified) olarak işaretlenir.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Çalışma alanı tasarımı</h2>
+<p>Anadolu Market'te Satış, Finans ve İK raporları tek bir “BI” çalışma alanında toplanmış: 60 öğe, 40 Üye, kimin neyi değiştirdiği belli değil. Yeniden tasarımda iki ilke işe yarar: <b>modeli rapordan ayır</b> ve <b>yetkiyi gruba ver</b>.</p>
+<div class="tbl-wrap"><table><tr><th>Çalışma alanı</th><th>İçerik</th><th>Kim, hangi rol?</th></tr>
+<tr><td>Satış Modeli [Dev/Test/Prod]</td><td>Onaylı anlam modeli</td><td>BI ekibi: Üye · Rapor yazarları: modelde Derleme izni</td></tr>
+<tr><td>Satış Raporları [Dev/Test/Prod]</td><td>Model üstüne kurulmuş raporlar</td><td>Rapor yazarları: Katkıda bulunan · Kimse son kullanıcı olarak eklenmez</td></tr>
+<tr><td>(Uygulama)</td><td>Son kullanıcıya giden paket</td><td>Entra güvenlik grupları, kitle bazında</td></tr></table></div>
+<p>Kişi yerine Microsoft Entra güvenlik gruplarını ekle; işe giren ve ayrılanlar grupta yönetilir. Çalışma alanının lisans türü (Pro, PPU, Fabric kapasitesi) görüntüleyicilerin lisansını da belirler: PPU çalışma alanındaki içeriği görmek için görüntüleyicinin de PPU'su olmalı; F64 ve üstü kapasitedeki içeriği ücretsiz lisanslı kullanıcılar görüntüleyebilir.</p>
+
+<h2>Uygulama: çalışma alanı uygulaması ve kuruluş uygulaması</h2>
+<p>Dağıtım için iki seçenek vardır. Klasik <b>çalışma alanı uygulaması</b> (workspace app) her çalışma alanında bir tanedir; değişiklikler “Uygulamayı güncelle” denene kadar kullanıcıya gitmez. Daha yeni olan <b>kuruluş uygulaması</b> (org app) ise bir Fabric öğesidir ve genel kullanıma açıktır (GA):</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Çalışma alanı uygulaması</th><th>Kuruluş uygulaması</th></tr>
+<tr><td>Çalışma alanı başına</td><td>Bir</td><td>Birden çok</td></tr>
+<tr><td>Değişiklik ne zaman görünür?</td><td>Uygulama güncellenince</td><td>Uygulama kaydedilince</td></tr>
+<tr><td>Model erişimi</td><td>Yazar elle yönetir</td><td>Rapora erişim, modeline (başka çalışma alanında olsa da) erişim verir</td></tr>
+<tr><td>Kurulum</td><td>Kullanıcı yükler</td><td>Gerekmez; Uygulamalar ve Son kullanılanlar listesinde görünür</td></tr>
+<tr><td>Kitleler</td><td>Var</td><td>Var; düzenleme moduna girmeden yönetilir</td></tr></table></div>
+<p><b>Kitle</b> (audience) senaryosu: “Temsilciler” kitlesi yalnızca Satış Performansı raporunu, “Yönetim” kitlesi ek olarak Kârlılık raporunu görür. Kitle bir <b>gezinme</b> düzenidir, güvenlik değildir: Kârlılık raporundaki marj sütununu temsilcilerden saklamak gerekiyorsa bunu RLS/OLS yapar, kitle değil.</p>
+
+<h2>Abonelikler ve veri uyarıları</h2>
+<ul>
+<li><b>Abonelik:</b> rapor sayfasının e-posta anlık görüntüsü; günlük, haftalık ya da veri yenilendikten sonra. Raporun tamamını ek olarak (PDF/PowerPoint) gönderebilir. Başkaları adına abonelik kurulabilir; kiracı ayarlarında dış kullanıcılara gönderim ayrıca kapatılabilir. Sayfalandırılmış raporların abonelikleri parametre değerleriyle çalışır (Sayfalandırılmış raporlar dersi).</li>
+<li><b>Veri uyarısı:</b> klasik uyarılar yalnızca <b>panodaki</b> kart, KPI ve gösterge kutucuklarında kurulur; rapor görselinde değil. Her kullanıcı kendi uyarısını kurar; Power Automate ile bir iş akışı tetiklenebilir.</li>
+<li><b>Activator:</b> Fabric'te rapor görselinden “Uyarı ayarla” ile kural tabanlı uyarılar kurulabilir: “bir kategorinin günlük satışı geçen haftanın ortalamasının %30 altına düşerse ekibe Teams mesajı”.</li>
+</ul>
+<p>Bir uyarı ya da abonelik ancak verinin güncel olduğu kadar doğrudur. Bu yüzden her raporda bir <b>veri tazeliği</b> göstergesi olmalı. Basit bir yol, modeldeki en son satış tarihini kartta göstermektir:</p>
+<pre class="dax">Veri Tazeliği (gün) =
+DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), TODAY(), DAY)</pre>
+<p>Yenileme durursa bu sayı her gün bir artar ve okur bunu fark eder; “Son yenileme” zaman damgası ise veri kaynağı güncellenmediğinde bile değişir ve yanıltabilir.</p>
+
+<h2>Ağ geçidi ve yenileme sınırları</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Pro (paylaşılan kapasite)</th><th>PPU / Premium / Fabric kapasitesi</th></tr>
+<tr><td>Zamanlanmış yenileme</td><td>Günde 8 (API ile tetiklenenler dahil)</td><td>Günde 48; XMLA okuma-yazma ile komut dosyası yenilemeleri sabit sayıyla sınırlı değil</td></tr>
+<tr><td>Yenileme zaman aşımı</td><td>2 saat</td><td>5 saat (XMLA ile aşılabilir)</td></tr>
+<tr><td>“Şimdi yenile”</td><td colspan="2">Günlük sayıma dahil değil</td></tr></table></div>
+<ul>
+<li><b>Etkinlik yoksa duraklama:</b> modele bağlı rapor ya da pano iki ay boyunca hiç açılmazsa zamanlanmış yenileme duraklatılır ve sahibine e-posta gider.</li>
+<li><b>Art arda hatalar:</b> yenileme defalarca başarısız olursa zamanlama kapatılır. Hata e-postasını kişisel kutuya değil, ekip dağıtım listesine yönlendir.</li>
+<li><b>Ağ geçidi:</b> şirket içi ya da doğrudan erişilemeyen her kaynak için gerekir. Bir model yalnızca <b>bir</b> ağ geçidi bağlantısı kullanır; aynı sorguda şirket içi SQL ile SharePoint Online birleşiyorsa bulut kaynağı da ağ geçidi üzerinden tanımlanmalıdır. Kurumsal kullanımda standart mod; kişisel mod yalnızca tek kişinin yönettiği modeller için.</li>
+<li><b>DirectQuery ve canlı bağlantı:</b> veri yenilemesi yoktur; ama pano kutucuklarının önbelleği varsayılan olarak saatte bir yenilenir.</li>
+</ul>
+
+<h2>Paylaşmak, uygulama ya da yerleştirme?</h2>
+<div class="tbl-wrap"><table><tr><th>İhtiyaç</th><th>Yol</th><th>Dikkat</th></tr>
+<tr><td>Üç kişiye hızlıca göster</td><td>Doğrudan paylaşım bağlantısı</td><td>“Yeniden paylaşabilir” ve “Derleyebilir” kutularını bilinçli seç</td></tr>
+<tr><td>300 kişilik satış ekibine düzenli dağıtım</td><td>Uygulama + kitleler</td><td>Gruplarla erişim, RLS testi</td></tr>
+<tr><td>Ekibin çalıştığı yerde göster</td><td>Teams sekmesi, SharePoint web bölümü</td><td>Kullanıcının rapora erişimi olmalı; RLS geçerli</td></tr>
+<tr><td>Şirket içi bir portala göm</td><td>Kuruluşunuz için yerleştirme (kullanıcı kendi kimliğiyle)</td><td>Her kullanıcının lisansı ve erişimi gerekir</td></tr>
+<tr><td>Müşterilere (Power BI hesabı olmayan) göster</td><td>Müşterileriniz için yerleştirme (uygulama verinin sahibi)</td><td>Hizmet sorumlusu RLS rolüne eklenemez; etkin kimlik yerleştirme belirtecinde gönderilir; kapasite gerekir</td></tr>
+<tr><td>Herkese açık veri</td><td>Web'de yayımla</td><td>İnternetteki herkes görür; kurumsal veri için asla</td></tr></table></div>
+<div class="tip"><b>Kontrol listesi</b>Model ve raporlar ayrı çalışma alanlarında mı? · Erişim gruplarla mı veriliyor? · Son kullanıcılar uygulama ile mi geliyor, çalışma alanı rolü almadan? · Yenileme sayısı ve süresi lisans sınırına uygun mu? · Hata bildirimleri ekip listesine gidiyor mu? · Raporda veri tazeliği göstergesi var mı?</div>
+</section><div class="note"><b>Bu ders toplu bakıştır</b>Adım adım anlatım: <a href="../calisma-alani/">Çalışma alanı</a>, <a href="../paylasim/">Paylaşım</a>, <a href="../power-bi-apps/">Uygulamalar</a>, <a href="../veri-yenileme/">Veri yenileme</a>, <a href="../gateway/">Ağ geçidi</a>.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-yayinlama">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../guvenlik/">← Satır ve nesne düzeyinde güvenlik</a><a href="../m-dili/">M dili: Power Query'nin arkasındaki kod →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

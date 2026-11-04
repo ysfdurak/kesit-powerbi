@@ -1,0 +1,59 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veri alma ve bağlantı modları | Kesit Power BI</title><meta name="description" content="Import, DirectQuery, Live Connection ve Direct Lake arasındaki farklar; hangisini ne zaman seçmeli?"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/veri-alma/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Veri alma ve bağlantı modları"><meta property="og:description" content="Import, DirectQuery, Live Connection ve Direct Lake arasındaki farklar; hangisini ne zaman seçmeli?"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/veri-alma/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Veri alma ve bağlantı modları","description":"Import, DirectQuery, Live Connection ve Direct Lake arasındaki farklar; hangisini ne zaman seçmeli?","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/veri-alma/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Veri Hazırlama</span><h1>Veri alma ve bağlantı modları</h1><p class="st-l">Import, DirectQuery, Live Connection ve Direct Lake arasındaki farklar; hangisini ne zaman seçmeli?</p>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-alma">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Veri nereden gelir?</h2>
+<p>Giriş → <b>Veri al</b> menüsünde yüzlerce bağlayıcı var: Excel, CSV, SQL Server, PostgreSQL, Oracle, SharePoint listeleri, Dataverse, Salesforce, Google Analytics, web sayfaları, REST API'ler… Bağlayıcı seçtikten sonra Power BI bir <b>Gezgin</b> penceresi açar; tabloları seçip <b>Yükle</b> ya da <b>Verileri Dönüştür</b> dersin.</p>
+<div class="tip"><b>Alışkanlık</b>Doğrudan “Yükle”ye basma. Önce “Verileri Dönüştür” ile Power Query'ye gir, veri türlerini ve gereksiz sütunları kontrol et.</div>
+<h2>Depolama modları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Mod</th><th>Veri nerede?</th><th>Artısı</th><th>Eksisi</th></tr>
+<tr><td><b>Import (İçeri aktar)</b></td><td>Power BI dosyasına kopyalanır, VertiPaq'te sıkıştırılır.</td><td>En hızlı; tüm DAX ve Power Query özellikleri çalışır.</td><td>Veri yenileme anı kadar günceldir; model boyutu sınırları var.</td></tr>
+<tr><td><b>DirectQuery</b></td><td>Kaynakta kalır; her görsel kaynağa sorgu gönderir.</td><td>Veri hep günceldir; çok büyük tablolar için uygundur.</td><td>Kaynak yavaşsa rapor yavaşlar; bazı DAX ve dönüşümler kısıtlıdır.</td></tr>
+<tr><td><b>Live Connection (Canlı bağlantı)</b></td><td>Başka bir yerde yayımlanmış anlam modelinde (ya da Analysis Services'te).</td><td>Tek doğru kaynak; ekipler aynı ölçüleri kullanır.</td><td>Modeli değiştiremezsin, yalnızca rapor ölçüleri eklersin.</td></tr>
+<tr><td><b>Direct Lake</b></td><td>Fabric lakehouse'taki Delta tablolarında.</td><td>Import'a yakın hız, kopyalama ve zamanlanmış yenileme yükü olmadan.</td><td>Fabric gerektirir.</td></tr>
+<tr><td><b>Bileşik (Composite)</b></td><td>Bazı tablolar Import, bazıları DirectQuery; “Dual” mod ikisi de olabilir.</td><td>Esneklik: özet veri hızlı, ayrıntı canlı.</td><td>Tasarımı daha karmaşık.</td></tr>
+</table></div>
+<h2>Karar verirken sorulacak üç soru</h2>
+<ol>
+<li><b>Veri ne kadar güncel olmalı?</b> Günde birkaç kez yeterliyse Import.</li>
+<li><b>Veri ne kadar büyük?</b> Yüz milyonlarca satır ve büyüyen bir olgu tablosu varsa DirectQuery ya da Direct Lake.</li>
+<li><b>Ortak bir model var mı?</b> Şirketin onaylı bir anlam modeli varsa ona Live Connection ile bağlan, aynı ölçüyü ikinci kez yazma.</li>
+</ol>
+<div class="note"><b>Ağ geçidi (gateway)</b>Kaynak şirket ağının içindeyse (ör. ofisteki SQL Server), Service'in ona ulaşması için <b>şirket içi veri ağ geçidi</b> kurulur. Bulut kaynaklarında genellikle gerekmez.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Dosya kaynakları: CSV, Excel, klasör</h2>
+<p>İş hayatında ilk raporların çoğu bir veritabanından değil, birinin e-postayla gönderdiği bir dosyadan başlar. Üç dosya türünün kendine özgü tuzakları vardır.</p>
+<h3>Metin/CSV</h3>
+<p>Giriş → Veri al → <b>Metin/CSV</b>. Açılan önizlemede üç ayara bak:</p>
+<ul>
+<li><b>Dosya kökeni (kodlama):</b> Türkçe karakterler “Ã¼” gibi bozuk görünüyorsa 65001: Unicode (UTF-8) seç.</li>
+<li><b>Sınırlayıcı:</b> Türkçe Excel'den kaydedilen CSV dosyaları çoğu zaman virgül değil noktalı virgül kullanır. Tüm veri tek sütunda geliyorsa sınırlayıcı yanlıştır.</li>
+<li><b>Veri türü algılama:</b> Power BI türü ilk satırlara bakarak tahmin eder. Sonradan gelen farklı değerler hata olabilir; türleri Power Query'de kendin kontrol et.</li>
+</ul>
+<h3>Excel çalışma kitabı</h3>
+<p>Gezgin penceresinde hem sayfalar hem de <b>Excel tabloları</b> görünür. Mümkünse tabloyu seç: tablo büyüyünce yeni satırlar kendiliğinden gelir ve başlık satırı nettir. Birleştirilmiş hücreler, üstteki başlık-logo satırları ve alt toplam satırları Power BI için gürültüdür; Power Query ile temizlenir (Power Query ile veri temizleme dersi).</p>
+<h3>Klasör</h3>
+<p>Her ay aynı yapıda bir dosya geliyorsa (“satis_2024_09.xlsx”, “satis_2024_10.xlsx”…) dosyaları tek tek eklemek yerine <b>Klasör</b> bağlayıcısını kullan. Birleştir ve Dönüştür dediğinde Power BI bir örnek dosyadaki adımları tüm dosyalara uygular. Yeni ayın dosyasını klasöre bırakman yeterli: bir sonraki yenilemede rapora girer. Dosyalar şirketin SharePoint'indeyse <b>SharePoint klasörü</b> bağlayıcısını seç; kaynak bulutta olduğu için Service’te yenilemek için ağ geçidine gerek kalmaz.</p>
+<h2>Web kaynakları</h2>
+<p><b>Web</b> bağlayıcısına bir adres verirsin. Adres bir HTML sayfasıysa Power BI sayfadaki tabloları listeler; bir CSV ya da JSON dosyasıysa onu doğrudan okur. Örnek: Merkez bankasının yayımladığı döviz kuru tablosu. İki uyarı: sayfanın düzeni değişirse sorgu bozulabilir ve bazı siteler otomatik okumaya izin vermez. Kalıcı bir iş için sitenin sunduğu resmi dosya ya da API adresini tercih et.</p>
+<h2>Gizlilik düzeyleri: veri nereye gidebilir?</h2>
+<p>Power Query bazen iki kaynağı birleştirirken birinin verisini diğerine sorgu içinde gönderir. Şirketin müşteri listesini, herkese açık bir web sitesine filtre olarak göndermesini istemezsin. Gizlilik düzeyi bunu yönetir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Düzey</th><th>Anlamı</th><th>Örnek kaynak</th></tr>
+<tr><td>Özel (Private)</td><td>Hassas veri; başka hiçbir kaynağa gönderilmez.</td><td>Maaş dosyası, kişisel veriler</td></tr>
+<tr><td>Kuruluş (Organizational)</td><td>Şirket içinde paylaşılabilir; genel kaynaklara gönderilmez.</td><td>Şirketin SQL sunucusu, SharePoint</td></tr>
+<tr><td>Genel (Public)</td><td>Herkese açık veri.</td><td>Herkese açık döviz kuru sayfası</td></tr>
+<tr><td>Yok (None)</td><td>Ayar yok; yalnızca kontrollü deneme için.</td><td>—</td></tr>
+</table></div>
+<p>Ayarlamak için: <b>Dosya → Seçenekler ve ayarlar → Veri kaynağı ayarları</b> → kaynağı seç → <b>İzinleri düzenle</b> → Gizlilik düzeyi. Yalnızca açık dosya için Giriş sekmesindeki Veri kaynağı ayarları da aynı pencereyi açar. Düzeyler uyumsuzsa Power Query birleştirmeyi durdurur ve bir “Formula.Firewall” hatası verir.</p>
+<div class="warn"><b>“Yok say” kestirmesi</b>Seçenekler → Gizlilik bölümünde gizlilik düzeylerini yok sayma seçeneği vardır ve hatayı susturur. Ama hassas verinin dışarı gitmesine izin verebilir ve Service’te yayımlanan rapor bu ayara uymaz. Doğru yol, her kaynağa gerçek düzeyini vermektir.</div>
+<p>Dosyanın yeri değiştiğinde (ör. masaüstünden ortak klasöre) aynı Veri kaynağı ayarları penceresindeki <b>Kaynağı değiştir</b> ile yeni yolu gösterirsin; sorgunun adımları korunur.</p>
+</section><div class="tip"><b>Elle dene</b><a href="../../">Power Query Lab</a> sayfasında bir kaynak seç; türü düzelt, boş satırları kaldır, bir sütunu böl. Her adımın M koduna dönüştüğünü gör.</div><div class="note"><b>İki kaynağı birleştirmek</b>Ekleme, birleştirme ve gizlilik kararları <a href="../coklu-kaynak/">Birden çok veri kaynağıyla çalışmak</a> dersinde; Power Query Lab’de alıştırması var.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-alma">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../arayuz/">← Desktop arayüz turu</a><a href="../pq-temel/">Power Query ile veri temizleme →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

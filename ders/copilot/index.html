@@ -1,0 +1,98 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copilot ile çalışmak ve modeli yapay zekâya hazırlamak | Kesit Power BI</title><meta name="description" content="Copilot’un Power BI’daki yerleri, kapasite ve kiracı gereksinimleri, Soru-Cevap’tan Copilot’a geçiş, “Yapay zekâ için verileri hazırla” ile veri şeması,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/copilot/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Copilot ile çalışmak ve modeli yapay zekâya hazırlamak"><meta property="og:description" content="Copilot’un Power BI’daki yerleri, kapasite ve kiracı gereksinimleri, Soru-Cevap’tan Copilot’a geçiş, “Yapay zekâ için verileri hazırla” ile veri şeması,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/copilot/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Copilot ile çalışmak ve modeli yapay zekâya hazırlamak","description":"Copilot’un Power BI’daki yerleri, kapasite ve kiracı gereksinimleri, Soru-Cevap’tan Copilot’a geçiş, “Yapay zekâ için verileri hazırla” ile veri şeması,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/copilot/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Copilot ile çalışmak ve modeli yapay zekâya hazırlamak</h1><p class="st-l">Copilot’un Power BI’daki yerleri, kapasite ve kiracı gereksinimleri, Soru-Cevap’tan Copilot’a geçiş, “Yapay zekâ için verileri hazırla” ile veri şeması, onaylı cevaplar ve talimatlar; iyi soru yazmak ve cevabı doğrulamak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-copilot">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Copilot, Power BI’da doğal dille soru sorduğun, rapor sayfası istediğin ya da DAX yazdırdığın yapay zekâ yardımcısıdır. Ama Copilot <b>modelini</b> okur: tablo, sütun ve ölçü adlarını, açıklamaları, ilişkileri. Model dağınıksa cevap da dağınık olur. Bu derste önce Copilot’un nerede olduğunu, sonra modeli ona nasıl hazırlayacağını öğreneceksin. DAX tarafındaki ilk adımlar “Hızlı ölçüler ve Copilot ile DAX” dersinde; burada rapor, model ve yönetim tarafına odaklanıyoruz.</p>
+
+<h2>Copilot Power BI’da nerede?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yer</th><th>Ne yapar?</th><th>Durum</th></tr>
+<tr><td>Rapor Copilot bölmesi (Copilot pane)</td><td>Açık raporla sohbet: soru sorarsın, sayfanın ya da raporun özetini alırsın. Düzenleme modunda yeni rapor sayfası önerir ve oluşturur.</td><td>Genel kullanım</td></tr>
+<tr><td>Anlatı görseli (Narrative)</td><td>Sayfadaki görselleri metinle özetler; filtre değişince metin de güncellenir.</td><td>Genel kullanım</td></tr>
+<tr><td>DAX sorgu görünümü (DAX query view)</td><td><code>Ctrl+I</code> ile Copilot: doğal dilden DAX sorgusu yazar, “Bu sorguyu açıkla” ile kodu anlatır, “Bir DAX konusunu açıkla” ile fonksiyon anlatır.</td><td>Desktop’ta Önizleme özellikleri altından açılır</td></tr>
+<tr><td>Ölçü açıklamaları</td><td>Bir ölçünün DAX’ını okuyup açıklama (description) önerir.</td><td>Model yazarı için</td></tr>
+<tr><td>Bağımsız Copilot (standalone)</td><td>Service’te sol gezinti çubuğundaki simge: tüm raporlar ve modeller arasında arar, soruyu doğru öğeye yönlendirir.</td><td><b>Önizleme</b></td></tr>
+<tr><td>Web modellemede Copilot</td><td>Service’te modeli inceler; ölçü, tablo, sütun ve ilişki düzenler.</td><td><b>Önizleme</b></td></tr>
+</table></div>
+<p>Rapor bölmesinde bir <b>yetenek seçici</b> (skill picker) vardır: “Veriyle ilgili soruları yanıtla”, “Rapor görsellerini analiz et” ve “Yeni rapor sayfası oluştur”. Test ederken hangi yeteneği kullandığını bilerek seç; çünkü aşağıda göreceğin ayarların bir kısmı yalnızca veri sorularını etkiler.</p>
+
+<h2>Gereksinimler: Copilot neden görünmüyor?</h2>
+<ul>
+<li><b>Kapasite:</b> Çalışma alanı ücretli bir Fabric kapasitesinde (F2 ve üstü) ya da Power BI Premium’da (P1 ve üstü) olmalı. Deneme kapasiteleri desteklenmez. Alternatif olarak yönetici bir <b>Fabric Copilot kapasitesi</b> atayabilir; o zaman yapay zekâ tüketimi oraya faturalanır.</li>
+<li><b>Lisans:</b> Yalnızca Pro ya da Kullanıcı Başına Premium (PPU) lisansı Copilot için yetmez; kuruluşun kapasitesi gerekir.</li>
+<li><b>Kiracı ayarı:</b> Yönetim portalında “Users can use Copilot and other features powered by Azure OpenAI” açık olmalı. Bağımsız Copilot için ayrıca kendi ayarı vardır ve kiracı düzeyinde açılmalıdır.</li>
+<li><b>Bölge:</b> Azure OpenAI’ın bulunmadığı bölgelerde verinin bölge dışında işlenmesine izin veren ayar gerekir. ABD ve AB veri sınırı dışında bu ayar kapalı geldiği için Copilot da kapalı başlar.</li>
+<li><b>Desktop:</b> İlk kullanımda Copilot uyumlu bir çalışma alanı seçersin; bu alanda en az Katkıda bulunan (Contributor) rolün olmalı.</li>
+<li><b>Dil:</b> Learn, İngilizce dışındaki dillerin resmî olarak desteklenmediğini söylüyor. Türkçe sorular çoğu zaman anlaşılır, ama kritik sorularda İngilizce sormak ve cevabı mutlaka doğrulamak daha güvenli.</li>
+</ul>
+<div class="note"><b>Önbellek</b>Model değişmediyse aynı soruya 24 saat içinde önbellekten aynı cevap gelir; “sohbeti temizle” bunu değiştirmez. Ayarları değiştirip test ediyorsan soruyu biraz değiştir ya da modeli yenile.</div>
+
+<h2>Soru-Cevap’tan Copilot’a geçiş</h2>
+<p>Soru-Cevap (Q&amp;A) görseli ve Q&amp;A kurulum ekranı emekliye ayrılıyor. Microsoft’un duyurusu Aralık 2026’yı veriyor; bazı Learn sayfalarındaki güncel uyarı ise Şubat 2027 diyor. Tarih ne olursa olsun yeni rapora Soru-Cevap koyma. Yerine geçenler:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soru-Cevap nerede kullanılıyordu?</th><th>Yerine</th></tr>
+<tr><td>Rapordaki Soru-Cevap görseli</td><td>Rapor Copilot bölmesi</td></tr>
+<tr><td>Panodaki soru kutusu</td><td>Bağımsız Copilot (önizleme)</td></tr>
+<tr><td>Mobil uygulama</td><td>Power BI Mobile’da Copilot</td></tr>
+<tr><td>Q&amp;A kurulumu (eş anlamlılar, ifadeler, öğretme)</td><td>Yapay zekâ için verileri hazırla</td></tr>
+</table></div>
+<p>Bir ayrıntı: “Yapay zekâ için verileri hazırla” bugün hâlâ modelde Soru-Cevap’ın <b>açık</b> olmasını ister; çünkü Copilot, metin sütunlarındaki değerleri (ör. “Ege”, “Premium”) bu dizinle tanır. Soru-Cevap görselini kaldırırken model ayarını kapatma.</p>
+
+<h2>Yapay zekâ için verileri hazırla (Prep data for AI) — önizleme</h2>
+<p>Desktop’ta <b>Giriş</b> şeridinde Copilot düğmesinin yanındadır; Service’te anlam modelinin sayfasında. Yaptığın her şey <b>anlam modeline</b> kaydedilir, rapora değil; o modeli kullanan tüm raporlar yararlanır.</p>
+<ol>
+<li><b>Yapay zekâ veri şeması (AI data schema):</b> Copilot’un öncelik vereceği alanları seçersin. Bizim modelde <code>Satislar[SatirNo]</code>, <code>KohortAyFarki</code>, <code>TopNSecim</code>, <code>OlcuSecimi</code> gibi yardımcı alanların Copilot’a gösterilmesine gerek yok. Modelde gizli alanlar ilk kurulumda otomatik olarak dışarıda kalır. Şema yalnızca veri sorularını etkiler; rapor özeti, sayfa oluşturma ve DAX sorgu üretimi tüm modeli kullanır.</li>
+<li><b>Onaylı cevaplar (verified answers):</b> Bir görseli seçip <b>…</b> menüsünden “Onaylı cevap ayarla” dersin ve tetikleyici ifadeler eklersin: “kanallara göre ciro”, “hangi kanal ne kadar sattı”. Kullanıcı benzer bir şey sorduğunda Copilot senin hazırladığın görseli döndürür. Sık sorulan, yanlış anlaşılmaya açık sorular için idealdir.</li>
+<li><b>Yapay zekâ talimatları (AI instructions):</b> En çok 10.000 karakterlik serbest metin. İş terimleri, varsayılan ölçüler ve belirsizlikte ne yapılacağı yazılır. Kullanıcılar talimatları göremez ve kapatamaz.</li>
+</ol>
+<pre>Ölçüler
+- "Ciro", "satış" ya da "gelir" denince [Net Satış] kullan; [Toplam Satış] iptalleri de içerir.
+- Kâr oranı için [Kâr Marjı %] kullan; satır düzeyindeki marjların ortalamasını alma.
+
+Tarihler
+- Tarih filtresi ve zaman karşılaştırması için her zaman Tarih tablosunu kullan, Satislar[Tarih]'i değil.
+- "Geçen yıl" sorularında [Satış GY] ölçüsünü kullan.
+
+Terimler
+- "Temsilci", "satıcı" ve "satış uzmanı" aynı şeydir: Calisanlar[AdSoyad].
+- "Kurumsal müşteri" Musteriler[Segment] = "Kurumsal" demektir.
+
+Belirsizlik
+- "Performans" sorusunda hangi ölçünün kastedildiği belli değilse kullanıcıya sor.</pre>
+<p>Model hazır olunca Service’te modelin ayarlarından <b>Copilot için onaylı</b> (Approved for Copilot) kutusunu işaretleyebilirsin. Yönetici, bağımsız Copilot’un yalnızca onaylı içerikte arama yapmasını isteyebilir; onaysız modeller o zaman hiç görünmez.</p>
+
+<h2>Modeli okunur kılmak</h2>
+<ul>
+<li><b>Adlandırma:</b> Kullanıcının söyleyeceği kelimeyi kullan. <code>Tbl_F_Sls</code> yerine <code>Satislar</code>, <code>M1</code> yerine <code>Net Satış</code>. Aynı şeye iki ad verme.</li>
+<li><b>Açıklamalar:</b> Ölçü ve sütunlara açıklama yaz (“İptaller hariç, KDV hariç ciro”). DAX Copilot açıklamanın yalnızca ilk 200 karakterini okur; en önemli bilgiyi başa koy.</li>
+<li><b>Gizli alanlar:</b> Anahtar sütunları, sıralama yardımcılarını, ara ölçüleri gizle. Gizlenen her alan, Copilot’un yanlış alanı seçme ihtimalini azaltır.</li>
+<li><b>Eş anlamlılar:</b> Bugün Model görünümündeki Özellikler bölmesinde ve Q&amp;A kurulumunda duruyor. Q&amp;A kurulumu kalkarken Learn, terim eşlemesini yapay zekâ talimatlarıyla yapmayı gösteriyor (“satıcı = temsilci”). Kalıcı yeri için güncel belgeleri izle.</li>
+<li><b>Yapı:</b> Yıldız şema, işaretli tarih tablosu, doğru özetleme ayarları (yıl sütunu toplanmasın), açık ölçüler. Copilot’un sorunlarının çoğu model sorunudur.</li>
+</ul>
+
+<h2>İyi soru yazmak</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Zayıf soru</th><th>Daha iyi soru</th><th>Neden?</th></tr>
+<tr><td>satışlar nasıl?</td><td>2024’te kanallara göre Net Satış ve geçen yıla göre değişim yüzdesi</td><td>Ölçü, dönem ve kırılım belli.</td></tr>
+<tr><td>en iyi ürünler</td><td>2024’te Net Satış’a göre ilk 5 ürün, kategorileriyle</td><td>“En iyi”nin ölçüsü ve sayısı verildi.</td></tr>
+<tr><td>bir sayfa yap</td><td>Bölge müdürü için tek sayfa: üstte Net Satış, Hedef Gerçekleşme % ve YoY % kartları; altta aylık trend ve bölgelere göre çubuk grafik</td><td>Kitle, kartlar ve görseller tanımlı.</td></tr>
+<tr><td>bu ölçü ne?</td><td>[Kümülatif Satış] ölçüsünün mantığını adım adım açıkla; ALL(Tarih[Tarih]) neden var?</td><td>Neyin açıklanacağı belli.</td></tr>
+</table></div>
+
+<h2>Sınırlar ve doğrulama sorumluluğu</h2>
+<p>Copilot olasılıksal çalışır: aynı soru farklı günlerde farklı kurgulanabilir. Model meta verisini okur ama iş kurallarını bilmez. Bu yüzden son sorumluluk sende:</p>
+<ul>
+<li><b>Bilinen bir sayıyla karşılaştır:</b> Bu modelde Net Satış toplamı yaklaşık 1.250.772 ₺, Toplam Satış ise 1.346.190 ₺. Copilot “ciro”ya ikinci sayıyı veriyorsa iptalleri dahil etmiştir.</li>
+<li><b>Hangi alanı kullandığına bak:</b> Copilot’un oluşturduğu görselde alan kutularını aç.</li>
+<li><b>Yazdığı DAX’ı oku:</b> Ayrıntılı denetim listesi “Yapay zekânın yazdığı DAX’ı denetlemek” dersinde.</li>
+<li><b>Sayfa özetini yayına koymadan önce oku:</b> Anlatı görseli yanlış bir neden-sonuç cümlesi kurabilir.</li>
+</ul>
+<div class="warn"><b>Güvenlik ve gizlilik</b>Copilot kullanıcının izinlerine uyar: satır düzeyi güvenlik (RLS) varsa yalnızca görebildiği veriyle cevap verir. Yine de duyarlı alanları (maaş, e-posta) yapay zekâ veri şemasından çıkarmak iyi bir alışkanlıktır.</div>
+<div class="note"><b>Fabric’in geri kalanı</b>Data Factory, not defteri ve ambarda Copilot <a href="../fabric-copilot/">Fabric ve Power BI’da Copilot</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-copilot">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../finans/">← Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar</a><a href="../yz-dax-denetim/">Yapay zekânın yazdığı DAX’ı denetlemek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

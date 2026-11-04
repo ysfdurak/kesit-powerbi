@@ -1,0 +1,185 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler | Kesit Power BI</title><meta name="description" content="Bir tabloyu filtrelemenin aslında genişletilmiş tablosunu filtrelemek olduğu, ALL(Satislar) ve REMOVEFILTERS(Urunler) neyi siler, tablo filtresinin gizli…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/genisletilmis-tablolar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler"><meta property="og:description" content="Bir tabloyu filtrelemenin aslında genişletilmiş tablosunu filtrelemek olduğu, ALL(Satislar) ve REMOVEFILTERS(Urunler) neyi siler, tablo filtresinin gizli…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/genisletilmis-tablolar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler","description":"Bir tabloyu filtrelemenin aslında genişletilmiş tablosunu filtrelemek olduğu, ALL(Satislar) ve REMOVEFILTERS(Urunler) neyi siler, tablo filtresinin gizli…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/genisletilmis-tablolar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Uzman DAX</span><h1>DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler</h1><p class="st-l">Bir tabloyu filtrelemenin aslında genişletilmiş tablosunu filtrelemek olduğu, ALL(Satislar) ve REMOVEFILTERS(Urunler) neyi siler, tablo filtresinin gizli etkisi, veri soyu (lineage) ve TREATAS, keyfi biçimli filtre ve KEEPFILTERS, ALLSELECTED ve gölge filtre bağlamı, CALCULATE argümanlarının değerlendirme sırası.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-genisletilmis-tablolar">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“CALCULATE: filtre bağlamını değiştirmek” ve “FILTER, ALL, ALLEXCEPT, ALLSELECTED” derslerinde kuralları öğrendin. “Bağlam geçişi” dersinde satır bağlamının filtreye nasıl dönüştüğünü gördün. Bu ders, o kuralların <b>altındaki</b> mekanizmayı anlatıyor. Bir ölçü “bazen” yanlış sonuç veriyorsa, sebep çoğu zaman bu derste anlatılan beş şeyden biridir: genişletilmiş tablo, tablo filtresi, veri soyu, keyfi biçimli filtre ya da argüman sırası.</p>
+<p>Anadolu Market’in finans ekibinden gelen üç gerçek soru ile başlayalım:</p>
+<ul>
+<li>“Kategori matrisinde ‘tüm ürünler’ toplamını istedim, <code>REMOVEFILTERS(Urunler)</code> yazdım. Kategori filtresi de gitti. Neden? Kategori ayrı bir tabloda.”</li>
+<li>“İade ve iptal hariç satış ölçüsü yazdım. Sonuç net satışla aynı çıktı; iadeler hâlâ içeride.”</li>
+<li>“Kullanıcı matriste Aralık 2023 ile Ocak 2024’ü birlikte seçti. ‘2024 satışı’ ölçüm Aralık 2024’ü de getirdi.”</li>
+</ul>
+
+<h2>1 · Genişletilmiş tablo: bir tablo, bağlı olduğu boyutları da içerir</h2>
+<p>DAX motoru her tabloyu <b>genişletilmiş (expanded)</b> hâliyle düşünür. Bir tablonun genişletilmiş hâli, kendi sütunları artı çoka-bir ilişkilerle <b>bir tarafına doğru</b> ulaşabildiği bütün tabloların sütunlarıdır. Genişleme yalnızca çok taraftan bir tarafa doğru olur; tersine olmaz.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Genişletilmiş hâli şunları da içerir</th></tr>
+<tr><td>Satislar</td><td>Urunler, Kategoriler, Musteriler, Tarih, Calisanlar, Departmanlar</td></tr>
+<tr><td>Urunler</td><td>Kategoriler</td></tr>
+<tr><td>Calisanlar</td><td>Departmanlar</td></tr>
+<tr><td>Hedefler</td><td>Kategoriler, Tarih</td></tr>
+<tr><td>Giderler</td><td>Tarih, GiderTurleri, Departmanlar</td></tr>
+<tr><td>Kategoriler, Tarih, Musteriler</td><td>Hiçbir şey (zincirin ucundaki boyutlar)</td></tr>
+</table></div>
+<p>Microsoft Learn’e göre iki ayrıntı önemli: <b>pasif ilişkiler de genişler</b> (Satislar[TeslimTarihi] → Tarih bağı kullanılmasa bile) ve <b>çift yönlü filtre genişlemeyi değiştirmez</b>. Çoka-çok kardinaliteli (sınırlı) ilişkilerde ise genişleme hiç olmaz; bunu “Çoka çok ilişkiler” dersinde göreceksin.</p>
+<p>Altın kural: <b>Bir tabloyu filtrelemek, onun genişletilmiş tablosunu filtrelemektir.</b> Kategoriler[Kategori] = "Elektronik" filtresi Satislar’ı süzer, çünkü Kategoriler[Kategori] genişletilmiş Satislar’ın bir sütunudur. Aynı mantık ters yönde de geçerlidir: bir filtreyi kaldıran fonksiyon, genişletilmiş tablodaki filtreleri de kaldırır.</p>
+<h3>Sayılarla: hangi kaldırma neyi siler?</h3>
+<p>Matriste satırlarda Kategoriler[Kategori] var. Elektronik satırında beş ölçünün sonucu:</p>
+<pre class="dax">Tüm Satış (Olgu) =
+CALCULATE([Net Satış], ALL(Satislar))
+
+Tüm Satış (Ürün Boyutu) =
+CALCULATE([Net Satış], REMOVEFILTERS(Urunler))
+
+Tüm Satış (Kategori Boyutu) =
+CALCULATE([Net Satış], REMOVEFILTERS(Kategoriler))
+
+Yanlış Sütun =
+CALCULATE([Net Satış], REMOVEFILTERS(Urunler[Kategori]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Ölçü</th><th>Elektronik satırı</th><th>Neden?</th></tr>
+<tr><td>[Net Satış]</td><td>339.304 ₺</td><td>Kategori filtresi Satislar’a ulaşır.</td></tr>
+<tr><td>ALL(Satislar)</td><td>1.250.772 ₺</td><td>Kategoriler genişletilmiş Satislar’ın içinde; filtre kalkar.</td></tr>
+<tr><td>REMOVEFILTERS(Urunler)</td><td>1.250.772 ₺</td><td>Urunler’in genişletilmiş hâli Kategoriler’i içerir; kategori filtresi de kalkar.</td></tr>
+<tr><td>REMOVEFILTERS(Kategoriler)</td><td>1.250.772 ₺</td><td>Filtre doğrudan bu tabloda.</td></tr>
+<tr><td>REMOVEFILTERS(Urunler[Kategori])</td><td>339.304 ₺</td><td>Görselin filtresi Kategoriler’de, bu sütunda değil; hiçbir şey kalkmaz.</td></tr>
+</table></div>
+<p>Ters yönü de dene: satırlarda Urunler[Urun] varken <code>REMOVEFILTERS(Kategoriler)</code> ürün filtresini <b>kaldırmaz</b>; 27" Monitör satırı 101.986 ₺ olarak kalır. Çünkü Kategoriler’in genişletilmiş tablosunda Urunler yoktur. Satislar[Kanal] kırılımında da <code>REMOVEFILTERS(Urunler)</code> kanal filtresine dokunmaz: Mağaza satırı 193.600 ₺ kalır, oysa <code>ALL(Satislar)</code> orada da 1.250.772 ₺ verir.</p>
+<div class="tip"><b>Pratik kural</b>Kaldırmak istediğin filtreyi, görselin filtrelediği <b>sütunu ya da boyut tablosunu</b> adıyla anarak kaldır. Olgu tablosunu (ALL(Satislar)) hedeflemek, istemediğin bütün boyut filtrelerini de siler.</div>
+
+<h2>2 · Tablo filtresi: görünmeyen sütunlar da filtredir</h2>
+<p>Finans ekibinin ikinci sorusu. Hedef: iptal ve iade hariç satış. [Net Satış] zaten iptalleri çıkarıyor; üzerine iade filtresi eklemek yeterli gibi görünür.</p>
+<pre class="dax">İadesiz (Deneme A) =
+CALCULATE([Net Satış], Satislar[Durum] &lt;&gt; "İade")
+
+İadesiz (Deneme B) =
+CALCULATE([Net Satış], FILTER(Satislar, Satislar[Durum] &lt;&gt; "İade"))
+
+İadesiz (Deneme C) =
+CALCULATE([Net Satış], FILTER(ALL(Satislar), Satislar[Durum] &lt;&gt; "İade"))
+
+İadesiz (Doğru) =
+CALCULATE([Toplam Satış], Satislar[Durum] &lt;&gt; "İptal", Satislar[Durum] &lt;&gt; "İade")</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Deneme</th><th>Toplam</th><th>Elektronik satırı</th><th>Ne oldu?</th></tr>
+<tr><td>A · sütun filtresi</td><td>1.250.772 ₺</td><td>339.304 ₺</td><td>[Net Satış] içindeki CALCULATE, Durum sütununa kendi filtresini yazar ve dıştaki “İade değil” filtresinin <b>üzerine yazar</b>. İadeler geri gelir.</td></tr>
+<tr><td>B · FILTER(Satislar)</td><td>1.169.937 ₺</td><td>323.108 ₺</td><td>Doğru ama yavaş. Tablo filtresi Satislar’ın bütün sütunlarını (SatirNo dahil) taşır. İçteki CALCULATE yalnızca Durum’u değiştirebilir; iade satırları SatirNo filtresiyle dışarıda kalır.</td></tr>
+<tr><td>C · FILTER(ALL(Satislar))</td><td>1.169.937 ₺</td><td>1.169.937 ₺</td><td>Toplam doğru, kırılım bozuk. ALL(Satislar) genişletilmiş tabloyu, yani kategori filtresini de siler.</td></tr>
+<tr><td>Doğru · iki koşul tek CALCULATE’te</td><td>1.169.937 ₺</td><td>323.108 ₺</td><td>Aynı sütuna iki ayrı filtre argümanı VE ile kesişir. Hızlı ve okunur.</td></tr>
+</table></div>
+<p>B ile C’nin farkı tam olarak genişletilmiş tablodur. B, o anki bağlamda görünen Satislar satırlarını alır; bu satırlar zaten kategoriye göre süzülmüştür ve tablo filtresi olarak verildiğinde Kategoriler sütunları da filtrede kalır. C ise önce bütün filtreleri kaldırır, sonra satırları döndürür. Diğer yol <code>[Net Satış] - [İade Tutarı]</code> da aynı sonucu verir ve ekipte en kolay okunan yazımdır.</p>
+<div class="warn"><b>Anti-kalıp: olgu tablosunu FILTER’a vermek</b>FILTER(Satislar, …) bütün olgu tablosunu satır satır dolaşır ve sonucu genişletilmiş tablo filtresi olarak taşır. Bir milyon satırlık modelde yavaştır ve filtre bağlamına gereksiz sütunlar ekler. Koşul tek sütundaysa sütun filtresi, birkaç sütundaysa <code>FILTER(ALL(Satislar[Durum], Satislar[Kanal]), …)</code> gibi yalnızca gereken sütunları al.</div>
+
+<h2>3 · Veri soyu (lineage): filtre hangi sütunu süzeceğini nereden bilir?</h2>
+<p>“Tablo fonksiyonları” dersinde soy bağını tanıdın. Uzman düzeyinde bilmen gereken, soyun <b>ne zaman korunduğu, ne zaman koptuğu</b>dur.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soy korunur</th><th>Soy kopar</th></tr>
+<tr><td>VALUES, DISTINCT, ALL, FILTER, TOPN, CALCULATETABLE, INTERSECT, EXCEPT sonucu: sütunlar modeldeki sütunu “hatırlar”.</td><td>ADDCOLUMNS ile eklenen yeni sütun, elle yazılan tablo ({"Web", "Mobil"}), DATATABLE ve bir sütun üzerinde işlem yapan ifade (Urunler[Urun] &amp; "").</td></tr>
+</table></div>
+<p>Pazarlama sorusu: “Web’den alışveriş yapan müşteriler mağazada ne kadar harcıyor?” Önce Web müşterilerinin kümesini bul, sonra bu kümeyi filtre olarak ver:</p>
+<pre class="dax">Web Müşterilerinin Mağaza Satışı =
+VAR WebMusterileri =
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Kanal] = "Web", Satislar[Durum] &lt;&gt; "İptal")
+RETURN
+    CALCULATE([Net Satış], WebMusterileri, Satislar[Kanal] = "Mağaza")</pre>
+<p>Sonuç 158.614 ₺; tüm mağaza satışı ise 193.600 ₺. Yani mağaza cirosunun yaklaşık %82’si Web’i de kullanan müşterilerden geliyor. WebMusterileri değişkeninin soyu Satislar[MusteriNo]’yu gösterdiği için CALCULATE doğru sütunu süzer; kanal filtresi ise ayrı bir argümanla Mağaza’ya çevrilir. Filtre olgu sütununda durur. Aynı kümeyi <code>TREATAS(WebMusterileri, Musteriler[MusteriNo])</code> ile boyuta taşırsan sonuç aynı kalır, ama filtre artık Musteriler üzerinden Talepler gibi diğer olgulara da ulaşır. Hangisini istediğine bilerek karar ver.</p>
+<p>Soy koptuğunda motor tabloyu filtre olarak kullanamaz. Aşağıdaki ilk ifade ürün adlarını metne çevirdiği için soyu kaybeder; ikincisi TREATAS ile soyu geri verir ve ilk 3 ürünün satışını (217.706 ₺) döndürür:</p>
+<pre class="dax" data-notry>-- Soy kopar: &amp; "" ifadesi yeni, bağımsız bir metin sütunu üretir
+CALCULATE([Net Satış], SELECTCOLUMNS(TOPN(3, VALUES(Urunler[Urun]), [Net Satış]), "U", Urunler[Urun] &amp; ""))</pre>
+<pre class="dax">İlk 3 Ürün (Soy Geri Verildi) =
+CALCULATE(
+    [Net Satış],
+    TREATAS(SELECTCOLUMNS(TOPN(3, VALUES(Urunler[Urun]), [Net Satış]), "U", Urunler[Urun] &amp; ""), Urunler[Urun])
+)</pre>
+<p>Soy kopunca filtre ya hiçbir şeyi süzmez ya da hata verir. Teşhis için tabloyu DAX sorgu görünümünde EVALUATE ile döndür, sonra TREATAS ile hedef sütunu açıkça yaz.</p>
+
+<h2>4 · Keyfi biçimli filtre ve KEEPFILTERS</h2>
+<p>Kullanıcı Yıl → Ay hiyerarşisinde, Ctrl ile <b>Aralık 2023</b> ve <b>Ocak 2024</b>’ü seçti. Bu seçim iki ayrı sütun filtresi değildir; (Yıl, Ay) <b>çiftlerinden</b> oluşan tek bir filtredir: {(2023, 12), (2024, 1)}. Böyle, sütunların bağımsız listelerine ayrıştırılamayan filtreye <b>keyfi biçimli filtre (arbitrarily shaped filter)</b> denir. Seçimin net satışı 43.560 + 47.433 = 90.993 ₺’dir.</p>
+<p>Şimdi seçim varken şu ölçü çalışsın:</p>
+<pre class="dax" data-notry>2024 Satışı = CALCULATE([Net Satış], Tarih[Yil] = 2024)
+2024 Satışı (Kesişim) = CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Filtre sonunda ne olur?</th><th>Sonuç</th></tr>
+<tr><td>Seçim (keyfi biçim)</td><td>{(2023, 12), (2024, 1)}</td><td>90.993 ₺</td></tr>
+<tr><td>2024 Satışı (üzerine yazma)</td><td>Yil sütunu çiftlerden çıkarılır, geriye Ay {12, 1} kalır; yeni filtre Yil = 2024. Sonuç Aralık 2024 + Ocak 2024.</td><td>141.434 ₺</td></tr>
+<tr><td>2024 Satışı (Kesişim)</td><td>Çiftler korunur ve Yil = 2024 ile kesişir: yalnızca (2024, 1).</td><td>47.433 ₺</td></tr>
+<tr><td>Biçim kaybolsaydı (iki ayrı dilimleyici)</td><td>Yil {2023, 2024} × Ay {12, 1}: dört ay.</td><td>198.531 ₺</td></tr>
+</table></div>
+<p>Üzerine yazma sürümü, kullanıcının hiç seçmediği Aralık 2024’ü raporlar. Testte görünmez, çünkü test eden genelde tek ay seçer. Hiyerarşi seçimini Playground’da TREATAS ile kurup üç sonucu kendin görebilirsin:</p>
+<pre class="dax">Seçim (Çiftler) =
+CALCULATE([Net Satış], TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
+Seçimde 2024 (Üzerine Yazma) =
+CALCULATE(CALCULATE([Net Satış], Tarih[Yil] = 2024), TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))
+Seçimde 2024 (Kesişim) =
+CALCULATE(CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024)), TREATAS({(2023, "Ara"), (2024, "Oca")}, Tarih[Yil], Tarih[Ay]))</pre>
+<p>Sırasıyla 90.993 ₺, 141.434 ₺ ve 47.433 ₺ döner.</p>
+<p>İki savunma yolu var. Birincisi, kullanıcı seçimiyle kesişmesi gereken filtrelerde <b>KEEPFILTERS</b>. İkincisi, biçimi tek sütunda tutmak: dilimleyiciye ya da hiyerarşiye Tarih[YilAy] gibi birleşik bir sütun koymak. Tek sütundaki filtre başka bir sütunun filtresiyle birlikte yaşar:</p>
+<pre class="dax">Seçimde 2024 (Tek Sütun) =
+CALCULATE(
+    CALCULATE([Net Satış], Tarih[Yil] = 2024),
+    Tarih[YilAy] IN {"2023-12", "2024-01"}
+)</pre>
+<p>Sonuç 47.433 ₺: Yil filtresi YilAy filtresini silemez, çünkü ikisi farklı sütunlardır.</p>
+
+<h2>5 · ALLSELECTED ve gölge filtre bağlamı</h2>
+<p>Power BI bir görseli çizerken bir sorgu üretir. Dilimleyiciler ve filtre bölmesi dış filtreyi kurar; görselin satırları (gruplama) her hücre için ayrı bir filtre ekler. Motor, gruplamaya başlamadan önceki filtreyi bir kenarda saklar. Buna <b>gölge filtre bağlamı (shadow filter context)</b> denir: etkin değildir, hiçbir şeyi süzmez, ama ALLSELECTED onu geri çağırabilir. ALLSELECTED “seçimi” değil, <b>son gölge filtre bağlamını</b> geri yükler.</p>
+<p>Dilimleyicide Elektronik, Kitap ve Spor seçili, satırlarda Kategoriler[Kategori]:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Elektronik satırı</th><th>Payda</th><th>Sonuç</th></tr>
+<tr><td>[Seçime Göre Pay %] (ALLSELECTED)</td><td>Üç kategorinin toplamı: 675.417 ₺</td><td>%50,2</td></tr>
+<tr><td>ALL(Kategoriler) ile pay</td><td>Bütün kategoriler: 1.250.772 ₺</td><td>%27,1</td></tr>
+<tr><td>Toplam satırı</td><td>ALLSELECTED %100, ALL ile %54,0</td><td></td></tr>
+</table></div>
+<p>Sorun, iteratörlerin de gölge bağlam kurmasıdır. ALLSELECTED kullanan bir ölçüyü SUMX, AVERAGEX ya da FILTER içinden çağırırsan, ALLSELECTED görselin değil iteratörün dolaştığı kümenin bağlamını geri yükleyebilir. Sonuç görseldeki sayıyla tutmaz ve hata ayıklaması zordur.</p>
+<pre class="dax" data-notry>-- Kaçın: ALLSELECTED kullanan ölçüyü iteratör içinden çağırmak
+Ortalama Seçim Payı = AVERAGEX(VALUES(Urunler[Urun]), [Seçime Göre Pay %])</pre>
+<ul>
+<li>ALLSELECTED’ı yalnızca görsele doğrudan konan ölçülerde kullan.</li>
+<li>Paydayı bir VAR’da, iteratörden <b>önce</b> hesapla; iteratörün içinde ALLSELECTED çağırma.</li>
+<li>Argümanlı yazımı (ALLSELECTED(Kategoriler)) argümansız ALLSELECTED()’a tercih et; neyi geri yüklediğin belli olsun.</li>
+</ul>
+
+<h2>6 · CALCULATE argümanları hangi sırayla değerlendirilir?</h2>
+<p>CALCULATE argümanlarını yazıldığı sırayla değil, sabit bir sırayla işler:</p>
+<ol>
+<li><b>Filtre argümanları dış bağlamda hesaplanır.</b> VALUES, MAX, FILTER gibi ifadeler, CALCULATE’in değiştireceği bağlamı değil, <b>çağrıldığı</b> bağlamı görür.</li>
+<li><b>Bağlam geçişi</b> olur (satır bağlamı varsa).</li>
+<li><b>Değiştiriciler</b> uygulanır: ALL / REMOVEFILTERS / ALLEXCEPT, USERELATIONSHIP, CROSSFILTER.</li>
+<li><b>Filtre argümanları</b> uygulanır: KEEPFILTERS ile sarılı olanlar kesişir, diğerleri aynı sütundaki filtrenin üzerine yazar.</li>
+<li>İfade yeni bağlamda hesaplanır.</li>
+</ol>
+<p>Sonuç 1: sıra yazımdan bağımsızdır. Aşağıdaki iki ölçü her yıl satırında aynı sayıyı, 747.066 ₺’yi verir; REMOVEFILTERS sonra yazılsa da önce çalışır ve Yil = 2024 filtresini silemez.</p>
+<pre class="dax">2024 Sabit A = CALCULATE([Net Satış], Tarih[Yil] = 2024, REMOVEFILTERS(Tarih))
+2024 Sabit B = CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] = 2024)</pre>
+<p>Sonuç 2: iteratör içindeki filtre argümanı satırı görmez. Aşağıdaki hatalı ölçüde VALUES(Tarih[YilAy]) bağlam geçişinden <b>önce</b>, dış bağlamda hesaplanır ve yılın bütün aylarını döndürür. Her ay için yılın tamamı toplanır: 2024 satırında 747.066 ₺ yerine 12 katı, 8.964.788 ₺ çıkar.</p>
+<pre class="dax">Ay Ay Toplam (Hatalı) =
+SUMX(VALUES(Tarih[YilAy]), CALCULATE([Net Satış], REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy])))
+
+Ay Ay Toplam (Doğru) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR Ay = Tarih[YilAy]
+    RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+)</pre>
+<p>Düzeltme, satırın değerini önce bir VAR’a almaktır. “Uzman kalıplar” dersinde aylık hedefi güne dağıtırken aynı hatanın çok daha sinsi bir sürümünü göreceksin: yıllık ve aylık toplamlar doğru çıkar, yalnızca hafta düzeyinde bozulur.</p>
+
+<h2>Üretimde test ve kontrol listesi</h2>
+<p>Bu hatalar toplam satırında ya da tek seçimde doğru görünür. Ölçüyü DAX sorgu görünümünde <b>en az üç bağlamda</b> dene: toplam, tek kırılım, çoklu seçim (iki ay, iki kanal). Performans Analizi’nden sorguyu DAX Studio’ya kopyalayıp sunucu zamanlamalarına bakmak, gereksiz tablo filtresini hemen ele verir.</p>
+<ol>
+<li>Kaldırdığım filtre görselin filtrelediği <b>sütun ya da boyut</b> mu, yoksa olgu tablosunun tamamı mı?</li>
+<li>FILTER’a bir tablo veriyorsam, o tablonun genişletilmiş hâli hangi filtreleri taşıyor?</li>
+<li>İç ölçü (ör. [Net Satış]) aynı sütuna kendi filtresini yazıyor mu? Dıştaki filtrem eziliyor mu?</li>
+<li>Filtre olarak verdiğim tablonun soyu doğru model sütununu gösteriyor mu? Emin değilsem TREATAS.</li>
+<li>Kullanıcı hiyerarşide çoklu seçim yapabilir mi? Evet ise sabit filtrelerde KEEPFILTERS.</li>
+<li>ALLSELECTED kullanan ölçü bir iteratörün içinden çağrılıyor mu?</li>
+<li>İteratör içindeki CALCULATE’in filtre argümanı satırın değerini mi kullanıyor? Kullanıyorsa değeri önce VAR’a al.</li>
+</ol>
+<div class="note"><b>Ekip için belge</b>Ölçünün açıklamasına (Description) “hangi filtreleri korur, hangilerini kaldırır” cümlesini yaz: “Kanal ve tarih filtresini korur; ürün ve kategori filtresini kaldırır.” Kod incelemesinde ilk sorulan soru budur ve Copilot da bu açıklamayı okur.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-genisletilmis-tablolar">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kurulum/">← Power BI Desktop kurulumu: bilgisayarını hazırla</a><a href="../coka-cok/">Çoka çok ilişkiler, köprü tablolar ve ilişki türleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

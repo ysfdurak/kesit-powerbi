@@ -1,0 +1,82 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tarih tablosu (date table) | Kesit Power BI</title><meta name="description" content="Her modele neden ayrı bir tarih tablosu gerekir; CALENDAR ile oluşturma ve tarih tablosu olarak işaretleme."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/tarih-tablosu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Tarih tablosu (date table)"><meta property="og:description" content="Her modele neden ayrı bir tarih tablosu gerekir; CALENDAR ile oluşturma ve tarih tablosu olarak işaretleme."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/tarih-tablosu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Tarih tablosu (date table)","description":"Her modele neden ayrı bir tarih tablosu gerekir; CALENDAR ile oluşturma ve tarih tablosu olarak işaretleme.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/tarih-tablosu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Veri Modelleme</span><h1>Tarih tablosu (date table)</h1><p class="st-l">Her modele neden ayrı bir tarih tablosu gerekir; CALENDAR ile oluşturma ve tarih tablosu olarak işaretleme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-tarih-tablosu">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Neden ayrı bir tarih tablosu?</h2>
+<ul>
+<li><b>Zaman zekâsı fonksiyonları</b> (<code>TOTALYTD</code>, <code>SAMEPERIODLASTYEAR</code>…) kesintisiz bir tarih sütunu ister: aralığın her günü bir kez bulunmalı.</li>
+<li>Satış olmayan günler de raporda görünebilir (ör. “bu ay satış yok” sıfırı).</li>
+<li>Yıl, Çeyrek, Ay, Hafta günü gibi sütunlar tek yerde tanımlanır; <code>Satislar</code> ve <code>Hedefler</code> aynı takvimi paylaşır.</li>
+</ul>
+<h2>DAX ile oluşturma</h2>
+<p>Modelleme → <b>Yeni tablo</b>:</p>
+<pre class="dax">Tarih =
+ADDCOLUMNS(
+    CALENDAR(DATE(2022, 1, 1), DATE(2024, 12, 31)),
+    "Yil", YEAR([Date]),
+    "AyNo", MONTH([Date]),
+    "Ay", FORMAT([Date], "MMM"),
+    "Ceyrek", "Ç" &amp; QUARTER([Date])
+)</pre>
+<p><code>CALENDAR</code> iki tarih arasındaki her günü tek sütunlu bir tablo olarak döndürür. <code>ADDCOLUMNS</code> bu tabloya yeni sütunlar ekler. Bu uygulamadaki <code>Tarih</code> tablosu aynı mantıkla kuruldu.</p>
+<h2>Kurulumdan sonra üç ayar</h2>
+<ol>
+<li><b>Tarih tablosu olarak işaretle:</b> Tabloya sağ tık → <i>Tarih tablosu olarak işaretle</i> → tarih sütununu seç. Böylece zaman zekâsı doğru çalışır.</li>
+<li><b>İlişki kur:</b> <code>Tarih[Tarih]</code> → <code>Satislar[Tarih]</code> (1:*).</li>
+<li><b>Ay sıralaması:</b> <code>Ay</code> sütununu seç → <i>Sütuna göre sırala</i> → <code>AyNo</code>. Yoksa aylar alfabetik dizilir (Ağu, Ara, Eki…).</li>
+</ol>
+<div class="warn"><b>Otomatik tarih/saat</b>Power BI, varsayılan olarak her tarih sütunu için gizli bir tarih tablosu üretir. Kendi tarih tablon varsa Dosya → Seçenekler → Veri Yükleme → <b>Otomatik tarih/saat</b> seçeneğini kapat. Model küçülür ve karışıklık azalır.</div>
+<p>Aşağıdaki alıştırmada bir DAX sorgusu yazacaksın. Sorgu <code>EVALUATE</code> ile başlar ve bir tablo döndürür; sonucu tablo olarak görürsün.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>CALENDAR mı, CALENDARAUTO mu?</h2>
+<p>İki fonksiyon da tek sütunlu (Date) bir gün listesi üretir. Farkları, aralığın nereden geldiğidir.</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>CALENDAR(başlangıç, bitiş)</th><th>CALENDARAUTO([mali yıl sonu ayı])</th></tr>
+<tr><td>Aralık</td><td>Senin verdiğin iki tarih</td><td>Modeldeki tüm tarih sütunlarının en küçüğünden en büyüğüne, tam yıllara genişletilmiş</td></tr>
+<tr><td>Kontrol</td><td>Tam sende</td><td>Modele eklenen her tarih sütunu aralığı değiştirebilir</td></tr>
+<tr><td>Ne zaman?</td><td>Çoğu üretim modelinde</td><td>Hızlı deneme; ya da tüm tarih sütunlarının temiz olduğundan eminsen</td></tr>
+</table></div>
+<p>Bu modelde bir deneme yapalım. Satışlar 22 Haziran 2022 ile 31 Aralık 2024 arasında. Ama <code>CALENDARAUTO()</code> çalıştırınca tablo <b>1 Ocak 2015</b>'te başlar, <b>31 Aralık 2025</b>'te biter: 4.018 gün. Neden? Calisanlar[IseGiris] sütununda 2015'te işe girmiş bir çalışan, Projeler[BitisPlan] sütununda 2025'te bitmesi planlanan bir proje var. CALENDARAUTO bunları da hesaba katar. Rapordaki yıl dilimleyicisinde satış olmayan sekiz yıl görünür.</p>
+<p>Daha güvenli yol, aralığı satış verisinden almak ve tam yıla yuvarlamaktır:</p>
+<pre class="dax">EVALUATE
+CALENDAR(
+    DATE(YEAR(MIN(Satislar[Tarih])), 1, 1),
+    DATE(YEAR(MAX(Satislar[Tarih])), 12, 31)
+)</pre>
+<p>Sonuç 1.096 gündür: 2022'nin başından 2024'ün sonuna. Bu uygulamadaki Tarih tablosu da tam olarak bu aralıktadır. Mali yılın Haziran'da bittiği bir şirkette CALENDARAUTO(6) yazılırsa aralık Temmuz–Haziran yıllarına genişletilir.</p>
+<h2>Sıralama sütunlarıyla tam bir tablo</h2>
+<p>Metin olan her takvim sütununun yanında onu doğru sıraya koyacak bir sayı sütunu olmalı:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    CALENDAR(DATE(2024, 1, 1), DATE(2024, 12, 31)),
+    "Yil", YEAR([Date]),
+    "AyNo", MONTH([Date]),
+    "Ay", FORMAT([Date], "MMM"),
+    "YilAy", FORMAT([Date], "yyyy-MM"),
+    "GunNo", WEEKDAY([Date], 2),
+    "HaftaninGunu", FORMAT([Date], "dddd")
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Metin sütunu</th><th>Sırala ölçütü</th><th>Yapılmazsa</th></tr>
+<tr><td>Ay (Oca, Şub…)</td><td>AyNo</td><td>Ağu, Ara, Eki… alfabetik</td></tr>
+<tr><td>HaftaninGunu (Pazartesi…)</td><td>GunNo (Pazartesi = 1)</td><td>Cuma, Cumartesi, Pazar… alfabetik</td></tr>
+<tr><td>YilAy (2024-01)</td><td>Gerekmez</td><td>Yıl-ay biçimi kendiliğinden doğru sıralanır</td></tr>
+</table></div>
+<p>Ayarlamak için sütunu seç → Sütun araçları → <b>Sütuna göre sırala</b> → sayı sütunu. WEEKDAY'in ikinci bağımsız değişkeni 2 olunca hafta Pazartesi başlar; Türkiye'deki alışkanlığa uygundur.</p>
+<h2>İşaretlemeden önce kontrol listesi</h2>
+<p>Tabloya sağ tık → <b>Tarih tablosu olarak işaretle</b> (ya da tabloyu seçip Tablo araçları şeridindeki aynı komut). Power BI tarih sütununu şu kurallara göre denetler:</p>
+<ul>
+<li>Değerler benzersiz: her gün bir kez.</li>
+<li>Boş değer yok.</li>
+<li>Kesintisiz: başlangıçtan bitişe tek gün eksik değil.</li>
+<li>Sütun türü Tarih ya da Tarih/Saat; Tarih/Saat ise tüm değerlerde saat aynı.</li>
+</ul>
+<p>Bu yüzden tarih tablosunu satış tablosundan (ör. VALUES(Satislar[Tarih])) üretmek yanlıştır: bu modelde satış olan gün sayısı 2022'de yalnızca 54, 2023'te 202, 2024'te 277'dir. Takvimde ise 365, 365 ve 366 gün olmalı. Eksik günler zaman zekâsı hesaplarını bozar. Zaman zekâsı fonksiyonları Zaman zekâsı dersinde.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-tarih-tablosu">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../model-temel/">← Veri modelleme: yıldız şema ve ilişkiler</a><a href="../dax-giris/">DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

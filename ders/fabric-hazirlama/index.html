@@ -1,0 +1,151 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları | Kesit Power BI</title><meta name="description" content="Doğru depoyu seçmek, ambarda görünüm, fonksiyon ve saklı yordam yazmak, PySpark not defterinde temizlik, görsel sorgu düzenleyici, işlem hatlarıyla…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-hazirlama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları"><meta property="og:description" content="Doğru depoyu seçmek, ambarda görünüm, fonksiyon ve saklı yordam yazmak, PySpark not defterinde temizlik, görsel sorgu düzenleyici, işlem hatlarıyla…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-hazirlama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları","description":"Doğru depoyu seçmek, ambarda görünüm, fonksiyon ve saklı yordam yazmak, PySpark not defterinde temizlik, görsel sorgu düzenleyici, işlem hatlarıyla…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-hazirlama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları</h1><p class="st-l">Doğru depoyu seçmek, ambarda görünüm, fonksiyon ve saklı yordam yazmak, PySpark not defterinde temizlik, görsel sorgu düzenleyici, işlem hatlarıyla düzenleme, yinelenen/eksik/null veri ve tür dönüşümü, anlam modeli için düzleştirme ve önceden toplama, OneLake kataloğu.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-hazirlama">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>DP-600 sınavında en ağır alan, yaklaşık yarı ağırlıkla <b>veriyi hazırlamak</b>tır. Power BI geliştiricisi için bu, Power Query’de yaptığın işin bir katman aşağıya, lakehouse ve ambara inmesi demektir. Bu ders “Microsoft Fabric’e giriş” dersinin devamıdır: orada parçaları tanıdın, burada onlarla Anadolu Market’in satış verisini temizleyip modele hazır hâle getireceksin. Yıldız şema, vekil anahtar ve SCD Tip 2 ayrıntıları “Fabric’te yıldız şema” dersinde; burada tekrar etmiyoruz.</p>
+
+<h2>Önce depoyu seç</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>Depo</th><th>Neden?</th></tr>
+<tr><td>Ham dosyalar (CSV, JSON) + Spark ile temizlik</td><td>Lakehouse</td><td>Dosyalar ve Delta tablolar bir arada; SQL analiz uç noktası salt okunur sorgu verir</td></tr>
+<tr><td>T-SQL ile INSERT/UPDATE/MERGE, saklı yordamlar, SQL ekibi</td><td>Ambar (warehouse)</td><td>Tam okuma-yazma T-SQL</td></tr>
+<tr><td>Saniyeler içinde gelen olay, log, tıklama verisi</td><td>Eventhouse (KQL veritabanı)</td><td>Zamana göre düzenlenmiş akış verisi; KQL ile sorgu</td></tr>
+</table></div>
+<p>Tipik düzen: ham veri lakehouse’ta, temizlenmiş ve modele hazır tablolar ambarda ya da yine lakehouse’ta. Gerçek zamanlı kısım “Gerçek zamanlı analitik” dersinde.</p>
+
+<h2>Ambarda T-SQL: görünüm, fonksiyon, saklı yordam</h2>
+<p>Fabric ambarı tablolar, görünümler, saklı yordamlar ve fonksiyonları destekler. Lakehouse’un SQL analiz uç noktasında da görünüm, fonksiyon ve yordam tanımlayabilirsin; ama orada tablo oluşturma, INSERT, UPDATE ve DELETE <b>yoktur</b>, çünkü tabloları Spark ya da veri akışı yazar.</p>
+<p><b>Görünüm (view):</b> Temizlik kuralını tek yerde tutar. Aşağıdaki görünüm iptalleri ayıklar, tutarı ondalık sayıya çevirir ve ürün kategorisini satırın yanına getirir:</p>
+<pre data-notry>CREATE VIEW dbo.vw_SatisTemiz AS
+SELECT  s.SiparisNo,
+        s.SatirNo,
+        CAST(s.Tarih AS date)            AS Tarih,
+        s.MusteriNo,
+        s.UrunNo,
+        u.Kategori,
+        s.Kanal,
+        CAST(s.Tutar AS decimal(18, 2))  AS Tutar,
+        COALESCE(s.Indirim, 0)           AS Indirim
+FROM    dbo.Satislar AS s
+JOIN    dbo.Urunler  AS u ON u.UrunNo = s.UrunNo
+WHERE   s.Durum &lt;&gt; 'İptal';</pre>
+<p><b>Satır içi tablo değerli fonksiyon:</b> Parametre alan bir görünüm gibi düşün. Örneğin tek bir kanalın satışlarını döndürür:</p>
+<pre data-notry>CREATE FUNCTION dbo.fn_KanalSatis (@Kanal varchar(20))
+RETURNS TABLE
+AS
+RETURN
+    SELECT Tarih, Kategori, SUM(Tutar) AS Tutar
+    FROM   dbo.vw_SatisTemiz
+    WHERE  Kanal = @Kanal
+    GROUP BY Tarih, Kategori;
+
+-- Kullanım
+SELECT * FROM dbo.fn_KanalSatis('Web');</pre>
+<p><b>Saklı yordam (stored procedure):</b> Birden çok adımı tek komutta toplar ve işlem hattından çağrılır. Bu yordam aylık özet tabloyu baştan kurar:</p>
+<pre data-notry>CREATE PROCEDURE dbo.usp_AylikOzetYenile
+AS
+BEGIN
+    DELETE FROM dbo.AylikKategoriOzet;
+
+    INSERT INTO dbo.AylikKategoriOzet (YilAy, Kategori, NetSatis, Adet)
+    SELECT  FORMAT(Tarih, 'yyyy-MM'), Kategori, SUM(Tutar), COUNT(*)
+    FROM    dbo.vw_SatisTemiz
+    GROUP BY FORMAT(Tarih, 'yyyy-MM'), Kategori;
+END;</pre>
+<div class="note"><b>Learn’de önizleme olanlar</b>T-SQL yüzey alanı sayfasında iç içe CTE, <code>ALTER TABLE … ALTER COLUMN</code>, düzenli ifade (regex) fonksiyonları ve birçok yapay zekâ fonksiyonu <b>önizleme</b> olarak işaretli. Tetikleyici (trigger), gerçekleştirilmiş görünüm (materialized view) ve özyinelemeli sorgu ambarda desteklenmiyor. <code>MERGE</code> ise genel kullanımda.</div>
+
+<h2>Not defterinde PySpark ile temizlik</h2>
+<p>Hacim büyüyünce ya da mantık SQL’e sığmayınca not defteri (notebook) kullanılır. PySpark DataFrame’i, pandas’a benzer ama veriyi birçok makineye dağıtarak işler. Aşağıdaki hücre ham satış tablosunu okur, temizler ve Delta tablo olarak yazar:</p>
+<pre data-notry>from pyspark.sql import functions as F
+
+ham = spark.read.table("ham_satislar")
+
+temiz = (
+    ham
+    .dropDuplicates(["SiparisNo", "SatirNo"])              # yinelenen satırlar
+    .withColumn("Tutar", F.col("Tutar").cast("decimal(18,2)"))   # tür dönüşümü
+    .withColumn("Tarih", F.to_date("Tarih", "dd.MM.yyyy"))
+    .withColumn("Kanal", F.trim(F.col("Kanal")))
+    .fillna({"Indirim": 0})                                # eksik indirim = 0
+    .filter(F.col("Durum") != "İptal")
+)
+
+temiz.write.mode("overwrite").format("delta").saveAsTable("satislar_temiz")</pre>
+<div class="tbl-wrap"><table>
+<tr><th>İş</th><th>PySpark</th><th>pandas</th><th>Power Query</th></tr>
+<tr><td>Yinelenenleri kaldır</td><td><code>dropDuplicates([...])</code></td><td><code>drop_duplicates(subset=[...])</code></td><td>Yinelenenleri kaldır</td></tr>
+<tr><td>Boşu doldur</td><td><code>fillna({...})</code></td><td><code>fillna({...})</code></td><td>Değerleri değiştir</td></tr>
+<tr><td>Tür değiştir</td><td><code>cast("int")</code></td><td><code>astype("int")</code></td><td>Veri türü</td></tr>
+<tr><td>Satır filtrele</td><td><code>filter(...)</code></td><td><code>df[df.Durum != "İptal"]</code></td><td>Satırları filtrele</td></tr>
+</table></div>
+<p>Küçük tablolarda Fabric’in Python (Spark’sız) not defterleri ve pandas yeterli olabilir; büyük tabloda Spark tercih edilir.</p>
+
+<h2>Görsel sorgu düzenleyici</h2>
+<p>SQL yazmak istemeyen kullanıcılar için ambarda ve SQL analiz uç noktasında <b>görsel sorgu düzenleyici</b> (visual query editor) var. Power Query’nin diyagram görünümünü kullanır: tabloları tuvale sürükler, “Sorguları yeni olarak birleştir” gibi adımlar eklersin.</p>
+<ul>
+<li><b>SQL’i görüntüle</b> ile adımların T-SQL karşılığını görürsün.</li>
+<li><b>Görünüm olarak kaydet</b> sonucu bir SQL görünümüne, <b>Tablo olarak kaydet</b> ise <code>CREATE TABLE AS SELECT</code> ile tabloya çevirir.</li>
+<li>Yalnızca okuma (SELECT) yapar ve yalnızca katlanabilen (query folding) Power Query adımlarını sunar. Bir adım SQL’e çevrilemezse görünüm olarak kaydedilemez.</li>
+</ul>
+
+<h2>İşlem hatları: kopyala, çalıştır, zamanla</h2>
+<p>İşlem hattı (pipeline) adımları sıraya koyar. Anadolu Market’in gece hattı:</p>
+<ol>
+<li><b>Veri kopyala (Copy data)</b> etkinliği: ERP’deki satış tablosunu lakehouse’un ham bölümüne taşır.</li>
+<li><b>Fabric not defteri</b> etkinliği: yukarıdaki temizlik hücresini çalıştırır.</li>
+<li><b>Saklı yordam</b> etkinliği: <code>usp_AylikOzetYenile</code> çağrılır.</li>
+<li><b>Anlam modeli yenileme</b> etkinliği: modeli yeniler (Direct Lake’te çerçeveleme).</li>
+<li>Herhangi bir adım hata verirse <b>Teams</b> etkinliği ekibe mesaj atar; <b>If condition</b> ve <b>ForEach</b> ile koşul ve döngü kurulur.</li>
+</ol>
+<p>Hat <b>Zamanla</b> düğmesiyle belirli aralıkta, <b>Tetikleyici</b> ile de bir olayda (ör. göle yeni dosya düştüğünde) çalışır. Yalnızca kaynaktan hedefe veri taşıyacaksan işlem hattı kurmadan <b>Kopyalama işi</b> (Copy job) da kullanılabilir; ilk çalışmada tam, sonra yalnızca yeni ve değişen satırları kopyalar.</p>
+
+<h2>Kirli veri: yinelenen, eksik, null ve tür</h2>
+<p>Temizliğe başlamadan önce ölç. Anadolu Market modelinde birkaç kontrol yapalım:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(Satislar),
+    "Farklı sipariş", DISTINCTCOUNT(Satislar[SiparisNo]),
+    "Farklı satır no", DISTINCTCOUNT(Satislar[SatirNo])
+)</pre>
+<p>1.620 satır, 910 farklı sipariş, 1.620 farklı satır numarası. Yani bir siparişin birden çok satırı var (bu normal, tanecik sipariş satırı), ama <b>anahtar</b> olan satır numarası hiç tekrar etmiyor: yinelenen kayıt yok. Yinelenen kontrolü her zaman tablonun anahtarıyla yapılır.</p>
+<p>Müşteri tablosunda ise 150 kayıt ve 140 farklı ad var. Bu yinelenme mi? Hayır: müşteri numaraları 150 farklı. Aynı adı taşıyan farklı kişiler var. Adı anahtar sanıp “yinelenenleri kaldır” dersen gerçek müşterileri silersin.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Bulgu</th><th>Sayı</th><th>Karar</th></tr>
+<tr><td><code>Satislar[KargoGun]</code> boş</td><td>131 satır: 121’i iptal, 10’u hâlâ kargoda</td><td>Doldurma! Boşluk anlamlı: teslim olmamış sipariş. Ortalama kargo günü boşları zaten saymaz.</td></tr>
+<tr><td><code>Musteriler[Bolge]</code> ve <code>[Sehir]</code> boş</td><td>7 müşteri, 63.853 ₺ net satış</td><td>Silme; “Bilinmiyor” üyesine ata ve kaynağa geri bildir.</td></tr>
+<tr><td>Ad tekrarı</td><td>150 kayıt, 140 farklı ad</td><td>Yinelenme değil; anahtar MusteriNo.</td></tr>
+</table></div>
+<p>Tür dönüşümünde iki kural: tarihleri metin olarak bırakma (zaman zekâsı çalışmaz) ve para tutarını <code>float</code> yerine <code>decimal</code> tut (toplamlarda kuruş kayması olmasın). Dönüşüm hatasında satırı sessizce atmak yerine hatalı satırları ayrı bir tabloya yaz ve say.</p>
+
+<h2>Düzleştir ve önceden topla</h2>
+<p>Anlam modeli için iki hazırlık daha var:</p>
+<ul>
+<li><b>Düzleştirme (denormalize):</b> Ürün → alt kategori → kategori zincirini tek ürün boyutuna indir. Modelde daha az ilişki, daha basit DAX.</li>
+<li><b>Önceden toplama (pre-aggregate):</b> Yöneticiler yalnızca ay × kategori düzeyine bakıyorsa, milyonlarca satırı her sorguda toplamak yerine özet tabloyu ambarda hazırla (yukarıdaki saklı yordam). Modelde bu tabloyu toplama tablosu olarak kullanabilirsin (“Kurumsal model” dersi).</li>
+</ul>
+<p>Özet tablonun doğru olup olmadığını DAX ile de kontrol edebilirsin. Ambarda <code>GROUP BY</code> ne yapıyorsa, DAX’ta <code>SUMMARIZECOLUMNS</code> aynısını yapar:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    Urunler[Kategori],
+    "Net Satış", [Net Satış],
+    "Adet", [Satılan Adet]
+)</pre>
+<p>1.620 satış satırı, yıl × kategori düzeyinde 21 satıra iner. Ambardaki özet tablonun toplamları bu sorguyla aynı değilse, ya temizlik kuralı (iptaller) ya da tarih dönüşümü farklıdır.</p>
+
+<h2>OneLake kataloğu: veriyi bul, yönet, koru</h2>
+<p>Hazırladığın tabloyu başkalarının bulması gerekir. <b>OneLake kataloğu</b> (OneLake catalog), Fabric gezinti bölmesindeki OneLake simgesiyle açılır ve üç sekmeden oluşur:</p>
+<ul>
+<li><b>Keşfet (Explore):</b> Lakehouse, ambar, anlam modeli gibi öğeleri ara, filtrele, ayrıntılarını gör. Desktop’ta bir modele bağlanırken de bu kataloğu kullanırsın.</li>
+<li><b>Yönet (Govern):</b> Sahip olduğun verinin yönetişim sağlığı ve önerilen eylemler.</li>
+<li><b>Güvenlik (Secure):</b> Çalışma alanı rolleri ve OneLake güvenlik rolleri tek ekranda.</li>
+</ul>
+<p>Akış verisi için katalogun karşılığı <b>Real-Time hub</b>’dır; bir sonraki derste.</p>
+<div class="note"><b>İşlem hattının içi</b>Bağımlılık, parametre, filigran ve teşhis <a href="../fabric-pipeline/">İşlem hatları</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-hazirlama">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../veri-akislari/">← Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın</a><a href="../kql-gercek-zaman/">Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

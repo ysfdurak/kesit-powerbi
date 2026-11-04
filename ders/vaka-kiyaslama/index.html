@@ -1,0 +1,162 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: şehir ve temsilci kıyaslaması (benchmarking) | Kesit Power BI</title><meta name="description" content="Operasyon direktörü şehirleri ve temsilcileri adil bir lig tablosunda görmek istiyor. Şirket ortalamasına göre endeks, müşteri başına normalleştirme,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kiyaslama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: şehir ve temsilci kıyaslaması (benchmarking)"><meta property="og:description" content="Operasyon direktörü şehirleri ve temsilcileri adil bir lig tablosunda görmek istiyor. Şirket ortalamasına göre endeks, müşteri başına normalleştirme,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kiyaslama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: şehir ve temsilci kıyaslaması (benchmarking)","description":"Operasyon direktörü şehirleri ve temsilcileri adil bir lig tablosunda görmek istiyor. Şirket ortalamasına göre endeks, müşteri başına normalleştirme,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kiyaslama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Vaka Çalışmaları</span><h1>Vaka: şehir ve temsilci kıyaslaması (benchmarking)</h1><p class="st-l">Operasyon direktörü şehirleri ve temsilcileri adil bir lig tablosunda görmek istiyor. Şirket ortalamasına göre endeks, müşteri başına normalleştirme, sipariş sıklığı ile sepetin ayrıştırılması, z-skoru ve örnek büyüklüğü eşiği, teslim süresi farkı, karma etkisinden arındırılmış iade karşılaştırması ve dinamik başlıklı bir şehir profili sayfası kurarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kiyaslama">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Operasyon direktörü. Yıllık bölge toplantısında şehir müdürlerine ve temsilcilere “nerede güçlüsünüz, nerede geridesiniz?” sorusunun cevabını tek bir tabloyla vermek istiyor.</p>
+<p><b>Hangi karar?</b> Gelecek yıl saha desteği hangi şehirlere verilecek, hangi temsilciyle iade konusunda konuşulacak? Brifin soruları:</p>
+<ol>
+<li>Şehirler şirket ortalamasının neresinde: sepet (sipariş başı satış), müşteri başı satış, iade oranı, teslim süresi?</li>
+<li>Büyük şehir küçük şehri toplamda hep geçer. Kıyas nasıl adil olur?</li>
+<li>Hangi farklar gerçekten olağan dışı, hangileri az veriden doğan gürültü?</li>
+<li>Temsilciler arasındaki iade farkı kişiden mi, yoksa sorumlu oldukları şehirlerden mi geliyor?</li>
+<li>Bir şehre tıklayınca açılan, başlığı seçime göre değişen bir profil sayfası.</li>
+</ol>
+<p><b>Vaka: satış performansı ve hedef takibi</b> temsilcileri büyüme ve hedefle ele aldı. Burada soru farklı: büyüme değil, <b>yapısal kıyas</b>. Herkesi aynı cetvelle, şirket ortalamasına göre ölçüyoruz.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Kullanım</th></tr>
+<tr><td><code>Musteriler</code></td><td><code>Sehir</code>, <code>Bolge</code>: 12 şehir. Şehir, siparişin değil müşterinin özelliğidir.</td></tr>
+<tr><td><code>Satislar</code></td><td><code>Durum</code> (iade), <code>Kanal</code>, <code>KargoGun</code> (sipariş ile teslim arası gün).</td></tr>
+<tr><td><code>Calisanlar</code></td><td><code>Satislar[TemsilciNo]</code> üzerinden temsilci adı. Satışı olan 6 temsilci var.</td></tr>
+</table></div>
+<p>Hazır ölçüler: <code>[Ortalama Sepet]</code>, <code>[Müşteri Başı Satış]</code>, <code>[Müşteri Başı Sipariş]</code>, <code>[İade Oranı %]</code>, <code>[Ortalama Kargo Günü]</code>. Dönem: verinin tamamı (Haziran 2022 – Aralık 2024). Tek yıl seçilirse küçük şehirlerde örnek iyice azalır.</p>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li><b>Şehri boş müşteriler:</b> 7 müşterinin şehri boş (42 sipariş, 63.853 ₺). Bu satırları silme; tabloda “(Şehir yok)” diye göster ve kaynak sisteme bildir.</li>
+<li><b>Mağaza siparişlerinde kargo günü 0.</b> Şehirlerin mağaza payı çok farklı: Samsun’da satışın %0,3’ü, Bursa’da %28,1’i mağazadan. Karışık ortalama, mağazası güçlü şehri hızlı gösterir. Teslim kıyasında yalnızca Web ve Mobil’i al (gerekçesi <b>Vaka: e-ticaret dönüşüm hunisi ve kargo</b> dersinde).</li>
+<li><b>Küçük örnekler:</b> Konya’da 22, Gaziantep’te 23, Samsun’da 28 sipariş var. Bu şehirlerde oranlar birkaç siparişle çok oynar.</li>
+<li><b>Temsilci ataması geriye dönük:</b> temsilci, müşterinin bugünkü temsilcisidir. Kıyas “portföy kıyası” olarak okunmalı.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Ortak cetvel: şirket ortalaması ve endeks.</b> Her ölçüyü şirket ortalamasına bölüp 100 ile çarparız. 100 ortalama demektir; 120 ortalamanın %20 üstü.</p>
+<pre class="dax">Şirket Ortalama Sepet =
+CALCULATE([Ortalama Sepet], REMOVEFILTERS(Musteriler))
+Sepet Endeksi =
+DIVIDE([Ortalama Sepet], [Şirket Ortalama Sepet]) * 100</pre>
+<p><code>REMOVEFILTERS(Musteriler)</code> şehir, bölge ve segment filtresini kaldırır; yıl ve kanal dilimleyicileri ise kalır. Böylece ortalama her zaman <b>seçili dönemin</b> şirket ortalamasıdır. Cetvel olarak şehirlerin basit ortalamasını değil, şirketin kendisini alırız: 12 şehrin müşteri başı satış ortalaması 9.309 ₺, şirketinki 9.197 ₺. Küçük şehirler basit ortalamada büyük şehirlerle aynı ağırlığı alır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Şehir</th><th>Net satış</th><th>Sipariş</th><th>Müşteri</th><th>Sepet (endeks)</th><th>Müşteri başı satış (endeks)</th><th>İade</th></tr>
+<tr><td>Trabzon</td><td>105.118 ₺</td><td>82</td><td>7</td><td>1.282 ₺ (86)</td><td><b>15.017 ₺ (163)</b></td><td>%11,8</td></tr>
+<tr><td>Antalya</td><td>104.621 ₺</td><td>57</td><td>9</td><td>1.835 ₺ (123)</td><td>11.625 ₺ (126)</td><td>%1,8</td></tr>
+<tr><td>Bursa</td><td>99.080 ₺</td><td>58</td><td>9</td><td>1.708 ₺ (114)</td><td>11.009 ₺ (120)</td><td>%10,2</td></tr>
+<tr><td>İzmir</td><td>146.768 ₺</td><td>98</td><td>14</td><td>1.498 ₺ (100)</td><td>10.483 ₺ (114)</td><td>%11,3</td></tr>
+<tr><td>Kayseri</td><td>92.949 ₺</td><td>61</td><td>9</td><td>1.524 ₺ (102)</td><td>10.328 ₺ (112)</td><td>%7,5</td></tr>
+<tr><td>Adana</td><td>58.749 ₺</td><td>39</td><td>6</td><td>1.506 ₺ (101)</td><td>9.792 ₺ (106)</td><td>%7,1</td></tr>
+<tr><td>İstanbul</td><td><b>225.869 ₺</b></td><td>181</td><td>27</td><td>1.248 ₺ (84)</td><td>8.366 ₺ (91)</td><td>%2,8</td></tr>
+<tr><td>Eskişehir</td><td>120.800 ₺</td><td>74</td><td>15</td><td>1.632 ₺ (109)</td><td>8.053 ₺ (88)</td><td>%6,6</td></tr>
+<tr><td>Ankara</td><td>116.700 ₺</td><td>73</td><td>15</td><td>1.599 ₺ (107)</td><td>7.780 ₺ (85)</td><td>%9,0</td></tr>
+<tr><td>Samsun</td><td>45.530 ₺</td><td>28</td><td>6</td><td>1.626 ₺ (109)</td><td>7.588 ₺ (83)</td><td>%8,3</td></tr>
+<tr><td>Gaziantep</td><td>43.292 ₺</td><td>23</td><td>7</td><td>1.882 ₺ (126)</td><td>6.185 ₺ (67)</td><td>%4,3</td></tr>
+<tr><td>Konya</td><td>27.444 ₺</td><td>22</td><td>5</td><td>1.247 ₺ (84)</td><td>5.489 ₺ (60)</td><td>%0</td></tr>
+<tr><td>(Şehir yok)</td><td>63.853 ₺</td><td>42</td><td>7</td><td>1.520 ₺ (102)</td><td>9.122 ₺ (99)</td><td>%3,5</td></tr>
+<tr><td><b>Şirket</b></td><td>1.250.772 ₺</td><td>838</td><td>136</td><td>1.493 ₺ (100)</td><td>9.197 ₺ (100)</td><td>%6,8</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Toplam satışta İstanbul açık ara birinci (satışın %18,1’i). Ama müşteri başına ortalamanın altında (91) ve sepeti en küçüklerden (84). Toplam tutar şehrin büyüklüğünü ölçer, başarısını değil. Müşteri başına bakınca 7 müşterili Trabzon birinci (163).</p>
+
+<p><b>Adım 2: Müşteri başı satışı ikiye ayır.</b> Müşteri başı satış = müşteri başı sipariş × sepet. İki şehir aynı endekse farklı yollardan ulaşabilir ve her yolun aksiyonu farklıdır.</p>
+<pre class="dax">Sipariş Sıklığı Endeksi =
+DIVIDE(
+    [Müşteri Başı Sipariş],
+    CALCULATE([Müşteri Başı Sipariş], REMOVEFILTERS(Musteriler))
+) * 100</pre>
+<p><b>Bulgu:</b> Trabzon’da müşteri ortalama 11,7 sipariş veriyor (şirket 6,2; sıklık endeksi 190) ama sepeti küçük (86). Gaziantep tam tersi: sepet 126, sıklık yalnızca 53. Trabzon için doğru aksiyon sepeti büyütmek (çapraz satış), Gaziantep için tekrar siparişi artırmak (hatırlatma kampanyası).</p>
+<p>İstanbul’un küçük sepeti kanal karmasından mı geliyor? Aynı kanal içinde kıyaslarız: İstanbul’un Web sepeti 1.176 ₺ (şirketin Web sepeti 1.420 ₺), Mobil sepeti 1.163 ₺ (şirket 1.554 ₺). İki kanalda da düşük; yani fark kanal karmasından değil, İstanbul müşterisinin daha küçük sepetle alışveriş yapmasından geliyor.</p>
+
+<p><b>Adım 3: Olağan dışı mı, gürültü mü?</b> Bir şehrin farkının ne kadar büyük olduğunu z-skoru söyler: (şehir − şehirlerin ortalaması) ÷ standart sapma. Yöntemin ayrıntısı <b>İleri istatistik: eğilim, z-skoru, mevsimsellik</b> dersinde.</p>
+<pre class="dax">Şehir Z-Skoru =
+VAR Seri =
+    FILTER(
+        ADDCOLUMNS(ALL(Musteriler[Sehir]), "M", [Müşteri Başı Satış]),
+        NOT ISBLANK(Musteriler[Sehir])
+    )
+VAR Ort = AVERAGEX(Seri, [M])
+VAR Sapma = STDEVX.P(Seri, [M])
+RETURN
+    IF(HASONEVALUE(Musteriler[Sehir]), DIVIDE([Müşteri Başı Satış] - Ort, Sapma))</pre>
+<p><b>Bulgu:</b> 12 şehrin müşteri başı satış ortalaması 9.309 ₺, standart sapması 2.510 ₺. ±2 sınırını aşan tek şehir Trabzon (z = 2,27). En düşükler Konya (−1,52) ve Gaziantep (−1,25). İade oranında hiçbir şehir ±2’yi aşmıyor; en yüksekler Trabzon (1,40) ve İzmir (1,26).</p>
+<p>İkinci savunma hattı örnek büyüklüğüdür. Konya’nın iade oranı %0: 22 siparişte tek iade olmamış. Bu bir başarı değil, az veridir. Oranı yalnızca yeterli sipariş varsa göster:</p>
+<pre class="dax">Güvenilir İade % =
+IF([Sipariş Sayısı] &gt;= 30, [İade Oranı %])</pre>
+<p><b>Bulgu:</b> 30 sipariş eşiğini 9 şehir ve şehri boş grup geçiyor. Konya, Gaziantep ve Samsun’da hücre boş kalır; tabloya “örnek az” notu düş. Eşiği raporda yazılı tut, sonuç beğenilmedi diye değiştirme.</p>
+
+<p><b>Adım 4: Teslim süresi kıyası.</b> Mağazasız ortalamayı şirketin mağazasız ortalamasıyla karşılaştırırız. Fark gün cinsindendir; eksi değer daha hızlı demektir.</p>
+<pre class="dax">Teslim Farkı (gün) =
+VAR Sehir = CALCULATE([Ortalama Kargo Günü], Satislar[Kanal] IN {"Web", "Mobil"})
+VAR Sirket =
+    CALCULATE(
+        [Ortalama Kargo Günü],
+        Satislar[Kanal] IN {"Web", "Mobil"},
+        REMOVEFILTERS(Musteriler)
+    )
+RETURN Sehir - Sirket</pre>
+<p><b>Bulgu:</b> Şirketin Web ve Mobil teslim ortalaması 3,65 gün. En yavaş Eskişehir (4,09 gün, +0,44), Konya (4,03) ve Bursa (3,97); en hızlı İzmir (3,30 gün, −0,36), Gaziantep (3,39) ve Ankara (3,41). Bursa’da kargolu satırların %16,4’ü 7 gün ya da daha geç teslim edilmiş; İzmir’de bu oran %1,4. Bursa hem yavaş hem iadesi yüksek (%10,2) bir şehir; kargo firmasıyla konuşulacak ilk şehir burası.</p>
+
+<p><b>Adım 5: Temsilci kıyası: karma etkisini ayır.</b> Temsilcilerin iade oranları farklı. Ama her temsilcinin müşterileri farklı şehirlerde. İadesi yüksek bir şehirde çok müşterisi olan temsilci, kendi hatası olmadan yüksek görünebilir. Bu yüzden her temsilci için <b>beklenen</b> iadeyi hesaplarız: kendi şehir karmasıyla, ama şirketin şehir oranlarıyla.</p>
+<pre class="dax">Beklenen İade % =
+DIVIDE(
+    SUMX(
+        VALUES(Musteriler[Sehir]),
+        CALCULATE(COUNTROWS(Satislar))
+            * CALCULATE([İade Oranı %], REMOVEFILTERS(Calisanlar))
+    ),
+    COUNTROWS(Satislar)
+)
+İade Farkı (puan) =
+([İade Oranı %] - [Beklenen İade %]) * 100</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Temsilci</th><th>İade oranı</th><th>Şehir karmasına göre beklenen</th><th>Fark</th></tr>
+<tr><td>Can Aydın</td><td><b>%12,4</b></td><td>%8,5</td><td><b>+3,9 puan</b></td></tr>
+<tr><td>Yusuf Kara</td><td>%7,6</td><td>%6,6</td><td>+1,0 puan</td></tr>
+<tr><td>Ece Kurt</td><td>%5,8</td><td>%5,8</td><td>0,0 puan</td></tr>
+<tr><td>Elif Doğan</td><td>%5,5</td><td>%5,5</td><td>0,0 puan</td></tr>
+<tr><td>Oğuz Demir</td><td>%4,9</td><td>%7,0</td><td>−2,1 puan</td></tr>
+<tr><td>Gamze Özkan</td><td>%4,3</td><td>%6,9</td><td>−2,6 puan</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Can Aydın’ın 290 satırının 62’si Trabzon’dan. Bu karma onun beklenen iadesini %8,5’e çıkarıyor, ama gerçekleşen %12,4 yine 3,9 puan yukarıda. Asıl ilginç olan şu: Trabzon’da Can Aydın’ın müşterilerinde iade %19,4 (62 satırda 12), aynı şehirde diğer temsilcilerin müşterilerinde %6,1 (82 satır). Trabzon dışında da Can Aydın’ın iadesi %10,5. Yani Trabzon’un yüksek iadesi şehirden değil, büyük ölçüde bu portföyden geliyor. Şirketin 80.835 ₺ iade tutarının 30.641 ₺’si (%37,9) bu portföyde. Kategori karması ise farkı açıklamıyor: kategori karmasına göre beklenen iade bütün temsilcilerde %6,7 ile %6,9 arasında.</p>
+<div class="warn"><b>Kişiyi suçlamadan önce</b>Fark bir sinyaldir, hüküm değil. Can Aydın’ın 8 müşterisinde 3 ya da daha fazla iade var; sorun tek bir müşteriye bağlı değil. Önce bu müşterilerin ürünlerine ve iade nedenlerine bak, sonra temsilciyle konuş.</div>
+
+<p><b>Adım 6: Şehir profili ve dinamik başlık.</b> Kıyas sayfasında bir şehre sağ tıklayınca <b>Detaya git (Drill-through)</b> ile profil sayfası açılır. Sayfanın başlığı seçili şehri ve konumunu anlatır:</p>
+<pre class="dax">Profil Başlığı =
+VAR Sehir =
+    IF(
+        HASONEVALUE(Musteriler[Sehir]),
+        COALESCE(SELECTEDVALUE(Musteriler[Sehir]), "(Şehir yok)"),
+        "Tüm şehirler"
+    )
+VAR Sepet = DIVIDE([Ortalama Sepet], CALCULATE([Ortalama Sepet], REMOVEFILTERS(Musteriler))) - 1
+VAR Siklik = DIVIDE([Müşteri Başı Sipariş], CALCULATE([Müşteri Başı Sipariş], REMOVEFILTERS(Musteriler))) - 1
+RETURN
+    Sehir &amp; " · sepet " &amp; IF(Sepet &gt;= 0, "+", "−") &amp; "%" &amp; FORMAT(ABS(Sepet) * 100, "0")
+        &amp; ", sipariş sıklığı " &amp; IF(Siklik &gt;= 0, "+", "−") &amp; "%" &amp; FORMAT(ABS(Siklik) * 100, "0")</pre>
+<p><b>Bulgu:</b> Trabzon seçiliyken başlık “Trabzon · sepet −%14, sipariş sıklığı +%90” olur; Gaziantep’te “sepet +%26, sipariş sıklığı −%47”. Başlık, tablodaki iki endeksi tek cümlede okutur. Şehri boş grup “(Şehir yok)” diye görünür, boş bir başlık çıkmaz.</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Sayfa / konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Kıyas, üst şerit</td><td>4 kart</td><td>Şirket sepeti, müşteri başı satış, iade oranı, Web+Mobil teslim günü (cetvel değerleri)</td></tr>
+<tr><td>Kıyas, sol</td><td>Matris</td><td>Sehir; Sepet Endeksi, Sipariş Sıklığı Endeksi, Güvenilir İade %, Teslim Farkı (gün). Endekslerde 100 çevresinde iki yönlü renk ölçeği.</td></tr>
+<tr><td>Kıyas, sağ</td><td>Dağılım grafiği (Scatter)</td><td>X: Sipariş Sıklığı Endeksi, Y: Sepet Endeksi, boyut: Müşteri Sayısı. 100’de iki sabit çizgi dört bölge çizer.</td></tr>
+<tr><td>Kıyas, alt</td><td>Tablo</td><td>Temsilci; İade Oranı %, Beklenen İade %, İade Farkı (puan); alt bilgi: “Portföy kıyası, atama geriye dönük.”</td></tr>
+<tr><td>Şehir profili</td><td>Detay sayfası</td><td>Detaya git alanı: Musteriler[Sehir]. Başlık: Profil Başlığı. Aylık satış çizgisi, kategori çubuğu, kanal payı, en çok iade eden 5 müşteri.</td></tr>
+</table></div>
+<div class="tip"><b>Endeksi biçimlendir</b>Endeks ölçülerinde ondalık gösterme ve eksen ya da renk ölçeğinin ortasını 100’e sabitle. Okuyucu “100’ün üstü iyi” kuralını bir kez öğrenince bütün sütunları aynı gözle okur. İade ve teslim gününde ters yön geçerlidir; renk ölçeğini bu sütunlarda ters çevir.</div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Toplamla değil müşteri başına kıyasla.</b> İstanbul satışın %18,1’ini getiriyor ama müşteri başına ortalamanın altında (91). Hedef ve ödül tablolarına toplam satışın yanında müşteri başı endeksi ekle.</li>
+<li><b>Trabzon’da sepet, Gaziantep’te sıklık:</b> Trabzon müşterisi çok sık ama küçük sepetle alıyor (sıklık 190, sepet 86); Gaziantep tersi (sıklık 53, sepet 126). Kampanyaları bu iki farklı soruna göre ayır.</li>
+<li><b>Can Aydın portföyündeki iadeyi incele:</b> şehir karmasına göre beklenenden 3,9 puan yüksek; şirket iade tutarının %37,9’u bu portföyde. Trabzon’un yüksek iadesi şehirden değil bu portföyden geliyor.</li>
+<li><b>Bursa ve Eskişehir için kargo görüşmesi:</b> Web+Mobil teslim 3,97 ve 4,09 gün; Bursa’da her altı kargolu satırdan biri 7 gün ya da daha geç.</li>
+<li><b>Küçük şehirleri eşikle göster:</b> 30 siparişin altındaki şehirlerin (Konya, Gaziantep, Samsun) oranlarını “örnek az” diye işaretle; şehri boş 7 müşteriyi kaynakta düzelt.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kiyaslama">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../finans-tablolar/">← Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi</a><a href="../vaka-pazar/">Vaka: pazar payı ve rakip karşılaştırması →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

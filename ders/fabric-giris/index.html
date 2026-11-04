@@ -1,0 +1,84 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake | Kesit Power BI</title><meta name="description" content="Fabric’in iş yükleri, OneLake ve Delta Parquet, kısayollar, lakehouse ve ambar farkı, Dataflow Gen2, işlem hatları ve not defterleri, Direct Lake’in…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-giris/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake"><meta property="og:description" content="Fabric’in iş yükleri, OneLake ve Delta Parquet, kısayollar, lakehouse ve ambar farkı, Dataflow Gen2, işlem hatları ve not defterleri, Direct Lake’in…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-giris/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake","description":"Fabric’in iş yükleri, OneLake ve Delta Parquet, kısayollar, lakehouse ve ambar farkı, Dataflow Gen2, işlem hatları ve not defterleri, Direct Lake’in…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-giris/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Fabric</span><h1>Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake</h1><p class="st-l">Fabric’in iş yükleri, OneLake ve Delta Parquet, kısayollar, lakehouse ve ambar farkı, Dataflow Gen2, işlem hatları ve not defterleri, Direct Lake’in Import ve DirectQuery ile karşılaştırması ve bir Power BI geliştiricisinin ilk Fabric projesi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-giris">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Microsoft Fabric, veri alma, işleme, depolama, analiz ve raporlamayı tek bir SaaS (hizmet olarak yazılım) ürününde toplar. Power BI artık bu platformun bir parçasıdır: aynı portal, aynı çalışma alanları, aynı kapasite. Bir Power BI geliştiricisi için Fabric, “veriyi Power Query’de hazırlayıp modele almak” yerine “veriyi bir kez göle koyup her araçla oradan okumak” demektir.</p>
+
+<h2>Fabric’in iş yükleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İş yükü</th><th>Ne için?</th><th>Başlıca öğeler</th></tr>
+<tr><td>Data Factory</td><td>Veri alma ve düzenleme</td><td>Veri akışı Gen2 (Dataflow Gen2), işlem hattı (pipeline), kopyalama işi</td></tr>
+<tr><td>Data Engineering</td><td>Spark ile büyük veri işleme</td><td>Lakehouse, not defteri (notebook), Spark iş tanımı</td></tr>
+<tr><td>Data Warehouse</td><td>T-SQL ile ilişkisel ambar</td><td>Ambar (warehouse)</td></tr>
+<tr><td>Real-Time Intelligence</td><td>Akış ve olay verisi</td><td>Eventstream, eventhouse (KQL), gerçek zamanlı pano</td></tr>
+<tr><td>Data Science</td><td>Makine öğrenmesi</td><td>ML deneyi, model, not defteri</td></tr>
+<tr><td>Databases</td><td>Operasyonel veritabanı ve yansıtma</td><td>SQL veritabanı, yansıtılmış (mirrored) veritabanı</td></tr>
+<tr><td>Power BI</td><td>Modelleme ve raporlama</td><td>Anlam modeli, rapor, pano, uygulama</td></tr>
+</table></div>
+<p>Learn ayrıca Fabric IQ adlı yeni bir iş yükünü <b>önizleme</b> olarak listeliyor. Bu derste Power BI geliştiricisinin en çok dokunacağı parçalara odaklanıyoruz.</p>
+
+<h2>OneLake ve Delta Parquet</h2>
+<p><b>OneLake</b>, her kiracıya (tenant) bir tane verilen veri gölüdür; “verinin OneDrive’ı” gibi düşün. Çalışma alanları onun altında klasörler, lakehouse ve ambarlar da onların içinde öğelerdir. Tablolar açık <b>Delta Lake</b> biçiminde saklanır: veri sütun tabanlı <b>Parquet</b> dosyalarında, değişiklik geçmişi bir işlem günlüğünde (<code>_delta_log</code>) durur. Aynı tabloyu Spark, T-SQL ve Power BI kopyalamadan okuyabilir.</p>
+<ul>
+<li><b>Kısayol (shortcut):</b> Başka bir yerdeki veriyi (ADLS Gen2, Amazon S3, Google Cloud Storage, başka bir lakehouse) <b>kopyalamadan</b> lakehouse içinde klasör ya da tablo gibi gösterir.</li>
+<li><b>Yansıtma (mirroring):</b> Azure SQL, Snowflake, Cosmos DB gibi bir kaynağı neredeyse gerçek zamanlı olarak OneLake’e çoğaltır.</li>
+</ul>
+
+<h2>Lakehouse ve ambar</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Lakehouse</th><th>Ambar (Warehouse)</th></tr>
+<tr><td>İçerik</td><td><b>Dosyalar</b> (CSV, JSON, görüntü…) + <b>Tablolar</b> (Delta)</td><td>Yalnızca tablolar (Delta)</td></tr>
+<tr><td>Yazma</td><td>Spark (PySpark, Spark SQL), Dataflow Gen2, işlem hattı</td><td>T-SQL: INSERT, UPDATE, DELETE, MERGE, saklı yordam</td></tr>
+<tr><td>SQL ile okuma</td><td>Otomatik <b>SQL analiz uç noktası</b>: salt okunur T-SQL, görünüm (view) tanımlanabilir</td><td>Tam okuma-yazma T-SQL</td></tr>
+<tr><td>Kimin için?</td><td>Veri mühendisi, Python/Spark bilen ekip</td><td>SQL bilen BI ve ambar ekibi</td></tr>
+</table></div>
+<p>İkisi birbirinin alternatifi değil, çoğu projede birlikte kullanılır: ham ve temizlenmiş veri lakehouse’ta, sunuma hazır yıldız şema ambarda ya da yine lakehouse’ta. Hangi deponun ne zaman seçileceği “DP-600 Fabric Analytics Engineer hazırlığı” dersinde tablo hâlinde var.</p>
+
+<h2>Veriyi taşıyan araçlar</h2>
+<ul>
+<li><b>Veri akışı Gen2:</b> Bildiğin Power Query’nin bulut sürümü. Fark: sonucu bir <b>hedefe</b> (lakehouse tablosu, ambar) yazar. Power BI geliştiricisinin Fabric’e en kolay giriş kapısıdır.</li>
+<li><b>İşlem hattı (pipeline):</b> Adımları sıraya koyar ve zamanlar: “kopyala → veri akışını çalıştır → not defterini çalıştır → anlam modelini yenile → hata olursa e-posta at”.</li>
+<li><b>Not defteri (notebook):</b> PySpark ya da Spark SQL ile büyük hacimli dönüşüm, birleştirme, makine öğrenmesi.</li>
+</ul>
+
+<h2>Anlam modeli ve Direct Lake</h2>
+<p>Fabric’te anlam modeli lakehouse ya da ambar tablolarına üç yolla bağlanabilir:</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Import</th><th>DirectQuery</th><th>Direct Lake</th></tr>
+<tr><td>Veri nerede?</td><td>Modelin belleğine kopyalanır</td><td>Kaynakta kalır, her sorguda SQL gider</td><td>OneLake’teki Delta dosyalarından belleğe, gerektikçe yüklenir</td></tr>
+<tr><td>Yenileme</td><td>Tam ya da artımlı veri yükleme (dakikalar–saatler)</td><td>Gerekmez</td><td><b>Çerçeveleme</b> (framing): yalnızca meta veri, genellikle saniyeler</td></tr>
+<tr><td>Sorgu hızı</td><td>Çok hızlı</td><td>Kaynağa bağlı, çoğu zaman yavaş</td><td>Import’a yakın (sütunlar bellekteyken)</td></tr>
+<tr><td>Power Query / hesaplanmış sütun</td><td>Var</td><td>Sınırlı</td><td>Power Query yok: dönüşüm Delta tablolara yazılırken yapılır. Direct Lake sütunlarına başvuran hesaplanmış sütun SQL üzerinde desteklenmez, OneLake üzerinde önizlemede ve sınırlıdır</td></tr>
+</table></div>
+<p>Direct Lake’te bir sorgu ilk kez bir sütuna ihtiyaç duyduğunda o sütun Parquet’ten belleğe yüklenir (transcoding); sonra bellekte kalır. Kullanılmayan sütun bellekten çıkarılabilir. Direct Lake’in iki türü (OneLake üzerinde ve SQL uç noktası üzerinde), DirectQuery’ye geri dönüş ve davranış ayarı “Kurumsal model” dersinde anlatılıyor.</p>
+<p>Senin için en iyi haber: <b>DAX değişmez.</b> Ölçüler, ilişkiler, modelde tanımlı DAX RLS’i ve DAX sorguları Import modelde nasıl çalışıyorsa Direct Lake modelde de öyle çalışır. İstisnalar veri katmanındadır: SQL uç noktası üzerindeki Direct Lake’te SQL görünümleri ve ambardaki SQL RLS DirectQuery’ye düşürür; OneLake üzerindeki Direct Lake’te ise DirectQuery’ye düşme yoktur ve SQL RLS uygulanmaz. Aşağıdaki sorgu, bu uygulamanın modelinde de bir Direct Lake modelinde de aynı sonucu verir:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    "Net Satış", [Net Satış],
+    "Satış GY", [Satış GY]
+)</pre>
+
+<h2>Kapasite ve lisans kavramı</h2>
+<p>Fabric öğelerini (lakehouse, ambar, not defteri, Direct Lake modeli) oluşturmak için çalışma alanının bir <b>Fabric kapasitesine</b> atanmış olması gerekir. Kapasite, kuruluşun satın aldığı ortak bir işlem gücü havuzudur; boyutu SKU ile ifade edilir ve tüm iş yükleri aynı havuzdan “kapasite birimi” tüketir. Rapor yazarı ve okurlarının Power BI lisansları (Pro, PPU) ise ayrı bir konudur ve kapasitenin boyutuna göre değişebilir. Fiyat ve eşikler sık değiştiği için burada sayı vermiyoruz; projeye başlamadan önce yöneticinle güncel lisans belgelerini kontrol et. Deneme kapasitesi öğrenmek için yeterlidir, ama Copilot gibi bazı özellikler denemede çalışmaz.</p>
+
+<h2>İlk Fabric projen: adım adım</h2>
+<ol>
+<li><b>Çalışma alanı:</b> Fabric kapasitesine atanmış bir çalışma alanı oluştur (ör. “Satış Analitiği – Geliştirme”).</li>
+<li><b>Lakehouse:</b> “SatisLakehouse” adlı bir lakehouse oluştur. Ham CSV dosyalarını <b>Dosyalar</b> bölümüne yükle ya da bir kısayolla bağla.</li>
+<li><b>Veri akışı Gen2:</b> Power Query’de temizle (tür, boşluk, birleştirme) ve hedef olarak lakehouse’un <b>Tablolar</b> bölümünü seç: <code>satislar</code>, <code>urunler</code>, <code>musteriler</code>, <code>tarih</code>.</li>
+<li><b>SQL analiz uç noktası:</b> Satır sayılarını ve toplamları T-SQL ile kontrol et.</li>
+<li><b>Anlam modeli:</b> Lakehouse’tan yeni bir Direct Lake anlam modeli oluştur; ilişkileri kur, tarih tablosunu işaretle, ölçüleri yaz.</li>
+<li><b>Rapor:</b> Modelden rapor oluştur ya da Desktop’ta canlı bağlan.</li>
+<li><b>Zamanlama:</b> Veri akışını ve gerekirse model çerçevelemesini bir işlem hattında sıraya koy.</li>
+<li><b>Yaşam döngüsü:</b> Çalışma alanını Git’e bağla, test ve üretim için dağıtım işlem hattı kur (“Yaşam döngüsü” dersi).</li>
+</ol>
+<div class="tip"><b>Sonraki adımlar</b>Fabric’te yıldız şemayı (vekil anahtar, SCD Tip 2, köprü tablo, Delta bakımı) “Fabric’te yıldız şema” dersinde, sertifika yolunu “DP-600” dersinde, depolama modu kararlarını “Kurumsal model” dersinde bulacaksın.</div>
+<div class="note"><b>Derinleş</b><a href="../fabric-onelake/">OneLake</a>, <a href="../fabric-lakehouse/">Lakehouse</a>, <a href="../fabric-data-factory/">Data Factory</a>, <a href="../fabric-pipeline/">İşlem hatları</a>, <a href="../fabric-anlam-modeli/">Fabric’te anlam modeli</a>, <a href="../fabric-copilot/">Fabric’te Copilot</a>.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-giris">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../python-r/">← Power BI’da Python ve R</a><a href="../fabric-yildiz/">Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

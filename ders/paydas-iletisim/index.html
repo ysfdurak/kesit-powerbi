@@ -1,0 +1,106 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim | Kesit Power BI</title><meta name="description" content="Bir BI analistinin günü DAX’tan çok insanlarla geçer: talepleri tek kapıdan almak, etki × efor ile sıralamak, nazikçe “şimdi değil” demek, demo yapmak,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/paydas-iletisim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim"><meta property="og:description" content="Bir BI analistinin günü DAX’tan çok insanlarla geçer: talepleri tek kapıdan almak, etki × efor ile sıralamak, nazikçe “şimdi değil” demek, demo yapmak,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/paydas-iletisim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim","description":"Bir BI analistinin günü DAX’tan çok insanlarla geçer: talepleri tek kapıdan almak, etki × efor ile sıralamak, nazikçe “şimdi değil” demek, demo yapmak,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/paydas-iletisim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Kariyer</span><h1>Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim</h1><p class="st-l">Bir BI analistinin günü DAX’tan çok insanlarla geçer: talepleri tek kapıdan almak, etki × efor ile sıralamak, nazikçe “şimdi değil” demek, demo yapmak, geri bildirimi ayıklamak, kapsam kaymasını yönetmek ve bulguyu yöneticiye üç cümlede anlatmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-paydas-iletisim">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Anadolu Market’te pazartesi sabahı. Rapor ekibindeki tek analist sensin ve gelen kutunda dokuz mesaj var: satış müdürü “acil” bir tablo istiyor, finans bir sayının tutmadığını söylüyor, depo şefi yeni bir sayfa öneriyor, BT yenilemenin gece başarısız olduğunu bildiriyor. Hepsini aynı anda yapamazsın. Bu ders, işin teknik olmayan ama işi belirleyen kısmını anlatıyor. Belirsiz bir talebi tek sayfalık brife çevirmeyi “Talepten rapor brifine: ihtiyaç toplama ve sayfa planı” dersinde gördük; burada brif sonrası hayatı konuşuyoruz.</p>
+
+<h2>Paydaşlar kimdir?</h2>
+<p><b>Paydaş (stakeholder)</b>, raporun sonucundan etkilenen ya da raporun yapılmasına katkı veren herkestir. Her birinden farklı bir şey istersin ve her biri senden farklı bir şey bekler:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Paydaş</th><th>Anadolu Market örneği</th><th>Senden beklediği</th><th>Senin ondan istediğin</th></tr>
+<tr><td><b>Talep sahibi</b></td><td>Satış müdürü</td><td>Kararını hızlandıran, zamanında gelen cevap</td><td>Net soru, öncelik, demo ve onay için zaman</td></tr>
+<tr><td><b>Veri sahibi</b></td><td>ERP’den sorumlu finans uzmanı</td><td>Verinin doğru yorumlanması</td><td>Alan tanımları, iş kuralları (“iptal” ne demek?), erişim</td></tr>
+<tr><td><b>Son kullanıcı</b></td><td>Bölge sorumluları, mağaza yöneticileri</td><td>Hızlı açılan, anlaşılır sayfa</td><td>Gerçek kullanım senaryoları, kabul testinde geri bildirim</td></tr>
+<tr><td><b>BT / platform</b></td><td>Veritabanı yöneticisi, Power BI yöneticisi</td><td>Güvenli bağlantı, kurallara uyum</td><td>Ağ geçidi, servis hesabı, çalışma alanı, lisans</td></tr>
+<tr><td><b>Sponsor</b></td><td>Ticaret direktörü</td><td>Ekibin doğru işlere zaman harcaması</td><td>Öncelik çatışmasında son söz</td></tr>
+</table></div>
+<div class="tip"><b>Veri sahibini ilk hafta bul</b>Bir sayının neden tutmadığını en hızlı veri sahibi açıklar. Projenin başında “bu tablodaki Durum alanı hangi değerleri alır, iptal edilen sipariş ne zaman satır olarak kalır?” diye sorman, sonradan günlerce mutabakat yapmaktan kurtarır.</div>
+
+<h2>Talep girişi: tek kapı</h2>
+<p>Talepler e-postadan, koridordan, toplantı sonunda “bir şey daha” diye gelirse hiçbir şey sıralanamaz. Ekibin <b>tek bir giriş noktası</b> olsun: bir form, bir Teams kanalı ya da bir iş takip aracı. Her talepte şu alanlar dolu olmalı:</p>
+<ol>
+<li><b>Kim istiyor, kim kullanacak?</b></li>
+<li><b>Hangi kararı ya da soruyu destekliyor?</b> (“Elektronik kampanyasına devam edelim mi?”)</li>
+<li><b>Ne zamana lazım ve neden o tarih?</b> (“Perşembe bütçe toplantısı” gerçek bir tarihtir; “ASAP” değildir.)</li>
+<li><b>Mevcut bir rapor bu soruya yakın mı?</b> Çoğu talep, var olan sayfaya bir filtre ya da sütun eklemekle çözülür.</li>
+<li><b>Hangi veri gerekiyor?</b> Modelde yoksa veri sahibi kim?</li>
+</ol>
+<p>Talebin yaşamı da görünür olsun: <b>Yeni → Netleştiriliyor → Sırada → Geliştiriliyor → Testte → Yayında</b> ya da <b>Reddedildi / Ertelendi</b>. Talep sahibi “benim işim nerede?” diye sormak zorunda kalmamalı.</p>
+
+<h2>Önceliklendirme: etki × efor</h2>
+<p>Her talebe iki not ver: <b>etki</b> (kaç kişiyi, hangi büyüklükte bir kararı etkiliyor, 1–5) ve <b>efor</b> (kaç günlük iş, yeni veri gerekiyor mu, 1–5). Sonra dört kutuya yerleştir:</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Düşük efor</th><th>Yüksek efor</th></tr>
+<tr><td><b>Yüksek etki</b></td><td><b>Hızlı kazanç</b>: hemen yap</td><td><b>Büyük proje</b>: planla, parçala, sponsorla konuş</td></tr>
+<tr><td><b>Düşük etki</b></td><td><b>Dolgu işi</b>: boşlukta yap ya da topluca yap</td><td><b>Kaçın</b>: nedenini açıklayarak reddet ya da ertele</td></tr>
+</table></div>
+<p>Pazartesi sabahının dört talebi:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Talep</th><th>Etki</th><th>Efor</th><th>Kutu</th></tr>
+<tr><td>Gece yenilemesi başarısız; rapor dünkü veriyi gösteriyor</td><td>5</td><td>1</td><td>Hızlı kazanç (aslında acil hata, sıranın en başı)</td></tr>
+<tr><td>Satış müdürü: “Aralık nasıl geçti?” sorusu için yorum</td><td>4</td><td>1</td><td>Hızlı kazanç</td></tr>
+<tr><td>Depo şefi: tedarikçi teslim süresi sayfası (veri modelde yok)</td><td>4</td><td>4</td><td>Büyük proje</td></tr>
+<tr><td>Bir kullanıcı: tüm grafiklerin rengini mor yapalım</td><td>1</td><td>2</td><td>Kaçın / ertele</td></tr>
+</table></div>
+<div class="note"><b>Puanlar kesin değil, konuşma aracı</b>Etki × efor tablosu kararı tek başına vermez; seni ve talep sahibini aynı dili konuşmaya zorlar. İki talep çakıştığında sponsorla bu tabloyu paylaş ve sırayı ona onaylat.</div>
+
+<h2>Tahmin vermek ve nazikçe “şimdi değil” demek</h2>
+<p>“Ne zaman biter?” sorusuna tek bir gün söyleme. İşi parçala (veri bağlantısı, model, ölçüler, sayfa, test) ve <b>aralık</b> ver: “Veri modelde varsa 2–3 gün; yeni bir kaynak gerekiyorsa veri sahibinin erişim vermesine bağlı olarak 1–2 hafta.” Belirsizliği saklamak değil, adlandırmak güven verir.</p>
+<p>Reddetmek de bir iletişim becerisidir. “Hayır” yerine <b>neden</b>, <b>ne zaman</b> ve <b>bugün ne yapabileceğini</b> söyle:</p>
+<div class="note"><b>Örnek mesaj: erteleme</b>Merhaba Selin Hanım, tedarikçi teslim süresi sayfası önemli bir ihtiyaç; ama bu veri şu an modelde yok ve satın alma sisteminden erişim gerekiyor. Bu hafta ekibin önceliği, sponsorumuzun onayladığı bütçe raporu. Önerim: talebi 2 hafta sonraki planlamaya alalım, bu arada satın almadan örnek bir dosya isteyeyim. Kısa vadede mevcut stok raporundaki “Stok gün sayısı” sütunu işinizi görür mü?</div>
+
+<h2>Demo yapmak</h2>
+<p>Demo, “bakın ne yaptım” gösterisi değil, <b>doğru şeyi yaptığını erkenden kontrol etme</b> toplantısıdır. Rapor yüzde 60 hazırken yapılan bir demo, yüzde 100’de yapılandan daha değerlidir.</p>
+<ol>
+<li><b>Soruyla başla:</b> “Brifte üç soru vardı; ilkiyle başlayalım.” Özellik turu yapma.</li>
+<li><b>Gerçek veriyle ve gerçek bir senaryoyla göster:</b> “Diyelim ki aralık ayına bakıyorsunuz. Hangi kategori geride? İşte burada.”</li>
+<li><b>Fareyi kullanıcıya ver:</b> Kullanıcının nerede takıldığını izlemek, onun ne söylediğinden daha öğreticidir.</li>
+<li><b>Bilinen eksikleri önce sen söyle:</b> “Teslim tarihi filtresi henüz yok, cuma eklenecek.”</li>
+<li><b>Sonda iki soru sor:</b> “Bu sayfayla kararınızı verebilir misiniz? Eksik olan en önemli tek şey ne?”</li>
+</ol>
+
+<h2>Geri bildirimi toplamak ve ayıklamak</h2>
+<p>Demo sonrası notları ve Service’teki yorumları tek bir listeye topla. Power BI Service’te raporun ya da tek bir görselin üzerine <b>yorum (comment)</b> eklenebilir ve <b>@bahsetme</b> ile bir meslektaş etiketlenebilir; etiketlenen kişiye bildirim gider. Sonra her maddeyi bir türe ayır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Örnek</th><th>Ne yaparsın?</th></tr>
+<tr><td><b>Hata</b></td><td>“Aralık satışı finans tablosundan farklı.”</td><td>Hemen incele; doğrula ya da farkın nedenini açıkla.</td></tr>
+<tr><td><b>Veri sorusu</b></td><td>“Bu sayıya iadeler dahil mi?”</td><td>Tanımı açıkla; sık soruluyorsa araç ipucuna yaz.</td></tr>
+<tr><td><b>Değişiklik isteği</b></td><td>“Web ve Mobil’i tek satırda ‘Dijital’ diye görelim.”</td><td>Brifle karşılaştır, eforu söyle, sıraya al.</td></tr>
+<tr><td><b>Yeni talep</b></td><td>“Bir de temsilci prim raporu olsa…”</td><td>Talep girişine yönlendir; bu projeye ekleme.</td></tr>
+<tr><td><b>Tercih</b></td><td>“Bu mavi biraz soluk.”</td><td>Kurumsal temayla çelişmiyorsa topluca, sonra yap.</td></tr>
+</table></div>
+
+<h2>Değişiklik talebi ve kapsam kayması</h2>
+<p><b>Kapsam kayması (scope creep)</b>, her biri küçük görünen eklemelerin teslim tarihini sessizce kaydırmasıdır. Kural basit: brifte yazmayan her şey bir <b>değişiklik talebidir</b>. Değişikliği reddetmek zorunda değilsin, ama bedelini görünür yapmalısın:</p>
+<div class="note"><b>Örnek mesaj: değişiklik talebi</b>“Dijital kanal” satırını eklemek yarım günlük iş ve brifte yoktu. Eklersem kanal sayfasının testi perşembeye kayar, yayın tarihi değişmez. Onaylıyor musunuz? Onaylarsanız brife ve sürüm notlarına ekliyorum.</div>
+<p>“Dijital” isteği teknik olarak küçük bir ölçüdür (alıştırma 2). Asıl iş; tanımı yazmak, testi güncellemek ve kullanıcılara duyurmaktır. 2024’te Web ve Mobil birlikte net satışın %83,4’ünü yapıyor; bu yüzden tanım net olmalı.</p>
+
+<h2>Kısa durum güncellemesi</h2>
+<p>Haftada bir, beş satırı geçmeyen bir durum notu, onlarca “ne oldu?” mesajını önler. Biçim hep aynı olsun:</p>
+<div class="note"><b>Örnek: haftalık durum (Satış raporu v1.2)</b><b>Bitti:</b> Kanal sayfası, Dijital kanal satırı. <b>Bu hafta:</b> Kabul testi (3 bölge sorumlusu). <b>Engel:</b> Satın alma verisine erişim bekleniyor (talep BT’de). <b>Karar gereken:</b> Tedarikçi sayfası bu sürüme mi, sonrakine mi? <b>Risk:</b> Yok.</div>
+
+<h2>Bulguyu yöneticiye sunmak: önce cevap</h2>
+<p>Satış müdürü soruyor: <i>“Bu ay geçen aya göre nasılız?”</i> Yöneticiler sunumun ilk cümlesinde cevabı bekler. Sıra: <b>cevap → kanıt → öneri</b>. Bizim modelde aralık 2024 ile kasım 2024:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Gösterge</th><th>Kasım 2024</th><th>Aralık 2024</th></tr>
+<tr><td>Net satış</td><td>89.055,60 ₺</td><td>94.000,95 ₺ (+%5,6)</td></tr>
+<tr><td>Aylık hedef gerçekleşme</td><td>%99,3</td><td>%106,3</td></tr>
+<tr><td>Sipariş sayısı</td><td>58</td><td>58</td></tr>
+<tr><td>Ortalama sepet</td><td>1.535,44 ₺</td><td>1.620,71 ₺</td></tr>
+<tr><td>Elektronik</td><td>33.147,30 ₺</td><td>15.936,85 ₺</td></tr>
+<tr><td>Giyim</td><td>9.864,80 ₺</td><td>20.974,55 ₺</td></tr>
+</table></div>
+<div class="note"><b>Örnek e-posta: üç paragraf</b><b>Cevap:</b> Aralıkta net satış geçen aya göre %5,6 artarak 94.000,95 ₺ oldu ve aylık hedefi %106,3 ile geçtik. <b>Kanıt:</b> Sipariş sayısı değişmedi (58); artış sepet büyüklüğünden geldi. Giyim 11.109,75 ₺, Ev &amp; Yaşam 8.359,50 ₺ arttı; Elektronik ise 17.210,45 ₺ geriledi. <b>Öneri:</b> Elektronikteki düşüşün kampanya bitişinden mi stoktan mı geldiğini satın almayla bu hafta kontrol edelim; gerekirse ocak kampanya bütçesini buna göre düzenleyelim.</div>
+<p>Rakamları kurtaran ölçü küçüktür:</p>
+<pre class="dax">Geçen Ay Farkı =
+[Net Satış] - [Satış GA]</pre>
+<p>Aralık 2024 satırında 4.945,35 ₺ döner. Yüzdeyi değişkenlerle kendin yazmak alıştırma 1’de.</p>
+<div class="warn"><b>Bir rakam, bir cümle</b>E-postaya 12 sütunlu bir tablo yapıştırma. Yöneticinin karar vermesi için gereken iki-üç sayıyı cümleye koy, ayrıntı için rapor bağlantısını ver. Yorumunu (“kampanya bitti”) kanıt gibi sunma; “kontrol edelim” diye öner.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-paydas-iletisim">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-kredi/">← Vaka: kredi portföyü ve geri ödeme planı</a><a href="../kalite-test/">Rapor kalitesi: veri mutabakatı, ölçü testleri, belgeleme ve kabul testi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

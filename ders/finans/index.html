@@ -1,0 +1,131 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar | Kesit Power BI</title><meta name="description" content="Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/finans/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar"><meta property="og:description" content="Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/finans/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar","description":"Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/finans/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Analiz</span><h1>Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar</h1><p class="st-l">Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri, XNPV ve XIRR ile yatırım kararı ve ne olur parametresiyle duyarlılık.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-finans">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Finans ekibi bir raporda üç şey arar: <b>tutarlar bir gelir tablosu düzeninde mi</b>, <b>bütçeye göre neredeyiz</b> ve <b>bir kararın parasal değeri ne</b>. Anadolu Market modelinde faaliyet giderleri <code>Giderler</code>, bütçesi <code>GiderButce</code>, türleri <code>GiderTurleri</code> tablosundadır; bilanço yoktur. Gelir tablosunu faaliyet kârına kadar gerçek veriyle kurarız. Şirket ölçeği öğretim için sıkıştırılmıştır: <code>Giderler</code> tutarları satışa göre küçük, <code>Calisanlar[Maas]</code> ile aynı ölçekte değildir.</p>
+
+<h2>Gelir tablosunun mantığı</h2>
+<p>Gelir tablosu (kâr-zarar tablosu, P&amp;L) yukarıdan aşağı okunur; her satır bir öncekinden bir kalem düşer:</p>
+<ol>
+<li><b>Brüt satış:</b> Liste fiyatıyla satış (adet × birim fiyat).</li>
+<li><b>− İndirimler</b> → <b>Satış (indirim sonrası)</b></li>
+<li><b>− İadeler</b> → <b>Net satış</b></li>
+<li><b>− Satılan malın maliyeti (SMM)</b> → <b>Brüt kâr</b>. Brüt kâr / net satış = <b>brüt marj</b>.</li>
+<li><b>− Faaliyet giderleri</b> (pazarlama, genel yönetim, personel) → <b>FAVÖK</b> (faiz, amortisman ve vergi öncesi kâr; İngilizcede EBITDA). Operasyonun nakit üretme gücüne yakın bir göstergedir.</li>
+<li><b>− Amortisman, faiz, vergi</b> → <b>Net kâr</b>.</li>
+</ol>
+<p>Modelde 5. satıra kadar inebiliriz: hazır <code>[Gider]</code> ve <code>[Faaliyet Kârı]</code> ölçüleri <code>Giderler</code> tablosunu kullanır. Amortisman ayrı tutulmadığı için buna tam FAVÖK değil, faaliyet kârı diyoruz. Dikkat: modeldeki <code>[Net Satış]</code> yalnızca iptalleri çıkarır, iadeleri değil. Muhasebe dilindeki net satış için iadeyi ayrıca düşmek gerekir. Bir ölçüye ad verirken hangi tanımı kullandığını açıklamasına yaz.</p>
+
+<h2>Modelden küçük bir kâr-zarar tablosu</h2>
+<p>Matrisin satırlarında “Brüt satış, İndirimler, …” gibi <b>kalem adları</b> olmalı; ama bu adlar modelde bir sütun değil. Kalıp: kalemleri tutan bir <b>yardımcı tablo</b> (Giriş → Veri gir) ve kalem başına doğru ölçüyü seçen bir <b>SWITCH</b> ölçüsü.</p>
+<pre class="dax" data-notry>-- Yardımcı tablo: KZKalemleri (Sira, Kalem), Kalem sütunu Sira'ya göre sıralı
+KZ Tutarı =
+VAR IadeMaliyet = CALCULATE([Toplam Maliyet], Satislar[Durum] = "İade")
+VAR NetSatis = [Net Satış] - [İade Tutarı]
+VAR SMM = [Net Maliyet] - IadeMaliyet
+RETURN SWITCH(SELECTEDVALUE(KZKalemleri[Sira]),
+    1, CALCULATE([Brüt Tutar], Satislar[Durum] &lt;&gt; "İptal"),
+    2, -[İndirim Tutarı],
+    3, [Net Satış],
+    4, -[İade Tutarı],
+    5, NetSatis,
+    6, -SMM,
+    7, NetSatis - SMM)</pre>
+<p>Aynı mantığı yardımcı tabloyu sorgunun içinde kurarak deneyebilirsin:</p>
+<pre class="dax">EVALUATE
+VAR Kalemler = SELECTCOLUMNS(
+    { (1, "Brüt satış"), (2, "İndirimler"), (3, "Satış (indirim sonrası)"), (4, "İadeler"),
+      (5, "Net satış"), (6, "Satılan malın maliyeti"), (7, "Brüt kâr") },
+    "Sira", [Value1], "Kalem", [Value2])
+VAR IadeMaliyet = CALCULATE([Toplam Maliyet], Satislar[Durum] = "İade")
+RETURN ADDCOLUMNS(Kalemler, "Tutar", SWITCH([Sira],
+    1, CALCULATE([Brüt Tutar], Satislar[Durum] &lt;&gt; "İptal"),
+    2, -[İndirim Tutarı],
+    3, [Net Satış],
+    4, -[İade Tutarı],
+    5, [Net Satış] - [İade Tutarı],
+    6, -([Net Maliyet] - IadeMaliyet),
+    7, [Net Satış] - [İade Tutarı] - ([Net Maliyet] - IadeMaliyet)))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kalem</th><th>Tutar (TL)</th></tr>
+<tr><td>Brüt satış</td><td>1.291.856</td></tr>
+<tr><td>İndirimler</td><td>−41.084</td></tr>
+<tr><td>Satış (indirim sonrası)</td><td>1.250.772</td></tr>
+<tr><td>İadeler</td><td>−80.835</td></tr>
+<tr><td><b>Net satış</b></td><td><b>1.169.937</b></td></tr>
+<tr><td>Satılan malın maliyeti</td><td>−743.418</td></tr>
+<tr><td><b>Brüt kâr</b></td><td><b>426.519</b> (marj %36,5)</td></tr>
+</table></div>
+<p>Satılan malın maliyetinden iade edilen ürünlerin maliyeti (51.246 TL) düşüldü; ürün stoğa geri döndüğü varsayımıyla. Gider kalemleri tutarları negatif yazılır; böylece matrisin toplamı anlamlı olmaz ama her satır doğru okunur. Ara toplam satırlarını (Net satış, Brüt kâr) koşullu biçimlendirmeyle kalın göster; matrisin kendi toplam satırını kapat.</p>
+<div class="tip"><b>Kalem sırası</b>Yardımcı tablonun Kalem sütununu “Sütuna göre sırala” ile Sira'ya bağla; yoksa kalemler alfabetik dizilir. Bu kalıp, <b>Hesaplama grupları, alan parametreleri, görsel hesaplamalar</b> dersindeki ölçü seçme mantığıyla akrabadır.</div>
+
+<h2>Bütçe sapması</h2>
+<p>Bütçe (ya da hedef) sapması iki biçimde verilir: <b>tutar</b> olarak (gerçekleşen − bütçe) ve <b>yüzde</b> olarak ((gerçekleşen − bütçe) / bütçe). Modeldeki <code>Hedefler</code> tablosu kategori ve ay düzeyindedir (ayrıntı düzeyi farkı için <b>Hedef ve gerçekleşen</b> dersine bak).</p>
+<pre class="dax">Bütçe Sapma Yüzdesi = DIVIDE([Net Satış] - [Hedef], [Hedef])</pre>
+<p>Toplamda net satış 1.250.772 TL, hedef 1.299.300 TL: sapma −48.528 TL, yani <b>−%3,7</b>. Yıllara göre: 2022 −%23,0, 2023 −%0,4, 2024 −%2,1. 2022'deki büyük açık bir performans sorunu değil; hedefler Ocak'tan, satışlar 22 Haziran'dan başlıyor. Sapmayı yorumlamadan önce iki tarafın aynı dönemi kapsadığını kontrol et.</p>
+<p>Sapma <b>işareti</b> kaleme göre yorumlanır: satışta pozitif sapma iyi, maliyette kötüdür. Koşullu biçimlendirmede renk kuralını kaleme göre ters çevir. Oranlarda (marj gibi) sapma <b>yüzde puan</b> olarak verilir: %36,5 marj ile %35 hedef arasındaki fark +1,5 puandır, %4,3 değil.</p>
+
+<h3>Gider bütçesi: gerçek veriyle sapma</h3>
+<p><code>GiderButce</code> gider türü ve ay düzeyindedir. Hazır ölçüler:</p>
+<pre class="dax">Gider Sapma Kontrol = [Gider] - [Gider Bütçe]</pre>
+<p>Gider tarafında işaret terstir: pozitif sapma bütçe aşımı, yani kötü haberdir. <b>Örnek raporlar → Finansal Performans</b> raporu bu ölçüleri ve <code>GiderTurleri[Grup]</code> kırılımını kullanır.</p>
+
+<h2>Oranlar ve oran panosu</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Oran</th><th>Tanım</th><th>Modelde</th></tr>
+<tr><td>Brüt marj</td><td>Brüt kâr / net satış</td><td><code>[Kâr Marjı %]</code> = %36,5</td></tr>
+<tr><td>İndirim oranı</td><td>İndirim / brüt satış</td><td><code>[Ortalama İndirim %]</code> = %3,2</td></tr>
+<tr><td>İade oranı (satır)</td><td>İade satırı / tüm satırlar</td><td><code>[İade Oranı %]</code> = %6,8</td></tr>
+<tr><td>İade oranı (tutar)</td><td>İade tutarı / satış</td><td><code>DIVIDE([İade Tutarı], [Net Satış])</code> = %6,5</td></tr>
+<tr><td>İptal oranı</td><td>İptal satırı / tüm satırlar</td><td><code>[İptal Oranı %]</code> = %7,5</td></tr>
+</table></div>
+<p>Aynı adlı oranın iki tanımı (satır ya da tutar bazlı) farklı sonuç verir; panoya hangisini koyduğunu yaz. Kategoriye göre tutar bazlı iade oranı Kozmetik'te %10,9, Spor'da %3,9. Oran panosunda her oranı <b>kendi hedefi ve geçen yılı</b> ile birlikte göster; tek başına bir yüzde iyi mi kötü mü söylemez. Pano tasarımı için <b>Koşullu biçimlendirme ve KPI'lar</b> dersine bak.</p>
+
+<h2>Paranın zaman değeri: FV, PV, PMT</h2>
+<p>Bugünkü 1 TL, bir yıl sonraki 1 TL'den değerlidir; çünkü bugün yatırıp faiz alabilirsin. DAX, Excel'deki finansal fonksiyonların aynısını içerir. İşaret kuralı da Excel'deki gibidir: <b>senden çıkan para negatif</b>, sana gelen pozitif.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Soru</th><th>Örnek</th><th>Sonuç</th></tr>
+<tr><td><code>FV(oran, dönem, ödeme, [bd], [tür])</code></td><td>Her ay 10.000 TL yatırırsam 12 ay sonra ne birikir? (aylık %3)</td><td><code>FV(0.03, 12, -10000)</code></td><td>141.920 TL</td></tr>
+<tr><td><code>PV(oran, dönem, ödeme)</code></td><td>3 yıl boyunca yılda 120.000 TL almanın bugünkü değeri? (%30)</td><td><code>PV(0.30, 3, -120000)</code></td><td>217.934 TL</td></tr>
+<tr><td><code>PMT(oran, dönem, bd)</code></td><td>500.000 TL krediyi 24 ayda aylık %3,5 ile öderken taksit?</td><td><code>PMT(0.035, 24, -500000)</code></td><td>31.136 TL</td></tr>
+</table></div>
+<p>Oranın ve dönemin <b>aynı birimde</b> olmasına dikkat et: aylık taksit için aylık oran ve ay sayısı. Yıllık %42 nominal oran aylık 0,42 / 12 = 0,035'tir. Son bağımsız değişken <b>tür</b> (type) ödemenin dönem sonunda (0, varsayılan) mı başında (1) mı yapıldığını söyler: <code>FV(0.03, 12, -10000, 0, 1)</code> 146.178 TL döndürür.</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(GENERATESERIES(12, 36, 12),
+    "Taksit", PMT(0.035, [Value], -500000),
+    "Toplam Ödeme", PMT(0.035, [Value], -500000) * [Value])</pre>
+<p>Vade 12 aydan 36 aya uzayınca taksit 51.742 TL'den 24.642 TL'ye iner; ama toplam ödeme 620.904 TL'den 887.115 TL'ye çıkar.</p>
+
+<h2>Yatırım kararı: XNPV ve XIRR</h2>
+<p><b>Net bugünkü değer</b> (NBD, NPV): Bir yatırımın tüm nakit akışlarını, istenen getiri oranıyla bugüne indirip toplamak. NBD &gt; 0 ise yatırım istenen getiriden fazlasını kazandırır. <b>İç verim oranı</b> (İVO, IRR): NBD'yi sıfır yapan oran; yatırımın kendi getirisi.</p>
+<p>DAX'ta düzensiz tarihli akışlar için <code>XNPV(tablo, değer, tarih, oran)</code> ve <code>XIRR(tablo, değer, tarih)</code> kullanılır. İndirgeme ilk akışın tarihine göre, (gün farkı / 365) üssüyle yapılır. Akışlarda en az bir negatif ve bir pozitif değer olmalı. Örnek: Depo otomasyonu için 1 Ocak 2025'te 300.000 TL yatırım; sonraki iki yıl boyunca her çeyrek 50.000 TL ek brüt kâr (varsayımsal bir proje):</p>
+<pre class="dax">EVALUATE
+VAR Akis = SELECTCOLUMNS(GENERATESERIES(0, 8),
+    "Tarih", EDATE(DATE(2025, 1, 1), 3 * [Value]),
+    "Nakit", IF([Value] = 0, -300000, 50000))
+RETURN ROW(
+    "NBD (%25)", XNPV(Akis, [Nakit], [Tarih], 0.25),
+    "İVO", XIRR(Akis, [Nakit], [Tarih]))</pre>
+<p>Sonuç: NBD 13.920 TL, İVO %30,6. Şirketin istediği getiri %25 ise proje kabul edilir (NBD pozitif, İVO &gt; %25). İstenen getiri %35 olsaydı NBD −10.159 TL olurdu ve proje reddedilirdi.</p>
+<div class="note"><b>Nakit akışı tablosu</b>Gerçek bir modelde nakit akışları bir tabloda (ör. Excel'den gelen bir yatırım planı) durur ve ölçü <code>XNPV(Akislar, Akislar[Tutar], Akislar[Tarih], 0.25)</code> biçiminde yazılır. Sorgu içinde <code>SELECTCOLUMNS(GENERATESERIES(…))</code> ya da <code>{ (DATE(2025, 1, 1), -250000), … }</code> tablo oluşturucusuyla küçük bir tablo kurmak deneme için yeterlidir.</div>
+
+<h2>Ne olur parametresiyle duyarlılık</h2>
+<p>NBD, varsayılan orana çok duyarlıdır. <b>Segmentasyon</b> dersindeki ne olur (what-if) parametresi kalıbı burada da işler: Modelleme → Yeni parametre → Sayısal aralık ile 0,10–0,40 arasında 0,05 adımlı bir “İskonto Oranı” parametresi oluştur; ölçü <code>SELECTEDVALUE</code> ile seçili oranı okur.</p>
+<pre class="dax" data-notry>NBD Senaryo =
+XNPV(Akislar, Akislar[Tutar], Akislar[Tarih],
+     SELECTEDVALUE('İskonto Oranı'[İskonto Oranı], 0.25))</pre>
+<p>Parametre tablosunu bir çizgi grafiğin eksenine koyarsan <b>duyarlılık eğrisini</b> görürsün; eğrinin sıfırı kestiği nokta İVO'dur:</p>
+<pre class="dax">EVALUATE
+VAR Akis = SELECTCOLUMNS(GENERATESERIES(0, 8),
+    "Tarih", EDATE(DATE(2025, 1, 1), 3 * [Value]),
+    "Nakit", IF([Value] = 0, -300000, 50000))
+RETURN ADDCOLUMNS(GENERATESERIES(0.10, 0.40, 0.05), "NBD", XNPV(Akis, [Nakit], [Tarih], [Value]))</pre>
+<p>%10'da 59.949 TL, %20'de 27.750 TL, %30'da 1.336 TL, %35'te −10.159 TL. Satış tarafında aynı soruyu Segmentasyon dersindeki fiyat senaryosuyla sorarsın: fiyat %5 artarsa adet ve kâr ne olur? İkisini bir sayfada birleştirmek, yatırımın getirisinin fiyat varsayımına ne kadar bağlı olduğunu gösterir.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-finans">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../zaman-serisi/">← Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları</a><a href="../copilot/">Copilot ile çalışmak ve modeli yapay zekâya hazırlamak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

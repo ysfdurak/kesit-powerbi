@@ -1,0 +1,90 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon | Kesit Power BI</title><meta name="description" content="Bir veri setini rapora dökmeden önce tanımak: eksik değerleri bulup nedenini anlamak, dağılımı histogramla görmek, IQR kuralıyla aykırı değer ayıklamak,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/eda/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon"><meta property="og:description" content="Bir veri setini rapora dökmeden önce tanımak: eksik değerleri bulup nedenini anlamak, dağılımı histogramla görmek, IQR kuralıyla aykırı değer ayıklamak,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/eda/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon","description":"Bir veri setini rapora dökmeden önce tanımak: eksik değerleri bulup nedenini anlamak, dağılımı histogramla görmek, IQR kuralıyla aykırı değer ayıklamak,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/eda/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon</h1><p class="st-l">Bir veri setini rapora dökmeden önce tanımak: eksik değerleri bulup nedenini anlamak, dağılımı histogramla görmek, IQR kuralıyla aykırı değer ayıklamak, kırpma (winsorizing), kutu grafiği ve DAX ile Pearson korelasyonu.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-eda">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Keşifçi veri analizi (Exploratory Data Analysis, EDA), bir grafiği yayımlamadan önce verinin ne söylediğini ve neyi saklıyor olabileceğini anlamaktır. <b>Temel istatistik, gruplama ve kutulama</b> dersindeki fonksiyonları (MEDIAN, STDEV, PERCENTILE) burada bir yöntemin parçası olarak kullanacağız.</p>
+
+<h2>EDA dört adımda</h2>
+<ol>
+<li><b>Soru:</b> Neyi merak ediyorsun? “Sipariş tutarları nasıl dağılıyor, birkaç büyük sipariş ortalamayı bozuyor mu?” gibi somut bir soruyla başla.</li>
+<li><b>Profil:</b> Her sütunun türü, satır sayısı, boş ve farklı değer sayısı, en küçük ve en büyük değeri.</li>
+<li><b>Dağılım:</b> Tek değişkenin şekli: simetrik mi, sağa çarpık mı, uç değerler var mı?</li>
+<li><b>İlişki:</b> İki değişken birlikte nasıl hareket ediyor? Dağılım grafiği ve korelasyon.</li>
+</ol>
+<p>Bu derste soru şu: <code>Satislar[Tutar]</code> (sipariş satırı tutarı) ve <code>Satislar[KargoGun]</code> nasıl bir veri?</p>
+
+<h2>Eksik değer: bul, anla, sonra karar ver</h2>
+<p><b>Power Query'de:</b> Görünüm sekmesinde <b>Sütun kalitesi</b> (Column quality) her sütunun üstünde geçerli, hatalı ve boş yüzdesini gösterir. <b>Sütun dağılımı</b> farklı ve benzersiz değer sayısını, <b>Sütun profili</b> ise seçili sütunun istatistiklerini ve değer dağılımını verir. Varsayılan olarak yalnızca ilk 1.000 satıra bakılır; durum çubuğundan “tüm veri kümesine göre sütun profili oluşturma” seçeneğine geç.</p>
+<p><b>DAX ile:</b> Rapora bir veri kalitesi kartı koymak için:</p>
+<pre class="dax">Eksik Kargo Payı = DIVIDE(COUNTBLANK(Satislar[KargoGun]), COUNTROWS(Satislar))</pre>
+<p>Sonuç %8,1: 1.620 satırın 131'inde kargo günü yok. Şimdi en önemli adım: <b>neden yok?</b> 121'i iptal edilmiş sipariş (teslimat hiç olmayacak, eksik değil “uygulanamaz”); 10'u hâlâ kargoda (değer henüz oluşmadı). Doldurma yöntemi seçmeden önce eksikliğin türünü ayır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yöntem</th><th>Ortalama kargo günü</th><th>Yanlılığı</th></tr>
+<tr><td>Satırı yok say (silme)</td><td>3,12</td><td>Eksikler rastgele değilse kalan veri temsilî olmaz. Hâlâ kargoda olan siparişler muhtemelen uzun sürenlerdir; ortalama biraz iyimser kalır.</td></tr>
+<tr><td>Sabitle doldur (0)</td><td>2,87</td><td>İptalleri “aynı gün teslim” gibi gösterir; ortalamayı yapay olarak düşürür.</td></tr>
+<tr><td>Medyanla doldur (3)</td><td>3,11</td><td>Ortalama neredeyse değişmez ama dağılım daralır, standart sapma küçülür; aykırılar daha az aykırı görünür.</td></tr>
+<tr><td>Önceki değer (Power Query: Doldur → Aşağı)</td><td>Sıraya bağlı</td><td>Yalnızca sıralı ve “değer değişene kadar geçerli” verilerde anlamlıdır (ör. bir başlık satırının altındaki satırlar). Sipariş satırlarında rastgele bir komşunun değerini kopyalar.</td></tr>
+</table></div>
+<div class="warn"><b>İptal edilmiş siparişi doldurma</b>“Uygulanamaz” eksikliği hiçbir değerle doldurma; hesaptan çıkar. Doğru ölçü iptalleri filtreler, kargodaki 10 siparişi ise “açık” olarak ayrıca raporlar. Doldurma bir analiz kararıdır; ne yaptığını raporun notunda yaz.</div>
+
+<h2>Dağılım: histogram ve frekans</h2>
+<p>Histogram, sayısal bir değişkeni eşit genişlikte <b>kutulara</b> (bins) böler ve her kutudaki satır sayısını çizer. Power BI'da yerleşik histogram görseli yoktur; bir kutu sütunu (Veri bölmesi → Yeni grup → Kutu) ya da DAX ile frekans tablosu kurup sütun grafiği çizersin. Kutu genişliğini sen seçersin; çok dar kutu gürültü, çok geniş kutu düz bir blok gösterir.</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    GENERATESERIES(0, 2000, 250),
+    "Satır", VAR Alt = [Value]
+        RETURN COUNTROWS(FILTER(Satislar, Satislar[Tutar] &gt;= Alt &amp;&amp; Satislar[Tutar] &lt; Alt + 250))
+)</pre>
+<p>Sonuç: 0–250 arası 222 satır, 250–500 arası 384, 500–750 arası 398, 750–1.000 arası 273, 1.000–1.250 arası 139 satır; sonra 30–40 satırlık uzun bir kuyruk 8.999 TL'ye kadar uzanır. Dağılım <b>sağa çarpık</b>: ortalama 831 TL, medyan 640 TL. Ortalama medyandan belirgin büyükse birkaç büyük değer ortalamayı yukarı çekiyordur.</p>
+<p>Ekseni bir bağlantısız kutu tablosundan alan bir ölçü yazmak da mümkündür (kutu sınırları bir <code>GENERATESERIES</code> hesaplanmış tablosunda, ölçü <code>SELECTEDVALUE</code> ile sınırı okur). Bu kalıp <b>Segmentasyon</b> dersindeki dinamik dilim kalıbıyla aynıdır.</p>
+
+<h2>Çeyrekler, IQR ve aykırı değer kuralı</h2>
+<p>Çeyrekler veriyi dört eşit parçaya böler: Q1 (%25), medyan (%50), Q3 (%75). Çeyrekler açıklığı <b>IQR = Q3 − Q1</b>, verinin ortadaki yarısının genişliğidir. Tukey'in kuralı: <b>Q1 − 1,5 × IQR</b> altı ve <b>Q3 + 1,5 × IQR</b> üstü aykırı değer adayıdır.</p>
+<pre class="dax">Tutar Üst Sınırı =
+VAR Q1 = PERCENTILE.INC(Satislar[Tutar], 0.25)
+VAR Q3 = PERCENTILE.INC(Satislar[Tutar], 0.75)
+RETURN Q3 + 1.5 * (Q3 - Q1)</pre>
+<p>Tüm veride Q1 = 355,96 TL, Q3 = 899 TL, IQR = 543,04 TL ve üst sınır 1.713,56 TL. Alt sınır negatif çıkar (−458,6); yani alt tarafta aykırı yok. Üst sınırın üstünde <b>138 satır</b> var (%8,5) ve bu satırlar toplam tutarın <b>%32,4</b>'ünü oluşturuyor. Aykırı değer burada “hatalı veri” değil, işin önemli bir parçası: monitör, robot süpürge, koşu bandı gibi pahalı ürünler.</p>
+<div class="tip"><b>Sınır bağlama göre değişir</b>Aynı ölçü kategori kırılımında her kategori için kendi çeyreklerini hesaplar: Elektronik'te üst sınır 2.288 TL, Kitap'ta 1.053 TL. “Genel olarak aykırı” ile “kendi grubunda aykırı” farklı sorulardır; raporda hangisini gösterdiğini belli et.</div>
+<p><b>Kırpma (winsorizing):</b> Aykırı satırları silmek yerine sınıra çekmek. Üst sınırın üstündeki her değer sınıra eşitlenir; satır sayısı korunur, uç değerlerin etkisi azalır. Ortalama tutar 831 TL'den 707,5 TL'ye iner; aykırıları tamamen silersek 613,9 TL olur. Kırpılmış ortalama, “tipik” siparişi anlatmak için ortalama ile medyan arasında bir uzlaşmadır; ciro raporunda ise asla kırpılmış değer kullanılmaz.</p>
+
+<h2>Kutu grafiği</h2>
+<p>Kutu grafiği (box plot) beş sayıyı tek görselde gösterir: kutunun alt ve üst kenarı Q1 ve Q3, içindeki çizgi medyan, bıyıklar (whiskers) 1,5 × IQR sınırına kadar uzanan en uç gözlemler, ötesindeki noktalar aykırı değerler. Kategorileri yan yana koyunca hem merkezi hem yayılımı bir bakışta karşılaştırırsın.</p>
+<p>Power BI'da yerleşik kutu grafiği <b>yoktur</b>. İki yol var: AppSource'tan bir özel görsel (custom visual) eklemek ya da kendin kurmak: Q1, medyan, Q3, alt ve üst sınır ölçülerini yazıp bir tabloda ya da hata çubuklu (error bars) bir grafikte göstermek. Özel görsel kullanacaksan kuruluşunun izin verdiği görseller listesine bak.</p>
+
+<h2>İki değişken: dağılım grafiği ve korelasyon</h2>
+<p>İki sürekli değişkenin ilişkisine önce <b>dağılım grafiğinde</b> (scatter chart) bak: Değerler alanına iki ölçü, Değerler (Values) kutusuna ayrıntı düzeyi (ör. <code>Urunler[Urun]</code>). Sonra ilişkinin gücünü tek bir sayıyla özetle: <b>Pearson korelasyon katsayısı r</b>, −1 ile +1 arasında, iki değişkenin <b>doğrusal</b> olarak birlikte hareket etme derecesidir.</p>
+<p>r = Σ(x − x̄)(y − ȳ) / √(Σ(x − x̄)² · Σ(y − ȳ)²). DAX'ta önce ürün başına bir sanal tablo kurulur, sonra beş toplam <code>SUMX</code> ile hesaplanır:</p>
+<pre class="dax">Fiyat Adet r =
+VAR T = ADDCOLUMNS(VALUES(Urunler[Urun]),
+    "X", CALCULATE(AVERAGE(Urunler[Fiyat])),
+    "Y", [Satılan Adet])
+VAR T2 = FILTER(T, NOT ISBLANK([X]) &amp;&amp; NOT ISBLANK([Y]))
+VAR MX = AVERAGEX(T2, [X])
+VAR MY = AVERAGEX(T2, [Y])
+RETURN DIVIDE(
+    SUMX(T2, ([X] - MX) * ([Y] - MY)),
+    SQRT(SUMX(T2, ([X] - MX) ^ 2)) * SQRT(SUMX(T2, ([Y] - MY) ^ 2)))</pre>
+<p>Ürün düzeyinde r = −0,60: pahalı ürünler daha az adet satıyor. İki ayrıntı önemli:</p>
+<ul>
+<li><b>CALCULATE'i unutma.</b> <code>"X", AVERAGE(Urunler[Fiyat])</code> yazarsan satır bağlamı filtreye dönüşmez; her ürün için tüm ürünlerin ortalama fiyatı gelir ve r = 0 çıkar. Ölçü referansı (<code>[Satılan Adet]</code>) ise CALCULATE'i zaten içerir. Bkz. <b>Bağlam geçişi</b> dersi.</li>
+<li><b>r yalnızca doğrusal ilişkiyi ölçer.</b> Fiyatlar 79 TL ile 15.999 TL arasında; ilişki eğri. Fiyatın logaritmasıyla (<code>LN</code>) hesaplanan r −0,87'ye çıkar. Önce dağılım grafiğine bakmanın nedeni budur.</li>
+</ul>
+<p>Kategori kırılımında ilişki daha güçlü: Kozmetik'te −0,96, Elektronik'te −0,86, Kitap'ta −0,51. Gruplar arası farklar (kitaplar ucuz ve çok satar) genel katsayıyı başka yöne çekebilir; her zaman grup içi ilişkiye de bak. <b>İleri istatistik</b> dersi bu formülü eğilim ve z-skoru ile birlikte ele alıyor.</p>
+
+<h2>Korelasyon nedensellik değildir</h2>
+<p>Ürün düzeyinde ortalama kargo günü ile iade oranı arasında r = +0,41 çıkıyor. “Kargo geciktikçe müşteri iade ediyor” demek cazip; ama korelasyon tek başına bunu kanıtlamaz:</p>
+<ul>
+<li><b>Ortak neden (karıştırıcı):</b> Büyük ve kırılgan ürünler hem geç gelir hem daha çok iade edilir; ikisini de ürün türü belirler.</li>
+<li><b>Ters yön:</b> İade sürecindeki bir ürün yeniden gönderilir ve kargo süresi uzar.</li>
+<li><b>Tesadüf:</b> 40 ürünlük bir örnekte orta büyüklükte bir r rastlantıyla çıkabilir.</li>
+</ul>
+<p>Nedenselliği test etmek deney (A/B testi) ya da en azından karıştırıcıyı sabit tutan bir karşılaştırma gerektirir: aynı kategoride, aynı fiyat bandında hızlı ve yavaş kargolanan siparişleri karşılaştır. Power BI'daki <b>Temel etkileyiciler</b> görseli de korelasyon bulur, neden bulmaz.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-eda">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-tarih-metin/">← DAX'ta tarih, metin ve sayma fonksiyonları</a><a href="../zaman-serisi/">Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

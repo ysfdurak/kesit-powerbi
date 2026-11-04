@@ -1,0 +1,93 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service | Kesit Power BI</title><meta name="description" content="Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/veri-baglantilari/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service"><meta property="og:description" content="Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/veri-baglantilari/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service","description":"Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/veri-baglantilari/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service</h1><p class="st-l">Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta kurulan bağlantının Service’te nasıl yenilendiği.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-baglantilari">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Veri alma ve bağlantı modları” dersinde İçeri aktarma ile DirectQuery farkını gördük. Bu ders bir bağlantının yaşam döngüsüne bakıyor: Desktop’ta nasıl kurulur, hangi bilgileri saklar ve rapor yayımlandıktan sonra Service’te neden bazen yenilenmez.</p>
+
+<h2>Verinin yolculuğu ve üç dil</h2>
+<ol>
+<li><b>Kaynak</b>: SQL Server, Excel, SharePoint, bir API…</li>
+<li><b>Power Query</b>: verinin alınması ve temizlenmesi. Dil: <b>M</b>.</li>
+<li><b>Anlam modeli</b> (semantic model): tablolar, ilişkiler, ölçüler. Dil: <b>DAX</b>.</li>
+<li><b>Rapor</b>: görseller ölçüleri çağırır.</li>
+<li><b>Service</b> (Power BI Service): yayımlanan model zamanlanmış olarak yenilenir, rapor paylaşılır.</li>
+</ol>
+<div class="tbl-wrap"><table>
+<tr><th>Dil</th><th>Nerede çalışır?</th><th>Ne için?</th></tr>
+<tr><td>SQL</td><td>Kaynak veritabanında</td><td>Veriyi kaynağında süzmek, birleştirmek. Power Query çoğu adımı kendisi SQL’e çevirir (sorgu katlama); istersen elle de yazarsın.</td></tr>
+<tr><td>M</td><td>Power Query’de, yenileme sırasında</td><td>Bağlanmak, şekillendirmek, temizlemek.</td></tr>
+<tr><td>DAX</td><td>Modelde, rapor açıkken</td><td>Ölçüler, hesaplanmış tablolar ve sütunlar, güvenlik kuralları.</td></tr>
+</table></div>
+
+<h2>Bir veritabanına bağlanmak</h2>
+<p><b>Veri al → SQL Server veritabanı</b> penceresi şunları ister:</p>
+<ul>
+<li><b>Sunucu</b>: <code>sql01.sirket.local</code> ya da bir bulut adresi. Bağlantı noktası gerekiyorsa sunucu adına eklenir.</li>
+<li><b>Veritabanı</b> (isteğe bağlı): boş bırakırsan gezgin sunucudaki tüm veritabanlarını listeler.</li>
+<li><b>Veri bağlantısı modu</b>: İçeri aktar ya da DirectQuery.</li>
+<li><b>Gelişmiş seçenekler</b> (Advanced options): komut zaman aşımı (varsayılan 10 dakika), <b>SQL deyimi</b>, ilişki sütunlarını ekle, tam hiyerarşiyle gezin.</li>
+</ul>
+<p>İlk bağlantıda <b>kimlik doğrulama türü</b> sorulur: Windows, Veritabanı (kullanıcı adı ve parola) ya da kuruluş hesabı (Microsoft Entra ID). Kimlik bilgisi .pbix dosyasına yazılmaz; bilgisayarındaki <b>Veri kaynağı ayarları</b>’nda saklanır. Dosyayı bir meslektaşına gönderirsen o da kendi kimliğiyle bağlanır. Bağlantı şifreli değilse Desktop bir uyarı gösterir; mümkünse sunucu tarafında şifrelemeyi açtır.</p>
+<pre class="m">let
+    Kaynak = Sql.Database("sql01.sirket.local", "SatisDB"),
+    Satislar = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data]
+in
+    Satislar</pre>
+
+<h2>Gezgin mi, yerel SQL sorgusu mu?</h2>
+<p>Gezginden (Navigator) tablo seçip Power Query’de filtrelemek ile <b>Gelişmiş seçenekler → SQL deyimi</b> kutusuna hazır bir sorgu yapıştırmak aynı veriyi getirebilir. Fark sonraki adımlarda ortaya çıkar.</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Gezgin + Power Query adımları</th><th>Yerel SQL sorgusu (native query)</th></tr>
+<tr><td>Sorgu katlama</td><td>Filtre, sütun seçme, gruplama kaynağa gönderilir.</td><td>Klasik yöntemde sonraki adımlar katlanmaz; hepsi Power Query’de, yerelde çalışır.</td></tr>
+<tr><td>Bakım</td><td>Adımlar görünür ve tıklanarak düzenlenir.</td><td>SQL metni tek bir adımda; değişiklik için SQL bilmek gerekir.</td></tr>
+<tr><td>Güvenlik</td><td>Ek onay yok.</td><td>Gelişmiş Düzenleyici’den eklenen ya da değiştirilen yerel sorgu için onay istenir.</td></tr>
+<tr><td>İyi olduğu yer</td><td>Çoğu senaryo.</td><td>Veritabanı ekibinin optimize ettiği karmaşık bir sorgu ya da saklı yordam çağrısı.</td></tr>
+</table></div>
+<p>Yerel sorgu kullanman gerekiyorsa katlamayı korumanın bir yolu vardır: <code>Value.NativeQuery</code> fonksiyonunu <code>EnableFolding = true</code> seçeneğiyle çağırmak. Bu, SQL Server, PostgreSQL, Snowflake, Google BigQuery gibi bazı bağlayıcılarda desteklenir; sonraki filtre adımı senin sorgunu bir alt sorgu olarak sarar.</p>
+<pre class="m">let
+    Kaynak = Sql.Database("sql01.sirket.local", "SatisDB"),
+    Sorgu = Value.NativeQuery(Kaynak,
+        "SELECT SiparisNo, Tarih, UrunNo, Tutar FROM dbo.Satislar WHERE Durum &lt;&gt; 'İptal'",
+        null, [EnableFolding = true]),
+    Son2Yil = Table.SelectRows(Sorgu, each [Tarih] &gt;= #date(2023, 1, 1))
+in
+    Son2Yil</pre>
+
+<h2>Parametreli bağlantı</h2>
+<p>“Power Query ile modele hazırlık” dersindeki parametreleri bağlantı bilgisine uygula: sunucu adını ve veritabanını metin parametresi yap. Geliştirme sırasında test sunucusunu, yayımladıktan sonra üretim sunucusunu kullanırsın; M koduna dokunmazsın.</p>
+<pre class="m">let
+    Kaynak = Sql.Database(SunucuAdi, VeritabaniAdi),
+    Satislar = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data]
+in
+    Satislar</pre>
+<p>Service’te parametre değeri anlam modelinin ayarlarından değiştirilebilir; dağıtım işlem hatlarında (deployment pipelines) her aşama için ayrı değer veren kurallar tanımlanır.</p>
+
+<h2>Desktop’tan Service’e: neden yenilenmiyor?</h2>
+<p>Yayımladığında Service’e model, veri ve M kodu gider; <b>kimlik bilgileri gitmez</b>. Zamanlanmış yenilemenin çalışması için Service’in kaynağa ulaşabilmesi ve oturum açabilmesi gerekir:</p>
+<ul>
+<li><b>Bulut kaynağı</b> (Azure SQL, SharePoint Online): anlam modeli ayarlarında <b>Veri kaynağı kimlik bilgileri</b>’ni gir ya da “Bağlantıları ve ağ geçitlerini yönet” sayfasındaki bir <b>bulut bağlantısını</b> seç.</li>
+<li><b>Şirket içi kaynak</b> (ofisteki SQL Server, ağ klasöründeki Excel): <b>şirket içi veri ağ geçidi</b> (on-premises data gateway) gerekir. Kimlik bilgilerini ağ geçidi yöneticisi tanımlar; senin hesabın o veri kaynağının kullanıcı listesinde olmalı. Kişisel mod ağ geçidi yalnızca tek kullanıcı içindir.</li>
+<li><b>Gizlilik düzeyleri</b>: farklı kaynakları birleştiren sorgularda Service de gizlilik düzeylerine (Özel, Kuruluş, Genel) uyar; Desktop’ta çalışan birleştirme Service’te bu yüzden hata verebilir.</li>
+</ul>
+<div class="note"><b>Yenileme sınırları</b>Pro lisansta günde en fazla 8, Premium kişi başı (PPU) ve Premium/Fabric kapasitede 48 zamanlanmış yenileme yapılabilir. Art arda dört başarısız yenilemeden ya da süresi dolmuş kimlik bilgisi gibi düzeltilemez bir hatadan sonra zamanlama kendiliğinden kapanır. İki ay boyunca hiç görüntülenmeyen modelin zamanlaması da duraklatılır.</div>
+
+<h2>Bağlantı hatalarını okumak</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Belirti</th><th>Olası neden</th><th>Ne yapılır?</th></tr>
+<tr><td>“Kimlik bilgileri geçersiz” ya da oturum açma hatası</td><td>Parola değişti, hesap kilitlendi, yanlış kimlik doğrulama türü</td><td>Veri kaynağı ayarlarında (Service’te model ayarlarında) kimliği güncelle.</td></tr>
+<tr><td>“Ağla ilgili ya da örneğe özgü bir hata” (network-related error)</td><td>Sunucu adı yanlış, güvenlik duvarı, VPN kapalı, Service’te ağ geçidi yok</td><td>Sunucuya ağdan erişimi kontrol et; buluttaki kaynakta istemci IP’sine izin ver; şirket içinde ağ geçidi kur.</td></tr>
+<tr><td><code>Expression.Error</code>: “…sütunu bulunamadı”</td><td>Kaynakta şema değişti: sütun silindi ya da yeniden adlandırıldı</td><td>Hata veren adımı bul; sütun adını düzelt ya da “Diğer sütunları kaldır” ile yalnızca gerekenleri seç.</td></tr>
+<tr><td>Service’te “ağ geçidi çevrimdışı”</td><td>Ağ geçidinin kurulu olduğu makine kapalı</td><td>Makineyi ya da ağ geçidi kümesini çalıştır.</td></tr>
+</table></div>
+<p>Kaynak taşındığında (yeni sunucu, yeni dosya yolu) <b>Dönüştür → Veri kaynağı ayarları → Kaynağı değiştir</b> ile tüm sorgulardaki bağlantı bir kerede güncellenir. Tek bir sorguda ise <code>Kaynak</code> adımındaki sunucu adını Gelişmiş Düzenleyici’de değiştirmen yeter; sonraki adımlar aynı tablo yapısını bulduğu sürece çalışır.</p>
+
+<h2>Artımlı yenileme: kısa bir bakış</h2>
+<p>Milyonlarca satırlık bir olgu tablosunu her gece baştan yüklemek yerine yalnızca son günleri yenilemek mümkündür. Bunun için <code>RangeStart</code> ve <code>RangeEnd</code> adlı iki tarih/saat parametresiyle tabloyu filtreler ve tabloya bir yenileme ilkesi tanımlarsın. Filtrenin kaynağa katlanması şarttır; yerel SQL sorgusu bu yüzden burada risklidir. Ayrıntılar “Kurumsal model” dersinde.</p>
+<div class="note"><b>Devamı</b>Ağ geçidinin kurulumu ve teşhisi <a href="../gateway/">On-premises data gateway</a>, yenilemenin türleri ve sınırları <a href="../veri-yenileme/">Veri yenileme</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-baglantilari">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-ileri/">← Power Query: join türleri, dizin sütunu ve gruplu sıra</a><a href="../model-ileri/">Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

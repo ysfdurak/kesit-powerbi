@@ -1,0 +1,76 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rol oynayan boyutlar ve USERELATIONSHIP | Kesit Power BI</title><meta name="description" content="Bir tarih tablosu, iki tarih sütunu: sipariş ve teslim tarihi. Pasif ilişkiyi ölçüde etkinleştirmek."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/rol-oynayan/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Rol oynayan boyutlar ve USERELATIONSHIP"><meta property="og:description" content="Bir tarih tablosu, iki tarih sütunu: sipariş ve teslim tarihi. Pasif ilişkiyi ölçüde etkinleştirmek."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/rol-oynayan/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Rol oynayan boyutlar ve USERELATIONSHIP","description":"Bir tarih tablosu, iki tarih sütunu: sipariş ve teslim tarihi. Pasif ilişkiyi ölçüde etkinleştirmek.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/rol-oynayan/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Modelleme</span><h1>Rol oynayan boyutlar ve USERELATIONSHIP</h1><p class="st-l">Bir tarih tablosu, iki tarih sütunu: sipariş ve teslim tarihi. Pasif ilişkiyi ölçüde etkinleştirmek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-rol-oynayan">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Sorun</h2>
+<p><code>Satislar</code> tablosunda iki tarih var: <code>Tarih</code> (sipariş) ve <code>TeslimTarihi</code>. İkisi de <code>Tarih</code> tablosuna bağlanmak ister. Ama iki tablo arasında aynı anda yalnızca <b>bir etkin ilişki</b> olabilir. Diğeri <b>pasif</b> (model diyagramında kesik çizgi) kalır.</p>
+<p>Bu modelde <code>Satislar[Tarih]</code> → <code>Tarih[Tarih]</code> etkin, <code>Satislar[TeslimTarihi]</code> → <code>Tarih[Tarih]</code> pasif. Tarih tablosu iki “rol” oynar: sipariş takvimi ve teslim takvimi.</p>
+<h2>Çözüm 1: USERELATIONSHIP</h2>
+<pre class="dax">Teslime Göre Satış =
+CALCULATE(
+    [Net Satış],
+    USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih])
+)</pre>
+<p><code>USERELATIONSHIP</code> yalnızca <code>CALCULATE</code> içinde çalışır ve o hesap süresince pasif ilişkiyi etkinleştirir; aynı tablolar arasındaki etkin ilişki geçici olarak devre dışı kalır. Aralık 2023'te verilip Ocak 2024'te teslim edilen sipariş, sipariş ölçüsünde Aralık'a, teslim ölçüsünde Ocak'a yazılır.</p>
+<h2>Çözüm 2: Boyutu çoğaltmak</h2>
+<p>İkinci bir tarih tablosu (<code>TeslimTarihi</code> tablosu) oluşturup etkin ilişkiyle bağlamak. Avantajı: kullanıcı aynı görselde iki tarihi ayrı eksenlere koyabilir (ör. sipariş ayı × teslim ayı matrisi). Dezavantajı: model büyür, iki takvim bakım ister, zaman zekâsı ölçüleri hangi takvimi kullandığını bilmelidir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Önerilen</th></tr>
+<tr><td>Birkaç ölçü ikinci tarihe göre hesaplanacak</td><td>USERELATIONSHIP</td></tr>
+<tr><td>Kullanıcı iki tarihi aynı anda dilimleyecek / eksene koyacak</td><td>İkinci tarih tablosu</td></tr>
+<tr><td>Çok sayıda rol (sipariş, kargo, teslim, fatura)</td><td>Genellikle ölçüler + USERELATIONSHIP; gerekirse hesaplama grubu</td></tr>
+</table></div>
+<h2>CROSSFILTER</h2>
+<p>Aynı aileden: <code>CROSSFILTER(Sütun1, Sütun2, BOTH | NONE | ONEWAY)</code> bir ilişkinin filtre yönünü hesap süresince değiştirir. Modelde ilişkiyi kalıcı olarak çift yönlü yapmak yerine yalnızca gereken ölçüde kullanılır:</p>
+<pre class="dax">Satılan Ürün Sayısı =
+CALCULATE(
+    COUNTROWS(Urunler),
+    CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH)
+)</pre>
+<p>Kanal dilimleyicisinde “Mağaza” seçiliyse bu ölçü mağazada satılmış ürün sayısını verir; çünkü filtre bu ölçüde Satislar'dan Urunler'e de akar.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Hangi soru hangi tarihi ister?</h2>
+<p>Teknik çözüm (USERELATIONSHIP ya da ikinci tablo) ikinci adımdır. İlk adım, her sorunun hangi tarih rolüne ait olduğunu belirlemektir:</p>
+<div class="tbl-wrap"><table><tr><th>İş sorusu</th><th>Soran</th><th>Tarih rolü</th></tr>
+<tr><td>“Bu ay ne kadar sipariş aldık?”</td><td>Satış ekibi</td><td>Sipariş tarihi</td></tr>
+<tr><td>“Bu ay ne kadar gelir tanıyabiliriz?”</td><td>Finans</td><td>Teslim tarihi</td></tr>
+<tr><td>“Gelecek hafta kaç teslimat yapacağız?”</td><td>Lojistik</td><td>Teslim tarihi</td></tr>
+<tr><td>“Siparişler ortalama kaç günde teslim ediliyor?”</td><td>Operasyon</td><td>İkisi birlikte (fark)</td></tr></table></div>
+<p>Ocak 2024 için sipariş tarihine göre net satış 47.433 ₺, teslim tarihine göre 47.297 ₺. Yıl düzeyinde fark büyür: 2024’te sipariş bazlı 747.066 ₺, teslim bazlı 738.304 ₺. Sınır ayları (Aralık’ta verilip Ocak’ta teslim edilen siparişler) iki ölçüyü birbirinden ayırır.</p>
+<h3>Teslim tarihi boş olan satırlar</h3>
+<p>Teslim bazlı ölçünün genel toplamı yine 1.250.772 ₺’dir, ama yıl satırlarının toplamı 1.239.709 ₺ tutar. Aradaki 11.063 ₺, henüz teslim edilmemiş (Durum = “Kargoda”) ve <code>TeslimTarihi</code> boş olan satırlardır. Toplam satırında tarih filtresi olmadığı için bu satırlar sayılır. Power BI yıl ekseninde bunları <b>(Boş)</b> etiketli ayrı bir satırda gösterir. Finans raporunda bu satırı gizlemek yerine “Teslim bekleyen” diye adlandırmak daha dürüsttür.</p>
+
+<h2>Anti-kalıp: olgu sütununu tarih dilimleyicisiyle süzmek</h2>
+<p>USERELATIONSHIP’i bilmeyen biri teslim bazlı ölçüyü şöyle kurar:</p>
+<pre class="dax">Teslim Satışı (hatalı) =
+VAR Bas = MIN(Tarih[Tarih])
+VAR Son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], Satislar[TeslimTarihi] &gt;= Bas, Satislar[TeslimTarihi] &lt;= Son)</pre>
+<p>Ocak 2024 satırında sonuç 44.996 ₺; doğrusu 47.297 ₺. Eksik 2.301 ₺, Aralık 2023’te verilip Ocak’ta teslim edilen siparişlerdir. Sebep: etkin ilişki hâlâ çalışıyor. Ocak filtresi önce sipariş tarihine göre süzüyor, ölçünün koşulu bunun <b>üstüne</b> ekleniyor. Sonuç “Ocak’ta verilip Ocak’ta teslim edilenler” oluyor. İki düzeltme var:</p>
+<pre class="dax">Teslim Satışı (filtre kaldırarak) =
+VAR Bas = MIN(Tarih[Tarih])
+VAR Son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Satislar[TeslimTarihi] &gt;= Bas, Satislar[TeslimTarihi] &lt;= Son)
+
+Teslim Satışı (ilişkiyle) =
+CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))</pre>
+<p>İkisi de 47.297 ₺ verir. İkincisi tercih edilir: niyeti açıkça söyler ve zaman zekâsı fonksiyonlarıyla birlikte çalışır. İlk kalıp, hazır <code>[Yoldaki Sipariş]</code> ölçüsündeki gibi iki tarih sütununu aynı anda karşılaştırman gerektiğinde gerekir (“sipariş verilmiş ama teslim edilmemiş”).</p>
+
+<h2>USERELATIONSHIP ve zaman zekâsı birlikte</h2>
+<p>Finans teslim bazlı YTD istiyor. Yeni bir YTD formülü yazmana gerek yok. Var olan ölçüyü pasif ilişkiyle sarmalarsın:</p>
+<pre class="dax">Teslime Göre YTD =
+CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))</pre>
+<p>Dıştaki CALCULATE’in etkinleştirdiği ilişki, içteki ölçünün bütün hesabı boyunca geçerlidir. Mayıs 2024’te teslim bazlı YTD 235.031 ₺, sipariş bazlı YTD 235.863 ₺. Aynı yöntem adet, sipariş sayısı ya da kargo süresi için de çalışır. Ocak 2024’te teslim edilen siparişlerin ortalama kargo süresi 2,74 gün, Ocak’ta verilen siparişlerinki 2,67 gün.</p>
+<div class="tip"><b>Ölçü ailesi kur</b>Her temel ölçünün teslim sürümünü tek tek yazmak yerine ad kuralı belirle: “… (Teslim)”. Görüntüleme klasörü (Display folder) ile ayrı bir klasöre koy. Ölçü sayısı çok artarsa aynı mantığı hesaplama grubuyla tek yerde toplayabilirsin (İleri Modelleme’deki hesaplama grupları dersi).</div>
+
+<h2>İkinci tarih tablosuna ne zaman geçmeli?</h2>
+<p>Lojistik müdürü bir matris istiyor: satırlarda sipariş ayı, sütunlarda teslim ayı, hücrede sipariş sayısı. Bu soru USERELATIONSHIP ile cevaplanamaz, çünkü aynı görselde aynı tablonun iki rolü aynı anda filtre olamaz. Burada ikinci bir tarih tablosu (ör. <code>TeslimTakvimi</code>) gerekir. Bu modelde siparişlerin %91,7’si verildiği ay içinde teslim ediliyor. Matrisin köşegeni dolu, köşegen dışı ise sınır aylarındaki kaymayı gösterir.</p>
+<div class="note"><b>İkinci tablo kurarken</b>1) Sütun adlarını rolüyle başlat (“Teslim Yıl”, “Teslim Ay”); kullanıcı iki “Yil” sütununu karıştırmasın. 2) Tabloyu da tarih tablosu olarak işaretle. 3) Zaman zekâsı ölçüleri hangi takvimi kullanıyorsa adında yazsın. 4) Dilimleyicilerde iki takvimi aynı sayfada kullanacaksan hangi dilimleyicinin hangi rolü süzdüğünü başlıkta belirt.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-rol-oynayan">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-model/">← Power Query ile modele hazırlık</a><a href="../yari-toplanabilir/">Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

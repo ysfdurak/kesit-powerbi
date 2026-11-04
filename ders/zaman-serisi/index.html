@@ -1,0 +1,99 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları | Kesit Power BI</title><meta name="description" content="Bir satış serisini bileşenlerine ayırmak: haftanın günü etkisi, çalışma çizelgesi, mevsimsellik endeksi, yerleşik tahmin ve geriye dönük test, DAX ile…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-serisi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları"><meta property="og:description" content="Bir satış serisini bileşenlerine ayırmak: haftanın günü etkisi, çalışma çizelgesi, mevsimsellik endeksi, yerleşik tahmin ve geriye dönük test, DAX ile…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-serisi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları","description":"Bir satış serisini bileşenlerine ayırmak: haftanın günü etkisi, çalışma çizelgesi, mevsimsellik endeksi, yerleşik tahmin ve geriye dönük test, DAX ile…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/zaman-serisi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Zaman Zekâsı</span><h1>Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları</h1><p class="st-l">Bir satış serisini bileşenlerine ayırmak: haftanın günü etkisi, çalışma çizelgesi, mevsimsellik endeksi, yerleşik tahmin ve geriye dönük test, DAX ile basit tahmin, CAGR ve aylık bileşik büyüme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-serisi">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p><b>Zaman zekâsı</b> ve <b>Gelişmiş zaman hesapları</b> derslerinde dönemleri karşılaştırmayı (YTD, geçen yıl, hareketli ortalama) öğrendin. Bu derste soruyu değiştiriyoruz: Seri <b>neden</b> böyle hareket ediyor ve bir sonraki ay ne bekleyebiliriz?</p>
+
+<h2>Bir zaman serisinin dört bileşeni</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Bileşen</th><th>Ne demek?</th><th>Anadolu Market'te</th></tr>
+<tr><td>Eğilim (trend)</td><td>Uzun dönemli yön</td><td>Yıllık net satış hızla büyüyor</td></tr>
+<tr><td>Mevsimsellik (seasonality)</td><td>Takvime bağlı, her yıl tekrarlanan desen</td><td>Kasım–Aralık yüksek, Ocak ve Nisan düşük</td></tr>
+<tr><td>Döngü (cycle)</td><td>Takvime bağlı olmayan, yıllardan uzun dalgalar (ekonomik döngü)</td><td>Üç yıllık veride ayırt edilemez</td></tr>
+<tr><td>Düzensizlik (noise)</td><td>Kalan rastgele oynama</td><td>Tek bir büyük siparişin ayı yukarı çekmesi</td></tr>
+</table></div>
+
+<h2>Önce veriye bak: 2022 eksik bir yıl</h2>
+<p>Tarih tablosu 1 Ocak 2022'de başlıyor, ama ilk satış <b>22 Haziran 2022</b>'de. Yıllık net satış: 2022'de 102.837 TL (yalnızca ~6 ay), 2023'te 400.870 TL, 2024'te 747.066 TL. Bu bilgi aşağıdaki her hesabı etkiler:</p>
+<ul>
+<li>2022'yi tam yıl gibi kullanan bir büyüme oranı abartılı çıkar.</li>
+<li>Takvim günlerine bölünen ortalamalarda 2022'nin ilk yarısı (satış olmayan 172 gün) payda olarak girerse ortalama düşer.</li>
+<li>Mevsimsellik endeksinde 2022'nin boş ayları (Ocak–Mayıs) o ayları “düşük sezon” gibi gösterir.</li>
+</ul>
+<p>Kural: Analize başlamadan önce serinin <b>başlangıç ve bitiş tarihini</b> ve aradaki boş dönemleri yaz.</p>
+
+<h2>Haftanın günü etkisi</h2>
+<p>“Hangi gün daha çok satıyoruz?” sorusunun cevabı paydaya bağlıdır. Haftanın gününe göre toplam satış, o günden kaç tane olduğuna bağlı olarak yanıltabilir; bu yüzden <b>gün başına ortalama</b> hesaplanır:</p>
+<pre class="dax">Gün Başına Satış =
+VAR Ilk = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS())
+RETURN DIVIDE([Net Satış], COUNTROWS(FILTER(Tarih, Tarih[Tarih] &gt;= Ilk)))</pre>
+<p>Payda, verinin başladığı günden itibaren o haftanın gününe düşen <b>tüm takvim günleri</b>dir (satışsız günler dahil). Sonuç: Çarşamba 1.590 TL ile en yüksek, Perşembe 1.266 TL ve Pazartesi 1.268 TL ile en düşük; tüm günlerin ortalaması 1.354 TL.</p>
+<div class="warn"><b>Satışsız günler de gündür</b>924 günün yalnızca 509'unda satış var. <code>AVERAGEX(VALUES(Tarih[Tarih]), [Net Satış])</code> boş günleri atlar ve “satış olan günlerin ortalaması”nı verir: bu hesapta en yüksek gün Cumartesi (2.758 TL) çıkar. Birinci ölçü “ortalama bir Çarşamba ne getirir?”, ikincisi “satış olan bir Cumartesi ne getirir?” sorusunu cevaplar. Hangisini sorduğunu bil. Ayrıca az veride (1.620 satır) günler arasındaki farkın bir kısmı tesadüftür.</div>
+
+<h2>Çalışma çizelgesi (run chart) ve medyan çizgisi</h2>
+<p>Çalışma çizelgesi, zaman ekseninde bir ölçünün çizgi grafiği ve üzerinde <b>medyan çizgisidir</b>. Medyan, uç aylardan etkilenmediği için ortalamadan daha sağlam bir referanstır. Power BI'da çizgi grafiği seç, Analiz bölmesinden <b>Medyan çizgisi</b> ekle; ya da ölçüyle:</p>
+<pre class="dax">Aylık Medyan =
+VAR Seri = FILTER(ADDCOLUMNS(ALLSELECTED(Tarih[YilAy]), "S", [Net Satış]), NOT ISBLANK([S]))
+RETURN MEDIANX(Seri, [S])</pre>
+<p>Satış olan 31 ayın medyanı 40.258 TL. Okuma kuralı: Medyanın aynı tarafında art arda <b>6 ya da daha çok nokta</b> varsa bu rastlantı değil, bir <b>kayma</b>dır (shift). Ekim 2023–Mart 2024 arası 6 ay, Mayıs–Aralık 2024 arası 8 ay üst üste medyanın üstünde: seri kalıcı olarak yukarı kaymış. Böyle bir durumda tek bir medyan çizgisi tüm dönemi temsil etmez; çizgiyi kayma noktasından sonra yeniden hesapla.</p>
+
+<h2>Mevsimsellik endeksi</h2>
+<p>Mevsimsellik endeksi = bir takvim ayının ortalama satışı / tüm ayların ortalama satışı. 1'in üstü “bu ay normalden güçlü”, altı “zayıf” demektir. 2022 eksik olduğu için yalnızca <b>tam yılları</b> (2023 ve 2024) kullan:</p>
+<pre class="dax">Ay Endeksi Tam Yıl =
+VAR AyOrt = DIVIDE(
+    CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] IN {2023, 2024})),
+    CALCULATE(DISTINCTCOUNT(Tarih[YilAy]), KEEPFILTERS(Tarih[Yil] IN {2023, 2024})))
+VAR GenelOrt = CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[Yil] IN {2023, 2024}) / 24
+RETURN DIVIDE(AyOrt, GenelOrt)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Oca</th><th>Şub</th><th>Mar</th><th>Nis</th><th>May</th><th>Haz</th><th>Tem</th><th>Ağu</th><th>Eyl</th><th>Eki</th><th>Kas</th><th>Ara</th></tr>
+<tr><td>0,64</td><td>0,78</td><td>0,92</td><td>0,60</td><td>0,76</td><td>1,06</td><td>1,11</td><td>0,83</td><td>1,09</td><td>1,27</td><td>1,52</td><td>1,44</td></tr>
+</table></div>
+<p>Toplam satırda endeks 1'dir (bütün ayların ortalaması kendine eşittir); bu iyi bir sağlama. Ama bir sorun var: Seri bir yılda %86 büyüdüğü için yılın son ayları, yalnızca takvim yüzünden değil <b>eğilim yüzünden de</b> yüksek çıkar. Endeksi eğilimden arındırmak için ya her yılı kendi ortalamasına bölüp yılları ortalarsın ya da önce eğilim çizgisini çıkarırsın (<b>İleri istatistik</b> dersindeki en küçük kareler). Kategori kırılımında ölçü her kategorinin kendi mevsimselliğini verir, çünkü <code>REMOVEFILTERS(Tarih)</code> yalnızca tarihi temizler.</p>
+
+<h2>Yerleşik tahmin ve geriye dönük test</h2>
+<p>Çizgi grafiğinde Analiz bölmesi → <b>Tahmin</b> (Forecast). Ön koşul: ekseni sürekli bir tarih (ya da tarih hiyerarşisi) olan, tek ölçülü bir çizgi grafik. Ayarlar:</p>
+<ul>
+<li><b>Tahmin uzunluğu</b> ve birimi (ör. 3 ay).</li>
+<li><b>Güven aralığı</b>: tahminin etrafındaki gölgeli bant (ör. %95). Bant genişse model emin değildir.</li>
+<li><b>Mevsimsellik</b>: kaç noktada bir tekrar ettiği (aylık veride 12). Otomatik bırakılabilir; 31 aylık seride elle 12 vermek daha güvenlidir.</li>
+<li><b>Son noktaları yok say</b> (Ignore last): Son N noktayı modelden saklar ve onları tahmin ettirir.</li>
+</ul>
+<p>Sonuncusu <b>geriye dönük test</b> (backtest, hindcast) için kullanılır: Son 3 ayı yok say, tahmin edilen 3 ayı gerçekleşenle karşılaştır. Tahmin gerçek değerlerin çok altında ya da üstündeyse, geleceğe dönük tahmine de güvenme. Yerleşik tahmin üstel düzeltmeye dayanır; sonuçları ölçü olarak modele yazılmaz, yalnızca o görselde yaşar.</p>
+
+<h2>DAX ile basit tahmin</h2>
+<p>Her ay için “son 3 ayın ortalaması” bir sonraki ayın naif tahminidir. Ölçü, içinde bulunduğu ayı <b>görmeden</b> önceki üç tam aya bakar; böylece geçmişin her ayında bir geriye dönük test yapmış olursun:</p>
+<pre class="dax">Naif Tahmin 3 Ay =
+VAR Son = MAX(Tarih[Tarih])
+RETURN DIVIDE(
+    CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], EOMONTH(Son, -4) + 1, EOMONTH(Son, -1))),
+    3)</pre>
+<p>Aralık 2024 için tahmin 78.158 TL (Eylül–Kasım ortalaması), gerçekleşen 94.001 TL: hata −%16,9. Büyüyen ve mevsimsel bir seride naif ortalama hep geriden gelir. İkinci yöntem <b>geçen yıl × büyüme</b>dir:</p>
+<pre class="dax">Tahmin GY x Büyüme =
+CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih])) * (1 + 0.8)</pre>
+<p>Geçen yılın aynı ayı mevsimselliği taşır, büyüme katsayısı eğilimi. 2024'ün yıllık büyümesiyle (%86,4) Aralık 2023'ten (43.560 TL) yapılan tahmin 81.179 TL, hata −%13,6. Sabit katsayıyı bir <b>ne olur (what-if) parametresine</b> bağlarsan kullanıcı büyüme varsayımını kaydırıcıyla değiştirir.</p>
+<div class="note"><b>Gelecek tarihler</b>Tahmini gelecekteki aylarda göstermek için tarih tablosu o ayları da içermelidir. Bu modelin Tarih tablosu 31.12.2024'te biter; 2025 için bir değer görmek istersen önce tarih tablosunu uzatman gerekir.</div>
+
+<h2>Büyüme oranları: CAGR ve CMGR</h2>
+<p><b>Bileşik yıllık büyüme oranı</b> (CAGR) = (Son / İlk)^(1 / yıl sayısı) − 1. Dönem boyunca her yıl aynı oranda büyüseydin hangi oranda büyümüş olurdun sorusunu cevaplar.</p>
+<ul>
+<li><b>Yanlış:</b> 2022 → 2024 yıllık toplamlarıyla CAGR %169,5 çıkar; çünkü 2022 yalnızca altı aydır.</li>
+<li><b>Bir yıllık CAGR</b> (2023 → 2024) yıllık büyümeyle aynıdır: %86,4.</li>
+<li><b>Adil karşılaştırma:</b> Aynı mevsimi karşılaştır. Temmuz–Aralık 2022 (102.242 TL) ile Temmuz–Aralık 2024 (446.573 TL) arası iki yıldır: CAGR = (446.573 / 102.242)^(1/2) − 1 = <b>%109</b>.</li>
+</ul>
+<pre class="dax">Yarıyıl CAGR Örnek =
+VAR Bas = CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2022, 7, 1), DATE(2022, 12, 31)))
+VAR Son = CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], DATE(2024, 7, 1), DATE(2024, 12, 31)))
+RETURN POWER(DIVIDE(Son, Bas), 1 / 2) - 1</pre>
+<p><b>Bileşik aylık büyüme</b> (CMGR) aynı formülün ay sayısıyla yazılışıdır. Mevsim etkisini azaltmak için aynı ayları seç: Aralık 2023 → Aralık 2024 (12 ay) için CMGR = (94.001 / 43.560)^(1/12) − 1 = <b>ayda %6,6</b>. Ocak 2023 (zayıf ay) ile Aralık 2024'ü (güçlü ay) karşılaştırmak oranı şişirir. Uç noktalar tek aylık değerse gürültüye duyarlıdır; çeyreklik ya da 12 aylık toplamlarla çalışmak daha sağlamdır.</p>
+
+<h2>Anomali</h2>
+<p>Mevsimselliği ve eğilimi bilince, “beklenenden sapan” ayı ayırt edebilirsin: Nisan 2024 (34.234 TL) hem önceki hem sonraki aylardan belirgin düşük. Power BI'daki <b>Anomali bul</b> özelliği ve z-skoruyla işaretleme <b>Analiz özellikleri ve yapay zekâ görselleri</b> ile <b>İleri istatistik</b> derslerinde anlatılıyor. Bir anomaliyi raporlamadan önce veri hatası olup olmadığını (eksik yükleme, iptal dalgası) kontrol et.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-serisi">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../eda/">← Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon</a><a href="../finans/">Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,77 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zaman zekâsı: YTD, geçen yıl, büyüme | Kesit Power BI</title><meta name="description" content="TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/zaman/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Zaman zekâsı: YTD, geçen yıl, büyüme"><meta property="og:description" content="TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/zaman/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Zaman zekâsı: YTD, geçen yıl, büyüme","description":"TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/zaman/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Zaman Zekâsı</span><h1>Zaman zekâsı: YTD, geçen yıl, büyüme</h1><p class="st-l">TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Ön koşul</h2>
+<p>Zaman zekâsı fonksiyonları kesintisiz bir tarih sütununa ihtiyaç duyar; iyi uygulama, ayrı bir tarih tablosu kurup “Tarih tablosu olarak işaretle”mektir. İlişki tarih türünde bir sütunla kurulduysa işaretlemeden de çalışır; tarih dışı bir anahtarla kurulduysa işaret şarttır. Bu modelde <code>Tarih[Tarih]</code> o sütundur. Görselde tarih bilgisini her zaman <b>Tarih tablosundan</b> al (<code>Tarih[Yil]</code>, <code>Tarih[YilAy]</code>), olgu tablosundaki tarihten değil.</p>
+<div class="note"><b>Veriye dikkat: 2022 yarım yıl</b>İlk satış Haziran 2022’de. Bu yüzden hazır <code>[YoY %]</code> 2023 için %289,8 verir: tam yılı yarım yılla karşılaştırır. Bu veri bilerek böyle; “Tam dönem YoY” alıştırması sorunu çözer.</div>
+<h2>Yılbaşından bugüne (YTD)</h2>
+<pre class="dax">Satış YTD = TOTALYTD([Net Satış], Tarih[Tarih])
+-- aynısı:
+Satış YTD = CALCULATE([Net Satış], DATESYTD(Tarih[Tarih]))</pre>
+<p>Mart satırında 1 Ocak – 31 Mart toplamını verir. Benzerleri: <code>TOTALQTD</code>, <code>TOTALMTD</code>, <code>DATESQTD</code>, <code>DATESMTD</code>.</p>
+<h2>Geçen yılla karşılaştırma</h2>
+<pre class="dax">Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+
+YoY % = DIVIDE([Net Satış] - [Satış GY], [Satış GY])</pre>
+<p><code>SAMEPERIODLASTYEAR</code>, görünen tarihleri bir yıl geri kaydırır. <code>DATEADD(Tarih[Tarih], -1, YEAR)</code> aynı işi yapar ve daha esnektir: <code>-1, MONTH</code> bir önceki ay, <code>-1, QUARTER</code> bir önceki çeyrek.</p>
+<h2>Önceki dönem</h2>
+<pre class="dax">Satış GA = CALCULATE([Net Satış], PREVIOUSMONTH(Tarih[Tarih]))
+Aylık Değişim % = DIVIDE([Net Satış] - [Satış GA], [Satış GA])</pre>
+<div class="note"><b>PREVIOUSMONTH ile DATEADD farkı</b><code>PREVIOUSMONTH</code> her zaman görünen ilk tarihten önceki <b>tam ayı</b> döndürür. Yıl düzeyinde bir hücrede (ör. 2024 toplamı) bile Aralık 2023'ü verir. <code>DATEADD(..., -1, MONTH)</code> ise tüm dönemi bir ay kaydırır.</div>
+<div class="warn"><b>İlk yıl boş</b>Verinin başladığı yılda “geçen yıl” yoktur; <code>Satış GY</code> boş, <code>YoY %</code> de boş döner. DIVIDE sayesinde hata değil boşluk görürsün.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Tarih tablosu olarak işaretlemek ne değiştirir?</h2>
+<p>Tarih tablosunu “tarih tablosu olarak işaretle”diğinde Power BI, tarih sütunu (<code>Tarih[Tarih]</code>) üzerine kurulan her filtreye otomatik olarak <code>REMOVEFILTERS(Tarih)</code> ekler. Bu yüzden şu kümülatif ölçü, satırlarda <code>Tarih[YilAy]</code> olsa bile doğru çalışır:</p>
+<pre class="dax">Kümülatif (tarih sütunuyla) =
+VAR Son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], Tarih[Tarih] &lt;= Son)</pre>
+<p>Aynı mantığı yıl sütunuyla elle kurmak ise bozulur:</p>
+<pre class="dax">Satış GY (elle) =
+VAR Y = MAX(Tarih[Yil])
+RETURN CALCULATE([Net Satış], Tarih[Yil] = Y - 1)</pre>
+<p>Bu ölçü <code>Tarih[Ay]</code> kırılımında doğru sonuç verir, ama <code>Tarih[YilAy]</code> kırılımında <b>her hücrede BLANK</b> döner: “2024-03” filtresi yerinde kalır, üstüne “Yıl = 2023” eklenir ve iki filtreyi aynı anda sağlayan tarih yoktur. <code>SAMEPERIODLASTYEAR</code> bu sorunu yaşamaz, çünkü tarih sütunu üzerinden çalışır ve diğer tarih filtrelerini kaldırır.</p>
+<div class="warn"><b>Zaman zekâsının üç ön koşulu</b>1) Tarih sütunu kesintisiz olmalı: ilk yılın 1 Ocak’ından son yılın 31 Aralık’ına her gün bir satır. 2) Tablo, tarih tablosu olarak işaretlenmeli. 3) Olgu tablosu tarih tablosuna bu tarih sütunuyla bağlanmalı. Biri eksikse ölçü hata vermez; yalnızca yanlış sonuç verir.</div></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>YTD, QTD, MTD: aynı satırda üç farklı pencere</h2>
+<p>Aylık yönetim raporunda Mayıs 2024 satırına bakan bir finans uzmanı üç sayı görür. Üçü de “bugüne kadar” der, ama başlangıç noktaları farklıdır:</p>
+<pre class="dax">Ay Başından Bugüne = TOTALMTD([Net Satış], Tarih[Tarih])
+Çeyrek Başından Bugüne = TOTALQTD([Net Satış], Tarih[Tarih])
+Yıl Başından Bugüne = TOTALYTD([Net Satış], Tarih[Tarih])</pre>
+<div class="tbl-wrap"><table><tr><th>Mayıs 2024 satırı</th><th>Pencere</th><th>Değer</th></tr>
+<tr><td>MTD</td><td>1–31 Mayıs</td><td>46.239 ₺</td></tr>
+<tr><td>QTD</td><td>1 Nisan – 31 Mayıs</td><td>80.472 ₺</td></tr>
+<tr><td>YTD</td><td>1 Ocak – 31 Mayıs</td><td>235.863 ₺</td></tr>
+<tr><td>Geçen yıl YTD (<code>[Satış GY YTD]</code>)</td><td>1 Ocak – 31 Mayıs 2023</td><td>117.309 ₺</td></tr></table></div>
+<p>YTD büyümesi: (235.863 − 117.309) / 117.309 = %101. Bu sayı “yılın ilk beş ayında satışlar ikiye katlandı” demektir. Aylık YoY’den daha az dalgalıdır ve yönetimin en sık sorduğu sayıdır.</p>
+<h3>Yıl satırında MTD ne gösterir?</h3>
+<p>2024 yıl satırında MTD 94.001 ₺ gösterir: Aralık’ın ay başından bugüne değeri. Fonksiyon “görünen son tarihin ayı” ile çalışır. Yıl satırında bu sayı yanıltıcıdır; kullanıcı bunu yılın toplamı sanabilir. MTD ve QTD ölçülerini matriste kullanıyorsan üst düzeylerde gizle: <code>IF(ISINSCOPE(Tarih[YilAy]), TOTALMTD(…))</code>.</p>
+<h3>Mali yıl</h3>
+<p>Şirketin mali yılı Temmuz’da başlıyorsa <code>TOTALYTD</code> ve <code>DATESYTD</code> fonksiyonlarına yıl sonu tarihini metin olarak verirsin:</p>
+<pre class="dax">Mali YTD = TOTALYTD([Net Satış], Tarih[Tarih], "6-30")</pre>
+<p>Tarih tablosuna da mali yıl ve mali çeyrek sütunları eklenmeli. Yoksa görselde “2024” yazan satır takvim yılını, ölçü ise mali yılı gösterir.</p>
+
+<h2>“Önceki dönem” dört farklı şey olabilir</h2>
+<p>Çeyreklik bir tabloda “önceki dönem” sütunu istendi. 2024-Ç2 satırında (net satış 145.102 ₺) dört yazım dört farklı sayı verir:</p>
+<div class="tbl-wrap"><table><tr><th>Yazım</th><th>Hangi tarihler?</th><th>2024-Ç2 satırı</th></tr>
+<tr><td><code>PREVIOUSMONTH(Tarih[Tarih])</code></td><td>Görünen ilk tarihten önceki tam ay: Mart</td><td>63.252 ₺</td></tr>
+<tr><td><code>DATEADD(Tarih[Tarih], -1, MONTH)</code></td><td>Tüm dönem bir ay geri: Mart–Mayıs</td><td>143.724 ₺</td></tr>
+<tr><td><code>PREVIOUSQUARTER(Tarih[Tarih])</code></td><td>Önceki tam çeyrek: Ocak–Mart</td><td>155.391 ₺</td></tr>
+<tr><td><code>DATEADD(Tarih[Tarih], -1, QUARTER)</code></td><td>Tüm dönem bir çeyrek geri: Ocak–Mart</td><td>155.391 ₺</td></tr></table></div>
+<p>Hazır <code>[Satış GA]</code> ölçüsü PREVIOUSMONTH kullandığı için çeyrek satırında yalnızca Mart’ı gösterir; “önceki çeyreğe göre büyüme” için uygun değildir. Kural: ölçünün adındaki dönemi fonksiyonda da kullan. Çeyreklik görsel için çeyreklik ölçü yaz.</p>
+<p>Aynı ayrım yıllar için de geçerlidir. Ay satırında <code>SAMEPERIODLASTYEAR</code> geçen yılın aynı ayını verir; <code>PREVIOUSYEAR</code> ise geçen yılın <b>tamamını</b>. 2024’ün her ay satırında <code>PREVIOUSYEAR</code> 400.870 ₺ gösterir. Bu bir hata değil, “geçen yılın toplamına karşı bu ay” karşılaştırması için kullanılan bir ölçüdür.</p>
+
+<h2>Eksik başlayan yıl tuzağı</h2>
+<p>Bu modelde satış verisi 22 Haziran 2022’de başlıyor. 2023’ün YoY değeri bu yüzden %289,8 çıkar: 2023’ün 12 ayı, 2022’nin yaklaşık 6 ayıyla karşılaştırılıyor. Kimse bu sayıya göre karar vermemeli. Bir çözüm, karşılaştırılan dönemin tamamı veri kapsamındaysa YoY göstermektir:</p>
+<pre class="dax">Tam Dönem YoY % =
+VAR OncekiBas = EDATE(MIN(Tarih[Tarih]), -12)
+VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih))
+RETURN IF(OncekiBas &gt;= IlkSatis, [YoY %])</pre>
+<p>2023 yıl satırında önceki dönem 1 Ocak 2022’de başlar. Bu tarih ilk satıştan önce olduğu için ölçü BLANK döner. 2024 satırında %86,4 görünür. Ay satırlarında Temmuz 2023’ten itibaren değer çıkar.</p>
+<div class="note"><b>Tarih tablosu kontrol listesi</b>1) Her gün bir satır, boşluk yok; ilk yılın 1 Ocak’ından son yılın 31 Aralık’ına. 2) Tarih sütununda saat yok (00:00 olmayan değerler ilişkiyi bozar). 3) “Tarih tablosu olarak işaretle” yapıldı. 4) Seçenekler’de “Otomatik tarih/saat” kapalı; yoksa her tarih sütunu için gizli bir tarih tablosu oluşur. 5) Ay adı gibi metin sütunları “Sütuna göre sırala” ile sayıya bağlı (Ay → AyNo). 6) Verinin başladığı ve bittiği tarih biliniyor; eksik dönemli karşılaştırmalar gizleniyor.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../filter-all/">← FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar</a><a href="../var-mantik/">VAR / RETURN, IF ve SWITCH →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

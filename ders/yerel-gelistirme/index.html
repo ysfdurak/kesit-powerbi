@@ -1,0 +1,57 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git | Kesit Power BI</title><meta name="description" content="Bilgisayarında düzenli çalışmak: .pbix ile .pbip farkı, klasör yapısı, DAX sorgu görünümünde ölçüyü denemek, TMDL görünümü, VS Code ve Git ile ilk akış,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yerel-gelistirme/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git"><meta property="og:description" content="Bilgisayarında düzenli çalışmak: .pbix ile .pbip farkı, klasör yapısı, DAX sorgu görünümünde ölçüyü denemek, TMDL görünümü, VS Code ve Git ile ilk akış,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yerel-gelistirme/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git","description":"Bilgisayarında düzenli çalışmak: .pbix ile .pbip farkı, klasör yapısı, DAX sorgu görünümünde ölçüyü denemek, TMDL görünümü, VS Code ve Git ile ilk akış,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yerel-gelistirme/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git</h1><p class="st-l">Bilgisayarında düzenli çalışmak: .pbix ile .pbip farkı, klasör yapısı, DAX sorgu görünümünde ölçüyü denemek, TMDL görünümü, VS Code ve Git ile ilk akış, harici araçlar; kendi Desktop’unda adım adım.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yerel-gelistirme">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Rapor_son_son2_GERCEK.pbix”. Tanıdık mı? Power BI Desktop ücretsiz ve Windows üzerinde çalışır; rapor geliştirmenin büyük kısmı burada, kendi bilgisayarında olur. Bu ders, ekibe girmeden önce <b>tek başına bile olsan</b> düzenli yerel çalışma alışkanlığını kurar. Dallar, çekme isteği ve dağıtım gibi ekip süreçleri “Yaşam döngüsü” dersinde.</p>
+<h2>.pbix mi, .pbip mi?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>.pbix</th><th>.pbip (Power BI projesi)</th></tr>
+<tr><td>Biçim</td><td>Tek ikili dosya</td><td>Metin dosyalarından oluşan klasör</td></tr>
+<tr><td>Fark görme</td><td>Yok</td><td>Satır satır, Git ile</td></tr>
+<tr><td>Veri</td><td>Dosyanın içinde</td><td>Yerel önbellekte (<code>.pbi/cache.abf</code>), depoya girmez</td></tr>
+<tr><td>Dış düzenleyici</td><td>Yok</td><td>VS Code ile TMDL ve PBIR</td></tr>
+<tr><td>Duyarlılık etiketi</td><td>Var</td><td>Desteklenmez</td></tr>
+<tr><td>OneDrive/SharePoint’e doğrudan</td><td>Var</td><td>Önerilmez; eşitleme sorunu çıkarır</td></tr></table></div>
+<p>Dönüşüm yalnız Desktop’ta <b>Dosya → Farklı kaydet</b> ile yapılır, otomatikleştirilemez. Klasör şöyle olur:</p>
+<pre class="dax" data-notry>AnadoluMarket/
+  AnadoluMarket.pbip               // kısayol, isteğe bağlı
+  AnadoluMarket.SemanticModel/
+    definition/                    // TMDL: tablolar, ölçüler, ilişkiler
+  AnadoluMarket.Report/
+    definition.pbir                // modeli gösterir
+    definition/                    // PBIR: sayfa, görsel, yer işareti
+  .gitignore                       // cache.abf ve localSettings.json dışarıda</pre>
+<p>Windows’un 260 karakter yol sınırına takılmamak için kısa kök klasör seç (<code>C:\bi\</code>). Dosyalar BOM’suz UTF-8, satır sonu CRLF’tir; Git’te <code>autocrlf</code> ayarını ekipçe aynı yap. Elle değişiklik desteklenmeyen dosyalar var (<code>report.json</code>, diyagram düzeni). Yayımdan önce bunlara dokunma.</p>
+<h2>DAX sorgu görünümü: ölçüyü yazmadan dene</h2>
+<p>Desktop’ta sol şeritteki <b>DAX sorgu görünümü</b>, modele EVALUATE sorgusu gönderir. Ölçüyü modele eklemeden önce <code>DEFINE MEASURE</code> ile yerel olarak yazıp sınayabilirsin. Doğruysa görünümdeki model güncelleme komutuyla modele eklersin. Bu uygulamadaki DAX Playground aynı mantıkla çalışır:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Deneme Marj] = DIVIDE([Brüt Kâr], [Net Satış])
+EVALUATE
+SUMMARIZECOLUMNS(Kategoriler[Kategori], "Net", [Net Satış], "Marj", [Deneme Marj])</pre>
+<p>Alışkanlık: yeni ölçü yazmadan önce kenar durumları sor. Sıfır bölme var mı, boş kategoride ne dönüyor, toplam satırı anlamlı mı? Sorgu dosyalarını projede saklarsan aynı testi sonra da çalıştırırsın.</p>
+<h2>TMDL görünümü</h2>
+<p>Modeli metin olarak düzenleyen görünümdür. Elli ölçünün biçimini tek tek tıklamak yerine betikle değiştirirsin, görüntüleme klasörü toplu verilir. Bir ölçü şöyle görünür (“Yaşam döngüsü” dersinde tam örnek var):</p>
+<pre class="dax" data-notry>measure 'Net Satış' = CALCULATE([Toplam Satış], Satislar[Durum] &lt;&gt; "İptal")
+    formatString: #,0 ₺
+    displayFolder: Temel</pre>
+<p>Desktop dış değişikliği algılar ve uygulamak için sorar. Açık değişiklik varken dışarıdan düzenleme yaparsan bazı değişiklikler kaybolabilir: önce Desktop’ta kaydet.</p>
+<h2>Git ile ilk yerel akış</h2>
+<ol><li>Projeyi .pbip olarak kaydet, klasörde <code>git init</code>.</li><li>Oluşan <code>.gitignore</code>’da <code>cache.abf</code> ve <code>localSettings.json</code> olduğunu kontrol et.</li><li>İlk işleme: <code>git add .</code>, <code>git commit -m "İlk sürüm"</code>.</li><li>Bir ölçüyü değiştir, Desktop’ta kaydet, <code>git diff</code> ile tek satırlık farkı gör.</li><li>Beğenmediysen <code>git restore</code> ile geri dön; Desktop’ı yeniden aç.</li></ol>
+<p>Bu kadarı bile “dün neyi bozdum?” sorusunu çözer. Uzak depo, dal ve çekme isteği ekip konusudur.</p>
+<h2>Harici araçlar</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>Ne için?</th><th>Bağlantı</th></tr>
+<tr><td>DAX Studio</td><td>Sorgu planı, sunucu zamanlaması</td><td>Desktop’ın yerel modeli</td></tr>
+<tr><td>Tabular Editor</td><td>Toplu ölçü, hesaplama grubu, Best Practice Analyzer</td><td>Yerel model ya da dosya</td></tr>
+<tr><td>VS Code</td><td>TMDL, PBIR, Git</td><td>Proje klasörü</td></tr></table></div>
+<p>Bu araçlar Desktop’ın çalıştırdığı yerel Analysis Services örneğine bağlanır. Üretimde kuruluşunun izin verdiği sürümleri kullan. Performans ölçümünde Desktop sonucu Service ile aynı olmaz: veri hacmi, eşzamanlılık, kapasite ve RLS farklıdır.</p>
+<h2>Yayımla mı, Git mi?</h2>
+<p>Desktop’ta Yayımla geçici bir .pbix ile yerel önbelleği de gönderir. Fabric Git tümleştirmesi ve REST API yalnız meta veriyi taşır; veri için yenileme gerekir. Tek başına çalışırken Yayımla yeterlidir; ekipte düzenli dağıtıma geç. PBIP’in sınırları: duyarlılık etiketi yok, Report Server sürümünde yok, AAS veya SSAS’a dağıtılamaz.</p>
+<div class="warn"><b>Sürümleri takip et</b>PBIP ve PBIR hızlı değişiyor. Gelişmiş rapor biçimi PBIR’ın durumu ve varsayılan olup olmadığı için Learn’deki güncel sayfaya bak; bu derste kesin tarih vermiyoruz. Eski PBIR-legacy biçimi belgesiz tek <code>report.json</code> kullanır.</div>
+<div class="tip"><b>Kendi ortamında dene</b>Power BI Desktop’u (Windows) Microsoft Store’dan ya da İndirme Merkezi’nden ücretsiz kur (“Power BI Desktop kurulumu” dersi). Hesap gerekmeden çalışır. Veri setleri sayfasından Anadolu Market CSV’lerini indir, ilk rapor dersindeki modeli kur, .pbip olarak kaydet. Yukarıdaki Git adımlarını dene. Mac’te Desktop çalışmaz; alıştırmalar tarayıcıda çözülür.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-yerel-gelistirme">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kullanim-izleme/">← Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor?</a><a href="../fabric-onelake/">OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

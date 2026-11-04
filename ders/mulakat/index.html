@@ -1,0 +1,134 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX ve Power BI mülakatına hazırlık | Kesit Power BI</title><meta name="description" content="BI mülakatlarının yapısı, en sık sorulan 12 kavram sorusu ve kısa model cevapları, canlı DAX sorusuna yaklaşım, klasik tuzaklar ve vaka sorusunu anlatma…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/mulakat/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX ve Power BI mülakatına hazırlık"><meta property="og:description" content="BI mülakatlarının yapısı, en sık sorulan 12 kavram sorusu ve kısa model cevapları, canlı DAX sorusuna yaklaşım, klasik tuzaklar ve vaka sorusunu anlatma…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/mulakat/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX ve Power BI mülakatına hazırlık","description":"BI mülakatlarının yapısı, en sık sorulan 12 kavram sorusu ve kısa model cevapları, canlı DAX sorusuna yaklaşım, klasik tuzaklar ve vaka sorusunu anlatma…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/mulakat/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Kariyer</span><h1>DAX ve Power BI mülakatına hazırlık</h1><p class="st-l">BI mülakatlarının yapısı, en sık sorulan 12 kavram sorusu ve kısa model cevapları, canlı DAX sorusuna yaklaşım, klasik tuzaklar ve vaka sorusunu anlatma yöntemi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-mulakat">Uygulamada aç, 14 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Bir BI mülakatı nasıl ilerler?</h2>
+<p>Veri analisti ve BI geliştirici mülakatları genellikle dört bölümden oluşur. Her biri farklı bir şeyi ölçer:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Bölüm</th><th>Ne ölçülür?</th><th>Nasıl hazırlanılır?</th></tr>
+<tr><td>Kavram soruları</td><td>Filtre bağlamı, ilişkiler, model tasarımı gibi temellerin anlaşılması</td><td>Aşağıdaki 12 soruyu kendi cümlelerinle, örnekle cevaplayabilmek</td></tr>
+<tr><td>Canlı DAX ya da SQL</td><td>Bir iş sorusunu doğru ölçüye çevirme ve sesli düşünme</td><td>Arena meydan okumaları ve Sınavlar’daki kod sınavları</td></tr>
+<tr><td>Vaka ya da rapor eleştirisi</td><td>Bir raporu okuma, sorunu bulma, öneri sunma</td><td>Örnek raporlar bölümü ve DAX Dedektif vakaları</td></tr>
+<tr><td>Davranışsal</td><td>Paydaşla çalışma, belirsizlik, hata yönetimi</td><td>2–3 gerçek proje hikâyesini Durum–Görev–Eylem–Sonuç yapısıyla hazırlamak</td></tr>
+</table></div>
+
+<h2>En sık sorulan 12 kavram sorusu</h2>
+<p>Her cevap üç parçadan oluşmalı: tanım, kısa bir örnek ve “ne zaman önemli”. Ezberden okunan tanım değil, örnek ikna eder.</p>
+<details class="faq"><summary>1. Filtre bağlamı ile satır bağlamı arasındaki fark nedir?</summary><p>Filtre bağlamı, bir hücre hesaplanırken modelde hangi satırların görünür olduğudur (görselin satırları, dilimleyiciler, CALCULATE filtreleri). Satır bağlamı ise bir iteratörün ya da hesaplanmış sütunun “şu anki satır” bilgisidir ve kendi başına filtrelemez. Örnek: hesaplanmış sütunda <code>SUM(Satislar[Tutar])</code> her satırda tablonun toplamını verir, çünkü satır bağlamı filtre değildir.</p></details>
+<details class="faq"><summary>2. CALCULATE ne yapar?</summary><p>İfadeyi değiştirilmiş bir filtre bağlamında hesaplar: filtre argümanları ilgili sütunlardaki dış filtreleri değiştirir, satır bağlamı varsa önce filtreye dönüştürür (bağlam geçişi). DAX’ta filtre bağlamını değiştirebilen fonksiyonlar yalnızca CALCULATE ve CALCULATETABLE’dır.</p></details>
+<details class="faq"><summary>3. SUM ile SUMX farkı nedir?</summary><p>SUM tek bir sütunu toplar. SUMX bir tabloyu satır satır dolaşır, her satırda bir ifade hesaplar ve sonuçları toplar: <code>SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])</code>. Satır düzeyinde bir hesap gerekiyorsa SUMX; yoksa SUM daha sade ve aynı hızdadır.</p></details>
+<details class="faq"><summary>4. Bağlam geçişi nedir?</summary><p>Satır bağlamında bir ölçü çağrıldığında ya da CALCULATE kullanıldığında, mevcut satırın değerleri filtreye dönüşür. Ölçüler örtük bir CALCULATE içerdiği için <code>SUMX(VALUES(Urunler[Urun]), [Net Satış])</code> her üründe o ürünün satışını hesaplar.</p></details>
+<details class="faq"><summary>5. ALL, ALLSELECTED ve REMOVEFILTERS farkı?</summary><p>ALL ve REMOVEFILTERS, CALCULATE içinde filtreleri tamamen kaldırır (REMOVEFILTERS yalnızca bu iş için vardır ve niyeti daha açık gösterir). ALL ayrıca tablo döndürebilir. ALLSELECTED görselin kendi satır ve sütunlarından gelen filtreleri kaldırır ama dilimleyici ve sayfa filtrelerini korur: “ekranda görünen toplam içindeki pay” için kullanılır.</p></details>
+<details class="faq"><summary>6. Yıldız şema neden önerilir?</summary><p>Olgu tablosu ortada, boyut tabloları çevresinde ve ilişkiler bire-çok olduğunda filtreler tek yönde, öngörülebilir biçimde akar; VertiPaq daha iyi sıkıştırır ve DAX daha basit kalır. Düz (tek tablo) model, tekrar eden metin sütunları yüzünden büyür ve “müşteri başına” gibi ölçüleri zorlaştırır.</p></details>
+<details class="faq"><summary>7. Çift yönlü ilişki ne zaman sorun olur?</summary><p>Filtrenin iki yönde akması belirsiz yollar ve döngüler yaratabilir; sonuçlar beklenmedik değişir ve performans düşer. Gerektiğinde ilişkiyi tek yönlü bırakıp ölçü içinde <code>CROSSFILTER(..., BOTH)</code> ile yalnızca o hesap için açmak daha güvenlidir.</p></details>
+<details class="faq"><summary>8. Hesaplanmış sütun mu, ölçü mü?</summary><p>Hesaplanmış sütun yenilemede bir kez hesaplanır, modelde yer kaplar ve dilimleyicide, satır alanında kullanılabilir. Ölçü sorgu anında, filtre bağlamına göre hesaplanır ve yer kaplamaz. Kural: değeri satır düzeyinde bir özellik olarak filtrelemek ya da gruplamak istiyorsan sütun; toplanacak bir sayıysa ölçü.</p></details>
+<details class="faq"><summary>9. Zaman zekâsı için neden ayrı bir tarih tablosu gerekir?</summary><p>Zaman fonksiyonları kesintisiz bir tarih sütunu bekler. Olgu tablosundaki tarihlerde boşluk olur (satış olmayan günler). Ayrıca ayrı tablo; yıl, çeyrek, ay ve tatil gibi sütunları tek yerde tutar ve birden çok olgu tablosunu aynı takvimle filtreler.</p></details>
+<details class="faq"><summary>10. Satır düzeyi güvenlik (RLS) nasıl çalışır?</summary><p>Bir rol, bir tabloya DAX filtresi ekler (ör. <code>[Bolge] = "Marmara"</code>); filtre ilişkiler üzerinden olgu tablosuna yayılır. Dinamik RLS’te filtre kullanıcının e-postasıyla eşleşen satırları seçer: <code>[Eposta] = USERPRINCIPALNAME()</code>. Roller yayından sonra Service’te kullanıcılara atanır ve “Farklı görüntüle” ile test edilir.</p></details>
+<details class="faq"><summary>11. Yavaş bir raporu nasıl incelersin?</summary><p>Önce ölç: Performans Analizi ile hangi görselin ve hangi aşamanın (DAX sorgusu mu, görsel çizimi mi) yavaş olduğunu bul. Sorgu yavaşsa DAX Studio’da Server Timings’e bak. Sonra en sık sebepleri ele: yüksek kardinaliteli sütunlar, gereksiz sütunlar, çift yönlü ilişkiler, iteratör içindeki koşullar, sayfadaki görsel sayısı.</p></details>
+<details class="faq"><summary>12. Import, DirectQuery ve Direct Lake arasında nasıl seçim yaparsın?</summary><p>Import en hızlı sorguyu verir ama veri yenileme zamanına kadar eskidir ve model belleğe sığmalıdır. DirectQuery veriyi kaynağında sorgular; güncel ama yavaştır ve DAX kısıtları vardır. Direct Lake (Fabric) Delta tablolarını doğrudan belleğe okur: Import’a yakın hız, kopya ve yenileme gerektirmeden güncellik.</p></details>
+
+<h2>Canlı DAX sorusuna yaklaşım</h2>
+<p>Mülakatçı doğru formülden çok <b>düşünme biçimini</b> izler. Beş adımlı bir yol işe yarar:</p>
+<ol>
+<li><b>Soruyu netleştir.</b> “Net satış iptalleri içeriyor mu? Toplam satırında ne görünmeli?” gibi bir iki soru sormak eksiklik değil, profesyonelliktir.</li>
+<li><b>Görseli tarif et.</b> “Satırlarda kategori, sütunda yıl olan bir matris düşünüyorum.” Filtre bağlamını konuşulur hâle getirir.</li>
+<li><b>Mevcut ölçülerden kur.</b> <code>[Net Satış]</code> varsa SUM’ı yeniden yazma; ölçüleri birbirinin üzerine kurmak, iyi model alışkanlığıdır.</li>
+<li><b>VAR ile adım adım yaz</b> ve her değişkenin ne tuttuğunu söyle.</li>
+<li><b>Bir hücreyle doğrula.</b> “Elektronik 2024 hücresinde bu ölçü şunu verir; toplam satırında ise şunu.” Sınır durumlarını (BLANK, ilk yıl, sıfıra bölme) kendin söyle.</li>
+</ol>
+
+<h2>Mülakatçının sevdiği tuzaklar</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tuzak</th><th>Ne olur?</th><th>Ders</th></tr>
+<tr><td>VAR’ı CALCULATE’ten önce hesaplamak</td><td>Değişken sabittir; filtre onu değiştirmez</td><td>VAR, mantık</td></tr>
+<tr><td><code>[A] - [GY]</code> ilk yılda</td><td>BLANK 0 sayılır; tüm satış “büyüme” görünür</td><td>BLANK ve hatalar</td></tr>
+<tr><td><code>Tarih[Yil] = Y - 1</code> ile geçen yıl</td><td>Ay-yıl kırılımında her hücre BLANK</td><td>Zaman zekâsı</td></tr>
+<tr><td>Ortalamaların ortalaması</td><td>Küçük gruplar ortalamayı orantısız etkiler</td><td>İteratörler</td></tr>
+<tr><td><code>ALL(Satislar)</code></td><td>Boyut filtreleri de silinir (genişletilmiş tablo)</td><td>ALL ailesi</td></tr>
+<tr><td>Toplam satırının toplam olmaması</td><td>Toplanamayan ölçüler toplamda yeniden hesaplanır</td><td>Filtre bağlamı</td></tr>
+</table></div>
+<p>Bu tuzakların hepsi derslerin “Derinleş” bölümlerinde gerçek verilerle gösteriliyor.</p>
+
+<h2>Vaka sorusunu anlatmak</h2>
+<p>“Bu rapora bakıp ne söylersin?” sorusunda sonuca değil, <b>yola</b> puan verilir. Önce genel resmi (toplam, eğilim), sonra en büyük sapmayı, sonra sebebi aradığın kırılımları anlat ve bir öneriyle bitir. DAX Dedektif vakaları tam olarak bu akışı çalıştırır. Sınavlar bölümündeki <b>Mülakat simülasyonu</b> ise süreli bir canlı DAX turudur ve her sorudan sonra gerçek mülakatlardaki gibi bir takip sorusu gösterir.</p>
+<p>Rol bazlı kavram soru bankası (zayıf ve güçlü cevap örnekleriyle), davranışsal sorular, ev ödevi vakası ve rapor eleştirisi alıştırması için menüdeki <b>Mülakat</b> bölümüne, sık karıştırılan kavramlar ve hatalar için de <b>Sık karıştırılanlar</b> ve <b>Sık hatalar</b> sayfalarına bak.</p><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>İleri teknik mülakat: dört tur</h2>
+<p>Kıdemli analist ve BI geliştirici mülakatlarında kavram soruları kısalır, uygulama turları uzar. Genellikle şu dört tur görülür:</p>
+<div class="tbl-wrap"><table><tr><th>Tur</th><th>Süre</th><th>Ölçülen</th><th>En çok puan kaybettiren</th></tr>
+<tr><td>Canlı DAX kodlama</td><td>30–45 dk</td><td>Soruyu ölçüye çevirme, doğrulama alışkanlığı</td><td>Sessizce yazıp test etmeden “bitti” demek</td></tr>
+<tr><td>Model tasarım tahtası</td><td>30 dk</td><td>Tanecik, olgu–boyut ayrımı, zor ilişkiler</td><td>Doğrudan tablo çizmeye başlamak</td></tr>
+<tr><td>Rapor eleştirisi</td><td>15–20 dk</td><td>Önceliklendirme, iş dili</td><td>Renk ve yazı tipiyle başlamak</td></tr>
+<tr><td>“Bu rakam yanlış”</td><td>20–30 dk</td><td>Sistematik hata ayıklama</td><td>Tahminle formül değiştirmek</td></tr></table></div>
+
+<h2>Canlı DAX turu: sorgu ile çalış</h2>
+<p>Mülakatçı ekran paylaşımında şunu ister: “Birden fazla kanaldan alışveriş yapmış müşteri sayısını yıl yıl göster.” Ölçüyü model içinde yazmak yerine DAX sorgu görünümünde <code>DEFINE MEASURE</code> ile yaz. Hem tanımı hem sonucu aynı ekranda gösterirsin ve modeli değiştirmeden denersin:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Çok Kanallı Müşteri] =
+        COUNTROWS(
+            FILTER(
+                VALUES(Satislar[MusteriNo]),
+                CALCULATE(DISTINCTCOUNT(Satislar[Kanal]), Satislar[Durum] &lt;&gt; "İptal") &gt;= 2
+            )
+        )
+EVALUATE
+SUMMARIZECOLUMNS(Tarih[Yil], "Çok kanallı", [Çok Kanallı Müşteri], "Müşteri", [Müşteri Sayısı])</pre>
+<p>Sonuç: 2022'de 32 müşteriden 9'u, 2023'te 77'den 48'i, 2024'te 123'ten 88'i birden çok kanal kullanmış. Şimdi sesli doğrula:</p>
+<ul>
+<li><b>Bağlam geçişi:</b> FILTER her müşteri satırında CALCULATE çağırır; satır bağlamı müşteri filtresine döner ve kanal sayısı o müşteri için hesaplanır.</li>
+<li><b>Toplam:</b> Tüm dönemde 113. Yılların toplamı (145) değildir, çünkü müşteri yıllar arasında tekrar eder. Bunu mülakatçı sormadan söyle.</li>
+<li><b>Kenar durum:</b> İptal filtresi içerideki CALCULATE'te. Yalnızca iptal edilmiş bir Mağaza siparişi olan müşteri “çok kanallı” sayılmaz.</li>
+</ul>
+<h3>Takip sorusuna hazır ol</h3>
+<p>İkinci görev çoğu zaman bir öncekinin üstüne kurulur: “Her kategorinin lider ürününü yaz.” <code>TOPN(1, VALUES(Urunler[Urun]), [Net Satış])</code> çoğu hücrede doğru çalışır. Ama satış olmayan aylarda (bu modelde 2022'nin ilk beş ayı) bütün ürünler BLANK ile berabere kalır ve TOPN 40 ürünün hepsini döndürür. Çözüm: önce satışı olan ürünleri filtrele. Bu tuzağı kendin bulup söylemek, kıdemli adayı ayıran davranıştır.</p>
+<pre class="dax">Lider Ürün =
+VAR Satanlar = FILTER(VALUES(Urunler[Urun]), NOT ISBLANK([Net Satış]))
+VAR Lider = TOPN(1, Satanlar, [Net Satış], DESC)
+RETURN CONCATENATEX(Lider, Urunler[Urun], ", ")</pre>
+
+<h2>Model tasarım tahtası</h2>
+<p>Örnek soru: “Bir e-ticaret şirketi kampanya etkisini ölçmek istiyor. Bir sipariş birden çok kampanya kodu kullanabilir. Hedefler aylık ve kategori bazında. İadeler ayrı bir sistemden geliyor. Modeli çiz.” Çizmeden önce şu sırayla konuş:</p>
+<ol>
+<li><b>Tanecik (grain):</b> “Satış olgusu sipariş satırı düzeyinde; hedef ay × kategori düzeyinde; iade, iade satırı düzeyinde.” Bu cümle modelin yarısıdır.</li>
+<li><b>Olgular:</b> Satislar, Hedefler, Iadeler. Üç olgu, üç ayrı tanecik; birleştirilmez.</li>
+<li><b>Ortak boyutlar:</b> Tarih, Ürün (kategori dahil), Müşteri, Kanal, Kampanya. Hedefler Tarih ve Kategori'ye bağlanır, Ürün'e değil.</li>
+<li><b>Zor kısım:</b> Sipariş–kampanya çoka-çok. Bir köprü tablo (SiparisNo, KampanyaNo) ve iki bire-çok ilişki. Kampanya filtresinin satışa ulaşması için ölçü içinde yön açma ya da köprü üzerinden filtre. Bir siparişi iki kampanyaya tam olarak saymanın toplamı şişireceğini söyle ve ağırlık (paylaştırma) seçeneğini öner.</li>
+<li><b>Güvenlik ve büyüme:</b> RLS hangi boyutta? Veri büyürse artımlı yenileme ve toplama tabloları.</li>
+</ol>
+<p>Sık hatalar: her şeyi tek düz tabloya koymak, hedefleri satış satırlarına join etmek, “filtreler aksın” diye her ilişkiyi çift yönlü yapmak. Ayrıntı Model tasarımı II ve Fabric'te yıldız şema derslerinde.</p>
+
+<h2>Rapor eleştirisi turu</h2>
+<p>Bir rapor ekran görüntüsü verilir. İlk dakika konuşma; incele. Sonra eleştiriyi <b>doğruluk → anlam → tasarım</b> önceliğiyle ve gözlem → etki → öneri biçiminde anlat.</p>
+<ul>
+<li><b>Doğruluk:</b> “Kategori matrisinin toplam satırında marj %249,5 görünüyor. Bu bir oranın satırlarının toplanmış hâli; gerçek marj %36,5. Ölçü SUMX ile kategori marjlarını topluyor olabilir.” Doğruluk hatası her zaman ilk maddedir.</li>
+<li><b>Anlam:</b> “Net satış kartında karşılaştırma yok; iyi mi kötü mü bilinmiyor.”</li>
+<li><b>Tasarım:</b> “Yedi dilimli pasta grafikte küçük dilimler ayırt edilmiyor; sıralı çubuk daha iyi.”</li>
+</ul>
+<p>Tam liste Rapor tasarımı dersindeki eleştiri kontrol listesinde.</p>
+
+<h2>“Bu rakam yanlış” turu: beş adım</h2>
+<p>Mülakatçı der ki: “CRM 2023'te 77 müşteri alışveriş yaptı diyor, sizin rapor 79 diyor. Bul.”</p>
+<ol>
+<li><b>Tanımı sor:</b> “CRM neyi sayıyor? İptal edilen siparişler dahil mi?”</li>
+<li><b>Bağlamı sabitle:</b> Aynı dönem, aynı filtreler. Rapordaki dilimleyicileri yaz.</li>
+<li><b>En küçük sorguda yeniden üret:</b> İki tanımı yan yana koy. <code>DISTINCTCOUNT(Satislar[MusteriNo])</code> 2023 için 79, <code>[Müşteri Sayısı]</code> 77.</li>
+<li><b>Farkı satır düzeyinde bul:</b> Küme farkı sorgusu farkı yapan müşterileri listeler.</li>
+<li><b>Düzelt ve testi ekle:</b> Rapordaki görsel yanlış ölçüyü kullanıyordu. Doğru ölçüye geç ve bu karşılaştırmayı test sayfasına ekle.</li>
+</ol>
+<pre class="dax">EVALUATE
+EXCEPT(
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023),
+    CALCULATETABLE(VALUES(Satislar[MusteriNo]), Tarih[Yil] = 2023, Satislar[Durum] &lt;&gt; "İptal")
+)</pre>
+<p>Sorgu iki müşteri döndürür (78 ve 102): 2023'te yalnızca iptal edilmiş siparişleri var. Aynı turda sık gelen iki varyasyon:</p>
+<div class="tbl-wrap"><table><tr><th>Şikâyet</th><th>Rapordaki</th><th>Beklenen</th><th>Kök neden</th></tr>
+<tr><td>“Ortalama sipariş tutarı çok düşük”</td><td>AVERAGE(Satislar[Tutar]) = 831 ₺</td><td>1.492,57 ₺</td><td>Satır ortalaması, sipariş ortalaması değil; iptaller de içeride</td></tr>
+<tr><td>“Net satış finanstan yüksek”</td><td>1.250.772 ₺</td><td>1.169.937 ₺</td><td>İadeler dahil; fark tam olarak iade tutarı (80.835 ₺)</td></tr></table></div>
+<div class="tip"><b>Sesli düşünme kalıbı</b>“Önce tanımı netleştireyim. Sonra aynı bağlamda iki sayıyı yan yana üreteyim. Fark satır düzeyinde nereden geliyor, bulayım. Düzeltmeden önce bir test yazayım ki bir daha olmasın.” Bu dört cümle, doğru formülden daha çok puan getirir.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-mulakat">Alıştırmalara geç (14)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../blank-hata/">← BLANK, hatalar ve DAX’ta hata ayıklama</a><a href="../hizmet-kullanici/">Power BI Service’te rapor kullanmak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

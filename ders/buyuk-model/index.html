@@ -1,0 +1,182 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller | Kesit Power BI</title><meta name="description" content="RangeStart/RangeEnd ve katlama şartı, artımlı yenileme politikası, gerçek zamanlı DirectQuery bölümüyle hibrit tablo, kullanıcı tanımlı ve otomatik…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/buyuk-model/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller"><meta property="og:description" content="RangeStart/RangeEnd ve katlama şartı, artımlı yenileme politikası, gerçek zamanlı DirectQuery bölümüyle hibrit tablo, kullanıcı tanımlı ve otomatik…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/buyuk-model/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller","description":"RangeStart/RangeEnd ve katlama şartı, artımlı yenileme politikası, gerçek zamanlı DirectQuery bölümüyle hibrit tablo, kullanıcı tanımlı ve otomatik…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/buyuk-model/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller</h1><p class="st-l">RangeStart/RangeEnd ve katlama şartı, artımlı yenileme politikası, gerçek zamanlı DirectQuery bölümüyle hibrit tablo, kullanıcı tanımlı ve otomatik toplamalar, isabet kontrolü, Dual ve bileşik model, büyük model depolama biçimi, XMLA ile bölüm yenileme, Direct Lake karşılaştırması ve lisans gereksinimleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-buyuk-model">Uygulamada aç, 12 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Kurumsal model” dersinde depolama modlarını, toplamaları ve artımlı yenilemeyi kısaca tanıdın; “Veri bağlantıları” dersinde katlamanın neden önemli olduğunu gördün. Bu ders o başlıkları bir üretim projesi gibi ele alıyor: mekanizma, sayılar, tuzaklar ve lisans gerçekleri.</p>
+
+<h2>Senaryo: Anadolu Market büyüdü</h2>
+<p>Bu uygulamadaki Satislar tablosu 1.620 satırdır. Şimdi şirketin beş yılda 900 milyon satış satırına ulaştığını düşün. Üç şikâyet var:</p>
+<ul>
+<li>Gece yenilemesi dört saat sürüyor ve bazen zaman aşımına düşüyor.</li>
+<li>Model belleğe sığmıyor; kapasite yöneticisi uyarı gönderiyor.</li>
+<li>Satış direktörü bugünün satışlarını canlı görmek istiyor.</li>
+</ul>
+<p>Her şikâyetin ayrı bir aracı var: <b>artımlı yenileme</b> süreyi, <b>büyük model biçimi</b> ve <b>toplamalar</b> belleği ve sorgu hızını, <b>hibrit tablo</b> tazeliği çözer. Yanlış araç seçmek, bir sorunu çözerken diğerini büyütür.</p>
+
+<h2>Artımlı yenileme: mekanizma</h2>
+<p>Power Query’de tam olarak <code>RangeStart</code> ve <code>RangeEnd</code> adlı iki <b>Tarih/Saat</b> parametresi oluşturulur. Adlar ayrılmıştır ve büyük-küçük harfe duyarlıdır. Olgu tablosu bunlarla filtrelenir:</p>
+<pre class="m">let
+    Kaynak = Sql.Database("sql-anadolu", "SatisDW"),
+    Satis = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data],
+    Filtre = Table.SelectRows(Satis, each [Tarih] &gt;= RangeStart and [Tarih] &lt; RangeEnd)
+in
+    Filtre</pre>
+<p>Yayımladıktan sonra Service bu parametrelere kendi değerlerini verir ve her <b>bölüm</b> (partition) için ayrı bir sorgu gönderir. Filtre kaynağa katlanırsa her bölüm sorgusu yalnızca kendi satırlarını çeker. Katlanmazsa her bölüm tüm tabloyu indirir ve filtreyi ağ geçidinde ya da Service’te uygular. Learn bunun yenilemeyi yavaşlattığını ve kaynakları tükettiğini, yani artımlı yenilemenin amacını boşa çıkardığını söyler.</p>
+<h3>Sınır kuralı: büyük-eşit ve küçük</h3>
+<p>Başta <code>&gt;=</code>, sonda <code>&lt;</code> kullanılır. İki uçta da <code>&lt;=</code> kullanırsan gece yarısındaki bir satır iki komşu bölüme birden girer ve <b>çift sayılır</b>. Bu hata toplamı yalnızca biraz şişirdiği için uzun süre fark edilmez.</p>
+<h3>Politika ve bölümler</h3>
+<p>Tabloya sağ tık → <b>Artımlı yenileme</b>. Örnek politika: “Son 3 yılı arşivle, son 10 günü artımlı yenile, yalnızca tam günler”. Service eski dönemleri yıl bölümlerinde, yakın dönemleri daha küçük bölümlerde tutar; her yenilemede yalnızca son 10 günün bölümleri yeniden yüklenir.</p>
+<p>Bu uygulamanın verisiyle bir benzetim: yenileme 1 Ocak 2025 sabahı çalışıyor ve “yalnızca tam günler” açık. Pencere 22–31 Aralık 2024’tür. Motorla sayınca bu pencerede 31 satır ve 25.897,20 net satış var; dokunulmayan arşivde 1.589 satır kalıyor. Yani her gece verinin yaklaşık %1,9’u işleniyor. 900 milyon satırlık modelde oran benzer kalırsa dört saatlik yenileme dakikalara iner.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ayar</th><th>Ne yapar?</th><th>Dikkat</th></tr>
+<tr><td>Arşivle</td><td>Tutulacak geçmiş dönem</td><td>Daha eskisi modelden düşer</td></tr>
+<tr><td>Artımlı yenile</td><td>Her seferinde yeniden yüklenen dönem</td><td>Geriye dönük düzeltmeler (iade, iptal) bu pencereye sığmalı</td></tr>
+<tr><td>Yalnızca tam günler</td><td>Bugünün yarım gününü yüklemez</td><td>Gerçek zamanlı bölüm için zorunlu; saat dilimi varsayılan UTC</td></tr>
+<tr><td>Veri değişikliklerini algıla</td><td>Değişmemiş bölümleri atlar</td><td>Bölümleme sütunundan farklı bir “son güncelleme” sütunu ister</td></tr>
+</table></div>
+<p>Anadolu Market’te iadeler satıştan 30 gün sonra kaydediliyorsa 10 günlük pencere yetmez: iade edilen satır arşiv bölümünde eski hâliyle kalır. Pencereyi iş kuralına göre seç.</p>
+<h3>Sık hatalar</h3>
+<ul>
+<li><b>Tür uyuşmazlığı:</b> Kaynak sütun tarih, parametreler tarih/saat. Kaynak tamsayı anahtar (20241231) ise parametreyi <code>yyyyMMdd</code> biçimli tamsayıya çevirmek gerekir.</li>
+<li><b>Filtre sırası:</b> Filtre, kaynak adımından hemen sonra gelmeli. Önce <code>Table.Buffer</code>, birleştirme ya da özel sütun eklemek katlamayı bozabilir.</li>
+<li><b>Yerel SQL sorgusu:</b> Yalnızca saf Import politikasında <code>EnableFolding=false</code> ile mümkündür; gerçek zamanlı bölümle olmaz.</li>
+<li><b>Desktop’tan yeniden yayımlamak:</b> Var olan bölümleri ve veriyi siler. Yayımladıktan sonra modeli .pbix olarak geri indiremezsin. Şema değişikliklerini ALM Toolkit gibi araçlarla yalnızca meta veri olarak dağıt.</li>
+<li><b>İlk yenileme:</b> Bütün geçmişi yükler, uzun sürer; elle başlat ve izle.</li>
+</ul>
+
+<h2>Hibrit tablo: gerçek zamanlı son bölüm</h2>
+<p>Politikadaki “En son verileri DirectQuery ile gerçek zamanlı al” seçeneği, yenileme penceresinden sonraki dönem için bir <b>DirectQuery bölümü</b> ekler. Tablo artık hibrittir: geçmiş bellekte, bugün kaynakta. Satış direktörünün “bugünü canlı göster” isteği böyle karşılanır.</p>
+<ul>
+<li>“Yalnızca tam günler” açık olmalıdır.</li>
+<li>Katlanmayan dönüşümlere izin verilmez; bütün bölümler tek bir veri kaynağını kullanmalıdır.</li>
+<li>Learn’e göre yalnızca Premium, Kullanıcı Başına Premium (PPU) ve Embedded’da vardır; Pro’da yoktur. Bu tür bir model yalnızca Premium çalışma alanına yayımlanabilir.</li>
+</ul>
+<p>Mekanizma: “Bu yıl” toplamını isteyen bir görsel için motor bellekteki bölümleri tarar, bugünün bölümü için kaynağa SQL gönderir ve sonuçları birleştirir. Yani <b>her görsel sorgusu</b> kaynağa da gider. Kaynak veritabanı bu yükü kaldırmalı; Dual boyutlar ve toplama tabloları bu yükü azaltır.</p>
+
+<h2>Kullanıcı tanımlı toplama tabloları</h2>
+<p>Toplama tablosu (aggregation), ayrıntı olgu tablosunun daha kaba bir özetidir. Kullanıcı yalnızca ayrıntı tablosunu görür; motor sorguyu özetle cevaplayabiliyorsa özete gider (<b>isabet</b>, hit), cevaplayamıyorsa ayrıntıya düşer (<b>ıska</b>, miss).</p>
+<h3>Kurulum (Learn’e göre)</h3>
+<ul>
+<li>Veri bölmesinde özet tabloya sağ tık → <b>Toplamaları yönet</b> (Manage aggregations). Her sütun için özetleme (Sum, Count, Count table rows, GroupBy), ayrıntı tablosu ve ayrıntı sütunu seçilir.</li>
+<li>Ayrıntı tablosu <b>DirectQuery</b> olmalıdır, Import olamaz. Özet tablo en hızlı Import’tadır; Import’a alındıktan sonra geri çevrilemez.</li>
+<li>Özet Import olunca Power BI ilişkili boyutları <b>Dual</b> yapmayı önerir. İlişki tabanlı isabet için ilişkiler “normal” (regular) olmalıdır.</li>
+<li>Birden çok özet varsa <b>öncelik</b> (precedence) değeri yüksek olan önce denenir. Zincirleme toplama (özetin özeti) yoktur; ayrıntı tablosu her zaman temel tablodur.</li>
+<li>İlişki tabanlı toplamalar yıldız şemaya, GroupBy tabanlı toplamalar ilişkisi olmayan düz büyük tablolara uygundur.</li>
+</ul>
+<h3>Motorla bir benzetim</h3>
+<p>Ay × kategori düzeyinde bir özet tablo:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[YilAy], Kategoriler[Kategori],
+    "Tutar", SUM(Satislar[Tutar]),
+    "Satir", COUNTROWS(Satislar)
+)</pre>
+<p>Sonuç 199 satırdır; ayrıntı 1.620 satır. Gerçek modelde oran çok daha çarpıcıdır: 900 milyon satır birkaç bin satıra iner. Özet ile ayrıntı aynı sonucu vermeli; bunu sorguyla doğrularsın:</p>
+<pre class="dax">EVALUATE
+VAR o = SUMMARIZECOLUMNS(Tarih[YilAy], Kategoriler[Kategori], "Tutar", SUM(Satislar[Tutar]))
+RETURN ROW("OzetTutar", SUMX(o, [Tutar]), "AyrintiTutar", SUM(Satislar[Tutar]), "OzetSatir", COUNTROWS(o))</pre>
+<p>İki tutar da 1.346.189,85 çıkar. Bu toplamı <code>[Toplam Satış]</code> ölçüsüne aittir.</p>
+<h3>Anti-kalıp: ölçünün filtresi özette yok</h3>
+<p>Raporlar ise <code>[Net Satış]</code> kullanıyor ve bu ölçü <code>Satislar[Durum] &lt;&gt; "İptal"</code> filtresi uygular. Özet tabloda Durum sütunu yoksa motor bu filtreyi özetle cevaplayamaz ve <b>her sorgu ayrıntıya düşer</b>. Toplama tablosu vardır ama hiç kullanılmaz. Çözüm Durum’u özetin GroupBy sütunlarına eklemektir: özet 431 satıra çıkar, iptaller dışarıda bırakılınca 1.250.772,45 verir, yani <code>[Net Satış]</code> ile aynı. Kural: özetin taneciği (grain), raporlardaki ölçülerin kullandığı <b>bütün</b> sütunları kapsamalı.</p>
+<h3>Toplanamayan ölçüler</h3>
+<ul>
+<li><b>Ortalama:</b> Learn’e göre <code>AVERAGE</code> toplam / sayıya katlanır, bu yüzden özette hem Sum hem “Count table rows” bulunmalı. Ortalamayı <code>DIVIDE(SUM(…), COUNTROWS(…))</code> diye yazmak niyeti açık eder.</li>
+<li><b>Tekil sayım:</b> 2024’te tekil müşteri 123, ama aylık tekil müşterileri toplarsan 509 çıkar. Tekil sayım özetten toplanamaz; isabet için sayılan sütun (MusteriNo) özette GroupBy olmalıdır. Bu da özeti büyütür.</li>
+</ul>
+<h3>Güvenlik ve tazelik</h3>
+<ul>
+<li>RLS ifadesi hem özeti hem ayrıntıyı filtrelemeli. Yalnızca özeti filtreleyen RLS’ye izin verilmez; yalnızca ayrıntıyı filtreleyen RLS çalışır ama sorgular isabet almaz.</li>
+<li>Özet Import, ayrıntı DirectQuery olduğu için özet bayatlarsa aynı soru iki farklı sayı verebilir. Özetin yenilemesini kaynağın yükleme zamanına bağla.</li>
+</ul>
+<h3>İsabeti nasıl ölçersin?</h3>
+<ul>
+<li>Learn, SQL Server Profiler’da <b>Query Processing → Aggregate Table Rewrite Query</b> olayını önerir. Olayın JSON çıktısındaki <code>matchingResult</code> isabeti, <code>dataRequest</code> istenen sütunları, <code>mapping</code> eşlenen özet sütunlarını gösterir.</li>
+<li>Pratik ilk kontrol: Performans Analizi’nde (Performance Analyzer) görselin satırında DirectQuery süresi görünüyorsa sorgu kaynağa gitmiştir.</li>
+<li>Test listesi: her rapor sayfasındaki her görseli bir kez çalıştır, ıskaları yaz, özet taneciğini ya da ölçüyü düzelt.</li>
+</ul>
+
+<h2>Otomatik toplamalar</h2>
+<p>Otomatik toplamalar, son 7 günün sorgu günlüğünden öğrenerek <code>System</code> özet tablolarını kendisi oluşturur ve günceller. Ayarı anlam modelinin Service’teki <b>Ayarlar</b> sayfasındadır; bir kaydırıcıyla önbellekten cevaplanacak sorgu yüzdesi seçilir.</p>
+<ul>
+<li>Premium kapasite, PPU ve Embedded gerekir; Pro’da yoktur. Yalnızca Service’te çalışır, Desktop’ta yoktur.</li>
+<li>DirectQuery modelleri ve bileşik modellerin DirectQuery kısmı içindir. Kaynaklar arasında Azure SQL Database, SQL Server 2019 ve sonrası, Snowflake, Databricks, BigQuery ve Redshift sayılır.</li>
+<li>Eğitim günün ilk zamanlanmış yenilemesinde çalışır ve 60 dakika sınırı vardır. Yüzde arttıkça kaynağa giden eğitim sorguları da artar.</li>
+<li>Hesaplanmış sütunlar dikkate alınmaz; yalnızca hibrit tablolardan oluşan modellerde açılmamalıdır; özellik açıkken .pbix indirilemez.</li>
+</ul>
+<p>Ne zaman hangisi? Sorgu kalıpları belli ve az sayıdaysa kullanıcı tanımlı özet daha öngörülebilirdir. Kullanıcılar çok farklı açılardan sorguluyorsa otomatik toplama emek kazandırır.</p>
+
+<h2>Bileşik model ve depolama modu seçimi</h2>
+<p>Toplamaların isabet alması, ilişkilerin normal kalmasına bağlıdır. Learn’in tek kaynaklı model için verdiği kural:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Çok tarafı</th><th>Bir tarafı normal ilişki için</th></tr>
+<tr><td>Dual</td><td>Dual</td></tr>
+<tr><td>Import</td><td>Import ya da Dual</td></tr>
+<tr><td>DirectQuery</td><td>DirectQuery ya da Dual</td></tr>
+</table></div>
+<p>Yani boyutlar hem Import özete hem DirectQuery ayrıntıya bağlanacaksa tek doğru seçim Dual’dır. Boyut Import kalırsa DirectQuery ayrıntıyla ilişkisi sınırlı (limited) olur. Çoka çok ilişkiler her zaman sınırlıdır; farklı kaynaklar arasındaki ilişki yalnızca iki taraf da Import ise normaldir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Mod</th><th>Neden</th></tr>
+<tr><td>Satislar (900 M satır)</td><td>DirectQuery (hibritse son bölüm)</td><td>Belleğe alınmaz; ayrıntı sorguları için</td></tr>
+<tr><td>Satış özeti (ay × kategori × durum)</td><td>Import, gizli</td><td>Raporların çoğu buradan cevaplanır</td></tr>
+<tr><td>Tarih, Urunler, Kategoriler, Musteriler</td><td>Dual</td><td>İki tarafa da normal ilişki</td></tr>
+<tr><td>Küçük bağımsız arama tabloları</td><td>Import</td><td>DirectQuery tabloya bağlı değilse</td></tr>
+</table></div>
+
+<h2>Büyük model biçimi ve XMLA ile bölüm yenileme</h2>
+<p><b>Büyük anlam modeli depolama biçimi</b> (Large semantic model storage format), modelin varsayılan 1 GB sınırını aşıp kapasitenin izin verdiği boyuta kadar büyümesini sağlar. Learn’e göre Fabric F, Premium P, Embedded A SKU’larında ve PPU’da vardır; ayrılmış kapasitedeki Pro çalışma alanlarında 1 GB ile sınırlıdır. Service’te modelin <b>Ayarlar → Büyük anlam modeli depolama biçimi</b> anahtarıyla açılır; Premium çalışma alanı bunu yeni modeller için varsayılan yapabilir. 1 GB’ı aşacak artımlı yenileme modellerinde ilk yenilemeden <b>önce</b> açılmalıdır. Ayrıca XMLA yazma performansını iyileştirdiği için küçük modellerde de önerilir.</p>
+<p>Bellek gerçeği: yenileme sırasında model geçici olarak daha fazla bellek ister. Kapasitenin yarısına yaklaşan bir model tam yenilemede belleği aşabilir; tek tek bölüm yenilemek bu yüzden önemlidir.</p>
+<p>XMLA uç noktası varsayılan olarak salt okunurdur; yazma işlemleri için kapasite ayarından <b>Okuma Yazma</b> açılır. SQL Server Management Studio’da TMSL ile tek bir bölüm yenilenebilir:</p>
+<pre class="dax" data-notry>{
+  "refresh": {
+    "type": "full",
+    "objects": [
+      { "database": "AnadoluSatis", "table": "Satislar", "partition": "2024Q4" }
+    ]
+  }
+}</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Yenileme yolu</th><th>Süre sınırı (Learn)</th></tr>
+<tr><td>Pro, zamanlanmış</td><td>2 saat</td></tr>
+<tr><td>Premium, zamanlanmış</td><td>5 saat</td></tr>
+<tr><td>XMLA uç noktası</td><td>Sınır yok; günlük 48 yenileme sınırına da sayılmaz</td></tr>
+</table></div>
+<p>Çok büyük modellerde “önyükleme” (bootstrapping) yapılır: nesneler veri yüklenmeden oluşturulur, sonra geçmiş bölümler tek tek doldurulur. Eski bir bölümü (ör. düzeltilmiş 2022 verisi) yeniden yüklemek de XMLA (SSMS ya da TMSL betiği) veya gelişmiş yenileme REST API’sinin <code>objects</code> parametresiyle yapılır (Premium, PPU, Embedded). Unutma: Desktop’ta yazılmış bir modelde XMLA ile yazma yapılınca model artık .pbix olarak indirilemez; kaynak dosyanı sakla.</p>
+
+<h2>Direct Lake ile karşılaştırma ve karar tablosu</h2>
+<p>Veri Fabric’te Delta tablolarındaysa “Kurumsal model” dersindeki Direct Lake seçeneği çoğu artımlı yenileme işini ortadan kaldırır: veri kopyalanmaz, “yenileme” tablonun yeni sürümüne bakmaktır (çerçeveleme). Bedeli, verinin önce bir göl evine ya da ambara taşınmış olmasıdır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek</th><th>Tazelik</th><th>Sorgu hızı</th><th>Kaynak yükü</th><th>Ne zaman?</th></tr>
+<tr><td>Import + artımlı yenileme</td><td>Son yenileme</td><td>En iyi</td><td>Yenilemede düşük</td><td>Gecelik tazelik yeterli, kaynak ilişkisel</td></tr>
+<tr><td>Hibrit tablo</td><td>Bugün canlı</td><td>Geçmiş hızlı, bugün kaynağa bağlı</td><td>Her sorguda biraz</td><td>“Bugünü göster” isteği, Premium/PPU</td></tr>
+<tr><td>Bileşik + toplama</td><td>Ayrıntı canlı, özet son yenileme</td><td>İsabette hızlı, ıskada yavaş</td><td>Iskalarda yüksek</td><td>Veri belleğe sığmıyor, sorgular çoğunlukla özet</td></tr>
+<tr><td>Direct Lake</td><td>Delta’nın son sürümü</td><td>Import’a yakın</td><td>Yok (OneLake okunur)</td><td>Veri zaten Fabric’te</td></tr>
+<tr><td>Saf DirectQuery</td><td>Canlı</td><td>Kaynağa bağlı</td><td>Her sorguda</td><td>Saniyeler önemli, kaynak çok güçlü</td></tr>
+</table></div>
+<h3>Lisans özeti (Learn’e göre)</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Özellik</th><th>Pro</th><th>PPU</th><th>Premium / Fabric kapasitesi</th></tr>
+<tr><td>Artımlı yenileme</td><td>Var</td><td>Var</td><td>Var</td></tr>
+<tr><td>Gerçek zamanlı DirectQuery bölümü</td><td>Yok</td><td>Var</td><td>Var</td></tr>
+<tr><td>Büyük model biçimi</td><td>Yalnızca ayrılmış kapasitede, 1 GB</td><td>Var</td><td>Var</td></tr>
+<tr><td>XMLA okuma-yazma</td><td>Yok</td><td>Var</td><td>Var</td></tr>
+<tr><td>Otomatik toplamalar</td><td>Yok</td><td>Var</td><td>Var</td></tr>
+</table></div>
+
+<h2>Kontrol listesi</h2>
+<ul>
+<li>RangeStart/RangeEnd tarih/saat mi, filtre kaynak adımından hemen sonra mı, katlandığı doğrulandı mı?</li>
+<li>Filtre <code>&gt;=</code> ve <code>&lt;</code> mı? Yenileme penceresi geriye dönük düzeltmeleri kapsıyor mu?</li>
+<li>1 GB’ı aşacak modelde büyük model biçimi ilk yenilemeden önce açıldı mı?</li>
+<li>Özet tablonun taneciği raporlardaki ölçülerin bütün filtre sütunlarını kapsıyor mu? İsabet Profiler ya da Performans Analizi ile ölçüldü mü?</li>
+<li>Boyutlar Dual mı? RLS hem özeti hem ayrıntıyı filtreliyor mu?</li>
+<li>Şema değişikliği yayımlamayla değil, meta veri dağıtımıyla mı yapılıyor? Kaynak .pbix saklanıyor mu?</li>
+<li>Veri Fabric’teyse Direct Lake değerlendirildi mi?</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-buyuk-model">Alıştırmalara geç (12)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ozel-takvim/">← Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı</a><a href="../ilk-olcu/">1 dakikada ilk ölçün →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

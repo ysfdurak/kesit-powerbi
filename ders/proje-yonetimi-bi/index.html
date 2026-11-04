@@ -1,0 +1,103 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım | Kesit Power BI</title><meta name="description" content="Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir rapor sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/proje-yonetimi-bi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım"><meta property="og:description" content="Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir rapor sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/proje-yonetimi-bi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım","description":"Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir rapor sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/proje-yonetimi-bi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Kariyer</span><h1>Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım</h1><p class="st-l">Keşiften bakıma yedi aşama, Anadolu Market için dört haftalık bir rapor sprint planı, risk listesi, RACI, tamamlandı tanımı, teslim ve belgeleme, canlı sonrası yenileme ve veri tazeliği izleme, eski raporları emekliye ayırmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-proje-yonetimi-bi">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>İş ilanlarında “Power BI bilgisi” yazar ama mülakatta sorulan çoğu zaman şudur: <b>“Bir projeyi baştan sona nasıl yürüttün?”</b> Bu ders o soruya cevap verebilmen için. Örnek proje: Anadolu Market satış müdürü haftalık toplantı için bir <b>satış ve hedef panosu</b> istiyor; süre dört hafta.</p>
+
+<h2>Yedi aşama</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Aşama</th><th>Soru</th><th>Çıktı</th></tr>
+<tr><td>1. Keşif</td><td>Kim, hangi kararı, ne sıklıkla verecek?</td><td>Rapor brifi, KPI tanımları, kabul kriterleri</td></tr>
+<tr><td>2. Veri değerlendirmesi</td><td>Veri nerede, erişimimiz var mı, ne kadar temiz?</td><td>Kaynak listesi, veri kalitesi notları, erişim talepleri</td></tr>
+<tr><td>3. Model</td><td>Olgu ve boyutlar neler, tanecik ne?</td><td>Yıldız şema, ölçüler, tarih tablosu</td></tr>
+<tr><td>4. Rapor</td><td>Sayfa hangi sırayla okunacak?</td><td>Sayfa taslağı, görseller, etkileşimler</td></tr>
+<tr><td>5. Kullanıcı kabul testi (UAT)</td><td>Rakamlar kaynakla tutuyor mu, kullanıcı işini yapabiliyor mu?</td><td>Test listesi, düzeltmeler, onay</td></tr>
+<tr><td>6. Canlıya alma</td><td>Kim, nereden, hangi yetkiyle erişecek?</td><td>Uygulama, erişim grupları, yenileme planı, duyuru</td></tr>
+<tr><td>7. Bakım</td><td>Rapor sağlıklı mı ve kullanılıyor mu?</td><td>Yenileme izleme, destek kanalı, değişiklik talepleri</td></tr>
+</table></div>
+<p>Keşif ve kabul kriterlerinin ayrıntısı “Talepten rapor brifine” dersinde; yayımlama ve yenileme “Yayımlama, yenileme ve yaşam döngüsü” dersinde; geliştirme / test / üretim ayrımı ve Git “Yaşam döngüsü” dersinde; test yöntemleri “Rapor kalitesi” konusunda.</p>
+
+<h2>Dört haftalık sprint planı</h2>
+<p>Küçük bir BI projesi için ağır bir Agile (çevik) kurulum gerekmez. Haftalık sprint, her hafta sonunda kullanıcıya kısa bir gösterim yeter:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Hafta</th><th>Hedef</th><th>İşler</th><th>Hafta sonu gösterimi</th></tr>
+<tr><td>1</td><td>Keşif ve veri</td><td>Brif görüşmesi; KPI tanımları (“net satış iptaller hariç”); kaynak erişimi; veri kalitesi taraması</td><td>Brif onayı, veri kalitesi notları</td></tr>
+<tr><td>2</td><td>Model</td><td>Power Query temizliği; yıldız şema; tarih tablosu; temel ölçüler; kaynakla mutabakat</td><td>Ölçüler bir tabloda; rakamlar kaynakla karşılaştırıldı</td></tr>
+<tr><td>3</td><td>Rapor</td><td>Sayfa taslağı; KPI kartları; kategori ve kanal kırılımı; detay sayfası; mobil düzen</td><td>Tıklanabilir taslak; geri bildirim listesi</td></tr>
+<tr><td>4</td><td>Test ve canlı</td><td>UAT; düzeltmeler; RLS testi; uygulama yayımı; zamanlanmış yenileme; kullanıcı rehberi</td><td>Canlıya alma ve ilk toplantıda kullanım</td></tr>
+</table></div>
+<div class="tip"><b>Kapsamı sabit, sırayı esnek tut</b>Her sprintin başında yalnızca o haftanın işlerini sırala. Yeni bir istek gelirse “bir sonraki sürüm” listesine yaz; aynı haftaya sıkıştırma.</div>
+
+<h2>Risk listesi</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Risk</th><th>Belirti</th><th>Önlem</th></tr>
+<tr><td>Veri kalitesi</td><td>Anadolu Market’te 7 müşterinin bölgesi boş; bu müşterilerin net satışı 63.852,75 ₺. Bölge raporunda “(Boş)” satırı çıkar</td><td>1. haftada taramayı yap; kaynağa düzeltme talebi aç; raporda “Bölge belirsiz” etiketiyle göster</td></tr>
+<tr><td>Erişim</td><td>Veritabanı izni ya da ağ geçidi 3. haftaya kadar gelmiyor</td><td>Erişim talebini 1. gün aç; geçici olarak örnek dışa aktarımla çalış</td></tr>
+<tr><td>Kapsam kayması (scope creep)</td><td>“Bir de stok sayfası ekleyelim” istekleri</td><td>Brifteki kapsam listesi; ek istekler bir sonraki sürüme</td></tr>
+<tr><td>Tanım çatışması</td><td>Finans ve satış farklı “net satış” kullanıyor</td><td>KPI tanımını iki tarafa imzalat; ölçü açıklamasına yaz</td></tr>
+<tr><td>Kullanıcı ilgisi</td><td>Kullanıcı gösterimlere gelmiyor</td><td>Sponsoru gösterime davet et; ilk toplantıyı raporla yap</td></tr>
+</table></div>
+
+<h2>RACI: kim ne yapar?</h2>
+<p><b>RACI</b> her iş için dört rolü yazar: <b>R</b>esponsible (işi yapan), <b>A</b>ccountable (sonuçtan hesap veren, tek kişi), <b>C</b>onsulted (görüşü alınan), <b>I</b>nformed (bilgilendirilen).</p>
+<div class="tbl-wrap"><table>
+<tr><th>İş</th><th>Satış müdürü</th><th>BI geliştirici</th><th>Veri sahibi (BT)</th><th>BI ekip lideri</th></tr>
+<tr><td>KPI tanımları</td><td>A</td><td>R</td><td>C</td><td>I</td></tr>
+<tr><td>Veri erişimi</td><td>I</td><td>C</td><td>R</td><td>A</td></tr>
+<tr><td>Model ve rapor</td><td>C</td><td>R</td><td>C</td><td>A</td></tr>
+<tr><td>Kabul testi</td><td>A</td><td>R</td><td>I</td><td>C</td></tr>
+<tr><td>Canlı sonrası destek</td><td>I</td><td>R</td><td>C</td><td>A</td></tr>
+</table></div>
+<p>Her satırda tam bir “A” olmalı. İki A varsa kimse sorumlu değildir.</p>
+
+<h2>Tamamlandı tanımı</h2>
+<p><b>Tamamlandı tanımı (definition of done)</b>, “bitti” demeden önce her işin geçmesi gereken ortak listedir:</p>
+<ul>
+<li>Toplam rakamlar kaynak sistemle mutabık (fark ve nedeni yazılı).</li>
+<li>Her ölçünün açıklaması (description) ve biçimi var; görünmesi gerekmeyen sütunlar gizli.</li>
+<li>RLS rolleri “Farklı görüntüle” ile test edildi.</li>
+<li>Sayfa, kabul kriterindeki sürede açılıyor (Performans Analizi ile ölçüldü).</li>
+<li>Erişilebilirlik: alternatif metin, sekme sırası, renk dışında işaret.</li>
+<li>Zamanlanmış yenileme çalışıyor ve hata bildirimi bir kişiye değil bir gruba gidiyor.</li>
+<li>Kullanıcı rehberi ve teknik belge güncel.</li>
+</ul>
+
+<h2>Teslim ve belgeleme</h2>
+<p>Projeyi bırakan kişi giderse rapor ölmemelidir. Teslim paketinde:</p>
+<ol>
+<li><b>Kullanıcı rehberi:</b> Bir sayfa. Hangi soruya hangi sayfa cevap verir, filtreler nasıl kullanılır, kime sorulur.</li>
+<li><b>Teknik belge:</b> Kaynaklar, yenileme planı, ağ geçidi, ölçü tanımları, RLS rolleri, bilinen veri sorunları.</li>
+<li><b>Kaynak kod:</b> PBIP klasörü Git’te (bkz. “Yaşam döngüsü” dersi).</li>
+<li><b>Sahiplik:</b> Çalışma alanında en az iki yönetici; anlam modelinin sahibi ve yedeği belli.</li>
+</ol>
+
+<h2>Canlı sonrası destek ve yenileme izleme</h2>
+<p>İlk iki hafta “hiper bakım” dönemidir: sorulara aynı gün cevap ver, her sabah yenilemeyi kontrol et. Sonra izlemeyi otomatikleştir. İki basit sağlık ölçüsü:</p>
+<p><b>Veri tazeliği:</b> Bir kırılımın son satış tarihi, modeldeki en son satış tarihinin kaç gün gerisinde? Anadolu Market’te Hediye kategorisinin son satışı 15 Aralık 2024; modelin son satışı 31 Aralık 2024. Fark 16 gün. Diğer kategoriler 0–1 gün geride. 16 gün Hediye için normal olabilir (az satan kategori), ama günlük satan bir kategoride alarm işaretidir.</p>
+<pre class="dax">Son Satış Tarihi =
+VAR Son = MAX(Satislar[Tarih])
+RETURN
+    IF(NOT ISBLANK(Son), FORMAT(Son, "dd.MM.yyyy"), "Satış yok")</pre>
+<p>Hiç satışı olmayan bir ürünün son satış tarihi boştur; boş tarihle gün farkı hesaplamak anlamsız sonuç verir. Bu yüzden tazelik ölçüsünü yazarken boş durumu açıkça ele al.</p>
+<p><b>Tamlık:</b> Bir sütunda boş değer ne kadar? Satislar[KargoGun] 1.620 satırın 131’inde boş. Ama boşların 121’i iptal satırı (iptal edilen sipariş kargoya çıkmaz), 10’u ise henüz kargoda. Teslim edilmiş satırlarda boş yok. Ders: <b>boş her zaman hata değildir</b>; tamlık ölçüsünü iş kuralına göre tanımla.</p>
+<pre class="dax">Boş Kargo Satırı =
+CALCULATE(COUNTROWS(Satislar), ISBLANK(Satislar[KargoGun]), Satislar[Durum] = "Teslim Edildi")</pre>
+<p>Bu ölçü sıfırdan farklı olursa veri hattında bir sorun var demektir. Service’te yenileme geçmişini izle, yenileme hatası bildirimlerini bir gruba yönlendir ve sağlık ölçülerini bir “Veri sağlığı” sayfasına koy.</p>
+
+<h2>Eski raporları emekliye ayırmak</h2>
+<p>Yeni pano canlıya çıkınca eski Excel ve rapor kopyaları kendiliğinden ölmez. Emeklilik süreci:</p>
+<ol>
+<li>Kullanım ölçümlerinden 30 günde açılmayan ya da yeni raporla aynı işi yapan raporları listele.</li>
+<li>Sahibine ve son kullanıcılarına “X tarihinde kaldırılacak, yerine şu rapor” diye haber ver.</li>
+<li>Raporu önce erişimden kaldır (silme), bir süre bekle; şikâyet gelmezse arşivle.</li>
+<li>Eski raporun anlam modeli başka içerik besliyorsa önce etki analizine bak.</li>
+</ol>
+<p>Emeklilik, bakım yükünü azaltır ve “hangi rapor doğru?” sorusunu ortadan kaldırır.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-proje-yonetimi-bi">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../bi-yonetimi/">← Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme</a><a href="../veri-akislari/">Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

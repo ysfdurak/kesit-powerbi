@@ -1,0 +1,115 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar | Kesit Power BI</title><meta name="description" content="DAX ile modele kalıcı tablo eklemek: ne zaman hesaplanır, neden dilimleyiciye tepki vermez; parametre ve eşik tabloları, küçük arama tabloları, özet…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hesap-tablolar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar"><meta property="og:description" content="DAX ile modele kalıcı tablo eklemek: ne zaman hesaplanır, neden dilimleyiciye tepki vermez; parametre ve eşik tabloları, küçük arama tabloları, özet…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hesap-tablolar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar","description":"DAX ile modele kalıcı tablo eklemek: ne zaman hesaplanır, neden dilimleyiciye tepki vermez; parametre ve eşik tabloları, küçük arama tabloları, özet…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hesap-tablolar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar</h1><p class="st-l">DAX ile modele kalıcı tablo eklemek: ne zaman hesaplanır, neden dilimleyiciye tepki vermez; parametre ve eşik tabloları, küçük arama tabloları, özet tablolar ve Power Query mi, ölçü mü kararı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hesap-tablolar">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Şimdiye kadar DAX ile iki şey yazdın: <b>ölçü</b> (bir sayı döndürür) ve <b>hesaplanmış sütun</b> (her satıra bir değer ekler). Üçüncü bir seçenek daha var: <b>hesaplanmış tablo (calculated table)</b>. Formül bir <b>tablo</b> döndürür ve bu tablo modele, içe aktarılmış bir tablo gibi eklenir. Ona ilişki kurabilir, sütunlarını dilimleyicide ya da eksende kullanabilirsin.</p>
+
+<h2>Hesaplanmış tablo ne zaman hesaplanır?</h2>
+<p>Desktop’ta <b>Tablo görünümü</b> ya da <b>Model görünümü</b> → <b>Hesaplamalar</b> grubu → <b>Yeni tablo (New table)</b>. Formül çubuğuna tablo döndüren bir ifade yazarsın:</p>
+<pre class="dax">Kategori Özeti =
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    "Satış", [Net Satış],
+    "Hedef", [Hedef]
+)</pre>
+<p>Bu tablonun en önemli özelliği <b>ne zaman</b> hesaplandığıdır:</p>
+<ul>
+<li>Formülü yazdığında ya da değiştirdiğinde bir kez hesaplanır.</li>
+<li>Beslendiği tablolardan biri <b>yenilendiğinde</b> yeniden hesaplanır.</li>
+<li>Rapor açıkken, kullanıcı dilimleyiciye tıkladığında <b>hesaplanmaz</b>. Sonuç modelde saklanmış durur.</li>
+</ul>
+<p>Örnek: Yukarıdaki tabloda Elektronik satırının <code>Satış</code> değeri 339.303,65 ₺’dir (tüm yıllar, tüm kanallar). Sayfaya “Kanal = Web” dilimleyicisi koysan da bu sütun 339.303,65 kalır. Aynı tabloda <code>[Net Satış]</code> <b>ölçüsünü</b> bir görsele koyarsan Web seçiminde 130.786,85 ₺ görürsün. Fark şudur: ölçü sorgu anında, filtre bağlamına göre hesaplanır; hesaplanmış tablodaki sütun ise yenileme anının dondurulmuş sonucudur.</p>
+<div class="note"><b>DirectQuery notu</b>Hesaplanmış tablo DirectQuery bir kaynaktan besleniyorsa kaynak değiştiğinde kendiliğinden güncellenmez; anlam modeli yenilendikten sonra değişikliği yansıtır.</div>
+
+<h2>Tarih tabloları: CALENDAR ve CALENDARAUTO</h2>
+<p>En yaygın hesaplanmış tablo tarih tablosudur. Nasıl kurulduğu, hangi sütunların ekleneceği ve “Tarih tablosu olarak işaretle” adımı <b>“Tarih tablosu”</b> dersinde. Burada yalnızca iki fonksiyonun farkını hatırlayalım:</p>
+<ul>
+<li><code>CALENDAR(başlangıç, bitiş)</code> verdiğin iki tarih arasındaki her günü üretir. <code>CALENDAR(DATE(2022,1,1), DATE(2024,12,31))</code> 1.096 satırdır.</li>
+<li><code>CALENDARAUTO()</code> modeldeki tarih sütunlarına bakar, en küçük ve en büyük tarihi tam yıllara yuvarlar. İsteğe bağlı argüman mali yılın bittiği aydır: <code>CALENDARAUTO(6)</code> Temmuz–Haziran yılları üretir.</li>
+</ul>
+<pre class="dax" data-notry>Takvim = CALENDARAUTO()</pre>
+<div class="warn"><b>CALENDARAUTO beklenmedik bir sütunu da görür</b>Bu modelde <code>Calisanlar[IseGiris]</code> 2015’ten başlıyor. Power BI’da CALENDARAUTO bu sütunu da hesaba katar ve takvim 2015-01-01’den başlar: 1.096 yerine 3.653 gün. Doğum tarihi, sözleşme bitiş tarihi gibi sütunlar takvimi on yıllarca uzatabilir. Aralığı bilerek seçmek için CALENDAR kullan.</div>
+
+<h2>GENERATESERIES: parametre ve eşik tabloları</h2>
+<p><code>GENERATESERIES(başlangıç, bitiş, adım)</code> tek sütunlu (<code>Value</code>) bir sayı dizisi üretir. Bu tablo bir dilimleyiciye konur, ölçü de seçilen değeri okur. Örnek soru: “Kargo hedefimiz kaç gün olmalı?” Mevcut <code>[Zamanında Teslim %]</code> ölçüsü eşiği 3 güne sabitlemiş. Eşiği kullanıcıya bırakalım:</p>
+<pre class="dax">Teslim Eşiği =
+GENERATESERIES(1, 7, 1)</pre>
+<pre class="dax" data-notry>Eşik İçinde Teslim % =
+VAR Esik = SELECTEDVALUE('Teslim Eşiği'[Value], 3)
+RETURN
+DIVIDE(
+    CALCULATE(COUNTROWS(Satislar), Satislar[KargoGun] &lt;= Esik, NOT ISBLANK(Satislar[KargoGun])),
+    CALCULATE(COUNTROWS(Satislar), NOT ISBLANK(Satislar[KargoGun]))
+)</pre>
+<p>Kargo günü bilinen satırlarda eşik 1 gün iken oran %29,6, 3 günde %60,2, 5 günde %87,2, 7 günde %94,2. Kullanıcı dilimleyiciyi kaydırdıkça kart değişir. Bu tablo modelde ilişkisizdir; yalnızca seçim taşır. Desktop’taki <b>Modelleme → Yeni parametre → Sayısal aralık</b> sihirbazı da arka planda aynı GENERATESERIES tablosunu ve bir SELECTEDVALUE ölçüsünü oluşturur (“Segmentasyon” dersindeki ne olur analizi).</p>
+
+<h2>DATATABLE ve tablo oluşturucu: küçük arama tabloları</h2>
+<p>Modelde olmayan küçük bir listeye ihtiyacın varsa (kanal sırası, durum grupları, eşik adları) iki yol var:</p>
+<pre class="dax">Kanal Sırası =
+DATATABLE(
+    "Kanal", STRING,
+    "Sira", INTEGER,
+    {
+        {"Mağaza", 1},
+        {"Web", 2},
+        {"Mobil", 3}
+    }
+)</pre>
+<pre class="dax">Kanal Sırası 2 =
+{ ("Mağaza", 1), ("Web", 2), ("Mobil", 3) }</pre>
+<ul>
+<li><b>DATATABLE</b> sütun adlarını ve türlerini (STRING, INTEGER, DOUBLE, CURRENCY, BOOLEAN, DATETIME) açıkça verir. Değerler sabit olmalıdır; içine ölçü ya da ifade yazamazsın.</li>
+<li><b>Tablo oluşturucu</b> <code>{ (…), (…) }</code> daha kısadır ama sütunlar <code>Value1</code>, <code>Value2</code> adını alır ve tür otomatik seçilir. Anlamlı ad için <code>SELECTCOLUMNS</code> ile yeniden adlandır.</li>
+<li>Tek sütunlu oluşturucu <code>{1, 2, 3}</code> bir <code>Value</code> sütunu üretir; ölçülerde <code>IN</code> ile de kullanılır.</li>
+</ul>
+<p>Kanal Sırası tablosunu <code>Satislar[Kanal]</code> ile ilişkilendirip <code>Kanal</code> sütununu <code>Sira</code>’ya göre sıralarsan grafikler Mağaza → Web → Mobil sırasıyla dizilir. Aynı işi Power Query’de <b>Giriş → Veri gir (Enter data)</b> ile de yapabilirsin; o tabloyu iş kullanıcısı arayüzden düzenleyebilir.</p>
+
+<h2>Özet tablolar: SUMMARIZECOLUMNS ve ADDCOLUMNS</h2>
+<p>Bir özet tablo, büyük bir olgu tablosunu daha kaba bir taneciğe indirir. İki kalıp:</p>
+<pre class="dax">Yıl Kanal Özeti =
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    Satislar[Kanal],
+    "Satış", [Net Satış]
+)</pre>
+<pre class="dax">Kanal Satışı =
+ADDCOLUMNS(
+    VALUES(Satislar[Kanal]),
+    "Satış", [Net Satış]
+)</pre>
+<p>SUMMARIZECOLUMNS gruplamayı ve ölçüyü tek adımda yapar; tüm ölçülerin boş döndüğü satırları kendisi atar. ADDCOLUMNS ise elindeki tabloya sütun ekler; her satırda ölçü çağrıldığı için bağlam geçişi olur (“Bağlam geçişi” dersi). Aynı ifadeleri bir ölçünün içinde <b>sanal tablo</b> olarak da kullanabilirsin: tablo modele yazılmaz, ölçü her çalıştığında yeniden kurulur ve dilimleyiciye tepki verir.</p>
+<pre class="dax">Hedefi Tutan Kategori Sayısı =
+COUNTROWS(
+    FILTER(
+        ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "G", [Hedef Gerçekleşme %]),
+        [G] &gt;= 1
+    )
+)</pre>
+<p>Bu ölçü 2023’te 3, 2024’te 1 döndürür (2024’te yalnızca Kitap: %100,2). Aynı mantığı hesaplanmış tabloyla yapsaydın yıl dilimleyicisi sonucu değiştirmezdi.</p>
+
+<h2>Hesaplanmış tablo mu, Power Query mi, ölçü mü?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>En iyi yer</th><th>Neden?</th></tr>
+<tr><td>Kaynaktan gelen veriyi temizlemek, birleştirmek</td><td>Power Query</td><td>Kaynağa yakın; sorgu katlama yapılabilir</td></tr>
+<tr><td>İş kullanıcısının elle düzenleyeceği küçük liste</td><td>Power Query “Veri gir”</td><td>Formül bilmeden düzenlenir</td></tr>
+<tr><td>Tarih tablosu, parametre tablosu, sabit sıralama listesi</td><td>Hesaplanmış tablo</td><td>Kısa formül; kaynak gerektirmez</td></tr>
+<tr><td>Modeldeki başka tablolardan türeyen boyut (rol oynayan tarih kopyası gibi)</td><td>Hesaplanmış tablo</td><td>Model değiştikçe yenilemede kendini günceller</td></tr>
+<tr><td>Dilimleyiciye göre değişmesi gereken her sonuç</td><td>Ölçü (sanal tablo)</td><td>Sorgu anında hesaplanır</td></tr>
+</table></div>
+
+<h2>Tuzaklar</h2>
+<ul>
+<li><b>Dilimleyiciye tepki yok:</b> “Seçili yıldaki ilk 5 ürün” gibi bir hesaplanmış tablo yazarsan seçim değiştiğinde liste değişmez. Bu iş bir ölçünün içinde TOPN ile yapılır.</li>
+<li><b>Yenileme ve bellek maliyeti:</b> Tablo modelde saklanır ve sıkıştırılır. Tarih × ürün çaprazı (<code>CROSSJOIN</code>) bu modelde 1.096 × 40 = 43.840 satır; buna kanal da eklersen 131.520 satır olur. Büyük modelde bu, her yenilemede zaman ve bellek demektir.</li>
+<li><b>Döngüsel bağımlılık (circular dependency):</b> Tablo A’dan türeyen bir hesaplanmış tabloyu A’ya ilişkiyle bağlarsan ya da A’ya, bu tabloyu okuyan bir hesaplanmış sütun eklersen Power BI “döngüsel bağımlılık algılandı” hatası verebilir. Boyutu olgudan türetiyorsan <code>VALUES</code> ve <code>ALL</code> yerine boş satıra bağımlı olmayan <code>DISTINCT</code> ya da <code>ALLNOBLANKROW</code> kullan; daha temiz yol boyutu Power Query’de kurmaktır.</li>
+<li><b>Tekrarlanan mantık:</b> Bir özet tablo ile bir ölçü aynı sayıyı farklı tanımla hesaplıyorsa raporda iki “doğru” oluşur. Özet tablodaki sütunlar mümkünse hazır ölçüleri çağırsın.</li>
+</ul>
+<div class="tip"><b>Önce sorguda dene</b>Bir hesaplanmış tablo yazmadan önce aynı ifadeyi DAX sorgu görünümünde <code>EVALUATE</code> ile çalıştır. Satır sayısını ve değerleri gördükten sonra “Yeni tablo”ya yapıştır. Aşağıdaki alıştırmaların ilk üçü bu yüzden sorgu biçiminde.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-hesap-tablolar">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-satis/">← Vaka: satış performansı ve hedef takibi</a><a href="../dashboard-kavramlar/">Rapor kavramları: KPI, hedef ve gösterge türleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

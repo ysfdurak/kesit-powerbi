@@ -1,0 +1,102 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapordan karara: yönetici toplantısında rapor kullanmak | Kesit Power BI</title><meta name="description" content="KPI sayfasını yukarıdan aşağı oku, her sayıya “neye göre?” diye sor, kırmızı bir KPI’dan üç tıklamada nedene in, bulguyu sahibi ve tarihi olan bir eyleme…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/karar-toplantisi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Rapordan karara: yönetici toplantısında rapor kullanmak"><meta property="og:description" content="KPI sayfasını yukarıdan aşağı oku, her sayıya “neye göre?” diye sor, kırmızı bir KPI’dan üç tıklamada nedene in, bulguyu sahibi ve tarihi olan bir eyleme…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/karar-toplantisi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Rapordan karara: yönetici toplantısında rapor kullanmak","description":"KPI sayfasını yukarıdan aşağı oku, her sayıya “neye göre?” diye sor, kırmızı bir KPI’dan üç tıklamada nedene in, bulguyu sahibi ve tarihi olan bir eyleme…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/karar-toplantisi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Rapordan karara: yönetici toplantısında rapor kullanmak</h1><p class="st-l">KPI sayfasını yukarıdan aşağı oku, her sayıya “neye göre?” diye sor, kırmızı bir KPI’dan üç tıklamada nedene in, bulguyu sahibi ve tarihi olan bir eyleme çevir, takip ölçüsünü seç ve tek paragraflık yönetici özetini DAX ile üret.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-karar-toplantisi">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Rapor bir sonuç değil, bir toplantının aracıdır. Toplantının sonunda “güzel rapor” değil, <b>“kim, neyi, ne zamana kadar yapacak?”</b> sorusunun cevabı çıkmalıdır. Bu derste Anadolu Market’in 2024 ikinci çeyrek (Ç2) toplantısını baştan sona oynuyoruz. Bütün sayılar modelden hesaplandı.</p>
+
+<h2>KPI sayfasını yukarıdan aşağı okumak</h2>
+<p>İyi bir yönetici sayfası üç katmandır (bkz. “Rapor kavramları” ve “Kullanıcı odaklı tasarım”):</p>
+<ol>
+<li><b>Üst şerit, “Durum ne?”:</b> 3–5 KPI kartı. Her kartta değer, karşılaştırma ve renk.</li>
+<li><b>Orta, “Nerede?”:</b> Kategori, kanal ya da bölge kırılımı. Kırmızının hangi parçadan geldiğini gösterir.</li>
+<li><b>Alt ya da detay sayfası, “Neden?”:</b> Ay, ürün, sipariş durumu gibi ayrıntılar.</li>
+</ol>
+<p>Toplantıda da bu sırayla git. Detaydan başlayan toplantı, ilk on dakikada tek bir ürünün tartışmasına sıkışır.</p>
+
+<h2>“Neye göre?” sorusu</h2>
+<p>2024 Ç2 net satışı <b>145.102 ₺</b>. Bu sayı tek başına ne iyi ne kötüdür. Üç farklı kıyas üç farklı hikâye anlatır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kıyas</th><th>Değer</th><th>Sonuç</th><th>Renk</th></tr>
+<tr><td>Hedefe göre</td><td>Hedef 155.000 ₺</td><td>%93,6 gerçekleşme, −9.898 ₺</td><td>Kırmızı</td></tr>
+<tr><td>Geçen yılın aynı çeyreğine göre</td><td>86.910 ₺</td><td>+%67,0</td><td>Yeşil</td></tr>
+<tr><td>Önceki çeyreğe göre</td><td>155.391 ₺</td><td>−%6,6</td><td>Sarı</td></tr>
+</table></div>
+<p>Hepsi doğrudur. Toplantının ilk işi, <b>hangi kıyasın karar için geçerli olduğunu</b> netleştirmektir. Bütçe hedefleri bağlayıcıysa hedef kıyası öndedir; ama “geçen yıla göre %67 büyüdük” bilgisi de masada olmalı ki kimse şirketin küçüldüğünü sanmasın.</p>
+
+<h2>Kırmızı KPI’dan nedene: üç tıklama</h2>
+<p>Hedef sapması kırmızı. Şimdi nedeni bulalım. Her adımda tek bir kırılım ekliyoruz.</p>
+<p><b>Tık 1, kanal kırılımı (önceki çeyreğe göre):</b></p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    VALUES(Satislar[Kanal]),
+    "Ç1 Satış", CALCULATE([Net Satış], Tarih[YilCeyrek] = "2024-Ç1"),
+    "Ç2 Satış", CALCULATE([Net Satış], Tarih[YilCeyrek] = "2024-Ç2"),
+    "Ç2 İptal %", CALCULATE([İptal Oranı %], Tarih[YilCeyrek] = "2024-Ç2")
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kanal</th><th>Ç1</th><th>Ç2</th><th>Fark</th></tr>
+<tr><td>Mobil</td><td>63.783 ₺</td><td>78.455 ₺</td><td>+14.672 ₺</td></tr>
+<tr><td>Web</td><td>56.330 ₺</td><td>42.506 ₺</td><td>−13.824 ₺</td></tr>
+<tr><td>Mağaza</td><td>35.278 ₺</td><td>24.141 ₺</td><td>−11.137 ₺</td></tr>
+</table></div>
+<p>İki kanal düşmüş. İkisine ayrı ayrı bakmak gerekiyor.</p>
+<p><b>Tık 2, Web’de sipariş durumu:</b> Web’in iptal dahil toplam tutarı Ç1’de 64.791 ₺, Ç2’de 59.004 ₺; yani talep yalnızca %8,9 azalmış. Asıl fark iptallerde: iptal edilen tutar 8.461 ₺’den <b>16.498 ₺</b>’ye çıkmış. Satır bazında iptal oranı %10,8’den <b>%24,7</b>’ye yükselmiş.</p>
+<p><b>Tık 3, Web iptallerinin ayı:</b> Nisan %23,8, <b>Mayıs %36,4</b> (33 satırdan 12’si), Haziran %5,3. Sorun Nisan–Mayıs’a yoğunlaşmış ve Haziran’da kendiliğinden geçmiş görünüyor. Web’deki ek iptal tutarı (16.498 − 8.461 = 8.037 ₺) tek başına hedef açığının (9.898 ₺) yaklaşık <b>%81</b>’i kadar.</p>
+<p><b>Mağaza’ya da bakalım:</b> Mağaza’nın Ç1’i tek bir siparişle şişmiş: 12.335 ₺’lik sipariş, bütün verinin en büyük siparişi. Mağaza’nın sipariş sayısı 17’den 19’a çıkmış, medyan sipariş 814 ₺’den 948 ₺’ye yükselmiş. Yani Mağaza’da bir sorun yok; düşüş, bir önceki çeyreğin aykırı değerinden geliyor. Bu bilgi toplantıda gereksiz bir “Mağaza kampanyası” kararını önler.</p>
+<div class="tip"><b>Raporda bu yol nasıl kurulur?</b>Kanal çubuğundan bir <b>detay sayfasına (drillthrough)</b> geç; o sayfada durum (Durum) ve ay kırılımı olsun. Aynı keşfi <b>ayrıştırma ağacı</b> ile de yapabilirsin: Net Satış → Kanal → Durum → Ay. Araçların kendisi “Ayrıştırma ağacı ve anahtar etkileyiciler” ile “Raporla hikâye anlatmak” derslerinde.</div>
+
+<h2>Bulgudan eyleme: sahip ve tarih</h2>
+<p>“Web’de iptal arttı” bir bulgudur, eylem değildir. Eylemin dört parçası vardır: <b>ne yapılacak, kim yapacak, ne zamana kadar, nasıl ölçülecek</b>.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Bulgu</th><th>Eylem</th><th>Sahip</th><th>Tarih</th><th>Takip ölçüsü</th></tr>
+<tr><td>Web iptal oranı Ç2’de %24,7 (Mayıs %36,4)</td><td>Nisan–Mayıs Web iptallerinin nedenini (ödeme hatası, stok, fiyat) çıkar; kalıcı nedense düzelt</td><td>E-ticaret müdürü</td><td>2 hafta içinde</td><td>Haftalık Web iptal oranı (hedef: %11’in altı)</td></tr>
+<tr><td>İptal nedeni veride yok</td><td>Kaynak sisteme “iptal nedeni” alanı ekle, modele al</td><td>BI ekibi + BT</td><td>Bir sonraki sprint</td><td>Nedeni boş iptal satırlarının payı</td></tr>
+<tr><td>Mağaza düşüşü aykırı değerden</td><td>Eylem yok; KPI kartına medyan sipariş eklenecek</td><td>Rapor sahibi</td><td>Bu hafta</td><td>—</td></tr>
+</table></div>
+<p>Bir bulgu için eylem gerekmediğini söylemek de bir karardır ve tutanağa yazılır.</p>
+<p>Veriden sonradan ne olduğunu da görebiliyoruz: Web iptal oranı Ç3’te %9,8, Ç4’te %8,2. Gerçek bir toplantıda bunu bir sonraki toplantının ilk maddesi olarak kontrol edersin.</p>
+
+<h2>Takip ölçüleri ve gösteriş ölçüleri</h2>
+<p><b>Gösteriş ölçüsü (vanity metric)</b>, iyi görünen ama bir karara bağlanmayan sayıdır: “toplam kayıtlı müşteri”, “rapor görüntülenme sayısı”, kümülatif satış eğrisi. Bunlar hep artar; bir eylemin işe yarayıp yaramadığını söylemez.</p>
+<p>İyi bir takip ölçüsü:</p>
+<ul>
+<li>Eylemle <b>doğrudan bağlantılıdır</b> (iptal nedenini düzeltirsen iptal oranı düşer).</li>
+<li><b>Bir oran ya da birim başına değerdir</b>, ham toplam değildir.</li>
+<li><b>Hedefi ve eşiği önceden yazılmıştır</b> (%11’in altı).</li>
+<li><b>Sık ölçülür</b>; haftalık eylemi çeyreklik ölçü izleyemez.</li>
+</ul>
+
+<h2>Tek paragraflık yönetici özeti</h2>
+<p>Toplantıya gelmeyen yönetici için sayfanın en üstüne seçime göre değişen bir cümle koy. Aşağıdaki ölçü bir kart görseline konur:</p>
+<pre class="dax">Toplantı Özeti =
+VAR Satis = [Net Satış]
+VAR Hedef = [Hedef]
+VAR GY = [Satış GY]
+VAR Oran = DIVIDE(Satis, Hedef)
+VAR Buyume = DIVIDE(Satis - GY, GY)
+VAR Kanallar = ADDCOLUMNS(VALUES(Satislar[Kanal]), "Iptal", [İptal Oranı %])
+VAR EnKotu = TOPN(1, Kanallar, [Iptal], DESC)
+VAR Cumle1 = "Net satış " &amp; FORMAT(Satis, "#,0") &amp; " ₺; hedef gerçekleşmesi %" &amp; FORMAT(Oran * 100, "0.0")
+VAR Cumle2 =
+    IF(ISBLANK(GY), ".",
+        ", geçen yıla göre " &amp; IF(Buyume &gt;= 0, "+%", "-%") &amp; FORMAT(ABS(Buyume) * 100, "0.0") &amp; ".")
+VAR Cumle3 =
+    " En yüksek iptal oranı: " &amp; MAXX(EnKotu, Satislar[Kanal])
+        &amp; " (%" &amp; FORMAT(MAXX(EnKotu, [Iptal]) * 100, "0.0") &amp; ")."
+RETURN
+    CONCATENATE(Cumle1 &amp; Cumle2, Cumle3)</pre>
+<p>2024 Ç2 seçiliyken sonuç: <i>“Net satış 145.102 ₺; hedef gerçekleşmesi %93,6, geçen yıla göre +%67,0. En yüksek iptal oranı: Web (%24,7).”</i> Ç3 seçilince: <i>“Net satış 187.330 ₺; hedef gerçekleşmesi %96,4, geçen yıla göre +%83,5. En yüksek iptal oranı: Web (%9,8).”</i></p>
+<ul>
+<li><b>CONCATENATE</b> yalnızca iki metni birleştirir; daha fazlası için <code>&amp;</code> işlecini kullan.</li>
+<li><b>FORMAT</b> sayıyı metne çevirir; sonuç artık sayı değildir, sıralanamaz ve toplanamaz.</li>
+<li>Türkçede yüzde işareti sayının önüne gelir. Bu yüzden <code>"0.0%"</code> yerine <code>"%" &amp; FORMAT(Oran * 100, "0.0")</code> kullandık.</li>
+</ul>
+<p>Paragrafın geri kalanını (neden ve eylem) analist elle yazar: <i>“Açığın büyük kısmı Nisan–Mayıs’taki Web iptallerinden geliyor; e-ticaret ekibi iki hafta içinde nedenleri raporlayacak. Mağaza’daki düşüş geçen çeyreğin tek büyük siparişinden kaynaklanıyor, eylem gerekmiyor.”</i> Otomatik cümle “ne oldu?” sorusunu, analistin cümlesi “ne yapıyoruz?” sorusunu cevaplar.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-karar-toplantisi">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../veri-okuryazarligi/">← Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak</a><a href="../bi-yonetimi/">Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

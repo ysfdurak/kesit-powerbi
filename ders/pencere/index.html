@@ -1,0 +1,148 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations) | Kesit Power BI</title><meta name="description" content="OFFSET, WINDOW, INDEX, RANK, ROWNUMBER; ORDERBY ve PARTITIONBY; görsel hesaplamalar (RUNNINGSUM, PREVIOUS, MOVINGAVERAGE)."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pencere/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations)"><meta property="og:description" content="OFFSET, WINDOW, INDEX, RANK, ROWNUMBER; ORDERBY ve PARTITIONBY; görsel hesaplamalar (RUNNINGSUM, PREVIOUS, MOVINGAVERAGE)."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pencere/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations)","description":"OFFSET, WINDOW, INDEX, RANK, ROWNUMBER; ORDERBY ve PARTITIONBY; görsel hesaplamalar (RUNNINGSUM, PREVIOUS, MOVINGAVERAGE).","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pencere/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations)</h1><p class="st-l">OFFSET, WINDOW, INDEX, RANK, ROWNUMBER; ORDERBY ve PARTITIONBY; görsel hesaplamalar (RUNNINGSUM, PREVIOUS, MOVINGAVERAGE).</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pencere">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Neden pencere fonksiyonları?</h2>
+<p>Zaman zekâsı fonksiyonları yalnızca tarih tablosunda çalışır. “Sıradaki bir önceki satır”, “son 3 satırın ortalaması”, “grup içindeki sıra” gibi sorular sıralı her eksende sorulur. 2022'de DAX'a eklenen pencere fonksiyonları bunu SQL'deki <code>OVER()</code> mantığıyla çözer.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Döndürür</th><th>SQL karşılığı</th></tr>
+<tr><td><code>OFFSET(n, ilişki, ORDERBY(…))</code></td><td>Geçerli satırdan n satır uzaktaki satır</td><td>LAG / LEAD</td></tr>
+<tr><td><code>WINDOW(başl, REL|ABS, bitiş, REL|ABS, ilişki, ORDERBY(…))</code></td><td>Bir satır aralığı</td><td>ROWS BETWEEN</td></tr>
+<tr><td><code>INDEX(n, ilişki, ORDERBY(…))</code></td><td>Mutlak konumdaki satır (−1 = son)</td><td>FIRST_VALUE / LAST_VALUE</td></tr>
+<tr><td><code>RANK(ilişki, ORDERBY(…))</code></td><td>Sıra numarası</td><td>RANK</td></tr>
+<tr><td><code>ROWNUMBER(ilişki, ORDERBY(…))</code></td><td>Benzersiz satır numarası</td><td>ROW_NUMBER</td></tr>
+</table></div>
+<ul>
+<li><b>İlişki (relation):</b> Üzerinde dolaşılacak satırlar; genellikle <code>ALLSELECTED(Tarih[YilAy])</code>.</li>
+<li><b>ORDERBY:</b> Sıralama sütunu ya da ölçüsü, ASC/DESC.</li>
+<li><b>PARTITIONBY:</b> Grup sınırı; sıra her grupta yeniden başlar (SQL PARTITION BY).</li>
+</ul>
+<pre class="dax">3 Ay Pencere Ort. =
+AVERAGEX(
+    WINDOW(-2, REL, 0, REL, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy])),
+    [Net Satış]
+)
+
+Kategori İçi Sıra =
+RANK(
+    ALLSELECTED(Urunler[Kategori], Urunler[Urun]),
+    ORDERBY([Net Satış], DESC),
+    PARTITIONBY(Urunler[Kategori])
+)</pre>
+<div class="note"><b>Zaman zekâsından farkı</b><code>OFFSET(-1, ALLSELECTED(Tarih[YilAy]), …)</code> görseldeki bir önceki satırı bulur. Görselde yalnızca 2024 varsa Ocak'ın öncesi yoktur. <code>PREVIOUSMONTH</code> ise takvime bakar ve Aralık 2023'ü bulur. Hangisi doğru? İş sorusuna göre değişir.</div>
+<h2>Görsel hesaplamalar</h2>
+<p>Bir görseli seçip Giriş → <b>Yeni görsel hesaplaması</b>. Formül, modeldeki tüm veriyle değil yalnızca görselin ızgarasıyla (satırlar, sütunlar) çalışır. Model ölçüsü yazmaktan çok daha basittir:</p>
+<pre class="dax" data-notry>Kümülatif = RUNNINGSUM([Net Satış])
+Önceki Ay = PREVIOUS([Net Satış])
+Değişim = [Net Satış] - PREVIOUS([Net Satış])
+3 Ay Ort. = MOVINGAVERAGE([Net Satış], 3)
+Satıra Göre Pay = DIVIDE([Net Satış], COLLAPSE([Net Satış], ROWS))</pre>
+<p>Görsel hesaplamalar modelde ölçü olarak görünmez; yalnızca o görselde yaşar. Hızlı ve basit analizler için idealdir; birden çok raporda kullanılacak iş tanımları ise model ölçüsü olmalıdır. PL-300 artık görsel hesaplama oluşturmayı ölçüyor.</p>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Pencere fonksiyonlarında üç gizli varsayım</h2>
+<p>OFFSET, INDEX ve WINDOW kısa yazılır, ama arka planda üç varsayım yapar. Mülakatta da sık sorulur:</p>
+<ol>
+<li><b>Bağlam ilişkisi (relation) belirtilmezse</b> fonksiyon, görseldeki <code>ALLSELECTED</code> kümesini kullanır. Yani dilimleyiciyle gizlenen aylar “önceki ay” sayılmaz.</li>
+<li><b>ORDERBY belirtilmezse</b> sıralama, ilişkideki sütunların kendi sırasıdır. Ay adına göre (“Ağu, Ara, Eki…”) sıralanan bir sütunda “önceki ay” alfabetik önceki ay olur. Her zaman sayısal bir sıralama sütunu (YilAy, AyNo) kullan.</li>
+<li><b>PARTITIONBY belirtilmezse</b> tüm satırlar tek bir bölümdür. “Her yıl kendi içinde ilk ay” gibi sorular için yılı bölüm olarak vermek gerekir.</li>
+</ol>
+<pre class="dax">Önceki Ay Satış =
+CALCULATE([Net Satış], OFFSET(-1, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC)))</pre>
+<p>Zaman zekâsı fonksiyonlarından (PREVIOUSMONTH, DATEADD) farkı: pencere fonksiyonları bir <b>takvim bilmez</b>. İlişki olarak olgu tablosundan türetilmiş bir liste verirsen (ör. <code>SUMMARIZE(Satislar, Tarih[YilAy])</code>), satış olmayan ay listede yer almaz ve OFFSET onu atlayıp bir önceki “mevcut” aya bakar. Takvim aylarına göre karşılaştırma gerekiyorsa zaman zekâsı, “bir önceki satır” gerekiyorsa pencere fonksiyonu doğru araçtır.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>İlişki parametresi: ALL mı, ALLSELECTED mı?</h2>
+<p>Finans raporunda dilimleyicide 2024 seçili. Aylık tabloda "önceki ay" sütunu Ocak 2024'te boş; finans müdürü Aralık 2023'ü görmek istiyor. Üç yazımı karşılaştıralım:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yazım</th><th>Ocak 2024</th><th>Neden?</th></tr>
+<tr><td><code>OFFSET(-1, ALLSELECTED(Tarih[YilAy]), ...)</code></td><td>boş</td><td>İlişkide yalnızca 2024 ayları var; Ocak'ın öncesi yok</td></tr>
+<tr><td><code>OFFSET(-1, ALL(Tarih[YilAy]), ...)</code></td><td>boş</td><td>OFFSET 2023-12'yi bulur, ama dilimleyicinin Yil = 2024 filtresi CALCULATE'te kalır; kesişim boş</td></tr>
+<tr><td><code>ALL(Tarih[YilAy])</code> + <code>REMOVEFILTERS(Tarih[Yil])</code></td><td>43.560,05</td><td>Satır bulunur ve yıl filtresi de kaldırılır</td></tr>
+</table></div>
+<pre class="dax">Önceki Ay (Dilimleyiciden Bağımsız) =
+CALCULATE(
+    [Net Satış],
+    OFFSET(-1, ALL(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC)),
+    REMOVEFILTERS(Tarih[Yil])
+)</pre>
+<p>Mekanizma: OFFSET bir tablo satırı döndürür (YilAy = "2023-12"). CALCULATE bu satırı yalnızca ilişkinin sütunlarına filtre olarak koyar ve YilAy'daki eski filtrenin yerine geçer. Aynı tablonun başka sütunlarındaki filtreler (Yil, Ceyrek) olduğu gibi kalır. İkinci satırdaki hata pencere fonksiyonuna özgü değildir; filtre bağlamının sıradan kuralıdır.</p>
+<p>Hangisi doğru? "Görseldeki bir önceki satır" isteniyorsa ALLSELECTED; "takvimdeki bir önceki ay" isteniyorsa zaman zekâsı (PREVIOUSMONTH) daha sadedir. Üçüncü yazım, takvim tablosu olmayan sıralı eksenlerde (ör. sprint numarası) işe yarar.</p>
+
+<h2>PARTITIONBY ve ilişkideki sütunlar</h2>
+<p>Satış ekibi "yıl içinde bir önceki ay" istiyor: Ocak, geçen yılın Aralık'ına bağlanmamalı. Bölüm (partition) sütunu ilişkinin içinde ya da ilişkiyle bağlı bir tabloda olmalıdır. En açık yol, Yil'i ilişkiye eklemektir:</p>
+<pre class="dax">Yıl İçi Önceki Ay =
+CALCULATE(
+    [Net Satış],
+    OFFSET(
+        -1,
+        ALLSELECTED(Tarih[Yil], Tarih[YilAy]),
+        ORDERBY(Tarih[YilAy], ASC),
+        PARTITIONBY(Tarih[Yil])
+    )
+)</pre>
+<p>Ocak 2023 satırı artık boştur; bölümsüz sürüm aynı hücrede Aralık 2022'yi (40.257,85 ₺) gösterir. Microsoft Learn'deki kurallar üretimde önemlidir:</p>
+<ul>
+<li>İlişkideki her sütun için dış bağlamda bir değer olmalı. Tek değer varsa o kullanılır; birden fazla dış sütun eşleşirse hata alırsın.</li>
+<li>ORDERBY ve PARTITIONBY sütunları satırları benzersiz tanımlamıyorsa fonksiyon gereken ek sütunları kendisi ekler; bulamazsa hata verir.</li>
+<li>ORDERBY'da ölçü kullanırsan eşit değerler sıralamayı belirsizleştirir. "Yılın en iyi ayı" gibi sorularda ikinci bir sıralama sütunu (<code>ORDERBY([Net Satış], DESC, Tarih[YilAy], ASC)</code>) eşitliği bozar.</li>
+</ul>
+
+<h2>Boş aylar: pencere satır sayar, takvim saymaz</h2>
+<p>WINDOW(-2, REL, 0, REL, ...) "son üç satır" demektir; bu satırlarda veri olup olmadığına bakmaz. Veri 22 Haziran 2022'de başlıyor; ilk aylarda üç farklı cevap çıkar:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ay</th><th>Net Satış</th><th>AVERAGEX(pencere)</th><th>Toplam / 3</th><th>Tam pencere</th></tr>
+<tr><td>2022-06</td><td>595,00</td><td>595,00</td><td>198,33</td><td>boş</td></tr>
+<tr><td>2022-07</td><td>11.916,20</td><td>6.255,60</td><td>4.170,40</td><td>boş</td></tr>
+<tr><td>2022-08</td><td>6.766,35</td><td>6.425,85</td><td>6.425,85</td><td>6.425,85</td></tr>
+</table></div>
+<p>AVERAGEX boş ayları atlar ve tek aylık "üç ay ortalaması" üretir. Üçe bölmek eksik ayları sıfır sayar. Üçüncü yol, pencere dolu değilse hiç göstermemektir. Grafikte ilk ayların yapay biçimde yüksek ya da düşük görünmesini istemiyorsan üçüncüsü en dürüst seçenektir (alıştırmada yazacaksın). Not: Haziran 2022 yalnızca 9 günlük veri içerir; tam olmayan dönemler her pencere hesabını bozar.</p>
+
+<h2>Toplam satırında ne olur?</h2>
+<p>Toplam satırında YilAy'ın dış bağlamda değeri yoktur. Belgelenen kurala göre fonksiyon, dış değeri olmayan sütunların mevcut her değeri için ayrı ayrı çalışır ve dönen satırların birleşimini (union) verir. Power BI'da bu şu sonuçları doğurur:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ölçü</th><th>Toplam satırında</th><th>Anlamlı mı?</th></tr>
+<tr><td>Önceki Ay (OFFSET -1)</td><td>Son ay hariç tüm aylar: 1.250.772,45 − 94.000,95 = 1.156.771,50</td><td>Hayır</td></tr>
+<tr><td>Kümülatif (WINDOW 1 ABS … 0 REL)</td><td>Tüm aylar: 1.250.772,45</td><td>Tesadüfen evet</td></tr>
+<tr><td>3 ay ortalaması (AVERAGEX + WINDOW)</td><td>Verisi olan 31 ayın ortalaması: 40.347,50</td><td>Hayır</td></tr>
+</table></div>
+<p>Bu uygulamanın motoru bu durumda toplamı boş gösterir; Power BI'da yukarıdaki sayıları görürsün. Kullanıcı toplam satırını okur ve yanlış yorumlar. Üretimde toplamı açıkça yönet:</p>
+<pre class="dax">Önceki Ay (Güvenli) =
+IF(
+    ISINSCOPE(Tarih[YilAy]),
+    CALCULATE([Net Satış], OFFSET(-1, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC)))
+)</pre>
+
+<h2>Görsel hesaplama mı, model ölçüsü mü?</h2>
+<p>Görsel hesaplamalar (visual calculations) aynı işi çoğu zaman tek satırda yapar: <code>PREVIOUS([Net Satış])</code>. Seçimi şu ölçütler belirler (Microsoft Learn'deki sınırlamalardan):</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ölçüt</th><th>Görsel hesaplama</th><th>Model ölçüsü</th></tr>
+<tr><td>Yeniden kullanım</td><td>Yalnızca o görselde; görseller arasında kopyalanamaz</td><td>Tüm raporlar ve Excel'de analiz</td></tr>
+<tr><td>Filtreleme, sıralama</td><td>Görsel hesaplamaya göre filtreleme ve sıralama desteklenmez</td><td>Tam destek</td></tr>
+<tr><td>Dışa aktarma, paylaşım</td><td>Veri dışa aktarmada sonuçlar yer almaz; panoya sabitlenemez, Web'de yayımla kullanılamaz</td><td>Sorun yok</td></tr>
+<tr><td>Dinamik biçim dizesi, RELATED, USERELATIONSHIP</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Yazım kolaylığı</td><td>RUNNINGSUM, PREVIOUS, MOVINGAVERAGE; eksen ve sıfırlama parametreleri</td><td>OFFSET/WINDOW ile ilişki, sıralama, bölüm elle yazılır</td></tr>
+<tr><td>Maliyet</td><td>Görselin zaten toplanmış ızgarası üzerinde çalışır</td><td>Her hücrede modelden hesaplanır</td></tr>
+</table></div>
+<p>Karar: ekipçe kullanılacak bir iş tanımı (resmî "önceki ay" ya da "kümülatif" rakamı) model ölçüsü olmalı. Tek bir görselde keşif amaçlı, dışa aktarılmayacak bir hesap için görsel hesaplama daha hızlı ve daha az hatalıdır.</p>
+
+<h2>Performans notları</h2>
+<ul>
+<li>İlişkiyi boyut sütunlarından kur (<code>ALLSELECTED(Tarih[YilAy])</code>: 36 satır). Olgu tablosundan türetilmiş bir ilişki (<code>SUMMARIZE(Satislar, ...)</code>) hem yavaştır hem de satışı olmayan ayları atlar.</li>
+<li>ORDERBY'da ölçü kullanmak, her hücrede ilişkinin her satırı için ölçüyü hesaplatır: 36 aylık eksende 36 × 36 = 1.296 ölçü değerlendirmesi. Günlük eksende 1.096 × 1.096 ≈ 1,2 milyon olur.</li>
+<li>Gün düzeyinde kümülatif istiyorsan ve tarih tablon işaretliyse, <code>DATESBETWEEN</code> ya da tarih filtresiyle yazılan klasik kalıp çoğu zaman daha hızlıdır. İki yazımı Performans Analizi ile ölç, sonra karar ver.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>"Görseldeki önceki satır" mı, "takvimdeki önceki dönem" mi? Aracı buna göre seç.</li>
+<li>İlişki dilimleyiciye uymalı mı (ALLSELECTED), yoksa onu aşmalı mı (ALL + REMOVEFILTERS)?</li>
+<li>Bölüm sütunu ilişkinin içinde mi?</li>
+<li>ORDERBY eşitlikleri bozacak ikinci bir sütun içeriyor mu?</li>
+<li>Pencere boş ya da eksik dönemlerde ne göstermeli?</li>
+<li>Toplam satırında ISINSCOPE ile ne göstereceğini açıkça belirledin mi?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-pencere">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../tablo-fonk/">← Tablo fonksiyonları, kümeler ve sanal ilişkiler</a><a href="../musteri-analitigi/">Müşteri analitiği: yeni, geri dönen, kayıp, kohort, RFM →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

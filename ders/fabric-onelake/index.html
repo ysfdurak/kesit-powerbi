@@ -1,0 +1,54 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik | Kesit Power BI</title><meta name="description" content="OneLake’in yapısı, açık biçimler, kısayol türleri ve kimlik davranışı, yansıtma, OneLake kataloğu, dosya gezgini; OneLake güvenlik rolleri kime uygulanır,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-onelake/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik"><meta property="og:description" content="OneLake’in yapısı, açık biçimler, kısayol türleri ve kimlik davranışı, yansıtma, OneLake kataloğu, dosya gezgini; OneLake güvenlik rolleri kime uygulanır,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-onelake/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik","description":"OneLake’in yapısı, açık biçimler, kısayol türleri ve kimlik davranışı, yansıtma, OneLake kataloğu, dosya gezgini; OneLake güvenlik rolleri kime uygulanır,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-onelake/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik</h1><p class="st-l">OneLake’in yapısı, açık biçimler, kısayol türleri ve kimlik davranışı, yansıtma, OneLake kataloğu, dosya gezgini; OneLake güvenlik rolleri kime uygulanır, kime uygulanmaz.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-onelake">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Anadolu Market’te dört ekip, aynı satış verisini dört ayrı kopya olarak tutuyor: BI, pazarlama, finans ve veri bilimi. Her kopyanın yenileme zamanı farklı, hepsi farklı sayı üretiyor. <b>OneLake’in vaadi şudur: tek göl, tek kopya, çok motor.</b> “Microsoft Fabric’e giriş” dersinde adını gördün; burada nasıl çalıştığını, nerede tuzak olduğunu öğreneceksin.</p>
+<h2>Yapı</h2>
+<div class="tbl-wrap"><table><tr><th>Düzey</th><th>Ne?</th><th>Karşılığı</th></tr>
+<tr><td>Kiracı (tenant)</td><td>Kuruluş başına <b>tek</b> OneLake; silinmez, ikincisi açılmaz</td><td>Kök; kiracı ilkeleri</td></tr>
+<tr><td>Çalışma alanı</td><td>Sahiplik ve erişim sınırı; bir kapasiteye ve bölgeye bağlıdır</td><td>Kapsayıcı (container)</td></tr>
+<tr><td>Öğe</td><td>Lakehouse, ambar, eventhouse…</td><td>Kapsayıcı içinde klasör</td></tr></table></div>
+<p>OneLake, Azure Data Lake Storage üzerine kuruludur ve ADLS Gen2 API’lerini destekler. Bu yüzden ADLS’le konuşan araç genelde OneLake’le de konuşur. Tablolar Delta Parquet ya da Apache Iceberg biçimindedir; açık biçim demek, Spark, T-SQL ve Power BI’ın aynı dosyaları kopyalamadan okuması demektir. Silinen dosyalar 7 gün yumuşak silme ile tutulur. Kısa adres kalıbı için Learn’deki “OneLake access and APIs” sayfasına bak.</p>
+<h2>Kısayol (shortcut) kuralları</h2>
+<p>Kısayol, başka yerdeki veriyi yerindeymiş gibi gösteren işaretçidir. Kaynak değişince hemen görünür, kopya oluşmaz. “Fabric’e veri getirmek” dersindeki dört gerçeğe ek olarak üç konu üretimde önemlidir.</p>
+<h3>Kimlik: kim adına okunuyor?</h3>
+<div class="tbl-wrap"><table><tr><th>Mod</th><th>Ne zaman?</th><th>Sonuç</th></tr>
+<tr><td><b>Geçiş (passthrough)</b></td><td>OneLake’ten OneLake’e varsayılan</td><td>Çağıranın kimliği kullanılır. Etkin izin: kısayol yolundaki ve hedef yolundaki iznin kesişimi.</td></tr>
+<tr><td><b>Devredilen (delegated)</b></td><td>Dış sistemlere her zaman</td><td>Bir bağlantı kimliğiyle okunur. Kullanıcının kendi kaynak izni aranmaz.</td></tr></table></div>
+<p>Devredilen kısayolda <b>bağlantı kimliği ne görüyorsa kısayolu görebilen de onu görür</b>. Dış S3 klasörüne “finans okuyucu” hesabıyla açılan kısayolu tüm çalışma alanına göstermek, finans verisini herkese açmak demektir.</p>
+<h3>Sınırlar ve dönüşümler</h3>
+<ul><li>Tables altında yalnız en üst düzeyde; Delta ise tablo olarak tanınır. Files altında her düzeyde.</li><li>Kısayol dönüşümleri CSV’yi Delta’ya çevirebilir ya da metne yapay zekâ uygulayabilir; durumunu Learn’den kontrol et.</li><li>Silme farkı önemli: kısayolu silmek veriyi silmez; <b>kısayolun içindeki dosyayı silmek hedefteki dosyayı siler</b>.</li></ul>
+<h2>Yansıtma (mirroring)</h2>
+<p>Yansıtma, dış veritabanını neredeyse gerçek zamanlı olarak OneLake’e çoğaltır; işlem hattı kurmak gerekmez. Learn üç tür sayar:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Ne yapar?</th><th>Örnek</th></tr>
+<tr><td>Veritabanı yansıtma</td><td>Sürekli Delta’ya çoğaltır</td><td>Azure SQL, Snowflake gibi desteklenen kaynaklar</td></tr>
+<tr><td>Meta veri yansıtma</td><td>Dış kataloğu eşitler, veri yerinde kalır (kısayol)</td><td>Unity Catalog gibi</td></tr>
+<tr><td>Açık yansıtma</td><td>Uygulaman API ile Delta yazar</td><td>Kendi CDC süreci</td></tr></table></div>
+<p>Learn’e göre yansıtma işlemi Fabric kapasite birimi tüketmez, depolama SKU’ya bağlı bir sınıra kadar ücretsizdir (F64 için 64 TB). Fiyat kuralları değişebilir; kesin hesap için resmî fiyat sayfasına bak. Yansıtılan veri salt okunurdur. Dönüştürmek istediğinde başka öğe gerekir.</p>
+<h2>Kısayol, yansıtma, kopyalama: hangisi?</h2>
+<div class="tbl-wrap"><table><tr><th>Durum</th><th>Seçim</th></tr>
+<tr><td>Veri zaten Delta, ADLS ya da başka çalışma alanında; kopya istemiyorsun</td><td>Kısayol</td></tr>
+<tr><td>Operasyonel veritabanı; yakın gerçek zamanlı ve hazır kurulum</td><td>Yansıtma</td></tr>
+<tr><td>Dönüşümlü, zamanlanmış, çok adımlı</td><td>İşlem hattı, Dataflow Gen2, not defteri</td></tr>
+<tr><td>Basit toplu ya da artımlı taşıma</td><td>Copy job</td></tr></table></div>
+<p>Ayrıntılı seçim “Data Factory” dersinde.</p>
+<h2>OneLake kataloğu ve dosya gezgini</h2>
+<p><b>OneLake kataloğu</b> veriyi bulma ve yönetme yeridir: etki alanı, çalışma alanı, öğe türü, onaya göre süz; açıklama, sahip, şema, soy gör. Sahip için etiket ve onay önerileri çıkarır. <b>OneLake dosya gezgini</b> ise Windows’ta dosya gezgini gibi çalışan, teknik olmayan kullanıcılar için bir istemcidir. Finans ekibi aylık dosyayı buraya bırakır, lakehouse’tan okunur.</p>
+<h2>OneLake güvenlik rolleri</h2>
+<p>OneLake güvenliği rol tabanlıdır ve varsayılan olarak reddeder: rol vermezsen veri erişimi yoktur. Reddeden rol yoktur, yalnız verir. Rol, klasör, tablo, satır ve sütun düzeyinde kapsam tanımlar; Spark, SQL ve Power BI’da tutarlı uygulanması hedeflenir.</p>
+<div class="tbl-wrap"><table><tr><th>Kullanıcı</th><th>Roller uygulanır mı?</th></tr>
+<tr><td>Yönetici, Üye, Katkıda bulunan</td><td><b>Hayır.</b> Yazma izinleri rollerin üstündedir.</td></tr>
+<tr><td>Görüntüleyici</td><td>Evet; roller ve varsayılan rol geçerli</td></tr></table></div>
+<ul><li><b>DefaultReader:</b> yeni lakehouse’larda otomatik gelir, ReadAll sahiplerini okur. Silersen ReadAll tek başına veri vermez.</li><li><b>Çoklu rol:</b> rol içi kapsamlar kesişir, roller arası birleşir. Bu yüzden birlikte uygulanması gereken RLS ve sütun kuralını aynı rolde tut.</li><li><b>SQL uç noktası:</b> birden çok rolde RLS koşulları VEYA ile birleşir; sütun kuralları daha katıdır, bir rol sütunu gizliyorsa engeller.</li><li><b>Direct Lake:</b> SQL üzerindeki Direct Lake sahibin kimliğini kullanır; son kullanıcı kimliğiyle uçtan uca için OneLake üzerindeki Direct Lake ya da kullanıcı kimliği modlu uç nokta gerekir.</li></ul>
+<div class="warn"><b>Durum notu</b>Learn’deki sayfa bu özelliğin önizleme mi genel kullanım mı olduğunu açık yazmıyor. Rol değişikliği yaklaşık 5 dakika, grup üyeliği değişikliği 1 saat ve üstü sürebilir; 250 rol, rol başına 500 üye gibi sınırlar var. Üretime almadan önce resmî sayfayı kontrol et.</div>
+<h2>Satır yetkisini model tarafıyla karıştırma</h2>
+<p>Modeldeki DAX RLS raporun kapısıdır; OneLake rolü gölün kapısıdır. Veri bilimci not defterinden Delta dosyasını okuyorsa DAX RLS onu durdurmaz. İkisini birlikte düşün. Modelde RLS sınaması “Satır ve nesne düzeyinde güvenlik” dersinde.</p>
+<div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Denemede bir lakehouse aç, başka bir lakehouse tablosuna kısayol oluştur, kısayolu sil, hedefin durduğunu gör. Silme denemesini kendi test verinde yap.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-onelake">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yerel-gelistirme/">← Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git</a><a href="../fabric-lakehouse/">Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

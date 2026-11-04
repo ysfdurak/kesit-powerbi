@@ -1,0 +1,154 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tablo fonksiyonları, kümeler ve sanal ilişkiler | Kesit Power BI</title><meta name="description" content="TREATAS, INTERSECT, EXCEPT, UNION, GENERATE, CROSSJOIN; soy bağı (lineage); köprü tablo ve çoka-çok ilişkiler."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/tablo-fonk/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Tablo fonksiyonları, kümeler ve sanal ilişkiler"><meta property="og:description" content="TREATAS, INTERSECT, EXCEPT, UNION, GENERATE, CROSSJOIN; soy bağı (lineage); köprü tablo ve çoka-çok ilişkiler."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/tablo-fonk/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Tablo fonksiyonları, kümeler ve sanal ilişkiler","description":"TREATAS, INTERSECT, EXCEPT, UNION, GENERATE, CROSSJOIN; soy bağı (lineage); köprü tablo ve çoka-çok ilişkiler.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/tablo-fonk/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>Tablo fonksiyonları, kümeler ve sanal ilişkiler</h1><p class="st-l">TREATAS, INTERSECT, EXCEPT, UNION, GENERATE, CROSSJOIN; soy bağı (lineage); köprü tablo ve çoka-çok ilişkiler.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-tablo-fonk">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Tablo döndüren ifadeler bir “değer”dir</h2>
+<p>DAX'ta bir tablo ifadesi değişkende tutulabilir, filtre olarak verilebilir, satırları sayılabilir. İleri seviyenin anahtarı, tabloları kümeler gibi düşünmektir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Küme işlemi</th><th>Örnek soru</th></tr>
+<tr><td><code>INTERSECT(A, B)</code></td><td>Kesişim</td><td>Hem 2023 hem 2024'te alışveriş yapan müşteriler</td></tr>
+<tr><td><code>EXCEPT(A, B)</code></td><td>Fark</td><td>2023'te alıp 2024'te almayan müşteriler (kayıp)</td></tr>
+<tr><td><code>UNION(A, B)</code></td><td>Birleşim (tekrarlar kalır)</td><td>İki listenin birleşimi; DISTINCT ile tekilleştir</td></tr>
+<tr><td><code>CROSSJOIN(A, B)</code></td><td>Kartezyen çarpım</td><td>Tüm kanal × yıl kombinasyonları</td></tr>
+<tr><td><code>GENERATE(A, ifade)</code></td><td>A'nın her satırı için ifadenin döndürdüğü satırlar</td><td>Her kategori için ilk 3 ürün</td></tr>
+<tr><td><code>TREATAS(tablo, sütun…)</code></td><td>Soy bağını değiştirir</td><td>Bağlantısız tablodaki değerleri modeldeki bir sütuna filtre olarak uygulamak</td></tr>
+</table></div>
+<h2>Soy bağı (lineage)</h2>
+<p><code>VALUES(Satislar[MusteriNo])</code> tek sütunlu bir tablodur ve sütunun modeldeki <code>Satislar[MusteriNo]</code> olduğunu “hatırlar”. Bu tablo <code>CALCULATE</code>'e verildiğinde Power BI hangi sütunu süzeceğini soy bağından bilir. <code>{1, 2, 3}</code> gibi elle yazılmış bir tablonun soy bağı yoktur; filtre olarak kullanılamaz. <code>TREATAS</code> soy bağını sonradan verir:</p>
+<pre class="dax">Kitap ve Spor = CALCULATE([Net Satış], TREATAS({"Kitap", "Spor"}, Kategoriler[Kategori]))</pre>
+<h2>Sanal ilişki</h2>
+<p>Modelde ilişki olmayan iki tablo arasında, hesap anında ilişki kurmak. Örneğin bağlantısız <code>KarsiUrunler</code> tablosundaki seçimi <code>Urunler</code>'e uygulamak:</p>
+<pre class="dax">B Ürünleri Satışı =
+CALCULATE(
+    [Net Satış],
+    TREATAS(VALUES(KarsiUrunler[KarsiUrunNo]), Urunler[UrunNo])
+)</pre>
+<p>Alternatifleri: <code>INTERSECT</code> ile ya da <code>FILTER(ALL(Urunler[UrunNo]), Urunler[UrunNo] IN VALUES(KarsiUrunler[KarsiUrunNo]))</code>. <code>TREATAS</code> genellikle en hızlı ve en okunur olanıdır. Sanal ilişki, hedefleri farklı tanecikte tutan bütçe tablolarında da sık kullanılır.</p>
+<h2>Çoka-çok ve köprü tablolar</h2>
+<p>Bir müşterinin birden çok segmente, bir ürünün birden çok kampanyaya ait olduğu durumlarda köprü (bridge) tablo kullanılır: <code>Musteri ← KopruMusteriSegment → Segment</code>. Filtrenin segmentten satışa ulaşması için köprü ile müşteri arasındaki ilişki çift yönlü olmalı ya da ölçüde <code>CROSSFILTER(…, BOTH)</code> kullanılmalıdır. Power BI'ın doğrudan “çoka-çok” kardinalitesi de vardır (iki tarafta da tekrar eden anahtar), ama sonuçları toplamlarda şaşırtıcı olabilir: bir satış iki segmentte sayılır, toplam ise bir kez sayar. Raporda bunun açıklanması gerekir.</p>
+<div class="warn"><b>Performans</b>Büyük olgu tablolarında <code>FILTER(Satislar, …)</code> ile sanal ilişki kurmak yavaştır. Sanal ilişkiyi boyut tablosunun anahtarı üzerinden (<code>TREATAS(…, Urunler[UrunNo])</code>) kur.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>SUMMARIZE ile gruplama, ADDCOLUMNS ile hesaplama</h2>
+<p>SUMMARIZE’ın içinde hesaplanmış sütun (<code>"Satış", [Net Satış]</code>) tanımlamak çalışır ama önerilmez: SUMMARIZE bu sütunları beklenmedik bir filtre bağlamında hesaplayabilir ve sonuç, özellikle aynı tablodan birden çok sütunla gruplandığında yanıltıcı olur. Güvenli kalıp, gruplamayı SUMMARIZE’a, hesaplamayı ADDCOLUMNS’a bırakmaktır:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    SUMMARIZE(Satislar, Urunler[Kategori]),
+    "Satış", [Net Satış]
+)</pre>
+<p>ADDCOLUMNS her satır için ölçüyü bağlam geçişiyle çağırır; yani her kategori satırında <code>[Net Satış]</code> o kategorinin filtresiyle hesaplanır. Yalnızca sorgu yazıyorsan <code>SUMMARIZECOLUMNS</code> daha da iyidir: gruplama ile hesaplamayı tek adımda yapar ve tüm ölçüleri BLANK olan satırları otomatik atar.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>SUMMARIZE: yalnızca var olan kombinasyonlar</h2>
+<p>Kanal müdürü soruyor: "Hangi ürün hangi kanalda hiç satılmadı?" Bu soru, iki tablo fonksiyonu arasındaki temel farkı gösterir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İfade</th><th>Satır</th><th>Anlamı</th></tr>
+<tr><td><code>VALUES(Urunler[Urun])</code></td><td>40</td><td>Katalogdaki tüm ürünler</td></tr>
+<tr><td><code>SUMMARIZE(Satislar, Urunler[Urun])</code></td><td>38</td><td>Satislar'da en az bir satırı olan ürünler</td></tr>
+<tr><td><code>SUMMARIZE(Satislar, Urunler[Urun], Satislar[Kanal])</code></td><td>113</td><td>Gerçekleşmiş ürün-kanal çiftleri</td></tr>
+<tr><td><code>CROSSJOIN(VALUES(Urunler[Urun]), VALUES(Satislar[Kanal]))</code></td><td>120</td><td>Olası tüm çiftler</td></tr>
+</table></div>
+<p>SUMMARIZE olgu tablosunu tarar ve satırların gerçekten içerdiği kombinasyonları döndürür. Gruplama sütunlarını çoka-bir ilişkiler boyunca "bir" tarafından alabilir (Urunler[Urun]); ters yönde alamaz. CROSSJOIN ise tabloları birbiriyle çarpar ve veride hiç olmayan çiftleri de üretir. Aradaki 7 çift sorunun cevabıdır:</p>
+<pre class="dax">EVALUATE
+FILTER(
+    CROSSJOIN(VALUES(Urunler[Urun]), VALUES(Satislar[Kanal])),
+    ISBLANK([Net Satış])
+)</pre>
+<p>Sonuç: Robot Süpürge Web'de hiç satılmamış; Koşu Bandı ve Gurme Lokum Kutusu ise hiçbir kanalda. FILTER her çiftte [Net Satış]'ı çağırır; bağlam geçişi hem ürünü hem kanalı filtreye çevirir.</p>
+<div class="note"><b>SUMMARIZE ham satırlara bakar</b>SUMMARIZE iptal edilmiş satırları da sayar. "Satılmış" demek istiyorsan ya CALCULATETABLE ile Durum filtresi ekle ya da yukarıdaki gibi ölçü üzerinden kontrol et.</div>
+
+<h2>SUMMARIZECOLUMNS ve boş satırlar</h2>
+<p>SUMMARIZECOLUMNS, ifadelerinin hepsi BLANK olan satırları sonuçtan atar. Görsellerin "boş satırı göstermeme" davranışı buradan gelir. Bu kural küçük bir değişiklikle sonucun boyutunu değiştirir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Sorgu (Urunler[Urun] × Tarih[Yil])</th><th>Satır</th><th>Neden?</th></tr>
+<tr><td><code>"S", [Net Satış]</code></td><td>111</td><td>Satışı olmayan ürün-yıl çiftleri atılır</td></tr>
+<tr><td><code>"S", [Net Satış] + 0</code></td><td>120</td><td>Hiçbir satır boş değil; 40 × 3 çiftin hepsi gelir</td></tr>
+<tr><td><code>"S", [Net Satış], "K", [Kayıtlı Müşteri]</code></td><td>120</td><td>İkinci ölçü ürün filtresinden etkilenmez, hiç boş olmaz</td></tr>
+</table></div>
+<p>Küçük modelde 9 fazladan satır zararsızdır. Müşteri × ürün × gün kırılımında ise "+0" ya da hiç boş olmayan bir ölçü, milyonlarca satırlık bir sonuç üretir; görsel yavaşlar ya da veri sınırına takılır. Sıfırı göstermen gerekiyorsa bunu yalnızca gereken görselde, sınırlı bir eksende yap.</p>
+<p>Gerçek Power BI'da, bir ifadeyi boşluk kontrolünden çıkarmak için <code>IGNORE</code> vardır: o ifade boş olmasa da satır, diğer ifadeler boşsa atılır. Bu uygulamanın motoru IGNORE'u desteklemez; söz dizimi aşağıda:</p>
+<pre class="dax" data-notry>EVALUATE
+SUMMARIZECOLUMNS(
+    Urunler[Urun], Tarih[Yil],
+    "S", [Net Satış],
+    "K", IGNORE([Kayıtlı Müşteri])
+)</pre>
+<p>Ek bilgi: Eski kaynaklarda "SUMMARIZECOLUMNS'u ölçü içinde kullanma" uyarısını görürsün. Microsoft Learn'e göre Haziran 2024'ten bu yana SUMMARIZECOLUMNS her bağlam geçişinde çalışabiliyor ve ölçü içinde tam destekleniyor. Yine de sonuç sırası garanti edilmez; sıra gerekiyorsa sorguda ORDER BY kullan.</p>
+
+<h2>GENERATE ve CROSSJOIN: kombinasyon üretmek</h2>
+<p>Pazarlama her kanalın en iyi ayını görmek istiyor:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    GENERATE(
+        VALUES(Satislar[Kanal]),
+        TOPN(1, CALCULATETABLE(VALUES(Tarih[YilAy])), [Net Satış])
+    ),
+    "Satış", [Net Satış]
+)</pre>
+<p>Sonuç: Web 2024-12 (44.653,15 ₺), Mobil 2024-06 (41.208,05 ₺), Mağaza 2024-12 (17.423,45 ₺). Mekanizma: GENERATE ilk tablonun her satırı için ikinci ifadeyi o satırın satır bağlamında hesaplar. TOPN içindeki [Net Satış] bağlam geçişiyle hem dış satırı (Kanal) hem iç satırı (YilAy) filtreye çevirir. CALCULATETABLE, ay listesini kanala göre süzer; o kanalda satış olmayan aylar listeye girmez.</p>
+<ul>
+<li>GENERATE, ikinci ifade boş tablo döndürürse o satırı atar (iç birleştirme gibi). Boş satırları tutmak için Power BI'da GENERATEALL vardır; bu uygulamada desteklenmez.</li>
+<li>İki tablonun sütun adları çakışırsa hata alırsın; SELECTCOLUMNS ile yeniden adlandır.</li>
+<li>CROSSJOIN maliyetini önceden hesapla: Musteriler × Urunler × Tarih = 150 × 40 × 1.096 = 6.576.000 satır. Bir ölçünün içinde bu boyutta tablo kurmak belleği ve süreyi patlatır.</li>
+</ul>
+
+<h2>Veri soyu nerede kaybolur?</h2>
+<p>Soy bağını ilk bölümde gördün. Üretimde soru şu: soy hangi adımda düşer? Soysuz bir tablo CALCULATE'e filtre olarak verilince Power BI'da ya hata alırsın ya da tablo hiçbir model sütununu süzmez. İki durumda da beklediğin sonuç gelmez.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Adım</th><th>Soy</th></tr>
+<tr><td><code>VALUES(Tarih[Yil])</code>, <code>FILTER(VALUES(...), ...)</code>, <code>CALCULATETABLE(...)</code></td><td>Korunur</td></tr>
+<tr><td><code>ADDCOLUMNS(..., "Yeni", ifade)</code> ile eklenen sütun</td><td>Yeni sütunun soyu yok</td></tr>
+<tr><td><code>SELECTCOLUMNS(..., "Y", Tarih[Yil] - 1)</code> gibi bir ifade</td><td>Kaybolur</td></tr>
+<tr><td><code>{ 2023, 2024 }</code>, <code>DATATABLE</code>, <code>GENERATESERIES</code></td><td>Hiç yok</td></tr>
+</table></div>
+<p>Örnek: "Bir önceki yıllar" listesini elle üretip satışı süzmek istiyorsun. Listeyi SELECTCOLUMNS ile kurduğun anda soy düşer. TREATAS soyu yeniden verir:</p>
+<pre class="dax" data-notry>-- Soy yok: filtre beklendiği gibi çalışmaz
+Geçen Yıl (Hatalı) =
+CALCULATE([Net Satış], SELECTCOLUMNS(VALUES(Tarih[Yil]), "Y", Tarih[Yil] - 1))</pre>
+<pre class="dax">Geçen Yıl (TREATAS) =
+CALCULATE(
+    [Net Satış],
+    TREATAS(SELECTCOLUMNS(VALUES(Tarih[Yil]), "Y", Tarih[Yil] - 1), Tarih[Yil])
+)</pre>
+<p>2024 satırında 400.869,55 ₺ (2023'ün satışı) döner. Power BI'da SELECTCOLUMNS içindeki sade bir sütun başvurusu (<code>"Y", Tarih[Yil]</code>) soyu korur; ifade yazdığın anda korumaz. Bu uygulamanın motoru da aynı kuralı izler: sade başvuruda soy korunur, ifadede kopar. Emin olamadığında TREATAS ile soyu açıkça ver.</p>
+
+<h2>Tablo değişkenleri: bir kez hesaplanır, sabit kalır</h2>
+<pre class="dax">Sabit Liste =
+VAR T = VALUES(Urunler[Urun])
+RETURN CALCULATE(COUNTROWS(T), Kategoriler[Kategori] = "Kitap")</pre>
+<p>Sonuç 7 değil 40'tır. VAR, tanımlandığı yerde ve o andaki filtre bağlamında bir kez hesaplanır. Sonradan gelen CALCULATE değişkenin içeriğini değiştiremez; yalnızca yeni ifadeleri etkiler. Kitap filtresinin listeye uygulanması için tablo ifadesi CALCULATE'in içinde yazılmalı: <code>CALCULATE(COUNTROWS(VALUES(Urunler[Urun])), Kategoriler[Kategori] = "Kitap")</code> 7 döndürür.</p>
+<ul>
+<li>Bu davranış performans için iyidir: aynı tabloyu üç kez kullanacaksan bir kez hesaplanır.</li>
+<li>Değişken tablonun eklenen sütunlarına <code>[S]</code> diye başvurursun; <code>T[S]</code> yazılamaz. Modelden gelen sütunlar özgün adlarıyla (Urunler[Urun]) kullanılır.</li>
+<li>Değişken tablo soyunu korur; yani CALCULATE'e filtre olarak verilebilir.</li>
+</ul>
+
+<h2>Küme işlemlerinin kuralları</h2>
+<p>2023 ve 2024'te alışveriş yapan müşteri kümeleri (iptaller hariç) 77 ve 123 kişidir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İşlem</th><th>Sonuç</th><th>İş dili</th></tr>
+<tr><td><code>INTERSECT(M2023, M2024)</code></td><td>64</td><td>İki yıl da alan</td></tr>
+<tr><td><code>EXCEPT(M2023, M2024)</code></td><td>13</td><td>2024'te gelmeyen</td></tr>
+<tr><td><code>EXCEPT(M2024, M2023)</code></td><td>59</td><td>2024'te 2023'te olmayan</td></tr>
+<tr><td><code>UNION(M2023, M2024)</code></td><td>200</td><td>Tekrarlar kalır</td></tr>
+<tr><td><code>DISTINCT(UNION(...))</code></td><td>136</td><td>Herhangi bir yılda alan</td></tr>
+</table></div>
+<ul>
+<li>EXCEPT simetrik değildir; sıra yanlışsa "kayıp" yerine "yeni" sayarsın.</li>
+<li>Sütunlar adla değil konumla eşleşir; sütun sayısı aynı olmalıdır. Sonucun sütun adları ve soyu ilk tablodan gelir.</li>
+<li>Sonuç kümesi filtre olarak kullanılabilir: <code>CALCULATE([Net Satış], EXCEPT(M2024, M2023), Tarih[Yil] = 2024)</code> bu 59 kişinin 2024 satışını (315.901,35 ₺) verir.</li>
+</ul>
+<p>Bu kümelerle tam bir müşteri köprüsü kurmayı İleri iş kalıpları dersinde, dönem tanımlarını Müşteri analitiği dersinde bulursun.</p>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>"Var olan" mı "olası" kombinasyon mu istiyorsun? SUMMARIZE ile CROSSJOIN'i buna göre seç.</li>
+<li>Sonuçta beklenmedik kadar çok satır var mı? Hiç boş olmayan bir ölçü aranıyor.</li>
+<li>Filtre olarak kullanacağın tablonun soyu hangi adımda düşüyor? Gerekirse TREATAS.</li>
+<li>Tablo değişkeni, sonradan değişmesini beklediğin bir filtreden önce mi tanımlandı?</li>
+<li>EXCEPT'in sırası iş sorusuyla aynı mı?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-tablo-fonk">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../mobil-erisilebilirlik/">← Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</a><a href="../pencere/">Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

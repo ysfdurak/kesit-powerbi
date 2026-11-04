@@ -1,0 +1,96 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA | Kesit Power BI</title><meta name="description" content="Büyük anlam modelleri için depolama modu kararları, toplama tabloları, büyük model biçimi, Direct Lake geri dönüşü, XMLA uç noktası."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kurumsal-model/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA"><meta property="og:description" content="Büyük anlam modelleri için depolama modu kararları, toplama tabloları, büyük model biçimi, Direct Lake geri dönüşü, XMLA uç noktası."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kurumsal-model/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA","description":"Büyük anlam modelleri için depolama modu kararları, toplama tabloları, büyük model biçimi, Direct Lake geri dönüşü, XMLA uç noktası.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kurumsal-model/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA</h1><p class="st-l">Büyük anlam modelleri için depolama modu kararları, toplama tabloları, büyük model biçimi, Direct Lake geri dönüşü, XMLA uç noktası.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kurumsal-model">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Depolama modu kararları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Öneri</th></tr>
+<tr><td>Veri 1 GB'ın altında, günlük yenileme yeterli</td><td>Import</td></tr>
+<tr><td>Fabric lakehouse/warehouse'ta Delta tablolar, büyük hacim</td><td>Direct Lake</td></tr>
+<tr><td>Kaynakta sürekli değişen veri, saniyeler önemli</td><td>DirectQuery (ya da gerçek zamanlı zekâ)</td></tr>
+<tr><td>Özet hızlı olsun, ayrıntı canlı kalsın</td><td>Bileşik model: toplama tablosu Import, ayrıntı DirectQuery</td></tr>
+<tr><td>Birden çok yayımlanmış modeli birleştirmek</td><td>Bileşik model: canlı bağlantı + yerel tablolar (DirectQuery for Power BI datasets/AS)</td></tr>
+</table></div>
+<h2>Bileşik modeller ve Dual</h2>
+<p>Bir tabloyu <b>Dual</b> yapmak, onu hem Import hem DirectQuery gibi davranabilir kılar: Import tabloyla birlikte sorgulanınca bellekten, DirectQuery tabloyla birlikte sorgulanınca kaynaktan okunur. Boyut tabloları genellikle Dual olur; böylece “zayıf ilişki” (limited relationship) oluşmaz.</p>
+<h2>Kullanıcı tanımlı toplamalar</h2>
+<p>Milyar satırlık bir DirectQuery olgu tablosunun yanında ay × ürün düzeyinde bir Import özet tablo oluşturulur ve <b>Toplamaları yönet</b> ile eşlenir (Satış Toplamı → Satislar[Tutar] Toplam). Sorgu özet düzeyindeyse motor özet tabloyu kullanır, ayrıntıya inilince DirectQuery'ye düşer. Kullanıcı yalnızca ayrıntı tablosunu görür.</p>
+<h2>Büyük model biçimi</h2>
+<p>Premium/Fabric kapasitesinde anlam modeli ayarı: model 10 GB sınırını aşabilir, XMLA yazma işlemleri ve artımlı yenileme bölümleri daha verimli olur. Büyük modellerde açılması önerilir.</p>
+<h2>Direct Lake</h2>
+<ul>
+<li><b>Direct Lake on OneLake:</b> Model doğrudan OneLake'teki Delta dosyalarını okur; birden çok lakehouse/warehouse'tan tablo alabilir; SQL uç noktasına bağımlı değildir.</li>
+<li><b>Direct Lake on SQL analytics endpoint:</b> Lakehouse/warehouse'un SQL uç noktası üzerinden; görünümler (view) ya da satır düzeyi güvenlik gibi durumlarda sorgu <b>DirectQuery'ye geri döner</b> (fallback).</li>
+<li><b>Geri dönüş davranışı</b> (DirectLakeBehavior): Otomatik, Yalnızca Direct Lake (geri dönüş yerine hata), Yalnızca DirectQuery. Performansı öngörülebilir tutmak için geri dönüşleri izle.</li>
+<li><b>Çerçeveleme (framing):</b> Direct Lake'te “yenileme”, modelin Delta tablolarının hangi sürümüne bakacağını güncellemektir; veri kopyalanmaz, saniyeler sürer.</li>
+</ul>
+<h2>Artımlı yenileme</h2>
+<ol>
+<li>Power Query'de <code>RangeStart</code> ve <code>RangeEnd</code> (Tarih/Saat) parametrelerini oluştur.</li>
+<li>Olgu tablosunu <code>[Tarih] &gt;= RangeStart and [Tarih] &lt; RangeEnd</code> ile filtrele (sorgu katlanmalı).</li>
+<li>Tabloya sağ tık → <b>Artımlı yenileme</b>: “Son 5 yılı arşivle, son 10 günü yenile”, isteğe bağlı “yalnızca tam günler”, “veri değişikliklerini algıla”, ve DirectQuery ile gerçek zamanlı son bölüm (hibrit tablo).</li>
+<li>Yayımla; ilk yenileme bölümleri oluşturur, sonrakiler yalnızca son bölümleri yeniler.</li>
+</ol>
+<h2>XMLA uç noktası</h2>
+<p>Premium/Fabric çalışma alanları Analysis Services protokolüyle erişilebilir. Tabular Editor, SQL Server Management Studio, DAX Studio ve ALM Toolkit bu uç noktayla modele bağlanır: tek tablo ya da bölüm yenileme, hesaplama grubu ve nesne düzeyi güvenlik (OLS) tanımlama, modeli komut dosyasıyla dağıtma. “Okuma-yazma” kapasite ayarından açılır.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bileşik model: tablo tablo karar vermek</h2>
+<p>Senaryo: Anadolu Market'in satış satırları şirket içindeki bir SQL veritabanında yüz milyonlarca satıra ulaştı. Yönetim aylık kategori özetine bakıyor; mağaza müdürleri ise gün içi satışları görmek istiyor. Tek bir depolama modu herkese uymaz; bileşik model (composite model) her tabloya ayrı mod vermeyi sağlar:</p>
+<div class="tbl-wrap"><table><tr><th>Tablo</th><th>Mod</th><th>Gerekçe</th></tr>
+<tr><td><code>Satislar</code> (ayrıntı)</td><td>DirectQuery</td><td>Belleğe sığmıyor, gün içi güncellik gerekli</td></tr>
+<tr><td><code>Tarih</code>, <code>Urunler</code>, <code>Kategoriler</code>, <code>Musteriler</code></td><td>Dual</td><td>Dilimleyiciler bellekten açılır; DirectQuery olguyla birleşince sorguya kaynakta katılır</td></tr>
+<tr><td><code>Hedefler</code></td><td>Import</td><td>Excel'den gelir, ayda bir değişir</td></tr>
+<tr><td>Aylık özet tablo</td><td>Import (gizli)</td><td>Yönetim sorgularını bellekten karşılar</td></tr></table></div>
+<p>Boyutlar Import olsaydı, DirectQuery olgu ile aralarındaki ilişki <b>sınırlı ilişki</b> (limited relationship) olurdu: farklı kaynak grupları arasında motor ilişkiyi tam bir birleşim gibi kuramaz. Sonuçları: <code>RELATED</code> çalışmaz, eşleşmeyen satırlar için boş satır (blank row) oluşmaz, her sorgu iki dünya arasında veri taşır. Dual bu yüzden boyutların varsayılanıdır.</p>
+<h3>Yayımlanmış modele bağlanıp genişletmek</h3>
+<p>Finans ekibi onaylı satış modelini kullanmak, ama kendi gider bütçesi tablosunu eklemek istiyor. Canlı bağlantıyı “yerel model”e çevirmek (Power BI anlam modellerine DirectQuery) bunu sağlar. Dikkat: kullanıcının kaynak modelde <b>Derleme</b> (Build) izni olmalı, kaynak modeldeki RLS geçerliliğini korur ve kiracıda “Power BI anlam modellerine DirectQuery bağlantılarına izin ver” ayarı açık olmalı. Zincir uzadıkça (model üstüne model üstüne model) sorgular yavaşlar ve hata ayıklamak zorlaşır; iki halkadan uzun zincirden kaçın.</p>
+
+<h2>DirectQuery'e geri dönüş ve Direct Lake davranışı</h2>
+<p>Direct Lake'in iki biçimi farklı davranır; karar verirken bu farkı bilmek gerekir:</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL (SQL analiz uç noktası)</th></tr>
+<tr><td>Kaynak</td><td>Bir ya da birden çok Fabric öğesinin Delta tabloları</td><td>Tek bir lakehouse/warehouse'un SQL uç noktası</td></tr>
+<tr><td>DirectQuery'e geri dönüş</td><td>Yok</td><td>Var: SQL görünümü (view), SQL tarafı ayrıntılı erişim denetimi ya da RLS, işlenmemiş tablo, sınır aşımı</td></tr>
+<tr><td>Sınır (guardrail) aşılırsa</td><td>Yenileme başarısız olur; Delta tabloları iyileştirilene kadar model sorgulanamaz</td><td>Geri dönüş açıksa sorgu DirectQuery ile çalışır, yenileme uyarıyla tamamlanır</td></tr>
+<tr><td>Import tablolarla bileşik</td><td>Desteklenir</td><td>Aynı modelde karıştırılamaz; Desktop'ta üstüne bileşik model kurulabilir</td></tr></table></div>
+<p>Kapasiteye göre sınırlardan örnekler: F2–F8'de tablo başına 1.000 Parquet dosyası/satır grubu, 300 milyon satır ve diskte 10 GB model; F64'te tablo başına 5.000 dosya/satır grubu ve 1,5 milyar satır, belleğe alınabilecek veri için 25 GB üst sınır. Sınırın altında kalmanın yolu çoğu zaman SKU büyütmek değil, Delta tablolarını bakımlı tutmaktır: küçük dosyaları birleştirmek (compaction), V-Order ile yazmak.</p>
+<ul>
+<li><b>İlk sorgu yavaşsa:</b> Direct Lake sütunları ihtiyaç oldukça belleğe alır (transcoding). Sabah ilk açılış soğuktur; çerçeveleme (framing) sonrası bir ısınma sorgusu planlamak yaygın bir çözümdür.</li>
+<li><b>Bellek dolarsa:</b> sütunlar bellekten atılıp yeniden yüklenir (paging); her şey çalışır ama yavaşlar.</li>
+<li><b>Geri dönüşü izle:</b> “Direct Lake davranışı” (Direct Lake behavior) özelliğiyle geri dönüşü kapatırsan sorun sessiz yavaşlık yerine açık hata olarak görünür; Fabric kapasite ölçümleri uygulamasında geri dönüşleri takip et.</li>
+<li><b>SQL görünümü yerine:</b> lakehouse'ta somutlaştırılmış görünüm (materialized view) ya da dönüşümü yapılmış bir Delta tablosu kullan.</li>
+</ul>
+
+<h2>Toplama tabloları ve artımlı yenileme: kısa hatırlatma</h2>
+<p>Bu iki konunun ayrıntısını ayrı bir ders işliyor; burada yalnızca karar ölçütü. Toplama tablosunun değeri, <b>tanesine</b> (grain) bağlıdır. Bu modelde <code>Satislar</code> 1.620 satırdır; ay × kategori düzeyinde özet 199 satıra iner. Ürün düzeyinde bir soru gelirse bu özet cevap veremez ve sorgu ayrıntıya düşer. Özet tabloyu, panoların gerçekten sorduğu soruların tanesinde kur; Performans Analizi ile “özet kullanıldı mı?” diye doğrula. Artımlı yenileme ise yenileme süresinin sınırlarını (paylaşılan kapasitede 2 saat, Premium/Fabric'te 5 saat) aşan tablolar için ilk adaydır.</p>
+
+<h2>Modeli kullanıcıya anlatmak: klasörler, açıklamalar, çeviriler</h2>
+<p>119 ölçülük bir model, alan listesinde düz bir liste olarak kullanılamaz. Kurumsal bir modelde şu üç meta veri en az ölçü kadar önemlidir:</p>
+<ul>
+<li><b>Görüntüleme klasörü</b> (Display folder): <code>Satış\Temel</code>, <code>Satış\Zaman Zekâsı</code>, <code>Müşteri\RFM</code>. Ters eğik çizgi alt klasör, noktalı virgül aynı ölçüyü iki klasörde gösterir. Klasör adları da çevrilebilir.</li>
+<li><b>Açıklama</b> (Description): alan listesinde araç ipucu olarak çıkar. “İptal hariç, iade dahil net satış; Tarih tablosuyla aktif ilişki” gibi tanımlar yazılmalı. Copilot ve “Yapay zekâ için verileri hazırla” (Prep data for AI) ayarları da bu açıklamalardan yararlanır.</li>
+<li><b>Gizleme ve özetleme:</b> anahtar sütunlar (<code>UrunNo</code>, <code>MusteriNo</code>) olgu tablosunda gizli olmalı; sayısal kimlikler “Özetleme: Hiçbiri” olmalı ki kimse SatirNo toplamı almasın.</li>
+</ul>
+<h3>Meta veri çevirileri (translations)</h3>
+<p>Almanya'daki ortak şirket aynı modeli kullanacak. Üç ayrı çeviri türü vardır ve zorlukları farklıdır:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Neyi çevirir?</th><th>Nasıl?</th></tr>
+<tr><td>Meta veri çevirisi</td><td>Tablo, sütun, ölçü, hiyerarşi adları; açıklamalar; görüntüleme klasörleri</td><td>Modelin içinde, dil (culture) başına; Translations Builder gibi araçlarla</td></tr>
+<tr><td>Rapor etiketi çevirisi</td><td>Başlıklar, düğme metinleri</td><td>Yerleşik özellik yok; etiketleri ölçü olarak tutan gizli bir tablo kalıbı</td></tr>
+<tr><td>Veri çevirisi</td><td>“Elektronik” → “Elektronik”, “Ev &amp; Yaşam” → “Haus &amp; Wohnen”</td><td>Kaynakta çevrilmiş sütunlar + seçim mekanizması</td></tr></table></div>
+<p>Sayfa sekmesi adları ve metin kutularındaki sabit yazılar çevrilemez; çok dilli raporlar Web'de yayımla ile desteklenmez. Ölçü adlarını çevirmek DAX'ı bozmaz: formüller nesneye başvurur, görünen ada değil.</p>
+<p>Nesne düzeyinde güvenlik (OLS) de kurumsal modelin parçasıdır; ayrıntısı Satır ve nesne düzeyinde güvenlik dersindedir.</p>
+
+<h2>Ölçek kararları</h2>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Önce dene</th><th>Sonra</th></tr>
+<tr><td>Pro'da model boyutu 1 GB sınırına yaklaştı</td><td>Gereksiz sütun, kardinalite, otomatik tarih/saat</td><td>PPU ya da Fabric kapasitesi; büyük model biçimi</td></tr>
+<tr><td>Yenileme 2 saati aşıyor</td><td>Sorgu katlama, artımlı yenileme</td><td>Kapasite (5 saat), XMLA ile bölüm bölüm yenileme</td></tr>
+<tr><td>Günde 8'den fazla yenileme gerekiyor</td><td>Gerçekten gerekli mi? Hangi tablo?</td><td>Kapasitede 48'e kadar zamanlanmış; Direct Lake ya da DirectQuery</td></tr>
+<tr><td>Birden çok ekip aynı tanımları yeniden yazıyor</td><td>Tek onaylı model + Derleme izni</td><td>Bileşik modelle ekip tablolarını ekleme</td></tr></table></div>
+<div class="tip"><b>Kontrol listesi</b>Her tablonun modu ve gerekçesi yazılı mı? · Boyutlar Dual mı? · Direct Lake'te geri dönüş davranışı bilinçli seçildi mi, izleniyor mu? · Toplama tablosunun tanesi gerçek sorulara uyuyor mu? · Her ölçünün açıklaması ve klasörü var mı? · Anahtar sütunlar gizli mi?</div>
+</section><div class="note"><b>Direct Lake’i işletmek</b>Çerçeveleme, sınırlar ve izinler <a href="../fabric-anlam-modeli/">Fabric’te anlam modeli</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-kurumsal-model">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-opt/">← DAX optimizasyonu: depolama motoru, formül motoru</a><a href="../yasam-dongusu/">Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

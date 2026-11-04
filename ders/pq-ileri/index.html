@@ -1,0 +1,88 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Query: join türleri, dizin sütunu ve gruplu sıra | Kesit Power BI</title><meta name="description" content="Altı birleştirme türü ve hangi soruya cevap verdikleri, birleştirmeden sonra null gelmesinin nedenleri, bulanık eşleştirme, dizin sütunu ve her grupta…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-ileri/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Query: join türleri, dizin sütunu ve gruplu sıra"><meta property="og:description" content="Altı birleştirme türü ve hangi soruya cevap verdikleri, birleştirmeden sonra null gelmesinin nedenleri, bulanık eşleştirme, dizin sütunu ve her grupta…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-ileri/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Query: join türleri, dizin sütunu ve gruplu sıra","description":"Altı birleştirme türü ve hangi soruya cevap verdikleri, birleştirmeden sonra null gelmesinin nedenleri, bulanık eşleştirme, dizin sütunu ve her grupta…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-ileri/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Power Query: join türleri, dizin sütunu ve gruplu sıra</h1><p class="st-l">Altı birleştirme türü ve hangi soruya cevap verdikleri, birleştirmeden sonra null gelmesinin nedenleri, bulanık eşleştirme, dizin sütunu ve her grupta sıra numarası. Sonuçları DAX sorgusuyla doğrulama.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-ileri">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Power Query: birleştirme, ekleme, özetten çıkarma” dersinde iki sorguyu bir anahtarla birleştirmeyi gördük. Orada hep varsayılan türü, <b>sol dış birleştirmeyi</b> kullandık. Oysa Birleştir (Merge) penceresindeki <b>Birleştirme türü</b> (Join kind) listesinde altı seçenek var ve her biri farklı bir soruya cevap verir.</p>
+
+<h2>Altı birleştirme türü</h2>
+<p>Örnekte sol tablo bir satış dökümü, sağ tablo ürün listesi; anahtar <code>UrunNo</code>.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Hangi satırlar kalır?</th><th>Cevapladığı soru</th><th>M</th></tr>
+<tr><td>Sol dış (Left outer)</td><td>Soldaki tüm satırlar + sağdan eşleşenler</td><td>“Her satışın ürün bilgisi ne?”</td><td><code>JoinKind.LeftOuter</code></td></tr>
+<tr><td>Sağ dış (Right outer)</td><td>Sağdaki tüm satırlar + soldan eşleşenler</td><td>“Her ürünün satışları neler?”</td><td><code>JoinKind.RightOuter</code></td></tr>
+<tr><td>Tam dış (Full outer)</td><td>İki taraftaki tüm satırlar</td><td>“İki listeyi eksiksiz karşılaştır.”</td><td><code>JoinKind.FullOuter</code></td></tr>
+<tr><td>İç (Inner)</td><td>Yalnızca iki tarafta da olanlar</td><td>“Sadece eşleşen kayıtlar.”</td><td><code>JoinKind.Inner</code></td></tr>
+<tr><td>Sol karşıt (Left anti)</td><td>Solda olup sağda <b>olmayanlar</b></td><td>“Listede olmayan ürün koduyla satış var mı?”</td><td><code>JoinKind.LeftAnti</code></td></tr>
+<tr><td>Sağ karşıt (Right anti)</td><td>Sağda olup solda <b>olmayanlar</b></td><td>“Hiç satılmamış ürün hangisi?”</td><td><code>JoinKind.RightAnti</code></td></tr>
+</table></div>
+<pre class="m">let
+    Satislar = Kaynak_Satislar,
+    Birlesik = Table.NestedJoin(Satislar, {"UrunNo"}, Urunler, {"UrunNo"},
+        "Urun", JoinKind.LeftOuter),
+    Acilmis = Table.ExpandTableColumn(Birlesik, "Urun", {"Urun", "Kategori"})
+in
+    Acilmis</pre>
+<p>Karşıt birleştirmeler bir <b>veri kalitesi denetimi</b> olarak çok değerlidir. Sol karşıt sonucu boş değilse olgu tablosunda boyutta karşılığı olmayan anahtarlar var demektir; modelde bu satırlar görselde “(Boş)” satırına düşer. Sağ karşıt ise kullanılmayan boyut üyelerini bulur. Bizim modelimizde 40 üründen 2’si hiç satılmamıştır: <b>Koşu Bandı</b> ve <b>Gurme Lokum Kutusu</b>. 150 müşteriden 14’ünün de hiç siparişi yok.</p>
+
+<h2>Birleştirmeden sonra neden null geliyor?</h2>
+<p>Sol dış birleştirmeden sonra genişlettiğin sütunlar null doluysa eşleşme olmamıştır. Sık nedenler:</p>
+<ol>
+<li><b>Anahtar türü farklı.</b> Bir tarafta <code>UrunNo</code> metin “7”, diğerinde sayı 7. Microsoft da eşleşen sütunların aynı veri türünde olması gerektiğini vurgular. Birleştirmeden önce iki tarafın türünü eşitle.</li>
+<li><b>Görünmez boşluk ya da karakter.</b> “E01 ” ile “E01” farklıdır. İki tarafı da Kırp ve Temizle.</li>
+<li><b>Büyük/küçük harf.</b> Power Query metni harf duyarlı karşılaştırır: “ankara” ile “Ankara” eşleşmez. İki tarafı aynı biçime getir.</li>
+<li><b>Sütun sırası.</b> Birden fazla sütunla birleştirirken iki tablodaki seçim sırası aynı olmalı: soldaki ilk seçilen sütun sağdaki ilk seçilenle eşleşir.</li>
+</ol>
+<div class="warn"><b>Satır çoğalması</b>Ters sorun da var: sağ tabloda anahtar <b>yineleniyorsa</b> soldaki her satır, eşleşen her kopya için bir kez tekrar eder. 1.620 satırlık satış tablosu ürün listesiyle birleştikten sonra 1.700 satır olduysa ürün listesinde yinelenen kod vardır ve toplamlar şişer. Birleştirmeden önce ve sonra satır sayısını karşılaştır; boyut tarafında anahtara göre <b>Yinelenenleri kaldır</b>.</div>
+
+<h2>Bulanık eşleştirme</h2>
+<p>Anahtar yazımı tutarsız olduğunda (“Anadolu Market AŞ” ile “Anadolu Market A.Ş.”) Birleştir penceresinde <b>Birleştirme yapmak için bulanık eşleştirme kullan</b> kutusunu işaretle. Bu yalnızca <b>metin</b> sütunlarında çalışır. Seçenekler:</p>
+<ul>
+<li><b>Benzerlik eşiği</b> (Similarity threshold): 0 ile 1 arası, varsayılan <b>0,80</b>. 1 tam eşleşme demektir.</li>
+<li><b>Büyük/küçük harfi yoksay</b> ve <b>Metin parçalarını birleştirerek eşleştir</b> (“Micro soft” ile “Microsoft”).</li>
+<li><b>En fazla eşleşme sayısı</b>: her satıra kaç aday döneceği.</li>
+<li><b>Dönüşüm tablosu</b>: <code>From</code> ve <code>To</code> sütunlu bir eşleme tablosu (“İst.” → “İstanbul”).</li>
+</ul>
+<pre class="m">Table.FuzzyNestedJoin(Bayiler, {"Unvan"}, CariListe, {"Unvan"}, "Cari",
+    JoinKind.LeftOuter, [IgnoreCase = true, Threshold = 0.85])</pre>
+<p>Bulanık eşleştirme bir kurtarma aracıdır, kalıcı çözüm değildir. Sonuçları gözle kontrol et, eşiği yükselt ve kaynak sistemde ortak bir kod alanı iste.</p>
+
+<h2>Dizin sütunu ve gruplu sıra</h2>
+<p><b>Sütun ekle → Dizin sütunu</b> (Index column) her satıra 0’dan ya da 1’den başlayan bir sıra numarası verir; “Özel” seçeneğiyle başlangıç ve artış belirlenir. Tek başına satır numarası verir. Asıl gücü, <b>Gruplandırma ölçütü</b> ile birleştiğinde ortaya çıkar: her kategori içinde ayrı sıra.</p>
+<ol>
+<li>Ürün listesini <b>Kategori</b>’ye göre grupla, işlem olarak <b>Tüm satırlar</b> (All rows) seç. Her kategori için içinde bir tablo taşıyan tek satır oluşur.</li>
+<li>Bu iç tabloları fiyata göre azalan sırala ve her birine dizin ekle.</li>
+<li>İç tabloları genişlet; <code>Sira = 1</code> olan satırları filtrele.</li>
+</ol>
+<pre class="m">let
+    Kaynak = Urunler,
+    Gruplu = Table.Group(Kaynak, {"Kategori"},
+        {{"Satirlar", each Table.AddIndexColumn(
+            Table.Sort(_, {{"Fiyat", Order.Descending}}), "Sira", 1, 1), type table}}),
+    Acilmis = Table.ExpandTableColumn(Gruplu, "Satirlar", {"Urun", "Fiyat", "Sira"}),
+    EnPahali = Table.SelectRows(Acilmis, each [Sira] = 1)
+in
+    EnPahali</pre>
+<p>Kullanıcı arayüzü 2. adımı doğrudan sunmaz: grupladıktan sonra formül çubuğunda <code>each _</code> kısmını <code>each Table.AddIndexColumn(…)</code> ile değiştirirsin. Sonuç yedi satırdır; her kategorinin en pahalı ürünü. Aynı sonucu modelde bir DAX sorgusuyla doğrulayabilirsin:</p>
+<pre class="dax">EVALUATE
+FILTER(
+    Urunler,
+    VAR Kat = Urunler[Kategori]
+    RETURN Urunler[Fiyat] = MAXX(FILTER(ALL(Urunler), Urunler[Kategori] = Kat), Urunler[Fiyat])
+)</pre>
+<p>Örneğin Spor’da Koşu Bandı (15.999 ₺), Elektronik’te 27" Monitör (7.499 ₺) gelir. Eşit fiyatlı iki ürün varsa DAX ikisini de döndürür, Power Query’deki dizin ise yalnızca birine 1 verir. İki yöntemin farkı bu bağ (tie) durumunda ortaya çıkar.</p>
+<div class="note"><b>Sıra için DAX mı, Power Query mi?</b>Sıra, kullanıcının seçimine göre değişmeliyse (dilimleyicide yıl seçince en çok satan ürün) DAX ölçüsü gerekir. Sabit bir özellikse (ürünün kategorisindeki fiyat sırası) Power Query’de bir kez hesaplamak daha ucuzdur.</div>
+
+<h2>Sorguyu okunur tutmak</h2>
+<ul>
+<li><b>Adımları yeniden adlandır.</b> “Değiştirilen Tür1” yerine “Tutar sayıya çevrildi”. Uygulanan Adımlar listesinde adıma sağ tıkla → Yeniden adlandır.</li>
+<li><b>Açıklama ekle.</b> Adıma sağ tıkla → <b>Özellikler</b> → Açıklama. Metin, adımın üzerine gelince ipucu olarak görünür; Gelişmiş Düzenleyici’de adımın üstünde <code>// yorum</code> satırı olarak durur.</li>
+<li><b>Sorgu bağımlılıkları.</b> <b>Görünüm → Sorgu bağımlılıkları</b> (Query dependencies) penceresi hangi sorgunun hangi kaynaktan ve hangi sorgudan beslendiğini bir ağaç olarak çizer. Bir kaynağın yolunu değiştirmeden önce neyin etkileneceğini burada gör.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-ileri">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-donusum/">← Power Query: metin, sayı ve tarih dönüşümleri</a><a href="../veri-baglantilari/">Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

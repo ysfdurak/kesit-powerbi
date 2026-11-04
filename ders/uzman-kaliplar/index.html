@@ -1,0 +1,181 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe | Kesit Power BI</title><meta name="description" content="Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/uzman-kaliplar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe"><meta property="og:description" content="Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/uzman-kaliplar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe","description":"Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/uzman-kaliplar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Uzman DAX</span><h1>Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe</h1><p class="st-l">Açık siparişleri doğru saymak (boş teslim tarihi, yaşlandırma, günlük ortalama), müşteri düzeyinde karşılaştırılabilir dönem ve hayatta kalan yanlılığı, işlem kuru / dönem sonu kuru / sabit kur ayrımı ve eksik kur, aylık hedefi güne dağıtmak ve taneciklik koruması.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-uzman-kaliplar">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“İleri iş kalıpları” dersinde Top N + Diğer, sepet analizi, ürün düzeyinde LFL ve aylık kurla dönüşümün iskeletini kurdun; Measure Lab’de [Yoldaki Sipariş] kalıbını gördün. Bu ders o kalıpları <b>üretime</b> taşıyor: gerçek verinin kenar durumları, aynı sorunun iki farklı doğru tanımı ve raporu sessizce bozan tanecik farkları. Her bölümde önce mevcut çözümün nerede yanlış sayı verdiğini motorla göreceğiz.</p>
+
+<h2>1 · Devam eden olaylar: açık siparişleri doğru saymak</h2>
+<p>Lojistik müdürü yılbaşı sabahı soruyor: “31 Aralık 2024 akşamı depoda kaç açık sipariş vardı?” Measure Lab’deki [Yoldaki Sipariş], ay satırlarında 2024 boyunca 1 ile 5 arasında değerler veriyor. Aralık 2024 satırı ise <b>BLANK</b>.</p>
+<p>Sebep veride: Aralık’ın son günlerinde verilmiş 6 sipariş (10 satır) hâlâ “Kargoda” ve TeslimTarihi <b>boş</b>. Kalıp <code>Satislar[TeslimTarihi] &gt; Gun</code> koşulunu kullanıyor; DAX’ta BLANK bir tarihle karşılaştırılınca sıfır gibi davranır ve koşul yanlış olur. Yani “henüz teslim edilmemiş” siparişler, tam da sayılması gerekenler, dışarıda kalıyor. Öte yandan iptal edilen 121 satırın da teslim tarihi boş; onları açık saymamalıyız.</p>
+<pre class="dax">Açık Sipariş =
+VAR Gun = MAX(Tarih[Tarih])
+RETURN
+    CALCULATE(
+        DISTINCTCOUNT(Satislar[SiparisNo]),
+        REMOVEFILTERS(Tarih),
+        Satislar[Tarih] &lt;= Gun,
+        Satislar[Durum] &lt;&gt; "İptal",
+        FILTER(
+            ALL(Satislar[TeslimTarihi]),
+            ISBLANK(Satislar[TeslimTarihi]) || Satislar[TeslimTarihi] &gt; Gun
+        )
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Ay sonu</th><th>[Yoldaki Sipariş]</th><th>[Açık Sipariş]</th></tr>
+<tr><td>2024-10</td><td>5</td><td>5</td></tr>
+<tr><td>2024-11</td><td>3</td><td>3</td></tr>
+<tr><td>2024-12</td><td>BLANK</td><td>6</td></tr>
+</table></div>
+<p>Geçmiş aylar aynı, çünkü o siparişlerin teslim tarihi artık dolu. Hata yalnızca <b>en güncel</b> dönemde, yani yöneticinin en çok baktığı yerde görünür. Devam eden olay kalıbının genel kuralı: bitiş tarihi boşsa olay <b>hâlâ sürüyordur</b>; iptal gibi “hiç başlamamış” durumları ayrıca dışla.</p>
+<h3>Aynı kalıptan türeyen üç soru</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Soru</th><th>Değişiklik</th><th>31.12.2024</th></tr>
+<tr><td>Açık sipariş tutarı</td><td>DISTINCTCOUNT yerine SUM(Satislar[Tutar])</td><td>11.063 ₺</td></tr>
+<tr><td>3 günden uzun açık (yaşlandırma)</td><td>Satislar[Tarih] &lt;= Gun - 3</td><td>2 sipariş</td></tr>
+<tr><td>Ay içinde ortalama günlük açık sipariş</td><td>AVERAGEX(VALUES(Tarih[Tarih]), [Açık Sipariş])</td><td>Aralık: 6,2 · en yüksek gün: 10</td></tr>
+</table></div>
+<p>Ay sonu değeri (6) ile ayın günlük ortalaması (6,2) ve zirvesi (10) farklı kararlar doğurur: ay sonu bilanço içindir, ortalama kapasite planı içindir, zirve ise vardiya planı içindir. Raporda hangisini gösterdiğini başlıkta yaz.</p>
+<h3>Performans: dinamik ölçü mü, fotoğraf tablosu mu?</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Ne zaman?</th><th>Bedel</th></tr>
+<tr><td>Dinamik ölçü (yukarıdaki)</td><td>Ay ya da gün düzeyinde, orta büyüklükte olgu</td><td>Her hücrede tarih filtresi yeniden kurulur; günlük ortalamada gün sayısı × sorgu</td></tr>
+<tr><td>Günlük fotoğraf tablosu (Tarih × açık sipariş sayısı)</td><td>Milyonlarca satır, günlük trend sık kullanılıyor</td><td>Yenilemede hesaplanır (Power Query ya da ambar); geçmişe dönük düzeltmelerde yeniden üretmek gerekir</td></tr>
+</table></div>
+<p>StokGorunum tablosu da bir fotoğraf tablosudur; “Model tasarımı II” dersinde gördüğün gibi aylar boyunca toplanmaz, son değeri alınır. Açık sipariş de aynı türde, <b>yarı toplanabilir</b> bir ölçüdür: yıl satırında 12 ayın toplamı değil, yıl sonu değeri gösterilir.</p>
+
+<h2>2 · Karşılaştırılabilir dönem: hangi müşteriler “aynı”?</h2>
+<p>“İleri iş kalıpları” dersinde LFL’yi ürün kümesiyle kurdun: her iki dönemde de satılan ürünler. Aynı fikri müşteriye uyguladığında, ürün analizinde göze batmayan bir tuzak ortaya çıkar. Yönetim kurulu soruyor: “2024’teki %86 büyümenin ne kadarı yeni müşteriden, ne kadarı mevcut müşterinin daha çok harcamasından?”</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tanım</th><th>Küme</th><th>2024 / 2023</th><th>Büyüme</th></tr>
+<tr><td>Tüm müşteriler</td><td>Herkes</td><td>747.066 / 400.870 ₺</td><td>+%86,4</td></tr>
+<tr><td>Etkinliğe göre (her iki yılda alan)</td><td>64 müşteri</td><td>—</td><td>+%27,3</td></tr>
+<tr><td>Kohorta göre (ilk siparişi 2023’ten önce)</td><td>46 müşteri</td><td>194.668 / 202.047 ₺</td><td>−%3,7</td></tr>
+</table></div>
+<p>İki “karşılaştırılabilir” tanım, işareti bile farklı iki sonuç veriyor. Etkinliğe dayalı tanım, 2024’te alışverişi bırakan müşterileri tanım gereği dışarıda bırakır: yalnızca “hayatta kalanlar” kalır. Bu <b>hayatta kalan yanlılığı (survivorship bias)</b> mevcut müşteri büyümesini olduğundan iyi gösterir. Kohort tanımı ise kümeyi dönem başında, sonuca bakmadan sabitler; kayıpları da içerir. Eski müşteri tabanı aslında küçülmüş; büyümenin tamamı yeni müşterilerden geliyor.</p>
+<pre class="dax">Eski Kohort Satışı =
+VAR DonemBasi = MIN(Tarih[Tarih])
+VAR KarsilastirmaBasi = EDATE(DonemBasi, -12)
+VAR EskiMusteriler =
+    CALCULATETABLE(
+        VALUES(Musteriler[MusteriNo]),
+        REMOVEFILTERS(Tarih),
+        Musteriler[IlkSiparis] &lt; KarsilastirmaBasi
+    )
+RETURN
+    CALCULATE([Net Satış], EskiMusteriler)
+
+Eski Kohort Satışı GY =
+VAR DonemBasi = MIN(Tarih[Tarih])
+VAR KarsilastirmaBasi = EDATE(DonemBasi, -12)
+VAR EskiMusteriler =
+    CALCULATETABLE(
+        VALUES(Musteriler[MusteriNo]),
+        REMOVEFILTERS(Tarih),
+        Musteriler[IlkSiparis] &lt; KarsilastirmaBasi
+    )
+RETURN
+    CALCULATE([Net Satış], EskiMusteriler, SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>
+<p>Küme, karşılaştırma döneminin <b>başına</b> göre kurulur: 2024 satırında “ilk siparişi 1 Ocak 2023’ten önce olanlar”. Böylece aynı 46 müşteri iki yılda da ölçülür.</p>
+<h3>Kenar durumlar</h3>
+<ul>
+<li><b>Eksik taban yılı:</b> Veri Haziran 2022’de başlıyor. 2023’ün 2022’ye göre büyümesi (+%290) yarım yılı tam yılla karşılaştırır; 2023 satırında LFL’yi gizle ya da yalnızca ortak aylarla hesapla.</li>
+<li><b>Bölme biçimi:</b> <code>DIVIDE(A, B) - 1</code> taban boşken BLANK − 1 = <b>−1</b> verir; 2022 satırı “−%100” görünür. <code>DIVIDE(A - B, B)</code> boş döner.</li>
+<li><b>Tanımı belgele:</b> Ölçü adına tanımı koy (“Eski Kohort Büyümesi”), açıklamaya kümenin nasıl seçildiğini yaz. “LFL” kısaltması tek başına iki ayrı ekipte iki ayrı şey demektir.</li>
+</ul>
+<div class="note"><b>Üretimde bayrak</b>Perakendede karşılaştırılabilir mağaza listesi genelde iş kuralıyla (en az 13 ay açık, tadilat yok) belirlenir ve kaynakta ya da Power Query’de dönem başına bir bayrak sütunu olarak tutulur. Dinamik DAX kümesi keşif için iyidir; resmî raporda bayrak, denetlenebilir ve hızlıdır.</div>
+
+<h2>3 · Döviz çevirme: hangi kur, hangi sayı?</h2>
+<p>Ortaklara dolar bazlı rapor hazırlanıyor. Kur tablosu DovizKurlari ayda bir satır tutuyor (ayın ilk günü, USD ve EUR) ve Tarih’e bağlı değil. Aylık kurla satış dönüşümünü Measure Lab’deki [Satış (Seçili Para)] yapıyor. Uzman sorusu şu: <b>her sayı aynı kurla mı çevrilir?</b></p>
+<div class="tbl-wrap"><table>
+<tr><th>Sayı türü</th><th>Örnek</th><th>Doğru kur</th></tr>
+<tr><td>Akış (dönem boyunca oluşur)</td><td>Satış, gider, satın alma</td><td>İşlem tarihinin kuru (burada ay kuru); ay ay çevrilip toplanır</td></tr>
+<tr><td>Bakiye (bir andaki fotoğraf)</td><td>Stok değeri, açık sipariş tutarı, alacak</td><td>Dönem sonu kuru</td></tr>
+<tr><td>Performans karşılaştırması</td><td>Büyüme, hedef sapması</td><td>Sabit kur (iki dönem aynı kurla)</td></tr>
+</table></div>
+<h3>Akış ve bakiye</h3>
+<p>2024 net satışı 747.066 ₺. Aylık kurlarla 22.614 $; tüm yılı Aralık kuruyla (35,00) çevirirsen 21.345 $; yıl ortalama kuruyla (32,78) 22.788 $. Akış için doğru olan ilkidir. Stok değeri ise yıl sonu fotoğrafıdır: 163.465 ₺, dönem sonu kuruyla 4.670 $. Ortalama kurla çevirmek 4.986 $ verir ve bilançoda olmayan bir değeri raporlar.</p>
+<pre class="dax">Stok Değeri (USD, Dönem Sonu) =
+VAR SonAyBasi = EOMONTH(MAX(Tarih[Tarih]), -1) + 1
+VAR Kur =
+    LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], SonAyBasi, DovizKurlari[ParaBirimi], "USD")
+RETURN
+    DIVIDE([Stok Değeri], Kur)</pre>
+<h3>Sabit kur: büyümenin ne kadarı kurdan?</h3>
+<p>Dolar bazında 2024 büyümesi 22.614 / 16.613 → <b>+%36,1</b>. TL bazında <b>+%86,4</b>. Hangisi “gerçek” performans? İkisini ayırmak için 2024’ün her ayını, 2023’ün aynı ayının kuruyla çevir:</p>
+<pre class="dax">Satış USD (GY Kuruyla) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR GecenYilAyBasi = EDATE(DATEVALUE(Tarih[YilAy] &amp; "-01"), -12)
+    VAR Kur =
+        LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], GecenYilAyBasi, DovizKurlari[ParaBirimi], "USD")
+    RETURN DIVIDE([Net Satış], Kur)
+)</pre>
+<p>2024 sabit kurla 31.204 $; 2023’e göre <b>+%87,8</b>. Yani iş hacmi neredeyse ikiye katlanmış, TL’nin değer kaybı dolar büyümesini %36’ya indirmiş. Kur etkisi: 22.614 − 31.204 = <b>−8.590 $</b>. Bu ayrıştırma, “dolar büyümesi düşük, ekip başarısız” yanlış sonucunu önler.</p>
+<h3>Eksik kur: sessiz kayıp</h3>
+<p>Yukarıdaki ölçü 2022 satırında BLANK verir; kur tablosunda 2021 yok. Asıl tehlike toplam satırında: 54.948 $, 2022’yi hiç içermiyor ve hiçbir uyarı yok. Üretimde iki koruma kur:</p>
+<ul>
+<li><b>Kontrol ölçüsü:</b> görünen aylardan kuru bulunamayanları say; sıfırdan büyükse kartta uyarı göster.</li>
+<li><b>Son bilinen kur:</b> kur tablosu bir gün geç yükleniyorsa, “o tarihe kadar bilinen en son kur” mantığı (MAX(DovizKurlari[Tarih]) ≤ gün) boş ay yerine bir önceki ayın kurunu kullanır. Bunu yalnızca iş birimi onaylarsa yap ve açıklamaya yaz.</li>
+</ul>
+<pre class="dax">Kuru Eksik Ay =
+COUNTROWS(
+    FILTER(
+        VALUES(Tarih[YilAy]),
+        ISBLANK(
+            LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], EDATE(DATEVALUE(Tarih[YilAy] &amp; "-01"), -12), DovizKurlari[ParaBirimi], "USD")
+        )
+    )
+)</pre>
+<p>2022 satırında 12, diğer yıllarda BLANK döner. Toplam satırında da 12: rapor kullanıcısına “bu toplamın 12 ayı eksik” demenin tek yolu budur.</p>
+
+<h2>4 · Farklı taneciklikte bütçe: aylık hedefi güne dağıtmak</h2>
+<p>Satış direktörü haftalık toplantı için “haftalık satış ve hedef” tablosu istiyor. Hedefler ay düzeyinde ve her ayın hedefi ayın 1. gününe yazılı. Hafta kırılımında [Hedef] şöyle görünür:</p>
+<div class="tbl-wrap"><table>
+<tr><th>2024 haftası</th><th>Net satış</th><th>[Hedef]</th><th>Günlük dağıtım</th></tr>
+<tr><td>1 (1–7 Ocak, 30–31 Aralık)</td><td>27.516 ₺</td><td>48.500 ₺</td><td>16.655 ₺</td></tr>
+<tr><td>2</td><td>6.921 ₺</td><td>BLANK</td><td>10.952 ₺</td></tr>
+<tr><td>5 (29 Ocak–4 Şubat)</td><td>5.682 ₺</td><td>46.000 ₺</td><td>11.038 ₺</td></tr>
+</table></div>
+<p>Ayın 1’ini içeren hafta ayın bütün hedefini alıyor, diğer haftalar hedefsiz. Aynı sorun ay içi “bugüne kadar” raporunda daha da tehlikeli: 1–15 Aralık 2024 satışı 60.134 ₺, [Hedef] 88.400 ₺ gösteriyor ve ekip “%68’deyiz” diye alarm veriyor. Günlük dağıtımla hedef 42.774 ₺, gerçekleşme %141. 2–31 Aralık seçilirse hedef BLANK olur.</p>
+<pre class="dax">Hedef (Günlük Dağıtım) =
+SUMX(
+    VALUES(Tarih[YilAy]),
+    VAR Ay = Tarih[YilAy]
+    VAR AyHedefi = CALCULATE([Hedef], REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+    VAR AyGunSayisi = CALCULATE(COUNTROWS(Tarih), REMOVEFILTERS(Tarih), Tarih[YilAy] = Ay)
+    VAR GorunenGun = CALCULATE(COUNTROWS(Tarih))
+    RETURN DIVIDE(AyHedefi * GorunenGun, AyGunSayisi)
+)</pre>
+<p>Her görünen ay için: ayın tam hedefi × (görünen gün / ayın gün sayısı). GorunenGun, bağlam geçişiyle o ayın <b>görünen</b> günlerini sayar; hafta 1’de Ocak için 7, Aralık için 2. Ay ve yıl satırlarında sonuç [Hedef] ile birebir aynıdır (2024: 763.200 ₺), yani ölçü mevcut raporları bozmaz.</p>
+<div class="warn"><b>Anti-kalıp: VAR yerine VALUES</b><code>Tarih[YilAy] = Ay</code> yerine <code>VALUES(Tarih[YilAy])</code> yazarsan, “Genişletilmiş tablolar” dersinde gördüğün gibi filtre argümanı dış bağlamda hesaplanır ve hafta 1’de iki ayı birden döndürür. Sonuç 16.655 ₺ yerine 19.873 ₺ olur. Ay, çeyrek ve yıl satırlarında ise iki sürüm aynı sayıyı verir; hata yalnızca ay sınırını kesen kırılımlarda görünür. Testte mutlaka hafta ve “1–15 Aralık” gibi kısmi bir aralık dene.</div>
+<h3>Üç strateji</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Strateji</th><th>Ne yapar?</th><th>Ne zaman?</th></tr>
+<tr><td>Dağıt (yukarıdaki)</td><td>Ay hedefini görünen günlere orantılar</td><td>Haftalık ve ay içi takip isteniyorsa</td></tr>
+<tr><td>Gizle</td><td>Görünen gün sayısı, görünen ayların tam gün sayısına eşit değilse BLANK</td><td>Hedef ancak ay düzeyinde anlamlıysa; yanlış sayı göstermektense boş</td></tr>
+<tr><td>Önceden dağıt</td><td>Power Query’de ya da ambarda gün düzeyinde hedef tablosu</td><td>Büyük model, ağırlıklı dağıtım (iş günü, mevsimsellik)</td></tr>
+</table></div>
+<pre class="dax">Hedef (Yalnızca Tam Ay) =
+VAR GorunenGun = COUNTROWS(Tarih)
+VAR TamAyGun = CALCULATE(COUNTROWS(Tarih), REMOVEFILTERS(Tarih), VALUES(Tarih[YilAy]))
+RETURN IF(GorunenGun = TamAyGun, [Hedef])</pre>
+<p>Burada VALUES doğru kullanım: ölçü iteratör içinde değil, dış bağlamda tek bir kez hesaplanıyor. Eşit dağıtım bir varsayımdır: hafta sonu satışı yüksek bir perakendecide günlere eşit pay vermek hafta içini hep “geride” gösterir. “Zaman serisi analizi” dersindeki haftanın günü endeksiyle ağırlıklandırmak bir sonraki adımdır; bu durumda önceden dağıtılmış gün tablosu daha bakımı kolay olur. Aynı kalıp GiderButce için de geçerlidir: gider bütçesi gider türü × ay düzeyinde, günlük dağıtım ölçüsü gider türü kırılımında [Gider Bütçe] ile aynı sayıyı verir.</p>
+
+<h2>Uzman kalıp kontrol listesi</h2>
+<ol>
+<li><b>Bitiş tarihi boş olabilir mi?</b> Devam eden olaylarda boş bitiş “sürüyor” demektir; iptal gibi başlamamış durumları ayrıca dışla.</li>
+<li><b>Ölçü toplanabilir mi?</b> Açık sipariş ve stok gibi bakiyeler yıl boyunca toplanmaz; dönem sonu ya da ortalama göster, hangisi olduğunu başlığa yaz.</li>
+<li><b>Karşılaştırılabilir küme sonuca bakmadan mı seçildi?</b> Etkinliğe dayalı küme hayatta kalan yanlılığı taşır.</li>
+<li><b>Sayı akış mı, bakiye mi?</b> Akış işlem kuruyla, bakiye dönem sonu kuruyla; büyüme yorumu sabit kurla.</li>
+<li><b>Kur eksik mi?</b> Kontrol ölçüsü toplam satırında da uyarmalı.</li>
+<li><b>Bütçe hangi tanecikte?</b> Ay sınırını kesen her kırılımda (hafta, tarih aralığı) hedefin ne gösterdiğini test et; dağıt, gizle ya da önceden dağıt.</li>
+<li><b>Belgele:</b> Her uzman ölçünün açıklamasına tanımı, kenar durumu ve test edilen kırılımları yaz. Bu ölçüler ekipte en çok “neden bu sayı?” sorusu alanlardır.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-uzman-kaliplar">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../coka-cok/">← Çoka çok ilişkiler, köprü tablolar ve ilişki türleri</a><a href="../ozel-takvim/">Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

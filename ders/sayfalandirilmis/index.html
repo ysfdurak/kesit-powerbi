@@ -1,0 +1,95 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl? | Kesit Power BI</title><meta name="description" content="Power BI Report Builder, piksel hassasiyetinde yazdırılabilir raporlar, parametreler ve etkileşimli raporla karşılaştırma."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/sayfalandirilmis/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl?"><meta property="og:description" content="Power BI Report Builder, piksel hassasiyetinde yazdırılabilir raporlar, parametreler ve etkileşimli raporla karşılaştırma."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/sayfalandirilmis/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl?","description":"Power BI Report Builder, piksel hassasiyetinde yazdırılabilir raporlar, parametreler ve etkileşimli raporla karşılaştırma.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/sayfalandirilmis/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl?</h1><p class="st-l">Power BI Report Builder, piksel hassasiyetinde yazdırılabilir raporlar, parametreler ve etkileşimli raporla karşılaştırma.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-sayfalandirilmis">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>İki farklı rapor türü</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Etkileşimli rapor (.pbix)</th><th>Sayfalandırılmış rapor (.rdl)</th></tr>
+<tr><td>Amaç</td><td>Keşif, analiz, rapor</td><td>Yazdırma, PDF, operasyonel liste, resmi belge</td></tr>
+<tr><td>Düzen</td><td>Ekrana sığan sayfa</td><td>Piksel hassasiyetinde, çok sayfaya yayılan tablolar</td></tr>
+<tr><td>Araç</td><td>Power BI Desktop</td><td>Power BI Report Builder (ücretsiz)</td></tr>
+<tr><td>Etkileşim</td><td>Çapraz filtre, detaya inme, araç ipucu</td><td>Parametreler, detay bağlantıları</td></tr>
+<tr><td>Satır sayısı</td><td>Görsel başına sınırlı</td><td>Binlerce satır, sayfa sonları, üst/alt bilgi</td></tr>
+<tr><td>Tipik örnek</td><td>Satış performansı raporu</td><td>Fatura, sipariş listesi, aylık resmî mutabakat</td></tr>
+</table></div>
+<h2>Ne zaman sayfalandırılmış?</h2>
+<ul>
+<li>Rapor yazdırılacak ya da PDF olarak dağıtılacaksa.</li>
+<li>Tüm satırlar (ör. 12.000 sipariş satırı) eksiksiz listelenmeliyse.</li>
+<li>Belge formatı sabitse (logo, üst bilgi, imza alanı, sayfa numarası).</li>
+<li>Her alıcıya kendi verisiyle (dinamik abonelik) e-posta gidecekse.</li>
+</ul>
+<h2>Kurulum adımları</h2>
+<ol>
+<li>Report Builder → veri kaynağı olarak yayımlanmış anlam modelini seç.</li>
+<li>Sorgu tasarımcısında alanları ve ölçüleri sürükle; arka planda bir DAX sorgusu oluşur.</li>
+<li>Parametre ekle (Yıl, Kategori); kullanıcı raporu açarken seçer.</li>
+<li>Tablo (tablix) yerleştir, grupla, sayfa sonlarını ve tekrarlanan başlıkları ayarla.</li>
+<li>Service'e yayımla; abonelik ile PDF dağıt.</li>
+</ol>
+<div class="note"><b>Etkileşimli raporda “sayfalandırılmış görsel”</b>Power BI raporuna eklenen sayfalandırılmış rapor görseli, etkileşimli raporun filtrelerini parametre olarak gönderip yazdırılabilir listeyi aynı sayfada gösterir.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Report Builder ile ilk rapor: kaynaktan tabloya</h2>
+<p>Muhasebe her ay sonunda mağaza kanalının sipariş satırlarını, logolu ve sayfa numaralı bir PDF olarak istiyor. Power BI Report Builder ücretsizdir ve sayfalandırılmış raporun (.rdl) ana tasarım aracıdır. RDL, raporun bütün tanımını (veri kaynağı, sorgu, parametreler, yerleşim) tutan bir XML dosyasıdır; metin olduğu için sürüm denetimine de girer.</p>
+<ol>
+<li><b>Veri kaynağı:</b> Veri kaynakları → Ekle → <b>Power BI anlam modeli</b>. Onaylı satış modelini seçmek, aynı ölçüleri (Net Satış, Sipariş Sayısı) burada da kullanmak demektir.</li>
+<li><b>Veri kümesi:</b> Sorgu tasarımcısında alanları sürükle ya da DAX sorgusunu kendin yaz. Veri kümesi bir DAX sorgusudur; sonucu düz bir tablodur.</li>
+<li><b>Tablix:</b> Tablo/matris/liste aynı denetimin farklı biçimleridir. Satır grupları (ör. Tarih'e göre), grup alt toplamları, “her sayfada başlığı tekrarla” ayarı ve grup başında sayfa sonu buradan verilir.</li>
+<li><b>Üst/alt bilgi:</b> logo, rapor adı, <code>=Globals!PageNumber &amp; " / " &amp; Globals!TotalPages</code> ifadesiyle sayfa numarası, oluşturma zamanı.</li>
+<li><b>Yayımla:</b> Report Builder'dan doğrudan Service'e.</li>
+</ol>
+<p>Muhasebenin istediği listenin veri kümesi şöyle bir sorgudur (ay ve kanal şimdilik sabit):</p>
+<pre class="dax">EVALUATE
+CALCULATETABLE(
+    SELECTCOLUMNS(Satislar, "Sipariş", Satislar[SiparisNo], "Tarih", Satislar[Tarih], "Durum", Satislar[Durum], "Tutar", Satislar[Tutar]),
+    Satislar[Kanal] = "Mağaza",
+    Tarih[YilAy] = "2024-12"
+)</pre>
+
+<h2>Parametreler: tek değer, çoklu değer, basamaklı</h2>
+<p>Sabit “2024-12” yerine kullanıcı ayı ve kategorileri seçmeli. Report Builder'da her parametre bir ad, tür, kullanılabilir değerler (çoğu zaman ayrı bir küçük veri kümesinden) ve varsayılan değer taşır. Sorgu tasarımcısı parametreli filtreyi kendisi üretir; DAX'ı elle yazıyorsan çoklu değerli parametre sorguya <b>tek bir metin</b> olarak gelir. Yaygın kalıp, değerleri parametre ifadesinde birleştirip DAX'ta yola çevirmektir:</p>
+<pre class="dax" data-notry>-- Parametre ifadesi (veri kümesi özellikleri → Parametreler):
+--   @Kategoriler = Join(Parameters!Kategori.Value, "|")
+EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    FILTER(VALUES(Kategoriler[Kategori]), PATHCONTAINS(@Kategoriler, Kategoriler[Kategori])),
+    "Net Satış", [Net Satış]
+)</pre>
+<p>Aynı mantığı sabit değerlerle, motorun çalıştırabildiği biçimde denemek için <code>TREATAS</code> kullanılır. “Elektronik ve Kitap” seçimi için:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    TREATAS({"Elektronik", "Kitap"}, Kategoriler[Kategori]),
+    "Net Satış", [Net Satış]
+)</pre>
+<p>Sonuç iki satırdır: Elektronik 339.303,65 ₺, Kitap 151.882,40 ₺. <b>Basamaklı parametrede</b> ikinci parametrenin (Ürün) kullanılabilir değerleri, birinci parametreye (Kategori) göre süzülen ayrı bir veri kümesinden gelir. Kenar durumlar: “Tümü” seçeneği için parametreye boş değer izni ver ve sorguda boşsa filtre uygulama; çok seçenekli bir listede yüzlerce ürün varsa kullanıcıya önce kategori seçtir.</p>
+
+<h2>Ne zaman sayfalandırılmış rapor? Karar tablosu</h2>
+<div class="tbl-wrap"><table><tr><th>İhtiyaç</th><th>En iyi araç</th><th>Neden</th></tr>
+<tr><td>Yönetici keşif yapacak, tıklayıp detaya inecek</td><td>Etkileşimli rapor</td><td>Çapraz filtre, araç ipucu, detaya inme</td></tr>
+<tr><td>Analist kendi pivotunu kuracak</td><td>Excel'de Çözümle</td><td>Canlı bağlantı, RLS geçerli, Excel becerisi</td></tr>
+<tr><td>Tüm satırlar eksiksiz, sayfa sayfa, imza alanıyla</td><td>Sayfalandırılmış rapor</td><td>Tablo kaç sayfa olursa olsun basılır</td></tr>
+<tr><td>Her ay aynı belge e-postayla, ekte PDF</td><td>Sayfalandırılmış rapor + abonelik</td><td>Parametreli abonelik, sabit düzen</td></tr>
+<tr><td>Etkileşimli sayfada “yazdırılabilir liste” düğmesi</td><td>Sayfalandırılmış rapor görseli</td><td>Raporun filtreleri parametre olarak geçer</td></tr></table></div>
+
+<h2>Lisans, sınırlar ve dağıtım</h2>
+<ul>
+<li><b>Oluşturma:</b> Report Builder ile oluşturmak ve Çalışma alanım'a yayımlamak için Pro/PPU gerekmez. Başka bir çalışma alanına yayımlamak için Pro ya da PPU gerekir.</li>
+<li><b>Görüntüleme:</b> Fabric F64 ya da üstü (veya Premium P1 ve üstü) kapasitedeki çalışma alanlarında ücretsiz lisanslı kullanıcılar görüntüleyebilir. Diğer durumlarda görüntüleyicinin Pro ya da PPU'su olmalı. Sayfalandırılmış raporlar Pro çalışma alanlarında da çalışır ve uygulamalara eklenebilir.</li>
+<li><b>Dışa aktarım biçimleri:</b> Excel, Word, PowerPoint, PDF, erişilebilir PDF, CSV, XML ve MHTML.</li>
+<li><b>Web'de tasarım:</b> Service içinde yalnızca basit, tek tablolu raporlar oluşturulabilir; ciddi tasarım için Report Builder.</li>
+<li><b>Sınırlar:</b> SSRS'nin paylaşılan veri kaynakları (.rds) ve paylaşılan veri kümeleri (.rsd) desteklenmez; özel derlemeler (custom assemblies) yoktur; şirket içi kaynaklar ve saklı yordamlar ağ geçidi üzerinden çalışır.</li>
+<li><b>RLS:</b> rapor anlam modeline bağlıysa kullanıcının RLS rolü geçerlidir; ama Service'teki “Rol olarak test et” sayfalandırılmış raporlarda çalışmaz. Testi gerçek bir test kullanıcısıyla yap.</li>
+</ul>
+<h3>Abonelikle PDF dağıtımı</h3>
+<p>Sayfalandırılmış raporun aboneliğinde biçim (PDF, Excel…) ve <b>parametre değerleri</b> seçilir: “Her ayın 1'inde, önceki ay, Mağaza kanalı, PDF ekli”. Varsayılan değeri “önceki ay” olarak hesaplayan bir parametre ifadesi kullanırsan aboneliği her ay güncellemen gerekmez. Her alıcıya kendi verisini göndermek için alıcı listesi ve parametre değerleri bir tablodan okunan dinamik abonelik kullanılır.</p>
+<div class="tip"><b>Kontrol listesi</b>Veri kaynağı onaylı anlam modeli mi? · Parametrelerin varsayılanı abonelikte elle değiştirme gerektirmiyor mu? · “Tümü” ve boş seçim davranışı test edildi mi? · Başlık her sayfada tekrar ediyor, sayfa numarası var mı? · Görüntüleyicilerin lisansı çalışma alanı kapasitesine uygun mu? · RLS gerçek bir test hesabıyla denendi mi?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-sayfalandirilmis">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yonetisim/">← Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar</a><a href="../ileri-kaliplar/">İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,69 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Biçim bölmesi: her ayar ne işe yarar? | Kesit Power BI</title><meta name="description" content="Görsel ve Genel sekmeleri: eksenler, veri etiketleri, gösterge, renkler, başlık, araç ipuçları; ne yaparsan ne olur."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/bicim-temel/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Biçim bölmesi: her ayar ne işe yarar?"><meta property="og:description" content="Görsel ve Genel sekmeleri: eksenler, veri etiketleri, gösterge, renkler, başlık, araç ipuçları; ne yaparsan ne olur."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/bicim-temel/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Biçim bölmesi: her ayar ne işe yarar?","description":"Görsel ve Genel sekmeleri: eksenler, veri etiketleri, gösterge, renkler, başlık, araç ipuçları; ne yaparsan ne olur.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/bicim-temel/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>Biçim bölmesi: her ayar ne işe yarar?</h1><p class="st-l">Görsel ve Genel sekmeleri: eksenler, veri etiketleri, gösterge, renkler, başlık, araç ipuçları; ne yaparsan ne olur.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-bicim-temel">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>İki sekme: Görsel ve Genel</h2>
+<p>Bir görseli seçip Görselleştirmeler bölmesindeki <b>boya fırçası</b> simgesine tıkladığında <b>Görseli biçimlendir</b> açılır. İki sekmesi vardır: <b>Görsel</b> (bu görsel türüne özel ayarlar) ve <b>Genel</b> (tüm görsellerde ortak: başlık, efektler, araç ipuçları, alternatif metin). Üstteki arama kutusuna ayarın adını yazmak en hızlı yoldur.</p>
+<h2>Görsel sekmesi (sütun / çubuk / çizgi)</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Bölüm</th><th>Ayar</th><th>Değiştirirsen ne olur?</th><th>Ne zaman?</th></tr>
+<tr><td rowspan="3"><b>X ekseni</b></td><td>Tür: Kategorik / Sürekli</td><td>Sürekli tarih ekseni boşlukları korur ve etiketleri seyreltir; kategorik her değeri eşit aralıkla yazar.</td><td>Tarihte sürekli; ay adlarında kategorik</td></tr>
+<tr><td>Değerler (yazı tipi, döndürme)</td><td>Etiket boyutu ve eğikliği</td><td>Etiketler sığmıyorsa çubuk grafiğe geç; eğik metin son çaredir</td></tr>
+<tr><td>Başlık</td><td>Eksen adını gösterir/gizler</td><td>Birim açık değilse (TL, adet) göster</td></tr>
+<tr><td rowspan="3"><b>Y ekseni</b></td><td>Aralık: Minimum / Maksimum</td><td>Eksenin başlangıç ve bitişini sabitler</td><td>Çubuklarda minimum = 0 kalmalı; birden çok grafiği aynı ölçekte karşılaştırırken maksimumu sabitle</td></tr>
+<tr><td>Görüntü birimleri</td><td>Otomatik, Bin, Milyon…</td><td>Ekseni sadeleştirmek için</td></tr>
+<tr><td>Ölçek türü: Doğrusal / Logaritmik</td><td>Log ölçek büyüklük farkı çok olan değerleri sıkıştırır</td><td>Nadiren; okuyucu log'a alışkın değilse yanıltır</td></tr>
+<tr><td><b>Kılavuz çizgileri</b></td><td>Yatay / dikey, renk, stil</td><td>Arka plandaki yardımcı çizgiler</td><td>Açık ve soluk tut; veri etiketleri açıksa kapatabilirsin</td></tr>
+<tr><td rowspan="2"><b>Sütunlar / Çubuklar</b></td><td>Renk, “Tüm kategorileri göster” (her çubuğa ayrı renk), fx (koşullu)</td><td>Rengi değiştirir; fx ile kurala veya ölçüye bağlanır</td><td>Tek seri tek renk; vurgu için yalnızca bir çubuğu farklı renk yap</td></tr>
+<tr><td>Düzen: Aralık, yeniden sırala</td><td>Çubuklar arası boşluk</td><td>Az kategoride boşluğu artır</td></tr>
+<tr><td rowspan="2"><b>Veri etiketleri</b></td><td>Konum, görüntü birimleri, ondalık</td><td>Değeri çubuğun üstüne/içine yazar</td><td>12'den az veri noktasında; kalabalıkta kapat</td></tr>
+<tr><td>Özel etiket (fx: Değer)</td><td>Etikette başka bir ölçüyü (ör. “+%4”) gösterir</td><td>Gerçekleşen + büyüme gibi iki bilgiyi bir arada vermek için</td></tr>
+<tr><td><b>Gösterge</b></td><td>Konum (üst, alt, sağ…), başlık</td><td>Seri adlarının listesi</td><td>2+ seri varsa göster; tek seride gizle (başlık yeterli)</td></tr>
+<tr><td><b>Çizgiler</b> (çizgi grafik)</td><td>Genişlik, stil (kesik), enterpolasyon (adım, yumuşak)</td><td>Çizginin görünüşü</td><td>Geçen yıl / hedef için kesik çizgi; adım enterpolasyonu fiyat gibi kademeli değişimler için</td></tr>
+<tr><td><b>İşaretçiler</b></td><td>Şekil, boyut</td><td>Her veri noktasına bir nokta</td><td>Az noktada açık; son noktayı vurgulamak için</td></tr>
+</table></div>
+<h2>Genel sekmesi</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Bölüm</th><th>Ne yapar?</th><th>İpucu</th></tr>
+<tr><td><b>Özellikler</b></td><td>Boyut, konum, iç kenar boşluğu</td><td>Hizalı tasarım için piksel değerlerini elle eşitle</td></tr>
+<tr><td><b>Başlık</b></td><td>Başlık metni, alt başlık, ayırıcı; fx ile ölçüye bağlanabilir</td><td>Dinamik başlık: <code>"Net satış · " &amp; SELECTEDVALUE(Tarih[Yil])</code></td></tr>
+<tr><td><b>Efektler</b></td><td>Arka plan, görsel kenarlığı, gölge</td><td>Gölgeyi kapat; kenarlık yerine boşlukla ayır</td></tr>
+<tr><td><b>Veri biçimi</b></td><td>Görsel düzeyinde sayı biçimi (yeni)</td><td>Ölçüdeki biçimi bu görsel için geçersiz kılar</td></tr>
+<tr><td><b>Başlık simgeleri</b></td><td>Görselin sağ üstündeki filtre, odak, daha fazla simgeleri</td><td>Sunum raporlarında sadeleştir</td></tr>
+<tr><td><b>Araç ipuçları</b></td><td>Varsayılan / Rapor sayfası; metin rengi, arka plan</td><td>Rapor sayfası türünde bir sayfayı mini rapor olarak gösterir</td></tr>
+<tr><td><b>Alternatif metin</b></td><td>Ekran okuyucunun okuduğu açıklama</td><td>Ölçüyle dinamik yapılabilir: ana bulguyu yaz</td></tr>
+</table></div>
+<h2>Analiz sekmesi (büyüteç simgesi)</h2>
+<p>Sabit çizgi, ortalama, minimum, maksimum, medyan, yüzdebirlik çizgileri; eğilim çizgisi; tahmin; hata çubukları; anomali bulma. Hepsi Orta seviyedeki <b>Analiz özellikleri</b> dersinde.</p>
+<div class="tip"><b>Ne yaparsan ne olur? Canlı gör</b><a href="../../">Görseller</a> bölümünde her görselin yanında bir Biçim bölmesi var: veri etiketini aç, göstergeyi taşı, ekseni sıfırdan başlatmayı kapat, ortalama çizgisi ekle… Grafik anında değişir ve her ayarın yanında ne zaman kullanılacağı yazar.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Biçimi kopyala: Biçim boyacısı</h2>
+<p>Altı grafiğin aynı görünmesini istiyorsun. Her birinde yirmi ayarı tek tek yapmak yerine birini bitir, onu seç ve <b>Giriş → Biçim boyacısı (Format painter)</b> düğmesine bas. Sonra hedef görsele tıkla. Başlık, renk, kenarlık, yazı tipi aynen kopyalanır. Düğmeye çift tıklarsan birden çok görsele art arda uygulayabilirsin.</p>
+<h2>Tema mı, tek tek ayar mı?</h2>
+<p>Biçim ayarlarının bir önceliği vardır. Görselde elle yaptığın ayar, temadan gelen ayarı <b>ezer</b>. Bu iyi bir şeydir ama bir tuzağı var: temayı sonradan değiştirdiğinde elle ayarlanmış görseller eski renklerinde kalır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Ne zaman doğru?</th><th>Dikkat</th></tr>
+<tr><td>Tema (Görünüm → Temalar)</td><td>Kurumsal renkler, yazı tipleri, tüm raporlarda aynı görünüm</td><td>Ağustos 2026'dan beri yeni raporlar sade bir temel temayla açılır; Tema bölmesinden düzenlenir.</td></tr>
+<tr><td>Biçim boyacısı</td><td>Bu rapordaki birkaç görseli eşitlemek</td><td>Kopyalanan ayarlar da elle yapılmış sayılır.</td></tr>
+<tr><td>Görsel ayarı</td><td>Bir görseli bilinçli olarak farklı yapmak (vurgu)</td><td>Az kullan; tema değişince elle düzeltmen gerekir.</td></tr>
+</table></div>
+<p>Bir görsel temayı dinlemiyorsa Biçim bölmesinde ilgili bölümün altındaki <b>Varsayılana sıfırla</b> bağlantısını kullan. O bölümün ayarları temaya geri döner.</p>
+<h2>Koşullu biçime ilk adım</h2>
+<p>Renk, anlam taşıdığında güçlüdür. Bir çubuğun ya da hücrenin rengini sabit seçmek yerine bir kurala bağlayabilirsin. Renk ayarının yanındaki <b>fx</b> düğmesi üç yol sunar:</p>
+<ul>
+<li><b>Renk ölçeği (Gradient):</b> Değer büyüdükçe renk koyulaşır. Isı haritası gibi matrislerde.</li>
+<li><b>Kurallar (Rules):</b> “%97'den küçükse kırmızı” gibi eşikler.</li>
+<li><b>Alan değeri (Field value):</b> Rengi bir ölçü döndürür. Kural karmaşıksa ve birden çok görselde kullanılacaksa en temiz yol budur.</li>
+</ul>
+<p>Örnek: hedefi en az %97 tutturan kategori yeşil, diğerleri kırmızı olsun. Bu modelde Kitap ve Giyim %97'nin üstünde; Elektronik %96,4 ile altında kalır. Yıllara bakınca 2022 (%77) kırmızı, 2023 ve 2024 yeşildir.</p>
+<pre class="dax">Hedef Rengi = IF([Hedef Gerçekleşme %] &gt;= 0.97, "#1B7F3B", "#B3261E")</pre>
+<p>Sonra çubuk renginin fx'inde Biçim stili: <b>Alan değeri</b>, alan: [Hedef Rengi] seçersin. Simgeler, veri çubukları ve daha ayrıntılı kurallar Koşullu biçimlendirme ve KPI'lar dersinde.</p>
+<div class="warn"><b>Rengi tek başına bırakma</b>Kırmızı-yeşil ayrımını görmekte zorlanan okuyucular vardır. Renge ek olarak veri etiketi, simge ya da “▲/▼” gibi bir işaret kullan. Erişilebilirlik ayrıntıları Mobil düzen ve erişilebilirlik dersinde.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-bicim-temel">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../gorsel-temel/">← Temel görseller ve alan kutuları</a><a href="../filtreler/">Filtreler bölmesi ve dilimleyiciler →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

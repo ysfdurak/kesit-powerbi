@@ -1,0 +1,122 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İleri istatistik: eğilim, z-skoru, mevsimsellik | Kesit Power BI</title><meta name="description" content="Analiz bölmesindeki eğilim çizgisinin matematiği, aykırı değer tespiti ve mevsim endeksi; hepsi DAX ile."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/istatistik-ileri/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="İleri istatistik: eğilim, z-skoru, mevsimsellik"><meta property="og:description" content="Analiz bölmesindeki eğilim çizgisinin matematiği, aykırı değer tespiti ve mevsim endeksi; hepsi DAX ile."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/istatistik-ileri/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"İleri istatistik: eğilim, z-skoru, mevsimsellik","description":"Analiz bölmesindeki eğilim çizgisinin matematiği, aykırı değer tespiti ve mevsim endeksi; hepsi DAX ile.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/istatistik-ileri/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Analiz</span><h1>İleri istatistik: eğilim, z-skoru, mevsimsellik</h1><p class="st-l">Analiz bölmesindeki eğilim çizgisinin matematiği, aykırı değer tespiti ve mevsim endeksi; hepsi DAX ile.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-istatistik-ileri">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Eğilim: en küçük kareler</h2>
+<p>Eğilim çizgisi <code>y = a + b·x</code> doğrusudur. <code>b</code> eğim, <code>a</code> kesişimdir:</p>
+<p style="font-family:var(--f-mono)">b = (N·Σxy − Σx·Σy) / (N·Σx² − (Σx)²)<br>a = (Σy − b·Σx) / N</p>
+<p>DAX'ta x için ay sıra numarası (<code>RANKX</code> ile), y için satış alınır ve beş toplam <code>SUMX</code> ile hesaplanır. Analiz bölmesindeki eğilim çizgisi görselde bunu yapar; ölçü olarak yazmak ise eğimi bir kartta (“ayda ortalama +4,2 B ₺”) göstermeyi ve eğilimden sapmayı hesaplamayı sağlar.</p>
+<h2>Z-skoru</h2>
+<p><code>z = (değer − ortalama) / standart sapma</code>. |z| ≥ 2 genellikle aykırı kabul edilir. <code>STDEVX.P</code> sanal tablo üzerinde standart sapma hesaplar. Güçlü eğilimli serilerde önce eğilimi çıkarmak (kalıntılar üzerinde z-skoru) daha doğrudur.</p>
+<h2>Mevsimsellik</h2>
+<p>Her takvim ayının ortalamasının genel ortalamaya oranı. Klasik tuzak: ara tabloyu <code>CALCULATETABLE</code>'ın dışında genişletmek; satırdaki ay filtresi diğer ayları boşaltır ve her ay 1 çıkar.</p>
+<h2>Korelasyon</h2>
+<pre class="dax">Fiyat–Adet Korelasyonu =
+VAR T = ADDCOLUMNS(VALUES(Urunler[Urun]), "X", CALCULATE(AVERAGE(Urunler[Fiyat])), "Y", [Satılan Adet])
+VAR MX = AVERAGEX(T, [X])
+VAR MY = AVERAGEX(T, [Y])
+VAR Kov = SUMX(T, ([X] - MX) * ([Y] - MY))
+VAR SX = SQRT(SUMX(T, ([X] - MX) ^ 2))
+VAR SY = SQRT(SUMX(T, ([Y] - MY) ^ 2))
+RETURN DIVIDE(Kov, SX * SY)</pre>
+<p>−1 ile 1 arası: negatif değer, pahalı ürünlerin daha az adet sattığını gösterir. Korelasyon nedensellik değildir.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Aykırı değer: hangi ölçüt?</h2>
+<p>Finans "olağandışı büyük siparişleri" işaretlemek istiyor. Önce dağılıma bak. İptal edilmemiş 838 siparişin net tutarları:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İstatistik</th><th>Değer (₺)</th><th>DAX</th></tr>
+<tr><td>Ortalama</td><td>1.492,57</td><td><code>AVERAGEX(T, [S])</code></td></tr>
+<tr><td>Medyan</td><td>1.086,50</td><td><code>MEDIANX(T, [S])</code></td></tr>
+<tr><td>1. çeyrek (P25)</td><td>646,00</td><td><code>PERCENTILEX.INC(T, [S], 0.25)</code></td></tr>
+<tr><td>3. çeyrek (P75)</td><td>1.792,00</td><td><code>PERCENTILEX.INC(T, [S], 0.75)</code></td></tr>
+<tr><td>P95</td><td>3.969,73</td><td><code>PERCENTILEX.INC(T, [S], 0.95)</code></td></tr>
+<tr><td>En büyük</td><td>12.335,45</td><td><code>MAXX(T, [S])</code></td></tr>
+</table></div>
+<p>Ortalama medyandan belirgin biçimde büyük: dağılım sağa çarpık. Birkaç büyük sipariş ortalamayı yukarı çekiyor. Bu durumda iki yaygın yöntem farklı sonuç verir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yöntem</th><th>Eşik</th><th>Aykırı sipariş</th></tr>
+<tr><td>IQR: Ç3 + 1,5 × (Ç3 − Ç1)</td><td>3.511 ₺</td><td>57 (%6,8)</td></tr>
+<tr><td>|z| &gt; 3 (örneklem standart sapması 1.463,19)</td><td>yaklaşık 5.882 ₺</td><td>22</td></tr>
+<tr><td>|z| &gt; 2</td><td>yaklaşık 4.419 ₺</td><td>33</td></tr>
+</table></div>
+<pre class="dax">Aykırı Eşiği (IQR) =
+VAR T = FILTER(ADDCOLUMNS(VALUES(Satislar[SiparisNo]), "S", [Net Satış]), NOT ISBLANK([S]))
+VAR Q1 = PERCENTILEX.INC(T, [S], 0.25)
+VAR Q3 = PERCENTILEX.INC(T, [S], 0.75)
+RETURN Q3 + 1.5 * (Q3 - Q1)</pre>
+<p>Z-skoru simetrik, normale yakın bir dağılım varsayar; para tutarları neredeyse hiç böyle değildir. Çarpık verilerde IQR ya da logaritma üzerinde z-skoru daha savunulabilirdir. Asıl üretim dersi şu: IQR'a göre aykırı olan 57 sipariş toplam 327.447 ₺ ediyor, yani net satışın %26,2'si. "Aykırıları çıkaralım" demek gelirin dörtte birini raporlardan silmek demektir. Aykırıyı silme, işaretle; ayrı bir sütunda ya da renkle göster.</p>
+
+<h2>Z-skoru: eğilimli seride yanılgı</h2>
+<p>Satış olan 31 ayın ortalaması 40.347,50 ₺, popülasyon standart sapması 23.535,82 ₺. Aralık 2024 (94.000,95 ₺) için z = 2,28; ana bölümdeki [Z-Skoru] ölçüsü bu ayı "aykırı" işaretler. Ama seri güçlü bir eğilim taşıyor: ay sırası ile satış arasındaki korelasyon 0,92. Eğilimi olan bir seride son aylar doğal olarak yüksek, ilk aylar doğal olarak düşüktür. Önce eğilimi çıkar, z-skorunu kalıntılara uygula (eğilim bölümündeki yöntem).</p>
+<ul>
+<li><b>Eksik dönem:</b> En düşük ay Haziran 2022 (595 ₺); yalnızca 9 günlük veri içerir. Kısmi dönemler aykırı değil, eksik veridir. Analizden çıkar ya da gün başına çevir.</li>
+<li><b>Aynı seri, IQR ile:</b> Aylık seride üst eşik 107.714,94 ₺; hiçbir ay aykırı değil. Yöntem seçimi sonucu belirler; raporda yöntemi yaz.</li>
+<li><b>STDEV.S mi STDEV.P mi?</b> Dönemin bütün aylarını betimliyorsan popülasyon (P); bu aylardan gelecek hakkında çıkarım yapıyorsan örneklem (S). Burada 23.535,82 ile 23.924,87: n = 31'de fark küçük, n = 5'te büyük olur.</li>
+</ul>
+
+<h2>Korelasyon: sayının arkasındaki n</h2>
+<p>İK direktörü soruyor: "Temsilci maaşı ile satış arasında ilişki var mı?" Altı temsilci için DAX ile hesaplanan korelasyon −0,12; kıdem ile satış arasında −0,24. Yorum yapmadan önce n'e bak: altı gözlemle %5 düzeyinde anlamlı sayılmak için |r| yaklaşık 0,81'i geçmelidir. Bu sayılar "ilişki yok" bile demez; "bu veriyle bir şey söylenemez" der.</p>
+<pre class="dax">Maaş–Satış Korelasyonu =
+VAR T =
+    ADDCOLUMNS(
+        FILTER(Calisanlar, NOT ISBLANK([Net Satış])),
+        "X", Calisanlar[Maas],
+        "Y", [Net Satış]
+    )
+VAR MX = AVERAGEX(T, [X])
+VAR MY = AVERAGEX(T, [Y])
+VAR Kov = SUMX(T, ([X] - MX) * ([Y] - MY))
+VAR SX = SQRT(SUMX(T, ([X] - MX) ^ 2))
+VAR SY = SQRT(SUMX(T, ([Y] - MY) ^ 2))
+RETURN DIVIDE(Kov, SX * SY)</pre>
+<p>Üç üretim tuzağı:</p>
+<ul>
+<li><b>Boşlar sıfır sayılır:</b> Ana bölümdeki fiyat–adet korelasyonu 40 ürünün hepsini kullanır ve −0,52 verir. Hiç satılmamış 2 ürünün adedi BLANK'tir; AVERAGEX onu atlar ama <code>[Y] - MY</code> aritmetiğinde BLANK sıfır gibi davranır. Bu ürünler çıkarılınca sonuç −0,60 olur. Satır kümesini önce <code>NOT ISBLANK</code> ile temizle.</li>
+<li><b>Eğilim sahte korelasyon üretir:</b> Zamanla büyüyen iki seri (satış ve çalışan sayısı, satış ve reklam harcaması) neredeyse her zaman yüksek korelasyon verir. Satışın ay sırasıyla korelasyonu 0,92'dir; büyüyen başka her şeyle de yüksek çıkar. Karşılaştırmayı değişimler (ay farkları) üzerinde yap.</li>
+<li><b>n'yi ölçünün yanında göster:</b> "r = −0,24 (n = 6)" yazmak, okuyucuyu yanlış karardan korur.</li>
+</ul>
+
+<h2>Güven aralığı yaklaşımı</h2>
+<p>Satış müdürü: "Ortalama sepet 2023'te 1.411,51 ₺ idi, 2024'te 1.515,35 ₺ oldu; %7,4 büyüdük." Bu fark gerçek mi, yoksa sipariş tutarlarındaki doğal dalgalanma mı? Büyük örneklemde ortalamanın yaklaşık %95 güven aralığı: ortalama ± 1,96 × s / √n.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl</th><th>n</th><th>Ortalama</th><th>Hata payı</th><th>Aralık</th></tr>
+<tr><td>2023</td><td>284</td><td>1.411,51</td><td>± 148,86</td><td>1.262,66 – 1.560,37</td></tr>
+<tr><td>2024</td><td>493</td><td>1.515,35</td><td>± 134,42</td><td>1.380,93 – 1.649,76</td></tr>
+</table></div>
+<p>Aralıklar büyük ölçüde örtüşüyor. Örtüşme kesin bir test değildir, ama "%7,4 büyüme" cümlesinin gürültü olabileceği konusunda güçlü bir uyarıdır. Oranlar için aynı yaklaşım: p ± 1,96 × √(p(1 − p) / n).</p>
+<div class="tbl-wrap"><table>
+<tr><th>Destek kanalı</th><th>CSAT</th><th>n</th><th>Hata payı</th></tr>
+<tr><td>Canlı destek</td><td>%82,7</td><td>52</td><td>± 10,3 puan</td></tr>
+<tr><td>Telefon</td><td>%80,0</td><td>45</td><td>± 11,7 puan</td></tr>
+<tr><td>Sosyal medya</td><td>%73,3</td><td>15</td><td>± 22,4 puan</td></tr>
+<tr><td>E-posta</td><td>%56,3</td><td>48</td><td>± 14,0 puan</td></tr>
+</table></div>
+<p>E-posta ile canlı destek arasındaki fark aralıkları aşar; büyük olasılıkla gerçektir. Sosyal medyanın %73,3'ü ise yalnızca 15 değerlendirmeye dayanır ve %51 ile %96 arasında herhangi bir yerde olabilir. Bu kanal için karar vermek erken.</p>
+<div class="warn"><b>n'yi yanlış bağlamda saymak</b>Kanal satırlı bir tabloda n'yi <code>COUNT(Talepler[Memnuniyet])</code> ile ADDCOLUMNS içinde CALCULATE olmadan hesaplarsan her kanalda 160 (tüm değerlendirmeler) çıkar ve hata payı olduğundan küçük görünür: canlı destek için ± 10,3 yerine ± 5,9 puan. Sahte bir kesinlik üretir. n her zaman CALCULATE içinde, satırın bağlamında sayılmalı.</div>
+
+<h2>İstatistiksel anlamlılık yanılgıları</h2>
+<ul>
+<li><b>Çoklu karşılaştırma:</b> 7 kategori × 12 ay = 84 hücreyi tarayıp "anlamlı" fark ararsan, %5 düzeyinde yalnızca tesadüfen yaklaşık 4 hücre anlamlı çıkar. Önce hipotezi koy, sonra veriye bak.</li>
+<li><b>Dilimleyiciyle kesit avı:</b> Dilimleyicileri çevirip "farkın göründüğü" kesiti bulmak aynı hatanın etkileşimli hâlidir.</li>
+<li><b>Anlamlı ≠ önemli:</b> Milyonlarca satırda 0,1 puanlık fark istatistiksel olarak anlamlı olabilir ama iş açısından önemsizdir. Etki büyüklüğünü (fark ₺ ya da puan) her zaman yanında yaz.</li>
+<li><b>Küçük gruplar:</b> İade oranı Elektronik'te %3,6 (± 2,3), Kitap'ta %8,0 (± 2,7): fark büyük olasılıkla gerçek. Hediye'de %5,1, ama 39 satışla ± 6,9 puan; hiçbir şey söylenemez.</li>
+<li><b>Korelasyon ≠ nedensellik:</b> İndirimli satış payı ile satış birlikte artıyorsa, indirim satışı artırmış olabilir; ya da yoğun sezonda hem indirim hem satış artmıştır.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Dağılım çarpık mı? Ortalama yerine medyan ve çeyrekler daha mı açıklayıcı?</li>
+<li>Aykırı değer yöntemi raporda yazılı mı? Aykırılar siliniyor mu, işaretleniyor mu?</li>
+<li>Seri eğilimli mi? Z-skoru eğilimden arındırılmış değerlere mi uygulanıyor?</li>
+<li>Korelasyon ve oranların yanında n görünüyor mu? Boşlar temizlendi mi?</li>
+<li>Karşılaştırmada güven aralığı ya da en azından hata payı var mı?</li>
+<li>Analiz bir hipotezle mi başladı, yoksa çok sayıda kesit taranarak mı bulundu?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-istatistik-ileri">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hiyerarsi/">← Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap</a><a href="../dax-opt/">DAX optimizasyonu: depolama motoru, formül motoru →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

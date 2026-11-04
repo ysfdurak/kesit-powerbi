@@ -1,0 +1,95 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI’da Python ve R | Kesit Power BI</title><meta name="description" content="Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, Service’teki sınırlar ve aynı işin DAX ya da Power…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/python-r/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI’da Python ve R"><meta property="og:description" content="Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, Service’teki sınırlar ve aynı işin DAX ya da Power…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/python-r/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI’da Python ve R","description":"Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, Service’teki sınırlar ve aynı işin DAX ya da Power…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/python-r/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Power BI’da Python ve R</h1><p class="st-l">Python/R betiğini veri kaynağı ve Power Query adımı olarak kullanmak, Python ve R görselleri, kurulum, Service’teki sınırlar ve aynı işin DAX ya da Power Query ile ne zaman daha iyi yapılacağı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-python-r">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Power BI, Python ve R betiklerini üç yerde çalıştırabilir: <b>veri kaynağı</b> olarak, Power Query’de <b>dönüştürme adımı</b> olarak ve rapor tuvalinde <b>görsel</b> olarak. Bu, istatistik ve makine öğrenmesi kütüphanelerini rapora getirir. Ama her betik bir bağımlılık ve bir sınır demektir. Bu derste ne zaman kullanılacağını ve nerede duracağını göreceksin. (Kesit Power BI tarayıcıda Python çalıştıramaz; kodlar okumak ve kendi bilgisayarında denemek içindir.)</p>
+
+<h2>Kurulum</h2>
+<ol>
+<li>Bilgisayarına Python (python.org dağıtımı önerilir) ya da R kur.</li>
+<li>Python için en az iki paket: <code>pip install pandas matplotlib</code>. Power BI veriyi yalnızca <b>pandas veri çerçevesi</b> (DataFrame) olarak alır ve verir.</li>
+<li>Desktop’ta <b>Dosya → Seçenekler ve ayarlar → Seçenekler → Python betiği oluşturma</b> (R için “R betiği oluşturma”): Python giriş dizinini seç.</li>
+</ol>
+<div class="note"><b>Conda ortamları</b>Power BI, seçtiğin dizindeki <code>python.exe</code>’yi doğrudan çalıştırır. Ek ortam ayarı isteyen dağıtımlar (Conda gibi) çalışmayabilir; o durumda Desktop’ı ortamın komut isteminden başlatmak gerekir.</div>
+
+<h2>Betik veri kaynağı olarak</h2>
+<p><b>Giriş → Veri al → Diğer → Python betiği</b>. Betikte oluşturduğun her DataFrame, Gezgin’de bir tablo olarak görünür. Örnek: bir API’den ya da dosyadan gelen veriyi pandas ile hazırlamak.</p>
+<pre data-notry>import pandas as pd
+
+kampanya = pd.DataFrame({
+    "Kampanya": ["Okula Dönüş", "Yaz Festivali", "Yılbaşı"],
+    "Baslangic": pd.to_datetime(["2024-08-20", "2024-06-01", "2024-12-15"]),
+    "Butce": [40000, 25000, 60000],
+})
+# Gezginde "kampanya" adlı bir tablo görünür</pre>
+<p>Sınırlar: 30 dakikadan uzun süren betik zaman aşımına uğrar; kullanıcıdan girdi bekleyen komutlar betiği durdurur; iç içe tablolar desteklenmez; çalışma dizini ayarlıyorsan tam yol yazmalısın.</p>
+
+<h2>Power Query’de betik adımı</h2>
+<p>Power Query’de <b>Dönüştür → Python betiği çalıştır</b>. Sorgunun o anki tablosu betiğe <code>dataset</code> adlı bir DataFrame olarak gelir. Örnek: bölgesi boş müşterilerde eksik değeri şehirden tamamlamak, kalanları “Bilinmiyor” yapmak.</p>
+<pre data-notry>import pandas as pd
+
+sehir_bolge = {"İstanbul": "Marmara", "Ankara": "İç Anadolu", "İzmir": "Ege"}
+df = dataset.copy()
+df["Bolge"] = df["Bolge"].fillna(df["Sehir"].map(sehir_bolge))
+df["Bolge"] = df["Bolge"].fillna("Bilinmiyor")
+# zaman serisinde boşluğu bir sonraki değerle doldurmak: df["Kur"] = df["Kur"].bfill()</pre>
+<p>Bunun için Python gerekmez: aynı iş Power Query’de birleştirme (Merge) ve “Değeri değiştir” adımlarıyla da yapılır ve sorgu katlamayı bozmaz. Python’ı, Power Query’nin yapamadığı işler için sakla: istatistiksel eksik değer tahmini (ör. regresyonla doldurma), metin madenciliği, kümeleme.</p>
+<div class="warn"><b>Service’te yenileme</b>Python ya da R betiği içeren bir sorgunun Service’te zamanlanmış yenilemesi için betiğin çalıştığı bilgisayara <b>kişisel mod ağ geçidi</b> (personal gateway) kurulmalı ve o bilgisayarda Python yüklü olmalı. Ayrıca betikle aynı sorgudaki tüm veri kaynaklarının gizlilik düzeyi <b>Genel</b> (Public) olmalı. Kurumsal ortamda bu çoğu zaman kabul edilemez; betiği Fabric not defterine ya da kaynağa taşımak daha sağlıklıdır.</div>
+
+<h2>Python ve R görselleri</h2>
+<p>Görselleştirmeler bölmesinde <b>Py</b> ya da <b>R</b> simgesini seç, betik görsellerini etkinleştir ve alanları <b>Değerler</b> kutusuna sürükle. Power BI bu alanlardan <code>dataset</code> adlı bir veri çerçevesi oluşturur. Dikkat: alanlar tablo görseli gibi gruplanır, tekrar eden satırlar bir kez gelir; her satırı istiyorsan benzersiz bir alan (ör. <code>SatirNo</code>) ekle.</p>
+<pre data-notry>import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Değerler: Kanal, Kategori, Net Satış
+pivot = dataset.pivot_table(index="Kategori", columns="Kanal",
+                            values="Net Satış", aggfunc="sum")
+sns.heatmap(pivot, annot=True, fmt=".0f", cmap="Blues")
+plt.title("Kategori × kanal net satış")
+plt.show()</pre>
+<pre data-notry># R görseli: aynı ısı haritası ggplot2 ile
+library(ggplot2)
+ggplot(dataset, aes(x = Kanal, y = Kategori, fill = `Net Satış`)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "steelblue")</pre>
+<p>Görsel bir <b>resim</b>dir: üzerine gelince araç ipucu çıkmaz, tıklayınca başka görselleri filtrelemez. Diğer görsellerden gelen filtre ve vurgulamaya ise tepki verir. Çoğu ısı haritası için matris + koşullu biçimlendirme yeterlidir ve etkileşimlidir; “Koşullu biçimlendirme ve KPI'lar” dersine bak.</p>
+
+<h2>Sınırlar (Learn’e göre)</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konu</th><th>Sınır</th></tr>
+<tr><td>Görsele gelen veri</td><td>En çok 150.000 satır (fazlası kesilir, görselde uyarı çıkar); Desktop’ta en çok 250 MB girdi</td></tr>
+<tr><td>Zaman aşımı</td><td>Desktop’ta görsel betiği 5 dakika; Service’te görsel başına 1 dakika</td></tr>
+<tr><td>Service’teki yük</td><td>Sıkıştırılmış veri + betik en çok 30 MB</td></tr>
+<tr><td>Paketler (Service)</td><td>Python 3.11 ve R 4.3.3 çalışma zamanı; yalnızca listede olan, PyPI/CRAN’da yayımlanmış açık kaynak paketler (pandas, matplotlib, seaborn, scikit-learn, ggplot2, corrplot…). Ağ bağlantısı kuran paketler engellenir.</td></tr>
+<tr><td>Lisans</td><td>Service’te betik görseli oluşturmak için Pro ya da PPU; görüntüleme için Fabric/Premium çalışma alanı da yeterli olabilir. Fabric’in olmadığı bölgelerde ve egemen bulutlarda Service’te desteklenmez.</td></tr>
+<tr><td>Paylaşım</td><td>Web’de yayımla (Publish to web) desteklemez; 2026 itibarıyla “müşterilerin için ekle” (app owns data) senaryosunda da destek sona eriyor.</td></tr>
+<tr><td>Çözünürlük</td><td>Görseller 72 DPI; sütun adları yeniden adlandırılsa da betik özgün adları görür.</td></tr>
+</table></div>
+
+<h2>Ne zaman DAX ya da Power Query yeterli?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İş</th><th>Önerilen</th><th>Neden?</th></tr>
+<tr><td>Eksik değeri sabit ya da eşleme ile doldurmak</td><td>Power Query</td><td>Katlanabilir, ağ geçidi gerektirmez.</td></tr>
+<tr><td>Eksik değer sayımı, veri kalitesi kartı</td><td>DAX</td><td>Dilimleyiciyle değişir, etkileşimlidir.</td></tr>
+<tr><td>Korelasyon, z-skoru, doğrusal eğilim</td><td>DAX</td><td>Formülü bilinen istatistikler DAX’ta yazılır (“İleri istatistik” dersi).</td></tr>
+<tr><td>Kümeleme, regresyon modeli, metin analizi</td><td>Python/R (tercihen Fabric not defteri)</td><td>Kütüphane gerekir; sonuç tablo olarak modele gelir.</td></tr>
+<tr><td>Özel istatistik grafiği (yoğunluk, çift grafik)</td><td>Python/R görseli</td><td>Yerleşik görsel yoksa; etkileşim beklenmiyorsa.</td></tr>
+</table></div>
+<p>Örneğin Python’da <code>df["Indirim"].corr(df["Adet"])</code> ile bulunan Pearson korelasyonu DAX’ta da yazılabilir; üstelik dilimleyiciyle değişir:</p>
+<pre class="dax">İndirim-Adet Korelasyonu =
+VAR T = FILTER(Satislar, Satislar[Durum] &lt;&gt; "İptal")
+VAR OrtX = AVERAGEX(T, Satislar[Indirim])
+VAR OrtY = AVERAGEX(T, Satislar[Adet])
+VAR Kov = SUMX(T, (Satislar[Indirim] - OrtX) * (Satislar[Adet] - OrtY))
+VAR SX = SQRT(SUMX(T, (Satislar[Indirim] - OrtX) ^ 2))
+VAR SY = SQRT(SUMX(T, (Satislar[Adet] - OrtY) ^ 2))
+RETURN DIVIDE(Kov, SX * SY)</pre>
+<p>Bizim modelde sonuç yaklaşık −0,02: indirim ile satılan adet arasında neredeyse hiç doğrusal ilişki yok. Elektronik’te sonuç boş döner, çünkü o kategoride indirim hiç değişmiyor (standart sapma 0, DIVIDE boş döndürür).</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-python-r">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yz-dax-denetim/">← Yapay zekânın yazdığı DAX’ı denetlemek</a><a href="../fabric-giris/">Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

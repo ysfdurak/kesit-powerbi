@@ -1,0 +1,64 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desktop arayüz turu | Kesit Power BI</title><meta name="description" content="Görünümler, bölmeler, alan kutuları: hangi düğme nerede ve ne işe yarar?"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/arayuz/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Desktop arayüz turu"><meta property="og:description" content="Görünümler, bölmeler, alan kutuları: hangi düğme nerede ve ne işe yarar?"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/arayuz/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Desktop arayüz turu","description":"Görünümler, bölmeler, alan kutuları: hangi düğme nerede ve ne işe yarar?","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/arayuz/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Desktop arayüz turu</h1><p class="st-l">Görünümler, bölmeler, alan kutuları: hangi düğme nerede ve ne işe yarar?</p>
+<div class="st-c"><a class="st-p" href="../../#ders-arayuz">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Soldaki görünümler</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Görünüm</th><th>Ne için?</th></tr>
+<tr><td><b>Rapor</b></td><td>Görselleri sayfaya yerleştirdiğin tuval. Zamanının çoğu burada geçer.</td></tr>
+<tr><td><b>Tablo</b> (eski adı Veri)</td><td>Yüklenen tabloların satırlarına bakarsın, hesaplanmış sütun eklersin.</td></tr>
+<tr><td><b>Model</b></td><td>Tabloları ve aralarındaki ilişkileri diyagram olarak görürsün; ilişki kurar, düzenlersin.</td></tr>
+<tr><td><b>DAX sorgu</b></td><td>EVALUATE ile başlayan sorgular yazıp sonucu tablo olarak görürsün. Ölçüleri denemek için idealdir.</td></tr>
+<tr><td><b>TMDL</b></td><td>Modeli metin (kod) olarak görüp düzenlersin. İleri seviye.</td></tr>
+</table></div>
+<h2>Sağdaki bölmeler</h2>
+<ul>
+<li><b>Veri bölmesi:</b> Tablolar, sütunlar ve ölçüler. Ölçülerin yanında hesap makinesi simgesi, hesaplanmış sütunlarda fx simgesi görürsün.</li>
+<li><b>Görselleştirmeler bölmesi:</b> Görsel türleri, <b>alan kutuları</b> (Eksen, Değerler, Gösterge, Araç ipuçları…) ve <b>biçim</b> sekmesi.</li>
+<li><b>Filtreler bölmesi:</b> Görsel, sayfa ve tüm rapor düzeyinde filtreler.</li>
+</ul>
+<h2>Alan kutuları: görselin iskeleti</h2>
+<p>Bir sütun grafiği oluşturduğunu düşün. <b>X ekseni</b> kutusuna <code>Kategoriler[Kategori]</code>, <b>Y ekseni</b> kutusuna <code>[Net Satış]</code> ölçüsünü sürüklersin. Power BI her kategori için ölçüyü ayrı ayrı hesaplar. Gösterge kutusuna <code>Satislar[Kanal]</code> koyarsan her kategori çubuğu kanallara bölünür.</p>
+<div class="tip"><b>Kural</b>Eksene <b>sütun</b> (gruplanacak şey), değerlere <b>ölçü</b> (hesaplanacak şey) konur. Sayısal bir sütunu değerlere sürüklersen Power BI onu kendiliğinden toplar; buna <i>örtük ölçü</i> denir. İyi pratik, her zaman açık (explicit) DAX ölçüsü yazmaktır.</div>
+<h2>Şerit (ribbon) sekmeleri</h2>
+<ul>
+<li><b>Giriş:</b> Veri al, Verileri dönüştür (Power Query'yi açar), Yenile, Yayımla.</li>
+<li><b>Ekle:</b> Yeni sayfa, metin kutusu, düğme, şekil, görsel.</li>
+<li><b>Modelleme:</b> Yeni ölçü, yeni sütun, yeni tablo, roller (RLS), parametreler.</li>
+<li><b>Görünüm:</b> Temalar, mobil düzen, Performans Analizi, yer işaretleri, seçim bölmesi.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>İlk on dakika: boş dosyadan ilk görsele</h2>
+<p>Arayüzü ezberlemenin en iyi yolu, bir kez baştan sona küçük bir iş yapmaktır. Aşağıdaki sırayı izle; her adımda hangi bölgeyi kullandığına dikkat et.</p>
+<ol>
+<li><b>Şerit (üst):</b> Giriş → Veri al ile bir Excel dosyası yükle.</li>
+<li><b>Veri bölmesi (sağ):</b> Tabloların listesi gelir. Bir tablonun yanındaki oka tıklayıp sütunlarını aç.</li>
+<li><b>Tuval (orta):</b> Veri bölmesinden bir ölçüyü tuvale sürükle. Power BI bir görsel oluşturur.</li>
+<li><b>Görselleştirmeler bölmesi:</b> Görsel türünü değiştir, alan kutularını düzenle.</li>
+<li><b>Sayfa sekmeleri (alt):</b> Artı (+) ile yeni sayfa ekle; sekmeye çift tıklayıp “Özet” adını ver.</li>
+<li><b>Dosya:</b> Ctrl + S ile kaydet. Kaydetmeden çalışmak, ilk dersin en pahalı hatasıdır.</li>
+</ol>
+<h2>Görselleştirmeler bölmesinin üç simgesi</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Simge</th><th>Adı</th><th>Ne yaparsın?</th></tr>
+<tr><td>Izgara / grafik</td><td>Görsel oluştur</td><td>Görsel türünü seçer, alanları kutulara koyarsın.</td></tr>
+<tr><td>Boya fırçası</td><td>Görseli biçimlendir</td><td>Renk, başlık, eksen, veri etiketi gibi görünüş ayarları.</td></tr>
+<tr><td>Büyüteç</td><td>Analiz</td><td>Ortalama çizgisi, eğilim çizgisi gibi ek çizgiler.</td></tr>
+</table></div>
+<p>Bu simgeler yalnızca bir görsel seçiliyken anlamlıdır. Hiçbir görsel seçili değilken fırçaya basarsan sayfanın kendisini (tuval arka planı, sayfa boyutu) biçimlendirirsin. Yeni başlayanların “ayar kayboldu” şikâyetinin çoğu bundandır.</p>
+<h2>Alt kenar: sayfalar ve durum çubuğu</h2>
+<ul>
+<li><b>Sayfa sekmeleri:</b> Sağ tık ile çoğalt, yeniden adlandır, gizle, sil. Gizli sayfa, yayımlanınca okuyucuya görünmez; detay ve araç ipucu sayfaları için kullanılır.</li>
+<li><b>Yakınlaştırma:</b> Sağ alttaki kaydırıcı ve “Sayfaya sığdır” düğmesi. Küçük ekranda tuvali bütün görmek için.</li>
+</ul>
+<h2>Kaybolan bölmeler ve formül çubuğu</h2>
+<p>Bölmeler, başlıklarındaki ok ile daraltılır. Tamamen kapanan bir bölmeyi <b>Görünüm</b> sekmesindeki Bölmeleri göster grubundan (Filtreler, Yer işaretleri, Seçim, Performans Analizi…) geri açarsın. Formül çubuğu ise yalnızca bir ölçü, hesaplanmış sütun ya da tablo seçiliyken şeridin hemen altında belirir. Veri bölmesinde ölçünün adına tıkla; formülü orada görürsün.</p>
+<div class="note"><b>Arama kutusu</b>Veri bölmesinin üstündeki arama kutusu, onlarca tablonun olduğu modellerde sütunu ya da ölçüyü bulmanın en hızlı yoludur. “satış” yazınca adında satış geçen her alan süzülür.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-arayuz">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../aile/">← Power BI ailesi ve iş akışı</a><a href="../veri-alma/">Veri alma ve bağlantı modları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,144 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı | Kesit Power BI</title><meta name="description" content="Lakehouse ve ambarda boyut-olgu tasarımı, vekil anahtar, yavaş değişen boyutlar (Tip 1, Tip 2) ve olgu satırını doğru sürüme bağlamak, köprü tablo, T-SQL…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-yildiz/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı"><meta property="og:description" content="Lakehouse ve ambarda boyut-olgu tasarımı, vekil anahtar, yavaş değişen boyutlar (Tip 1, Tip 2) ve olgu satırını doğru sürüme bağlamak, köprü tablo, T-SQL…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-yildiz/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı","description":"Lakehouse ve ambarda boyut-olgu tasarımı, vekil anahtar, yavaş değişen boyutlar (Tip 1, Tip 2) ve olgu satırını doğru sürüme bağlamak, köprü tablo, T-SQL…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-yildiz/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı</h1><p class="st-l">Lakehouse ve ambarda boyut-olgu tasarımı, vekil anahtar, yavaş değişen boyutlar (Tip 1, Tip 2) ve olgu satırını doğru sürüme bağlamak, köprü tablo, T-SQL ile MERGE ve CTAS, OPTIMIZE, V-Order ve VACUUM, DAX’ta “o tarihteki değer”.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-yildiz">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Veri modelleme: yıldız şema ve ilişkiler” dersinde yıldız şemayı Power BI modelinin içinde kurdun. Fabric’te aynı tasarımı bir katman aşağıya, <b>lakehouse ya da ambar tablolarına</b> indirirsin: Direct Lake modelde Power Query adımı yoktur, hesaplanmış sütun ve tablo desteği de sınırlı ve yeni olduğu için (önizleme) şema, Delta tablolar yazılırken hazır olmalıdır. Bu ders o tasarımın üç zor parçasını işliyor: tarih boyunca değişen boyutlar, çok değerli boyutlar ve tabloların fiziksel bakımı.</p>
+
+<h2>Boyut ve olgu tablolarını tasarlamak</h2>
+<ul>
+<li><b>Olgu tablosu</b> (fact): bir iş olayının en ince ayrıntısı (sipariş satırı), sayısal ölçümler (adet, tutar) ve boyutlara anahtarlar. Dar ve uzun olmalı; metin sütunlarını boyuta taşı.</li>
+<li><b>Boyut tablosu</b> (dimension): olayı betimleyen nitelikler (müşteri, ürün, tarih). Geniş ve kısa olabilir.</li>
+<li><b>Tanecik</b> (grain) kararı ilk karardır: “Bir satır = bir sipariş satırı.” Hedef tablosu gibi farklı tanecikli olgular ayrı tablolardır (“Hedef ve gerçekleşen” dersi).</li>
+<li><b>Normalleştirmeyi kaldırma:</b> Kar tanesi (snowflake) zincirlerini (Ürün → Alt kategori → Kategori) sunum katmanında tek boyut tablosuna düzleştir. Kaynakta normalleştirilmiş kalabilir; Power BI’a giden “altın” katman yıldız olmalı. İstisna: başka olguların da kullandığı ortak bir boyut (bizim modelde <code>Kategoriler</code>, hem <code>Urunler</code> hem <code>Hedefler</code> tarafından kullanılıyor).</li>
+</ul>
+
+<h2>Vekil anahtar (surrogate key)</h2>
+<p>Kaynak sistemin anahtarı (<code>MusteriNo</code>) bir <b>iş anahtarıdır</b>. Ambarda boyuta ayrıca anlamsız, artan bir tamsayı verilir: <code>MusteriAnahtari</code>. Nedenleri:</p>
+<ul>
+<li>Aynı müşterinin birden çok sürümü (Tip 2) olabilir; iş anahtarı artık benzersiz değildir.</li>
+<li>Farklı kaynaklardan gelen çakışan numaralar ayrılır.</li>
+<li>Tamsayı anahtar VertiPaq’ta iyi sıkışır ve ilişkiler hızlı çalışır.</li>
+<li>“Bilinmeyen” üye için sabit bir satır (ör. anahtar −1) tutulur; olgu satırı hiçbir zaman boş anahtarla kalmaz.</li>
+</ul>
+<p>Fabric ambarında <code>IDENTITY</code> sütunları destekleniyor; lakehouse’ta Spark ile <code>row_number()</code> ya da en büyük anahtar + 1 yöntemi kullanılır. Ambarda birincil ve yabancı anahtar kısıtları yalnızca <code>NOT ENFORCED</code> olarak tanımlanabilir: belgeleme ve sorgu iyileştiricisi içindir, benzersizliği yükleme kodun sağlamalıdır.</p>
+
+<h2>Yavaş değişen boyutlar: Tip 1 ve Tip 2</h2>
+<p>Bir müşteri 2024 başında Bireysel segmentten Premium’a geçti. 2023 satışları hangi segmentte raporlanmalı?</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Ne yapar?</th><th>Sonuç</th></tr>
+<tr><td>Tip 1</td><td>Eski değerin üzerine yazar</td><td>Geçmiş satışlar da bugünkü segmentte görünür. Basit; yazım düzeltmeleri için doğru.</td></tr>
+<tr><td>Tip 2</td><td>Eski satırı kapatır, yeni sürüm satırı ekler</td><td>Her satış, gerçekleştiği andaki segmentte görünür. Tarihsel doğruluk.</td></tr>
+</table></div>
+<p>Tip 2 boyutta her satır bir <b>sürümdür</b> ve şu sütunları taşır: <code>MusteriAnahtari</code> (vekil, sürüme özgü), <code>MusteriNo</code> (iş anahtarı), izlenen nitelikler, <code>GecerliBaslangic</code>, <code>GecerliBitis</code> (açık sürümde 9999-12-31) ve <code>Guncel</code> bayrağı (1/0).</p>
+<div class="tbl-wrap"><table>
+<tr><th>MusteriAnahtari</th><th>MusteriNo</th><th>Segment</th><th>GecerliBaslangic</th><th>GecerliBitis</th><th>Guncel</th></tr>
+<tr><td>104</td><td>4</td><td>Bireysel</td><td>2022-01-01</td><td>2023-12-31</td><td>0</td></tr>
+<tr><td>388</td><td>4</td><td>Premium</td><td>2024-01-01</td><td>9999-12-31</td><td>1</td></tr>
+</table></div>
+<p>Hangi niteliklerin Tip 2 olacağını iş kararı belirler: segment, bölge, temsilci evet; ad soyad yazım düzeltmesi hayır (Tip 1). Her niteliği Tip 2 yapmak boyutu gereksiz yere büyütür.</p>
+
+<h2>T-SQL: MERGE ile SCD2, CTAS ile olgu</h2>
+<p>Ambarda <code>MERGE</code> genel kullanımda. Önce değişen müşterinin açık sürümünü kapat ve yeni müşterileri ekle:</p>
+<pre>MERGE dbo.DimMusteri AS h
+USING stg.Musteri AS k
+   ON h.MusteriNo = k.MusteriNo AND h.Guncel = 1
+WHEN MATCHED AND h.Segment &lt;&gt; k.Segment THEN
+    UPDATE SET h.GecerliBitis = DATEADD(day, -1, CAST(GETDATE() AS date)),
+               h.Guncel = 0
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT (MusteriNo, Musteri, Segment, GecerliBaslangic, GecerliBitis, Guncel)
+    VALUES (k.MusteriNo, k.Musteri, k.Segment, CAST(GETDATE() AS date), '9999-12-31', 1);
+
+-- Kapatılan sürümlerin yerine yeni açık sürüm
+INSERT INTO dbo.DimMusteri (MusteriNo, Musteri, Segment, GecerliBaslangic, GecerliBitis, Guncel)
+SELECT k.MusteriNo, k.Musteri, k.Segment, CAST(GETDATE() AS date), '9999-12-31', 1
+FROM stg.Musteri AS k
+WHERE NOT EXISTS (SELECT 1 FROM dbo.DimMusteri AS h
+                  WHERE h.MusteriNo = k.MusteriNo AND h.Guncel = 1);</pre>
+<p>Olgu yüklenirken her satır, satış tarihinde geçerli olan sürümün vekil anahtarını almalıdır. <code>CREATE TABLE AS SELECT</code> (CTAS) bunu tek adımda yapar:</p>
+<pre>CREATE TABLE dbo.FactSatis AS
+SELECT s.SiparisNo, s.SatirNo, s.Tarih, s.UrunNo, s.Adet, s.Tutar,
+       COALESCE(m.MusteriAnahtari, -1) AS MusteriAnahtari
+FROM stg.Satis AS s
+LEFT JOIN dbo.DimMusteri AS m
+       ON m.MusteriNo = s.MusteriNo
+      AND s.Tarih BETWEEN m.GecerliBaslangic AND m.GecerliBitis;</pre>
+<p>Bu yapıldıysa Power BI tarafı kolaydır: <code>FactSatis[MusteriAnahtari]</code> ile <code>DimMusteri[MusteriAnahtari]</code> arasında normal bir ilişki kurarsın ve her satış kendiliğinden doğru segmentte görünür. “Bugünkü segmente göre” analiz de istenirse boyuta bir Tip 1 sütunu (<code>GuncelSegment</code>) eklenir.</p>
+<div class="warn"><b>Sık hata</b>Olguyu iş anahtarıyla (<code>MusteriNo</code>) Tip 2 boyuta bağlamak. Boyutta aynı numaradan birden çok satır olduğu için ilişki çoka-çok olur ve satışlar sürüm sayısı kadar çoğalabilir.</div>
+
+<h2>Çok değerli boyut ve köprü tablo</h2>
+<p>Bir kampanya birden çok kategoriyi kapsar, bir kategori birden çok kampanyada yer alır. Bunu olgu tablosuna sütun olarak koyamazsın. Çözüm bir <b>köprü tablo</b>dur: <code>KampanyaKategori(Kampanya, Kategori)</code>. Modelde köprü, iki boyut arasında durur; filtrenin <code>Kampanya → Köprü → Kategoriler</code> yönünde akması için köprü ile <code>Kategoriler</code> arasındaki ilişki çift yönlü yapılır ya da ölçüde <code>TREATAS</code> kullanılır. Ayrıntı “Tablo fonksiyonları, kümeler ve sanal ilişkiler” dersinde. İki önemli kural:</p>
+<ul>
+<li>Kampanyalara göre kırılımda toplamlar <b>toplanmaz</b>: Giyim iki kampanyada olduğu için iki satırda da görünür; toplam satırı her kategoriyi bir kez sayar.</li>
+<li>Köprüye ağırlık sütunu (ör. 0,5 / 0,5) eklenirse satış kampanyalara paylaştırılabilir.</li>
+</ul>
+<p>Bizim modelde kampanya tablosu yok; köprü mantığını DAX içinde küçük bir tabloyla deneyebilirsin:</p>
+<pre class="dax">Okula Dönüş Satışı =
+VAR Kopru =
+    SELECTCOLUMNS(
+        { ("Okula Dönüş", "Kitap"), ("Okula Dönüş", "Elektronik"), ("Okula Dönüş", "Giyim"),
+          ("Yaz Festivali", "Spor"), ("Yaz Festivali", "Giyim") },
+        "Kampanya", [Value1], "Kategori", [Value2]
+    )
+VAR Kategoriler_ = SELECTCOLUMNS(FILTER(Kopru, [Kampanya] = "Okula Dönüş"), "Kategori", [Kategori])
+RETURN CALCULATE([Net Satış], KEEPFILTERS(TREATAS(Kategoriler_, Kategoriler[Kategori])))</pre>
+<p><code>KEEPFILTERS</code> olmazsa matrisin her kategori satırında kampanyanın toplamı (681.355 ₺) görünür; çünkü <code>TREATAS</code> aynı sütundaki dış filtrenin üzerine yazar.</p>
+
+<h2>Delta bakımı: OPTIMIZE, V-Order, VACUUM</h2>
+<p>Her yükleme yeni Parquet dosyaları ekler. Küçük ve çok sayıda dosya hem Spark’ı hem Direct Lake’i yavaşlatır; Direct Lake’in kapasiteye göre dosya ve satır grubu sınırları (guardrails) da aşılabilir.</p>
+<ul>
+<li><b>OPTIMIZE</b> (sıkıştırma): küçük dosyaları büyük dosyalarda birleştirir.</li>
+<li><b>V-Order</b>: Parquet’i yazarken sıralama, kodlama ve sıkıştırmayı VertiPaq tarzı okumaya göre ayarlar. Learn’e göre yazmayı ortalama yaklaşık %15 yavaşlatır, sıkıştırmayı %50’ye kadar artırabilir. <b>Yeni çalışma alanlarında varsayılan olarak kapalıdır</b>; Power BI’ın yoğun okuduğu tablolar için açman gerekir.</li>
+<li><b>VACUUM</b>: artık hiçbir sürümün başvurmadığı eski dosyaları siler. Varsayılan saklama 7 gündür; daha kısa süre zaman yolculuğunu (time travel) ve eşzamanlı okuyucuları etkileyebilir.</li>
+</ul>
+<pre>-- Spark SQL (lakehouse not defteri)
+OPTIMIZE satislar VORDER;
+VACUUM satislar RETAIN 168 HOURS;
+
+-- Tabloda V-Order'ı kalıcı aç (yalnızca bundan sonraki yazmaları etkiler)
+ALTER TABLE satislar SET TBLPROPERTIES ("delta.parquet.vorder.enabled" = "true");</pre>
+<p>Aynı işlemler lakehouse gezgininde tabloya sağ tık → <b>Bakım</b> ile de çalıştırılır; düzenli bakım için işlem hattındaki Lakehouse bakım etkinliği (<b>önizleme</b>) kullanılabilir. Ambar tablolarının bakımını Fabric büyük ölçüde kendisi yapar.</p>
+
+<h2>DAX tarafında SCD2: “o tarihteki değer”</h2>
+<p>En iyisi, yukarıdaki gibi olgunun doğru sürümün anahtarını taşımasıdır. Ama bazen elinde yalnızca iş anahtarı olan bir olgu ve ayrı bir geçmiş tablosu olur. O zaman her satış satırı için geçerli sürümü tarih aralığına göre bulursun. Bizim modelde <code>Musteriler</code> Tip 1 (yalnızca bugünkü segment) olduğu için geçmişi küçük bir tabloyla canlandıralım: 4 numaralı müşteri 2024’te Premium’a geçti, 8 numaralı müşteri Nisan 2024’te Premium’dan Bireysel’e indi.</p>
+<pre class="dax">EVALUATE
+SELECTCOLUMNS(
+    { (4, "Bireysel", DATE(2022, 1, 1), DATE(2023, 12, 31)),
+      (4, "Premium",  DATE(2024, 1, 1), DATE(2099, 12, 31)),
+      (8, "Premium",  DATE(2022, 1, 1), DATE(2024, 3, 31)),
+      (8, "Bireysel", DATE(2024, 4, 1), DATE(2099, 12, 31)) },
+    "MusteriNo", [Value1], "Segment", [Value2],
+    "GecerliBaslangic", [Value3], "GecerliBitis", [Value4]
+)</pre>
+<p>Ölçü, her satış satırında müşterinin o tarihte geçerli sürümünü arar; geçmişte kaydı olmayan müşteri için bugünkü segmenti kullanır:</p>
+<pre class="dax">Premium Satış (O Tarihte) =
+VAR Gecmis =
+    SELECTCOLUMNS(
+        { (4, "Bireysel", DATE(2022, 1, 1), DATE(2023, 12, 31)),
+          (4, "Premium",  DATE(2024, 1, 1), DATE(2099, 12, 31)),
+          (8, "Premium",  DATE(2022, 1, 1), DATE(2024, 3, 31)),
+          (8, "Bireysel", DATE(2024, 4, 1), DATE(2099, 12, 31)) },
+        "MusteriNo", [Value1], "Segment", [Value2],
+        "Bas", [Value3], "Bit", [Value4]
+    )
+RETURN
+CALCULATE(
+    SUMX(
+        Satislar,
+        VAR No = Satislar[MusteriNo]
+        VAR Gun = Satislar[Tarih]
+        VAR Surum = FILTER(Gecmis, [MusteriNo] = No &amp;&amp; [Bas] &lt;= Gun &amp;&amp; [Bit] &gt;= Gun)
+        VAR Seg = IF(ISEMPTY(Surum), RELATED(Musteriler[Segment]), MAXX(Surum, [Segment]))
+        RETURN IF(Seg = "Premium", Satislar[Tutar])
+    ),
+    Satislar[Durum] &lt;&gt; "İptal"
+)</pre>
+<p>Sonuç: Tip 1 görünümde (<code>Musteriler[Segment] = "Premium"</code>) 2023 Premium satışı 164.865 ₺, tarihsel görünümde 154.847 ₺. Fark tam olarak 4 numaralı müşterinin 2023’teki Bireysel dönemi (−10.594 ₺) ve 8 numaralı müşterinin 2023’teki Premium dönemidir (+576 ₺). Bu ölçü öğreticidir ama satır satır arama yaptığı için büyük olguda yavaştır; üretimde sürüm anahtarını yükleme sırasında olguya yaz.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-yildiz">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-giris/">← Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake</a><a href="../vaka-kayip/">Vaka: müşteri kaybı (churn) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

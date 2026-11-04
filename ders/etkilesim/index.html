@@ -1,0 +1,80 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti | Kesit Power BI</title><meta name="description" content="Raporu keşfedilebilir yapan özellikler ve hangisinin ne zaman kullanılacağı."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/etkilesim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti"><meta property="og:description" content="Raporu keşfedilebilir yapan özellikler ve hangisinin ne zaman kullanılacağı."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/etkilesim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti","description":"Raporu keşfedilebilir yapan özellikler ve hangisinin ne zaman kullanılacağı.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/etkilesim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti</h1><p class="st-l">Raporu keşfedilebilir yapan özellikler ve hangisinin ne zaman kullanılacağı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-etkilesim">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Dilimleyiciler</h2>
+<ul>
+<li>Liste, açılır menü, döşeme, tarih aralığı (kaydırıcı) ve göreli tarih (“son 3 ay”) stilleri.</li>
+<li><b>Dilimleyicileri eşitle</b> (Görünüm → Dilimleyicileri eşitle): Bir sayfadaki yıl seçimi diğer sayfalara da taşınır.</li>
+<li>Çok sayıda dilimleyici yerine <b>Filtreler bölmesi</b>ni kullanıcıya açmak da bir seçenektir.</li>
+</ul>
+<h2>Çapraz filtreleme ve vurgulama</h2>
+<p>Bir grafikte bir çubuğa tıklamak sayfadaki diğer görselleri etkiler. Varsayılan davranış çoğu görselde <b>vurgulama</b>dır (seçilmeyen kısım soluklaşır). Biçim → <b>Etkileşimleri düzenle</b> ile her görsel için “Filtrele / Vurgula / Yok” seçersin. <b>Örnek raporlar</b> sayfasında grafiklere tıklayarak bunu deneyebilirsin.</p>
+<h2>Detaya inme (drill-down)</h2>
+<p>Eksene birden çok alan koyarsan (Yıl → Çeyrek → Ay) bir <b>hiyerarşi</b> oluşur. Görselin üstündeki oklarla bir alt düzeye inersin. Tarih hiyerarşileri ve Kategori → Ürün gibi doğal hiyerarşiler için idealdir.</p>
+<h2>Detay sayfası (drill-through)</h2>
+<p>Ayrı bir “Ürün Detayı” sayfası tasarlar, <code>Urunler[Urun]</code> alanını o sayfanın <b>detaylandırma</b> alanına koyarsın. Kullanıcı herhangi bir sayfada bir ürüne sağ tıklayıp <i>Detaya git → Ürün Detayı</i> der ve o ürünle süzülmüş sayfaya geçer.</p>
+<h2>Araç ipucu sayfaları</h2>
+<p>Küçük bir sayfayı (Sayfa bilgileri → Araç ipucu olarak kullan) bir görselin üzerine gelindiğinde açılan mini rapor olarak gösterebilirsin. Örneğin kategori çubuğunun üzerine gelince o kategorinin aylık eğilimi.</p>
+<h2>Yer işaretleri ve düğmeler</h2>
+<ul>
+<li><b>Yer işareti:</b> Sayfanın o anki durumunu (filtreler, görünür görseller) kaydeder.</li>
+<li><b>Düğme + yer işareti:</b> “Grafik / Tablo” geçişi, “Filtreleri temizle” düğmesi, rehberli sunum.</li>
+<li><b>Sayfa gezintisi:</b> Düğmelerle sayfalar arasında menü oluşturma.</li>
+</ul>
+<h2>Yapay zekâ görselleri</h2>
+<ul>
+<li><b>Anahtar etkileyiciler:</b> Bir ölçüyü en çok neyin artırıp azalttığını bulur.</li>
+<li><b>Ayrıştırma ağacı:</b> Bir toplamı istediğin sırayla alt boyutlara böler.</li>
+<li><b>Copilot:</b> “2024'te kategoriye göre net satış” gibi doğal dil soruları. (Eski Soru-Cevap özelliği kaldırılıyor; Learn: Şubat 2027.)</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Filtrele mi, vurgula mı? Okuyucu ne görür?</h2>
+<p>Satış müdürü Kanal çubuğunda “Mobil”e tıklıyor. Yanındaki Kategori sütun grafiği iki farklı şekilde tepki verebilir:</p>
+<div class="tbl-wrap"><table><tr><th>Davranış</th><th>Kategori grafiğinde ne olur?</th><th>Ne zaman iyi?</th></tr>
+<tr><td>Vurgula (Highlight)</td><td>Her çubuğun tam boyu soluk kalır; Mobil’in payı koyu renkle çubuğun içinde çizilir.</td><td>Parçanın bütüne oranı görülmek istenirken: “Elektronik’in ne kadarı Mobil’den?”</td></tr>
+<tr><td>Filtrele (Filter)</td><td>Çubuklar yalnızca Mobil satışıyla yeniden çizilir; eksen yeniden ölçeklenir, sıralama değişebilir.</td><td>Seçimin kendi dünyasına bakılırken: “Mobil’de hangi kategori lider?”</td></tr>
+<tr><td>Yok (None)</td><td>Hiçbir şey değişmez.</td><td>Genel toplamı gösteren KPI kartları, karşılaştırma için sabit kalması gereken referans grafikler.</td></tr></table></div>
+<p>Learn’e göre çizgi, dağılım ve harita görselleri vurgulanamaz; bu yüzden onlar her zaman filtrelenir. Kartlar da vurgulanamaz, seçim onlara filtre olarak ulaşır. Ayar <b>Biçim → Etkileşimleri düzenle</b> (Edit interactions) ile açılır: kaynak görseli seç, diğer görsellerin köşesinde beliren filtre, vurgu ve “yok” simgelerinden birine tıkla. Ayar <b>kaynak → hedef</b> yönündedir; A’nın B’ye etkisi, B’nin A’ya etkisinden bağımsızdır.</p>
+<div class="tip"><b>Varsayılanı değiştirmek</b>Vurgulama yerine her yerde filtreleme istiyorsan tek tek ayarlamak zorunda değilsin: Dosya → Seçenekler ve ayarlar → Seçenekler → Geçerli dosya → Rapor ayarları altında varsayılan etkileşimi çapraz vurgulamadan çapraz filtrelemeye çeviren bir seçenek bulunur. Yalnızca o dosyayı etkiler.</div>
+
+<h2>Detaya inme ile detaya git farkı</h2>
+<p>İki özellik adları benzediği için sürekli karıştırılır. Tek cümleyle: <b>detaya inme aynı görselin içinde hiyerarşide aşağı iner, detaya git başka bir sayfaya gider.</b></p>
+<div class="tbl-wrap"><table><tr><th></th><th>Detaya inme (Drill down)</th><th>Detaya git (Drill through)</th></tr>
+<tr><td>Nerede olur?</td><td>Aynı görselde</td><td>Hedef sayfada</td></tr>
+<tr><td>Kurulum</td><td>Eksene birden çok alan (Yıl → Çeyrek → Ay)</td><td>Hedef sayfanın Detaylandırma kutusuna alan</td></tr>
+<tr><td>Diğer görselleri etkiler mi?</td><td>Varsayılan olarak hayır</td><td>Hedef sayfadaki tüm görseller süzülür</td></tr>
+<tr><td>Geri dönüş</td><td>Görselin üstündeki yukarı ok</td><td>Otomatik eklenen Geri düğmesi</td></tr></table></div>
+<p>Detaya inmenin sayfadaki diğer görselleri de süzmesini istiyorsan: görseli seç → Biçim şeridi → <b>Detaya inme filtrelerini uygula</b> (Apply drill down filters to) → <b>Tüm sayfa</b>. Böylece kullanıcı 2024 → 2. çeyreğe indiğinde yanındaki kartlar da o çeyreği gösterir.</p>
+
+<h2>Dilimleyici eşitlemenin ileri hâli: eşitleme grupları</h2>
+<p>Hikâye anlatımı dersinde aynı dilimleyiciyi sayfalar arasında eşitlemeyi gördün. Bazen eşitlenmesi gereken şey <b>iki ayrı dilimleyicidir</b>: örneğin Özet sayfasında açılır liste biçiminde, Detay sayfasında döşeme biçiminde bir Kategori dilimleyicisi. Dilimleyicileri eşitle bölmesinde <b>Gelişmiş seçenekler</b>’i aç ve iki dilimleyiciye birebir aynı grup adını yaz. İki seçenek var:</p>
+<ul>
+<li><b>Filtre değişikliklerini diğer dilimleyicilerle eşitle:</b> Birinde yapılan seçim ötekine taşınır.</li>
+<li><b>Alan değişikliklerini diğer dilimleyicilerle eşitle:</b> Birinin alanını değiştirirsen öteki de değişir.</li>
+</ul>
+<div class="warn"><b>Eşitleme ile performans</b>Beş sayfaya eşitlenmiş bir dilimleyicide her tıklama, açık sayfanın tüm görsellerini yeniden sorgular. Kullanıcı çok sayıda dilimleyiciyi art arda değiştiriyorsa <b>Tüm dilimleyicileri uygula</b> (Apply all slicers) eylemli bir düğme koy: seçimler önce toplanır, sorgular tek seferde gider. Desktop’ta düğmeyi denemek için Ctrl tuşuna basılı tutarak tıkla.</div>
+
+<h2>Düğme eylemleri: hangi iş için hangisi?</h2>
+<div class="tbl-wrap"><table><tr><th>Eylem</th><th>Tipik kullanım</th></tr>
+<tr><td>Sayfa gezintisi</td><td>Menü şeridi; yer işareti gerektirmez</td></tr>
+<tr><td>Yer işareti</td><td>Grafik/Tablo geçişi, hazır filtre senaryoları</td></tr>
+<tr><td>Detaya git</td><td>Seçili ürünün ayrıntı sayfasına götüren düğme; seçim yokken devre dışı görünür</td></tr>
+<tr><td>Tüm dilimleyicileri uygula / temizle</td><td>Çok dilimleyicili filtre panelleri</td></tr>
+<tr><td>Geri</td><td>Detay sayfasından dönüş</td></tr>
+<tr><td>Web URL’si</td><td>Kaynak sisteme, belge sayfasına bağlantı</td></tr></table></div>
+<p>Düğme eylem listesinde Soru-Cevap da görünür; ancak bu özellik kaldırılacağı için (Learn: Şubat 2027) yeni raporlarda kullanma. Kullanıcının hangi seçimle baktığını görünür kılmak, etkileşimli raporun en çok unutulan parçasıdır: bir metin kartı seçimi yazsın.</p>
+<pre class="dax">Seçim Özeti Metni =
+IF(
+    ISFILTERED(Kategoriler[Kategori]),
+    "Kategori: " &amp; CONCATENATEX(VALUES(Kategoriler[Kategori]), Kategoriler[Kategori], ", "),
+    "Tüm kategoriler"
+)</pre>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-etkilesim">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../gorsel-ilkeler/">← Görselleştirme ilkeleri</a><a href="../hedef/">Hedef ve gerçekleşen: farklı ayrıntı düzeyleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

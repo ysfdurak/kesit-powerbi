@@ -1,0 +1,106 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX'ta tarih, metin ve sayma fonksiyonları | Kesit Power BI</title><meta name="description" content="Altı sayma fonksiyonunun farkı, teslim süresini DATEDIFF ile hesaplamak, EOMONTH, WEEKDAY, NETWORKDAYS, FORMAT ile ay adı üretmek ve metin fonksiyonları.…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-tarih-metin/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX'ta tarih, metin ve sayma fonksiyonları"><meta property="og:description" content="Altı sayma fonksiyonunun farkı, teslim süresini DATEDIFF ile hesaplamak, EOMONTH, WEEKDAY, NETWORKDAYS, FORMAT ile ay adı üretmek ve metin fonksiyonları.…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-tarih-metin/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX'ta tarih, metin ve sayma fonksiyonları","description":"Altı sayma fonksiyonunun farkı, teslim süresini DATEDIFF ile hesaplamak, EOMONTH, WEEKDAY, NETWORKDAYS, FORMAT ile ay adı üretmek ve metin fonksiyonları.…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-tarih-metin/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>DAX'ta tarih, metin ve sayma fonksiyonları</h1><p class="st-l">Altı sayma fonksiyonunun farkı, teslim süresini DATEDIFF ile hesaplamak, EOMONTH, WEEKDAY, NETWORKDAYS, FORMAT ile ay adı üretmek ve metin fonksiyonları. Hangisi hesaplanmış sütunda, hangisi ölçüde kullanılır?</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-tarih-metin">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p><b>Toplama fonksiyonları</b> dersinde SUM, COUNTROWS ve DISTINCTCOUNT ile tanıştın. Bu derste üç küçük ama her gün kullanılan aileyi tamamlıyoruz: <b>sayma</b>, <b>tarih</b> ve <b>metin</b> fonksiyonları. Örneklerin hepsi Anadolu Market modelinden; sayılar bu modelden hesaplandı.</p>
+
+<h2>Sayma ailesi: altı fonksiyon, altı farklı soru</h2>
+<p>“Kaç tane?” sorusunun DAX'ta birden çok cevabı var. Fark, <b>boş (BLANK)</b> hücreleri ve <b>tekrar eden</b> değerleri nasıl ele aldıklarındadır. <code>Satislar[KargoGun]</code> sütununda bazı satırlar boştur; bu sütun farkları görmek için idealdir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Ne sayar?</th><th><code>Satislar[KargoGun]</code> için sonuç</th></tr>
+<tr><td><code>COUNTROWS(Satislar)</code></td><td>Tablonun satırlarını; sütunla ilgilenmez</td><td>1.620</td></tr>
+<tr><td><code>COUNT</code></td><td>Boş olmayan hücreleri (sayı, tarih, metin)</td><td>1.489</td></tr>
+<tr><td><code>COUNTA</code></td><td>Boş olmayan hücreleri; TRUE/FALSE dahil her türü</td><td>1.489</td></tr>
+<tr><td><code>COUNTBLANK</code></td><td>Boş hücreleri</td><td>131</td></tr>
+<tr><td><code>DISTINCTCOUNT</code></td><td>Farklı değerleri; BLANK da bir değer sayılır</td><td>15</td></tr>
+<tr><td><code>DISTINCTCOUNTNOBLANK</code></td><td>Farklı değerleri; BLANK hariç</td><td>14</td></tr>
+</table></div>
+<p>Kargo günü 0 ile 13 arasında 14 farklı değer alıyor. <code>DISTINCTCOUNT</code> boş hücreyi de ayrı bir değer saydığı için 15 döndürür. Aynı tuzak müşteri tablosunda da var: 150 müşterinin 7'sinin şehri boş. <code>DISTINCTCOUNT(Musteriler[Sehir])</code> 13, <code>DISTINCTCOUNTNOBLANK(Musteriler[Sehir])</code> 12 verir. “Kaç şehre satış yapıyoruz?” sorusunun doğru cevabı 12'dir.</p>
+<pre class="dax">Boş Kargo Günü = COUNTBLANK(Satislar[KargoGun])</pre>
+<pre class="dax">Şehirli Müşteri = COUNTA(Musteriler[Sehir])</pre>
+<div class="tip"><b>COUNT ile COUNTA</b>Güncel DAX'ta COUNT sayı, tarih ve metin değerlerini sayar; yalnızca TRUE/FALSE sütunlarında çalışmaz. Mantıksal (Boolean) bir sütunu saymak için COUNTA kullan. Pratikte ikisi çoğu sütunda aynı sonucu verir.</div>
+<p>Boş değerin <b>nedenini</b> de sor: 131 boş kargo gününün 121'i iptal edilen siparişlerde (teslimat hiç olmayacak), 10'u ise hâlâ kargoda olan siparişlerde (henüz bilinmiyor). Sayı aynı, anlamı farklı. Bu konuya Keşifçi veri analizi dersinde döneceğiz.</p>
+
+<h2>Tarih fonksiyonları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Örnek</th><th>Sonuç</th></tr>
+<tr><td><code>YEAR</code>, <code>MONTH</code>, <code>DAY</code></td><td><code>MONTH(DATE(2024, 3, 5))</code></td><td>3</td></tr>
+<tr><td><code>DATE(yıl, ay, gün)</code></td><td><code>DATE(2024, 3, 5)</code></td><td>5 Mart 2024</td></tr>
+<tr><td><code>EOMONTH(tarih, ay kaydırma)</code></td><td><code>EOMONTH(DATE(2024, 2, 10), 0)</code></td><td>29 Şubat 2024 (ayın son günü)</td></tr>
+<tr><td><code>WEEKDAY(tarih, 2)</code></td><td><code>WEEKDAY(DATE(2024, 3, 4), 2)</code></td><td>1 (Pazartesi = 1, Pazar = 7)</td></tr>
+<tr><td><code>DATEDIFF(başlangıç, bitiş, aralık)</code></td><td><code>DATEDIFF(DATE(2024, 1, 31), DATE(2024, 2, 1), MONTH)</code></td><td>1</td></tr>
+<tr><td><code>NETWORKDAYS(başlangıç, bitiş)</code></td><td><code>NETWORKDAYS(DATE(2024, 3, 1), DATE(2024, 3, 31))</code></td><td>21</td></tr>
+</table></div>
+<p><code>WEEKDAY</code>'in ikinci bağımsız değişkeni haftanın nereden başlayacağını söyler. Varsayılan (1) Pazar = 1'dir; Türkiye'de alışılan sıra için <b>2</b> kullan. Modeldeki <code>Tarih[GunNo]</code> sütunu tam olarak <code>WEEKDAY(Tarih[Tarih], 2)</code> ile aynıdır.</p>
+<p><code>DATEDIFF</code> tam ayları değil, <b>geçilen sınırları</b> sayar: 31 Ocak'tan 1 Şubat'a bir gün vardır, ama bir ay sınırı geçildiği için sonuç 1'dir. Aralık olarak DAY, WEEK, MONTH, QUARTER, YEAR (ve saat için HOUR, MINUTE, SECOND) yazılabilir. İkinci tarih birinciden küçükse sonuç negatiftir.</p>
+<pre class="dax">Ortalama Teslim Süresi =
+AVERAGEX(
+    FILTER(Satislar, NOT ISBLANK(Satislar[TeslimTarihi])),
+    DATEDIFF(Satislar[Tarih], Satislar[TeslimTarihi], DAY)
+)</pre>
+<p>Sonuç 3,12 gündür; modeldeki hazır <code>[Ortalama Kargo Günü]</code> ölçüsüyle aynı. Peki <code>FILTER</code>'ı atlarsan ne olur?</p>
+<pre class="dax">Teslim Süresi (hatalı) =
+AVERAGEX(Satislar, DATEDIFF(Satislar[Tarih], Satislar[TeslimTarihi], DAY))</pre>
+<div class="warn"><b>Boş tarih sıfır değildir</b>Tarih hesaplarında boş bir tarih, DAX'ın tarih başlangıcı olan 30 Aralık 1899 gibi işlenebilir. NETWORKDAYS'in belgesi bunu açıkça söyler: tarihlerden yalnızca biri boşsa 30.12.1899 kabul edilir. Bu uygulamanın motorunda yukarıdaki hatalı ölçü −1.596,7 gün döndürür. Teslim tarihi boş satırları her zaman önce ayıkla.</div>
+<p><code>NETWORKDAYS(başlangıç, bitiş, [hafta sonu], [tatiller])</code> iş günlerini sayar. Varsayılan hafta sonu Cumartesi–Pazar'dır (kod 1); tatilleri <code>{ DATE(2024, 4, 10), DATE(2024, 4, 11) }</code> gibi tek sütunlu bir tabloyla verirsin. Başlangıç ve bitiş <b>dahildir</b>: aynı gün teslim edilen bir sipariş 1 iş günü sayılır. Teslimatlarda ortalama NETWORKDAYS 2,97 çıkar; “kaç iş günü sürdü?” sorusu için 1 çıkarırsın.</p>
+
+<h2>TODAY ve FORMAT: iki tuzak</h2>
+<p><b>TODAY()</b> bilgisayarın bugünkü tarihini döndürür. Ölçüde her sorguda, hesaplanmış sütunda yalnızca yenilemede hesaplanır. Bu modelin verisi 31 Aralık 2024'te biter; “son 30 gün” ölçüsünü <code>TODAY()</code> ile yazarsan bugün boş sonuç alırsın. Geçmiş verili raporlarda “bugün” olarak verinin son tarihini kullan: <code>CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS())</code>. Uygulamanın motoru tutarlı sonuç versin diye TODAY()'i 31.12.2024 kabul eder.</p>
+<p><b>FORMAT(değer, biçim)</b> bir değeri <b>metne</b> çevirir. Model kültürü Türkçe olduğunda ay adları Türkçe gelir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İfade</th><th>Sonuç</th></tr>
+<tr><td><code>FORMAT(DATE(2024, 3, 5), "MMMM yyyy")</code></td><td>Mart 2024</td></tr>
+<tr><td><code>FORMAT(DATE(2024, 3, 5), "yyyy-MM")</code></td><td>2024-03</td></tr>
+<tr><td><code>FORMAT(DATE(2024, 3, 5), "dddd")</code></td><td>Salı</td></tr>
+<tr><td><code>FORMAT(1234.5, "#,0.00")</code></td><td>1.234,50</td></tr>
+</table></div>
+<pre class="dax">Seçili Ay Metni =
+IF(
+    HASONEVALUE(Tarih[YilAy]),
+    "Satışlar · " &amp; FORMAT(MAX(Tarih[Tarih]), "MMMM yyyy"),
+    "Satışlar · tüm dönem"
+)</pre>
+<div class="warn"><b>FORMAT sayıyı metne çevirir</b>Üç sonucu var. (1) Metin döndüren bir ölçü sütun ya da çizgi grafiğin Y eksenine konamaz; Microsoft'un belgesi de bunu açıkça söyler. (2) Metin olarak sıralanır: "Ağustos", "Aralık"tan önce gelir; "10" ise "9"dan önce. (3) <b>FORMAT(BLANK()) boş metin ("") döndürür</b>, BLANK değil. Ölçü artık hiç boş olmadığı için tablo görseli satışı olmayan tüm satırları da gösterir. Sayıyı yalnızca görünüşü için biçimlendiriyorsan FORMAT yerine ölçünün biçim ayarını ya da dinamik biçim dizesini kullan.</div>
+
+<h2>Metin fonksiyonları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Örnek</th><th>Sonuç</th></tr>
+<tr><td><code>LEFT</code> / <code>RIGHT</code> / <code>MID</code></td><td><code>LEFT("Ankara", 3)</code>, <code>MID("ABCDEF", 2, 3)</code></td><td>Ank, BCD</td></tr>
+<tr><td><code>LEN</code></td><td><code>LEN("Antalya")</code></td><td>7</td></tr>
+<tr><td><code>UPPER</code> / <code>LOWER</code></td><td><code>UPPER(Musteriler[Sehir])</code></td><td>BURSA</td></tr>
+<tr><td><code>SEARCH</code> / <code>FIND</code></td><td><code>SEARCH("set", Urunler[Urun], 1, 0)</code></td><td>Bulunduğu konum; yoksa 0</td></tr>
+<tr><td><code>SUBSTITUTE</code></td><td><code>SUBSTITUTE("a-b-c", "-", "")</code></td><td>abc</td></tr>
+<tr><td><code>TRIM</code></td><td><code>TRIM("  Kot   Pantolon ")</code></td><td>Kot Pantolon (baştaki, sondaki ve aradaki fazla boşluklar gider)</td></tr>
+<tr><td><code>CONCATENATE</code> / <code>&amp;</code></td><td><code>CONCATENATE("a", "b")</code>, <code>"a" &amp; "b" &amp; "c"</code></td><td>CONCATENATE yalnızca iki değer alır; <code>&amp;</code> sınırsızdır</td></tr>
+<tr><td><code>COMBINEVALUES</code></td><td><code>COMBINEVALUES("|", Satislar[SiparisNo], Satislar[UrunNo])</code></td><td>1|27 (birleşik anahtar)</td></tr>
+</table></div>
+<p><code>SEARCH</code> büyük-küçük harfe duyarsızdır ve joker karakter kabul eder; <code>FIND</code> duyarlıdır. İkisi de bulamazsa hata verir; dördüncü bağımsız değişkenle (ör. 0) bunun yerine bir değer döndürmelerini söylersin. Ürün adında “set” geçen üç ürünü bulmak:</p>
+<pre class="dax">EVALUATE
+FILTER(VALUES(Urunler[Urun]), SEARCH("set", Urunler[Urun], 1, 0) &gt; 0)</pre>
+<p>Sonuç: Çaydanlık Seti, Seramik Kupa Seti, Dambıl Seti 10kg. <code>COMBINEVALUES</code> ise iki sütunu ayraçla birleştirip tek bir anahtar üretir. Tek sütunlu ilişki kurulması gereken yerlerde (ör. sipariş + ürün) kullanılır; DirectQuery'de bu birleşik anahtarla kurulan ilişkiler için iyileştirilmiştir.</p>
+<pre class="dax">EVALUATE
+TOPN(5,
+    ADDCOLUMNS(VALUES(Musteriler[Sehir]),
+        "Büyük harf", UPPER(Musteriler[Sehir]),
+        "İlk 3", LEFT(Musteriler[Sehir], 3),
+        "Uzunluk", LEN(Musteriler[Sehir])),
+    Musteriler[Sehir], ASC)</pre>
+
+<h2>Hesaplanmış sütunda mı, ölçüde mi?</h2>
+<p>Bu fonksiyonların çoğu tek bir değer üzerinde çalışır. Nerede kullanacağın, sonucun <b>bir satıra mı</b> yoksa <b>bir seçime mi</b> ait olduğuna bağlıdır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>Yer</th><th>Neden?</th></tr>
+<tr><td>Sipariş satırının teslim süresi, ürün kısa adı, sipariş ayı etiketi</td><td>Hesaplanmış sütun (daha iyisi: Power Query)</td><td>Her satıra ait sabit bir etiket; dilimleyicide ve eksende kullanılır</td></tr>
+<tr><td>Ortalama teslim süresi, boş kargo günü sayısı</td><td>Ölçü</td><td>Filtreye göre değişen bir toplam</td></tr>
+<tr><td>“Mart 2024” başlığı</td><td>Ölçü</td><td>Kullanıcının seçimine bağlı; satırda saklanamaz</td></tr>
+<tr><td>Ay adı, yıl-ay, haftanın günü</td><td>Tarih tablosunun sütunu</td><td>Modelde zaten var: <code>Tarih[Ay]</code>, <code>Tarih[YilAy]</code>, <code>Tarih[HaftaninGunu]</code></td></tr>
+</table></div>
+<div class="note"><b>Ölçüde satır fonksiyonu</b>Ölçüde <code>DATEDIFF(Satislar[Tarih], …)</code> gibi bir sütunu doğrudan yazamazsın; ölçünün “şu anki satırı” yoktur. Satır satır hesap için <code>AVERAGEX</code>, <code>SUMX</code>, <code>FILTER</code> gibi bir yineleyici kullan. Ayrıntısı <b>Yineleyiciler: SUMX, AVERAGEX ve RELATED</b> dersinde.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-tarih-metin">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../model-ileri/">← Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük</a><a href="../eda/">Keşifçi veri analizi: eksik değer, dağılım, aykırı değer ve korelasyon →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

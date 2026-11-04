@@ -1,0 +1,63 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Temel görseller ve alan kutuları | Kesit Power BI</title><meta name="description" content="Bir alanı hangi kutuya koyarsan ne olur? Eksen, değerler, gösterge, küçük katlar, araç ipuçları."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-temel/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Temel görseller ve alan kutuları"><meta property="og:description" content="Bir alanı hangi kutuya koyarsan ne olur? Eksen, değerler, gösterge, küçük katlar, araç ipuçları."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-temel/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Temel görseller ve alan kutuları","description":"Bir alanı hangi kutuya koyarsan ne olur? Eksen, değerler, gösterge, küçük katlar, araç ipuçları.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-temel/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>Temel görseller ve alan kutuları</h1><p class="st-l">Bir alanı hangi kutuya koyarsan ne olur? Eksen, değerler, gösterge, küçük katlar, araç ipuçları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-temel">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Görsel = alan kutularının toplamı</h2>
+<p>Görselleştirmeler bölmesinin <b>Oluştur</b> sekmesinde her görselin <b>alan kutuları</b> (field wells) vardır. Görselin ne söylediğini, hangi alanı hangi kutuya koyduğun belirler. Aynı iki alan, kutular değişince bambaşka bir grafik olur.</p>
+<h2>Sütun grafiğinin kutuları: ne koyarsan ne olur?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Kutu</th><th>Ne koyulur?</th><th>Koyduğunda ne olur?</th><th>Örnek</th></tr>
+<tr><td><b>X ekseni</b></td><td>Sütun (kategori ya da tarih)</td><td>Her farklı değer için bir sütun çizilir. Birden çok alan koyarsan hiyerarşi oluşur ve detaya inme okları belirir.</td><td><code>Kategoriler[Kategori]</code></td></tr>
+<tr><td><b>Y ekseni</b></td><td>Ölçü (ya da sayısal sütun)</td><td>Sütunun yüksekliği. İkinci bir ölçü eklersen kümelenmiş sütunlar oluşur.</td><td><code>[Net Satış]</code></td></tr>
+<tr><td><b>Gösterge</b></td><td>Sütun</td><td>Her sütun bu alanın değerlerine bölünür ve renklendirilir (yığılmış ya da kümelenmiş).</td><td><code>Satislar[Kanal]</code></td></tr>
+<tr><td><b>Küçük katlar</b></td><td>Sütun</td><td>Aynı grafik bu alanın her değeri için ayrı küçük bir panelde tekrarlanır; eksenler ortaktır.</td><td><code>Musteriler[Segment]</code></td></tr>
+<tr><td><b>Araç ipuçları</b></td><td>Ölçü</td><td>Fareyle üzerine gelince açılan kutuya ek bilgi eklenir; grafik değişmez.</td><td><code>[Kâr Marjı %]</code></td></tr>
+<tr><td><b>Detaylandırma</b> (sayfada)</td><td>Sütun</td><td>Bu sayfa bir detay sayfası olur; başka sayfalardan sağ tıklayıp buraya gelinir.</td><td><code>Urunler[Urun]</code></td></tr>
+</table></div>
+<h2>Sık kullanılan görsellerin kutuları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Görsel</th><th>Kutular</th><th>Dikkat</th></tr>
+<tr><td>Kart</td><td>Alanlar (tek ölçü)</td><td>Yeni kart görseli birden çok ölçü ve referans etiketi alır.</td></tr>
+<tr><td>Çizgi grafik</td><td>X ekseni (tarih), Y ekseni, İkincil y ekseni, Gösterge, Küçük katlar</td><td>Tarihi X'e koy; Power BI kesintisiz (sürekli) eksen kullanır.</td></tr>
+<tr><td>Halka / Pasta</td><td>Gösterge, Değerler, Ayrıntılar</td><td>Dilim sayısını 5'in altında tut.</td></tr>
+<tr><td>Tablo</td><td>Sütunlar</td><td>Ölçüler de sütun olarak eklenir; toplam satırı otomatik.</td></tr>
+<tr><td>Matris</td><td>Satırlar, Sütunlar, Değerler</td><td>Satırlara birden çok alan = artı/eksi ile açılan hiyerarşi.</td></tr>
+<tr><td>Dağılım</td><td>Değerler (nokta başına), X ekseni, Y ekseni, Gösterge, Boyut, Oynatma ekseni</td><td>“Değerler” kutusu boşsa tek bir nokta çizilir!</td></tr>
+<tr><td>Dilimleyici</td><td>Alan</td><td>Tarih alanında kaydırıcı, metin alanında liste/döşeme.</td></tr>
+</table></div>
+<div class="warn"><b>En sık yapılan hata</b>Sayısal bir sütunu (ör. <code>Satislar[Adet]</code>) eksene koymak. Power BI onu kategori gibi davranıp her farklı adet değeri için bir sütun çizer. Sayıyı ölçüye, metni eksene koy.</div>
+<h2>Bir görsele tıklayınca ne olur?</h2>
+<p>Rapor görünümünde bir sütuna tıklamak, sayfadaki diğer görselleri <b>çapraz filtreler</b> ya da <b>vurgular</b>. Bu Power BI'ın varsayılan davranışıdır. Detaya inmek için ise görselin üstündeki <b>aşağı ok</b> (detaya inme modu) açılır; o zaman tıklama filtrelemek yerine bir alt düzeye iner. İkisini karıştırmamak için <a href="../../">Örnek raporlar</a> bölümünde her görselin başlığında bu oklar ayrı düğmeler olarak duruyor.</p>
+<div class="tip"><b>Canlı dene</b><a href="../../">Görseller</a> bölümünde her görsel için Oluştur sekmesindeki kutuları değiştirebilir ve sonucu anında görebilirsin.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Alan kutusundaki küçük ok: özetleme seçenekleri</h2>
+<p>Alan kutusuna koyduğun her alanın yanında küçük bir aşağı ok vardır. Bu menü, Power BI'ın o alanla ne yapacağını belirler.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek</th><th>Ne yapar?</th><th>Ne zaman?</th></tr>
+<tr><td>Topla, Ortalama, En az, En çok</td><td>Sayısal sütunu bu yolla özetler (örtük ölçü).</td><td>Hızlı keşifte; kalıcı raporda açık ölçü yaz.</td></tr>
+<tr><td>Say, Farklı say</td><td>Değerleri ya da farklı değerleri sayar.</td><td>Metin sütunlarında varsayılan.</td></tr>
+<tr><td>Özetleme</td><td>Her değeri olduğu gibi gösterir.</td><td>Tabloda ürün kodu, fiyat listesi gibi alanlarda.</td></tr>
+<tr><td>Bu görsel için yeniden adlandır</td><td>Yalnızca bu görselde başlığı değiştirir; modeldeki ad aynı kalır.</td><td>“Sum of Tutar” yerine “Satış” yazmak için.</td></tr>
+<tr><td>Değeri olmayan öğeleri göster</td><td>Ölçüsü boş olan satırları da listeler.</td><td>Satışı olmayan kategorileri de görmek için.</td></tr>
+</table></div>
+<p>Bir örnek: tabloya Satislar[KargoGun] sütununu sürükledin. Power BI onu kendiliğinden toplar ve “KargoGun toplamı: 4.647” yazar. Bu sayının iş anlamı yoktur; kimse kargo günlerini toplamaz. Oktan <b>Ortalama</b> seçebilirsin ama doğrusu hazır <b>[Ortalama Kargo Günü]</b> ölçüsünü kullanmaktır. Böylece aynı hesap her raporda aynı adla çıkar.</p>
+<h2>Tablo mu, matris mi?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Tablo</th><th>Matris</th></tr>
+<tr><td>Yapı</td><td>Düz liste; her satır bir kayıt ya da grup</td><td>Satır × sütun çaprazı (Excel'deki pivot tablo gibi)</td></tr>
+<tr><td>Alt toplam</td><td>Yalnızca en altta toplam</td><td>Her düzeyde alt toplam</td></tr>
+<tr><td>Hiyerarşi</td><td>Yok</td><td>Artı / eksi ile açılıp kapanan düzeyler</td></tr>
+<tr><td>Tipik kullanım</td><td>Sipariş listesi, müşteri listesi, dışa aktarma</td><td>Kategori × yıl satışı, bölge → şehir kırılımı</td></tr>
+</table></div>
+<p>Kategoriler[Kategori] satırlara, Tarih[Yil] sütunlara, [Net Satış] değerlere konunca matris bir pivot tablo olur: örneğin Elektronik 2022'de 26.724 ₺, Hediye 2022'de 2.000 ₺. Aynı alanları bir tabloya koyarsan her kategori-yıl çifti ayrı bir satır olur; karşılaştırmak zorlaşır.</p>
+<h2>Satış olmayan satırlar neden kayboluyor?</h2>
+<p>Power BI, ölçüsü boş (BLANK) olan satırları varsayılan olarak gizler. Bir dilimleyicide yalnızca bir ay seçtiğinde o ay satışı olmayan kategori listeden düşer. Çoğu zaman bu istenen davranıştır: boş satırlar gürültüdür. Ama yönetici “satış yapmayan kategoriyi de görmek istiyorum” diyorsa satır alanının okundan <b>Değeri olmayan öğeleri göster</b> seçeneğini aç. Boş yerine 0 görmek istenirse bu bir ölçü kararıdır; BLANK, hatalar ve DAX'ta hata ayıklama dersinde nasıl yapılacağını göreceksin.</p>
+<div class="note"><b>Tarih alanında hiyerarşi</b>Otomatik tarih/saat açıksa bir tarih sütununu eksene koyduğunda Yıl → Çeyrek → Ay → Gün hiyerarşisi gelir. Kendi tarih tablonu kullanıyorsan oktan yalnızca tarihin kendisini seçebilir ya da Tarih tablosundaki Yil, Ay sütunlarını ayrı ayrı koyabilirsin. Tarih tablosu dersinde neden kendi tablonun daha iyi olduğunu gördün.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-temel">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../menuler-turu/">← Menüler turu: hangi komut nerede?</a><a href="../bicim-temel/">Biçim bölmesi: her ayar ne işe yarar? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,81 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Görselleştirme ilkeleri | Kesit Power BI</title><meta name="description" content="Veri-mürekkep oranı, renk, sıralama, etiketler, eksenler ve erişilebilirlik."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-ilkeler/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Görselleştirme ilkeleri"><meta property="og:description" content="Veri-mürekkep oranı, renk, sıralama, etiketler, eksenler ve erişilebilirlik."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-ilkeler/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Görselleştirme ilkeleri","description":"Veri-mürekkep oranı, renk, sıralama, etiketler, eksenler ve erişilebilirlik.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-ilkeler/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Görselleştirme ilkeleri</h1><p class="st-l">Veri-mürekkep oranı, renk, sıralama, etiketler, eksenler ve erişilebilirlik.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-ilkeler">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Az ama doğru</h2>
+<ul>
+<li><b>Veri-mürekkep oranı:</b> Ekrandaki her pikselin bir görevi olsun. Kalın kenarlıklar, gölgeler, 3B efektler, ızgara çizgilerinin hepsi bilgiye rakip olur.</li>
+<li><b>Bir görsel, bir mesaj:</b> Başlık mesajı söylesin: “Elektronik, satışın üçte birini taşıyor”.</li>
+<li><b>Sayfa başına 5–7 görsel:</b> Daha fazlası hem okuyucuyu hem motoru yorar.</li>
+</ul>
+<h2>Renk</h2>
+<ul>
+<li><b>Kategorik renk</b> kimlik içindir (Web, Mobil, Mağaza). Her kanal her sayfada aynı renkte olmalı.</li>
+<li><b>Sıralı renk</b> (açıktan koyuya tek ton) büyüklük içindir: ısı haritası, harita.</li>
+<li><b>Iraksak renk</b> (iki ton, ortada nötr) iyi/kötü sapma içindir: hedefe göre fark.</li>
+<li><b>Durum renkleri</b> (yeşil/sarı/kırmızı) yalnızca durum için kullanılır; renk körlüğü için yanına simge (▲ ▼) ya da metin koy.</li>
+<li>Vurgu için gri + tek renk: Tüm çubuklar gri, odaklanılan kategori renkli.</li>
+</ul>
+<h2>Eksenler ve sıralama</h2>
+<ul>
+<li>Çubuk ve sütun grafiklerinde eksen <b>sıfırdan</b> başlar.</li>
+<li>Kategorileri değere göre sırala; zamanı soldan sağa kronolojik bırak.</li>
+<li>Uzun kategori adları için yatay çubuk kullan; eğik metinden kaçın.</li>
+<li>Ölçeği farklı iki ölçüyü ikili eksenle birleştirme.</li>
+</ul>
+<h2>Erişilebilirlik</h2>
+<ul>
+<li>Görsellere <b>alternatif metin</b> ekle (Biçim → Genel → Alternatif metin).</li>
+<li>Sekme sırasını Seçim bölmesinden düzenle; klavyeyle gezilebilir olsun.</li>
+<li>Metin kontrastı en az 4,5:1 olsun; açık gri üstüne beyaz yazı kullanma.</li>
+<li>Rengi tek bilgi taşıyıcısı yapma: gösterge, etiket ya da desen ekle.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Eksen sıfırdan başlamalı mı? Karar kuralı</h2>
+<p>“Eksen her zaman sıfırdan başlar” kuralı yarım bir kuraldır. Doğrusu şu: <b>uzunlukla değer anlatan</b> grafiklerde eksen sıfırdan başlar; <b>konumla değişim anlatan</b> grafiklerde başlamak zorunda değildir.</p>
+<div class="tbl-wrap"><table><tr><th>Grafik</th><th>Göz neyi okur?</th><th>Eksen</th></tr>
+<tr><td>Sütun / çubuk</td><td>Çubuğun boyu</td><td>Sıfırdan başlamalı. Kesik eksen boyu yalan söyletir.</td></tr>
+<tr><td>Alan grafiği</td><td>Dolgunun alanı</td><td>Sıfırdan başlamalı.</td></tr>
+<tr><td>Çizgi</td><td>Eğim ve yön</td><td>Veriye yakın başlayabilir; küçük oynamaları görmek için uygundur.</td></tr>
+<tr><td>Dağılım</td><td>Noktanın konumu</td><td>Veriye yakın başlar; sıfır çoğu zaman boşluk yaratır.</td></tr></table></div>
+<p>Somut örnek: Anadolu Market’te Giyim’in toplam net satışı yaklaşık 190.169 TL, Spor’un 184.231 TL. Fark yalnızca %3 civarında. Bir sütun grafiğinde y eksenini 180.000’den başlatırsan Giyim çubuğu yaklaşık 10.169, Spor çubuğu 4.231 birim boyunda çizilir. Okuyucu “Giyim, Spor’un iki katından fazla” diye okur. Aynı veriyi çizgi grafikte aylık eğilim olarak gösterirken eksenin 180.000’den başlaması ise sorun değildir; çünkü orada kimse çizginin boyunu ölçmez.</p>
+<div class="tip"><b>Power BI’da nerede?</b>Görseli seç → Biçim → Y ekseni → Aralık → Minimum. Varsayılan “Otomatik” değeri çubuk grafikte sıfırdan başlar ama elle yazılmış bir minimum, rapor yıllarca kopyalanırken fark edilmeden kalabilir. Gözden geçirmede her çubuk grafiğin minimumuna bak.</div>
+
+<h2>Yanıltıcı grafik kataloğu</h2>
+<p>Aşağıdaki hataların çoğu kötü niyetle değil, “daha etkileyici görünsün” isteğiyle yapılır. Gözden geçirmede bu listeyi tek tek tara:</p>
+<ul>
+<li><b>Kesik eksenli çubuk:</b> Yukarıdaki örnek. Çözüm: sıfırdan başlat ya da farkı ayrı bir “fark” ölçüsüyle göster.</li>
+<li><b>Çift eksen oyunu:</b> Net satış sol eksende, kâr marjı sağ eksende. İki eksenin ölçeği elle seçildiği için çizgiler istenen yerde kesişir ve sahte bir ilişki görünür. Görsel algı dersindeki kombo grafik kurallarına uy; emin değilsen iki ayrı küçük grafik kullan.</li>
+<li><b>Eksik dönemle karşılaştırma:</b> İçinde bulunulan ayın yarısı geçmişken ayı tam aylarla aynı çizgide göstermek, son noktada sahte bir düşüş yaratır. Son noktayı farklı renkle işaretle ya da tamamlanmamış ayı filtrele.</li>
+<li><b>Kümülatif ile dönemsel karışıklığı:</b> Kümülatif satış çizgisi hiç düşmez. Kötü geçen bir ay, eğimdeki küçük bir yassılmadan ibaret kalır. Başlıkta “kümülatif” sözcüğü mutlaka geçsin.</li>
+<li><b>3B ve pasta:</b> Perspektif öndeki dilimi büyük gösterir. Yedi kategoriyi pastada okumak zordur; sıralı yatay çubuk her zaman daha dürüsttür.</li>
+<li><b>Renk ölçeğinin her filtrede yeniden kurulması:</b> Isı haritasında “koyu” bir sayfada yüksek, öbür sayfada orta anlamına gelir. Koşullu biçim dersinde sabit eşik yöntemini gördün.</li>
+<li><b>Oran yerine mutlak sayı:</b> Mobil kanal satışı (yaklaşık 599.841 TL) Mağaza’dan (yaklaşık 193.600 TL) büyük diye “Mobil daha başarılı” denemez; sipariş, müşteri ya da ziyaretçi başına bakmadan karar verilmez.</li>
+</ul>
+
+<h2>Veri-mürekkep oranını adım adım artırmak</h2>
+<p>Varsayılan bir sütun grafiği alıp beş adımda sadeleştir. Her adımdan sonra “bu kaldırdığım şey okuyucunun bir sorusuna cevap veriyor muydu?” diye sor:</p>
+<ol>
+<li>Kenarlık, gölge ve arka plan rengini kapat (Biçim → Genel → Efektler).</li>
+<li>Y ekseni ve yatay ızgara çizgilerini kapat, onun yerine veri etiketlerini aç. Yedi çubuk için yedi etiket, eksenden daha hızlı okunur.</li>
+<li>Etiketleri kısalt: “339.303,65” yerine “339 B” (Görüntüleme birimleri: Bin). Ondalık hane okuyucuya bilgi değil, gürültü verir.</li>
+<li>Gösterge (legend) tek seri için gereksizdir; kapat. Bilgiyi başlığa taşı.</li>
+<li>Başlığı bulguya çevir: “Kategoriye göre net satış” yerine “Elektronik satışın yaklaşık %27’sini taşıyor”.</li>
+</ol>
+<div class="warn"><b>Aşırıya kaçma</b>Sadeleştirme bağlamı yok etmemeli. Hedef çizgisi, geçen yıl karşılaştırması ya da birim (TL, adet) “mürekkep” değil, anlamdır. Kural: veriyi ya da karşılaştırmayı taşıyan öğe kalır, süs olan gider.</div>
+
+<h2>Renk bütçesi</h2>
+<p>Bir sayfada kaç renk kullandığını say. İyi bir rapor sayfasında genellikle şunlar yeterlidir: bir nötr gri (bağlam), bir vurgu rengi (odak), ve gerekiyorsa durum renkleri (iyi/kötü). Kanal gibi kategorik bir boyut varsa onun 3 rengi eklenir. Bu sayının 6–7’yi geçmesi, okuyucunun göstergeye bakmak zorunda kalması demektir. Vurguyu ölçüyle yapmak, “hangi çubuk renkli olsun?” kararını rapor yazarının elinden alıp veriye bırakır: en yüksek satışlı kategori kendiliğinden renklenir.</p>
+<pre class="dax">En İyi Kategori Rengi =
+VAR Bu = [Net Satış]
+VAR EnYuksek = MAXX(ALLSELECTED(Kategoriler[Kategori]), [Net Satış])
+RETURN IF(Bu = EnYuksek, "#2A78D6", "#B8B5AD")</pre>
+<p>Bu ölçüyü sütun grafiğinin Biçim → Sütunlar → Renk → fx → Biçim stili: Alan değeri ile bağlarsın. Kullanıcı bir yıl seçtiğinde lider kategori değişirse vurgu da değişir.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-ilkeler">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-orta/">← Power Query: birleştirme, ekleme, özetten çıkarma</a><a href="../etkilesim/">Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

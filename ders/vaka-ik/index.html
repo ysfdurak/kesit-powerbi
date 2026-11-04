@@ -1,0 +1,132 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: İK analitiği | Kesit Power BI</title><meta name="description" content="İK müdürü bütçe dönemi öncesi kadro ve ücret yapısını görmek istiyor. Departman başına çalışan, maaş dağılımı ve çeyrekler, kıdem grupları, unvan bazında…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-ik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: İK analitiği"><meta property="og:description" content="İK müdürü bütçe dönemi öncesi kadro ve ücret yapısını görmek istiyor. Departman başına çalışan, maaş dağılımı ve çeyrekler, kıdem grupları, unvan bazında…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-ik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: İK analitiği","description":"İK müdürü bütçe dönemi öncesi kadro ve ücret yapısını görmek istiyor. Departman başına çalışan, maaş dağılımı ve çeyrekler, kıdem grupları, unvan bazında…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-ik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Vaka Çalışmaları</span><h1>Vaka: İK analitiği</h1><p class="st-l">İK müdürü bütçe dönemi öncesi kadro ve ücret yapısını görmek istiyor. Departman başına çalışan, maaş dağılımı ve çeyrekler, kıdem grupları, unvan bazında maaş aralığı, yönetici başına ekip ve işe alım eğilimini çıkarırsın; ayrılış verisinin neden olmadığını ve nasıl ekleneceğini konuşursun.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-ik">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> İK müdürü (Onur Özkan), genel müdüre sunum hazırlıyor. Yeni yılın ücret bütçesi ve işe alım planı konuşulacak.</p>
+<p><b>Hangi karar?</b> Hangi departmanlarda ücret düzenlemesi gerekiyor, yöneticilerin ekipleri dengeli mi, işe alım hangi hızda sürmeli? Ek olarak genel müdür “çalışan kaybımız ne durumda?” diye soracak; buna dürüst bir cevap gerekiyor.</p>
+<p>Ebeveyn-çocuk yapısını (<code>YoneticiNo</code>, <code>Yol</code>) <b>Hiyerarşiler</b> dersinde gördün. Burada aynı tabloyu bir İK raporuna dönüştürüyoruz.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>İçerik</th></tr>
+<tr><td><code>Calisanlar</code></td><td>27 çalışan: unvan, maaş, işe giriş, kıdem yılı, seviye (1 genel müdür, 2 müdür, 3 uzman/temsilci), yönetici no, yol.</td></tr>
+<tr><td><code>Departmanlar</code></td><td>8 departman ve şehri. <code>Calisanlar[DepartmanNo]</code> ile çoka-bir ilişkili.</td></tr>
+</table></div>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li><b>Modelde ayrılış verisi yok.</b> <code>Calisanlar</code> bugün çalışanların anlık görüntüsüdür: ayrılan kişi tablodan düşmüş. Bu yüzden çalışan devir oranı (turnover), ortalama çalışma süresi veya “kim ayrılıyor?” sorusu bu modelle <b>cevaplanamaz</b>. Ayrıca maaş ve kıdem dağılımı yalnızca “kalanları” gösterir (hayatta kalan yanlılığı).</li>
+<li>Departmanlar tablosunda <b>Hukuk</b> var ama ona bağlı çalışan yok. Matriste “boş öğeleri göster” kapalıysa bu departman hiç görünmez; bilinçli bir seçim yap.</li>
+<li><code>Tarih</code> tablosu 2022–2024’ü kapsar ve <code>Calisanlar</code> ile ilişkili değildir. Daha eski işe girişler için ayrı bir yöntem gerekir (Adım 6).</li>
+<li>Maaş ve e-posta kişisel veridir. Yayımlamadan önce <b>Satır ve nesne düzeyinde güvenlik</b> dersindeki nesne düzeyi güvenliği (OLS) ile <code>Maas</code> sütununu yalnızca İK rolüne aç.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Departman başına çalışan.</b> Hazır <code>[Çalışan Sayısı]</code> ölçüsünü <code>Departmanlar[Departman]</code> ile matrise koy.</p>
+<p><b>Bulgu:</b> Satış 6, Veri Analitiği 5, Yazılım 5, Pazarlama 4, Finans 3, İnsan Kaynakları 3, Genel Müdürlük 1, Hukuk 0. Toplam maaş yükünde Satış (357.000 ₺, %19,2) ve Yazılım (356.000 ₺, %19,2) başta.</p>
+
+<p><b>Adım 2: Maaş dağılımı: medyan ve çeyrekler.</b> Ortalama tek başına yanıltır; çeyrekler dağılımın gövdesini gösterir.</p>
+<pre class="dax">Maaş 1. Çeyrek = PERCENTILE.INC(Calisanlar[Maas], 0.25)
+Maaş 3. Çeyrek = PERCENTILE.INC(Calisanlar[Maas], 0.75)
+Çeyrekler Arası Fark = [Maaş 3. Çeyrek] - [Maaş 1. Çeyrek]</pre>
+<p><b>Bulgu:</b> Şirket geneli: ortalama 68.741 ₺, medyan 67.000 ₺, 1. çeyrek 54.500 ₺, 3. çeyrek 78.500 ₺. En düşük 38.000 ₺, en yüksek 145.000 ₺ (genel müdür). Ortalamanın medyandan yüksek olması tek bir yüksek maaşın etkisi.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Departman</th><th>Kişi</th><th>1. çeyrek</th><th>Medyan</th><th>3. çeyrek</th><th>En yüksek / en düşük</th></tr>
+<tr><td>İnsan Kaynakları</td><td>3</td><td>69.500</td><td>72.000</td><td>81.000</td><td>1,34</td></tr>
+<tr><td>Yazılım</td><td>5</td><td>66.000</td><td>71.000</td><td>75.000</td><td>1,53</td></tr>
+<tr><td>Finans</td><td>3</td><td>66.000</td><td>69.000</td><td>75.500</td><td>1,30</td></tr>
+<tr><td>Veri Analitiği</td><td>5</td><td>60.000</td><td>60.000</td><td>71.000</td><td>2,02</td></tr>
+<tr><td>Satış</td><td>6</td><td>45.250</td><td>55.000</td><td>67.000</td><td><b>2,53</b></td></tr>
+<tr><td>Pazarlama</td><td>4</td><td>44.000</td><td>46.000</td><td>56.750</td><td>1,89</td></tr>
+</table></div>
+<p>Pazarlama’nın medyanı şirket medyanının 21.000 ₺ altında. Satış’ta en yüksek maaş en düşüğün 2,53 katı: departman içi en geniş makas.</p>
+
+<p><b>Adım 3: Kıdem grupları.</b> <code>KidemYil</code> sütunundan grup üretmek için hesaplanmış sütun ya da gruplama (Group) kullanılabilir. Analiz için bir DAX sorgusu yeterli:</p>
+<pre class="dax">EVALUATE
+VAR T =
+    ADDCOLUMNS(
+        Calisanlar,
+        "Grup", SWITCH(TRUE(),
+            Calisanlar[KidemYil] &lt;= 1, "0-1 yıl",
+            Calisanlar[KidemYil] &lt;= 4, "2-4 yıl",
+            Calisanlar[KidemYil] &lt;= 7, "5-7 yıl",
+            "8+ yıl")
+    )
+RETURN
+    ADDCOLUMNS(
+        DATATABLE("Grup", STRING, {{"0-1 yıl"}, {"2-4 yıl"}, {"5-7 yıl"}, {"8+ yıl"}}),
+        "Kişi", VAR G = [Grup] RETURN COUNTROWS(FILTER(T, [Grup] = G)),
+        "Medyan", VAR G = [Grup] RETURN MEDIANX(FILTER(T, [Grup] = G), Calisanlar[Maas])
+    )</pre>
+<p><b>Bulgu:</b> 0-1 yıl 5 kişi (medyan 58.000 ₺), 2-4 yıl 12 kişi (63.000 ₺), 5-7 yıl 5 kişi (71.000 ₺), 8+ yıl 5 kişi (90.000 ₺). Kadronun yarıya yakını (12 / 27) 2-4 yıllık: terfi ve ücret beklentisinin en yoğun olduğu grup.</p>
+
+<p><b>Adım 4: Unvan ve seviye bazında maaş aralığı.</b></p>
+<pre class="dax">Maaş Aralığı = MAX(Calisanlar[Maas]) - MIN(Calisanlar[Maas])
+Maaş Aralığı Oranı = DIVIDE(MAX(Calisanlar[Maas]), MIN(Calisanlar[Maas]))</pre>
+<p><b>Bulgu:</b> Seviye 2’de (6 müdür) maaşlar 82.000–97.000 ₺, medyan 88.500 ₺. Seviye 3’te (20 kişi) 38.000–75.000 ₺, medyan 60.000 ₺: müdür medyanı uzman medyanının 1,48 katı. Birden fazla kişili unvanlarda en geniş aralık <b>Satış Temsilcisi</b>’nde: 52.000–70.000 ₺ (18.000 ₺ fark). Dikkat çeken iki nokta:</p>
+<ul>
+<li><b>Ücret sıkışması:</b> 09.07.2024’te giren Yusuf Kara (Satış Temsilcisi) 58.000 ₺ alıyor; 2022’den beri aynı unvanda olan Ece Kurt 52.000 ₺. Yeni girenin eskiden fazla alması ayrılma riskini artırır.</li>
+<li><b>Unvan sırası:</b> Satış Uzmanı unvanındaki iki kişi (38.000–43.000 ₺) Satış Temsilcilerinden düşük ücret alıyor. Unvan adları kariyer basamağını yansıtmıyor olabilir; İK ile unvan sözlüğü konuşulmalı.</li>
+</ul>
+
+<p><b>Adım 5: Yönetici başına ekip büyüklüğü.</b> Doğrudan bağlıları saymak için bağlamdaki kişileri “yönetici” kabul edip tüm tabloda onlara bağlı olanları ararız:</p>
+<pre class="dax">Doğrudan Bağlı =
+VAR Yoneticiler = VALUES(Calisanlar[CalisanNo])
+RETURN COUNTROWS(FILTER(ALL(Calisanlar), Calisanlar[YoneticiNo] IN Yoneticiler))
+Yönetici Sayısı = COUNTROWS(FILTER(VALUES(Calisanlar[CalisanNo]), [Doğrudan Bağlı] &gt; 0))
+Ortalama Ekip Büyüklüğü = DIVIDE([Doğrudan Bağlı], [Yönetici Sayısı])</pre>
+<p><b>Bulgu:</b> 7 yönetici, 26 doğrudan bağlı, ortalama ekip <b>3,7</b> kişi. Genel müdür 6, Satış Müdürü 5, Analitik ve Yazılım müdürleri 4’er, Pazarlama 3, İK ve Finans 2’şer kişi yönetiyor. Ekip büyüklüğü sorunu yok; ama genel müdürün 6 doğrudan bağlısı tüm müdürler demek. Tüm alt ağaç (dolaylı bağlılar dâhil) için <b>Hiyerarşiler</b> dersindeki <code>PATHCONTAINS</code> kalıbını kullan.</p>
+
+<p><b>Adım 6: İşe alım eğilimi.</b> <code>Calisanlar</code> ile <code>Tarih</code> arasında ilişki yok. <code>TREATAS</code> sanal bir ilişki kurar (<b>Tablo fonksiyonları, kümeler ve sanal ilişkiler</b> dersi):</p>
+<pre class="dax">İşe Alım =
+CALCULATE(COUNTROWS(Calisanlar), TREATAS(VALUES(Tarih[Tarih]), Calisanlar[IseGiris]))</pre>
+<p>Tarih tablosu 2022’de başladığı için önceki yıllar bu ölçüde görünmez. Tüm geçmiş için bir sorgu:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    GENERATESERIES(2015, 2024, 1),
+    "İşe giriş", VAR Y = [Value] RETURN COUNTROWS(FILTER(Calisanlar, YEAR(Calisanlar[IseGiris]) = Y))
+)</pre>
+<p><b>Bulgu:</b> 2015’ten 2021’e yılda 1–4 kişi alınmış; <b>2022’de 7</b> kişi (zirve), 2023’te 2, 2024’te 3. 2024’te alınan üç kişiden ikisi Pazarlama’da İçerik Uzmanı. Ancak ayrılış verisi olmadığı için bu “net büyüme” değildir: 2022’de alınıp ayrılan biri tabloda hiç görünmez.</p>
+
+<h2>Ayrılış analizi hangi veriyle yapılır?</h2>
+<p>Genel müdürün sorusuna cevap: <b>bu modelle yapılamaz</b>; şu veriler gerekir:</p>
+<ul>
+<li><b>Ayrılış tarihi ve nedeni:</b> <code>AyrilisTarihi</code> (boşsa çalışıyor) ve <code>AyrilisTuru</code> (gönüllü / gönülsüz / emeklilik). Ayrılanlar tablodan silinmemeli.</li>
+<li><b>Tarihli çalışan geçmişi:</b> unvan, departman ve maaş değiştiğinde yeni satır açan bir tablo (yavaş değişen boyut, tip 2). Böylece “ayrıldığında hangi departmandaydı, ne kazanıyordu?” cevaplanır.</li>
+<li><b>Aylık kadro anlık görüntüsü:</b> ay sonu çalışan sayısı. Devir oranı = dönemdeki ayrılış ÷ ortalama çalışan sayısı; ortalama kadro yarı toplanabilir bir ölçüdür (<b>Yarı toplanabilir ölçüler</b> dersi).</li>
+</ul>
+<p>Bu veriler gelince örnek ölçü şöyle olur (bu modelde sütun olmadığından çalıştırılamaz):</p>
+<pre class="dax" data-notry>Ayrılan Çalışan =
+CALCULATE(
+    COUNTROWS(Calisanlar),
+    USERELATIONSHIP(Calisanlar[AyrilisTarihi], Tarih[Tarih])
+)
+Devir Oranı % = DIVIDE([Ayrılan Çalışan], [Ortalama Kadro])</pre>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Üst şerit</td><td>4 kart</td><td>Çalışan (27), Medyan maaş (67.000 ₺), Ortalama kıdem (3,9 yıl), Ortalama ekip (3,7)</td></tr>
+<tr><td>Sol orta</td><td>Matris</td><td>Satır: Departman; değerler: Çalışan, 1. çeyrek, Medyan, 3. çeyrek, Maaş Aralığı Oranı (koşullu biçim: 2’nin üstü uyarı rengi)</td></tr>
+<tr><td>Sağ orta</td><td>Sütun grafik</td><td>X: kıdem grubu; Y: Çalışan Sayısı; araç ipucu: Medyan Maaş</td></tr>
+<tr><td>Sol alt</td><td>Ayrıştırma ağacı veya hiyerarşik tablo</td><td>Yol hiyerarşisi; Doğrudan Bağlı</td></tr>
+<tr><td>Sağ alt</td><td>Çizgi grafik</td><td>İşe giriş yılı; işe alım sayısı</td></tr>
+<tr><td>Alt bilgi</td><td>Metin kutusu</td><td>“Ayrılış verisi modelde yok; devir oranı gösterilmiyor.”</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Pazarlama ücret seviyesi geride:</b> medyan 46.000 ₺, şirket medyanı 67.000 ₺. Piyasa karşılaştırması yapılmadan işe alım zorlaşır.</li>
+<li><b>Satış’ta ücret makası en geniş</b> (2,53 kat) ve aynı unvanda yeni gelen eskiden fazla alıyor. Satış Temsilcisi bandını 52.000–70.000 ₺ arasında yeniden tanımla.</li>
+<li><b>2-4 yıl kıdemli 12 kişi</b> kadronun %44’ü. Terfi kriterlerini bu grup için yazılı hâle getir.</li>
+<li><b>Ayrılış verisini topla:</b> AyrilisTarihi ve AyrilisTuru sütunları ile aylık kadro anlık görüntüsü olmadan çalışan kaybı raporlanamaz.</li>
+<li>Hukuk departmanı tanımlı ama boş: ya kadro planına ekle ya da boyut tablosundan çıkar.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-ik">Alıştırmalara geç (5)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-kayip/">← Vaka: müşteri kaybı (churn)</a><a href="../vaka-stok/">Vaka: stok analizi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

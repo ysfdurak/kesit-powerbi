@@ -1,0 +1,59 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLANK, hatalar ve DAX’ta hata ayıklama | Kesit Power BI</title><meta name="description" content="BLANK’in aritmetikte ve karşılaştırmada davranışı, COALESCE ve ISBLANK, sıfıra bölme, IFERROR’ın tuzakları ve bir ölçüyü adım adım ayıklama yöntemi."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/blank-hata/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="BLANK, hatalar ve DAX’ta hata ayıklama"><meta property="og:description" content="BLANK’in aritmetikte ve karşılaştırmada davranışı, COALESCE ve ISBLANK, sıfıra bölme, IFERROR’ın tuzakları ve bir ölçüyü adım adım ayıklama yöntemi."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/blank-hata/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"BLANK, hatalar ve DAX’ta hata ayıklama","description":"BLANK’in aritmetikte ve karşılaştırmada davranışı, COALESCE ve ISBLANK, sıfıra bölme, IFERROR’ın tuzakları ve bir ölçüyü adım adım ayıklama yöntemi.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/blank-hata/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>BLANK, hatalar ve DAX’ta hata ayıklama</h1><p class="st-l">BLANK’in aritmetikte ve karşılaştırmada davranışı, COALESCE ve ISBLANK, sıfıra bölme, IFERROR’ın tuzakları ve bir ölçüyü adım adım ayıklama yöntemi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-blank-hata">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>BLANK: “değer yok”</h2>
+<p>DAX’ta bir ölçünün hesaplayacak satırı yoksa sonuç <b>BLANK</b> olur. Hiç satılmamış bir ürünün <code>[Net Satış]</code>’ı 0 değil, BLANK’tir. Görseller BLANK olan satırları varsayılan olarak gizler: matriste hiç satmayan ürün görünmez. Bu çoğu zaman istenen davranıştır.</p>
+<p>BLANK, SQL’deki NULL’a benzer ama aynı değildir. Aritmetikte ve karşılaştırmada kendine özgü kuralları var:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İfade</th><th>Sonuç</th><th>Neden önemli?</th></tr>
+<tr><td><code>BLANK() + 1</code></td><td>1</td><td>Toplama ve çıkarmada BLANK, 0 gibi davranır. <code>[Net Satış] - [Satış GY]</code> ilk yılda tüm satışı “büyüme” gösterir.</td></tr>
+<tr><td><code>BLANK() * 2</code></td><td>BLANK</td><td>Çarpmada BLANK yayılır. Bölmede pay BLANK ise sonuç BLANK; payda BLANK ise 5 / BLANK sonsuz, 0 / BLANK NaN verir. Bu yüzden bölmede DIVIDE kullan.</td></tr>
+<tr><td><code>BLANK() = 0</code></td><td>TRUE</td><td><code>=</code> karşılaştırmasında BLANK; 0 ve "" ile eşittir.</td></tr>
+<tr><td><code>BLANK() == 0</code></td><td>FALSE</td><td><code>==</code> katı eşitliktir; BLANK yalnızca BLANK’e eşittir.</td></tr>
+<tr><td><code>ISBLANK(0)</code></td><td>FALSE</td><td>0 bir değerdir; BLANK değildir.</td></tr>
+</table></div>
+<h2>BLANK’i yönetmek: ISBLANK ve COALESCE</h2>
+<pre class="dax">Satış Değişimi =
+VAR GY = [Satış GY]
+RETURN IF(ISBLANK(GY), BLANK(), [Net Satış] - GY)</pre>
+<p>Geçen yıl verisi yoksa fark anlamsızdır; BLANK döndürmek görselde o hücreyi boş bırakır. <code>COALESCE</code> ise ilk BLANK olmayan değeri döndürür:</p>
+<pre class="dax">Net Satış (0'lı) = COALESCE([Net Satış], 0)</pre>
+<div class="warn"><b>“+0” ve COALESCE tuzağı</b>Bir ölçü hiçbir zaman BLANK döndürmezse görsel, satır ve sütun alanlarının <b>tüm kombinasyonlarını</b> gösterir: 40 ürün × 150 müşteri tablosu 6.000 satıra çıkar ve yavaşlar. Sıfır göstermeyi yalnızca kart gibi tek değerli görsellerde ya da kombinasyonların anlamlı olduğu küçük matrislerde kullan.</div>
+<h2>Boş değerlere göre filtrelemek</h2>
+<pre class="dax">Şehri Bilinmeyen Satış = CALCULATE([Net Satış], ISBLANK(Musteriler[Sehir]))</pre>
+<p>Veri kalitesi ölçüleri (“şehri boş müşterilerin cirosu”) raporda sorunun büyüklüğünü görünür kılar. Power Query’de sütun kalitesi aynı bilgiyi yükleme sırasında verir.</p>
+<h2>Hata mı, BLANK mı?</h2>
+<ul>
+<li><code>1 / 0</code> hata değildir: sonuç <b>sonsuz</b> (∞) olur. <code>0 / 0</code> ise <b>NaN</b>.</li>
+<li><code>DIVIDE(1, 0)</code> BLANK döndürür; üçüncü bağımsız değişkenle başka bir değer verebilirsin: <code>DIVIDE(a, b, 0)</code>.</li>
+<li><code>VALUE("12a")</code> gerçek bir hatadır: metin sayıya çevrilemez.</li>
+</ul>
+<pre class="dax">Güvenli Sayı = IFERROR(VALUE("12a"), 0)</pre>
+<div class="warn"><b>IFERROR’ı alışkanlık hâline getirme</b><code>IFERROR</code> ve <code>ISERROR</code> her satırda hatayı yakalamak için formül motorunda çalışır; ölçüyü yavaşlatır ve sorunu saklar. Bölme için <code>DIVIDE</code>, tür sorunları için Power Query’de doğru veri türü kullan. <code>IFERROR(1/0, 0)</code> beklediğin gibi 0 döndürmez; çünkü 1/0 bir hata değil, sonsuzdur.</div>
+<h2>Bir ölçüyü adım adım ayıklamak</h2>
+<ol>
+<li><b>Böl:</b> Uzun bir ölçüyü <code>VAR</code>’larla parçalara ayır. <code>RETURN</code>’den sonra sonucu değil, şüphelendiğin değişkeni yaz ve görsele bak.</li>
+<li><b>Tabloyu say:</b> Değişken bir tabloysa <code>RETURN COUNTROWS(Tablo)</code> ile kaç satır kaldığını gör. Beklediğinden fazla ya da az satır, filtrenin yanlış olduğunu söyler.</li>
+<li><b>Sorguya dök:</b> DAX sorgu görünümünde (ya da DAX Studio’da) tablo değişkenini <code>EVALUATE</code> ile doğrudan listele.</li>
+<li><b>Bağlamı yaz:</b> Hücrenin filtre bağlamını bir “hata ayıklama” ölçüsüyle görünür yap: <code>CONCATENATEX(VALUES(Tarih[Yil]), Tarih[Yil], ", ")</code>.</li>
+</ol>
+<pre class="dax">EVALUATE
+VAR Iptaller = FILTER(Satislar, Satislar[Durum] = "İptal")
+RETURN ROW("İptal satırı", COUNTROWS(Iptaller), "İptal tutarı", SUMX(Iptaller, Satislar[Tutar]))</pre>
+<h2>Sık görülen hata mesajları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Mesaj</th><th>Neden</th><th>Çözüm</th></tr>
+<tr><td>Birden çok değer içeren bir tablo, tek bir değer beklenen yerde kullanıldı</td><td>Bir sütunu ya da <code>VALUES</code>’u, birden çok satır dönebilecekken tek değer gibi kullandın.</td><td><code>SELECTEDVALUE</code>, <code>MAX</code> ya da <code>HASONEVALUE</code> ile koru.</td></tr>
+<tr><td>Döngüsel bağımlılık algılandı</td><td>İki hesaplanmış sütun (ya da sütun ile ilişki) birbirine dayanıyor.</td><td>Hesabı ölçüye taşı ya da Power Query’ye al.</td></tr>
+<tr><td>Sütun bulunamadı / geçerli bir satır için tek değer belirlenemiyor</td><td>Ölçüde bir sütuna satır bağlamı olmadan başvurdun: <code>= Satislar[Tutar] * 2</code>.</td><td>Toplama ya da yineleyici kullan: <code>SUMX(Satislar, Satislar[Tutar] * 2)</code>.</td></tr>
+<tr><td>Beklenmedik toplam</td><td>Toplam satırı, satırların toplamı değil, ölçünün toplam bağlamındaki sonucudur.</td><td>Satır satır toplam isteniyorsa <code>SUMX(VALUES(...), [Ölçü])</code>.</td></tr>
+</table></div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-blank-hata">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../final-hazirlik/">← Bitirme projesine hazırlık</a><a href="../mulakat/">DAX ve Power BI mülakatına hazırlık →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

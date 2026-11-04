@@ -1,0 +1,86 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın | Kesit Power BI</title><meta name="description" content="Veri akışı Gen2 ile Gen1 arasındaki fark, çıkış hedefleri, hazırlığın nerede yapılacağı (veri akışı, modeldeki Power Query, SQL görünümü), paylaşılan ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/veri-akislari/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın"><meta property="og:description" content="Veri akışı Gen2 ile Gen1 arasındaki fark, çıkış hedefleri, hazırlığın nerede yapılacağı (veri akışı, modeldeki Power Query, SQL görünümü), paylaşılan ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/veri-akislari/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın","description":"Veri akışı Gen2 ile Gen1 arasındaki fark, çıkış hedefleri, hazırlığın nerede yapılacağı (veri akışı, modeldeki Power Query, SQL görünümü), paylaşılan ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/veri-akislari/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın</h1><p class="st-l">Veri akışı Gen2 ile Gen1 arasındaki fark, çıkış hedefleri, hazırlığın nerede yapılacağı (veri akışı, modeldeki Power Query, SQL görünümü), paylaşılan ve onaylı anlam modelleri, canlı bağlantı, ince rapor deseni, yenileme sırası ve veri tazeliği ölçüsü.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-akislari">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Anadolu Market’te dört analist var. Her biri kendi .pbix dosyasında aynı ürün listesini temizliyor: boşlukları siliyor, kategori adlarını düzeltiyor, iptal edilen siparişleri ayıklıyor. Ay sonunda dört raporda dört farklı “net satış” çıkıyor. Sorun DAX’ta değil, <b>hazırlığın dört kez yapılmasında</b>. Bu derste hazırlığı tek bir yere taşımayı ve herkesin aynı anlam modelini kullanmasını öğreneceksin.</p>
+<p>İki katman var: <b>veri katmanı</b> (temizlenmiş tablolar) ve <b>anlam katmanı</b> (ilişkiler, ölçüler, güvenlik). Veri akışı birinci katmanı, paylaşılan anlam modeli ikinci katmanı ortak hâle getirir.</p>
+
+<h2>Veri akışı nedir? Gen2 ile Gen1 farkı</h2>
+<p>Veri akışı (dataflow), Power Query adımlarının bir .pbix dosyasının içinde değil, Service’te (bulutta) çalışan hâlidir. Adımlar aynıdır: “Power Query ile veri temizleme” ve “Power Query: birleştirme, ekleme, özetten çıkarma” derslerinde öğrendiğin her dönüşüm burada da var. Fark, sonucun bir kez hesaplanıp birçok kişiye sunulmasıdır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Özellik</th><th>Veri akışı Gen2 (Fabric)</th><th>Veri akışı Gen1 (Power BI)</th></tr>
+<tr><td>Sonuç nereye yazılır?</td><td>Seçtiğin bir veya birden çok <b>çıkış hedefine</b> (lakehouse, ambar…)</td><td>Veri akışının kendi deposuna; raporlar veri akışı bağlayıcısıyla okur</td></tr>
+<tr><td>İşlem hattında adım olarak çalışma</td><td>Var (Dataflow Gen2 etkinliği)</td><td>Yok</td></tr>
+<tr><td>Hızlı kopyalama (fast copy), izleme merkezi, ayrıntılı yenileme geçmişi</td><td>Var</td><td>Yok</td></tr>
+<tr><td>Veri akışı bağlayıcısıyla DirectQuery</td><td>Yok; bunun yerine çıkış tablosuna doğrudan bağlanılır</td><td>Var</td></tr>
+<tr><td>Zamanlanmış ve artımlı yenileme, dağıtım işlem hatları</td><td>Var</td><td>Var</td></tr>
+<tr><td>Durum</td><td>Önerilen yol; Nisan 2026’dan beri yeni öğeler Git ve CI/CD desteğiyle oluşturuluyor</td><td>Eski (legacy) durumda: çalışmaya devam ediyor, yeni özellik gelmiyor</td></tr>
+</table></div>
+<div class="note"><b>Gen1 kapanıyor mu?</b>Microsoft Learn’e göre şu an Gen1’i kaldırma planı yok. Fabric erişimi olan kapasitelerde Gen2 öneriliyor. Pro ve PPU kullanıcıları için Gen1 desteklenmeye devam ediyor. Gen1 öğelerini kimliğini, adını ve zamanlamasını koruyarak yükselten bir sihirbaz var, ama <b>önizleme</b> aşamasında. Geçişten önce Learn’deki geçiş sayfasını kontrol et.</div>
+<p>Gen2 yayımlandığında çalışma alanında <code>DataflowsStagingLakehouse</code> ve <code>DataflowsStagingWarehouse</code> gibi sistem öğeleri görebilirsin. Bunlar ara (staging) depolardır, dokunman gerekmez.</p>
+
+<h2>Çıkış hedefleri: veriyi nereye bırakacaksın?</h2>
+<p>Gen2’de her sorgu için bir <b>veri hedefi</b> (data destination) seçersin. Learn’in listesinde Fabric lakehouse tabloları ve dosyaları, Fabric ambarı, Fabric KQL veritabanı, Fabric SQL veritabanı, Azure SQL, Azure Data Explorer, ADLS Gen2, SharePoint dosyaları, Snowflake ve PostgreSQL var.</p>
+<ul>
+<li><b>Değiştir (Replace):</b> Her yenilemede hedefteki veri silinir, yerine yeni sonuç yazılır. Boyut tabloları için tipik seçim.</li>
+<li><b>Ekle (Append):</b> Her yenilemede sonuç mevcut tablonun sonuna eklenir. Günlük satış dosyası gibi biriken veride kullanılır. KQL veritabanı ve Azure Data Explorer yalnızca Ekle’yi destekler.</li>
+<li><b>Otomatik ayarlar:</b> Yeni tablolarda varsayılan olarak açıktır (lakehouse, Azure SQL ve Snowflake için). Sütun eklediğinde eşlemeyi kendisi günceller ve tabloyu gerekirse yeniden oluşturur. Dikkat: tablo yeniden oluşturulunca üzerine kurduğun ilişkiler gidebilir.</li>
+</ul>
+<div class="warn"><b>Ekle + yeniden çalıştırma = çift kayıt</b>Ekle yöntemiyle çalışan bir veri akışını aynı gün iki kez elle çalıştırırsan o günün satırları iki kez yazılır. Ya Değiştir kullan ya da veri akışında “yalnızca son günü al” filtresiyle ve hedefte tekrar kontrolüyle çalış.</div>
+
+<h2>Hazırlık nerede yapılmalı?</h2>
+<p>Aynı temizliği üç yerde yapabilirsin. Hangisinin doğru olduğu, kimin kullanacağına ve verinin nerede durduğuna bağlıdır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yer</th><th>Ne zaman doğru?</th><th>Zayıf yanı</th></tr>
+<tr><td>Modeldeki Power Query</td><td>Tablo yalnızca bu modelde kullanılıyor; küçük ve hızlı bir proje</td><td>Başka model aynı temizliği tekrar yazar</td></tr>
+<tr><td>Veri akışı (Gen2)</td><td>Aynı tabloyu birden çok model kullanıyor; ekip Power Query biliyor; kaynak şirket içinde (ağ geçidi)</td><td>Çok büyük hacimde Spark ya da SQL kadar hızlı olmayabilir</td></tr>
+<tr><td>SQL görünümü (ambar ya da SQL analiz uç noktası)</td><td>Veri zaten ambarda; mantık birkaç birleştirme ve filtre; SQL bilen ekip bakım yapacak</td><td>Direct Lake modelde görünüm kullanmak DirectQuery’ye geri dönüşe yol açabilir (“Kurumsal model” dersi)</td></tr>
+</table></div>
+<p>Kural olarak: dönüşümü <b>verinin olduğu yere en yakın</b> ve <b>en çok kişinin yararlanacağı</b> katmanda yap. Anadolu Market’te ürün ve müşteri temizliği veri akışına, iptalleri ayıklayan “net satış” mantığı ise ortak anlam modeline gider.</p>
+
+<h2>Paylaşılan anlam modeli ve canlı bağlantı</h2>
+<p>Veri katmanı ortaklaştıktan sonra ikinci adım, ölçüleri de ortaklaştırmaktır. Bir anlam modeli bir kez yayımlanır; diğer analistler Desktop’ta <b>Veri al → Power BI anlam modelleri</b> ile ona bağlanır. Bu bağlantıya <b>canlı bağlantı</b> (live connection) denir.</p>
+<ul>
+<li>Bağlanmak için modelde <b>Derleme (Build)</b> izni gerekir. İzin çalışma alanında ya da uygulama paylaşılırken verilir.</li>
+<li>Canlı bağlı raporda modeli değiştiremezsin: yeni tablo, sütun ya da ilişki ekleyemezsin. Ama <b>rapor düzeyi ölçü</b>, görsel hesaplama ekleyebilirsin.</li>
+<li>Modelin RLS kuralları canlı bağlı raporda da çalışır.</li>
+<li>Güvenilir modeller tanıtılmış (promoted) ya da sertifikalı (certified) olarak işaretlenir. Kimin onaylayabildiği “Yönetişim” dersinde anlatılıyor.</li>
+</ul>
+<p>Rapor düzeyi ölçü, modeldeki hazır ölçüleri kullanmalıdır. Pazarlama ekibi “sipariş başına brüt kâr” istiyor. Ortak modelde <code>[Brüt Kâr]</code> ve <code>[Sipariş Sayısı]</code> zaten var; sıfırdan SUM yazmak yerine onları kullan:</p>
+<pre class="dax">Sipariş Başı Kâr =
+DIVIDE([Brüt Kâr], [Sipariş Sayısı])</pre>
+<p>Bu modelde sonuç yaklaşık 544 ₺ (456.108 ₺ brüt kâr, 838 sipariş). İptal kuralı değişirse bu ölçü de kendiliğinden doğru kalır, çünkü kural tek yerde, <code>[Net Satış]</code> içinde.</p>
+<div class="tip"><b>Model mi değişmeli, rapor mu?</b>Bir rapor düzeyi ölçü üç rapora kopyalanmaya başladıysa, model sahibine onu ortak modele taşımasını öner. Rapor düzeyi ölçü tek bir raporun ihtiyacı içindir.</div>
+
+<h2>İnce rapor (thin report) deseni</h2>
+<p>Ekipler büyüyünce model ve raporlar ayrılır:</p>
+<ol>
+<li><b>Model çalışma alanı:</b> Tek bir .pbix (ya da .pbip) içinde yalnızca model: tablolar, ilişkiler, ölçüler, RLS. Raporu yok ya da yalnızca test sayfası var. Bunu veri ekibi yönetir.</li>
+<li><b>Rapor çalışma alanları:</b> Her rapor bu modele canlı bağlı, kendi modeli olmayan bir dosyadır. Buna <b>ince rapor</b> denir. Satış, finans ve pazarlama ayrı raporlar yazar ama sayılar aynı modelden gelir.</li>
+</ol>
+<p>Kazanç: model bir kez yenilenir, kapasite bir kez harcanır, “hangi sayı doğru?” tartışması biter. Bedel: model sahibi değişiklik yaparken bağlı raporları düşünmek zorundadır. Bunun için etki analizi ve soy (lineage) görünümü kullanılır; .pbit şablonları, .pbids veri kaynağı dosyaları ve PBIP ile Git akışı “Yaşam döngüsü” dersinde ayrıntılı anlatılıyor.</p>
+<div class="note"><b>Canlı bağlantıdan bileşik modele</b>İnce raporda kendi Excel dosyanı da eklemek istersen, canlı bağlantıyı “Power BI anlam modellerine DirectQuery” ile bileşik modele çevirmen gerekir. Bu konu “Kurumsal model” dersinde.</div>
+
+<h2>Yenileme bağımlılıkları ve sıra</h2>
+<p>Anadolu Market’in gece akışı şöyle: ERP’den satış dosyası gelir → ürün ve satış veri akışları çalışır → anlam modeli yenilenir → raporlar ve abonelik e-postaları güncel veriyi gösterir. Sıra bozulursa model eski veriyle yenilenir ve sabah herkes dünün rakamını görür.</p>
+<ul>
+<li><b>Saate göre zincir (kırılgan):</b> Veri akışı 02:00’de, model 03:00’te. Veri akışı bir gece 70 dakika sürerse model eski veriyi alır ve kimse fark etmez.</li>
+<li><b>Olaya göre zincir (sağlam):</b> Fabric işlem hattında Dataflow Gen2 etkinliği → Anlam modeli yenileme (semantic model refresh) etkinliği. Yenileme etkinliği varsayılan olarak işin bitmesini bekler; bir adım hata verirse sonraki çalışmaz ve hata bildirimi gönderilebilir. Ayrıntı “Fabric’te veriyi hazırlamak” dersinde.</li>
+<li><b>Direct Lake modelde</b> veri kopyalanmadığı için “yenileme” yalnızca çerçevelemedir (framing); yine de veri akışı bittikten sonra yapılmalıdır.</li>
+</ul>
+<p>Sırayı ne kadar iyi kurarsan kur, raporda bir <b>tazelik göstergesi</b> olsun. En basit hâli, olgu tablosundaki en son tarihin bir referans tarihten kaç gün geride olduğunu söyler. Bu uygulamanın verisi 31.12.2024’te bittiği için referans olarak o günü kullanıyoruz; gerçek bir modelde yerine <code>TODAY()</code> ya da yenileme günlüğünden gelen tarih yazılır.</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    "Son Satış", MAX(Satislar[Tarih]),
+    "Gecikme (gün)", DATEDIFF(MAX(Satislar[Tarih]), DATE(2024, 12, 31), DAY)
+)</pre>
+<p>Sonuçta altı kategori 0 ya da 1 gün geride, <b>Hediye</b> ise 16 gün (son satış 15.12.2024). Bu bir veri hatası olmayabilir; belki o kategoride gerçekten satış yoktur. Ama göstergeyi gören kişi soruyu sorar, rakamı körü körüne kullanmaz.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-akislari">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../proje-yonetimi-bi/">← Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım</a><a href="../fabric-hazirlama/">Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,107 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DP-600 Fabric Analytics Engineer hazırlığı | Kesit Power BI</title><meta name="description" content="Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dp600/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DP-600 Fabric Analytics Engineer hazırlığı"><meta property="og:description" content="Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dp600/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DP-600 Fabric Analytics Engineer hazırlığı","description":"Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dp600/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Sınav Hazırlığı</span><h1>DP-600 Fabric Analytics Engineer hazırlığı</h1><p class="st-l">Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dp600">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Sınav hakkında</h2>
+<p><b>DP-600: Implementing Analytics Solutions Using Microsoft Fabric</b> sınavını geçenler <i>Microsoft Certified: Fabric Analytics Engineer Associate</i> unvanını alır. PL-300'ün bir üst basamağı gibi düşünülebilir: rapor yazmaktan çok veriyi hazırlamak, kurumsal anlam modeli kurmak ve çözümü yönetmek ölçülür. Geçme puanı 1000 üzerinden 700'dür.</p>
+<h2>Ölçülen beceriler (Ekim 2026)</h2>
+<div class="warn"><b>Listeyi kendin kontrol et</b>Sertifika sayfası (Ekim 2026) üç alan gösteriyor ve aşağıdaki tablo ona dayanıyor. Kasım 2026’daki kontrolde çalışma kılavuzunun bazı dil sürümleri eski dört alanlı listeyi gösterdi. Sınava girmeden önce resmî kılavuzda “Skills measured” tarihini kendin oku.</div>
+
+<div class="tbl-wrap"><table>
+<tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
+<tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yerel geliştirme, Yaşam döngüsü, Kurumsal model, Kullanım ve izleme</td></tr>
+<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>OneLake, Lakehouse, Data Factory, İşlem hatları, Ağ geçidi, ödevler, Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
+<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
+</table></div>
+<h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
+<ul>
+<li><b>OneLake:</b> Kuruluşun tek veri gölü; tüm Fabric öğeleri verisini burada Delta/Parquet olarak tutar. <b>Kısayollar</b> (shortcuts) veriyi kopyalamadan başka konumlara (ADLS, S3, başka lakehouse) bağlar.</li>
+<li><b>Lakehouse:</b> Dosyalar + Delta tablolar; Spark not defterleri ve otomatik SQL analiz uç noktası.</li>
+<li><b>Warehouse:</b> Tam T-SQL yazma desteği olan veri ambarı.</li>
+<li><b>Eventhouse / KQL veritabanı:</b> Gerçek zamanlı ve zaman serisi verisi; KQL ile sorgulanır.</li>
+<li><b>Dataflow Gen2:</b> Power Query'nin bulut sürümü; sonucu lakehouse/warehouse'a yazar.</li>
+<li><b>İşlem hattı (pipeline):</b> Veri kopyalama ve düzenleme (orchestration).</li>
+</ul>
+<h2>Hangi veri deposu?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>Seçim</th></tr>
+<tr><td>Yapılandırılmamış + yapılandırılmış veri, Spark ile mühendislik</td><td>Lakehouse</td></tr>
+<tr><td>T-SQL ile yazma (INSERT/UPDATE), saklı yordamlar, SQL ekibi</td><td>Warehouse</td></tr>
+<tr><td>Akış verisi, telemetri, log, saniyelik analiz</td><td>Eventhouse (KQL)</td></tr>
+</table></div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Çerçeveyi doğrula: 19 Ekim 2026 sürümü</h2>
+<p>Microsoft Learn'deki DP-600 çalışma kılavuzunun ölçülen beceriler listesi <b>19 Ekim 2026</b> tarihli. Alan ağırlıkları değişmedi: analitik çözümü sürdürme %25–30, veriyi hazırlama %45–50, anlam modellerini uygulama ve yönetme %25–30. Değişiklik günlüğünde yalnızca “Veriyi sorgulama ve analiz etme” alt başlığında küçük bir değişiklik var. İngilizce sürüm önce güncellenir; yerelleştirilmiş sürüm birkaç hafta geriden gelebilir. Geçme puanı 700.</p>
+<p>Ağırlıkların anlamı açık: sınavın neredeyse yarısı veriyi hazırlamak. Burada T-SQL görünümleri, saklı yordamlar, yıldız şemayı lakehouse ya da ambarda kurmak, yinelenen ve eksik veriyi temizlemek ve veriyi dört araçla sorgulamak var: görsel sorgu düzenleyici, SQL, KQL ve DAX. Power BI geçmişinden gelen biri için en büyük açık genellikle SQL'dir.</p>
+
+<h2>Depo kararı: bir karar ağacı</h2>
+<ol>
+<li><b>Veri saniyeler içinde akıyor mu?</b> (telemetri, log, tıklama akışı) → Eventhouse / KQL veritabanı. Analiz katmanı için OneLake erişilebilirliğini açarsan aynı veri Delta olarak OneLake'te görünür ve kopyalamadan anlam modeline bağlanabilir.</li>
+<li><b>Ekip veriyi T-SQL ile yazacak mı?</b> (INSERT, UPDATE, MERGE, çok tablolu işlemler, saklı yordamlar) → Warehouse.</li>
+<li><b>Dosya, yarı yapılandırılmış veri ya da Spark / Python mühendisliği var mı?</b> → Lakehouse. Lakehouse'un SQL analiz uç noktası T-SQL ile <b>okur</b>; tablolara yazmaz.</li>
+<li><b>Veri başka bir yerde zaten var mı?</b> (ADLS, başka bir lakehouse) → kopyalama, kısayol (shortcut) oluştur.</li>
+<li><b>Raporlar nasıl tüketecek?</b> → Anlam modeli her zaman en üstte durur. Depolama modu kararı aşağıda.</li>
+</ol>
+<p>Ayrıntılı tasarım Fabric'te yıldız şema ve Fabric'te veriyi hazırlamak derslerinde.</p>
+
+<h2>Direct Lake: OneLake mı, SQL uç noktası mı?</h2>
+<p>Beceri listesinde ayrı bir madde var: “Direct Lake on OneLake ile Direct Lake on SQL analytics endpoint arasında seçim”. Fabric belgelerindeki farklar:</p>
+<div class="tbl-wrap"><table><tr><th>Konu</th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL</th></tr>
+<tr><td>Kaynak</td><td>Bir ya da birden çok Fabric öğesi (kısayollar dahil)</td><td>SQL analiz uç noktası olan tek kaynak</td></tr>
+<tr><td>DirectQuery'ye geri dönüş</td><td>Yok</td><td>Var (açıksa); kapalıysa sorgu hata verir</td></tr>
+<tr><td>Import tablolarla karışım</td><td>Mümkün</td><td>Aynı modelde DirectQuery / Dual ile karışmaz</td></tr>
+<tr><td>Ambardaki SQL RLS</td><td>Uygulanmaz; kullanıcının OneLake dosya erişimi gerekir</td><td>Uygulanır ama sorgular DirectQuery'ye düşer</td></tr>
+<tr><td>Sınır (guardrail) aşılırsa</td><td>Yenileme başarısız; Delta tabloları optimize edilene kadar model sorgulanamaz</td><td>Uyarıyla devam eder, sorgular DirectQuery'ye düşer ve yavaşlar</td></tr></table></div>
+<p>SQL uç noktasında geri dönüşü tetikleyenler: gerçekleştirilmemiş SQL görünümü, ambarda SQL tabanlı ayrıntılı erişim denetimi (SQL RLS dahil), henüz işlenmemiş tablo ve sınır aşımı. Direct Lake yenilemesi (framing) veri kopyalamaz; yalnızca en son Delta dosyalarına işaret eden meta veriyi günceller ve saniyeler sürer.</p>
+<div class="note"><b>Sınav dili</b>“Raporlar yavaşladı, Performans Analizi'nde Direct Lake görselleri DirectQuery sorgusu gönderiyor” cümlesini görürsen geri dönüş tetikleyicilerini düşün: görünüm mü, SQL RLS mi, sınır mı?</div>
+
+<h2>Aynı soru, üç dil: DAX, SQL, KQL</h2>
+<p>Soru: “2024'te en çok satan 5 ürün hangisi?” Anlam modelinde DAX sorgusu:</p>
+<pre class="dax">EVALUATE
+TOPN(
+    5,
+    SUMMARIZECOLUMNS(
+        Urunler[Urun], Urunler[Kategori],
+        TREATAS({2024}, Tarih[Yil]),
+        "Net Satış 2024", [Net Satış]
+    ),
+    [Net Satış 2024], DESC
+)
+ORDER BY [Net Satış 2024] DESC</pre>
+<p>Sonuç: 27" Monitör 59.992 ₺, Akıllı Saat 37.789 ₺, Türk Kahvesi Makinesi 34.744 ₺, Robot Süpürge 32.396 ₺, Yoga Matı 28.868 ₺. Aynı sorunun ambar ya da SQL uç noktası karşılığı:</p>
+<pre class="dax" data-notry>SELECT TOP 5 u.Urun, u.Kategori, SUM(s.Tutar) AS NetSatis2024
+FROM dbo.Satislar AS s
+JOIN dbo.Urunler AS u ON u.UrunNo = s.UrunNo
+WHERE s.Durum &lt;&gt; 'İptal' AND YEAR(s.Tarih) = 2024
+GROUP BY u.Urun, u.Kategori
+ORDER BY NetSatis2024 DESC;</pre>
+<p>Eventhouse'ta bir satış olayı tablosu olsaydı KQL karşılığı:</p>
+<pre class="dax" data-notry>SatisOlaylari
+| where Durum != "İptal" and Tarih between (datetime(2024-01-01) .. datetime(2024-12-31T23:59:59))
+| summarize NetSatis2024 = sum(Tutar) by Urun, Kategori
+| top 5 by NetSatis2024 desc</pre>
+<div class="tbl-wrap"><table><tr><th>Dil</th><th>Nerede doğru?</th><th>Dikkat</th></tr>
+<tr><td>DAX</td><td>İş kuralı anlam modelinde; tüm raporlar aynı tanımı kullanmalı</td><td>SQL'de “Net satış”ı yeniden yazmak iki tanım üretir</td></tr>
+<tr><td>SQL</td><td>Dönüştürme, görünüm, saklı yordam, veri kalitesi kontrolü</td><td>SQL uç noktası salt okunur; yazma ambarda</td></tr>
+<tr><td>KQL</td><td>Zaman serisi, log, yakın gerçek zamanlı analiz</td><td>Zaman aralığı filtresini erken uygula</td></tr>
+<tr><td>Görsel sorgu düzenleyici</td><td>Kod yazmadan hızlı seçme, filtreleme, toplama</td><td>Karmaşık mantıkta SQL'e geç</td></tr></table></div>
+
+<h2>Anlam modeli kararları: sınavın sevdiği eşleşmeler</h2>
+<ul>
+<li><b>Depolama modu:</b> Delta tabloları OneLake'teyse önce Direct Lake; eski bir kaynak varsa DirectQuery ya da Import; boyutlar için Dual (Kurumsal model dersi).</li>
+<li><b>Artımlı yenileme:</b> RangeStart / RangeEnd parametreleri; filtre kaynağa katlanmalı.</li>
+<li><b>Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri:</b> Hesaplama grupları dersinde.</li>
+<li><b>Pencere ve bilgi fonksiyonları:</b> OFFSET, WINDOW, INDEX; ISINSCOPE, ISFILTERED gibi bilgi fonksiyonları (Pencere fonksiyonları dersi).</li>
+<li><b>Yaşam döngüsü:</b> Git sürüm denetimi ve .pbip, dağıtım işlem hatları ve dağıtım kuralları, XMLA ile dağıtım, etki analizi (Yaşam döngüsü dersi).</li>
+</ul>
+
+<h2>Sınav stratejisi</h2>
+<p>Uygulamanın Sınavlar bölümündeki aday notlarına göre DP-600'de vaka çalışması çoğunlukla başta gelir ve geri dönülemez; sonda “aynı senaryo, farklı çözüm” evet/hayır serisi olur. T-SQL ağırlıklıdır. Plan: Sınavlar → DP-600 konu alıştırması ile alanları tek tek çalış, son iki haftada kısa ve tam denemeleri çöz. Her yanlışta kendine şu soruyu sor: kısıt neydi (en az çaba, en az ayrıcalık, kopyasız, gerçek zamana yakın)? Yanlış şık o kısıtın hangisini çiğniyordu?</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-dp600">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yasam-dongusu/">← Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar</a><a href="../final-hazirlik/">Bitirme projesine hazırlık →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

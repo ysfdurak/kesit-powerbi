@@ -1,0 +1,67 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi | Kesit Power BI</title><meta name="description" content="İlk ölçünü yaz. Ölçü ile hesaplanmış sütun arasındaki farkı ve yazım kurallarını öğren."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-giris/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi"><meta property="og:description" content="İlk ölçünü yaz. Ölçü ile hesaplanmış sütun arasındaki farkı ve yazım kurallarını öğren."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-giris/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi","description":"İlk ölçünü yaz. Ölçü ile hesaplanmış sütun arasındaki farkı ve yazım kurallarını öğren.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-giris/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi</h1><p class="st-l">İlk ölçünü yaz. Ölçü ile hesaplanmış sütun arasındaki farkı ve yazım kurallarını öğren.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-giris">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>DAX nedir?</h2>
+<p>DAX (Data Analysis Expressions), Power BI modelindeki hesapların dilidir. Excel formüllerine benzer ama hücreyle değil <b>tablolar ve sütunlarla</b> çalışır. Bir DAX formülü üç şeyden birini üretir:</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Ölçü (measure)</th><th>Hesaplanmış sütun</th><th>Hesaplanmış tablo</th></tr>
+<tr><td>Ne zaman hesaplanır?</td><td>Görsel her çizildiğinde, o anki filtrelere göre</td><td>Yenileme sırasında, her satır için bir kez</td><td>Yenileme sırasında</td></tr>
+<tr><td>Nerede saklanır?</td><td>Saklanmaz (yalnızca formül)</td><td>Modelde, bellekte yer kaplar</td><td>Modelde</td></tr>
+<tr><td>Tipik kullanım</td><td>Toplamlar, oranlar, büyüme</td><td>Satırı sınıflandırmak (Yaş grubu, Fiyat bandı)</td><td>Tarih tablosu, yardımcı tablolar</td></tr>
+<tr><td>Örnek</td><td><code>Toplam Satış = SUM(Satislar[Tutar])</code></td><td><code>Tutar = Satislar[Adet] * Satislar[BirimFiyat]</code></td><td><code>Tarih = CALENDAR(...)</code></td></tr>
+</table></div>
+<div class="tip"><b>Altın kural</b>Sonuç bir <b>toplam, oran ya da karşılaştırma</b> ise ölçü yaz. Sonuç <b>her satıra ait bir etiket</b> ise ve dilimleyicide ya da eksende kullanacaksan hesaplanmış sütun (ya da daha iyisi Power Query sütunu) kullan.</div>
+<h2>Yazım kuralları</h2>
+<ul>
+<li>Ölçü adı, eşittir, ifade: <code>Toplam Satış = SUM(Satislar[Tutar])</code></li>
+<li>Sütunlar <b>her zaman tablo adıyla</b>: <code>Satislar[Tutar]</code>. Boşluklu tablo adı tek tırnakla: <code>'Satış Tablosu'[Tutar]</code>.</li>
+<li>Ölçüler <b>tablo adı olmadan</b>, köşeli parantezle: <code>[Toplam Satış]</code>. Böylece okuyan kişi sütun ile ölçüyü ayırt eder.</li>
+<li>Metinler çift tırnakla: <code>"Web"</code>. Bağımsız değişkenler virgülle ayrılır.</li>
+<li>Satır sonları ve girinti serbesttir; okunabilirlik için kullan. Yorum: <code>// açıklama</code></li>
+</ul>
+<h2>İlk ölçün</h2>
+<pre class="dax">Toplam Satış = SUM(Satislar[Tutar])</pre>
+<p>Bu ölçüyü bir karta koyarsan tüm satışların toplamını, kategoriye göre bir sütun grafiğine koyarsan her kategorinin toplamını görürsün. Formül aynı, sonuç <b>bağlama</b> göre değişir. DAX'ın en önemli fikri budur; Orta seviyedeki <a href="../baglam/">Filtre bağlamı</a> dersinde ayrıntısıyla göreceğiz.</p>
+<p>Alıştırmalarda yalnızca ifadeyi yazman yeterli; ölçü adı verilmiştir. İstersen <code>Ad = </code> önekini de yazabilirsin. Sonucun, toplamda ve kategori / yıl kırılımlarında doğru çözümle karşılaştırılır.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Ölçünü adım adım oluştur</h2>
+<ol>
+<li>Veri bölmesinde ölçünün “yaşayacağı” tabloya sağ tıkla → <b>Yeni ölçü</b>. Şeritte Giriş ya da Modelleme sekmesindeki Yeni ölçü düğmesi de aynı işi yapar.</li>
+<li>Şeridin altında formül çubuğu açılır. <code>Ölçü = ...</code> yazısını sil, kendi formülünü yaz.</li>
+<li><b>Enter</b> ile onayla. Birden çok satır yazmak için <b>Shift + Enter</b>.</li>
+<li>Ölçü seçiliyken <b>Ölçü araçları</b> sekmesinden biçimi (para birimi, yüzde, ondalık) ayarla.</li>
+<li>Ölçüyü bir karta ya da tabloya koyup sonucu kontrol et.</li>
+</ol>
+<p>Formül yazarken Power BI öneri listesi açar. <code>[</code> yazınca ölçüler, tablo adını yazınca o tablonun sütunları listelenir. Listeden seçmek yazım hatalarını önler.</p>
+<h2>Ölçüler nerede yaşar?</h2>
+<p>Ölçü verinin içinde saklanmaz; yalnızca formülü saklanır. Hangi tablonun altında göründüğü (<b>giriş tablosu</b>) sadece düzen içindir, hesabı değiştirmez. Çok ölçülü modellerde ekipler boş bir “_Ölçüler” tablosu açıp tüm ölçüleri orada toplar ve klasörlere ayırır. Her ölçüye bir <b>açıklama</b> yazarsan, ölçünün üzerine gelen kişi “bu iptalleri içeriyor mu?” sorusunun cevabını hemen görür.</p>
+<h2>İşleçler: dört işlem ve fazlası</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İşleç</th><th>Anlamı</th><th>Örnek</th></tr>
+<tr><td><code>+ - * /</code></td><td>Dört işlem</td><td><code>SUM(Satislar[Tutar]) / 1000</code></td></tr>
+<tr><td><code>&amp;</code></td><td>Metinleri birleştirir</td><td><code>"Yıl: " &amp; 2024</code></td></tr>
+<tr><td><code>= &lt;&gt; &gt; &lt; &gt;= &lt;=</code></td><td>Karşılaştırma</td><td><code>Satislar[Durum] &lt;&gt; "İptal"</code></td></tr>
+<tr><td><code>&amp;&amp;</code> ve <code>||</code></td><td>VE / VEYA</td><td><code>Satislar[Adet] &gt; 1 &amp;&amp; Satislar[Kanal] = "Web"</code></td></tr>
+</table></div>
+<p>Yönetim kurulu sunumunda sayılar binlik gösterilmek isteniyor. Bir ölçüyle bunu yapabilirsin:</p>
+<pre class="dax">Satış (Bin) = SUM(Satislar[Tutar]) / 1000</pre>
+<p>Bu modelde sonuç yaklaşık 1.346,2 olur; yani iptaller dahil toplam tutar 1.346.190 ₺. Aynı işi ölçünün biçim ayarıyla (görüntü birimi: Bin) da yapabilirsin. Fark şu: biçim yalnızca görünüşü değiştirir, bölme ise sayının kendisini değiştirir. Başka bir ölçü bu ölçüyü kullanacaksa biçim ayarı daha güvenlidir.</p>
+<h2>İlk hata mesajların</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Ne yazdın?</th><th>Ne oldu?</th><th>Çözüm</th></tr>
+<tr><td><code>Satır Tutarı = Satislar[Tutar]</code></td><td>“Tek bir değer belirlenemiyor” hatası</td><td>Ölçü tek bir sayı döndürmeli. Sütunu bir toplayıcıya sar: <code>SUM(Satislar[Tutar])</code>.</td></tr>
+<tr><td><code>SUM(Satis[Tutar])</code></td><td>Tablo ya da sütun bulunamadı</td><td>Adı öneri listesinden seç; tablonun adı Satislar.</td></tr>
+<tr><td><code>SUM(Satislar[Tutar]</code></td><td>Söz dizimi hatası</td><td>Her açılan parantez kapanmalı.</td></tr>
+</table></div>
+<pre class="dax" data-notry>Satır Tutarı = Satislar[Tutar]   -- hatalı: ölçüde çıplak sütun</pre>
+<p>Neden hata? Bir ölçü bir kartta tek bir sayı göstermek zorundadır. Satislar[Tutar] ise 1.620 satırlık bir sütundur; Power BI hangisini göstereceğini bilemez. Aynı ifade bir <b>hesaplanmış sütunda</b> çalışır, çünkü orada her satır kendi değerini alır. Bu farkın adı satır bağlamıdır; Filtre bağlamı ve satır bağlamı dersinde ayrıntısıyla göreceksin.</p>
+<div class="tip"><b>Ölçüyü ölçüyle kur</b>Uygulamadaki hazır ölçüler birbirinin üzerine kurulur: [Brüt Kâr], [Net Satış] eksi [Net Maliyet] demektir. Bu modelde sonuç 456.108 ₺. İptal kuralı değişirse yalnızca [Net Satış] ve [Net Maliyet] güncellenir, [Brüt Kâr] kendiliğinden doğru kalır.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-giris">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../tarih-tablosu/">← Tarih tablosu (date table)</a><a href="../toplama/">Toplama fonksiyonları ve DIVIDE →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

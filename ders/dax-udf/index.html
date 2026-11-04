@@ -1,0 +1,107 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak | Kesit Power BI</title><meta name="description" content="Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-udf/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak"><meta property="og:description" content="Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-udf/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak","description":"Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-udf/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak</h1><p class="st-l">Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek, modele kaydetmek ve TMDL, imza tasarımı, parametre türleri, val ve expr geçiş modlarının bağlama etkisi, sınırlar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-udf">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Büyüyen bir modelde aynı mantık onlarca ölçüde tekrar eder: “geçen yıla göre değişim”, “payda sıfırsa boş döndür”, “şu kanalın payı”. Bir gün tanım değişir (ör. iadeler de düşülecek) ve sen otuz ölçüyü tek tek düzeltirsin; birini unutursun. <b>DAX kullanıcı tanımlı fonksiyonları</b> (user-defined functions, UDF) bu mantığı parametreli bir fonksiyon olarak <b>bir kez</b> yazmanı sağlar.</p>
+<div class="note"><b>Durum</b>UDF'ler 2025'te önizleme olarak geldi. Microsoft Learn'e göre <b>Haziran 2026</b> sürümünden itibaren Power BI Desktop ve Service’te genel kullanımdadır ve veritabanı uyumluluk düzeyi <b>1702</b> ya da üstünü ister. Bu uygulamanın Playground motoru <code>FUNCTION</code> sözcüğünü desteklemez: UDF kodlarını okuyup anla, alıştırmalarda fonksiyon çağrısının <b>açılmış (inline) hâlini</b> yaz.</div>
+
+<h2>UDF mi, hesaplama grubu mu, düz ölçü mü?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Kopyala-yapıştır ölçü</th><th>Hesaplama grubu</th><th>UDF</th></tr>
+<tr><td>Nasıl uygulanır?</td><td>Her ölçüde mantık yeniden yazılır</td><td>Görseldeki ölçüye <code>SELECTEDMEASURE()</code> ile otomatik uygulanır</td><td>Ölçünün içinde adıyla çağrılır</td></tr>
+<tr><td>Parametre</td><td>Yok</td><td>Yok (yalnızca seçili ölçü)</td><td>0–256 parametre, varsayılan değer</td></tr>
+<tr><td>Kim seçer?</td><td>Model yazarı</td><td>Rapor kullanıcısı (dilimleyiciyle)</td><td>Model yazarı</td></tr>
+<tr><td>Nerede çalışır?</td><td>Ölçü</td><td>Ölçüler (örtük ölçüler hariç)</td><td>Ölçü, hesaplanmış sütun, görsel hesaplama, başka UDF</td></tr>
+</table></div>
+<p>İkisi rakip değil. Hesaplama grubu “kullanıcı Cari / GY / YTD arasında seçsin” sorusunu çözer (<b>Hesaplama grupları, alan parametreleri, görsel hesaplamalar</b> dersi). UDF ise “bu formülü otuz yerde aynı yazalım” sorusunu çözer. Bir hesaplama öğesi de içinde bir UDF çağırabilir.</p>
+
+<h2>İlk fonksiyon: tanımla ve EVALUATE ile dene</h2>
+<p>UDF'yi önce <b>DAX sorgu görünümünde</b> yazıp denemek en güvenli yoldur. <code>DEFINE</code> bloğunda <code>FUNCTION</code> anahtar sözcüğü, adı, parametre listesi ve <code>=&gt;</code> işaretinden sonra gövde gelir:</p>
+<pre class="dax" data-notry>DEFINE
+    /// Payı paydaya güvenli böler; payda 0 ya da boşsa BLANK döner.
+    FUNCTION Pbi.Pay = ( pay : NUMERIC, payda : NUMERIC ) =&gt;
+        DIVIDE ( pay, payda )
+
+EVALUATE
+{ Pbi.Pay ( 10, 4 ), Pbi.Pay ( 10, 0 ) }
+// 2,5 ve boş</pre>
+<p><code>///</code> ile başlayan satır fonksiyonun <b>açıklamasıdır</b>; IntelliSense bunu gösterir. Düz <code>//</code> ve <code>/* */</code> yorumlar açıklama olarak görünmez. Sorgu düzgün çalışınca:</p>
+<ul>
+<li>DAX sorgu görünümünde üstteki <b>Modeli değişikliklerle güncelle</b> (Update model with changes) düğmesine ya da editördeki “Update model: Add new function” satırına bas. Fonksiyon modele kaydedilir ve <b>Model gezgininde Functions</b> düğümünde görünür.</li>
+<li><b>TMDL görünümünde</b> aynı tanım <code>createOrReplace</code> altında <code>function Pbi.Pay = ...</code> biçimindedir; <b>Uygula</b> ile kaydedilir. PBIP projesinde fonksiyonlar <code>definition</code> klasöründeki <code>functions.tmdl</code> dosyasında durur (<b>Yaşam döngüsü: PBIP, TMDL, Git…</b> dersi).</li>
+<li>Kaydedilen fonksiyon bir ölçüde çağrılır: <code>Brüt Marj = Pbi.Pay ( [Brüt Kâr], [Net Satış] )</code>.</li>
+</ul>
+
+<h2>İmza tasarlamak: ad, parametre, tür</h2>
+<p>Fonksiyonun imzası (adı ve parametreleri) bir sözleşmedir; sonradan değiştirmek onu çağıran her ölçüyü etkiler. Learn'deki kurallar:</p>
+<ul>
+<li><b>Fonksiyon adı</b> modelde benzersiz olmalı; harf, rakam ve alt çizgi içerir. Ad alanı için nokta kullanılabilir (<code>Pbi.Pay</code>, <code>Finans.Yoy</code>) ama ad noktayla başlayıp bitemez, art arda iki nokta olamaz. Yerleşik bir DAX fonksiyonuyla ya da <code>MEASURE</code>, <code>FUNCTION</code>, <code>DEFINE</code> gibi ayrılmış sözcüklerle çakışamaz.</li>
+<li><b>Parametre adı</b> yalnızca harf, rakam ve alt çizgi içerir; nokta olamaz. Türkçe karakterden kaçınmak (<code>oran</code>, <code>payda</code>) taşınabilirliği artırır.</li>
+<li><b>Varsayılan değer:</b> <code>esik : NUMERIC = 0.95</code> parametreyi isteğe bağlı yapar. Varsayılan ifade, fonksiyonun tanımlandığı yerde görünen adlara başvurabilir.</li>
+<li><b>Aşırı yükleme yok:</b> Aynı adla farklı parametreli iki fonksiyon tanımlanamaz. Özyineleme de desteklenmez; dönüş türü açıkça yazılamaz.</li>
+</ul>
+<div class="tbl-wrap"><table>
+<tr><th>Tür ipucu</th><th>Anlamı</th><th>Varsayılan mod</th></tr>
+<tr><td><code>AnyVal</code></td><td>Skaler ya da tablo değer (tür yazılmazsa bu)</td><td>val</td></tr>
+<tr><td><code>Scalar</code> + alt tür</td><td>Tek değer; alt tür <code>Int64</code>, <code>Decimal</code>, <code>Double</code>, <code>String</code>, <code>DateTime</code>, <code>Boolean</code>, <code>Numeric</code>, <code>Variant</code></td><td>val</td></tr>
+<tr><td><code>Table</code></td><td>Tablo değer</td><td>val</td></tr>
+<tr><td><code>AnyRef</code>, <code>ColumnRef</code>, <code>TableRef</code>, <code>MeasureRef</code>, <code>CalendarRef</code></td><td>Sütun, tablo, ölçü ya da takvim <b>başvurusu</b></td><td>expr (val yazılamaz)</td></tr>
+</table></div>
+<p>Değer türleri örtük tür dönüşümü yapar: <code>x : INT64</code> parametresine 3,4 verirsen 3 olur. Başvuru türleri dönüşüm yapmaz. Gövdede <code>ISNUMERIC</code>, <code>ISSTRING</code>, <code>ISINT64</code> gibi denetim fonksiyonlarıyla gelen değeri kontrol edebilirsin.</p>
+
+<h2>val ve expr: argüman ne zaman hesaplanır?</h2>
+<p>Parametrenin <b>geçiş modu</b> UDF'lerin en önemli ve en kolay karıştırılan noktasıdır:</p>
+<ul>
+<li><b>val (hevesli, eager):</b> Argüman fonksiyon çağrılmadan <b>önce bir kez</b> hesaplanır; fonksiyona yalnızca sonucu gider. Learn'e göre çağıranın hem satır hem filtre bağlamını görür.</li>
+<li><b>expr (tembel, lazy):</b> Argüman hesaplanmadan, bir ifade olarak gider. Fonksiyon gövdesinde, gövdenin kurduğu bağlamda (ör. <code>CALCULATE</code> içinde) ve gerekirse <b>birçok kez</b> hesaplanır. Learn'e göre yalnızca filtre bağlamını devralır.</li>
+</ul>
+<pre class="dax" data-notry>DEFINE
+    FUNCTION Pbi.Yoy = ( olcu : SCALAR EXPR ) =&gt;
+        VAR Simdi = olcu
+        VAR Once = CALCULATE ( olcu, SAMEPERIODLASTYEAR ( Tarih[Tarih] ) )
+        RETURN DIVIDE ( Simdi - Once, Once )
+
+    FUNCTION Pbi.YoyHatali = ( olcu : SCALAR VAL ) =&gt;
+        VAR Simdi = olcu
+        VAR Once = CALCULATE ( olcu, SAMEPERIODLASTYEAR ( Tarih[Tarih] ) )
+        RETURN DIVIDE ( Simdi - Once, Once )
+
+EVALUATE
+SUMMARIZECOLUMNS ( Tarih[Yil],
+    "expr", Pbi.Yoy ( [Net Satış] ),
+    "val", Pbi.YoyHatali ( [Net Satış] ) )</pre>
+<p><code>val</code> sürümünde <code>olcu</code> artık bir sayıdır; <code>CALCULATE</code> bir sayının filtresini değiştiremez, “geçen yıl” da bu yılla aynı çıkar. Aynı davranışı motorda VAR ile görebilirsin; VAR da val gibi bir kez hesaplanır:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(Tarih[Yil],
+    "expr gibi", DIVIDE([Net Satış] - CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih])),
+                        CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))),
+    "val gibi", VAR S = [Net Satış]
+                RETURN DIVIDE(S - CALCULATE(S, SAMEPERIODLASTYEAR(Tarih[Tarih])),
+                              CALCULATE(S, SAMEPERIODLASTYEAR(Tarih[Tarih]))))</pre>
+<p>Sonuç: expr gibi 2023'te <b>%289,8</b>, 2024'te <b>%86,4</b>; val gibi her yıl <b>0</b>. Kural basit: Fonksiyonun içinde argümanın <b>bağlamını değiştireceksen</b> (CALCULATE, yineleyici, zaman zekâsı) parametre <code>expr</code> olmalı. Yalnızca gelen sayıyla aritmetik yapacaksan (<code>Pbi.Pay</code> gibi) <code>val</code> yeterli ve daha ucuzdur; argüman bir kez hesaplanır.</p>
+<p>Yineleyicide fark daha da büyür. <code>AVERAGEX(VALUES(Tarih[YilAy]), olcu)</code> gövdeli bir fonksiyonda expr parametre her ay için ayrı hesaplanır: filtresiz durumda satış olan 31 ayın ortalaması <b>40.347</b> TL'dir. Aynı parametre val olsaydı tek bir toplam (1.250.772) her aya tekrar yazılır ve “ortalama” toplamın kendisine eşit çıkardı.</p>
+
+<h2>Test etmek</h2>
+<ol>
+<li><b>Bilinen değerle karşılaştır:</b> <code>EVALUATE { Pbi.Pay ( 10, 4 ) }</code> gibi elle hesaplanabilen girdilerle başla.</li>
+<li><b>Hazır ölçüyle aynı mı?</b> Fonksiyonla yazdığın ölçüyü eski ölçünün yanına bir tabloya koy: <code>SUMMARIZECOLUMNS ( Tarih[Yil], "Eski", [YoY %], "Yeni", Pbi.Yoy ( [Net Satış] ) )</code>. Her satır aynı olmalı.</li>
+<li><b>Kenar durumları:</b> payda 0, BLANK, negatif değer, geçen yılı olmayan ilk yıl (2022).</li>
+<li><b>Modeldeki fonksiyonları listele:</b> <code>EVALUATE INFO.USERDEFINEDFUNCTIONS ()</code> modeldeki UDF'leri ve ifadelerini döndürür; belgelendirme ve gözden geçirme için kullanışlıdır.</li>
+</ol>
+
+<h2>Sınırlar (Learn'e göre)</h2>
+<ul>
+<li>UDF'ler görüntüleme klasörlerine konamaz, çevirilerle birleştirilemez; tablosu olmayan modellerde desteklenmez.</li>
+<li><b>Nesne düzeyi güvenlik fonksiyonu korumaz:</b> Gizli bir sütunu kullanan fonksiyon otomatik gizlenmez. Gizli nesnelerin adını fonksiyon adına ya da açıklamasına yazma.</li>
+<li>Canlı bağlantılı bir raporda kaynak modelin fonksiyonları Model gezgininde görünmez; bileşik modeldeki ölçüler kaynak modelin UDF'lerine başvuramaz.</li>
+<li>Görsel hesaplama formül çubuğunda IntelliSense yoktur; sütunu expr parametre olarak geçirmek ya da tablo adı olmadan sütun yazmak kırmızı alt çizgi ve doğrulama hatası üretebilir. Tablo adıyla nitelenmemiş adlar ölçü başvurusu sayılır.</li>
+</ul>
+<div class="tip"><b>Kütüphane gibi düşün</b>Fonksiyonları bir ad alanı altında topla (<code>Finans.</code>, <code>Zaman.</code>), her birine <code>///</code> açıklaması ve <code>@param</code> satırları yaz, bir test sorgusunu PBIP deposunda sakla. Fonksiyonu değiştirince test sorgusunu yeniden çalıştır.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-udf">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../power-platform/">← Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları</a><a href="../finans-tablolar/">Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

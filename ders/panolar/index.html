@@ -1,0 +1,45 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı | Kesit Power BI</title><meta name="description" content="Rapor ile pano farkı, görsel sabitlemek, canlı sayfa, farklı raporlardan tek bakış, veri uyarısı kurmak; kutucuğa uygun ölçü yazmak ve panonun bugün hâlâ…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/panolar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı"><meta property="og:description" content="Rapor ile pano farkı, görsel sabitlemek, canlı sayfa, farklı raporlardan tek bakış, veri uyarısı kurmak; kutucuğa uygun ölçü yazmak ve panonun bugün hâlâ…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/panolar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı","description":"Rapor ile pano farkı, görsel sabitlemek, canlı sayfa, farklı raporlardan tek bakış, veri uyarısı kurmak; kutucuğa uygun ölçü yazmak ve panonun bugün hâlâ…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/panolar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı</h1><p class="st-l">Rapor ile pano farkı, görsel sabitlemek, canlı sayfa, farklı raporlardan tek bakış, veri uyarısı kurmak; kutucuğa uygun ölçü yazmak ve panonun bugün hâlâ nerede işe yaradığı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-panolar">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Service’te “pano” (dashboard) belirli bir nesnedir: farklı raporlardan sabitlenen kutucuklardan oluşan <b>tek sayfa</b>. Günlük dilde her rapora pano denir; sınavda ve iş görüşmesinde bu karışıklık puan kaybettirir. Bu uygulamadaki Örnek raporlar sayfası da pano değil, rapordur.</p>
+<h2>Rapor mu, pano mu?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Rapor</th><th>Pano</th></tr>
+<tr><td>Sayfa</td><td>Bir ya da çok</td><td>Tek</td></tr>
+<tr><td>Veri</td><td>Tek anlam modeli</td><td>Bir ya da çok rapor ve model</td></tr>
+<tr><td>Nerede yapılır?</td><td>Desktop ve Service</td><td>Yalnız Service</td></tr>
+<tr><td>Dilimleyici, filtre</td><td>Var</td><td>Yok (odak modundaki süzme kaydedilmez)</td></tr>
+<tr><td>Detaya inme</td><td>Var</td><td>Yalnız sayfanın tamamı sabitlenmişse</td></tr>
+<tr><td>Veri uyarısı</td><td>Klasik uyarı yok</td><td>Kart, KPI, gösterge kutucuklarında</td></tr>
+<tr><td>Kutucuğa tıklayınca</td><td>Yok</td><td>Kaynak rapora gider</td></tr></table></div>
+<h2>Ne zaman pano?</h2>
+<p>Her raporun panoya ihtiyacı yoktur. Üç durumda işe yarar:</p>
+<ul><li><b>Birden çok rapordan tek bakış.</b> Satış, stok ve kargo ayrı modellerde. Yönetici sabah üç raporu tek tek açmak istemez.</li><li><b>Veri uyarısı.</b> Klasik uyarılar yalnız panoda kurulur.</li><li><b>Ana sayfada öne çıkarma.</b> Yönetici için sade bir giriş.</li></ul>
+<p>Tek modelde özet ve ayrıntı istiyorsan <b>iyi tasarlanmış bir rapor sayfası genellikle daha iyidir</b>: dilimleyici var, etkileşim var, Desktop’ta kaynak denetimine girer. Panolar Git tümleştirmesinde desteklenmez.</p>
+<h2>Kutucuk sabitlemek</h2>
+<ol><li>Service’te raporu <b>düzenleme izniyle</b> aç. Size paylaşılan rapordan sabitleyemezsin.</li><li>Görselin üzerindeki raptiye simgesi: <b>Panoya sabitle</b>.</li><li>Var olan panoyu seç ya da yeni oluştur.</li><li>Panoda kutucuğun … menüsünden başlık, alt başlık ve özel bağlantıyı düzenle.</li></ol>
+<div class="tbl-wrap"><table><tr><th></th><th>Görsel sabitleme</th><th>Canlı sayfa sabitleme</th></tr>
+<tr><td>Ne gider?</td><td>Tek görsel</td><td>Sayfanın tamamı</td></tr>
+<tr><td>Etkileşim</td><td>Tıklayınca rapora gider</td><td>Sayfa içinde çapraz filtreleme çalışır</td></tr>
+<tr><td>Rapordaki değişiklik</td><td>Görselin biçimi değişirse kutucuk güncellenmeyebilir</td><td>Sayfa yenilenince yansır</td></tr>
+<tr><td>Mobil</td><td>Kutucuk olarak görünür</td><td>Rapor kutucukları mobilde etkileşimli değildir</td></tr></table></div>
+<p>Pano oluşturmak bir yazar işidir. Çalışma alanında Pro ya da PPU gerekir; Çalışma alanım’da bu lisans gerekmez. Panoya görsel sabitlemeden metin, resim, video da eklenebilir; ama gerçek sayılar rapordan gelmeli ki tıklayan ayrıntıya ulaşabilsin.</p>
+<h2>Veri uyarısı</h2>
+<p>“Net satış 50.000 ₺’nin altına düşünce haber ver.” Bu iş panoda kurulur:</p>
+<ul><li>Yalnız <b>gösterge, KPI ve kart</b> kutucuklarında.</li><li>Uyarıyı kuran kişiye özeldir; pano paylaşılmış olsa da başkası göremez. Ekip için her kişi kendi uyarısını kurar ya da Power Automate kullanılır.</li><li>Uyarı <b>veri yenilendiğinde</b> denetlenir. Model günde bir yenileniyorsa uyarı da günde bir kez bakar.</li><li>Sıklık sınırlıdır: saatte ya da 24 saatte en fazla bir bildirim. Bildirim merkezinde her zaman, e-postada isteğe bağlı görünür.</li></ul>
+<p>Fabric’te Activator, rapor görselinden kural tabanlı uyarı kurmayı sağlar (“Yayımlama” dersinde örnek var). Satın alma kararı değil, “kimin haber alması gerekiyor” sorusu belirleyicidir.</p>
+<h2>Kutucuğa uygun ölçü</h2>
+<p>Panoda dilimleyici olmadığı için <b>bağlamı ölçünün içine yazarsın</b>. Rapordaki bir kart seçili yıla bakar, panodaki kutucuk ise sabitlendiği hâlde kalır. “2024 net satışı” gibi sabit bir dönem için:</p>
+<pre class="dax">Kart 2024 Net Satış =
+CALCULATE([Net Satış], Tarih[Yil] = 2024)</pre>
+<p>Eşik uyarısı için sayısal bir sapma göstermek, metin göstermekten iyidir: “hedefin 12.000 ₺ gerisinde” gibi bir değer eşikle karşılaştırılabilir.</p>
+<div class="warn"><b>Soru-Cevap kalkıyor</b>Panonun üstündeki soru kutusu Soru-Cevap (Q&amp;A) ile çalışır ve emekliye ayrılıyor. Learn’deki güncel uyarı Şubat 2027 diyor; önceki duyurularda Aralık 2026 geçiyordu. Tarih için resmî sayfaya bak. Yeni pano tasarımını soru kutusuna dayandırma; yerine bağımsız Copilot önerilir (“Copilot ile çalışmak” dersi).</div>
+<div class="tip"><b>Kendi ortamında dene</b>Service’te herhangi bir raporu aç, bir kartı Çalışma alanım’daki yeni bir panoya sabitle, kutucukta uyarı kur. Ücretsiz lisansla Çalışma alanım’da denenebilir. Uyarının tetiklenmesi için verinin yenilenmesi gerekir; değişmeyen örnek veride uyarı gelmez.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-panolar">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../calisma-alani/">← Çalışma alanı (workspace) kurmak ve raporu yayımlamak</a><a href="../paylasim/">Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

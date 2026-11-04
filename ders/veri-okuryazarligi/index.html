@@ -1,0 +1,120 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak | Kesit Power BI</title><meta name="description" content="Ortalama ile medyan, yüzde ile yüzde puan, küçük taban etkisi, korelasyon ile nedensellik, Simpson paradoksu, yanıltan grafikler, örneklem ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/veri-okuryazarligi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak"><meta property="og:description" content="Ortalama ile medyan, yüzde ile yüzde puan, küçük taban etkisi, korelasyon ile nedensellik, Simpson paradoksu, yanıltan grafikler, örneklem ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/veri-okuryazarligi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak","description":"Ortalama ile medyan, yüzde ile yüzde puan, küçük taban etkisi, korelasyon ile nedensellik, Simpson paradoksu, yanıltan grafikler, örneklem ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/veri-okuryazarligi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Veri okuryazarlığı: rakamı doğru okumak ve doğru soruyu sormak</h1><p class="st-l">Ortalama ile medyan, yüzde ile yüzde puan, küçük taban etkisi, korelasyon ile nedensellik, Simpson paradoksu, yanıltan grafikler, örneklem ve mevsimsellik. Yöneticinin analiste sorması gereken sorular.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-okuryazarligi">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Bir rapor doğru hesaplanmış olabilir ama yine de yanlış okunabilir. “Ortalama sepet 1.500 ₺”, “iade %19 düştü”, “Giyim %492 büyüdü” gibi cümleler doğrudur; ama hepsi bir bağlam ister. Bu ders formül yazmayı değil, <b>rakamı okumayı</b> öğretiyor. Örneklerin tamamı Anadolu Market modelinden hesaplandı.</p>
+
+<h2>Ortalama mı, medyan mı?</h2>
+<p><b>Ortalama (mean)</b> bütün değerleri toplar ve sayıya böler. <b>Medyan (median)</b> değerleri sıraya dizer ve tam ortadakini alır. Değerler simetrik dağılıyorsa ikisi yakındır. Birkaç çok büyük değer varsa ortalama yukarı kayar, medyan yerinde kalır.</p>
+<p>Anadolu Market’te iptal edilmemiş 838 sipariş var. Sipariş tutarlarına bakalım:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Gösterge</th><th>Değer</th></tr>
+<tr><td>Ortalama sipariş tutarı ([Ortalama Sepet])</td><td>1.492,57 ₺</td></tr>
+<tr><td>Medyan sipariş tutarı</td><td>1.086,50 ₺</td></tr>
+<tr><td>En küçük / en büyük sipariş</td><td>71 ₺ / 12.335,45 ₺</td></tr>
+<tr><td>Ortalamanın üstündeki sipariş sayısı</td><td>278 (yaklaşık üçte biri)</td></tr>
+</table></div>
+<p>Yani “tipik müşterimiz 1.500 ₺ harcıyor” cümlesi yanlıştır. Siparişlerin yarısı 1.086,50 ₺’nin altında kalıyor; ortalamayı birkaç büyük sipariş çekiyor. Kategori içinde fark daha da büyük: Elektronik’te ortalama 1.570,85 ₺, medyan ise 809 ₺.</p>
+<p>Dağılımın kuyruğunu görmek için bir yüzdelik de işe yarar. Aşağıdaki ölçü, siparişlerin %90’ının altında kaldığı tutarı verir (bu modelde 2.879,60 ₺):</p>
+<pre class="dax">Sipariş Tutarı P90 =
+PERCENTILEX.INC(
+    CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] &lt;&gt; "İptal"),
+    CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal"),
+    0.9
+)</pre>
+<div class="tip"><b>Kural</b>Tutar, süre, maaş gibi sağa çarpık (birkaç çok büyük değeri olan) verilerde ortalamanın yanına medyanı da koy. İkisi çok farklıysa bunu raporda söyle. İstatistik fonksiyonlarının ayrıntısı “Temel istatistik, gruplama ve kutulama” dersinde.</div>
+
+<h2>Yüzde değişim ve yüzde puan</h2>
+<p>Bir oran değiştiğinde iki farklı şey söylenebilir:</p>
+<ul>
+<li><b>Yüzde puan (pp) farkı:</b> Yeni oran eksi eski oran. %7,27’den %5,91’e inen iade oranı <b>1,37 puan</b> düşmüştür.</li>
+<li><b>Göreli (yüzde) değişim:</b> Farkın eski orana bölümü. Aynı düşüş <b>%18,8</b>’lik bir azalmadır.</li>
+</ul>
+<div class="tbl-wrap"><table>
+<tr><th>Oran</th><th>2023</th><th>2024</th><th>Puan farkı</th><th>Göreli değişim</th></tr>
+<tr><td>İade oranı (satır bazında)</td><td>%7,27</td><td>%5,91</td><td>−1,37 puan</td><td>−%18,8</td></tr>
+<tr><td>Kâr marjı</td><td>%31,91</td><td>%38,63</td><td>+6,71 puan</td><td>+%21,0</td></tr>
+</table></div>
+<p>İkisi de doğrudur ama farklı izlenim bırakır. “İade %18,8 düştü” cümlesi kulağa büyük gelir; “iade 1,37 puan düştü” daha ölçülüdür. Oranlarda hangisini kullandığını <b>her zaman</b> yaz. Puan farkını DAX’ta şöyle hesaplarsın:</p>
+<pre class="dax">İade Oranı Puan Farkı =
+VAR BuDonem = [İade Oranı %]
+VAR OncekiYil = CALCULATE([İade Oranı %], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+RETURN
+    IF(NOT ISBLANK(OncekiYil), (BuDonem - OncekiYil) * 100)</pre>
+<p>Sonuç “puan” birimindedir; yüzde biçimi verme, yanına “puan” yaz.</p>
+
+<h2>Küçük taban etkisi</h2>
+<p>Taban küçükse küçük bir artış dev bir yüzde üretir. Anadolu Market’in verisi <b>22 Haziran 2022</b>’de başlıyor; 2022 yarım bir yıl. Bu yüzden 2023’ün geçen yıla göre büyümesi <b>%289,8</b> çıkıyor. Giyim kategorisinde 11.576 ₺’den 68.502,45 ₺’ye çıkış <b>%491,8</b> görünüyor. Bunlar şirketin performansını değil, eksik başlangıç yılını anlatır.</p>
+<p>Aynı tuzak küçük kategorilerde de var:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Karşılaştırma</th><th>Yüzde</th><th>Tutar olarak</th></tr>
+<tr><td>Hediye, 2023 / 2022</td><td>+%183,5</td><td>+3.670 ₺</td></tr>
+<tr><td>Elektronik, 2024 / 2023</td><td>+%94,5</td><td>+100.284,95 ₺</td></tr>
+</table></div>
+<p>Yüzdeye bakan Hediye’yi yıldız sanar; tutara bakan Elektronik’in şirkete 27 kat daha fazla ek satış getirdiğini görür. <b>Yüzdeyi her zaman mutlak değerle birlikte göster.</b></p>
+
+<h2>Korelasyon nedensellik değildir</h2>
+<p>İki sayı birlikte artıyorsa biri diğerine sebep olmayabilir. Örnek: Anadolu Market’te ortalama indirim oranı yıllara göre %2,35 → %3,11 → %3,33 arttı; net satış da 102.837 ₺ → 400.870 ₺ → 747.066 ₺ oldu. “İndirim arttı, satış patladı; o hâlde indirimi artıralım” demek cazip. Ama aynı yıllarda satın alan müşteri sayısı da 32 → 77 → 123 oldu. Satışı büyüten asıl şey müşteri tabanının büyümesi olabilir. İkisini birlikte etkileyen üçüncü bir etkene <b>karıştırıcı değişken (confounder)</b> denir; burada zaman ve şirketin büyümesi.</p>
+<p>Nedensellik için ya kontrollü bir deney (aynı dönemde bir grup indirim alır, bir grup almaz) ya da karıştırıcıları sabit tutan bir kıyas gerekir. Dağılım grafiği ve korelasyon katsayısı “Keşifçi veri analizi” dersinde.</p>
+
+<h2>Simpson paradoksu</h2>
+<p><b>Simpson paradoksu</b>, bir oranın toplamda bir yöne, alt gruplarda ise ters yöne işaret etmesidir. Sebep, grupların büyüklüklerinin (karışımın) farklı olmasıdır.</p>
+<p>Bu modelde gerçek bir örnek aradık: iade, iptal, kâr marjı, zamanında teslim ve indirimli satış payı oranlarını kanal, segment, bölge, yaş grubu, cinsiyet, yıl, kategori ve indirim bandına göre ikili ikili karşılaştırdık. Yeterli satırı olan <b>gerçek bir tersine dönme bulamadık</b>. Bu yüzden aşağıda açıkça <b>örnek amaçlı</b>, uydurma küçük bir tablo kullanıyoruz: iki kargo firması, yakın ve uzak gönderiler.</p>
+<pre class="dax">EVALUATE
+VAR Gonderiler =
+    DATATABLE(
+        "Firma", STRING, "Mesafe", STRING, "Gonderi", INTEGER, "Zamaninda", INTEGER,
+        {
+            {"A", "Yakın", 200, 180}, {"A", "Uzak", 600, 300},
+            {"B", "Yakın", 600, 510}, {"B", "Uzak", 200, 90}
+        }
+    )
+RETURN
+    ADDCOLUMNS(
+        DISTINCT(SELECTCOLUMNS(Gonderiler, "Firma", [Firma])),
+        "Genel Oran",
+            VAR F = [Firma]
+            RETURN DIVIDE(
+                SUMX(FILTER(Gonderiler, [Firma] = F), [Zamaninda]),
+                SUMX(FILTER(Gonderiler, [Firma] = F), [Gonderi])
+            )
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Firma</th><th>Yakın</th><th>Uzak</th><th>Genel</th></tr>
+<tr><td>A</td><td>%90 (200 gönderi)</td><td>%50 (600 gönderi)</td><td>%60</td></tr>
+<tr><td>B</td><td>%85 (600 gönderi)</td><td>%45 (200 gönderi)</td><td>%75</td></tr>
+</table></div>
+<p>A firması hem yakında hem uzakta daha iyi; ama genelde B önde görünüyor. Çünkü A’ya zor işler (uzak gönderiler) verilmiş. Toplam oran, işin karışımını da ölçer. Bir oranı karşılaştırmadan önce sor: <b>“Gruplar aynı karışımda mı?”</b></p>
+
+<h2>Yanıltan grafikler</h2>
+<ul>
+<li><b>Kesik eksen:</b> Mobil kanal 599.841 ₺, Web 457.331 ₺ sattı; Mobil 1,31 kat büyük. Sütun grafiğinde eksen 400.000’den başlarsa çubuklar 3,49 kat farklı görünür. Sütun ve çubuk grafiklerde eksen sıfırdan başlamalı. Çizgi grafikte kesik eksen kabul edilebilir, ama eksen değerleri görünür olmalı.</li>
+<li><b>İkili eksen:</b> İki farklı ölçeği aynı grafiğe koyunca çizgilerin kesiştiği nokta tamamen eksen ayarına bağlıdır. Okuyucu “satış hedefi geçti” sanabilir. Ayrıntı “Görsel algı” dersinde.</li>
+<li><b>Kümülatif ile dönem:</b> Nisan 2024’te aylık satış bir önceki aya göre <b>%45,9 düştü</b> (63.252 ₺ → 34.234 ₺). Aynı ay kümülatif satış 659.098 ₺’den 693.331 ₺’ye <b>çıktı</b>. Kümülatif eğri hiç düşmez; düşüşü gizler. Grafiğin başlığında hangisi olduğunu yaz.</li>
+</ul>
+
+<h2>Örneklem büyüklüğü ve mevsimsellik</h2>
+<p><b>Örneklem:</b> 2022’nin iade oranı %12,38. Kulağa kötü geliyor, ama bu oran yalnızca 105 satırdan (13 iade) çıkıyor. 2024’te 965 satır var. Birkaç iade küçük grubun oranını çok oynatır. Bir oranın yanına her zaman “kaç kayıttan?” bilgisini koy (araç ipucuna satır sayısı eklemek kolay bir yöntem).</p>
+<p><b>Mevsimsellik:</b> Aralık 2024 satışı Kasım’a göre %5,6 arttı. Bir yıl önce ise Aralık, Kasım’a göre %22,1 düşmüştü. Ay-ay kıyas, mevsimin etkisini büyümeyle karıştırır. Mevsimi olan işlerde asıl soru <b>geçen yılın aynı ayıyla</b> kıyastır: Aralık 2024, Aralık 2023’ün %115,8 üstünde. Mevsimsellik ayrıntısı “Zaman serisi analizi” dersinde.</p>
+
+<h2>Yöneticinin analiste sorması gereken sorular</h2>
+<ol>
+<li><b>Neye göre?</b> Hedefe mi, geçen yıla mı, önceki aya mı?</li>
+<li><b>Tanım ne?</b> “Satış” iptalleri, iadeleri, indirimi içeriyor mu?</li>
+<li><b>Kaç kayıttan?</b> Oran kaç sipariş ya da müşteriden çıkıyor?</li>
+<li><b>Ortalama mı, medyan mı?</b> Birkaç büyük değer tabloyu çarpıtıyor mu?</li>
+<li><b>Puan mı, yüzde mi?</b> Oran değişiminde hangisi yazıldı?</li>
+<li><b>Tutar olarak ne kadar?</b> Büyük yüzde küçük bir tabandan mı geliyor?</li>
+<li><b>Karışım değişti mi?</b> Toplam oran, grupların ağırlığı değiştiği için mi oynadı?</li>
+<li><b>Başka ne açıklayabilir?</b> Mevsim, kampanya, veri eksikliği, tanım değişikliği?</li>
+<li><b>Veri ne kadar taze?</b> Son yenileme ne zaman, eksik gün var mı?</li>
+</ol>
+<div class="note"><b>İyi bir analist bu soruları sevmez değil, bekler</b>Bu sorular güvensizlik işareti değildir. Cevaplarını raporun içine (araç ipucu, dipnot, tanım sayfası) koyan bir rapor, toplantıda daha az soruyla karşılaşır.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-okuryazarligi">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../portfoy-kariyer/">← Portföy, CV ve ilk 90 gün: Power BI işine hazırlanmak</a><a href="../karar-toplantisi/">Rapordan karara: yönetici toplantısında rapor kullanmak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,128 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M dili: Power Query'nin arkasındaki kod | Kesit Power BI</title><meta name="description" content="let/in yapısı, adımlar, sık kullanılan fonksiyonlar, özel fonksiyonlar ve hata yönetimi."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-dili/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="M dili: Power Query'nin arkasındaki kod"><meta property="og:description" content="let/in yapısı, adımlar, sık kullanılan fonksiyonlar, özel fonksiyonlar ve hata yönetimi."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-dili/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"M dili: Power Query'nin arkasındaki kod","description":"let/in yapısı, adımlar, sık kullanılan fonksiyonlar, özel fonksiyonlar ve hata yönetimi.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-dili/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Veri Hazırlama</span><h1>M dili: Power Query'nin arkasındaki kod</h1><p class="st-l">let/in yapısı, adımlar, sık kullanılan fonksiyonlar, özel fonksiyonlar ve hata yönetimi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-dili">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Yapı</h2>
+<pre class="m">let
+    Kaynak = Sql.Database("sunucu", "AnadoluMarket"),
+    Siparisler = Kaynak{[Schema="dbo", Item="orders"]}[Data],
+    Teslim = Table.SelectRows(Siparisler, each [status] = "delivered"),
+    Sutunlar = Table.SelectColumns(Teslim, {"order_id", "customer_id", "order_date"}),
+    Adlar = Table.RenameColumns(Sutunlar, {{"order_id", "SiparisNo"}, {"customer_id", "MusteriNo"}})
+in
+    Adlar</pre>
+<ul>
+<li>M, büyük/küçük harfe <b>duyarlıdır</b>: <code>Table.SelectRows</code> doğru, <code>table.selectrows</code> hata.</li>
+<li><code>each [status] = "delivered"</code>, “her satır için” anlamına gelen kısa fonksiyon yazımıdır: <code>(satir) =&gt; satir[status] = "delivered"</code>.</li>
+<li><code>{ }</code> liste, <code>[ ]</code> kayıt (record), <code>Tablo{0}</code> ilk satır, <code>Kayit[Alan]</code> alan erişimi.</li>
+</ul>
+<h2>Sık kullanılan fonksiyonlar</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Ne yapar?</th></tr>
+<tr><td><code>Table.SelectRows</code></td><td>Satır süzme</td></tr>
+<tr><td><code>Table.AddColumn</code></td><td>Özel sütun: <code>Table.AddColumn(t, "Tutar", each [Adet] * [Fiyat], type number)</code></td></tr>
+<tr><td><code>Table.TransformColumnTypes</code></td><td>Veri türü atama</td></tr>
+<tr><td><code>Table.Group</code></td><td>Gruplandırma</td></tr>
+<tr><td><code>Table.NestedJoin</code> + <code>Table.ExpandTableColumn</code></td><td>Birleştirme (Merge)</td></tr>
+<tr><td><code>Table.Combine</code></td><td>Ekleme (Append)</td></tr>
+<tr><td><code>Table.UnpivotOtherColumns</code></td><td>Özetten çıkarma</td></tr>
+<tr><td><code>Text.Trim</code>, <code>Text.Proper</code>, <code>Text.Lower</code></td><td>Metin temizliği</td></tr>
+<tr><td><code>Date.Year</code>, <code>Date.StartOfMonth</code></td><td>Tarih işlemleri</td></tr>
+</table></div>
+<h2>Özel fonksiyon</h2>
+<pre class="m">let
+    TemizSehir = (s as nullable text) as nullable text =&gt;
+        if s = null then null
+        else Text.Proper(Text.Trim(s))
+in
+    TemizSehir</pre>
+<p>Bu sorguyu kaydedip başka sorgularda <code>Table.TransformColumns(t, {{"city", TemizSehir}})</code> diye çağırabilirsin.</p>
+<h2>Hata yönetimi</h2>
+<pre class="m">Table.AddColumn(t, "TarihTemiz", each try Date.FromText([signup_date], [Culture="tr-TR"]) otherwise null)</pre>
+<p><code>try … otherwise</code>, satır düzeyindeki hatayı yakalayıp yerine değer koyar. Hatalı satırları ayrı bir sorguda tutmak için <b>Hataları Tut</b> komutu kullanılır.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Değerler: kayıt, liste, tablo</h2>
+<p>Power Query'de her adım bir <b>değer</b> üretir. Gelişmiş Düzenleyici'de (Advanced Editor) kodu okuyabilmek için dört temel değer türünü ve onlara erişimi tanımak yeter:</p>
+<pre class="m">let
+    Liste    = {"Web", "Mobil", "Mağaza"},               // liste: sıralı değerler
+    Kayit    = [Ad = "Ece Kurt", Sehir = "İzmir"],       // kayıt: ad = değer çiftleri
+    Tablo    = #table({"Kanal", "Pay"}, {{"Web", 0.37}, {"Mobil", 0.48}}),
+    Ilk      = Liste{0},            // "Web"   — listede konum (0'dan başlar)
+    Ad       = Kayit[Ad],           // "Ece Kurt" — kayıtta alan
+    IlkSatir = Tablo{0},            // kayıt: [Kanal = "Web", Pay = 0.37]
+    Kanallar = Tablo[Kanal],        // liste: {"Web", "Mobil"}
+    Guvenli  = Kayit[Telefon]?      // alan yoksa hata yerine null
+in
+    Guvenli</pre>
+<p>Bir tablo, aynı alanlara sahip kayıtların listesi gibi düşünülebilir: <code>Tablo{0}</code> bir kayıt, <code>Tablo[Kanal]</code> bir listedir. <code>?</code> işareti erişimi “isteğe bağlı” yapar: <code>Liste{10}?</code> ve <code>Kayit[Telefon]?</code> hata yerine <code>null</code> döndürür. Kaynaktan gelen sütun bazen yoksa (ör. CRM dışa aktarımı yeni bir sürümde sütunu kaldırdıysa) bu küçük işaret sorgunun tamamen çökmesini önler.</p>
+
+<h2>let/in: sıra değil, bağımlılık</h2>
+<p><code>let</code> içindeki adlar bir tarif listesidir; <b>yukarıdan aşağı çalıştırılmaz</b>. M tembel (lazy) değerlendirir: <code>in</code> sonrasındaki değer hangi adlara ihtiyaç duyuyorsa yalnızca onlar hesaplanır. Bunun iki pratik sonucu var:</p>
+<ul>
+<li><b>Hata ayıklama:</b> <code>in</code> satırına ara bir adımın adını yazarak o adımın sonucunu görebilirsin. Uygulanan Adımlar bölmesinde bir adıma tıklamak da bunu yapar.</li>
+<li><b>Kullanılmayan adım çalışmaz:</b> bir adımdaki hata, sonuca giden yolda değilse sorguyu durdurmaz. Ama aynı adımı bir sonraki adım kullanmaya başladığı anda hata ortaya çıkar.</li>
+</ul>
+<p>Boşluk ya da Türkçe karakter içeren adım adları <code>#"Değiştirilen Tür"</code> biçiminde yazılır. Arayüz bu adları kendisi üretir; elle yazarken kısa ve boşluksuz adlar (<code>Turler</code>, <code>Filtre</code>) kodu okunur kılar.</p>
+
+<h2>each ve _: kısa fonksiyon yazımı</h2>
+<p><code>each</code>, tek parametreli bir fonksiyonun kısaltmasıdır: <code>each [Adet] * [Fiyat]</code> = <code>(_) =&gt; _[Adet] * _[Fiyat]</code>. Köşeli parantez içindeki alan adı, <code>_</code> değerinin alanıdır. <code>_</code> ne olduğuna göre değişir:</p>
+<div class="tbl-wrap"><table><tr><th>Fonksiyon</th><th><code>_</code> nedir?</th><th>Örnek</th></tr>
+<tr><td><code>Table.SelectRows</code>, <code>Table.AddColumn</code></td><td>Satırın kaydı</td><td><code>each [Kanal] = "Web"</code></td></tr>
+<tr><td><code>Table.TransformColumns</code></td><td>Hücrenin değeri</td><td><code>each Text.Proper(_)</code></td></tr>
+<tr><td><code>List.Transform</code>, <code>List.Select</code></td><td>Listenin elemanı</td><td><code>each _ * 1.2</code></td></tr></table></div>
+<pre class="m">let
+    Kaynak   = Satislar,
+    Secili   = Table.SelectRows(Kaynak, each List.Contains({"Web", "Mobil"}, [Kanal])),
+    Etiketli = Table.AddColumn(Secili, "Bant",
+                 each if [Tutar] &gt;= 2000 then "Büyük" else if [Tutar] &gt;= 500 then "Orta" else "Küçük",
+                 type text)
+in
+    Etiketli</pre>
+<p>İç içe <code>each</code> yazınca iki <code>_</code> çakışır: içteki dıştakini gölgeler. Böyle durumlarda açık adlı fonksiyon yaz: <code>(satir) =&gt; List.Select(Liste, (x) =&gt; x &gt; satir[Esik])</code>.</p>
+
+<h2>Özel fonksiyon ve parametreli kaynak</h2>
+<p>Satın alma ekibi her tedarikçi için ayrı Excel gönderiyor; dosyaların yapısı aynı. Aynı temizliği 8 kez yazmak yerine bir fonksiyon yazılır ve dosya listesinin her satırına uygulanır. “Klasörden birleştir” komutu bunu kendiliğinden yapar: bir <i>örnek dosyayı dönüştür</i> sorgusu ve ondan türetilen bir fonksiyon üretir; temizliği örnek sorguda yaptığında fonksiyon da güncellenir.</p>
+<pre class="m">// fxTedarikciTemizle
+(Dosya as binary, Tedarikci as text) as table =&gt;
+let
+    Sayfa  = Excel.Workbook(Dosya, null, true){[Item = "Siparis", Kind = "Sheet"]}[Data],
+    Baslik = Table.PromoteHeaders(Sayfa, [PromoteAllScalars = true]),
+    Turler = Table.TransformColumnTypes(Baslik, {{"Tarih", type date}, {"Tutar", type number}}, "tr-TR"),
+    Etiket = Table.AddColumn(Turler, "Tedarikci", each Tedarikci, type text)
+in
+    Etiket</pre>
+<p><b>Parametreli kaynak:</b> sunucu ve veritabanı adlarını Parametreleri yönet ile <code>SunucuAdi</code>, <code>VeritabaniAdi</code> parametrelerine al: <code>Sql.Database(SunucuAdi, VeritabaniAdi)</code>. Dağıtım işlem hattındaki parametre kuralları Test'te test sunucusunu, Üretim'de canlı sunucuyu seçer (Yaşam döngüsü dersi). Kenar durum: farklı kaynakları birleştiren sorgularda gizlilik düzeyleri uyuşmazsa <code>Formula.Firewall</code> hatası çıkar; kaynakları ayrı hazırlık (staging) sorgularına ayırmak ya da gizlilik düzeylerini doğru tanımlamak gerekir.</p>
+
+<h2>Hata yönetimi: try, otherwise, catch</h2>
+<p>İki tür hata vardır. <b>Adım düzeyinde hata</b> (dosya yok, sütun yok) sorgunun tamamını durdurur. <b>Hücre düzeyinde hata</b> (bir tarih çevrilemedi) yalnızca o hücreyi Error yapar; yüklemede o hücre boş gelir ve hata raporu oluşur. <code>try</code> her ikisini de bir kayda çevirir:</p>
+<pre class="m">let
+    Kaynak = Musteri,
+    Denendi = Table.AddColumn(Kaynak, "Deneme", each try Date.FromText([KayitTarihi], [Culture = "tr-TR"])),
+    // Deneme: [HasError = false, Value = ...]  ya da  [HasError = true, Error = [Reason, Message, Detail]]
+    Tarih  = Table.AddColumn(Denendi, "KayitTarihiTemiz", each if [Deneme][HasError] then null else [Deneme][Value], type nullable date),
+    Neden  = Table.AddColumn(Tarih, "HataNedeni", each if [Deneme][HasError] then [Deneme][Error][Message] else null, type nullable text),
+    Sonuc  = Table.RemoveColumns(Neden, {"Deneme"})
+in
+    Sonuc</pre>
+<ul>
+<li><code>try … otherwise null</code> kısa yoldur ama nedeni kaybeder. Kalite raporu gerekiyorsa yukarıdaki gibi <b>neden sütunu</b> tut; “2024-02-30” gibi hatalı satırlar sessizce kaybolmasın.</li>
+<li><code>try … catch (e) =&gt; …</code> yazımı hata kaydını doğrudan bir fonksiyona verir: <code>try Number.From([Tutar]) catch (e) =&gt; if e[Message] = "…" then 0 else null</code>.</li>
+<li>Kendi hatanı da üretebilirsin: <code>error "Beklenen Tutar sütunu yok"</code>. Kaynak beklenmedik biçimde değiştiğinde sessizce yanlış veri yüklemektense yenilemenin açık bir mesajla durması iyidir.</li>
+</ul>
+
+<h2>Sorgu katlama ile ilişkisi</h2>
+<p>Bir SQL kaynağında adımlar mümkün olduğunca tek bir SQL sorgusuna çevrilir (sorgu katlama, query folding). M yazım biçimin bunu doğrudan etkiler:</p>
+<div class="tbl-wrap"><table><tr><th>Adım</th><th>Çoğu SQL kaynağında</th></tr>
+<tr><td>Satır filtresi, sütun seçme/kaldırma, gruplama, aynı kaynaktaki birleştirme</td><td>Katlanır</td></tr>
+<tr><td>Satır başına <code>try … otherwise</code>, özel fonksiyon çağrısı, <code>Table.Buffer</code></td><td>Katlanmaz; sonraki adımlar da yerelde çalışır</td></tr>
+<tr><td>Dizin sütunu ekleme, bazı metin fonksiyonları (ör. her sözcüğün ilk harfi)</td><td>Genellikle katlanmaz</td></tr></table></div>
+<p>Kural: <b>katlanan adımları başa, katlanmayanları sona</b> koy. Adıma sağ tıklayıp <b>Yerel sorguyu görüntüle</b> (View Native Query) seçeneğinin açık olması, o adıma kadar katlandığını gösterir. Artımlı yenilemedeki <code>RangeStart</code>/<code>RangeEnd</code> filtresinin katlanması özellikle kritiktir; o filtreden önce katlamayı bozan bir adım varsa her bölüm için kaynağın tamamı okunur.</p>
+<div class="tip"><b>Kontrol listesi</b>Adım adları okunur mu? · Hatalar null'a gömülmek yerine neden sütununda mı? · Kaynak adresleri parametrede mi? · Katlamayı bozan adımlar sonda mı? · Tekrarlanan temizlik fonksiyona alındı mı?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-dili">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yayinlama/">← Yayımlama, yenileme ve yaşam döngüsü</a><a href="../dashboard-tasarim/">Rapor tasarımı: bir vaka çalışması →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

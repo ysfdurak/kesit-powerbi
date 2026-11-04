@@ -1,0 +1,48 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI uygulamaları (apps): kurmak, kitleler, güncellemek | Kesit Power BI</title><meta name="description" content="Çalışma alanı uygulaması (workspace app) ve kuruluş uygulaması (org app) arasında seçim; yayımlama adımları, kitleler, gizli içerik tuzağı, izinler,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/power-bi-apps/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI uygulamaları (apps): kurmak, kitleler, güncellemek"><meta property="og:description" content="Çalışma alanı uygulaması (workspace app) ve kuruluş uygulaması (org app) arasında seçim; yayımlama adımları, kitleler, gizli içerik tuzağı, izinler,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/power-bi-apps/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI uygulamaları (apps): kurmak, kitleler, güncellemek","description":"Çalışma alanı uygulaması (workspace app) ve kuruluş uygulaması (org app) arasında seçim; yayımlama adımları, kitleler, gizli içerik tuzağı, izinler,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/power-bi-apps/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Power BI uygulamaları (apps): kurmak, kitleler, güncellemek</h1><p class="st-l">Çalışma alanı uygulaması (workspace app) ve kuruluş uygulaması (org app) arasında seçim; yayımlama adımları, kitleler, gizli içerik tuzağı, izinler, güncelleme ve otomatik yükleme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-power-bi-apps">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Satış ekibinde 300 kişi var. Her birine bağlantı göndermek, çalışma alanına eklemek ya da e-postayla PDF atmak yerine menülü tek bir paket istiyorsun: işte <b>uygulama (app)</b>. Çalışma alanı mutfaktır, uygulama servistir. Yazarlar mutfakta değiştirir, okuyucu güncellenene kadar eski tabağı görür.</p>
+<h2>İki tür uygulama</h2>
+<p>Learn iki tür tanımlar. Klasik “Power BI uygulaması”nın resmî adı artık <b>çalışma alanı uygulaması</b>dır. <b>Kuruluş uygulaması</b> (org app) daha yeni bir Fabric öğesidir, genel kullanımdadır ve ikisi birlikte yaşayabilir. Mevcut uygulamalar kendiliğinden değişmez. Bilgiler Kasım 2026’da Learn’den kontrol edildi; ayrıntılar değişebilir.</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Çalışma alanı uygulaması</th><th>Kuruluş uygulaması</th></tr>
+<tr><td>Çalışma alanı başına</td><td>Bir</td><td>Birden çok</td></tr>
+<tr><td>İçerik</td><td>Sürümlü: “Uygulamayı güncelle” denene kadar eski kalır</td><td>Canlı: kaydedilince görünür</td></tr>
+<tr><td>Modele erişim</td><td>Yazar elle yönetir</td><td>Otomatik verilir; başka çalışma alanında olsa da</td></tr>
+<tr><td>Kullanıcıyı çıkarınca</td><td>Model erişimi elle kaldırılır</td><td>Uygulamadan gelen erişim otomatik kalkar</td></tr>
+<tr><td>Kullanıcı tarafı</td><td>Yükleme ister (ya da otomatik yükleme)</td><td>Yükleme yok; Uygulamalar listesinde görünür</td></tr>
+<tr><td>Yorum</td><td>Rapor araç çubuğunda var</td><td>Rapor araç çubuğunda yok</td></tr>
+<tr><td>Oluşturma</td><td>Çalışma alanı araç çubuğu: Uygulama oluştur</td><td>Yeni → Org app</td></tr></table></div>
+<p>Karar sorusu: <b>“Yazarın kaydettiği her değişiklik okuyucuya hemen gitmeli mi?”</b> Hayır ve test sonrası sürüm yayımlanacaksa çalışma alanı uygulaması. Aynı alandan birden çok paket, farklı alanlardaki modeller ve daha az izin işi isteniyorsa kuruluş uygulaması değerlendirilir. Bu derste sınavda da sorulan çalışma alanı uygulamasını adım adım işleyeceğiz.</p>
+<h2>Yayımlama: üç sekme</h2>
+<ol><li><b>Kurulum (Setup):</b> ad, açıklama, tema rengi, destek sitesi, iletişim. Gelişmiş ayarlarda rapor kopyalama, gizli içerik erişimi ve uygulamadaki Copilot.</li><li><b>İçerik (Content):</b> çalışma alanındaki öğeleri seç, sırala, dış bağlantı ekle.</li><li><b>Kitle (Audience):</b> kitleleri oluştur, içerik görünürlüğünü ve erişimi ver.</li></ol>
+<p>Sonra <b>Uygulamayı yayımla</b>. Yayımlamak ve güncellemek için Pro ya da PPU gerekir. Yönetici ve Üye yayımlar; Katkıda bulunan yalnız yönetici izin verirse günceller. Çalışma alanı başına bir uygulama vardır.</p>
+<h2>Kitleler</h2>
+<p>Kitle (audience), aynı uygulamada farklı grubun farklı içerik görmesini sağlar. “Temsilciler” Satış Performansı’nı, “Yönetim” ek olarak Kârlılık raporunu görür.</p>
+<ul><li>Uygulama başına en fazla 25 kitle; kişi ve grup toplamı 10.000; kitle başına 1.000 giriş. Grup tek giriş sayılır, bu yüzden kişi değil grup ekle.</li><li>Çalışma alanı kullanıcıları her kitlede sayılır: 4 kullanıcı ve 5 kitle 20 giriş eder.</li><li>Kullanıcı birden çok kitledeyse üstte sekme ve “Tümü” görür.</li></ul>
+<div class="warn"><b>Kitle güvenlik değildir</b>Gizlemek görünümü değiştirir. Gizli içeriğe erişim seçeneği açıksa, bağlantısı olan herkes gizli öğeleri açabilir. Kârlılık raporunda marjı saklamak gerekiyorsa RLS ya da OLS kullan. Ayrıca gizlenmiş bir rapora giden kutucuk hata verir, gizli detay sayfasına gidilemez.</div>
+<h2>Güncellemek ve tuzakları</h2>
+<ul><li><b>Çalışma alanı sahneleme alanıdır.</b> Rapor değişti, ama kullanıcı görmüyor: “Uygulamayı güncelle” dememişsindir.</li><li><b>Yeni içerik kitlelerde gizli gelir.</b> İlk yayımda hepsi görünür, sonradan eklenen elle açılır. “Yeni raporu ekledim, kimse göremiyor” şikâyetinin sebebi budur.</li><li><b>Raporu çıkarmak kişiselleştirmeleri siler.</b> Kullanıcının yer işaretleri ve yorumları gider, rapor geri eklense de dönmez.</li><li><b>İzni kaldırmak eski erişimi almaz.</b> Güncellemede izin kutusunu kapatmak yeni yükleyenleri etkiler; var olan Derleme ya da paylaşım iznini modelin Doğrudan erişim sekmesinden kaldır.</li><li><b>Başka alandaki model.</b> Uygulama, modeli başka çalışma alanındaysa o modele erişimi kendi vermez. Tüm kullanıcılar erişebilmeli; zincirli modellerde her halkaya izin ver.</li><li><b>Yayımdan çekmek</b> uygulamayı herkesten kaldırır, kişiselleştirmeleri siler. Çalışma alanı içeriği durur.</li></ul>
+<h2>Erişim ve otomatik yükleme</h2>
+<p>Erişimi olmayan kullanıcı varsayılan olarak talep gönderebilir; talep sahibe e-postayla gider. <b>İzinleri yönet</b> ekranında Doğrudan erişim ve Bekleyen sekmeleri vardır. Fabric yöneticisi izin verdiyse <b>Bu uygulamayı otomatik yükle</b> seçeneği uygulamayı kitlelere iter; “Tüm kuruluş” için yapılamaz. Mesai dışında yayımla, birkaç kullanıcıyla doğrula.</p>
+<h2>Lisans</h2>
+<p>Çalışma alanı Premium ya da F64+ kapasitede değilse uygulamayı açmak için herkes Pro ya da PPU ister. Kapasitedeyse ücretsiz lisansla da görülür. Uygulamadaki Copilot önizlemededir ve Copilot gereksinimlerine bağlıdır (“Copilot ile çalışmak” dersi).</p>
+<h2>Yaşam döngüsü ile</h2>
+<p>Dağıtım işlem hatlarında çoklu kitle tam desteklenmez; yeni içeriğin görünürlüğünü elle yönet. Uygulama öğelerinin kimlikleri çalışma alanındakilerden farklıdır; kullanım günlüklerini okurken bunu hesaba kat. Yayımlama ya da güncelleme 1 dakikada zaman aşımına uğrarsa içerik sayısını azalt ya da raporları gelişmiş rapor biçimine (PBIR) çevir.</p>
+<p>Kaç giriş kullandığını hesaplamak kolaydır. Örnek bir kitle planında toplam girişi hesaplayan sorgu:</p>
+<pre class="dax">EVALUATE
+VAR CalismaAlaniKullanici = 4
+VAR Kitleler =
+    DATATABLE("Kitle", STRING, "Grup", INTEGER, {{"Temsilciler", 12}, {"Bölge Müdürleri", 3}, {"Yönetim", 1}})
+RETURN
+    ROW("Toplam Giriş", SUMX(Kitleler, [Grup] + CalismaAlaniKullanici), "Sınır", 10000)</pre>
+<p>Sonuç: 16 + 7 + 5 = 28 giriş. Grup yerine kişi ekleseydin 600 temsilci tek başına kitle başına 1.000 sınırına yaklaşırdı.</p>
+<div class="tip"><b>Kendi ortamında dene</b>Pro ya da deneme lisansıyla bir çalışma alanında iki raporla uygulama kur, iki kitle tanımla, bir raporu ikinci kitleden gizle, sonra rapora değişiklik yapıp <b>Uygulamayı güncelle</b> demeden görüntüle. Lisansın yoksa kararları alıştırmalarla çalış.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-power-bi-apps">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../paylasim/">← Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi</a><a href="../yorum-isbirligi/">Yorum ve iş birliği: rapor üzerinde konuşmak, Teams ve PowerPoint →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

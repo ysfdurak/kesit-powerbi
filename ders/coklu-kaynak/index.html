@@ -1,0 +1,48 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir | Kesit Power BI</title><meta name="description" content="SQL, Excel, SharePoint ve web kaynağını tek modelde toplamak. Sorguları eklemek mi, birleştirmek mi, ilişki kurmak mı? Gizlilik düzeyi, sorgu katlama ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/coklu-kaynak/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir"><meta property="og:description" content="SQL, Excel, SharePoint ve web kaynağını tek modelde toplamak. Sorguları eklemek mi, birleştirmek mi, ilişki kurmak mı? Gizlilik düzeyi, sorgu katlama ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/coklu-kaynak/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir","description":"SQL, Excel, SharePoint ve web kaynağını tek modelde toplamak. Sorguları eklemek mi, birleştirmek mi, ilişki kurmak mı? Gizlilik düzeyi, sorgu katlama ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/coklu-kaynak/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir</h1><p class="st-l">SQL, Excel, SharePoint ve web kaynağını tek modelde toplamak. Sorguları eklemek mi, birleştirmek mi, ilişki kurmak mı? Gizlilik düzeyi, sorgu katlama ve yenileme sonuçları; Power Query Lab’de iki kaynakla çalışan alıştırmalar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-coklu-kaynak">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Gerçek bir raporda veri tek yerden gelmez. Anadolu Market’te satış satırları şirket içindeki SQL Server’da, hedefler finansın SharePoint’teki Excel dosyasında, bayi raporları ortak klasördeki CSV’lerde, döviz kuru ise merkez bankasının sitesinde. <b>Birden çok kaynağı bağlamak kolaydır; zor olan, hangi işi nerede yapacağına karar vermektir.</b> Bu ders dört kaynağı tek modele indirirken sorulması gereken soruları ve yanlış kararın sonuçlarını anlatır.</p>
+<h2>Üç yol: ekle, birleştir, ilişkilendir</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne yapar?</th><th>Ne zaman?</th><th>Yanlış kullanılırsa</th></tr>
+<tr><td><b>Sorguları ekle (Append)</b></td><td>Aynı yapıdaki tabloları alt alta koyar; satır sayısı artar.</td><td>Ocak ve Şubat dosyaları, şube dosyaları</td><td>Sütun adı farklıysa (“Şehir” ve “Sehir”) iki sütun oluşur, boşluklar null kalır.</td></tr>
+<tr><td><b>Sorguları birleştir (Merge)</b></td><td>Bir anahtarla yan yana getirir; sütun sayısı artar.</td><td>Boyutu düzleştirmek, olguya tek bir öznitelik eklemek</td><td>Sağ tabloda anahtar yinelenirse satırlar çoğalır, toplamlar şişer.</td></tr>
+<tr><td><b>Model ilişkisi</b></td><td>Tablolar ayrı kalır; filtre ilişkiden akar.</td><td>Olgu ve boyut, farklı taneciklikte hedef tablosu</td><td>Anahtar türleri uyuşmazsa ilişki kurulmaz; yetim satırlar boş satırda toplanır.</td></tr>
+</table></div>
+<p>Kural: <b>yeni bir olgu satırı geliyorsa ekle; bir boyutu ya da özniteliği tamamlıyorsan önce model ilişkisini düşün</b>, ancak tablo gerçekten tek bir boyuta inecekse birleştir. Yıldız şemanın nedeni “Veri modelleme” dersinde. Join türleri “Power Query: join türleri, dizin sütunu ve gruplu sıra” dersinde.</p>
+<h2>Önce temizle, sonra birleştir</h2>
+<p>Merge eşleşmesi büyük/küçük harfe ve boşluğa duyarlıdır. Bayi raporunda “ ANKARA ” yazıyorsa SharePoint listesindeki “Ankara” ile eşleşmez; sorgu hata vermez, sütun sessizce null gelir. Bu en sık yapılan çoklu kaynak hatasıdır: rapor açılır, görünür hiçbir sorun yoktur, ama bölge kırılımında büyük bir “(Boş)” satırı çıkar.</p>
+<ol><li>İki taraftaki anahtarın türünü eşitle (metin ve sayı karışmasın).</li><li>Kırp, harf biçimini tekleştir, görünmeyen karakterleri temizle.</li><li>Sağ tablonun anahtarını yinelenenlere karşı kontrol et.</li><li>Birleştirmeden sonra eşleşmeyen satırları say: sol karşıt (left anti) birleştirme tam bu sayıyı verir.</li></ol>
+<p>Power Query Lab’de bu akışı gerçekten yapacaksın: alıştırmalarda ikinci kaynak olarak SharePoint listesi ve Şubat CSV dosyası var.</p>
+<h2>Gizlilik düzeyi ve Formula.Firewall</h2>
+<p>Farklı kaynaklı iki sorgu birleşince Power Query bir kaynağın verisini ötekine gönderebilir. Gizlilik düzeyleri (Özel, Kuruluş, Genel) bunu sınırlar; ayarın yeri “Veri alma ve bağlantı modları” dersinde. Üç sonuç genelde atlanır:</p>
+<ul><li><b>Sorgu katlama kırılabilir.</b> Özel düzeyli bir CSV ile SQL Server tablosu birleşiyorsa motor filtreyi SQL’e gönderemez; bütün tabloyu çeker, sonra yerelde birleştirir. Yenileme yavaşlar.</li>
+<li><b>Masaüstü ayarı Service’e taşınmaz.</b> Microsoft Learn, Desktop’taki gizlilik ayarlarının yayımlanmadığını söyler. Yayımdan sonra anlam modeli ayarlarında (ağ geçidi varsa ağ geçidi bağlantısında) yeniden ver.</li>
+<li><b>“Yok say” Service’te seni kurtarmaz.</b> Desktop’ta gizlilik düzeylerini yok sayarak çalışan sorgu Service’te hata verebilir.</li></ul>
+<h2>Yenileme açısından çoklu kaynak</h2>
+<p>Her kaynağın yenileme yolu farklıdır, ama bir anlam modeli yalnız <b>bir ağ geçidi bağlantısı</b> kullanır. Aynı sorguda şirket içi SQL ile SharePoint Online birleşiyorsa bulut kaynağı da ağ geçidinden geçmek zorundadır: ağ geçidinde bulut kaynağı için bir veri kaynağı tanımı eklenir ya da “kullanıcının bulut veri kaynaklarının bu ağ geçidi kümesinden yenilenmesine izin ver” seçeneği açılır. Ayrıntı “On-premises data gateway” dersinde.</p>
+<div class="tbl-wrap"><table><tr><th>Kaynak</th><th>Kimlik bilgisi nerede?</th><th>Ağ geçidi?</th></tr>
+<tr><td>Şirket içi SQL Server</td><td>Ağ geçidi bağlantısı</td><td>Evet</td></tr>
+<tr><td>SharePoint Online Excel</td><td>Anlam modeli ayarları, Veri kaynağı kimlik bilgileri</td><td>Hayır (aynı sorguda şirket içiyle birleşiyorsa evet)</td></tr>
+<tr><td>Ağ klasöründeki CSV</td><td>Ağ geçidi bağlantısı</td><td>Evet</td></tr>
+<tr><td>Web sayfası</td><td>Anlam modeli ayarları</td><td>Hayır</td></tr></table></div>
+<p>Pratik sonuç: ağ klasöründeki dosyayı SharePoint’e taşımak çoğu zaman bir ağ geçidi bağımlılığını ortadan kaldırır. Dinamik adresli kaynaklar da Service’te yenilenmeyebilir; web kaynağında <code>Web.Contents</code> ile <code>RelativePath</code> ya da <code>Query</code> kullan.</p>
+<h2>Bileşik model ne zaman?</h2>
+<p>Her kaynağı Import etmek zorunda değilsin. Satışlar DirectQuery, hedefler Import olabilir; bu bir bileşik modeldir. Ama farklı kaynak gruplarındaki tablolar arasındaki ilişki <b>sınırlı ilişki</b> olur. Tablo tablo karar “Kurumsal model” dersinde. Başlangıç kuralı: veri yeterince küçükse hepsini Import et, karmaşıklığı ancak bir gereksinim zorlarsa ekle.</p>
+<h2>Kaynaklar arası mutabakat</h2>
+<p>İki kaynak birleşince “hangi sayı doğru?” sorusu çıkar. Excel’den gelen bir tabloyu modele bağlamadan önce DAX sorgu görünümünde sınayabilirsin. Aşağıdaki sorgu, Excel’den gelmiş gibi küçük bir hedef tablosunu sanal ilişkiyle (TREATAS) modele bağlar:</p>
+<pre class="dax">EVALUATE
+VAR ExcelHedef =
+    DATATABLE("Kategori", STRING, "Plan", INTEGER, {{"Kitap", 150000}, {"Elektronik", 350000}, {"Giyim", 200000}})
+RETURN
+    ADDCOLUMNS(ExcelHedef, "Net", CALCULATE([Net Satış], TREATAS({[Kategori]}, Kategoriler[Kategori])))</pre>
+<p>Sonuçta Kitap 151.882 ₺, Elektronik 339.304 ₺ gelir. Excel’de “Kitaplar” yazsaydı o satır boş kalırdı; sorun rapora çıkmadan görülürdü.</p>
+<div class="note"><b>Kontrol listesi</b>Her kaynağın sahibi ve yenileme sıklığı yazılı mı? · Anahtarlar temizlendi mi, türleri aynı mı? · Eşleşmeyen satır sayısı biliniyor mu? · Gizlilik düzeyi her kaynakta doğru mu, Service’te yeniden verildi mi? · Birleşen sorgu hâlâ katlanıyor mu (Yerel sorguyu görüntüle)? · Ağ geçidi gerekiyorsa bulut kaynağı da tanımlı mı?</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-coklu-kaynak">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-spark-odev/">← Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı</a><a href="../calisma-alani/">Çalışma alanı (workspace) kurmak ve raporu yayımlamak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

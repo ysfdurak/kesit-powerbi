@@ -1,0 +1,98 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Koşullu biçimlendirme ve KPI'lar | Kesit Power BI</title><meta name="description" content="Renk, veri çubukları ve simgeleri ölçülerle yönetmek; KPI ve gösterge görselleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kosullu-bicim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Koşullu biçimlendirme ve KPI'lar"><meta property="og:description" content="Renk, veri çubukları ve simgeleri ölçülerle yönetmek; KPI ve gösterge görselleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kosullu-bicim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Koşullu biçimlendirme ve KPI'lar","description":"Renk, veri çubukları ve simgeleri ölçülerle yönetmek; KPI ve gösterge görselleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kosullu-bicim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Koşullu biçimlendirme ve KPI'lar</h1><p class="st-l">Renk, veri çubukları ve simgeleri ölçülerle yönetmek; KPI ve gösterge görselleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kosullu-bicim">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Tablo ve matriste koşullu biçim</h2>
+<p>Değer alanının açılır menüsü → <b>Koşullu biçimlendirme</b>:</p>
+<ul>
+<li><b>Arka plan rengi / Yazı rengi:</b> Renk skalası (ısı haritası), kurallar ya da <b>alan değeri</b> (renk kodunu bir ölçüden almak).</li>
+<li><b>Veri çubukları:</b> Hücrenin içine küçük bir çubuk.</li>
+<li><b>Simgeler:</b> ▲ ▼ ● gibi durum simgeleri.</li>
+<li><b>Web URL'si:</b> Hücreyi bağlantıya çevirir.</li>
+</ul>
+<h2>Rengi DAX'la belirlemek</h2>
+<pre class="dax">Durum Rengi =
+SWITCH(TRUE(),
+    [Hedef Gerçekleşme %] &gt;= 1, "#17855A",
+    [Hedef Gerçekleşme %] &gt;= 0.95, "#A86A12",
+    "#C0392B")</pre>
+<p>Koşullu biçimde “Biçim stili: Alan değeri” seçip bu ölçüyü verirsin. Aynı ölçü sütun grafiğinin “Veri renkleri” bölümünde de (fx düğmesi) kullanılabilir. Kural tek yerde durur.</p>
+<h2>KPI görseli ve gösterge</h2>
+<ul>
+<li><b>KPI görseli:</b> Değer + hedef + eğilim ekseni. Hedefin üstü yeşil, altı kırmızı.</li>
+<li><b>Gösterge (gauge):</b> Yarım daire üzerinde değer, hedef çizgisi ve maksimum. Tek bir oran için.</li>
+<li><b>Kart (yeni):</b> Birden çok ölçüyü tek görselde, referans etiketleriyle gösterir.</li>
+</ul>
+<div class="tip"><b>Ölçek</b>Isı haritası renk skalasında minimum ve maksimumu sabitlemezsen renkler her filtrede yeniden ölçeklenir; “koyu yeşil” bir sayfada %120, diğerinde %80 anlamına gelebilir. Kurallarla sabit eşikler daha tutarlıdır.</div>
+
+<h2>Kural mı, ölçü mü, skala mı?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yöntem</th><th>Ne zaman?</th><th>Dikkat</th></tr>
+<tr><td>Renk skalası</td><td>Bir değerin büyüklüğünü sezdirmek: ısı haritası.</td><td>Min/max sabit değilse anlam filtreyle değişir.</td></tr>
+<tr><td>Kurallar</td><td>Sabit eşikler: “%95’in altı kırmızı”.</td><td>Eşik birkaç görselde tekrarlanırsa bakımı zorlaşır.</td></tr>
+<tr><td>Alan değeri (DAX)</td><td>İş kuralı birden çok görselde aynı olmalı; renk başka bir ölçüye bağlı.</td><td>Ölçü bir renk kodu (#RRGGBB) ya da renk adı döndürmeli.</td></tr>
+</table></div>
+<h2>Renk körlüğü ve simge</h2>
+<p>Erkeklerin yaklaşık %8’inde kırmızı-yeşil ayrımı zayıftır. Durumu yalnızca renkle değil, simgeyle de (▲ ■ ▼) ver ve kırmızıyı yalnızca “kötü” için kullan. Tema dosyasındaki <code>good</code>, <code>neutral</code>, <code>bad</code> renkleri bu sınıflar için tek kaynak olsun.</p>
+<pre class="dax">Marj Rengi =
+SWITCH(
+    TRUE(),
+    [Kâr Marjı %] &gt;= 0.4, "#17855A",
+    [Kâr Marjı %] &gt;= 0.3, "#A86A12",
+    "#C0392B"
+)</pre>
+<p>Aynı mantıkla simge döndüren bir metin ölçüsü de yazılabilir; koşullu biçimdeki “Simgeler” seçeneğinden daha esnektir çünkü simgenin anlamını ölçünün adı açıklar.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Kurallarda yüzde tuzağı</h2>
+<p>Finans ekibi Hedef Gerçekleşme % sütununa kural yazıyor: “%95’in altı kırmızı”. Kural iletişim kutusunda değerin yanındaki birim açılır listesi iki seçenek sunar: <b>Sayı</b> ve <b>Yüzde</b>. Sezgisel olarak “Yüzde” seçilir ve sonuç tutarsızlaşır. Nedeni: Learn’e göre buradaki “Yüzde”, değerin kendisini değil, <b>en küçük ile en büyük arasındaki aralıktaki konumu</b> ifade eder. Veri 100 ile 400 arasındaysa “yüzde 33’ten küçük” kuralı 200’ün altını boyar.</p>
+<ul>
+<li>Oran ölçüsüne kural yazarken değeri ondalık gir (%95 → <code>0,95</code>) ve birimi <b>Sayı</b> seç.</li>
+<li>Negatif oranlar için ayrı bir “0’dan küçük” kuralı ekle; yoksa o hücreler hiçbir kurala girmez ve biçimsiz kalır.</li>
+<li>Renk ölçeği ve yüzde tabanlı kurallar, veride NaN (sıfıra bölmeden gelen “sayı değil”) varsa çalışmaz. Oranları her zaman <code>DIVIDE</code> ile yaz.</li>
+</ul>
+
+<h2>Başka bir ölçüye göre boyamak</h2>
+<p>Koşullu biçim iletişim kutusundaki <b>Hangi alanı temel almalıyız?</b> (What field should we base this on?) sorusu en güçlü ve en az bilinen ayardır. Net Satış sütununun arka planını <b>Kâr Marjı %</b>’ye göre boyayabilirsin: hücrede ciro yazar ama renk kârlılığı anlatır. Matriste bu, tek bir sütunla iki boyutlu bilgi demektir. Okuyucunun bunu anlaması için sütun başlığına ya da görsel alt başlığına “renk: kâr marjı” notu düş.</p>
+
+<h2>Toplam satırı ve boş değerler</h2>
+<p>Alan değeri yöntemiyle bağladığın renk ölçüsü <b>toplam ve ara toplam satırlarında da çalışır</b>. Kategori satırları için yazdığın “marj %40’ın üstü yeşil” kuralı toplam satırını da boyar; toplam çoğu zaman ortalamaya yakın olduğu için sarı görünür ve okuyucu “genelde kötüyüz” diye anlar. İki çözüm:</p>
+<ol>
+<li>Ölçü toplam satırında <code>BLANK()</code> döndürsün. <code>ISINSCOPE</code> satırda hangi düzeyde olduğunu söyler; boş renk “biçim uygulama” anlamına gelir.</li>
+<li>Kural iletişim kutusunda <b>Boş değerleri nasıl biçimlendirelim?</b> seçeneğini “Biçimlendirme yok” bırak.</li>
+</ol>
+<pre class="dax">Marj Rengi (Toplamsız) =
+IF(
+    ISINSCOPE(Kategoriler[Kategori]),
+    SWITCH(TRUE(),
+        [Kâr Marjı %] &gt;= 0.37, "#17855A",
+        [Kâr Marjı %] &gt;= 0.35, "#A86A12",
+        "#C0392B")
+)</pre>
+<p>Bu modelde kategori marjları dar bir aralıkta: Elektronik yaklaşık %38,0 ile en yüksek, Hediye yaklaşık %32,3 ile en düşük. Eşikler bu yüzden %37 ve %35 seçildi; eşiği verinin gerçek dağılımına bakmadan yazmak, bütün hücrelerin aynı renge boyanmasıyla sonuçlanır.</p>
+
+<h2>Simgeler ve veri çubukları: ince ayarlar</h2>
+<ul>
+<li><b>Simge düzeni:</b> Değerin solunda, sağında ya da yalnızca simge. Dar sütunlarda “yalnızca simge” kullanıyorsan, yanında değer gösteren ikinci bir sütun bırak; simge tek başına sayı vermez.</li>
+<li><b>Kuraldan simge seçmek:</b> Her kuralın simge listesinden herhangi bir setten simge alabilirsin; üçlü setlere mahkûm değilsin.</li>
+<li><b>Alan değeriyle özel simge:</b> Bir sütunda resim adresleri tutup simge olarak gösterebilirsin (SVG, PNG gibi biçimler). Adres herkese açık ya da OneLake dosya bağlantısı olmalı.</li>
+<li><b>Veri çubukları ve negatifler:</b> Negatif değerler için ayrı renk ve eksen rengi seçilir. Hedef farkı gibi işaret değiştiren ölçülerde çubuğun ortadan iki yöne açılması, okumayı kolaylaştırır.</li>
+<li><b>Yalnızca çubuğu göster:</b> Sayıyı gizler. Yöneticiye ilk bakışta sıralama, ayrıntı isteyene araç ipucunda sayı vermek için uygundur.</li>
+</ul>
+
+<h2>Renk körlüğüne dayanıklı durum paleti</h2>
+<p>Kırmızı-yeşil çifti en sık kullanılan ve en sorunlu çifttir. Alternatifler: <b>mavi-turuncu</b> ıraksak palet (iyi = mavi, kötü = turuncu) ya da aynı tonun koyu-açık çifti. Büyüme gibi işaretli bir ölçüde üçüncü durumu unutma: geçen yıl verisi yoksa büyüme hesaplanamaz. Bu modelde 2022 ilk yıl olduğu için YoY % boş döner; renk ölçüsü bu durumu açıkça gri yapmalı, yoksa boş hücre “sıfır büyüme” gibi okunur.</p>
+<pre class="dax">Büyüme Rengi =
+VAR B = [YoY %]
+RETURN
+    SWITCH(TRUE(),
+        ISBLANK(B), "#8A8780",
+        B &gt;= 0, "#2A78D6",
+        "#D9622B")</pre>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-kosullu-bicim">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hedef/">← Hedef ve gerçekleşen: farklı ayrıntı düzeyleri</a><a href="../baglam-gecisi/">Bağlam geçişi (context transition) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

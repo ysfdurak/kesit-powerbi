@@ -1,0 +1,68 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI ailesi ve iş akışı | Kesit Power BI</title><meta name="description" content="Desktop, Service, Mobile, Report Server, lisans türleri ve bir raporun baştan sona yolculuğu."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/aile/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI ailesi ve iş akışı"><meta property="og:description" content="Desktop, Service, Mobile, Report Server, lisans türleri ve bir raporun baştan sona yolculuğu."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/aile/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI ailesi ve iş akışı","description":"Desktop, Service, Mobile, Report Server, lisans türleri ve bir raporun baştan sona yolculuğu.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/aile/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Power BI ailesi ve iş akışı</h1><p class="st-l">Desktop, Service, Mobile, Report Server, lisans türleri ve bir raporun baştan sona yolculuğu.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-aile">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Hangi parça ne işe yarar?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Parça</th><th>Ne yaparsın?</th><th>Kim kullanır?</th></tr>
+<tr><td><b>Power BI Desktop</b></td><td>Veriyi al, temizle, modelle, DAX yaz, rapor tasarla. Windows uygulaması, ücretsiz.</td><td>Rapor geliştiricisi, analist</td></tr>
+<tr><td><b>Power BI Service</b> (app.powerbi.com)</td><td>Raporu yayımla, paylaş, yenileme zamanla, pano ve uygulama oluştur, izinleri yönet.</td><td>Herkes; tüketiciler raporu burada görür</td></tr>
+<tr><td><b>Power BI Mobile</b></td><td>Raporları telefon ve tablette görüntüle, uyarı al.</td><td>Yöneticiler, sahadaki ekipler</td></tr>
+<tr><td><b>Power BI Report Server</b></td><td>Raporları bulut yerine şirket içindeki sunucuda yayımla.</td><td>Veriyi buluta çıkaramayan kurumlar</td></tr>
+<tr><td><b>Microsoft Fabric</b></td><td>Power BI'ın içinde yaşadığı geniş platform: lakehouse, veri ambarı, veri akışları, not defterleri.</td><td>Veri ekipleri</td></tr>
+</table></div>
+<h2>Lisanslar kısaca</h2>
+<ul>
+<li><b>Ücretsiz (Free):</b> Desktop'ta her şeyi yapabilirsin, Service'te yalnızca kendi “Çalışma alanım” bölümünde çalışırsın. Başkasıyla paylaşamazsın.</li>
+<li><b>Pro:</b> Rapor yayımlama ve paylaşma için kullanıcı başına lisans. Paylaşan ve görüntüleyen tarafın ikisinde de Pro gerekir (kapasite yoksa).</li>
+<li><b>Premium Per User (PPU):</b> Pro'ya ek olarak büyük model, sık yenileme, dağıtım işlem hatları gibi gelişmiş özellikler.</li>
+<li><b>Kapasite (Fabric F SKU'ları):</b> Kurum bir kapasite satın alır. Yeterli büyüklükteki kapasitede raporu görüntüleyenlerin Pro almasına gerek kalmaz.</li>
+</ul>
+<div class="warn"><b>Güncel bilgiyi kontrol et</b>Microsoft lisans adlarını ve fiyatlarını sık değiştirir. Satın alma kararı için her zaman Microsoft'un resmi fiyat sayfasına bak.</div>
+<h2>Bir raporun yolculuğu</h2>
+<ol>
+<li><b>Veri al:</b> Excel, SQL Server, SharePoint, web, API… (Giriş → Veri al)</li>
+<li><b>Dönüştür:</b> Power Query'de temizle, biçimlendir, birleştir.</li>
+<li><b>Modelle:</b> Tabloları ilişkilendir, yıldız şema kur, tarih tablosu ekle.</li>
+<li><b>Hesapla:</b> DAX ile ölçüler yaz: satış, kâr, büyüme, pay…</li>
+<li><b>Görselleştir:</b> Grafikleri, kartları, dilimleyicileri sayfaya yerleştir.</li>
+<li><b>Yayımla ve paylaş:</b> Service'e gönder, yenilemeyi zamanla, uygulama olarak dağıt.</li>
+</ol>
+<p>Bu uygulamadaki menü de aynı sırayı izler: <b>Anadolu Market modeli</b> (2–3. adım), <b>DAX Playground</b> ve <b>DAX fonksiyonları</b> (4. adım), <b>Görseller ve biçim</b> ile <b>Örnek raporlar</b> (5. adım).</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Service’teki nesneler: kim kimin içinde?</h2>
+<p>Raporunu yayımladığında Power BI Service’te (Service) tek bir dosya görmezsin; birkaç ayrı nesne oluşur. Bunları bilmek, “raporu sildim, veri de gitti mi?” gibi soruları cevaplamanı sağlar.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Nesne</th><th>Ne tutar?</th><th>Anadolu Market örneği</th></tr>
+<tr><td>Çalışma alanı (Workspace)</td><td>Bir ekibin klasörü. İçindeki her şeye erişimi yönetir.</td><td>“Satış Analitiği” çalışma alanı</td></tr>
+<tr><td>Anlam modeli (Semantic model)</td><td>Tablolar, ilişkiler, ölçüler ve verinin kendisi. Yenileme buna yapılır.</td><td>Satislar, Urunler, Tarih ve hazır ölçüler</td></tr>
+<tr><td>Rapor (Report)</td><td>Sayfalar ve görseller. Verisi yoktur; bir anlam modeline bağlanır.</td><td>“Aylık Satış Raporu”</td></tr>
+<tr><td>Pano (Dashboard)</td><td>Farklı raporlardan sabitlenmiş (pin) kutuları tek ekranda toplar.</td><td>Genel müdürün tek sayfalık özeti</td></tr>
+<tr><td>Uygulama (App)</td><td>Çalışma alanındaki seçili raporları paketleyip geniş bir kitleye dağıtır.</td><td>Tüm bölge müdürlerine “Satış Uygulaması”</td></tr>
+</table></div>
+<p>En önemli fikir şudur: <b>bir anlam modeli, birçok rapor</b>. Finans, satış ve lojistik ekipleri aynı modeli kullanıp kendi raporlarını yaparsa “Net Satış” her raporda aynı çıkar. Herkes kendi kopyasını yaparsa bir ay sonra üç farklı rakam tartışılır.</p>
+<h2>Çalışma alanı rolleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Rol</th><th>Ne yapabilir?</th><th>Kime verilir?</th></tr>
+<tr><td>Yönetici (Admin)</td><td>Her şey; üye ekleyip çıkarır, alanı siler.</td><td>BI ekibi lideri</td></tr>
+<tr><td>Üye (Member)</td><td>İçerik ekler, düzenler, uygulamayı yayımlar.</td><td>Kıdemli geliştiriciler</td></tr>
+<tr><td>Katkıda Bulunan (Contributor)</td><td>İçerik ekler ve düzenler, uygulamayı yayımlayamaz.</td><td>Rapor geliştiren analistler</td></tr>
+<tr><td>Görüntüleyici (Viewer)</td><td>Yalnızca görüntüler ve etkileşir.</td><td>Okuyucular (çoğu zaman uygulama daha iyidir)</td></tr>
+</table></div>
+<div class="tip"><b>İyi alışkanlık</b>Okuyucuları çalışma alanına tek tek eklemek yerine onlara uygulama üzerinden erişim ver. Böylece sen çalışma alanında rapor üzerinde değişiklik yaparken okuyucular yarım kalmış hâlini görmez; uygulamayı güncellediğinde yeni hâl yayına çıkar.</div>
+<h2>Rolle göre bir gün</h2>
+<ul>
+<li><b>Analist:</b> Sabah Desktop'ta yeni bir ölçü yazar, test eder, çalışma alanına yayımlar.</li>
+<li><b>Satış müdürü:</b> Teams'te ya da telefonda uygulamayı açar, kendi bölgesini dilimleyiciyle seçer, bir veri uyarısı kurar.</li>
+<li><b>Veri mühendisi:</b> Fabric'te verinin her gece OneLake'e gelmesini sağlar; analistin modeli bu veriyi okur.</li>
+<li><b>BI yöneticisi:</b> Lisansları, kapasiteyi ve kimin hangi çalışma alanına girdiğini izler.</li>
+</ul>
+<p>Bu derste rolleri kısaca tanıdın; erişim ve güvenlik ayrıntıları Yönetişim ve Satır düzeyinde güvenlik derslerinde.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-aile">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../tarih/">← Power BI'ın hikâyesi: Excel eklentisinden veri platformuna</a><a href="../arayuz/">Desktop arayüz turu →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

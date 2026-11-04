@@ -1,0 +1,114 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VAR / RETURN, IF ve SWITCH | Kesit Power BI</title><meta name="description" content="Değişkenlerle okunur ve hızlı formüller; koşullu mantık ve dinamik metinler."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/var-mantik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="VAR / RETURN, IF ve SWITCH"><meta property="og:description" content="Değişkenlerle okunur ve hızlı formüller; koşullu mantık ve dinamik metinler."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/var-mantik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"VAR / RETURN, IF ve SWITCH","description":"Değişkenlerle okunur ve hızlı formüller; koşullu mantık ve dinamik metinler.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/var-mantik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>VAR / RETURN, IF ve SWITCH</h1><p class="st-l">Değişkenlerle okunur ve hızlı formüller; koşullu mantık ve dinamik metinler.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-var-mantik">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Değişkenler</h2>
+<pre class="dax">YoY % =
+VAR BuYil = [Net Satış]
+VAR GecenYil = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+RETURN
+    DIVIDE(BuYil - GecenYil, GecenYil)</pre>
+<ul>
+<li><b>Okunurluk:</b> Her ara adımın bir adı olur.</li>
+<li><b>Performans:</b> Değişken bir kez hesaplanır; formülde iki kez kullansan da tekrar hesaplanmaz.</li>
+<li><b>Hata ayıklama:</b> <code>RETURN GecenYil</code> yazıp ara sonucu görebilirsin.</li>
+<li><b>Dikkat:</b> Değişken, <b>tanımlandığı yerdeki</b> bağlamda hesaplanır ve sabit kalır. <code>CALCULATE(BuYil, ...)</code> yazmak BuYil'i değiştirmez.</li>
+</ul>
+<h2>IF</h2>
+<pre class="dax">Hedef Durumu = IF([Net Satış] &gt;= [Hedef], "Hedefte", "Altında")</pre>
+<h2>SWITCH ve SWITCH(TRUE())</h2>
+<pre class="dax">Kanal Kodu = SWITCH(SELECTEDVALUE(Satislar[Kanal]), "Web", "W", "Mobil", "M", "Mağaza", "S", "?")
+
+Performans =
+VAR Oran = DIVIDE([Net Satış], [Hedef])
+RETURN SWITCH(TRUE(),
+    ISBLANK(Oran), "Hedef yok",
+    Oran &gt;= 1.05, "Üstün",
+    Oran &gt;= 0.95, "Hedefte",
+    "Geride")</pre>
+<p><code>SWITCH(TRUE(), …)</code> iç içe IF'lerin okunur hâlidir: koşullar sırayla denenir, ilk doğru olanın sonucu döner.</p>
+<h2>SELECTEDVALUE ile dinamik başlık</h2>
+<pre class="dax">Başlık = "Net satış · " &amp; SELECTEDVALUE(Tarih[Yil], "Tüm yıllar")</pre>
+<p>Tek bir yıl seçiliyse o yılı, değilse “Tüm yıllar” metnini döndürür. Görselin başlığına <i>fx</i> düğmesiyle bu ölçüyü bağlayabilirsin.</p>
+
+<h2>Değişken bir tablo da olabilir</h2>
+<pre class="dax">Sadık Müşteri Satışı =
+VAR Sadiklar =
+    FILTER(VALUES(Satislar[MusteriNo]), CALCULATE([Sipariş Sayısı]) &gt;= 5)
+RETURN
+    CALCULATE([Net Satış], Sadiklar)</pre>
+<p><code>Sadiklar</code> bir tablo değişkenidir: en az 5 siparişi olan müşterilerin listesi. <code>CALCULATE</code>’e filtre olarak verilince net satış yalnızca bu müşteriler için hesaplanır. Aynı tabloyu iki yerde kullansan da bir kez hesaplanır.</p>
+<h2>IF, SWITCH ve BLANK</h2>
+<p><code>IF(koşul, değer)</code> yazıp üçüncü bağımsız değişkeni vermezsen, koşul yanlış olduğunda sonuç <b>BLANK</b> olur ve görsel o satırı gizler. Bu, “yalnızca hedefi aşanları göster” gibi ölçüler için bilinçli bir tekniktir. BLANK’in diğer davranışları için <a href="../blank-hata/">BLANK ve hata ayıklama</a> dersine bak.</p>
+<div class="tip"><b>İsimlendirme</b>Değişken adları boşluk içeremez ve ölçü adlarıyla çakışmamalı. <code>BuYil</code>, <code>GecenYil</code>, <code>_oran</code> gibi kısa ve anlamlı adlar kullan; tablo değişkenlerine çoğul ad vermek (<code>Sadiklar</code>) okunurluğu artırır.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>VAR, tanımlandığı yerde ve bir kez hesaplanır</h2>
+<p>Mülakatlarda en sık sorulan DAX tuzaklarından biri:</p>
+<pre class="dax">Web Satışı (hatalı) =
+VAR S = [Net Satış]
+RETURN CALCULATE(S, Satislar[Kanal] = "Web")</pre>
+<p>Bu ölçü <b>1.250.772 ₺</b> döndürür, yani tüm kanalların satışını. Beklenen ise 457.331 ₺. Sebep: <code>S</code> değişkeni tanımlandığı satırda, o anki filtre bağlamında hesaplanır ve bir <b>sabite</b> dönüşür. CALCULATE’in değiştirdiği filtre, artık hesaplanmış bir sayıyı etkilemez. Doğrusu, ölçüyü CALCULATE’in içinde çağırmaktır:</p>
+<pre class="dax">Web Satışı =
+CALCULATE([Net Satış], Satislar[Kanal] = "Web")</pre>
+<p>Değişkenlerin bu davranışı aynı zamanda avantajdır: bir değeri dış bağlamda bir kez hesaplayıp sonra farklı bir bağlamda karşılaştırmak için kullanılır, ör. “ürünün satışı, kategorinin ortalamasından büyük mü?”.</p>
+<div class="note"><b>Tablo değişkenleri de sabittir</b><code>VAR T = FILTER(...)</code> bir kez hesaplanır. T’yi CALCULATE’e filtre olarak verebilirsin, ama T’nin içeriği CALCULATE’in değiştirdiği bağlama göre yeniden hesaplanmaz.</div></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>VAR ile hata ayıklama: ölçüyü parça parça aç</h2>
+<p>Satış direktörü “Hedef etiketi bazı aylarda saçma” diyor. Ölçü tek satırlık uzun bir formülse nereden başlayacağını bilemezsin. Değişkenlerle yazılmış bir ölçüde ise her ara adımı tek tek görebilirsin. Yöntem basit: <code>RETURN</code>’den sonra sonucu değil, şüphelendiğin değişkeni yaz.</p>
+<pre class="dax" data-notry>Hedef Etiketi =
+VAR Satis = [Net Satış]
+VAR Hedef = [Hedef]
+VAR Oran = DIVIDE(Satis, Hedef)
+RETURN
+    -- geçici: RETURN Oran
+    SWITCH(TRUE(), ISBLANK(Oran), "Hedef yok", Oran &gt;= 1, "Hedefte", "Geride")</pre>
+<p>Ara değerleri tek tek açmak yerine hepsini aynı anda görmek istersen DAX sorgu görünümünü (DAX query view) kullan. Değişkenleri sorgu sütunu yapınca her ayın ara adımlarını yan yana görürsün:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Tanı Oranı] = DIVIDE([Net Satış], [Hedef])
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[YilAy],
+    "Satış", [Net Satış],
+    "Hedef", [Hedef],
+    "Oran", [Tanı Oranı]
+)</pre>
+<p>Bu yöntem bir ekip alışkanlığıdır. Ölçüyü değiştirmeden önce sorgu sekmesinde çalıştır, sonuçları kaydet; değişiklikten sonra aynı sorguyu yeniden çalıştırıp karşılaştır. Böylece “düzelttim ama başka bir yeri bozdum” durumunu yakalarsın.</p>
+
+<h2>SWITCH(TRUE()) sırası: ilk doğru kazanır</h2>
+<p><code>SWITCH(TRUE(), …)</code> koşulları yukarıdan aşağıya dener ve <b>ilk</b> doğru olanın sonucunu döndürür. Eşikleri yanlış sırada yazmak sessiz bir hatadır; formül çalışır, ama bazı etiketler hiç görünmez.</p>
+<pre class="dax">Etiket (yanlış sıra) =
+VAR Oran = DIVIDE([Net Satış], [Hedef])
+RETURN SWITCH(TRUE(), Oran &gt;= 0.95, "Hedefte", Oran &gt;= 1.05, "Üstün", "Geride")
+
+Etiket (doğru sıra) =
+VAR Oran = DIVIDE([Net Satış], [Hedef])
+RETURN SWITCH(TRUE(), Oran &gt;= 1.05, "Üstün", Oran &gt;= 0.95, "Hedefte", "Geride")</pre>
+<p>36 aylık bir tabloda yanlış sıralı ölçü hiçbir aya “Üstün” demez: 21 “Hedefte”, 15 “Geride”. Doğru sıralı ölçü iki ayı “Üstün” olarak işaretler: Haziran 2023 ve Aralık 2024 (oran %106,3). Yanlış sırada %106’lık bir ay önce “≥ 0,95” koşuluna takılır ve “Hedefte” olur.</p>
+<div class="tip"><b>Sıralama kuralı</b>1) BLANK kontrolünü en başa koy. 2) Büyükten küçüğe eşiklerde en yüksek eşik önce gelsin. 3) Son bağımsız değişken “hiçbiri” durumudur; bilerek yaz. 4) Eşik sayılarını değişkene al (<code>VAR UstEsik = 1.05</code>), böylece değiştirmen gerektiğinde tek yeri düzeltirsin.</div>
+
+<h3>BLANK’i unutmanın iki bedeli</h3>
+<p><code>ISBLANK(Oran)</code> kontrolünü atlarsan iki şey olur. Birincisi, satışı olmayan bir kırılımda <code>Oran</code> BLANK’tir; BLANK karşılaştırmalarda 0 gibi davranır ve satır “Geride” etiketi alır. Bu bir hedef başarısızlığı değil, veri yokluğudur. İkincisi, ölçü hiçbir zaman BLANK döndürmediği için görsel, satışı olmayan ürün ve müşterileri de listeler; tablo gereksiz satırlarla dolar.</p>
+
+<h2>Sınıflandırmayı saymak</h2>
+<p>Bir sonraki soru genellikle “Kaç tanesi?” olur: “Bu yıl kaç kategori hedefini tuttu?” Etiketi bir değişkende ya da FILTER koşulunda hesaplayıp satırları sayarsın:</p>
+<pre class="dax">Hedefi Aşan Kategori =
+COUNTROWS(
+    FILTER(VALUES(Kategoriler[Kategori]), [Net Satış] &gt;= [Hedef])
+)</pre>
+<p>2023’te 3 kategori, 2024’te 1 kategori hedefini tuttu; 2022’de hiçbiri (sonuç BLANK). Aylık bakınca Kasım ve Aralık 2024’te 5 kategori hedefte. Tüm dönem satırında sonuç yine BLANK, çünkü hiçbir kategori üç yılın toplam hedefini tutturamadı. Bu, toplam satırının satırların toplamı olmadığının bir örneği daha (Filtre bağlamı dersindeki kural).</p>
+<p>FILTER’ın içinde de değişken kullanabilirsin. Değişken, FILTER’ın her satırında o satırın bağlamında yeniden hesaplanır, çünkü tanımlandığı yer satır ifadesinin içidir:</p>
+<pre class="dax">Hedefe Yakın Kategori =
+COUNTROWS(
+    FILTER(
+        VALUES(Kategoriler[Kategori]),
+        VAR Oran = DIVIDE([Net Satış], [Hedef])
+        RETURN Oran &gt;= 0.95 &amp;&amp; Oran &lt; 1
+    )
+)</pre>
+<div class="note"><b>Kontrol listesi: koşullu ölçü</b>1) Her değişkenin adı ne hesapladığını söylüyor mu? 2) BLANK durumu ilk koşul mu? 3) Eşikler büyükten küçüğe mi? 4) Ara değerleri DAX sorgu görünümünde bir kez yan yana gördün mü? 5) Etiket ölçüsü, satırı olmayan kırılımlarda BLANK dönüyor mu?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-var-mantik">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../zaman/">← Zaman zekâsı: YTD, geçen yıl, büyüme</a><a href="../siralama/">Sıralama ve ilk N: RANKX ve TOPN →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,124 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Segmentasyon: ABC, dinamik dilimler ve ne olur analizi | Kesit Power BI</title><meta name="description" content="Pareto ve ABC sınıfı, bağlantısız tablolarla dinamik segment, sayısal aralık parametresi ile senaryo."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/segmentasyon/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Segmentasyon: ABC, dinamik dilimler ve ne olur analizi"><meta property="og:description" content="Pareto ve ABC sınıfı, bağlantısız tablolarla dinamik segment, sayısal aralık parametresi ile senaryo."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/segmentasyon/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Segmentasyon: ABC, dinamik dilimler ve ne olur analizi","description":"Pareto ve ABC sınıfı, bağlantısız tablolarla dinamik segment, sayısal aralık parametresi ile senaryo.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/segmentasyon/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Müşteri Analitiği</span><h1>Segmentasyon: ABC, dinamik dilimler ve ne olur analizi</h1><p class="st-l">Pareto ve ABC sınıfı, bağlantısız tablolarla dinamik segment, sayısal aralık parametresi ile senaryo.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-segmentasyon">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Statik mi, dinamik mi?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Statik segment (hesaplanmış sütun)</th><th>Dinamik segment (ölçü + bağlantısız tablo)</th></tr>
+<tr><td>Ne zaman hesaplanır?</td><td>Yenilemede</td><td>Her etkileşimde</td></tr>
+<tr><td>Filtrelere tepki</td><td>Yok (2024 seçince de tüm zamanlara göre)</td><td>Var</td></tr>
+<tr><td>Eksen/dilimleyicide kullanım</td><td>Doğrudan</td><td>Bağlantısız tablo üzerinden</td></tr>
+<tr><td>Performans</td><td>Hızlı</td><td>Müşteri sayısıyla orantılı</td></tr>
+</table></div>
+<h2>Dinamik segmentasyon kalıbı</h2>
+<ol>
+<li>Sınırları tutan bağlantısız tablo: <code>MusteriDilimleri</code> (Dilim, Min, Max, Sira). Giriş → Veri gir ile ya da DAX <code>DATATABLE</code> ile.</li>
+<li>Her müşterinin değerini hesaplayan sanal tablo: <code>ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "S", [Net Satış])</code>.</li>
+<li>Görünen dilimler üzerinde dolaşıp sınırlar içindeki müşterileri say.</li>
+</ol>
+<pre class="dax">Dilimler (DATATABLE) =
+DATATABLE(
+    "Dilim", STRING, "Min", INTEGER, "Max", INTEGER,
+    {
+        {"Küçük", 0, 2000},
+        {"Orta", 2000, 6000},
+        {"Büyük", 6000, 15000},
+        {"VIP", 15000, 999999999}
+    }
+)</pre>
+<h2>ABC (Pareto)</h2>
+<p>Ürünlerin küçük bir kısmı satışın büyük kısmını getirir. ABC sınıflandırması bunu iş kuralına çevirir: kümülatif payı %70'e kadar olanlar A (yakından izlenir, stoğu bitmemeli), %90'a kadar B, kalanı C (gözden geçirilecek uzun kuyruk). Kümülatif toplamın klasik DAX yolu: “satışı benimkinden büyük ya da eşit olanların toplamı”.</p>
+<h2>Ne olur (what-if) parametresi</h2>
+<p>Modelleme → <b>Yeni parametre → Sayısal aralık</b>: ad, veri türü, en küçük, en büyük, artış, varsayılan. Power BI iki şey oluşturur:</p>
+<pre class="dax" data-notry>FiyatSenaryosu = GENERATESERIES(-0.2, 0.2, 0.05)
+FiyatSenaryosu Değeri = SELECTEDVALUE(FiyatSenaryosu[FiyatDegisimi], 0)</pre>
+<p>ve sayfaya bir kaydırıcı dilimleyici ekler. Ölçülerinde <code>[FiyatSenaryosu Değeri]</code>'ni kullanarak senaryo hesaplarsın. Parametre tablosunu eksene koyarsan her senaryoyu yan yana görürsün (ör. kâr eğrisi ve optimum fiyat).</p>
+<div class="tip"><b>Raporda</b><a href="../../">Fiyat ve İndirim raporu</a> bu parametreyi kaydırıcıyla kullanıyor; <a href="../../">Ürün raporu</a> ABC sınıfını ve Pareto eğrisini gösteriyor.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Dört segmentleme yolu: hangisi ne zaman?</h2>
+<p>Satış direktörü üç şey istiyor: müşterileri yıllık harcamaya göre bantlara ayırmak, her bandın satış payını görmek ve “geçen yıla göre kaç müşteri üst banda çıktı?” sorusunu cevaplamak. Önce hangi yolu kullanacağına karar ver.</p>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Filtreye tepki</th><th>Eksende kullanım</th><th>Maliyet</th><th>Doğru olduğu yer</th></tr>
+<tr><td>Hesaplanmış sütun</td><td>Yok</td><td>Doğrudan</td><td>Yenilemede bir kez</td><td>Ömür boyu değer, kayıt kanalı gibi sabit özellikler</td></tr>
+<tr><td>Ölçü + ilişkisiz bant tablosu</td><td>Var</td><td>Bant tablosu üzerinden</td><td>Her hücrede müşteri sayısıyla orantılı</td><td>Keşif, “seçili dönemde hangi bant?”</td></tr>
+<tr><td>Yüzdelik eşik (ölçü)</td><td>Var</td><td>Bant tablosu ya da kart</td><td>Sıralama + yüzdelik hesap</td><td>“En iyi %20” gibi göreli tanımlar</td></tr>
+<tr><td>Anlık görüntü tablosu</td><td>Dondurulmuş</td><td>Doğrudan</td><td>Kaynakta, ayda bir</td><td>Kampanya listeleri, geçiş analizi, denetim</td></tr></table></div>
+
+<h2>İlişkisiz bant tablosu: mekanizma ve toplam satırı</h2>
+<p><code>MusteriDilimleri</code> tablosunun modelde hiçbir ilişkisi yok. Matrisin satırına <code>Dilim</code> konduğunda filtre yalnızca bu küçük tabloyu daraltır; Satislar'a ulaşmaz. Bu yüzden ölçü üç iş yapar: müşterileri ve satışlarını sanal bir tabloda hesaplar, görünen bant satırlarını dolaşır, sınırlar arasındaki müşterileri toplar. Hazır <code>[Dilimdeki Müşteri]</code> ölçüsü bunu <code>SUMX(MusteriDilimleri, …)</code> ile yapar.</p>
+<h3>Anti-kalıp: SELECTEDVALUE ile sınır okumak</h3>
+<pre class="dax">Naif Dilim Müşterisi =
+VAR AltSinir = SELECTEDVALUE(MusteriDilimleri[Min])
+VAR UstSinir = SELECTEDVALUE(MusteriDilimleri[Max])
+RETURN
+    COUNTROWS(
+        FILTER(VALUES(Musteriler[MusteriNo]), [Net Satış] &gt; AltSinir &amp;&amp; [Net Satış] &lt;= UstSinir)
+    )</pre>
+<p>2024 seçiliyken bant satırları doğru görünür: Küçük 24, Orta 53, Büyük 36, VIP 10. Ama toplam satırı <b>boş</b> gelir. Toplamda dört bant birden görünür, SELECTEDVALUE BLANK döner ve hiçbir müşteri koşulu sağlamaz. <code>SUMX(MusteriDilimleri, …)</code> kalıbı ise toplamda dört bandı tek tek dolaşır ve 123 verir. Kural: ilişkisiz tablodan değer okuyorsan, toplam satırında birden çok satır görüneceğini varsay ve satırları dolaş.</p>
+<h3>Sınırların çakışması</h3>
+<p>Bantlar “alt sınır hariç, üst sınır dahil” kuralıyla tanımlı: <code>[S] &gt; Min &amp;&amp; [S] &lt;= Max</code>. İki tarafı da dahil yazarsan, tam 6.000 ₺ harcayan bir müşteri hem Orta'da hem Büyük'te sayılır. Satırların toplamı toplam satırından büyük çıkar. Bu modelde tam sınırda müşteri olmadığı için hata bugün görünmez; veri büyüdüğünde sessizce ortaya çıkar. Bunu test sayfana bir kontrol olarak ekle: bant satırlarının toplamı, toplam satırına eşit mi?</p>
+<h3>Bant payı ve toplam</h3>
+<pre class="dax">Bant Satış Payı % =
+DIVIDE([Dilim Satışı], [Net Satış])</pre>
+<p>Pay ölçüsü ilişkisiz tabloda kolaydır, çünkü <code>[Net Satış]</code> bant filtresinden etkilenmez: payda her satırda dönemin tamamıdır. 2024'te VIP bandı 10 müşteriyle 184.624 ₺ getirir (%24,7). Tüm yıllar birlikte alındığında VIP'te 34 müşteri ve %56,6 pay görünür. Aynı bant tanımı, dönem uzadıkça müşterileri yukarı taşır. Yıllık eşikleri tüm dönemde kullanma; ya dönemi sabitle ya eşikleri dönem uzunluğuna göre ölçekle.</p>
+
+<h2>Göreli segment: yüzdelik eşik</h2>
+<p>“En iyi %20 müşterimiz satışın ne kadarını getiriyor?” Burada eşik sabit değil; seçili döneme ve kategoriye göre yeniden hesaplanır.</p>
+<pre class="dax">Müşteri 80. Yüzdelik Satışı =
+PERCENTILEX.INC(
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal"),
+        "S", [Net Satış]
+    ),
+    [S], 0.8
+)
+
+Üst Beşte Bir Payı % =
+VAR Esik = [Müşteri 80. Yüzdelik Satışı]
+VAR T =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal"),
+        "S", [Net Satış]
+    )
+RETURN DIVIDE(SUMX(FILTER(T, [S] &gt;= Esik), [S]), [Net Satış])</pre>
+<p>2024'te eşik 9.305 ₺; bu eşiği geçen müşteriler satışın %48,4'ünü getirir. Elektronik'te eşik 7.420 ₺ ve pay %57,1; Hediye'de eşik 580 ₺ ve pay %35,1. Neden <code>VALUES(Musteriler[MusteriNo])</code> değil de Satislar'dan alınan liste? Musteriler'de 150 kayıt var. Seçili dönemde alışveriş yapmayanlar BLANK satışla yüzdelik hesabına girerse eşik aşağı kayar. Kenar durum: eşikte birden çok müşteri varsa <code>&gt;=</code> nedeniyle “%20” biraz fazla müşteri kapsayabilir. Kartın altına gerçek müşteri sayısını yaz.</p>
+
+<h2>Segment geçişleri: bu yıl ve geçen yıl</h2>
+<p>Geçiş sorusunun iki biçimi var. Tek sayı (“kaç müşteri üst banda çıktı?”) bir ölçüyle cevaplanır:</p>
+<pre class="dax">Bandı Yükselen Müşteri =
+VAR T = ADDCOLUMNS(VALUES(Musteriler[MusteriNo]), "Bu", [Net Satış], "GY", [Satış GY])
+RETURN
+    COUNTROWS(
+        FILTER(
+            T,
+            VAR B1 = MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] &lt; [Bu] &amp;&amp; [Bu] &lt;= MusteriDilimleri[Max]), MusteriDilimleri[Sira])
+            VAR B0 = MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] &lt; [GY] &amp;&amp; [GY] &lt;= MusteriDilimleri[Max]), MusteriDilimleri[Sira])
+            RETURN NOT ISBLANK(B0) &amp;&amp; B1 &gt; B0
+        )
+    )</pre>
+<p>2024'te 28 müşteri üst banda çıktı; 25 müşteri alt banda indi ya da hiç alışveriş yapmadı. Tam geçiş matrisi (2023 bandı × 2024 bandı) için iki ilişkisiz bant tablosu gerekir: biri satırlara, biri sütunlara. Modelde tek tablo varsa geçişi önce bir DAX sorgusuyla doğrula:</p>
+<pre class="dax">EVALUATE
+VAR T =
+    ADDCOLUMNS(
+        VALUES(Musteriler[MusteriNo]),
+        "S23", CALCULATE([Net Satış], Tarih[Yil] = 2023),
+        "S24", CALCULATE([Net Satış], Tarih[Yil] = 2024)
+    )
+VAR T2 =
+    ADDCOLUMNS(
+        T,
+        "Onceki", COALESCE(MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] &lt; [S23] &amp;&amp; [S23] &lt;= MusteriDilimleri[Max]), MusteriDilimleri[Dilim]), "Yok"),
+        "Simdi", COALESCE(MAXX(FILTER(MusteriDilimleri, MusteriDilimleri[Min] &lt; [S24] &amp;&amp; [S24] &lt;= MusteriDilimleri[Max]), MusteriDilimleri[Dilim]), "Yok")
+    )
+RETURN GROUPBY(T2, [Onceki], [Simdi], "Musteri", COUNTX(CURRENTGROUP(), 1))
+ORDER BY [Onceki], [Simdi]</pre>
+<p>Sorgu ilginç bir tablo verir: 2023'te Büyük bantta olan 24 müşteriden 7'si yerinde kaldı, 4'ü VIP'e çıktı, 8'i Orta'ya indi, 4'ü hiç gelmedi. 2023'te alışveriş yapmayıp 2024'te gelen 59 müşteri var (“Yok” satırı). Bu satırlar “Yükselen” değildir; yeni müşteridir. Ölçüdeki <code>NOT ISBLANK(B0)</code> koşulu tam olarak bunu ayırır.</p>
+<div class="note"><b>Üretim notu</b>Geçiş ölçüsü her hücrede müşteri sayısı × 2 bağlam geçişi yapar. Birkaç bin müşteride sorun yok. Yüz binlerde, aylık anlık görüntü tablosu (Ay, MusteriNo, Bant) kaynakta hazırlanır ve geçiş basit bir sayıma döner. Hangi yolu seçtiğini rapor belgesine yaz; iki ekip aynı soruya iki farklı sayıyla gelmesin.</div>
+<div class="tip"><b>Kontrol listesi</b>Bant sınırları tek taraflı mı (Min hariç, Max dahil)? Toplam satırı satırların toplamına eşit mi? İlişkisiz tablodan değer okuyan ölçü toplamda satırları dolaşıyor mu? Yıllık eşikler çok yıllık dönemde kullanılmıyor mu? Yüzdelik eşiğin altında gerçek müşteri sayısı yazıyor mu? Geçişte yeni müşteri ile yükselen müşteri ayrılıyor mu?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-segmentasyon">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../musteri-analitigi/">← Müşteri analitiği: yeni, geri dönen, kayıp, kohort, RFM</a><a href="../yonetisim/">Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

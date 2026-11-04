@@ -1,0 +1,114 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX optimizasyonu: depolama motoru, formül motoru | Kesit Power BI</title><meta name="description" content="Sorgu planı, SE ve FE süreleri, materyalizasyon, geri çağırmalar; yavaş ölçüyü hızlandırma reçeteleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-opt/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX optimizasyonu: depolama motoru, formül motoru"><meta property="og:description" content="Sorgu planı, SE ve FE süreleri, materyalizasyon, geri çağırmalar; yavaş ölçüyü hızlandırma reçeteleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-opt/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX optimizasyonu: depolama motoru, formül motoru","description":"Sorgu planı, SE ve FE süreleri, materyalizasyon, geri çağırmalar; yavaş ölçüyü hızlandırma reçeteleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-opt/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>DAX optimizasyonu: depolama motoru, formül motoru</h1><p class="st-l">Sorgu planı, SE ve FE süreleri, materyalizasyon, geri çağırmalar; yavaş ölçüyü hızlandırma reçeteleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-opt">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>İki motor</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Depolama motoru (SE, VertiPaq)</th><th>Formül motoru (FE)</th></tr>
+<tr><td>Ne yapar?</td><td>Sıkıştırılmış sütunları tarar, filtreler, toplar</td><td>DAX mantığını yürütür: IF, iç içe yineleyiciler, karmaşık ifadeler</td></tr>
+<tr><td>Paralel mi?</td><td>Çok çekirdekli</td><td>Tek iş parçacığı</td></tr>
+<tr><td>Önbellek</td><td>Var (aynı veri isteği tekrar hesaplanmaz)</td><td>Yok</td></tr>
+<tr><td>Hedef</td><td>İşin çoğu burada yapılsın</td><td>Az ve küçük ara sonuçlarla çalışsın</td></tr>
+</table></div>
+<p>DAX Studio → <b>Server Timings</b>: toplam süre, SE süresi, FE süresi, SE sorgu sayısı ve her SE sorgusunun döndürdüğü satır sayısı. Yavaş bir ölçüde genellikle iki desen görürsün: (1) çok sayıda küçük SE sorgusu (yineleyicide bağlam geçişi), (2) milyonlarca satırlık bir ara sonucun FE'ye taşınması (materyalizasyon).</p>
+<h2>Geri çağırma (callback)</h2>
+<p>SE basit aritmetiği kendi yapabilir; ama <code>IF</code>, <code>DIVIDE</code> gibi bazı ifadeler satır satır FE'ye “geri çağırma” ister (CallbackDataID). <code>SUMX(Satislar, IF(Satislar[Indirim] &gt; 0, Satislar[Tutar]))</code> yerine <code>CALCULATE(SUM(Satislar[Tutar]), Satislar[Indirim] &gt; 0)</code> yazmak işi tamamen SE'ye verir.</p>
+<h2>Reçeteler</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr>
+<tr><td>Ölçü tek başına hızlı, matriste yavaş</td><td>Her hücrede tekrar eden pahalı alt ifade</td><td>VAR ile bir kez hesapla; mümkünse dışa taşı</td></tr>
+<tr><td>Çok sayıda SE sorgusu</td><td>Büyük tabloda yineleyici + ölçü çağrısı</td><td>Boyutun anahtarı üzerinde dolaş: <code>SUMX(VALUES(Urunler[UrunNo]), …)</code></td></tr>
+<tr><td>FE süresi yüksek</td><td>Büyük materyalizasyon (FILTER(Satislar…))</td><td>Sütun filtresi kullan; <code>KEEPFILTERS</code> ile kesişim</td></tr>
+<tr><td>Yüksek kardinaliteli sütun filtresi yavaş</td><td>Milyonlarca farklı değer</td><td>Modelde sütunu böl (tarih/saat), gruplanmış sütun ekle</td></tr>
+<tr><td>IFERROR / ISERROR yaygın</td><td>Hata yakalama satır satır FE'de</td><td>DIVIDE ve doğru veri türleri</td></tr>
+<tr><td>Çift yönlü ilişkiler</td><td>Filtre zincirleri ve belirsizlik</td><td>Tek yön + gerektiğinde CROSSFILTER</td></tr>
+<tr><td>Görsel çok satırlı</td><td>Görselde 10.000+ satır</td><td>İlk N filtresi, sayfalandırma, detay sayfası</td></tr>
+</table></div>
+<h2>Ölçme yöntemi</h2>
+<ol>
+<li>Performans Analizi'nde yavaş görseli bul → <b>Sorguyu kopyala</b>.</li>
+<li>DAX Studio'da (ya da DAX sorgu görünümünde) sorguyu çalıştır; önbelleği temizleyerek (Clear Cache) ölç.</li>
+<li>Ölçüyü değiştir, aynı koşulda tekrar ölç. Tek değişiklik, tek ölçüm.</li>
+<li>Sonuçların aynı olduğunu doğrula (performans için doğruluktan vazgeçme).</li>
+</ol>
+<div class="note"><b>Bu oyun alanında</b>DAX Playground her çalıştırmada süreyi milisaniye olarak gösterir. Motor VertiPaq değildir ama kalıplar aynı yönde davranır: Measure Lab’deki RFM segment sayımı, segment satırı başına tüm müşterileri dolaştığı için diğerlerinden çok daha yavaştır.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Formula Engine ve Storage Engine</h2>
+<p>Bir DAX sorgusu iki motorda çalışır. <b>Storage Engine</b> (VertiPaq), sıkıştırılmış sütunları çok çekirdekli ve çok hızlı tarar; ama yalnızca basit işler bilir: filtrele, grupla, topla, say. <b>Formula Engine</b> geri kalan her şeyi yapar: koşullar, iç içe iteratörler, karmaşık mantık. Formula Engine tek çekirdekte çalışır.</p>
+<p>Optimizasyonun özü, işi Storage Engine’e bırakmaktır:</p>
+<ul>
+<li><b>Sütun filtresi tablo filtresinden hızlıdır.</b> <code>Urunler[Fiyat] &gt; 1000</code> doğrudan Storage Engine sorgusuna dönüşür; <code>FILTER(Urunler, ...)</code> çoğu zaman Formula Engine’de satır satır değerlendirilir.</li>
+<li><b>İteratör içinde IF “geri çağırma” (callback) üretir.</b> <code>SUMX(Satislar, IF(...))</code> her satır için Formula Engine’e döner. Koşulu CALCULATE filtresine taşıyabiliyorsan taşı.</li>
+<li><b>Değişkenler tekrar hesaplamayı önler.</b> Aynı ölçüyü bir formülde üç kez çağırmak, üç ayrı hesaplama demektir; VAR ile bir kez hesaplanır.</li>
+<li><b>Kardinalite her şeyden önemlidir.</b> Bir sütundaki farklı değer sayısı sıkıştırmayı ve tarama hızını belirler. Tarih-saat sütununu tarih ve saat diye ikiye bölmek, modeli birkaç kat küçültebilir.</li>
+</ul>
+<pre class="dax">Pahalı Satırlar Satışı =
+CALCULATE([Net Satış], Satislar[Tutar] &gt; 2000)</pre>
+<p>Bu yazım, aynı sonucu veren <code>SUMX(Satislar, IF(Satislar[Tutar] &gt; 2000, Satislar[Tutar]))</code> gibi bir iteratörden daha ölçeklenebilirdir. Gerçek modelde farkı görmek için Performans Analizi ile sorguyu kopyalayıp DAX Studio’da “Server Timings” ile SE ve FE sürelerine bak.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Server Timings'i okumak: bir ekranı adım adım yorumla</h2>
+<p>Bir matris 3 saniyede açılıyor. Performans Analizi'nden sorguyu kopyaladın, DAX Studio'da <b>Clear Cache</b> sonrası <b>Server Timings</b> açıkken çalıştırdın. Aşağıdaki değerler örnek bir ekrandır (bu modelden ölçülmüş değil); amaç okumayı öğrenmek:</p>
+<div class="tbl-wrap"><table><tr><th>Alan</th><th>Örnek değer</th><th>Nasıl okunur?</th></tr>
+<tr><td>Total</td><td>3.050 ms</td><td>Sorgunun toplam süresi</td></tr>
+<tr><td>FE</td><td>2.700 ms (%89)</td><td>Formül motoru tek iş parçacığında çalışıyor; asıl yük burada</td></tr>
+<tr><td>SE</td><td>350 ms (%11)</td><td>Depolama motorunda geçen süre</td></tr>
+<tr><td>SE CPU</td><td>1.400 ms</td><td>SE CPU / SE ≈ 4: tarama paralel çalışmış, SE sağlıklı</td></tr>
+<tr><td>SE Queries</td><td>612</td><td>Çok sayıda küçük SE sorgusu: yineleyici içinde bağlam geçişi</td></tr>
+<tr><td>SE Cache</td><td>540</td><td>Sorguların çoğu önbellekten geldi; aynı veri tekrar tekrar isteniyor</td></tr></table></div>
+<p>Bu tablo tek başına bir teşhis koyar: <b>işin çoğu FE'de, SE sorguları çok ve küçük</b>. Neden genellikle bir yineleyicinin her satırında ölçü çağrılmasıdır. Sonraki adım sorgu listesine bakmaktır: her xmSQL satırında döndürülen satır sayısı (Rows) ve boyut (KB) yazar. Tek bir sorgu 1,6 milyon satır döndürüyorsa sorun <b>materyalizasyondur</b>: SE büyük bir ara tabloyu FE'ye taşımıştır. xmSQL metninde <code>CallbackDataID</code> görüyorsan SE satır satır FE'ye geri çağırma yapıyordur.</p>
+<p><b>Query Plan</b> sekmesinde mantıksal ve fiziksel plan vardır. Fiziksel planda büyük “Records” sayılı <i>Spool</i> satırları, FE'nin bellekte tuttuğu ara sonuçlardır. Hedef: az sayıda SE sorgusu, küçük ara sonuçlar, callback yok.</p>
+
+<h2>Sütun filtresi, KEEPFILTERS ve FILTER(tablo): hız ve anlam birlikte</h2>
+<p>Pazarlama bir “Web Satışı” ölçüsü istiyor ve onu Kanal satırlı bir matrise koyacak. Üç yazımın hızı ve <b>sonucu</b> farklıdır:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Satislar[Kanal],
+    "Net Satış", [Net Satış],
+    "Sütun filtresi", CALCULATE([Net Satış], Satislar[Kanal] = "Web"),
+    "KEEPFILTERS", CALCULATE([Net Satış], KEEPFILTERS(Satislar[Kanal] = "Web"))
+)</pre>
+<p>Web satırında üçü de 457.330,90 ₺ verir. Mobil satırında ise sütun filtresi yine <b>457.330,90 ₺</b> gösterir: <code>Satislar[Kanal] = "Web"</code>, satırdan gelen “Kanal = Mobil” filtresinin <b>üzerine yazar</b>. KEEPFILTERS iki filtreyi kesiştirir; Mobil ve Mağaza satırları boş kalır. İkisi de SE'de çözülür, hız aynıdır; fark tamamen anlamdadır.</p>
+<p>Üçüncü yol <code>FILTER(Satislar, Satislar[Kanal] = "Web")</code> yazmaktır. Bu, olgu tablosunu satır satır dolaşıp tüm sütunlarıyla bir tablo filtresi üretir. Büyük tabloda materyalizasyon demektir ve filtre genişletilmiş tablonun bütün sütunlarına uygulanır; sonucu tahmin etmek zorlaşır. Kural: <b>tek sütun koşulu → sütun filtresi; mevcut seçime saygı → KEEPFILTERS; FILTER yalnızca ölçüye dayalı koşulda ve küçük bir tablo üzerinde</b> (ör. <code>FILTER(VALUES(Urunler[UrunNo]), [Net Satış] &gt; 5000)</code>).</p>
+<div class="warn"><b>Modeldeki örnek</b>Hazır <code>[Net Satış]</code> ölçüsü <code>Satislar[Durum] &lt;&gt; "İptal"</code> sütun filtresiyle yazılmıştır. Bu yüzden Durum satırlı bir tabloda <b>her satırda 1.250.772,45 ₺</b> görünür; İptal satırı dahil. Aynı ölçü KEEPFILTERS ile yazılsaydı İptal satırı boş, Teslim Edildi 1.049.627,00 ₺ olurdu. Ölçüyü hangi sütunlarla kesileceğini düşünerek yaz.</div>
+
+<h2>IF, SWITCH ve kısa devre</h2>
+<p>Motor, IF ve SWITCH'te çoğu zaman yalnızca gereken dalı hesaplar. Ama koşul satıra bağlıysa ve bir yineleyicinin içindeyse, SE her iki dalın verisini önceden toplayabilir. Bu bir hata değildir; bazen tek bir geniş SE sorgusu, satır başına küçük sorgulardan hızlıdır. <code>IF.EAGER</code> bu davranışı bilerek ister. Kendi tarafında yapabileceğin iki şey var:</p>
+<ul>
+<li><b>Ucuz kontrolü öne al:</b> <code>IF(ISBLANK([Net Satış]), BLANK(), &lt;pahalı ifade&gt;)</code>. Satışı olmayan hücrelerde pahalı kısım hesaplanmaz; ayrıca boş satırlar matristen düşer.</li>
+<li><b>SWITCH(TRUE(), …) sırası:</b> En sık doğru olan koşulu ilk sıraya koy; koşullarda ölçü değil, değişken kullan.</li>
+</ul>
+<p>Tersi de bir anti-kalıptır: <code>IF([Net Satış] &gt; 0, [Net Satış], 0)</code> gibi “boş yerine 0” yazımları, satışı olmayan her ürün-gün bileşimini görünür kılar. Matris 40 ürün × 1.096 gün = 43.840 satıra çıkabilir ve yavaşlık DAX'tan değil, sıfırların kendisinden gelir.</p>
+
+<h2>DISTINCTCOUNT'un bedeli</h2>
+<p><code>[Müşteri Sayısı]</code> ve <code>[Sipariş Sayısı]</code> DISTINCTCOUNT kullanır. Farklı sayım <b>toplanamaz</b>: ayların müşteri sayılarını toplayıp yıl bulamazsın, çünkü aynı müşteri birden çok ayda alışveriş yapar. Bu yüzden motor her hücre için sütunun sözlüğünü yeniden tarar; kardinalite yükseldikçe maliyet artar. Toplama tabloları da çoğu zaman farklı sayımı karşılayamaz.</p>
+<ul>
+<li><code>COUNTROWS(VALUES(Satislar[MusteriNo]))</code> aynı sonucu (bu modelde 136) verir ve çoğu zaman aynı planı üretir; tek başına hızlandırmaz.</li>
+<li>Asıl kazanç kardinaliteden gelir: birleştirilmiş metin anahtar (“Musteri-Urun”) üzerinde farklı sayım yerine iki tam sayı sütun ya da önceden hesaplanmış bir anahtar kullan.</li>
+<li>DirectQuery'de yaklaşık sayım (<code>APPROXIMATEDISTINCTCOUNT</code>) kaynağa itilebilir; “yaklaşık” olduğu raporda belirtilmeli. Bu oyun alanının motorunda yoktur.</li>
+</ul>
+
+<h2>Değişken: bir kez hesapla, ama doğru yerde</h2>
+<p>Değişken tanımlandığı yerdeki bağlamda <b>bir kez</b> hesaplanır ve sonra sabittir. Bu hem hız kazandırır hem de sık bir hataya yol açar:</p>
+<pre class="dax">Yanlış 2023 Satışı =
+VAR s = [Net Satış]
+RETURN CALCULATE(s, Tarih[Yil] = 2023)
+Doğru 2023 Satışı =
+CALCULATE([Net Satış], Tarih[Yil] = 2023)</pre>
+<p>Toplamda yanlış ölçü <b>1.250.772,45 ₺</b> (bütün yıllar), doğru ölçü <b>400.869,55 ₺</b> verir; 2024 satırında yanlış ölçü 747.065,70 ₺ gösterir. CALCULATE bir sabitin bağlamını değiştiremez. Kural: <b>değişkeni, değerini istediğin bağlamda tanımla</b>; CALCULATE ile değiştirilecek bir şeyse değişkene ölçünün kendisini değil, sonucu kullanılacak tabloyu ya da filtreyi koy.</p>
+
+<h2>Karar ağacı</h2>
+<ol>
+<li>Önce ölç: Clear Cache + Server Timings. FE mi SE mi baskın?</li>
+<li>SE baskın ve sorgu az ama büyükse: model sorunu (kardinalite, ilişki, sütun sayısı) → Performans ve VertiPaq dersi.</li>
+<li>FE baskın ve SE sorgusu çoksa: yineleyiciyi boyut anahtarına taşı, bağlam geçişini azalt.</li>
+<li>CallbackDataID varsa: IF/koşulu CALCULATE filtresine taşı.</li>
+<li>Büyük materyalizasyon varsa: FILTER(olgu) yerine sütun filtresi ya da KEEPFILTERS.</li>
+<li>Aynı ölçü bir formülde birden çok kez geçiyorsa: VAR.</li>
+<li>Her değişiklikten sonra sonucu karşılaştır; hızlı ama yanlış ölçü, yavaş ve doğru ölçüden kötüdür.</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-opt">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../istatistik-ileri/">← İleri istatistik: eğilim, z-skoru, mevsimsellik</a><a href="../kurumsal-model/">Kurumsal model: bileşik, toplamalar, Direct Lake, artımlı yenileme, XMLA →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

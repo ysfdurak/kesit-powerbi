@@ -1,0 +1,105 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar | Kesit Power BI</title><meta name="description" content="Real-Time hub, eventstream ve eventhouse ile akış verisi; KQL’in temel işleçleri (where, project, summarize, bin, render); aynı sorunun KQL, SQL ve DAX…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kql-gercek-zaman/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar"><meta property="og:description" content="Real-Time hub, eventstream ve eventhouse ile akış verisi; KQL’in temel işleçleri (where, project, summarize, bin, render); aynı sorunun KQL, SQL ve DAX…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kql-gercek-zaman/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar","description":"Real-Time hub, eventstream ve eventhouse ile akış verisi; KQL’in temel işleçleri (where, project, summarize, bin, render); aynı sorunun KQL, SQL ve DAX…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kql-gercek-zaman/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar</h1><p class="st-l">Real-Time hub, eventstream ve eventhouse ile akış verisi; KQL’in temel işleçleri (where, project, summarize, bin, render); aynı sorunun KQL, SQL ve DAX karşılıkları; gerçek zamanlı pano ile DirectQuery ve otomatik sayfa yenileme karşılaştırması; Activator uyarıları ve OneLake ile entegrasyon.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kql-gercek-zaman">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Anadolu Market’in web sitesinde her tıklama bir olaydır: ziyaret, ürün görüntüleme, sepete ekleme, ödeme, satın alma. Kampanya günü pazarlama ekibi “sepete ekleyenler ödemeye geçiyor mu?” sorusunun cevabını yarın sabah değil, <b>şimdi</b> istiyor. Gece yenilenen bir Import model buna cevap veremez. Fabric’te bu işin adı <b>Real-Time Intelligence</b> (gerçek zamanlı zekâ) iş yüküdür.</p>
+
+<h2>Akış verisinin yolculuğu</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Parça</th><th>Ne yapar?</th></tr>
+<tr><td>Real-Time hub</td><td>Kuruluştaki akış verisini bulmak, eklemek ve paylaşmak için merkezi katalog</td></tr>
+<tr><td>Eventstream</td><td>Olayları kodsuz toplar, dönüştürür ve hedeflere yönlendirir (eventhouse, lakehouse, Activator…)</td></tr>
+<tr><td>Eventhouse ve KQL veritabanı</td><td>Zaman damgalı akış verisi için analiz motoru; veriyi geliş zamanına göre düzenler. Tablolar eventhouse içindeki KQL veritabanlarında durur.</td></tr>
+<tr><td>KQL sorgu kümesi (queryset)</td><td>KQL ya da T-SQL ile sorgu yazdığın ortam</td></tr>
+<tr><td>Gerçek zamanlı pano (Real-Time Dashboard)</td><td>Her kutucuğu bir KQL sorgusu olan, canlı yenilenen pano</td></tr>
+<tr><td>Activator (Fabric Activator)</td><td>Veride bir koşul oluşunca e-posta, Teams mesajı, Power Automate akışı ya da bir Fabric öğesi çalıştırır</td></tr>
+</table></div>
+<p>Hangi deponun ne zaman seçileceğini “Fabric’te veriyi hazırlamak” dersinde gördün: saniyelik olay ve log verisi eventhouse’a gider.</p>
+
+<h2>KQL’e ilk adım</h2>
+<p>KQL (Kusto Query Language), bir tabloyla başlar ve satırları <code>|</code> (boru) ile bir işleçten diğerine aktarır. Okuma sırası yazma sırasıdır: “tabloyu al, süz, seç, özetle, çiz”. Örneklerde eventhouse’ta duran hayalî bir tıklama tablosu kullanıyoruz: <code>TiklamaAkisi(Zaman, ZiyaretciNo, AdimNo, Adim, Cihaz, Kaynak)</code>.</p>
+<pre data-notry>// Son 1 saatte mobilden gelen olayların ilk 10 satırı
+TiklamaAkisi
+| where Zaman &gt; ago(1h) and Cihaz == "Mobil"
+| project Zaman, ZiyaretciNo, Adim, Kaynak
+| take 10</pre>
+<ul>
+<li><b>where</b>: satırları süzer (SQL’de WHERE, DAX’ta FILTER ya da CALCULATE filtresi). Eşitlik <code>==</code> ile yazılır.</li>
+<li><b>project</b>: sütun seçer ya da yeniden adlandırır (SQL’de SELECT listesi, DAX’ta SELECTCOLUMNS).</li>
+<li><b>extend</b>: hesaplanan yeni sütun ekler (DAX’ta ADDCOLUMNS).</li>
+<li><b>take</b>: ilk N satır; <code>limit</code> ile aynıdır.</li>
+</ul>
+<pre data-notry>// Saatlik olay sayısı ve benzersiz ziyaretçi, zaman grafiği olarak
+TiklamaAkisi
+| where Zaman &gt; ago(1d)
+| summarize Olay = count(), Ziyaretci = dcount(ZiyaretciNo) by bin(Zaman, 1h)
+| render timechart</pre>
+<ul>
+<li><b>summarize … by</b>: gruplar ve toplar (SQL’de GROUP BY, DAX’ta SUMMARIZECOLUMNS).</li>
+<li><b>bin(Zaman, 1h)</b>: zamanı saatlik kovalara yuvarlar. Learn’e göre tarih sütunları için otomatik saatlik kova artık yok; <code>bin</code> açıkça yazılmalı.</li>
+<li><b>render</b>: sonucu grafik olarak çizer (timechart, columnchart…).</li>
+</ul>
+<div class="warn"><b>dcount bir tahmindir</b>KQL’de <code>dcount()</code> performans için yaklaşık sonuç verir; varsayılan doğrulukta küçük kümelerde tam sayar, büyük kümelerde küçük bir hata payı olabilir. DAX’taki <code>DISTINCTCOUNT</code> ise her zaman tam sayar. İki aracın sonucu çok büyük tablolarda birebir tutmayabilir.</div>
+
+<h2>Aynı soru üç dilde</h2>
+<p>DP-600, veriyi görsel sorgu düzenleyiciyle, SQL ile, KQL ile ve DAX ile süzüp toplayabilmeni ister. Soru: “Altı saatlik dilimlerde kaç olay var?”</p>
+<div class="tbl-wrap"><table>
+<tr><th>Dil</th><th>Sorgu</th></tr>
+<tr><td>KQL</td><td><code>TiklamaAkisi | summarize Olay = count() by Dilim = bin(Saat, 6)</code></td></tr>
+<tr><td>T-SQL</td><td><code>SELECT (Saat / 6) * 6 AS Dilim, COUNT(*) AS Olay FROM TiklamaAkisi GROUP BY (Saat / 6) * 6</code></td></tr>
+<tr><td>DAX</td><td>Aşağıdaki sorgu</td></tr>
+</table></div>
+<p>Bu uygulamanın modelinde aynı yapıda bir tablo var: <code>WebOlaylari</code> (Ekim–Kasım 2024, 2.019 olay, 900 ziyaretçi). DAX’ta kovaları <code>GENERATESERIES</code> ile üretip her kovadaki olayları sayabilirsin:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    GENERATESERIES(0, 18, 6),
+    "Olay", COUNTROWS(FILTER(WebOlaylari, WebOlaylari[Saat] &gt;= [Value] &amp;&amp; WebOlaylari[Saat] &lt; [Value] + 6))
+)</pre>
+<p>Sonuç: 00–06 arası 513, 06–12 arası 513, 12–18 arası 502, 18–24 arası 491 olay. Gün içinde belirgin bir tepe yok; trafik dengeli dağılıyor.</p>
+
+<h2>Huniyi KQL ile okumak</h2>
+<p>Huni sorusunda her adımda kaç farklı ziyaretçi kaldığını sayarız. KQL’de koşullu toplayıcılar işi tek satırda yapar:</p>
+<pre data-notry>TiklamaAkisi
+| where Zaman between (datetime(2024-10-01) .. datetime(2024-11-30))
+| summarize Ziyaret   = dcountif(ZiyaretciNo, AdimNo == 1),
+            Odeme     = dcountif(ZiyaretciNo, AdimNo == 4),
+            SatinAlma = dcountif(ZiyaretciNo, AdimNo == 5)
+          by Cihaz
+| extend OdemedenSatisa = round(100.0 * SatinAlma / Odeme, 1)</pre>
+<p>DAX’ta aynı mantık, hazır <code>[Ziyaretçi]</code> ölçüsünü adım filtresiyle CALCULATE içine almaktır. Modelde huni 900 → 640 → 254 → 137 → 88 ziyaretçi. Ödeme adımına gelen 137 kişiden 88’i satın almış: yaklaşık %64,2. Cihaza göre bakınca masaüstünde %68,6, mobilde %59,7. Mobil ödeme sayfası ilk bakılacak yer.</p>
+<pre class="dax">Ödemeden Satışa % =
+DIVIDE(
+    CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 5),
+    CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 4)
+)</pre>
+<p>Huni görselinin kurulumu ve adım oranlarının raporda gösterimi “Vaka: e-ticaret dönüşüm hunisi ve kargo” dersinde var.</p>
+
+<h2>Gerçek zamanlı pano mu, Power BI raporu mu?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Gerçek zamanlı pano</th><th>Power BI + DirectQuery + otomatik sayfa yenileme</th></tr>
+<tr><td>Sorgu dili</td><td>Her kutucuk bir KQL sorgusu</td><td>DAX; motor kaynağa sorgu (ör. KQL ya da SQL) gönderir</td></tr>
+<tr><td>Yenileme</td><td>Canlı yenileme: yeni veri gelince görseller güncellenir; yenileme hızı sınırı ayarlanır</td><td>Sabit aralık ya da değişiklik algılama. Paylaşılan kapasitede en az 30 dakika; ayrılmış kapasitede (Fabric F, Premium, PPU) yönetici izin verirse saniyeler; varsayılan alt sınır 5 dakika (değişiklik algılamada 5 saniye)</td></tr>
+<tr><td>Güçlü yanı</td><td>Operasyon ekranı: son dakikalar, log, hızlı keşif</td><td>Zengin görsel, yıldız şema, RLS, diğer verilerle birleştirme</td></tr>
+<tr><td>Zayıf yanı</td><td>Kurumsal model, ölçü kütüphanesi yok</td><td>Kaynak her yenilemede sorgulanır; kapasite tüketir</td></tr>
+</table></div>
+<p>Otomatik sayfa yenileme yalnızca DirectQuery (ve bazı canlı bağlantı) senaryolarında çalışır; Import modelde yoktur. Direct Lake’te sabit aralık desteklenir, değişiklik algılama desteklenmez. Pratik ayrım: <b>vardiya ekranı</b> için gerçek zamanlı pano, <b>yönetim raporu</b> için Power BI.</p>
+
+<h2>Activator ile eyleme geçmek</h2>
+<p>Ekranı izleyen kimse yoksa gerçek zamanlı veri işe yaramaz. <b>Activator</b>, bir eventstream’den, gerçek zamanlı panodan ya da Power BI raporundan gelen veriyi nesne başına (ör. her ürün, her mağaza) izler ve kural sağlanınca eylem başlatır. Kurallar durumsuz (“değer 50’nin altında”) ya da durumlu (“azalıyor”, “30 dakikadır veri gelmiyor”) olabilir ve yalnızca duruma ilk girişte tetiklenir; aynı uyarı her olayda tekrar gelmez.</p>
+<p>Örnek: “Mobil ödeme adımındaki dönüşüm 15 dakikalık pencerede %50’nin altına düşerse ödeme ekibinin Teams kanalına mesaj gönder.” Power BI tarafındaki uyarılar ve Power Automate ile eylem “Power Platform ile eyleme geçmek” dersinde anlatılıyor.</p>
+
+<h2>OneLake ile bağlamak</h2>
+<p>Gerçek zamanlı veri yalnız kalmamalı; geçmiş satışlarla birlikte analiz edilmeli. İki köprü var:</p>
+<ul>
+<li><b>Eventhouse OneLake erişilebilirliği</b> (OneLake availability): KQL veritabanındaki tablolar OneLake’e Delta Parquet biçiminde mantıksal bir kopya olarak açılır. Veritabanı ya da tablo düzeyinde açılır. Sonra lakehouse’tan kısayolla, not defterinden ya da Direct Lake modelden okunur. Learn’e göre ek depolama ücreti yoktur. Gecikme varsayılan olarak 3 saate kadar çıkabilir, 5 dakika ile 3 saat arasında ayarlanabilir. Açıkken tabloyu yeniden adlandıramaz, satır silemez, tabloya RLS uygulayamazsın.</li>
+<li><b>Anlam modelleri için OneLake entegrasyonu</b>: Import modelin tabloları her yenilemede OneLake’e Delta tablo olarak yazılır. Böylece veri bilimci aynı “altın” veriyi Spark’la okur. Yalnızca Import tablolar yazılır; ölçüler, DirectQuery tabloları ve hesaplama grupları yazılmaz. Fabric F ya da Premium P kapasitesi gerekir.</li>
+</ul>
+<div class="tip"><b>Tasarım önerisi</b>Son birkaç günün olaylarını eventhouse’ta KQL ile canlı izle; daha eski olayları OneLake üzerinden lakehouse’a bağla ve satış modeline Direct Lake ile ekle. Böylece hem canlı ekran hem de yıllık eğilim aynı veriden beslenir.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-kql-gercek-zaman">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-hazirlama/">← Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları</a><a href="../embed-api/">Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

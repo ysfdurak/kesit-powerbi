@@ -1,0 +1,55 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı | Kesit Power BI</title><meta name="description" content="Şemayı açıkça vermek, yinelenen ve boş değer, Delta tablosuna yazmak, küçük dosya sorunu, OPTIMIZE, V-Order ve VACUUM’un ne zaman gerektiği."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-spark-odev/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı"><meta property="og:description" content="Şemayı açıkça vermek, yinelenen ve boş değer, Delta tablosuna yazmak, küçük dosya sorunu, OPTIMIZE, V-Order ve VACUUM’un ne zaman gerektiği."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-spark-odev/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı","description":"Şemayı açıkça vermek, yinelenen ve boş değer, Delta tablosuna yazmak, küçük dosya sorunu, OPTIMIZE, V-Order ve VACUUM’un ne zaman gerektiği.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-spark-odev/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Lakehouse ödevi: PySpark ile temizlik, Delta ve dosya bakımı</h1><p class="st-l">Şemayı açıkça vermek, yinelenen ve boş değer, Delta tablosuna yazmak, küçük dosya sorunu, OPTIMIZE, V-Order ve VACUUM’un ne zaman gerektiği.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-spark-odev">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Sınav not defterini ayrıntılı kod olarak değil, <b>doğru işlem</b> olarak sorar: hangi adım yineleneni çözer, hangi işlem boş değeri doldurur, hangi ayar Direct Lake’i etkiler. Yine de kavram kendi elinle yapınca kalıcı olur. Bu ödev <code>AnadoluLH</code> lakehouse’undaki <code>Files/ham</code> klasörünü kullanır.</p>
+
+<h2>Ödev 1: CSV’den Delta’ya</h2>
+<p>Lakehouse’a bir not defteri bağla ve çalıştır:</p>
+<pre data-notry>from pyspark.sql import functions as F
+
+df = (spark.read
+      .option("header", True)
+      .option("inferSchema", False)
+      .csv("Files/ham/Musteriler.csv"))
+
+print(df.columns)   # ilk sütun adında görünmez bir karakter var mı?
+print(df.count())
+df.filter(F.col("Sehir").isNull()).count()</pre>
+<div class="tip"><b>Beklenen sonuç</b>150 satır, <code>Sehir</code> sütununda 7 boş değer. Boşlar veride bilerek var: <code>Musteriler[Sehir]</code> boş olan satırların DAX’taki davranışını “BLANK ve hatalar” dersinde gördün.</div>
+<p><code>inferSchema</code> kapalıyken her sütun metin gelir. Bu bilinçli: türü sen verirsin ve hatalı değeri görürsün.</p>
+
+<h2>Ödev 2: Türü ver, boşu çöz, yineleneni kontrol et</h2>
+<pre data-notry>temiz = (df
+  .withColumn("MusteriNo", F.col("MusteriNo").cast("int"))
+  .fillna({"Sehir": "Bilinmiyor"})
+  .dropDuplicates(["MusteriNo"]))
+
+print(temiz.count())
+temiz.write.format("delta").mode("overwrite").saveAsTable("Musteriler_Temiz")</pre>
+<div class="tip"><b>Beklenen sonuç</b>Yine 150 satır: <code>MusteriNo</code> yinelenmiyor. Boş şehirler “Bilinmiyor” oldu. SQL analiz uç noktasında <code>Musteriler_Temiz</code> görünmeli.</div>
+<p>Anahtar yinelenmiyorsa <code>dropDuplicates</code> hiçbir şey değiştirmez, ama satır sayısını önce ve sonra karşılaştırmak iyi bir alışkanlıktır. Satır sayısı düştüyse hangi satırın neden silindiğini açıklayabilmelisin.</p>
+
+<h2>Delta dosya bakımı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İşlem</th><th>Ne yapar?</th><th>Ne zaman?</th></tr>
+<tr><td><code>OPTIMIZE</code></td><td>Küçük dosyaları birleştirir</td><td>Dosya sayısı tablo boyutundan hızlı artıyorsa; birikmiş sorunu bir kez çöz, sonra otomatik sıkıştırmayı (auto compaction) aç</td></tr>
+<tr><td><b>V-Order</b></td><td>Parquet dosyasını okuma için düzenler</td><td>Spark’ın yazdığı tablolarda yalnız Direct Lake ana tüketiciyse aç. Ambarda varsayılan olarak açıktır</td></tr>
+<tr><td><code>VACUUM</code></td><td>Saklama süresi dolan, başvurulmayan dosyaları siler</td><td>Depolamayı geri kazanır, etkin dosya düzenini iyileştirmez. Süreyi kısaltmak zaman yolculuğunu ve eşzamanlı okuyucuları bozabilir</td></tr>
+</table></div>
+<p>Learn’e göre Direct Lake genellikle 1 ile 16 milyon satırlık satır gruplarıyla en iyi çalışır. Küçük ve dengesiz satır grupları daha çok sütun segmenti ve dönüştürme yükü demektir. Bir tablonun yavaş olduğunu görünce önce dosya ve satır grubu durumuna bak, ayarı sonra değiştir.</p>
+
+<h2>Ödev 3: Etkisini göster</h2>
+<p>Aynı tabloya küçük parçalar halinde on kez <code>append</code> yap, dosya sayısına bak, sonra <code>OPTIMIZE</code> çalıştır:</p>
+<pre data-notry>%%sql
+OPTIMIZE Musteriler_Temiz;
+DESCRIBE DETAIL Musteriler_Temiz;</pre>
+<p><code>numFiles</code> değerinin düştüğünü not et. Mülakatta bunu “dosya sayısını ölçtüm, sıkıştırdım, tekrar ölçtüm” diye anlatabilirsin.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-spark-odev">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-tsql-odev/">← Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam</a><a href="../coklu-kaynak/">Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,87 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI ve Excel birlikte: Excel’de analiz et, bağlı tablolar, dışa aktarma | Kesit Power BI</title><meta name="description" content="Excel dosyasını kaynak olarak doğru yere koymak, Excel’de Analiz Et ile modele canlı bağlı PivotTable, bağlı tablolar, özetlenmiş ve temel veriyi dışa…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/excel-entegrasyon/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI ve Excel birlikte: Excel’de analiz et, bağlı tablolar, dışa aktarma"><meta property="og:description" content="Excel dosyasını kaynak olarak doğru yere koymak, Excel’de Analiz Et ile modele canlı bağlı PivotTable, bağlı tablolar, özetlenmiş ve temel veriyi dışa…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/excel-entegrasyon/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI ve Excel birlikte: Excel’de analiz et, bağlı tablolar, dışa aktarma","description":"Excel dosyasını kaynak olarak doğru yere koymak, Excel’de Analiz Et ile modele canlı bağlı PivotTable, bağlı tablolar, özetlenmiş ve temel veriyi dışa…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/excel-entegrasyon/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Power BI ve Excel birlikte: Excel’de analiz et, bağlı tablolar, dışa aktarma</h1><p class="st-l">Excel dosyasını kaynak olarak doğru yere koymak, Excel’de Analiz Et ile modele canlı bağlı PivotTable, bağlı tablolar, özetlenmiş ve temel veriyi dışa aktarmanın sınırları, etiketlerin dosyayla gitmesi ve modeli Excel kullanıcısına hazırlamak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-excel-entegrasyon">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Şirketlerde Power BI çoğu zaman Excel'in yerine değil, yanına gelir. Finans ekibi rakamları yine Excel'de çevirmek ister; satış ekibi listeyi Excel'e alıp telefonla arama yapar. Bu derste iki yönü de göreceğiz: <b>Excel'den Power BI'a</b> (Excel bir veri kaynağı olarak) ve <b>Power BI'dan Excel'e</b> (Excel, yayımlanmış modelin bir istemcisi olarak).</p>
+
+<h2>Excel kaynak olarak: dosya nerede durmalı?</h2>
+<p>Desktop'ta <b>Veri al → Excel çalışma kitabı</b> ile bir dosyaya bağlanmak kolaydır. Sorun yayımladıktan sonra başlar. <code>C:\Raporlar\satis.xlsx</code> gibi <b>yerel bir yol</b> yalnızca senin bilgisayarında vardır. Power BI Service buluttadır ve bu yola ulaşamaz; zamanlanmış yenileme hata verir.</p>
+<ul>
+<li><b>Çözüm 1 – dosyayı buluta taşı:</b> Dosyayı iş ya da okul hesabının OneDrive'ına veya bir SharePoint Online sitesine koy. Bulut kaynakları için ağ geçidi gerekmez.</li>
+<li><b>Çözüm 2 – ağ geçidi:</b> Dosya şirket ağındaki bir klasörde kalacaksa şirket içi veri ağ geçidi (on-premises data gateway) kurulur. Ağ geçidinin çalıştığı makine açık olmalıdır.</li>
+</ul>
+<div class="warn"><b>Eşitlenmiş klasör tuzağı</b>OneDrive'ın bilgisayarına eşitlediği klasör (<code>C:\Users\...\OneDrive - Şirket\...</code>) de yerel bir yoldur. Dosya bulutta olsa bile bağlantı yerel yoldan kurulduysa Service onu bulamaz. Bağlantıyı dosyanın <b>web adresiyle</b> kur: Excel'de Dosya → Bilgi → Yolu kopyala ile https adresini al, Power BI'da Veri al → Web ya da SharePoint klasörü bağlayıcısını kullan.</div>
+<p>Excel dosyasını doğrudan Service’e içeri aldıysan Power BI dosyayı OneDrive ya da SharePoint'te <b>yaklaşık saatte bir</b> kontrol eder. Bu dosya eşitlemesi, dış kaynaklardan veri çeken <b>zamanlanmış yenilemeden</b> ayrı bir işlemdir.</p>
+<p>Excel tarafında da düzen gerekir. Veriyi <b>Tablo</b> olarak biçimlendir (Ctrl+T) ve tabloya anlamlı bir ad ver. Power BI'da sayfaya değil tabloya bağlan; yeni satırlar tabloya eklendikçe yenilemede gelir. Birleştirilmiş hücre, ara toplam satırı ve aynı sütunda metinle sayının karışması temizlik işini artırır. Sütun adını sonradan değiştirmek Power Query adımlarını kırar. Temizlik için <b>Power Query ile veri temizleme</b> dersine bak.</p>
+
+<h2>Excel'de Analiz Et: PivotTable'ı modele bağlamak</h2>
+<p><b>Excel'de Analiz Et</b> (Analyze in Excel), yayımlanmış bir anlam modeline (semantic model) <b>canlı bağlı</b> bir Excel çalışma kitabı üretir. Dosyada verinin kopyası değil, modele giden bağlantı vardır. PivotTable Alanları listesinde modelin tabloları ve ölçüleri görünür.</p>
+<ul>
+<li><b>Service’ten:</b> Raporu aç → <b>Dışa aktar → Excel'de Analiz Et</b>. Çalışma alanında anlam modelinin <b>…</b> menüsünden de başlatılabilir.</li>
+<li><b>Excel'den:</b> Ekle → PivotTable → <b>Power BI'dan</b>, ya da Veri → Veri Al → Power Platform'dan → <b>Power BI'dan</b>. Sağda erişebildiğin anlam modellerini listeleyen bir bölme açılır.</li>
+</ul>
+<p><b>Gereksinimler:</b> Modelde <b>Derleme (Build) izni</b> ya da çalışma alanında en az <b>Katkıda bulunan</b> rolü, bir Power BI lisansı ve kiracı yöneticisinin canlı bağlantıyla Excel kullanımını açmış olması. Mac kullanıcıları bu dosyaları yalnızca Excel'in web sürümünde inceleyebilir. Kiracı dışındaki konuk kullanıcılar Power BI verisini Excel'de canlı bağlantıyla kullanamaz.</p>
+<p><b>Güvenlik:</b> Satır düzeyi güvenlik (RLS) ve nesne düzeyi güvenlik (OLS) Excel'de de geçerlidir; kullanıcı yalnızca raporda görebildiği veriyi görür. <b>Yenile:</b> Excel'de Veri → Tümünü Yenile modele yeni bir sorgu gönderir. Excel'deki rakam, modelin en son yenilendiği an kadar günceldir.</p>
+<div class="note"><b>Learn'deki sınırlar</b>Hiyerarşiler PivotTable alan listesinde yalnızca <b>İçeri aktarma</b> (Import) modundaki modellerde korunur; DirectQuery, Direct Lake ve bileşik modellerde görünmez. Alan parametreleri olan modellerde Excel'de Analiz Et beklendiği gibi çalışmayabilir. Canlı bağlantılı bir raporun içine eklenen rapor ölçüleri Excel'e gelmez; Excel modeli görür, raporu değil.</div>
+
+<h2>Bağlı tablolar ve öne çıkan tabloların sonu</h2>
+<p>Herkes PivotTable istemez; bazıları düz bir liste ister. Excel masaüstünde aynı bölmede <b>Insert Table</b> seçeneği bir tablo tasarlama penceresi açar: alanları seçer, filtreyi kurarsın ve sonuç Excel sayfasına <b>bağlı tablo</b> (connected table) olarak gelir. Bağlı tablo, normal bir Excel tablosu gibi görünür ama yenilendiğinde modelden yeniden dolar; tabloya verdiğin Excel biçimi yenilemede korunur.</p>
+<p>İkinci yol bir görselden başlar: görselin <b>…</b> menüsü → <b>Verileri dışa aktar → Özetlenmiş veriler</b> → dosya biçimi olarak <b>canlı bağlantılı .xlsx</b> (en fazla 500.000 satır). İnen dosyadaki tablo da yenilenebilir. Bu dosyada bir <b>ExportHeaders</b> sayfası, görsele uygulanan filtreleri listeler; rakamın hangi seçimle alındığını sonradan da görürsün.</p>
+<div class="warn"><b>Öne çıkan tablolar kaldırıldı</b>Eskiden Desktop'ta bir tabloyu “öne çıkan tablo” (featured table) yapıp Excel'de <b>kuruluş veri türü</b> (organization data type) olarak kullanabiliyordun. Microsoft Learn'e göre bu ayar <b>Haziran 2026</b> Desktop sürümüyle kaldırıldı. Eski çalışma kitaplarında görebilirsin ama yeni çözümü bağlı tablo ya da PivotTable üzerine kur.</div>
+
+<h2>Modeli Excel kullanıcısına hazırlamak</h2>
+<p>Excel'in PivotTable'ı modele Power BI görsellerinden farklı bir sorgu diliyle (MDX) bağlanır. Bunun pratik sonuçları var:</p>
+<ul>
+<li><b>Açık ölçü şart:</b> Power BI'da sayısal bir sütunu görsele sürükleyince örtük (implicit) bir toplam oluşur. Excel PivotTable'ında sütunlar satır, sütun ve filtre alanlarına girer; <b>Değerler</b> alanına modeldeki ölçüler gelir. Kullanıcının toplamak isteyeceği her sayı için bir ölçü yaz.</li>
+<li><b>Biçimi ölçünün özelliği olarak ver:</b> Ölçü araçları → Biçim ile para, yüzde, ondalık ayarla. <code>FORMAT()</code> sonucu <b>metindir</b>; metin döndüren ölçü pivotta sayı gibi sıralanmaz, Excel grafiğine giremez, Excel formülünde hesaplanamaz.</li>
+<li><b>Oranları modelde hesapla:</b> Excel'in klasik “Hesaplanmış alan” komutu bu tür (OLAP) pivotlarda kullanılamaz. Kullanıcı oranı satırların ortalamasını alarak üretmeye kalkarsa yanılır.</li>
+<li><b>Düzen:</b> Teknik sütunları gizle, ölçüleri görüntüleme klasörlerine koy, ay adlarını “Sütuna göre sırala” ile sırala. Excel kullanıcısı alan listesinde neyi görürse onu kullanır.</li>
+</ul>
+<p>Oran tuzağına bir örnek: Sipariş başına adet.</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Doğru oran", DIVIDE([Satılan Adet], [Sipariş Sayısı]),
+    "Kategori satırlarının ortalaması",
+        AVERAGEX(VALUES(Kategoriler[Kategori]), DIVIDE([Satılan Adet], [Sipariş Sayısı])))</pre>
+<p>Doğru değer <b>2,87</b>; kategori satırlarının ortalaması ise <b>1,61</b>. Bir sipariş birden çok kategoriden ürün içerebildiği için kategori satırları toplamı vermez. Oran bir ölçü olarak modelde dursun ki Excel'deki toplam satırı da doğru hesaplansın.</p>
+<pre class="dax">Satır Sayısı (Excel) = COUNTROWS(Satislar)</pre>
+<p>Bu basit ölçü bile Excel kullanıcısının işine yarar: Satislar tablosunda 1.620 satır var; pivotta hangi seçimde kaç satır olduğunu görmek, dışa aktarma sınırlarını tahmin etmeyi kolaylaştırır.</p>
+
+<h2>Dışa aktarma: özetlenmiş mi, temel veri mi?</h2>
+<p>Görselin <b>…</b> menüsündeki <b>Verileri dışa aktar</b> komutu birkaç seçenek sunar. Service kullanıcısı tarafı için <b>Power BI Service’te rapor kullanmak</b>, ayarlar için <b>Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme</b> derslerine bak; burada sınırları bir arada görelim:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek</th><th>Ne iner?</th><th>Sınır (Learn)</th></tr>
+<tr><td>Özetlenmiş veriler (.xlsx)</td><td>Görselin gösterdiği toplama düzeyi</td><td>150.000 satır</td></tr>
+<tr><td>Geçerli düzene sahip veriler (matris)</td><td>Matrisin şekli korunur</td><td>150.000 kesişim (satır × değer sütunu)</td></tr>
+<tr><td>Temel veriler</td><td>Görselin arkasındaki ayrıntı satırları</td><td>Yazar ya da yönetici izin verdiyse</td></tr>
+<tr><td>.csv</td><td>Düz liste, ara toplamsız</td><td>30.000 satır</td></tr>
+<tr><td>Canlı bağlantılı .xlsx</td><td>Yenilenebilir tablo</td><td>500.000 satır</td></tr>
+</table></div>
+<ul>
+<li>Filtreler ve dilimleyiciler dışa aktarmaya uygulanır. Gizli alanlar gelmez (temel veri hariç).</li>
+<li>Modeldeki biçim dizeleri Excel ve CSV'de korunur; <b>dinamik biçim</b> ve görsele özgü “genel toplamın yüzdesi” gibi gösterimler korunmaz.</li>
+<li>Görselde <b>Veri içermeyen öğeleri göster</b> açıksa temel veri dışa aktarımı çalışmaz.</li>
+<li>Rapor ayarlarında üç seçenek vardır: yalnızca özetlenmiş, özetlenmiş ve temel, hiç. Yönetici portalındaki ayar rapor ayarıyla çelişirse yönetici kazanır.</li>
+</ul>
+
+<h2>Duyarlılık etiketleri dosyayla birlikte gider</h2>
+<p>Veri Excel'e indiğinde Power BI'ın dışına çıkar. Bu yüzden koruma ayarlı bir duyarlılık etiketi (ör. “Gizli”) dışa aktarılan Excel, PowerPoint ve PDF dosyasına da uygulanır; dosyayı yalnızca yetkili kişiler açabilir. Bir PivotTable ya da bağlı tablo eklediğinde modelin etiketi çalışma kitabına <b>otomatik</b> geçer. Çalışma kitabında zaten bir etiket varsa <b>daha kısıtlayıcı olan</b> uygulanır. Yönetici, Microsoft Defender for Cloud Apps ile etikete göre kural koyabilir; örneğin yönetilmeyen cihazlara indirmeyi engelleyebilir. Etiketlerin kendisi <b>Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar</b> dersinde.</p>
+
+<h2>Ne zaman Excel, ne zaman başka bir araç?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>Uygun araç</th></tr>
+<tr><td>Kullanıcı kendi pivotunu kurup Excel formülleriyle senaryo yapacak</td><td>Excel'de Analiz Et / bağlı PivotTable</td></tr>
+<tr><td>Belli kolonlarla, filtrelenmiş, yenilenebilir düz liste</td><td>Bağlı tablo ya da canlı bağlantılı .xlsx</td></tr>
+<tr><td>Her ay aynı biçimde, sayfa sayfa basılacak uzun liste ya da fatura</td><td>Sayfalandırılmış rapor</td></tr>
+<tr><td>Etkileşimli keşif, mobilde izleme</td><td>Power BI raporu</td></tr>
+<tr><td>Bir kez, birkaç yüz satırlık hızlı kontrol</td><td>Özetlenmiş veriyi dışa aktar</td></tr>
+</table></div>
+<p>Excel'e “her şeyi indir” isteği çoğu zaman yanlış soruya işarettir. Kullanıcı aslında aynı listeyi her ay istiyorsa <b>Sayfalandırılmış raporlar: ne zaman?</b> dersindeki çözüm, kendi hesabını yapmak istiyorsa canlı bağlı PivotTable daha güvenli ve günceldir.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-excel-entegrasyon">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ayristirma-etkileyen/">← Ayrıştırma ağacı ve anahtar etkileyiciler: soru sorarak analiz</a><a href="../power-platform/">Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

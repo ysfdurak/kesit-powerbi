@@ -1,0 +1,58 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor? | Kesit Power BI</title><meta name="description" content="Kullanım ölçümleri, etkinlik günlüğü, Monitor hub, Capacity Metrics, çalışma alanı izleme ve Performans Analizi: hangi soruyu hangi araç cevaplar;…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kullanim-izleme/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor?"><meta property="og:description" content="Kullanım ölçümleri, etkinlik günlüğü, Monitor hub, Capacity Metrics, çalışma alanı izleme ve Performans Analizi: hangi soruyu hangi araç cevaplar;…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kullanim-izleme/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor?","description":"Kullanım ölçümleri, etkinlik günlüğü, Monitor hub, Capacity Metrics, çalışma alanı izleme ve Performans Analizi: hangi soruyu hangi araç cevaplar;…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kullanim-izleme/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor?</h1><p class="st-l">Kullanım ölçümleri, etkinlik günlüğü, Monitor hub, Capacity Metrics, çalışma alanı izleme ve Performans Analizi: hangi soruyu hangi araç cevaplar; sınırlar ve kullanım verisiyle karar vermek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kullanim-izleme">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Altı aydır her ay güncellenen rapora emek veriyorsun. Kaç kişi açıyor? Sen bilmiyorsan “rapor başarılı” demek cesaret ister. Bu ders üç soruyu cevaplar: <b>kim kullanıyor, ne yavaş, kapasite nereye gidiyor?</b> Benimseme planı ve kültür tarafı “Power BI ortamını yönetmek” dersinde; burada araçları ve kararları işliyoruz.</p>
+<h2>Hangi soru, hangi araç?</h2>
+<div class="tbl-wrap"><table><tr><th>Soru</th><th>Araç</th><th>Kim?</th><th>Sınır</th></tr>
+<tr><td>Bu raporu kim, ne sıklıkla açıyor?</td><td><b>Kullanım ölçümleri raporu</b></td><td>Yönetici, Üye, Katkıda bulunan; Pro ya da PPU</td><td>Son 30 gün, önizleme</td></tr>
+<tr><td>Kiracıda kim neyi yaptı, 6 ay önce kim dışa aktardı?</td><td><b>Etkinlik günlüğü, denetim</b></td><td>Fabric yöneticisi, uyumluluk</td><td>Kendi depona biriktir</td></tr>
+<tr><td>Bu gece hangi iş düştü?</td><td><b>Monitor hub</b></td><td>Fabric kullanıcıları; yalnız görme izni olan öğeler</td><td>Learn’de önizleme etiketli sayfa</td></tr>
+<tr><td>Yenileme neden düştü?</td><td><b>Yenileme geçmişi</b></td><td>Model erişimi olan</td><td>“Veri yenileme” dersi</td></tr>
+<tr><td>Kapasite neden kısıtlıyor?</td><td><b>Fabric Capacity Metrics uygulaması</b></td><td>Kapasite yöneticisi</td><td>İşlem 14, depolama 30 gün görünüm</td></tr>
+<tr><td>Bu görsel neden yavaş?</td><td><b>Performans Analizi</b></td><td>Yazar, Desktop’ta</td><td>Service koşulları farklıdır</td></tr>
+<tr><td>Modele hangi sorgular geliyor?</td><td><b>Çalışma alanı izleme</b></td><td>Sorgu için en az Katkıda bulunan</td><td>Önizleme; varsayılan 30 gün, kapasite tüketir</td></tr></table></div>
+<h2>Kullanım ölçümleri raporu</h2>
+<p>Çalışma alanında raporun <b>Diğer seçenekler (…) → Kullanım ölçümleri raporunu görüntüle</b>. Görüntüleyici rolü yetmez. Yöneticinin “içerik oluşturucular için kullanım ölçümleri” ayarı açık olmalı. Çalışma alanım’da ve Azure Private Link arkasında çalışmaz.</p>
+<ul><li><b>Gösterir:</b> rapor görüntüleme, sayfa görüntüleme, tekil görüntüleyen, eğilim, dağıtım yolu (çalışma alanı, paylaşım, uygulama), platform (web, gömülü, mobil), tipik açılma süresi (yüzde 50’lik dilim).</li><li><b>Bugünü saymaz.</b> Model günde bir yenilenir; yeni veri 24 saate kadar gecikir.</li><li><b>30 günden eskisi silinir.</b> Uzun eğilim için düzenli dışarı aktar.</li><li><b>Kopya al:</b> Dosya → Kopya kaydet düzenlenebilir rapor üretir; Desktop’tan “Usage Metrics Report” modeline bağlanılabilir. Model önizleme olduğu için ufak değişebilir.</li></ul>
+<div class="warn"><b>Sayıyı doğru oku</b>Sayfa görüntüleme istemci izlemesinden gelir; reklam engelleyici ya da ağ sorunu farklılık yaratır. Abonelik anlık görüntüleri görüntülemeyi şişirebilir. Uygulamadaki rapor çalışma alanındakiyle farklı kimlik taşır, ayrı görünebilir. Pano kullanımı yeni raporda yok. Bir ayarla kullanıcı adları “adsız kullanıcı” olarak maskelenebilir.</div>
+<h2>Etkinlik günlüğü ve denetim</h2>
+<p>Birden çok çalışma alanı, 30 günden uzun geçmiş ya da tüm etkinlikler için kullanım ölçümleri yetmez. Etkinlik günlüğünü her gün kendi deponda biriktir (“Yönetişim” dersi). Böylece “kim dışa aktardı?” aylar sonra cevaplanır.</p>
+<h2>Monitor hub</h2>
+<p>Fabric’in birleşik izleme ekranı. İş çalıştırmaları, uygulamalar, kapasite ve maliyet, ajanlar, uyarılar sayfaları var. Herkes açabilir, ama yalnız görme izni olduğu öğeleri görür. İşlem hattı hatasını adım adım okumak “İşlem hatları” dersinde. Learn’de Kasım 2026 itibarıyla önizleme etiketi taşıyor.</p>
+<h2>Capacity Metrics</h2>
+<p>Kapasite kapasite birimi (CU) ile ölçülür. Rapor sorguları, yenileme, not defteri, Copilot aynı havuzdan tüketir. Uygulamanın <b>Sistem durumu</b> sayfası hangi kapasitenin kısıtlandığını, <b>İşlem</b> sayfası 14 günlük eğilimi ve işlem matrisini, <b>Zaman noktası</b> sayfaları 30 saniyelik aralıkları gösterir.</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Yorum</th><th>Önce dene</th></tr>
+<tr><td>Her gece 02:00’de zirve, sabah rapor yavaş</td><td>Yenilemeler üst üste</td><td>Saatleri yay</td></tr>
+<tr><td>Öğlen bir not defteri kapasitenin çoğunu yiyor</td><td>Geliştirme işi üretim havuzunda</td><td>Ayrı kapasite, iş saatini kaydır</td></tr>
+<tr><td>Kısıtlama (throttling), sorgu reddi</td><td>Uzun süre kapasite üstünde tüketim</td><td>Ağır işi bul, sonra SKU düşün</td></tr>
+<tr><td>Rapor yavaş, kapasite rahat</td><td>Kapasite sorunu değil, DAX ya da model</td><td>Performans Analizi</td></tr></table></div>
+<p>Son satır önemli: SKU büyütmek yavaş ölçüyü düzeltmez. Sıra “önce hangi işlem, sonra neden, en son para”dır.</p>
+<h2>Çalışma alanı izleme</h2>
+<p>İsteğe bağlı bir izleme öğesi, çalışma alanı olaylarını Eventhouse içindeki tablolara yazar. Anlam modeli işlem günlükleri, işlem hattı, Dataflow Gen2 ve ambar kayıtları buraya gelir; KQL ile sorgulanır, Activator ile uyarıya bağlanır. Önizlemededir, kapasite tüketir, açılmadan önceki etkinlik geriye dönük dolmaz.</p>
+<h2>Kullanım verisiyle karar</h2>
+<div class="tbl-wrap"><table><tr><th>Bulgu</th><th>Karar</th></tr>
+<tr><td>30 günde hiç açılmayan rapor</td><td>Sahibine sor, tek açan yoksa arşivle</td></tr>
+<tr><td>Çok açılıyor, tek kişi</td><td>Kişisel iş; aboneliğe ya da kendi alanına</td></tr>
+<tr><td>Çok görüntüleme, ilk sayfa dışı neredeyse hiç</td><td>Sayfaları azalt, özeti güçlendir</td></tr>
+<tr><td>Tipik açılma süresi yüksek</td><td>Sayfadaki görsel sayısını, ölçüleri incele</td></tr>
+<tr><td>Çoğu erişim mobil</td><td>Mobil düzeni önceliklendir</td></tr></table></div>
+<p>Kullanım tablosunu Desktop’a aldığında sorular DAX’a dönüşür. Örnek kullanım tablosu:</p>
+<pre class="dax">EVALUATE
+VAR Kullanim =
+    DATATABLE("Rapor", STRING, "Kisi", STRING, "Goruntuleme", INTEGER, {
+        {"Satış", "ayse", 22}, {"Satış", "mert", 14}, {"Satış", "selin", 9},
+        {"Stok", "ayse", 40}, {"Kargo", "mert", 1}
+    })
+RETURN
+    GROUPBY(Kullanim, [Rapor], "Toplam", SUMX(CURRENTGROUP(), [Goruntuleme]), "Kisi Sayisi", SUMX(CURRENTGROUP(), 1))</pre>
+<p>Stok 40 görüntülenmiş ama tek kişi; Satış 45 görüntülenmiş, üç kişi. Sadece toplama bakan kişi Stok’u “popüler” sanır. Tablolar örnek amaçlıdır.</p>
+<div class="tip"><b>Kendi ortamında dene</b>Bir çalışma alanında (Pro ya da deneme) kendi raporunun kullanım ölçümlerini aç; verinin gelmesi bir gün sürebilir. Capacity Metrics ve çalışma alanı izleme için Fabric kapasitesi gerekir; Fabric deneme kapasitesi Capacity Metrics uygulamasını destekler. Yönetici ayarına bağlı olabilir.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-kullanim-izleme">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../gateway/">← On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir</a><a href="../yerel-gelistirme/">Yerel geliştirme: .pbix’ten .pbip’e, DAX sorgu görünümü, TMDL ve Git →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

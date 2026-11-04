@@ -1,0 +1,139 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bağlam geçişi (context transition) | Kesit Power BI</title><meta name="description" content="Satır bağlamı filtre bağlamına nasıl dönüşür? Ölçü çağırmak neden farklı sonuç verir?"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/baglam-gecisi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Bağlam geçişi (context transition)"><meta property="og:description" content="Satır bağlamı filtre bağlamına nasıl dönüşür? Ölçü çağırmak neden farklı sonuç verir?"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/baglam-gecisi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Bağlam geçişi (context transition)","description":"Satır bağlamı filtre bağlamına nasıl dönüşür? Ölçü çağırmak neden farklı sonuç verir?","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/baglam-gecisi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>Bağlam geçişi (context transition)</h1><p class="st-l">Satır bağlamı filtre bağlamına nasıl dönüşür? Ölçü çağırmak neden farklı sonuç verir?</p>
+<div class="st-c"><a class="st-p" href="../../#ders-baglam-gecisi">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Tanım</h2>
+<p><b>Bağlam geçişi</b> (context transition), <code>CALCULATE</code> bir satır bağlamının içinde çalıştığında olur: geçerli satırın tüm sütun değerleri <b>filtreye</b> dönüşür. Ölçüler her zaman gizli bir <code>CALCULATE</code> ile sarılı olduğundan, bir yineleyicinin içinde <b>ölçü çağırmak</b> da bağlam geçişini tetikler.</p>
+<h2>Karşılaştır</h2>
+<pre class="dax">A = SUMX(Musteriler, SUM(Satislar[Tutar]))
+B = SUMX(Musteriler, CALCULATE(SUM(Satislar[Tutar])))
+C = SUMX(Musteriler, [Toplam Satış])</pre>
+<ul>
+<li><b>A:</b> Her müşteri satırında <code>SUM</code> çalışır ama satır bağlamı filtre değildir; her satırda <i>tüm</i> satışların toplamı gelir. 150 müşteri × toplam satış: anlamsız, çok büyük bir sayı.</li>
+<li><b>B:</b> <code>CALCULATE</code> geçerli müşteri satırını filtreye çevirir; her satırda o müşterinin satışı hesaplanır. Sonuç, toplam satışa eşittir.</li>
+<li><b>C:</b> Ölçü çağrısı gizli <code>CALCULATE</code> içerdiği için B ile aynıdır.</li>
+</ul>
+<p>Playground’da üçünü de çalıştırıp farkı gör.</p>
+<h2>Nerede işe yarar?</h2>
+<pre class="dax">-- Müşteri başına ortalama satış (yalnızca alışveriş yapanlar)
+Müşteri Ortalaması = AVERAGEX(VALUES(Satislar[MusteriNo]), [Net Satış])
+
+-- 10.000 TL üstü alışveriş yapan müşteri sayısı
+Değerli Müşteri = COUNTROWS(FILTER(VALUES(Musteriler[Musteri]), [Net Satış] &gt; 10000))</pre>
+<div class="warn"><b>Dikkat: yinelenen satırlar</b>Bağlam geçişi satırın <i>tüm sütunlarını</i> filtreye çevirir. Tabloda birebir aynı iki satır varsa, her biri ikisinin toplamını görür ve sonuç iki kat sayılır. Bu yüzden yineleyiciyi mümkünse anahtarı olan bir tabloda ya da <code>VALUES(Tablo[Anahtar])</code> üzerinde çalıştır.</div>
+<div class="note"><b>Performans</b>Bağlam geçişi her satır için yeni bir filtre bağlamı kurar. 1 milyon satırlık olgu tablosu üzerinde <code>SUMX(Satislar, [Ölçü])</code> yavaştır; boyut üzerinde (<code>VALUES(Urunler[Urun])</code>) dolaşmak çok daha hızlıdır.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Bağlam geçişi hangi satırları filtreler?</h2>
+<p>Satır bağlamı CALCULATE ile filtreye dönüştüğünde, mevcut satırın <b>tüm sütunlarının</b> değeri filtre olur. Satır benzersizse bu, tam olarak o satırı seçer. Ama tablo birbirinin aynısı iki satır içeriyorsa, bağlam geçişi ikisini birden seçer ve iteratör her birinde iki satırın toplamını görür: sonuç iki katına çıkar.</p>
+<p>Bu modelde <code>Satislar[SatirNo]</code> her satırı benzersiz kıldığı için <code>SUMX(Satislar, [Net Satış])</code> doğru sonuç verir. Ama anahtarı olmayan bir tabloda (ör. Excel’den gelen, satır numarası olmayan bir liste) aynı ölçü sessizce yanlış toplar. Olgu tablolarında benzersiz bir satır anahtarı tutmanın bir sebebi de budur.</p>
+<pre class="dax">Ürün Başına Satış (doğru düzey) =
+SUMX(VALUES(Urunler[Urun]), [Net Satış])</pre>
+<p>İkinci kural: iteratörü <b>sorunun düzeyinde</b> döndür. “Her ürünün satışı” sorusu ürün listesinde döner; 3.000 satırlık olgu tablosunda dönmek hem yavaştır hem de yukarıdaki tekrar riskini taşır.</p>
+<div class="note"><b>EARLIER nereden çıktı?</b>Eski DAX kodlarında iç içe satır bağlamlarında dıştaki satıra erişmek için <code>EARLIER</code> görürsün. Bugün aynı iş, dış satırın değerini bir <code>VAR</code>’a alarak çok daha okunur yapılır.</div></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bağlam geçişinin bedeli: her satırda bir CALCULATE</h2>
+<p>Satış müdürü, "Temsilci Performansı" sayfasının yavaş açıldığından yakınıyor. Sayfadaki bir kart şu ölçüyü kullanıyor: <code>SUMX(Satislar, [Net Satış])</code>. Sonuç doğru: 1.250.772,45 ₺. Peki motor bu sayıya nasıl ulaşıyor?</p>
+<ol>
+<li>SUMX, Satislar tablosunun 1.620 satırını tek tek dolaşır. Her satırda bir satır bağlamı açılır.</li>
+<li>[Net Satış] bir ölçüdür; her ölçü gizli bir CALCULATE ile sarılıdır. CALCULATE satır bağlamını görünce bağlam geçişini çalıştırır: satırın 17 sütununun değeri tek tek filtreye dönüşür.</li>
+<li>Bu yeni filtre bağlamında ölçünün kendi filtresi (<code>Satislar[Durum] &lt;&gt; "İptal"</code>) eklenir ve SUM hesaplanır.</li>
+<li>Bu iş 1.620 kez tekrarlanır ve sonuçlar toplanır.</li>
+</ol>
+<div class="tbl-wrap"><table>
+<tr><th>Yazım</th><th>Dolaşılan satır</th><th>Bağlam geçişi</th><th>Sonuç</th></tr>
+<tr><td><code>SUMX(Satislar, [Net Satış])</code></td><td>1.620</td><td>1.620</td><td>1.250.772,45</td></tr>
+<tr><td><code>SUMX(VALUES(Urunler[Urun]), [Net Satış])</code></td><td>40</td><td>40</td><td>1.250.772,45</td></tr>
+<tr><td><code>[Net Satış]</code></td><td>yok</td><td>0</td><td>1.250.772,45</td></tr>
+</table></div>
+<p>Üç yazım da aynı sayıyı verir; maliyetleri çok farklıdır. Power BI'ın motorunda basit toplamalar depolama motorunda (storage engine) sıkıştırılmış sütunlar üzerinde çalışır ve çok hızlıdır. Satır satır bağlam geçişi gerektiren ifadeler ise işi formül motoruna (formula engine) taşır. Bin satırda fark görünmez, on milyon satırda saniyelerle ölçülür.</p>
+<p>Nasıl ölçersin? Rapor görünümünde Optimize şeridi → <b>Performans Analizi (Performance analyzer)</b> → kaydı başlat, görselleri yenile, görselin sorgusunu kopyala. Sorguyu DAX Studio'da Server Timings açık çalıştır. Formül motoru süresi yüksek, depolama motoru sorgu sayısı fazlaysa bağlam geçişinden şüphelen.</p>
+<div class="tip"><b>Kural</b>İteratörü sorunun tanecik düzeyinde (müşteri, ürün, ay) döndür. Olgu tablosunda dolaşman gerekiyorsa ölçü çağırma, sütun ifadesi yaz: <code>SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])</code> bağlam geçişi içermez.</div>
+
+<h2>İteratör içinde ölçü çağırmak: üç sessiz fark</h2>
+<h3>1. Boş satırlar ortalamadan düşer</h3>
+<pre class="dax">Alıcı Ortalaması =
+AVERAGEX(Musteriler, [Net Satış])
+
+Kayıtlı Müşteri Ortalaması =
+DIVIDE([Net Satış], COUNTROWS(Musteriler))</pre>
+<p>Birincisi 9.196,86 ₺, ikincisi 8.338,48 ₺ döndürür. Musteriler'de 150 satır var, ama 14 müşteri hiç alışveriş yapmamış. Onların [Net Satış] değeri BLANK'tir ve AVERAGEX boşları atlar; yani 150'ye değil 136'ya böler. Hangisi doğru? Soru "alışveriş yapan müşteri başına" ise birincisi, "kayıtlı müşteri başına" ise ikincisi. Ölçünün adı bu farkı açıkça söylemeli.</p>
+<h3>2. Ölçü yerine çıplak toplama yazmak</h3>
+<pre class="dax">Yanlış Değerli Müşteri =
+COUNTROWS(FILTER(Musteriler, SUM(Satislar[Tutar]) &gt; 10000))</pre>
+<p>Sonuç 150'dir. FILTER'ın satır bağlamı filtre değildir; her müşteri satırında SUM tüm tabloyu (1.346.189,85 ₺) görür ve koşul herkes için doğru çıkar. Aynı koşulu [Net Satış] ile yazınca bağlam geçişi devreye girer ve sonuç 42 olur. Yanlış sürüm hata vermez, yalnızca yanlış sayı üretir. Kod incelemesinde ilk aranacak şey budur.</p>
+<h3>3. Ölçünün kendi filtresi satırı kurtarmaz</h3>
+<p>[Net Satış] içinde <code>Satislar[Durum] &lt;&gt; "İptal"</code> var. Bu filtre, Durum sütunundaki dış filtrenin yerine geçer. Bir matrise Kanal ve Durum koyarsan "Web / İptal" hücresinde 457.330,90 ₺ görürsün: bu, Web'in tüm net satışıdır. Okuyan kişi bunu "iptal edilen tutar" sanar.</p>
+<p>Oysa aynı ölçü <code>SUMX(Satislar, [Net Satış])</code> içinde çağrıldığında iptal satırları boş döner. Neden? Bağlam geçişi yalnızca Durum'u değil SatirNo dahil bütün sütunları filtreler. Durum filtresinin değiştirilmesi, satırın kendisini seçen SatirNo filtresini kaldırmaz; o satır iptal olduğu için kesişim boştur. Aynı ölçü, aynı tabloda iki farklı davranış gösterir.</p>
+<div class="warn"><b>Durum kırılımı olan raporlar</b>Ölçünün filtresini KEEPFILTERS ile yaz: <code>CALCULATE([Toplam Satış], KEEPFILTERS(Satislar[Durum] &lt;&gt; "İptal"))</code>. KEEPFILTERS dış filtreyi silmez, onunla kesişir; İptal hücresi boş kalır ve satır görselden düşer.</div>
+
+<h2>Yinelenen satırlar: sayı nasıl şişer?</h2>
+<p>Muhasebe, ERP'den "günlük ürün satışı" adlı bir Excel dosyası gönderiyor: Tarih, UrunNo ve Tutar sütunları var, satır numarası yok. Aynı gün aynı ürün aynı tutarla iki kez satıldıysa dosyada birebir aynı iki satır bulunur. Bu tabloda <code>SUMX(Tablo, [Ölçü])</code> çalıştırırsan ne olur? Modelde bunu taklit etmek için bağlam geçişinin yalnızca bu üç sütunu filtrelediğini varsayalım:</p>
+<pre class="dax">Anahtarsız Tablo Taklidi =
+SUMX(
+    Satislar,
+    CALCULATE(
+        SUM(Satislar[Tutar]),
+        ALLEXCEPT(Satislar, Satislar[Tarih], Satislar[UrunNo], Satislar[Tutar])
+    )
+)</pre>
+<p>Gerçek toplam 1.346.189,85 ₺; bu ölçü 1.387.343,85 ₺ döndürür (%3,1 fazla). Satislar'da bu üç sütuna göre 24 yinelenen satır var. İkiz satırlardan her biri, bağlam geçişinde ikisini birden seçer ve toplam iki kez sayılır. Yalnızca Tarih ve UrunNo kalsaydı 65 tekrar oluşur, sonuç 1.432.133,80 ₺'ye (%6,4 fazla) çıkardı. Hata toplamda küçük bir sapma gibi görünür; kimse fark etmez.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Çözüm</th><th>Ne zaman?</th></tr>
+<tr><td>Power Query'de Dizin sütunu (Index column) ekle</td><td>Kaynakta anahtar yoksa; ilk tercih</td></tr>
+<tr><td>İteratörü boyut anahtarında döndür: <code>VALUES(Urunler[UrunNo])</code></td><td>Soru zaten ürün ya da müşteri düzeyindeyse</td></tr>
+<tr><td>Ölçü yerine sütun ifadesi: <code>SUMX(T, T[Tutar])</code></td><td>Satır düzeyinde hesap yeterliyse; bağlam geçişi hiç yok</td></tr>
+<tr><td>Test: <code>COUNTROWS(T) = DISTINCTCOUNT(T[Anahtar])</code></td><td>Her yeni olgu tablosunda, DAX sorgusuyla</td></tr>
+</table></div>
+
+<h2>Bağlam geçişi bütün satır bağlamlarını dönüştürür</h2>
+<p>İç içe iteratörlerde bağlam geçişi yalnızca en içteki satırı değil, açık olan tüm satır bağlamlarını filtreye çevirir. Şu sorguda dış satır bir segment, iç satır bir müşteridir:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    VALUES(Musteriler[Segment]),
+    "Değerli", COUNTROWS(FILTER(VALUES(Musteriler[MusteriNo]), [Net Satış] &gt; 10000))
+)</pre>
+<p>İçteki VALUES(Musteriler[MusteriNo]) segment satırına göre süzülmez; her segmentte 150 müşterinin hepsini döndürür. Ama [Net Satış] çağrıldığında hem müşteri hem segment filtreye döner. Başka segmentteki müşteri için kesişim boştur ve koşul yanlış çıkar. Sonuç yine doğrudur: Premium 21, Kurumsal 14, Bireysel 7. Doğru ama pahalı: her segmentte 150 müşteri dolaşılır. Dış ifadeyi CALCULATE ile sarmak (bir sonraki alıştırma) listeyi baştan segmente göre süzer ve gereksiz geçişleri önler.</p>
+
+<h2>ALLSELECTED iteratörün içinde</h2>
+<p>[Seçime Göre Pay %] şöyle tanımlı: <code>DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED()))</code>. Bir analist "her kanalda kategorilerin ortalama payı"nı istiyor ve şunu yazıyor: <code>AVERAGEX(VALUES(Kategoriler[Kategori]), [Seçime Göre Pay %])</code>. Beklentisi her kanal satırında %14,29 (yedi payın ortalaması). Görselde ise Web %5,22, Mobil %6,85, Mağaza %2,21 çıkıyor.</p>
+<p>Mekanizma: ALLSELECTED(), görselin kendi satırlarından gelen filtreleri (burada Kanal) ve bağlam geçişinden gelen kategori filtresini kaldırır; yalnızca görselin dışından gelen filtreleri (dilimleyiciler, sayfa filtreleri) bırakır. Payda Web'in toplamı değil, görselin genel toplamıdır. Yedi payın ortalaması Web'in genel paydaki yerinin (%36,56) yedide biri olur.</p>
+<pre class="dax">Kanal İçi Ortalama Kategori Payı =
+VAR KanalSatis = [Net Satış]
+RETURN
+    AVERAGEX(VALUES(Kategoriler[Kategori]), DIVIDE([Net Satış], KanalSatis))</pre>
+<p>Doğru yazım paydayı iteratörden önce bir değişkene alır; her kanal satırında %14,29 çıkar. Kural: ALLSELECTED kullanan ölçüleri doğrudan görselde kullan, başka bir iteratörün içinden çağırma. Çağırman gerekiyorsa davranışı DAX sorgu görünümünde ayrıca test et.</p>
+
+<h2>Hesaplanmış sütunda bağlam geçişi</h2>
+<p>Ürün tablosuna "ürünün toplam satışı" sütunu eklenecek. Hesaplanmış sütunda satır bağlamı vardır, filtre bağlamı yoktur. Aşağıdaki sorgu iki yazımı yan yana gösterir (ADDCOLUMNS burada hesaplanmış sütunun yerini tutar):</p>
+<pre class="dax">EVALUATE
+TOPN(
+    3,
+    ADDCOLUMNS(
+        Urunler,
+        "Çıplak SUM", SUM(Satislar[Tutar]),
+        "CALCULATE ile", CALCULATE(SUM(Satislar[Tutar]))
+    ),
+    [CALCULATE ile]
+)</pre>
+<p>"Çıplak SUM" her üründe 1.346.189,85 ₺ (tüm tablo) gösterir. "CALCULATE ile" sütununda ürün satırı filtreye döner, filtre ilişki üzerinden Satislar'a iner: 27" Monitör için 101.986 ₺.</p>
+<ul>
+<li><b>Döngüsel bağımlılık (circular dependency):</b> Özellikle anahtarı olmayan bir tabloda, CALCULATE kullanan ikinci bir hesaplanmış sütun eklediğinde bu hatayı alabilirsin. Bağlam geçişi tablonun bütün sütunlarını filtrelediği için her yeni sütun diğerine bağımlı görünür. Çözüm: CALCULATE içinde <code>ALLEXCEPT(Tablo, Tablo[Anahtar])</code> ile yalnızca anahtarın filtresini tutmak ya da hesabı ölçüye taşımak.</li>
+<li><b>Olgu tablosunda CALCULATE'li sütun:</b> 1.620 satırda sorun yok; 50 milyon satırda yenileme süresini katlar. Bu tür hesaplar Power Query'de ya da kaynakta yapılmalı.</li>
+<li><b>Donma:</b> Hesaplanmış sütun yalnızca yenilemede hesaplanır, dilimleyiciye tepki vermez. "Seçili yıldaki satış" gibi sorular ölçü ister.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>İteratör hangi tabloda dönüyor? Sorunun düzeyiyle aynı mı?</li>
+<li>İçeride ölçü mü, çıplak toplama mı var? Çıplaksa satır bağlamı filtreye dönüşmüyor demektir.</li>
+<li>Dolaşılan tablonun benzersiz bir anahtarı var mı? Yoksa sonuç şişebilir.</li>
+<li>Ortalama alıyorsan boş satırların atlanması isteniyor mu?</li>
+<li>İçeride ALLSELECTED kullanan bir ölçü çağrılıyor mu? Paydayı değişkene al.</li>
+<li>Olgu tablosunda hesaplanmış sütun + CALCULATE var mı? Power Query'ye ya da ölçüye taşı.</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-baglam-gecisi">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kosullu-bicim/">← Koşullu biçimlendirme ve KPI'lar</a><a href="../zaman-ileri/">Gelişmiş zaman hesapları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,57 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toplama fonksiyonları ve DIVIDE | Kesit Power BI</title><meta name="description" content="SUM, AVERAGE, MIN, MAX, COUNTROWS, DISTINCTCOUNT ve güvenli bölme."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/toplama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Toplama fonksiyonları ve DIVIDE"><meta property="og:description" content="SUM, AVERAGE, MIN, MAX, COUNTROWS, DISTINCTCOUNT ve güvenli bölme."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/toplama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Toplama fonksiyonları ve DIVIDE","description":"SUM, AVERAGE, MIN, MAX, COUNTROWS, DISTINCTCOUNT ve güvenli bölme.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/toplama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>Toplama fonksiyonları ve DIVIDE</h1><p class="st-l">SUM, AVERAGE, MIN, MAX, COUNTROWS, DISTINCTCOUNT ve güvenli bölme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-toplama">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Temel toplayıcılar</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Ne yapar?</th><th>Örnek</th></tr>
+<tr><td><code>SUM</code></td><td>Sütundaki sayıları toplar</td><td><code>SUM(Satislar[Tutar])</code></td></tr>
+<tr><td><code>AVERAGE</code></td><td>Aritmetik ortalama</td><td><code>AVERAGE(Satislar[BirimFiyat])</code></td></tr>
+<tr><td><code>MIN</code> / <code>MAX</code></td><td>En küçük / en büyük değer (tarihlerde de çalışır)</td><td><code>MAX(Satislar[Tarih])</code></td></tr>
+<tr><td><code>COUNTROWS</code></td><td>Tablodaki satır sayısı</td><td><code>COUNTROWS(Satislar)</code></td></tr>
+<tr><td><code>DISTINCTCOUNT</code></td><td>Sütundaki farklı değer sayısı</td><td><code>DISTINCTCOUNT(Satislar[MusteriNo])</code></td></tr>
+<tr><td><code>COUNT</code> / <code>COUNTA</code></td><td>Boş olmayan sayısal / tüm değerleri sayar</td><td><code>COUNTA(Musteriler[Sehir])</code></td></tr>
+</table></div>
+<h2>Satır mı, sipariş mi?</h2>
+<p><code>Satislar</code> tablosunda her satır bir <b>sipariş satırı</b>dır. Bir siparişte iki ürün varsa iki satır olur. Bu yüzden:</p>
+<pre class="dax">Satır Sayısı = COUNTROWS(Satislar)
+Sipariş Sayısı = DISTINCTCOUNT(Satislar[SiparisNo])</pre>
+<p>İkisi farklı sonuç verir. “Kaç sipariş aldık?” sorusunun cevabı ikincisidir. Tanecik (grain) dediğimiz şey budur: tablonun bir satırı neyi temsil ediyor?</p>
+<h2>Güvenli bölme: DIVIDE</h2>
+<pre class="dax">Ortalama Sepet = DIVIDE(SUM(Satislar[Tutar]), DISTINCTCOUNT(Satislar[SiparisNo]))</pre>
+<p><code>/</code> işleci payda sıfırsa sonsuz ya da hata üretir. <code>DIVIDE(pay, payda, [alternatif])</code> ise payda sıfır ya da boşsa <b>boş</b> (ya da verdiğin alternatif değeri) döner. Görselde boş değerli satırlar gizlenir; bu genellikle istediğin davranıştır.</p>
+<h2>Ölçüleri yeniden kullan</h2>
+<pre class="dax">Ortalama Sepet = DIVIDE([Toplam Satış], [Sipariş Sayısı])</pre>
+<p>Bir kez tanımladığın ölçüyü başka ölçülerde çağırmak, formülü kısa ve tutarlı tutar. Toplam Satış'ın tanımı değişirse (ör. iptaller hariç tutulursa) Ortalama Sepet de kendiliğinden güncellenir.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Hangi soru, hangi fonksiyon?</h2>
+<p>Doğru toplayıcıyı seçmek için önce soruyu cümle olarak yaz. Cümledeki anahtar kelime fonksiyonu söyler.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soru cümlesi</th><th>Fonksiyon</th><th>Bu modelde sonuç</th></tr>
+<tr><td>“Toplam ne kadar sattık?”</td><td><code>SUM(Satislar[Tutar])</code></td><td>1.346.190 ₺ (iptaller dahil)</td></tr>
+<tr><td>“Kaç satır kayıt var?”</td><td><code>COUNTROWS(Satislar)</code></td><td>1.620</td></tr>
+<tr><td>“Kaç sipariş aldık?”</td><td><code>DISTINCTCOUNT(Satislar[SiparisNo])</code></td><td>910</td></tr>
+<tr><td>“Kaç farklı müşteri aldı?”</td><td><code>DISTINCTCOUNT(Satislar[MusteriNo])</code></td><td>136</td></tr>
+<tr><td>“Kaç farklı ürün satıldı?”</td><td><code>DISTINCTCOUNT(Satislar[UrunNo])</code></td><td>38 (katalogda 40 ürün var)</td></tr>
+<tr><td>“Kaç satırda kargo günü dolu?”</td><td><code>COUNT(Satislar[KargoGun])</code></td><td>1.489</td></tr>
+<tr><td>“Bir satır ortalama kaç lira?”</td><td><code>AVERAGE(Satislar[Tutar])</code></td><td>yaklaşık 831 ₺</td></tr>
+</table></div>
+<h2>Ortalama tuzağı: satır ortalaması sepet değildir</h2>
+<p>Satış müdürü “ortalama sepetimiz ne kadar?” diye soruyor. Aceleyle <code>AVERAGE(Satislar[Tutar])</code> yazarsan yaklaşık <b>831 ₺</b> bulursun. Oysa doğru cevap toplam tutarın sipariş sayısına bölümüdür: 1.346.190 / 910 = yaklaşık <b>1.479 ₺</b>.</p>
+<p>Neden fark var? AVERAGE her <b>satırı</b> bir kez sayar. Bir siparişte üç ürün varsa o sipariş üç satırdır ve ortalamayı üç küçük parça olarak etkiler. “Sepet” ise siparişin tamamıdır. Kural: ortalama istendiğinde önce “neyin ortalaması?” diye sor. Cevap “satırın” değilse <code>DIVIDE(toplam, sayım)</code> kur.</p>
+<h2>Sayımlar toplanmaz</h2>
+<p>Bir matriste kategorilere göre müşteri sayısını gösterdin. Elektronik 98, Kitap 115, Ev &amp; Yaşam 99… Alt alta toplarsan 649 eder. Ama toplam satırında <b>136</b> yazar. Hata yok: aynı müşteri hem kitap hem elektronik almış olabilir ve her iki satırda da sayılır. Toplam satırı ise müşterileri bir kez sayar.</p>
+<p>Aynı şey yıllar için de geçerli: 2022'de 33, 2023'te 79, 2024'te 123 müşteri vardır; toplamları 235 eder ama üç yılda alışveriş yapan farklı müşteri sayısı 136'dır. DISTINCTCOUNT ile hesaplanan bir rakamı Excel'e alıp alt alta toplamak, iş hayatındaki en yaygın raporlama hatalarından biridir.</p>
+<div class="warn"><b>Okuyucuyu önceden uyar</b>Müşteri sayısı gibi toplanmayan ölçülerin olduğu matrislerde toplam satırının yanına kısa bir not ya da araç ipucu ekle: “Bir müşteri birden çok kategoride sayılabilir.” Böylece toplantıda “toplam yanlış” tartışması çıkmaz.</div>
+<h2>COUNT, COUNTA, COUNTROWS: boşlukları kim sayar?</h2>
+<p>Satislar tablosunda 1.620 satır var ama KargoGun sütunu 131 satırda boş. <code>COUNTROWS(Satislar)</code> 1.620, <code>COUNT(Satislar[KargoGun])</code> 1.489 döndürür. COUNT yalnızca dolu (boş olmayan) değerleri sayar. “Kaç satır?” sorusu için COUNTROWS, “kaç satırda bu bilgi var?” sorusu için COUNT ya da COUNTA (metin sütunlarında) kullan. Boşlukların nedeni ve nasıl ele alınacağı BLANK, hatalar ve DAX'ta hata ayıklama dersinde.</p>
+<pre class="dax">Kargo Bilgisi Olan Satır = COUNT(Satislar[KargoGun])
+Kargo Bilgisi Eksik Satır = COUNTROWS(Satislar) - [Kargo Bilgisi Olan Satır]</pre>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-toplama">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-giris/">← DAX'a giriş: ölçü, hesaplanmış sütun, söz dizimi</a><a href="../ilk-rapor/">İlk raporunu kur →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

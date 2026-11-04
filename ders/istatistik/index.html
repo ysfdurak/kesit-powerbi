@@ -1,0 +1,82 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Temel istatistik, gruplama ve kutulama | Kesit Power BI</title><meta name="description" content="Ortalama, medyan, standart sapma, yüzdebirlik; grup ve kutu (bin) oluşturma, kümeleme, histogram."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/istatistik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Temel istatistik, gruplama ve kutulama"><meta property="og:description" content="Ortalama, medyan, standart sapma, yüzdebirlik; grup ve kutu (bin) oluşturma, kümeleme, histogram."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/istatistik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Temel istatistik, gruplama ve kutulama","description":"Ortalama, medyan, standart sapma, yüzdebirlik; grup ve kutu (bin) oluşturma, kümeleme, histogram.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/istatistik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Temel istatistik, gruplama ve kutulama</h1><p class="st-l">Ortalama, medyan, standart sapma, yüzdebirlik; grup ve kutu (bin) oluşturma, kümeleme, histogram.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-istatistik">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>İstatistik fonksiyonları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Ne verir?</th><th>Ne zaman?</th></tr>
+<tr><td><code>AVERAGE</code> / <code>AVERAGEX</code></td><td>Aritmetik ortalama</td><td>Dağılım simetrikse</td></tr>
+<tr><td><code>MEDIAN</code> / <code>MEDIANX</code></td><td>Ortanca değer</td><td>Maaş, sepet tutarı gibi uç değerli verilerde ortalamadan daha temsilî</td></tr>
+<tr><td><code>STDEV.S</code>, <code>STDEV.P</code>, <code>STDEVX.P</code></td><td>Standart sapma (örneklem / popülasyon)</td><td>Değişkenliği ölçmek, z-skoru</td></tr>
+<tr><td><code>VAR.S</code>, <code>VAR.P</code></td><td>Varyans</td><td>Standart sapmanın karesi</td></tr>
+<tr><td><code>PERCENTILE.INC</code>, <code>PERCENTILEX.INC</code></td><td>Yüzdebirlik (0–1)</td><td>“Müşterilerin en iyi %20'si kaç TL üstünde?”</td></tr>
+<tr><td><code>MIN</code>, <code>MAX</code>, <code>COUNT</code>, <code>DISTINCTCOUNT</code></td><td>Uç değerler ve sayımlar</td><td>Her yerde</td></tr>
+<tr><td><code>GEOMEAN</code></td><td>Geometrik ortalama</td><td>Büyüme oranlarının ortalaması</td></tr>
+</table></div>
+<div class="note"><b>Ortalama yanıltabilir</b>Anadolu Market'te müşteri başına net satışın ortalaması medyanından belirgin yüksektir; birkaç VIP müşteri ortalamayı yukarı çeker. Yöneticiye “tipik müşteri” sorulduğunda medyanı göster.</div>
+<h2>Gruplama ve kutulama (Power BI özelliği)</h2>
+<p>Veri bölmesinde bir sütuna sağ tık → <b>Yeni grup</b>:</p>
+<ul>
+<li><b>Liste grubu:</b> Metin değerlerini elle gruplara topla (İstanbul + Bursa = Marmara). Arka planda hesaplanmış bir sütun oluşturur.</li>
+<li><b>Kutu (bin):</b> Sayısal ya da tarih sütununu eşit genişlikte aralıklara böl (Maaş: 10.000'lik kutular). <b>Histogram</b> çizmek için kutulanmış sütunu eksene, sayımı değere koyarsın.</li>
+</ul>
+<pre class="dax" data-notry>-- Aynı kutuyu DAX hesaplanmış sütunuyla yapmak:
+Maaş Kutusu = FLOOR(Calisanlar[Maas], 10000)</pre>
+<h2>Kümeleme</h2>
+<p>Dağılım grafiğinde <b>…</b> → <b>Kümeleri otomatik bul</b>. Power BI noktaları benzerliklerine göre gruplar ve yeni bir küme sütunu oluşturur (ör. “düşük satış, yüksek marj” ürünleri). Küme sayısını kendin de belirleyebilirsin. Sonuç keşif içindir; iş kuralına dönüştürmeden önce kümelerin anlamını kontrol et.</p>
+<h2>Bu modelde</h2>
+<p>İK verisi (<code>Calisanlar</code>, <code>Departmanlar</code>) istatistik alıştırmaları için idealdir: 27 çalışan, 7 departman, maaşlar arasında belirgin farklar. <a href="../../">İK raporu</a> maaş histogramını ve dağılımını gösteriyor.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Ortalama mı, medyan mı? Sayılarla karar</h2>
+<p>CRM müdürü “Tipik bir müşteri bize ne kadar kazandırıyor?” diye soruyor. Modelde satın alma yapmış 136 müşteri var. İki cevap çıkıyor:</p>
+<div class="tbl-wrap"><table><tr><th>İstatistik</th><th>Değer (yaklaşık)</th></tr>
+<tr><td>Müşteri başı ortalama net satış</td><td>9.197 TL</td></tr>
+<tr><td>Müşteri başı medyan net satış</td><td>6.467 TL</td></tr>
+<tr><td>En düşük / en yüksek müşteri</td><td>586 TL / 37.955 TL</td></tr>
+<tr><td>Ortalamanın üstünde kalan müşteri</td><td>136 müşteriden 47’si</td></tr></table></div>
+<p>Ortalama, medyandan yaklaşık %42 yüksek. Müşterilerin yalnızca üçte biri ortalamanın üstünde. Yani “ortalama müşteri” aslında azınlıktaki büyük alıcıların çektiği bir sayıdır. Karar kuralı:</p>
+<ul>
+<li><b>Ortalama:</b> Toplamla ilişkili sorular. “100 yeni müşteri kazanırsak ciro ne kadar artar?” sorusunda ortalama doğrudur, çünkü toplamı ortalama belirler.</li>
+<li><b>Medyan:</b> “Tipik” sorular. Kampanya eşiği, müşteri segmenti sınırı, “sıradan bir sipariş ne kadar?” sorularında.</li>
+<li><b>İkisini birlikte göster:</b> Aradaki fark çarpıklığın ölçüsüdür. Fark büyükse dağılıma bak (histogram).</li>
+</ul>
+<pre class="dax">Medyan Müşteri Satışı =
+MEDIANX(VALUES(Musteriler[MusteriNo]), [Net Satış])</pre>
+<p>Aynı ayrım satır düzeyinde de var: satış satırı tutarının ortalaması yaklaşık 831 TL, medyanı 640 TL. Sipariş düzeyinde ise ortalama sepet yaklaşık 1.493 TL, medyan sipariş 1.087 TL. Hangi düzeyde (satır, sipariş, müşteri) ortalama aldığını ölçünün adına yaz; “Ortalama Satış” adı üç farklı sayıya karşılık gelebilir.</p>
+
+<h2>Ağırlıklı ve basit ortalama</h2>
+<p>Ürün müdürü “kategorilerin ortalama marjı” istiyor. İki hesap var:</p>
+<ul>
+<li><b>Ağırlıklı (oranların oranı):</b> Toplam brüt kâr / toplam net satış = [Kâr Marjı %] ≈ %36,5. Büyük kategori sonuca daha çok etki eder.</li>
+<li><b>Basit (oranların ortalaması):</b> Yedi kategorinin marjının aritmetik ortalaması ≈ %35,6. Hediye gibi küçük bir kategori, Elektronik ile aynı ağırlıkta sayılır.</li>
+</ul>
+<p>Şirketin kârlılığı sorulduğunda ağırlıklı oran doğrudur. “Kategori yöneticilerinin performansı” gibi her birimin eşit sayıldığı sorularda basit ortalama savunulabilir. Matriste toplam satırı her zaman ağırlıklı oranı gösterir; kategori satırlarının ortalamasıyla tutmaması hata değildir.</p>
+<pre class="dax">Basit Ortalama Marj =
+AVERAGEX(VALUES(Kategoriler[Kategori]), [Kâr Marjı %])</pre>
+
+<h2>Dağılımı tek bakışta anlatmak</h2>
+<p>Keşifçi veri analizi dersinde çeyrekler ve aykırı değer kuralını ayrıntılı göreceksin; burada raporda nasıl sunulacağına odaklan. Müşteri satışlarında 25. yüzdebirlik yaklaşık 3.759 TL, 75. yüzdebirlik yaklaşık 14.782 TL. “Müşterilerin yarısı 3.759 ile 14.782 TL arasında harcıyor” cümlesi, standart sapmadan çok daha anlaşılırdır. Yönetici sayfasında dağılım için şu üçlü yeterlidir: medyan kartı, çeyrekler arası aralık cümlesi, küçük bir histogram.</p>
+
+<h2>Büyüme oranlarının ortalaması: GEOMEAN</h2>
+<p>Finans direktörü “son iki yılda ortalama yıllık büyümemiz ne?” diye soruyor. Modelde net satış 2023’te yaklaşık %290, 2024’te yaklaşık %86 büyüdü. Bu iki oranın aritmetik ortalaması yaklaşık %188 eder. Ama 2022’nin 102.837 TL’sini iki yıl üst üste %188 büyütürsen 2024 için yaklaşık 854 bin TL bulursun; gerçek değer 747 bin TL. Doğru cevap bileşik (geometrik) büyümedir: (1 + 2,898) × (1 + 0,864) çarpımının karekökünden 1 çıkar, yaklaşık %170. Oranlar çarpılarak birikir; bu yüzden ortalamaları da çarpımsal alınır. DAX’ta GEOMEAN ve GEOMEANX bunun içindir; büyüme katsayılarının (1 + oran) ortalamasını alıp 1 çıkarırsın. İlk yıl gibi büyümesi boş olan dönemi hesaba katma.</p>
+<h2>Analiz bölmesindeki ortalama çizgisi neyin ortalaması?</h2>
+<p>Aylık net satış sütun grafiğine Analiz bölmesinden <b>Ortalama çizgisi</b> eklediğinde çizgi, <b>görünen noktaların</b> (ayların) ortalamasıdır. Modelde satış olan 31 ayın ortalaması yaklaşık 40.347 TL. Bu sayı ne satır tutarı ortalamasıdır ne de sepet ortalaması. İki tuzak:</p>
+<ul>
+<li>Grafik filtrelenip 6 ay kalırsa çizgi o 6 ayın ortalamasına kayar. “Ortalama” sabit bir referans değildir.</li>
+<li>Satışı olmayan aylar eksende görünmüyorsa ortalamaya girmez. Eksik ay, ortalamayı yukarı çeker.</li>
+</ul>
+<p>Sabit bir referans istiyorsan (ör. tüm geçmişin aylık ortalaması) <b>Sabit çizgi</b> ekle ve değerini fx ile bir ölçüye bağla. Ölçü görünen aylardan bağımsız hesaplanmalı:</p>
+<pre class="dax">Aylık Ortalama (Tüm Dönem) =
+CALCULATE(
+    AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış]),
+    REMOVEFILTERS(Tarih)
+)</pre>
+<div class="tip"><b>Ortalama çizgisinin yanına not</b>Çizginin etiketini aç ve adını “Görünen ayların ortalaması” yap. İki dakikalık bu iş, toplantıdaki “bu ortalama nereden çıktı?” tartışmasını bitirir.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-istatistik">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../filtreler/">← Filtreler bölmesi ve dilimleyiciler</a><a href="../hizli-olcu/">Hızlı ölçüler (quick measures) ve Copilot ile DAX →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,86 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar | Kesit Power BI</title><meta name="description" content="Genel toplama göre pay, ebeveyne göre pay, seçime göre pay ve satır koşullu filtreler."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/filter-all/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar"><meta property="og:description" content="Genel toplama göre pay, ebeveyne göre pay, seçime göre pay ve satır koşullu filtreler."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/filter-all/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar","description":"Genel toplama göre pay, ebeveyne göre pay, seçime göre pay ve satır koşullu filtreler.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/filter-all/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar</h1><p class="st-l">Genel toplama göre pay, ebeveyne göre pay, seçime göre pay ve satır koşullu filtreler.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-filter-all">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>FILTER: satır satır koşul</h2>
+<pre class="dax">Büyük Satırlar = CALCULATE([Toplam Satış], FILTER(Satislar, Satislar[Tutar] &gt; 2000))</pre>
+<p><code>FILTER(tablo, koşul)</code> koşulu her satırda test eder ve geçen satırlardan bir tablo döndürür. Basit sütun koşullarında boolean filtre (<code>Satislar[Kanal] = "Web"</code>) daha hızlıdır. <code>FILTER</code>, koşul bir <b>ölçüye</b> ya da birden çok sütuna dayandığında gerekir:</p>
+<pre class="dax">Çok Satan Ürün Sayısı = COUNTROWS(FILTER(Urunler, [Toplam Satış] &gt; 50000))</pre>
+<h2>ALL ailesi</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>CALCULATE içinde ne yapar?</th></tr>
+<tr><td><code>ALL(Tablo)</code> / <code>REMOVEFILTERS(Tablo)</code></td><td>Tablonun ve genişletilmiş tablosunun (bire tarafındaki tablolar) filtrelerini kaldırır</td></tr>
+<tr><td><code>ALL(Tablo[Sütun])</code></td><td>Yalnızca o sütunun filtresini kaldırır</td></tr>
+<tr><td><code>ALLEXCEPT(Tablo, Tablo[Sütun])</code></td><td>Belirtilen sütun dışındaki tüm filtreleri kaldırır</td></tr>
+<tr><td><code>ALLSELECTED(...)</code></td><td>Görselin satır/sütun filtrelerini kaldırır ama dilimleyici seçimlerini korur</td></tr>
+</table></div>
+<h2>Üç farklı pay</h2>
+<pre class="dax">Genel Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))
+
+Seçime Göre Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Kategoriler)))
+
+Kategori İçi Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun])))</pre>
+<ul>
+<li><b>Genel pay:</b> Dilimleyicide yalnızca 3 kategori seçilse bile payda tüm kategorilerdir; yüzdeler 100'e tamamlanmaz.</li>
+<li><b>Seçime göre pay:</b> Payda yalnızca seçili kategorilerdir; görseldeki yüzdeler 100'e tamamlanır.</li>
+<li><b>Kategori içi pay:</b> Satırda ürün varken, ürün filtresi kalkar ama kategori filtresi kalır: ürünün kendi kategorisindeki payı.</li>
+</ul>
+<div class="warn"><b>Doğru sütunu kaldır</b>Görselde <code>Kategoriler[Kategori]</code> ile grupluyorsan, paydada da <code>Kategoriler</code> filtresini kaldırmalısın. <code>ALL(Urunler[Kategori])</code> yazarsan görselin filtresi (Kategoriler'den geliyor) yerinde kalır ve her satırda %100 görürsün. Bu modelde iki kategori sütunu var: raporda ve alıştırmalarda eksen hep <code>Kategoriler[Kategori]</code>; <code>Urunler[Kategori]</code> ilişki anahtarıdır ve Playground’un alan listesinde gösterilmez.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Genişletilmiş tablolar: ALL(Satislar) neden kategori filtresini de siler?</h2>
+<p>DAX’ta bir olgu tablosu, ilişkili olduğu boyut tablolarının sütunlarını da “içerir”. Buna <b>genişletilmiş tablo</b> denir: <code>Satislar</code>, çoktan bire ilişkiler üzerinden <code>Urunler</code>, <code>Musteriler</code> ve <code>Tarih</code> sütunlarını da kapsar. Bu yüzden:</p>
+<pre class="dax">Tüm Satışlar =
+CALCULATE([Net Satış], ALL(Satislar))</pre>
+<p>kategori kırılımında her satırda <b>1.250.772 ₺</b> (genel toplam) verir. Kategori filtresi <code>Urunler</code> tablosunda olduğu halde ALL(Satislar) onu da kaldırır, çünkü Urunler[Kategori] genişletilmiş Satislar tablosunun bir parçasıdır. Tersi doğru değildir: <code>ALL(Urunler)</code> ürün tablosunun ve onun genişletilmiş tablosunun (bire tarafındaki <code>Kategoriler</code>) filtrelerini siler; çok tarafındaki <code>Satislar[Kanal]</code> filtresi yerinde kalır.</p>
+<pre class="dax">Kanal Filtresiz Satış =
+CALCULATE([Net Satış], ALL(Satislar[Kanal]))</pre>
+<p>Tek bir sütunu hedeflemek ise genişletmeye girmez: yukarıdaki ölçü yalnızca kanal filtresini kaldırır; kategori, tarih ve müşteri filtreleri korunur. Pratik kural: <b>tüm tabloyu değil, kaldırmak istediğin sütunu ya da boyut tablosunu</b> hedefle. Niyetini en açık gösteren yazım <code>REMOVEFILTERS(Urunler)</code> gibi boyut tablosunu adıyla anmaktır.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>ALLSELECTED ve görselin toplamı</h2>
+<p>Kategori müdürü dilimleyicide yalnızca Elektronik, Kitap ve Spor’u seçti. Pasta grafiğinde payların 100’e tamamlanmasını bekliyor. Hazır <code>[Kategori Payı %]</code> ölçüsü ise şunu gösteriyor:</p>
+<div class="tbl-wrap"><table><tr><th>Kategori</th><th>[Net Satış]</th><th>[Kategori Payı %] (ALL)</th><th>Seçime göre pay (ALLSELECTED)</th></tr>
+<tr><td>Elektronik</td><td>339.304 ₺</td><td>%27,1</td><td>%50,2</td></tr>
+<tr><td>Kitap</td><td>151.882 ₺</td><td>%12,1</td><td>%22,5</td></tr>
+<tr><td>Spor</td><td>184.231 ₺</td><td>%14,7</td><td>%27,3</td></tr>
+<tr><td>Toplam</td><td>675.417 ₺</td><td>%54,0</td><td>%100</td></tr></table></div>
+<p>İki ölçü de doğru; farklı sorulara cevap veriyorlar. <code>ALL(Kategoriler)</code> paydaya tüm şirketi koyar: “Elektronik, şirketin %27’si.” <code>ALLSELECTED(Kategoriler)</code> ise görselin kendi satır filtresini kaldırır ama dilimleyici gibi dışarıdan gelen filtreleri korur. Payda 675.417 ₺ olur: “Seçtiğin üç kategorinin yarısı Elektronik.”</p>
+<pre class="dax">Seçili Kategoriler İçinde Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Kategoriler)))</pre>
+<div class="warn"><b>ALLSELECTED’in sınırı</b>ALLSELECTED “görselin dışından gelen filtreleri” tanır. Başka bir görselden gelen çapraz filtre de bu gruba girer. Ölçüyü başka bir yineleyicinin içinden çağırırsan davranışı tahmin etmek zorlaşır. Kural: ALLSELECTED’i görselde doğrudan kullanılan en dış ölçüde kullan, yardımcı ölçülerin içine gömme.</div>
+
+<h2>Paydayı kurarken hangi filtre kalıyor?</h2>
+<p>Şimdi dilimleyicide kategori değil, <b>Kanal = Web</b> seçili olsun. Satırlarda kategoriler var. Paydayı üç farklı şekilde kurarsan:</p>
+<div class="tbl-wrap"><table><tr><th>Payda</th><th>Ne kaldırılır?</th><th>Elektronik</th><th>Okunuşu</th></tr>
+<tr><td><code>ALL(Kategoriler)</code></td><td>Yalnızca kategori</td><td>%28,6</td><td>Web satışları içinde Elektronik’in payı</td></tr>
+<tr><td><code>ALL(Satislar)</code></td><td>Kategori, kanal, tarih, müşteri… hepsi</td><td>%10,5</td><td>Web’deki Elektronik, şirketin tüm satışlarının yüzde kaçı?</td></tr>
+<tr><td><code>ALLSELECTED(Kategoriler)</code></td><td>Görselin kategori filtresi</td><td>%28,6</td><td>Kategori seçimi olmadığı için ALL ile aynı</td></tr></table></div>
+<p>Dilimleyicinin kanal filtresi <code>ALL(Satislar)</code> ile de silinir, çünkü <code>Satislar[Kanal]</code> olgu tablosundadır ve genişletilmiş <code>Satislar</code> bütün boyutları kapsar. Kullanıcı “Web’i seçtim, neden paydada Web yok?” diye sorarsa ilk bakacağın yer burasıdır.</p>
+
+<h2>Zaman içinde pay</h2>
+<p>Pay her zaman kategoriyle ilgili değildir. Finans ekibi iki soru soruyor: “Aralık, yılın yüzde kaçı?” ve “2024, üç yılın yüzde kaçı?”</p>
+<pre class="dax">Yıl İçi Ay Payı % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], ALLEXCEPT(Tarih, Tarih[Yil])))
+
+Tüm Yıllara Göre Pay % =
+DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Tarih)))</pre>
+<p>Aralık 2024 yılın %7,5’i; 2024 ise tüm dönemin %59,7’si. Yıl içi payda <code>ALL(Tarih[YilAy])</code> yazmak da yalnız ay sütunu varken aynı sonucu verir. Ama matrise <code>Tarih[Ay]</code> ya da <code>Tarih[Ceyrek]</code> eklenince o filtreler yerinde kalır ve paylar bozulur. <code>ALLEXCEPT(Tarih, Tarih[Yil])</code> “yıl dışındaki tüm tarih filtrelerini kaldır” dediği için daha sağlamdır.</p>
+
+<h2>Hiyerarşide ebeveyne göre pay</h2>
+<p>Kategori → Ürün hiyerarşisi olan bir matriste her düzey kendi ebeveynine göre pay göstersin: ürün satırında kategorinin yüzde kaçı, kategori satırında şirketin yüzde kaçı.</p>
+<pre class="dax">Ebeveyn Payı (Hiyerarşi) =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Urunler[Urun]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Urunler[Urun]))),
+    ISINSCOPE(Kategoriler[Kategori]), DIVIDE([Net Satış], CALCULATE([Net Satış], ALL(Kategoriler)))
+)</pre>
+<p>Sıra önemlidir. Ürün satırında hem ürün hem kategori kapsamdadır. Bu yüzden en derin düzey önce denenir. 27" Monitör, Elektronik’in %30,1’i; Elektronik de şirketin %27,1’i. Toplam satırında hiçbir koşul doğru olmadığı için ölçü BLANK döner. %100 göstermek anlamsız olacağından bu bilinçli bir tercihtir.</p>
+<div class="note"><b>Kontrol listesi: pay ölçüsü</b>1) Payda kim: şirket, seçim, ebeveyn, yıl? Ölçü adına yaz. 2) Görselde hangi sütunla grupluyorsun? Paydada o sütunun (ya da tablosunun) filtresini kaldır. 3) Dilimleyici filtresi paydada kalmalı mı? Kalmalıysa olgu tablosunu değil boyutu hedefle. 4) Toplam satırında ne görünmeli: %100 mü, BLANK mi?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-filter-all">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../iteratorler/">← Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED</a><a href="../zaman/">Zaman zekâsı: YTD, geçen yıl, büyüme →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,91 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapor kavramları: KPI, hedef ve gösterge türleri | Kesit Power BI</title><meta name="description" content="Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik rapor türleri; Gestalt ilkeleri ve ters piramit…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-kavramlar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Rapor kavramları: KPI, hedef ve gösterge türleri"><meta property="og:description" content="Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik rapor türleri; Gestalt ilkeleri ve ters piramit…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-kavramlar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Rapor kavramları: KPI, hedef ve gösterge türleri","description":"Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik rapor türleri; Gestalt ilkeleri ve ters piramit…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-kavramlar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>Rapor kavramları: KPI, hedef ve gösterge türleri</h1><p class="st-l">Metrik, KPI ve OKR farkı; öncü ve gecikmeli göstergeler; operasyonel, analitik, stratejik ve taktik rapor türleri; Gestalt ilkeleri ve ters piramit düzeni; süssüz ama ilgi çeken tasarım; kullanım ölçümleriyle benimsenmeyi izlemek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dashboard-kavramlar">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<div class="note"><b>Terim</b>İş dilinde “dashboard” çoğu zaman tek bakışta okunan yönetici raporu demektir. Power BI’da <b>pano (dashboard)</b> ise ayrı bir nesnedir: Service’te rapor görsellerinin sabitlendiği tek sayfa. Bu derste genel anlam için “rapor” diyoruz; farkı “Power BI Service’te rapor kullanmak” dersinde görebilirsin.</div>
+<p>“Talepten rapor brifine” dersinde talep sahibiyle konuşup KPI’ları yazdın. Bu ders o konuşmanın sözlüğünü veriyor: hangi sayı KPI’dır, hangisi yalnızca bir metriktir, hangi gösterge geleceği haber verir ve bir rapor kime göre nasıl kurulur? Somut bir tasarım örneği “Rapor tasarımı: bir vaka çalışması” dersinde.</p>
+
+<h2>Metrik, KPI, OKR</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Kavram</th><th>Tanım</th><th>Bu modelde örnek</th></tr>
+<tr><td><b>Metrik (metric)</b></td><td>Ölçülebilen herhangi bir sayı.</td><td>Sipariş sayısı, ortalama kargo günü, ziyaretçi sayısı</td></tr>
+<tr><td><b>KPI (anahtar performans göstergesi)</b></td><td>Bir hedefe bağlanmış ve karar için seçilmiş az sayıdaki metrik. Hedefi, eşiği ve sahibi vardır.</td><td>Net satış hedef gerçekleşmesi: 2024’te 747.065,70 ₺ / 763.200 ₺ = %97,9</td></tr>
+<tr><td><b>OKR (hedef ve anahtar sonuçlar)</b></td><td>Bir hedef cümlesi (Objective) ve onu ölçen 2–4 anahtar sonuç (Key Results). Genelde çeyreklik, iddialı.</td><td>Hedef: “Web kanalını kârlı büyütmek.” Anahtar sonuç: “Sepete ekleme oranı %28’den %32’ye.”</td></tr>
+</table></div>
+<p>Kural: Her KPI bir metriktir ama her metrik KPI değildir. Bir raporda 30 KPI varsa aslında hiç KPI yoktur; yalnızca metrik listesi vardır. Yöneticiye dönük bir sayfada 3–6 KPI yeterlidir.</p>
+<p>Bir KPI kartı üç parçadan oluşur: <b>değer</b>, <b>karşılaştırma</b> (hedef ya da geçen yıl) ve <b>durum</b> (iyi / izlenmeli / kötü). Durumu metinle değil sayısal bir kodla üreten bir ölçü, renk, simge ve sıralama için tek kaynak olur (alıştırma 1).</p>
+
+<h2>Öncü ve gecikmeli göstergeler</h2>
+<ul>
+<li><b>Gecikmeli gösterge (lagging indicator):</b> Sonucu ölçer, olaydan sonra gelir. Net satış, kâr, müşteri kaybı. “Ne oldu?” sorusunu cevaplar; değiştirmek için geç kalmışsındır.</li>
+<li><b>Öncü gösterge (leading indicator):</b> Sonucu önceden haber veren davranışı ölçer. Sepete ekleme oranı, yeni müşteri sayısı, web ziyaretçisi. Bugün hareket edersen yarının sonucu değişir.</li>
+</ul>
+<p>Bu modelde web hunisi Ekim–Kasım 2024’ü kapsıyor. Ziyaret adımındaki 900 ziyaretçinin 254’ü sepete ekledi (%28,2), 88’i satın aldı (%9,8). Kaynaklara göre bakınca E-posta’dan gelenlerde sepete ekleme %36,3, Reklam’dan gelenlerde %20,9. Satış gerçekleşmeden önce, sepete ekleme oranı hangi kaynağın daha verimli olduğunu gösteriyor. Yeni müşteri sayısı da öncü bir göstergedir: 2022’de 32, 2023’te 45, 2024’te 59.</p>
+<div class="tip"><b>İkisini eşleştir</b>Her gecikmeli KPI’ın yanına onu besleyen bir öncü gösterge koy: “Net satış” kartının yanında “Sepete ekleme oranı”, “Müşteri kaybı”nın yanında “90 gündür alışveriş yapmayan müşteri”. Okuyucu hem sonucu hem de yarının işaretini görür.</div>
+
+<h2>Rapor türleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Kullanıcı</th><th>Soru</th><th>Ne gerekir?</th></tr>
+<tr><td><b>Stratejik</b></td><td>Üst yönetim</td><td>“Yıllık hedefe göre neredeyiz?”</td><td>Az KPI, uzun dönem eğilim, hedef ve geçen yıl karşılaştırması; aylık güncelleme yeterli</td></tr>
+<tr><td><b>Taktik</b></td><td>Bölüm yöneticisi</td><td>“Bu çeyrek hangi kategori geride, ne yapmalı?”</td><td>Hedef sapması, kategori ve bölge kırılımı, bir sonraki adıma geçiş</td></tr>
+<tr><td><b>Operasyonel</b></td><td>Saha ekibi, depo</td><td>“Bugün hangi sipariş gecikiyor?”</td><td>Sık yenileme, liste ve uyarı, eşik renkleri, az grafik</td></tr>
+<tr><td><b>Analitik</b></td><td>Analist</td><td>“Neden iade arttı?”</td><td>Esnek filtre, detaya inme, dağılım ve yapay zekâ görselleri, ayrıntı tablosu</td></tr>
+</table></div>
+<p>Bir sayfa iki türü birden taşımaya çalışınca ikisini de kötü yapar. Stratejik bir sayfaya 40 satırlık bir sipariş listesi eklemek yerine detay sayfasına geçiş koy.</p>
+
+<h2>Gestalt ilkeleri ve düzen</h2>
+<p>Gestalt ilkeleri, gözün ayrı öğeleri nasıl <b>grup</b> olarak algıladığını anlatır. Raporda “bu kutular birbirine ait” mesajını kenarlıksız verebilirsin:</p>
+<ul>
+<li><b>Yakınlık (proximity):</b> Birbirine yakın öğeler grup sayılır. Satış kartı ile hedef kartı yan yana, kargo kartı biraz uzakta olsun.</li>
+<li><b>Benzerlik (similarity):</b> Aynı renk ya da şekil aynı anlamı taşır. “Hedef” her grafikte aynı gri kesikli çizgi olsun.</li>
+<li><b>Çevreleme (enclosure):</b> Hafif bir arka plan dikdörtgeni içindeki görselleri tek bölüm yapar. Satış bölümü ve operasyon bölümü ayrı zeminlerde dursun.</li>
+<li><b>Süreklilik (continuity):</b> Göz bir çizgiyi izler. Aynı x eksenini paylaşan grafikleri alt alta hizala; okuyucu ayı yukarıdan aşağı takip eder.</li>
+</ul>
+<p>Tasarımcıların dört temel kuralı da aynı sonuca götürür: <b>karşıtlık (contrast)</b> önemli sayıyı büyük ve koyu yapar; <b>tekrar (repetition)</b> aynı yazı tipi, renk ve kart biçimini her sayfada kullanır; <b>hizalama (alignment)</b> görselleri ortak bir ızgaraya oturtur; <b>yakınlık</b> ilgili öğeleri toplar, ilgisizleri ayırır.</p>
+
+<h2>Ters piramit: özet, eğilim, ayrıntı</h2>
+<p>Gazetecilikte en önemli bilgi ilk cümlededir. Raporda da aynı sıra işler:</p>
+<ol>
+<li><b>Üstte özet:</b> KPI kartları. “İyi mi, kötü mü?” sorusu 5 saniyede cevaplanır.</li>
+<li><b>Ortada eğilim ve karşılaştırma:</b> Aylık seri, hedef çizgisi, kategori sıralaması. “Ne zaman, nerede?”</li>
+<li><b>Altta ya da başka sayfada ayrıntı:</b> Tablo, ürün listesi, detay sayfası. “Hangi kayıtlar?”</li>
+</ol>
+<p>Okuyucu yukarıdan aşağı indikçe soru daralır, ayrıntı artar. Kullanıcı her katmanda durabilir; çoğu yönetici ilk katmanda durur.</p>
+
+<h2>İlgi çeken ama süssüz tasarım</h2>
+<p>Duygusal ve ilgi çekici tasarım süs demek değildir. Gereksiz 3B efekt, gölge, arka plan resmi ve dekoratif simgeler (<b>chartjunk</b>) okuyucunun dikkatini veriden çalar. İlgiyi şunlarla kazan:</p>
+<ul>
+<li><b>Bulgu başlığı:</b> “Kategoriye göre satış” değil, “2024’te Hediye hedefin %16 gerisinde”.</li>
+<li><b>Kitlenin dili:</b> Ölçü adları yerine iş terimleri (“Net satış”, “İade oranı”).</li>
+<li><b>Tek vurgu rengi</b> ve anlamlı simgeler (▲ ▼). Rengin anlamı her sayfada aynı.</li>
+<li><b>Karşılaştırma:</b> Tek başına sayı duygu uyandırmaz; “geçen yıla göre %86,4 büyüme” uyandırır.</li>
+</ul>
+
+<h2>Benimsenmeyi ölçmek: kullanım ölçümleri</h2>
+<p>Bir rapor kullanılmıyorsa başarısızdır, ne kadar güzel olursa olsun. Power BI Service’te rapor açıkken <b>Diğer seçenekler (…) → Kullanım ölçümlerini aç (Open usage metrics)</b>; ya da çalışma alanı listesinde raporun yanındaki <b>…</b> → <b>Kullanım ölçümleri raporunu görüntüle</b>.</p>
+<ul>
+<li>Rapor son <b>90 günü</b> gösterir ve günde bir güncellenir; veri 24 saate kadar gecikebilir.</li>
+<li>Görüntüleme sayısı, tekil görüntüleyen, kullanıcı başına görüntüleme, sayfa bazında görüntüleme ve platform (tarayıcı ya da mobil) gibi ölçümler içerir.</li>
+<li>Raporu görmek için içerikte <b>düzenleme iznin</b> olmalı ve yöneticinin ilgili kiracı ayarını açık bırakmış olması gerekir. Kişisel çalışma alanında (My workspace) çalışmaz.</li>
+<li>Raporu kopyalayıp filtre bölmesindeki rapor filtresini kaldırırsan çalışma alanındaki tüm raporların kullanımını görürsün. Yeni sürüm önizlemede, raporun üstündeki anahtarla açılır.</li>
+</ul>
+<p>Hangi sayfa hiç açılmıyor? Kullanıcıların çoğu ilk sayfada mı kalıyor? Bu sorular bir sonraki sürümün brifini yazar.</p>
+
+<h2>Rapor kontrol listesi</h2>
+<ol>
+<li>Sayfanın türü (stratejik, taktik, operasyonel, analitik) ve kullanıcısı tek cümleyle yazılabiliyor mu?</li>
+<li>Her KPI’ın hedefi, eşiği ve sahibi var mı? Metriklerden ayrılmış mı?</li>
+<li>Her gecikmeli KPI’ın yanında en az bir öncü gösterge var mı?</li>
+<li>Sıra özet → eğilim → ayrıntı mı?</li>
+<li>Gruplar yakınlık ve çevrelemeyle mi kurulmuş, kenarlık kalabalığıyla mı?</li>
+<li>Süs öğesi kaldırıldığında mesaj kayboluyor mu? Kaybolmuyorsa o öğe gereksizdir.</li>
+<li>Yayımladıktan bir ay sonra kullanım ölçümlerine bakma tarihi takvimde mi?</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-dashboard-kavramlar">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hesap-tablolar/">← Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar</a><a href="../ozel-gorseller/">Özel grafik teknikleri: şelale, huni, gösterge, tornado, harita ve özel görseller →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

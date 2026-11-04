@@ -1,0 +1,89 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Query: birleştirme, ekleme, özetten çıkarma | Kesit Power BI</title><meta name="description" content="Merge (join türleri), Append, Unpivot, Group By, koşullu sütun, parametreler ve sorgu katlama."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-orta/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Query: birleştirme, ekleme, özetten çıkarma"><meta property="og:description" content="Merge (join türleri), Append, Unpivot, Group By, koşullu sütun, parametreler ve sorgu katlama."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-orta/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Query: birleştirme, ekleme, özetten çıkarma","description":"Merge (join türleri), Append, Unpivot, Group By, koşullu sütun, parametreler ve sorgu katlama.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-orta/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Power Query: birleştirme, ekleme, özetten çıkarma</h1><p class="st-l">Merge (join türleri), Append, Unpivot, Group By, koşullu sütun, parametreler ve sorgu katlama.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-orta">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Sorguları birleştir (Merge)</h2>
+<p>İki tabloyu ortak bir sütun üzerinden yan yana getirir; SQL'deki JOIN'in karşılığıdır. Giriş → <b>Sorguları Birleştir</b>.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Birleştirme türü</th><th>Sonuç</th></tr>
+<tr><td>Sol dış</td><td>Soldaki tüm satırlar + sağdaki eşleşenler (en yaygın)</td></tr>
+<tr><td>Sağ dış</td><td>Sağdaki tüm satırlar + soldaki eşleşenler</td></tr>
+<tr><td>Tam dış</td><td>İki taraftaki tüm satırlar</td></tr>
+<tr><td>İç</td><td>Yalnızca iki tarafta da eşleşenler</td></tr>
+<tr><td>Sol karşıt (anti)</td><td>Solda olup sağda eşleşmeyenler (ör. hiç sipariş vermemiş müşteriler)</td></tr>
+<tr><td>Sağ karşıt</td><td>Sağda olup solda eşleşmeyenler</td></tr>
+</table></div>
+<p>Birleştirmeden sonra yeni bir “tablo” sütunu oluşur; başlığındaki genişlet düğmesiyle istediğin sütunları seçersin.</p>
+<h2>Sorguları ekle (Append)</h2>
+<p>Aynı yapıdaki tabloları alt alta ekler (SQL'de UNION ALL). Her ay ayrı dosya gelen satış raporları için idealdir. Daha da iyisi: <b>Klasör</b> bağlayıcısı, bir klasördeki tüm dosyaları tek seferde birleştirir; klasöre yeni dosya eklendikçe yenilemede kendiliğinden gelir.</p>
+<h2>Özetten çıkar (Unpivot)</h2>
+<p>Excel'den gelen “Ocak | Şubat | Mart …” sütunlu bütçe tablosunu modele uygun hâle getirir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori</th><th>Oca</th><th>Şub</th><th></th><th>Kategori</th><th>Ay</th><th>Hedef</th></tr>
+<tr><td>Kitap</td><td>4.000</td><td>4.200</td><td>→</td><td>Kitap</td><td>Oca</td><td>4.000</td></tr>
+<tr><td>Spor</td><td>6.500</td><td>6.100</td><td></td><td>Kitap</td><td>Şub</td><td>4.200</td></tr>
+</table></div>
+<p>Kategori sütununu seç → Dönüştür → <b>Diğer Sütunların Özetini Kaldır</b>. Bu modeldeki <code>Hedefler</code> tablosu tam olarak bu biçimdedir.</p>
+<h2>Gruplandırma ve koşullu sütun</h2>
+<ul>
+<li><b>Gruplandırma ölçütü:</b> Satırları özetler (ör. müşteri başına sipariş sayısı). Modele daha küçük bir tablo yüklemek için kullanılır.</li>
+<li><b>Koşullu sütun:</b> Sihirbazla “Eğer Fiyat &gt; 1000 ise Pahalı” gibi kurallar. Hesaplanmış sütun yerine burada oluşturmak modeli verimli tutar.</li>
+<li><b>Örneklerden sütun:</b> Birkaç örnek yazarsın, Power Query kuralı kendisi çıkarır.</li>
+</ul>
+<h2>Parametreler ve sorgu katlama</h2>
+<ul>
+<li><b>Parametre:</b> Sunucu adı, başlangıç tarihi gibi değerleri bir yerde tanımla; geliştirme ve canlı ortam arasında tek tıkla geçiş yap. Artımlı yenileme de <code>RangeStart</code> ve <code>RangeEnd</code> parametrelerine dayanır.</li>
+<li><b>Sorgu katlama (query folding):</b> Adımların kaynak veritabanına tek bir SQL sorgusu olarak gönderilmesi. Filtre, sütun seçimi, gruplama gibi adımlar katlanır; işi veritabanı yapar. Bir adıma sağ tıklayıp <b>Yerel Sorguyu Görüntüle</b> ile kontrol edebilirsin. Katlamayı bozan adımları (ör. dizin sütunu) mümkün olduğunca sona koy.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Birleştir mi, ekle mi? İlk karar</h2>
+<p>Satış operasyonundan iki dosya geliyor: bayilerin Ocak satışları ve Şubat satışları. Bir de bayi listesi (bayi adı, bölge, açılış tarihi). Hangi dosya hangi işlemle gelir?</p>
+<div class="tbl-wrap"><table><tr><th>Soru</th><th>İşlem</th><th>Sonuç</th></tr>
+<tr><td>Aynı sütunlar, farklı dönem mi?</td><td>Ekle (Append)</td><td>Satır sayısı artar, sütunlar aynı kalır</td></tr>
+<tr><td>Bir tabloya başka tablodan bilgi mi ekleniyor?</td><td>Birleştir (Merge)</td><td>Sütun sayısı artar; eşleşmeyen satır birleştirme türüne göre kalır ya da düşer</td></tr></table></div>
+<p>Ocak + Şubat = Ekle. Satış + bayi bölgesi = Birleştir. Ama çoğu zaman birleştirmeye <b>hiç gerek yoktur</b>: bayi listesini ayrı bir boyut tablosu olarak yükleyip modelde ilişki kurmak, bölgeyi satış tablosuna kopyalamaktan daha temizdir. Birleştirmeyi; anahtar yoksa, iki kaynağı tek boyutta toplamak gerekiyorsa ya da bir arama tablosu modelde gereksiz kalacaksa kullan. Join türlerinin ayrıntısı ve birleştirme sonrası neden null geldiği Power Query ileri dersinde.</p>
+<div class="tip"><b>“Yeni olarak” seçenekleri</b>Giriş → Sorguları Birleştir / Ekle düğmelerinin açılır okunda “Yeni olarak” seçenekleri var. Yeni olarak birleştirmek, mevcut sorguyu bozmadan üçüncü bir sorgu üretir; kaynak sorgular ara adım olarak kalır, yüklemelerini kapatırsın.</div>
+
+<h2>Eklemede sütun adı uyuşmazlığı</h2>
+<p>Ekleme sütunları <b>sırasına göre değil adına göre</b> eşler. Ocak dosyasında <code>Tutar</code>, Şubat dosyasında <code>Tutar TL</code> yazıyorsa sonuçta iki ayrı sütun oluşur: Ocak satırlarında <code>Tutar TL</code> null, Şubat satırlarında <code>Tutar</code> null. Toplam doğru gibi görünür ama her ölçü yarım çalışır. Önlem:</p>
+<ul>
+<li>Eklemeden önce her kaynakta sütunları aynı adla yeniden adlandır.</li>
+<li>Eklemeden sonra sütun profilinde (Görünüm → Sütun profili) beklenmedik null oranına bak.</li>
+<li>Klasörden birleştirmede örnek dosya dönüşümü tüm dosyalara uygulanır; adı farklı olan dosya bu dönüşümde hata verir ve sorun erken görünür.</li>
+</ul>
+
+<h2>Gruplandırmanın gelişmiş hâli</h2>
+<p>Gruplandırma ölçütü iletişim kutusunda <b>Gelişmiş</b>’i seçince birden çok gruplama sütunu ve birden çok toplama ekleyebilirsin: aynı adımda bayi başına toplam tutar, satır sayısı ve en son tarih. İşlem listesindeki <b>Tüm satırlar</b> seçeneği ise her grubu iç içe bir tablo olarak tutar; sonra her grubun içinden “en son satır” ya da “en büyük tutar” gibi bir seçim yapmak için kullanılır. Ama dikkat: modelde ayrıntıyı tutup DAX ile toplamak çoğu zaman daha esnektir. Gruplandırmayı, ayrıntının modelde hiç gerekmediği durumlar (ör. günlük ham log’u saatlik özete indirmek) için sakla.</p>
+
+<h2>Koşullu sütun ve arkasındaki M</h2>
+<p>Sütun ekle → <b>Koşullu sütun</b>. Sihirbaz koşulları yukarıdan aşağı dener ve <b>ilk eşleşende durur</b>. Bu yüzden sıra önemlidir: “Tutar &gt; 1000 ise Büyük” koşulunu “Tutar &gt; 2000 ise Çok büyük” koşulunun üstüne yazarsan 2.040 TL’lik bayi satırı “Büyük” olur. En dar koşulu en üste koy. Sihirbaz arka planda şu M’yi yazar:</p>
+<pre class="m">= Table.AddColumn(Kaynak, "Satış Bandı", each
+    if [Tutar] = null then "Bilinmiyor"
+    else if [Tutar] &gt; 2000 then "Çok büyük"
+    else if [Tutar] &gt; 1000 then "Büyük"
+    else "Normal", type text)</pre>
+<p>null kontrolünü en başa koymak önemli: M’de bir tarafı null olan <code>&gt;</code> karşılaştırması false değil <b>null</b> döner; <code>if</code> koşulu null olunca hücre “null değeri Logical türüne dönüştürülemez” hatası verir. Kontrol başta olursa boş tutarlı satır hata yerine açıkça “Bilinmiyor” gibi bir etikete düşer.</p>
+
+<h2>Hata yönetimi: adım hatası, hücre hatası</h2>
+<p>Power Query’de iki tür hata görürsün:</p>
+<ul>
+<li><b>Adım düzeyi hata:</b> Sorgunun tamamı durur; ön izleme yerine sarı bir uyarı çıkar. Tipik neden: kaynak dosyanın yeri ya da bir sütunun adı değişmiş. Çözüm adımın formülünde.</li>
+<li><b>Hücre düzeyi hata:</b> Tablo yüklenir ama bazı hücrelerde <code>Error</code> yazar. Tipik neden: “bilinmiyor” yazan bir tarih, “-” yazan bir tutar.</li>
+</ul>
+<p>Hücre hatalarında dört yol var; seçim, hatanın iş anlamına bağlı:</p>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne yapar?</th><th>Ne zaman?</th></tr>
+<tr><td>Hataları kaldır</td><td>Satırı atar</td><td>Satır anlamsızsa (test kaydı)</td></tr>
+<tr><td>Hataları değiştir</td><td>Hücreye sabit değer yazar (null, 0)</td><td>Satır değerli, alan boş kalabilir</td></tr>
+<tr><td>Hataları koru (Keep errors)</td><td>Yalnızca hatalı satırları bırakır</td><td>Ayrı bir “denetim” sorgusu: kaynak sahibine gönderilecek liste</td></tr>
+<tr><td><code>try … otherwise</code></td><td>Hata olursa yedek ifade</td><td>Birden çok olası biçim: önce bir yolu dene, olmazsa ötekini</td></tr></table></div>
+<pre class="m">= Table.AddColumn(Kaynak, "Kayıt Tarihi", each
+    try Date.FromText([KayitTarihi], [Culture = "tr-TR"]) otherwise null, type date)</pre>
+<div class="warn"><b>Sessiz düzeltme tehlikesi</b>Hatayı 0 ile değiştirmek raporda “satış yok” gibi görünür; null ile değiştirmek ise “bilinmiyor” demektir. Tutar için 0 değil null tercih et ve hatalı satır sayısını bir denetim sorgusunda izle.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-orta">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../siralama/">← Sıralama ve ilk N: RANKX ve TOPN</a><a href="../gorsel-ilkeler/">Görselleştirme ilkeleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

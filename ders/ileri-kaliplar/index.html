@@ -1,0 +1,152 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi | Kesit Power BI</title><meta name="description" content="Gerçek projelerde en çok istenen dört uzun kalıbı sıfırdan yazmak ve her satırın neden orada olduğunu anlamak."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/ileri-kaliplar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi"><meta property="og:description" content="Gerçek projelerde en çok istenen dört uzun kalıbı sıfırdan yazmak ve her satırın neden orada olduğunu anlamak."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/ileri-kaliplar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi","description":"Gerçek projelerde en çok istenen dört uzun kalıbı sıfırdan yazmak ve her satırın neden orada olduğunu anlamak.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/ileri-kaliplar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Uzman DAX</span><h1>İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi</h1><p class="st-l">Gerçek projelerde en çok istenen dört uzun kalıbı sıfırdan yazmak ve her satırın neden orada olduğunu anlamak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-ileri-kaliplar">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>İleri seviyede ölçü yazmak</h2>
+<p>Uzun bir ölçü, birbirine bağlanan küçük adımlardan oluşur. İleri seviyenin sonunda ölçüyü yazmadan önce adımları kâğıda dökersin:</p>
+<ol>
+<li><b>Soru:</b> Ölçü tam olarak neyi cevaplıyor? Toplam satırında ne görünmeli?</li>
+<li><b>Bağlam:</b> Görselde hangi alanlar olacak? Hangi filtreler korunmalı, hangileri kaldırılmalı?</li>
+<li><b>Kümeler:</b> Hangi ara tablolar gerekiyor (ilk N ürün, A alan müşteriler, ortak ürünler)?</li>
+<li><b>Skaler adımlar:</b> Hangi sayılar bu kümelerden türetiliyor?</li>
+<li><b>Dallar:</b> Toplam satırı, boş değerler, özel satırlar (“Diğer”) için SWITCH dalları.</li>
+</ol>
+<p>Her adım bir <code>VAR</code> olur. İyi adlandırılmış değişkenler ölçünün belgesidir.</p>
+<h2>1 · Top N + Diğer</h2>
+<p><b>Soru:</b> Grafikte ilk N ürün ve tek bir “Diğer” çubuğu; toplam her zaman genel toplama eşit. <b>Model hilesi:</b> Ürün adları + “Diğer” satırını içeren bağlantısız <code>UrunlerVeDiger</code> tablosu eksene konur; çünkü ölçü, modelde olmayan bir satır (“Diğer”) üretemez.</p>
+<h2>2 · Sepet analizi</h2>
+<p><b>Soru:</b> A'yı alanların yüzde kaçı B'yi de aldı? <b>Model hilesi:</b> Ürünlerin bağlantısız bir kopyası (<code>KarsiUrunler</code>) ikinci eksen olur; A filtresi kaldırılıp B filtresi <code>TREATAS</code> ile uygulanır. Destek (support), güven (confidence) ve kaldıraç (lift) üç temel metriktir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Metrik</th><th>Formül</th><th>Anlam</th></tr>
+<tr><td>Destek</td><td>A ve B'yi birlikte alan / tüm müşteriler</td><td>Birlikteliğin yaygınlığı</td></tr>
+<tr><td>Güven</td><td>A ve B'yi birlikte alan / A'yı alan</td><td>A alındığında B'nin olasılığı</td></tr>
+<tr><td>Kaldıraç</td><td>Güven / B'nin genel alınma oranı</td><td>1'den büyükse birliktelik tesadüften güçlü</td></tr>
+</table></div>
+<h2>3 · Like-for-like (LFL)</h2>
+<p><b>Soru:</b> Yeni ürün eklemenin etkisi olmadan organik büyüme ne? Her iki dönemde de satılan ürün kümesi bulunur, iki dönemin satışı yalnızca bu kümeyle hesaplanır.</p>
+<h2>4 · Para birimi dönüşümü</h2>
+<p><b>Soru:</b> Satışı USD/EUR olarak göster. <b>Kural:</b> Dönüşüm işlemin tanecikte (ay) yapılır, sonra toplanır. Yıllık TL toplamı yıllık ortalama kura bölünmez.</p>
+<p>Dört kalıbın tam kodu ve satır satır açıklaması <a href="../../">Measure Lab</a>'nda. Aşağıdaki alıştırmalarda bunları sen yazacaksın; iskelet verildi.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>ABC / Pareto: üretim hâli</h2>
+<p>Kategori müdürü ABC sınıfını stok planlamasında kullanacak: A ürünlerinin stoğu hiç bitmemeli, C ürünleri gözden geçirilecek. Sınıf bir karar tetiklediği için her satırının savunulabilir olması gerekir. Segmentasyon dersindeki kalıbı üretime taşırken beş soruya cevap ver.</p>
+<h3>1. Sınır kuralı yazılı mı?</h3>
+<p>Satan 38 ürün için iki makul kural farklı sonuç verir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kural</th><th>A</th><th>B</th><th>C</th></tr>
+<tr><td>Kümülatif pay (ürün dahil) ≤ %70 ise A</td><td>20</td><td>9</td><td>9</td></tr>
+<tr><td>Önceki ürünlerin payı &lt; %70 ise A (eşiği geçen ürün de A)</td><td>21</td><td>9</td><td>8</td></tr>
+</table></div>
+<p>İkisi de savunulabilir; önemli olan ekibin hangisini kullandığını ölçünün açıklamasına yazmasıdır. Tedarik ekibi "21. ürün neden B?" diye sorduğunda cevap belgede olmalı.</p>
+<h3>2. Eşitlikler nasıl çözülüyor?</h3>
+<p>Klasik kalıp "satışı benimkinden büyük ya da eşit olanların toplamı"dır. Eşit satışlı iki ürün birbirinin satışını kümülatife katar ve ikisi de büyük kümülatifi alır. Bu katalogda eşitlik yok, ama binlerce SKU'lu gerçek listelerde (aynı fiyatla bir kez satılan ürünler) çok sık görülür. Eşitliği bozmanın yolu ikinci bir sıralama ölçütüdür: pencere fonksiyonunda <code>ORDERBY([Net Satış], DESC, Urunler[Urun], ASC)</code>.</p>
+<pre class="dax" data-notry>Kümülatif Satış (Eşitliksiz) =
+SUMX(
+    WINDOW(
+        1, ABS, 0, REL,
+        ALLSELECTED(Urunler[Urun]),
+        ORDERBY([Net Satış], DESC, Urunler[Urun], ASC)
+    ),
+    [Net Satış]
+)</pre>
+<h3>3. Performans ne kadar?</h3>
+<p>Klasik kalıp her ürün satırında tüm ürün listesini süzer: n ürün için n² karşılaştırma. 40 üründe 1.600; 50.000 SKU'da 2,5 milyar. Seçenekler:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Filtrelere tepki</th><th>Hız</th><th>Ne zaman?</th></tr>
+<tr><td>Ölçü (FILTER + ADDCOLUMNS)</td><td>Var</td><td>n² ; büyük katalogda yavaş</td><td>Birkaç yüz ürün</td></tr>
+<tr><td>Ölçü (WINDOW)</td><td>Var</td><td>Sıralama maliyeti; daha okunur</td><td>Orta katalog, eşitlik çözümü gerekiyorsa</td></tr>
+<tr><td>Hesaplanmış sütun / tablo</td><td>Yok (yenilemede donar)</td><td>Hızlı</td><td>"Son 12 aya göre sabit sınıf" yeterliyse</td></tr>
+<tr><td>Power Query ya da kaynak</td><td>Yok</td><td>En hızlı</td><td>Sınıf başka sistemlerde de kullanılacaksa</td></tr>
+</table></div>
+<h3>4. 80/20 gerçekten geçerli mi?</h3>
+<p>Bu katalogda satışın %80'ini satan 38 ürünün 25'i (%66) getiriyor. "Ürünlerin %20'si satışın %80'i" kuralı burada yok; satış oldukça dengeli dağılıyor. Kuralı varsayma, veriden ölç ve raporda söyle.</p>
+<h3>5. Sınıfları eksene koymak</h3>
+<p>Ölçü ile hesaplanan sınıf eksene konamaz. "Her sınıfta kaç ürün var?" grafiği için A/B/C satırlarını içeren bağlantısız küçük bir tablo (DATATABLE) ve sınıf sayan bir ölçü gerekir. Ölçünün çekirdeği alıştırmada.</p>
+
+<h2>Yeni, sadık, geri kazanılan, kayıp: köprü tutmalı</h2>
+<p>Yönetim kurulu yıllık "müşteri köprüsü" istiyor: geçen yılın aktif müşterisinden bu yılın aktif müşterisine nasıl gelindi? Tanımlar (yıllık pencere, iptaller hariç):</p>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Tanım</th><th>2024</th></tr>
+<tr><td>Önceki yıl aktif</td><td>2023'te alan</td><td>77</td></tr>
+<tr><td>Kayıp</td><td>2023'te alıp 2024'te almayan</td><td>13</td></tr>
+<tr><td>Sadık</td><td>İki yılda da alan</td><td>64</td></tr>
+<tr><td>Yeni</td><td>2024'te alan, daha önce hiç almamış</td><td>59</td></tr>
+<tr><td>Geri kazanılan</td><td>2024'te alan, 2023'te almamış ama daha önce almış</td><td>0</td></tr>
+<tr><td>Bu yıl aktif</td><td>2024'te alan</td><td>123</td></tr>
+</table></div>
+<p>Köprü: 77 − 13 + 59 + 0 = 123. Bu eşitlik her dönemde tutmalıdır; tutmuyorsa tanımlardan biri diğeriyle örtüşüyor ya da bir müşteriyi iki kez sayıyorsun. Köprüyü bir DAX sorgusuyla her dönem için test et ve testi ölçüyle birlikte sakla.</p>
+<ul>
+<li><b>Veri başlangıcı etkisi:</b> Veri Haziran 2022'de başladığı için 2022'nin 32 müşterisinin hepsi "yeni" görünür. Bu gerçek bir kazanım değildir; köprüyü 2023'ten başlat ya da ilk dönemi işaretle.</li>
+<li><b>Pencere uzunluğu:</b> Çeyreklik pencerede aynı müşteriler sık sık "kayıp" ve "geri kazanılan" olur (2024 Ç4'te 23 geri kazanılan). Pencere, müşterinin alışveriş sıklığına göre seçilmelidir.</li>
+<li><b>Toplam satırı:</b> Önceki dönemi DATEADD ile tanımlayan ölçü toplamda anlamsız sayı üretir. <code>HASONEVALUE(Tarih[Yil])</code> ile koru.</li>
+<li><b>Durumları eksende göstermek:</b> Bağlantısız bir durum tablosu ve SWITCH gerekir; Top N + Diğer'deki model hilesiyle aynı mantık.</li>
+</ul>
+<pre class="dax" data-notry>Müşteri Köprüsü =
+VAR Durum = SELECTEDVALUE(MusteriDurumu[Durum])
+VAR Simdi = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal")
+VAR Onceki = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal", DATEADD(Tarih[Tarih], -1, YEAR))
+VAR Eski = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal", Tarih[Tarih] &lt; MIN(Tarih[Tarih]))
+RETURN
+    IF(HASONEVALUE(Tarih[Yil]),
+        SWITCH(Durum,
+            "Kayıp", - COUNTROWS(EXCEPT(Onceki, Simdi)),
+            "Sadık", COUNTROWS(INTERSECT(Simdi, Onceki)),
+            "Yeni", COUNTROWS(EXCEPT(EXCEPT(Simdi, Onceki), Eski)),
+            "Geri kazanılan", COUNTROWS(INTERSECT(EXCEPT(Simdi, Onceki), Eski))
+        )
+    )</pre>
+
+<h2>Sepet analizi: müşteri değil sipariş düzeyinde</h2>
+<p>Ana bölümdeki birlikte alma oranı müşteri düzeyindedir: "A'yı bir kez alan, B'yi herhangi bir zaman almış mı?" Mağaza yerleşimi ve "bunu alan bunu da aldı" önerisi için asıl soru sipariş düzeyindedir: aynı sepette mi? Kitap ve Kozmetik için sayılar (iptaller hariç, 838 sipariş):</p>
+<div class="tbl-wrap"><table>
+<tr><th>Metrik</th><th>Hesap</th><th>Değer</th></tr>
+<tr><td>Kitap içeren sipariş</td><td></td><td>311</td></tr>
+<tr><td>Kozmetik içeren sipariş</td><td></td><td>229</td></tr>
+<tr><td>İkisini birlikte içeren</td><td></td><td>61</td></tr>
+<tr><td>Destek</td><td>61 / 838</td><td>%7,3</td></tr>
+<tr><td>Güven (Kitap → Kozmetik)</td><td>61 / 311</td><td>%19,6</td></tr>
+<tr><td>Kozmetik'in genel oranı</td><td>229 / 838</td><td>%27,3</td></tr>
+<tr><td>Kaldıraç</td><td>%19,6 / %27,3</td><td>0,72</td></tr>
+</table></div>
+<p>En sık birlikte görülen çift, tesadüften <i>daha az</i> birlikte alınıyor. Bu veride 21 kategori çiftinin hiçbirinde kaldıraç 1'i geçmiyor; sepetler küçük (sipariş başına ortalama 1,79 satır) ve kategoriler aynı sepette birbirinin yerine geçiyor. En yüksek kaldıraç Hediye–Kozmetik (0,89), ama yalnızca 9 siparişe dayanıyor ve yıla göre 1,21 (2023) ile 0,87 (2024) arasında oynuyor.</p>
+<pre class="dax">Hediye–Kozmetik Kaldıracı =
+VAR Tum = CALCULATE([Sipariş Sayısı], REMOVEFILTERS(Kategoriler), REMOVEFILTERS(Urunler))
+VAR A = CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] &lt;&gt; "İptal", Kategoriler[Kategori] = "Hediye")
+VAR B = CALCULATETABLE(VALUES(Satislar[SiparisNo]), Satislar[Durum] &lt;&gt; "İptal", Kategoriler[Kategori] = "Kozmetik")
+VAR AB = COUNTROWS(INTERSECT(A, B))
+RETURN DIVIDE(AB * Tum, COUNTROWS(A) * COUNTROWS(B))</pre>
+<ul>
+<li><b>En az destek eşiği koy:</b> Örneğin 30 siparişin altındaki çiftleri gösterme. Küçük sayılarda kaldıraç rastgele büyür ya da küçülür.</li>
+<li><b>Oranın yanında sayıyı göster:</b> "Kaldıraç 1,21 (n = 4)" ile "Kaldıraç 1,21 (n = 400)" aynı karar değildir.</li>
+<li><b>Performans:</b> Ürün düzeyinde n ürün için n² çift vardır. Binlerce SKU'da çift tablosunu Power Query'de ya da Fabric'te önceden hesapla, Power BI'da yalnızca göster.</li>
+</ul>
+
+<h2>Dinamik segmentasyon: üyelik hangi filtreye göre?</h2>
+<p>Kitap kategori müdürü dilimleyicide Kitap'ı seçip [Dilimdeki Müşteri] grafiğine bakıyor: 85 Küçük, 28 Orta, hiç Büyük ya da VIP yok. "Kitap müşterilerimiz değersiz mi?" Hayır: ölçü müşteriyi yalnızca Kitap harcamasına göre segmentliyor. İki farklı soru var:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soru</th><th>Küçük</th><th>Orta</th><th>Büyük</th><th>VIP</th></tr>
+<tr><td>Kitap harcamasına göre (mevcut ölçü)</td><td>85</td><td>28</td><td>0</td><td>0</td></tr>
+<tr><td>Kitap alanlar, toplam harcamalarına göre</td><td>12</td><td>31</td><td>37</td><td>33</td></tr>
+</table></div>
+<p>İkinci soru için iki değişiklik gerekir: müşterinin değeri ürün filtreleri kaldırılarak hesaplanır, ama dolaşılan liste yalnızca Kitap alanlardır. Dikkat: listeyi VALUES(Musteriler[MusteriNo]) ile kurarsan Kitap filtresi Musteriler'e ulaşmaz (filtre Satislar'dan Musteriler'e akmaz) ve 113 yerine 136 müşteri sayarsın.</p>
+<ul>
+<li><b>Sınır kontrolü:</b> Koşul <code>Min &lt; S &lt;= Max</code>. Değeri 0 ya da negatif olan müşteri (iadesi satışından büyük) hiçbir dilime girmez. Testte dilimlerin toplamını [Müşteri Sayısı] ile karşılaştır.</li>
+<li><b>Dönem etkisi:</b> 2024 seçilince VIP sayısı 34'ten 10'a düşer; çünkü değer seçili döneme göre hesaplanır. Bu bilinçli bir karar olmalı ve başlıkta yazmalı.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Sınır kuralı ve eşitlik çözümü ölçünün açıklamasında yazılı mı?</li>
+<li>Katalog büyüklüğünde performansı ölçtün mü? Gerekirse sınıfı yenilemede hesapla.</li>
+<li>Müşteri köprüsü her dönemde kapanıyor mu? İlk dönem işaretli mi?</li>
+<li>Sepet metriklerinin yanında sipariş sayısı görünüyor mu, en az destek eşiği var mı?</li>
+<li>Segment üyeliği hangi filtreye göre hesaplanıyor? Başlık bunu söylüyor mu?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-ileri-kaliplar">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../sayfalandirilmis/">← Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl?</a><a href="../hiyerarsi/">Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

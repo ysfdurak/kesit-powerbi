@@ -1,0 +1,125 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: satış performansı ve hedef takibi | Kesit Power BI</title><meta name="description" content="Satış müdürü 2024’ü kapatırken hedefe ne kadar yaklaştığını, hangi kategori ve temsilcinin öne çıktığını ve 2025 için neyi değiştireceğini soruyor.…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-satis/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: satış performansı ve hedef takibi"><meta property="og:description" content="Satış müdürü 2024’ü kapatırken hedefe ne kadar yaklaştığını, hangi kategori ve temsilcinin öne çıktığını ve 2025 için neyi değiştireceğini soruyor.…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-satis/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: satış performansı ve hedef takibi","description":"Satış müdürü 2024’ü kapatırken hedefe ne kadar yaklaştığını, hangi kategori ve temsilcinin öne çıktığını ve 2025 için neyi değiştireceğini soruyor.…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-satis/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Vaka Çalışmaları</span><h1>Vaka: satış performansı ve hedef takibi</h1><p class="st-l">Satış müdürü 2024’ü kapatırken hedefe ne kadar yaklaştığını, hangi kategori ve temsilcinin öne çıktığını ve 2025 için neyi değiştireceğini soruyor. Kategori düzeyinde hedef gerçekleşme, YTD takibi, temsilci performansı, büyüme sırası ve dinamik yönetici özeti metnini kurarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-satis">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Satış Müdürü Elif Doğan. Ocak ayındaki yıl kapanış toplantısında yönetim kuruluna tek sayfalık bir performans raporu sunacak.</p>
+<p><b>Hangi karar?</b> 2025 hedefleri kategori bazında nasıl dağıtılacak, temsilcilere prim nasıl hesaplanacak? Brifin soruları:</p>
+<ol>
+<li>2024’te hedefin ne kadarını gerçekleştirdik, yıl içinde nerede geride kaldık?</li>
+<li>Hangi kategoriler hedefi tuttu, hangileri en çok büyüdü ya da yavaşladı?</li>
+<li>Temsilcilerin performansı nasıl ve bu karşılaştırma adil mi?</li>
+<li>Kartların üstünde tek cümlelik, seçime göre değişen bir yönetici özeti.</li>
+</ol>
+<p>Sayfa düzeni ve KPI ilkeleri için <b>Rapor tasarımı: bir vaka çalışması</b>, farklı ayrıntı düzeyindeki hedefler için <b>Hedef ve gerçekleşen</b> dersine dayanıyoruz.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Kullanım</th></tr>
+<tr><td><code>Hedefler</code></td><td>Aylık (ayın ilk günü) ve kategori düzeyinde hedef; 2022-01 – 2024-12, 7 kategori × 36 ay = 252 satır.</td></tr>
+<tr><td><code>Kategoriler</code></td><td>Hedefler ve Urunler’in ortak boyutu. <b>Kategori kırılımı her zaman bu tablodan</b> alınmalı.</td></tr>
+<tr><td><code>Satislar</code> → <code>Calisanlar</code></td><td><code>Satislar[TemsilciNo]</code> çoka-bir <code>Calisanlar[CalisanNo]</code>. Temsilci adı <code>Calisanlar[AdSoyad]</code>.</td></tr>
+</table></div>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li><b>Doğru boyut:</b> Hedefler, <code>Urunler</code> ile değil <code>Kategoriler</code> ile ilişkili. Matrise <code>Urunler[Kategori]</code> koyarsan <code>[Hedef]</code> her satırda toplamı gösterir. <code>Kategoriler[Kategori]</code> kullan.</li>
+<li><b>Temsilci hedefi yok:</b> hedefler yalnızca kategori düzeyinde. Temsilci için “hedef gerçekleşme” hesaplanamaz; sıralama ve büyüme ile yetinilir.</li>
+<li><b>Temsilci ataması geriye dönük:</b> <code>Satislar[TemsilciNo]</code> 1.620 satırın tamamında müşterinin bugünkü temsilcisiyle (<code>Musteriler[TemsilciNo]</code>) aynı. Müşteri devredildiğinde geçmiş satışlar da yeni temsilciye geçmiş. Aşağıda bunun sonuçlarını görüyoruz.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Yıllık hedef gerçekleşme.</b> Hazır <code>[Hedef]</code>, <code>[Hedef Gerçekleşme %]</code>, <code>[Hedef Farkı]</code> ölçüleri.</p>
+<p><b>Bulgu:</b> 2024 net satış <b>747.066 ₺</b>, hedef 763.200 ₺: gerçekleşme <b>%97,9</b>, açık 16.134 ₺. Geçen yıla göre büyüme %86,4. Çeyreklere göre: Ç1 %98,2, <b>Ç2 %93,6</b>, Ç3 %96,4, Ç4 %101,4. Hedefi aşan tek çeyrek Ç4. Aylık bazda 12 ayın yalnızca ikisinde (Ağustos ve Aralık) hedef aşıldı.</p>
+
+<p><b>Adım 2: YTD hedef gerçekleşme.</b> Yöneticiler “yılbaşından bu yana neredeyiz?” sorusunu sorar. Hazır <code>[Satış YTD]</code> ve <code>[Hedef YTD]</code> ile:</p>
+<pre class="dax">Hedef Gerçekleşme YTD % = DIVIDE([Satış YTD], [Hedef YTD])
+Hedef Açığı YTD = [Satış YTD] - [Hedef YTD]</pre>
+<p><b>Bulgu:</b> 2024’te YTD gerçekleşme yıl boyunca %95,9 ile %98,2 arasında kaldı. En düşük nokta Haziran sonu (%95,9; açık 12.707 ₺). Aralık’taki güçlü ay (94.001 ₺, hedef 88.400 ₺) yılı %97,9’a taşıdı. Yani açık yılın ilk yarısında oluştu, ikinci yarıda kısmen kapandı.</p>
+
+<p><b>Adım 3: Kategori bazında hedef ve büyüme.</b></p>
+<pre class="dax">Büyüme Sırası =
+IF(
+    HASONEVALUE(Kategoriler[Kategori]),
+    RANKX(ALL(Kategoriler[Kategori]), [YoY %])
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori (2024)</th><th>Net satış</th><th>Hedef gerçekleşme</th><th>Büyüme (2023’e göre)</th><th>Büyüme sırası</th></tr>
+<tr><td>Kozmetik</td><td>82.908 ₺</td><td>%98,7</td><td>+%116,6</td><td>1</td></tr>
+<tr><td>Ev &amp; Yaşam</td><td>144.292 ₺</td><td>%96,6</td><td>+%115,0</td><td>2</td></tr>
+<tr><td>Kitap</td><td>95.327 ₺</td><td><b>%100,2</b></td><td>+%112,4</td><td>3</td></tr>
+<tr><td>Elektronik</td><td>206.432 ₺</td><td>%96,8</td><td>+%94,5</td><td>4</td></tr>
+<tr><td>Hediye</td><td>9.700 ₺</td><td><b>%83,6</b></td><td>+%71,1</td><td>5</td></tr>
+<tr><td>Giyim</td><td>110.090 ₺</td><td>%99,5</td><td>+%60,7</td><td>6</td></tr>
+<tr><td>Spor</td><td>98.317 ₺</td><td>%99,1</td><td><b>+%39,9</b></td><td>7</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Hedefi aşan tek kategori Kitap (%100,2). Hediye %83,6 ile en geride; açığın 1.900 ₺’si burada. 2024’te <b>küçülen kategori yok</b>; en yavaş büyüyen Spor (+%39,9). Dikkat: Spor ve Giyim hedefe çok yakın ama yavaş büyüyor. Bu, hedeflerin bu kategorilerde düşük konduğunu gösterebilir.</p>
+
+<p><b>Adım 4: Temsilci performansı.</b> İlişki modelde var; <code>Calisanlar[AdSoyad]</code>’ı satıra koy, hazır <code>[Temsilci Sırası]</code> ve <code>[YoY %]</code> ölçülerini ekle.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Temsilci (2024)</th><th>Net satış</th><th>Müşteri</th><th>Ortalama sepet</th><th>Büyüme</th></tr>
+<tr><td>Gamze Özkan</td><td>150.012 ₺</td><td>20</td><td>1.875 ₺</td><td>+%105</td></tr>
+<tr><td>Yusuf Kara</td><td>149.376 ₺</td><td>21</td><td>1.606 ₺</td><td>+%108</td></tr>
+<tr><td>Can Aydın</td><td>138.653 ₺</td><td>18</td><td>1.671 ₺</td><td>+%82</td></tr>
+<tr><td>Ece Kurt</td><td>109.374 ₺</td><td>20</td><td>1.420 ₺</td><td>+%238</td></tr>
+<tr><td>Elif Doğan (müdür)</td><td>105.770 ₺</td><td>21</td><td>1.290 ₺</td><td>+%45</td></tr>
+<tr><td>Oğuz Demir</td><td>93.881 ₺</td><td>23</td><td>1.204 ₺</td><td>+%26</td></tr>
+</table></div>
+<p>Tablo adil mi? Yusuf Kara 09.07.2024’te işe girmiş. Yine de işe girişinden önceki tarihli satışlar ona yazılı:</p>
+<pre class="dax">İşe Girişten Önceki Satış =
+SUMX(
+    VALUES(Calisanlar[CalisanNo]),
+    VAR Giris = CALCULATE(MAX(Calisanlar[IseGiris]))
+    RETURN CALCULATE([Net Satış], Satislar[Tarih] &lt; Giris)
+)</pre>
+<p><b>Bulgu:</b> Toplam <b>163.810 ₺</b> satış, temsilcinin işe girişinden önceki tarihli. Bunun 140.318 ₺’si Yusuf Kara’da; 2024’teki 149.376 ₺’sinin 54.741 ₺’si işe girişinden önce. Can Aydın’da 21.701 ₺, Oğuz Demir’de 1.791 ₺. Neden: temsilci, sipariş anındaki değil müşterinin bugünkü temsilcisi. Bu veriyle temsilci primi hesaplanırsa yanlış kişiye ödeme yapılır.</p>
+<div class="warn"><b>Prim için kullanmadan önce</b>Kaynak sistemden sipariş anındaki temsilciyi (<code>SiparisTemsilciNo</code>) iste ya da müşteri-temsilci atama geçmişini tarihli bir tabloyla modele ekle. O zamana kadar temsilci tablosunu “portföy performansı” olarak adlandır.</div>
+
+<p><b>Adım 5: Yönetici özeti metni.</b> Kartların üstüne, seçime göre değişen bir cümle. Modeldeki <code>[Yönetici Özeti Metni]</code> büyüme ve kanalı anlatıyor; bu vaka için hedef odaklı bir sürüm yazıyoruz:</p>
+<pre class="dax">Hedef Özeti Metni =
+VAR Satis = [Satış YTD]
+VAR Hedef = [Hedef YTD]
+VAR Oran = DIVIDE(Satis, Hedef)
+VAR Kat =
+    FILTER(
+        ADDCOLUMNS(VALUES(Kategoriler[Kategori]), "O", DIVIDE([Satış YTD], [Hedef YTD])),
+        NOT ISBLANK([O])
+    )
+VAR EnGeri = TOPN(1, Kat, [O], ASC)
+VAR Temsilci = FILTER(ADDCOLUMNS(VALUES(Calisanlar[AdSoyad]), "S", [Satış YTD]), NOT ISBLANK([S]))
+VAR EnIyi = TOPN(1, Temsilci, [S], DESC)
+VAR Cumle1 = "YTD satış " &amp; FORMAT(Satis, "#,##0") &amp; " ₺, hedef gerçekleşmesi %" &amp; FORMAT(Oran * 100, "0.0")
+VAR Cumle2 = IF(Satis &gt;= Hedef, " (hedef aşıldı).", " (açık " &amp; FORMAT(Hedef - Satis, "#,##0") &amp; " ₺).")
+VAR Cumle3 = " En geride kalan kategori: " &amp; MAXX(EnGeri, Kategoriler[Kategori]) &amp; " (%" &amp; FORMAT(MAXX(EnGeri, [O]) * 100, "0.0") &amp; ")."
+VAR Cumle4 = " En yüksek portföy: " &amp; MAXX(EnIyi, Calisanlar[AdSoyad]) &amp; "."
+RETURN
+    IF(ISBLANK(Hedef), "Seçimde hedef yok.", Cumle1 &amp; Cumle2 &amp; Cumle3 &amp; Cumle4)</pre>
+<p><b>Bulgu (2024 seçili):</b> “YTD satış 747.066 ₺, hedef gerçekleşmesi %97,9 (açık 16.134 ₺). En geride kalan kategori: Hediye (%83,6). En yüksek portföy: Gamze Özkan.” Haziran 2024 seçilince metin “%95,9 (açık 12.707 ₺)” olur; 2023 seçilince en yüksek portföy Can Aydın’a geçer. Türkçede yüzde işareti sayının önüne gelir; bu yüzden <code>"0.0%"</code> biçimi yerine <code>"%" &amp; FORMAT(Oran * 100, "0.0")</code> kullandık.</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>En üst</td><td>Kart (metin)</td><td>Hedef Özeti Metni</td></tr>
+<tr><td>Üst şerit</td><td>3 KPI görseli</td><td>Satış YTD / Hedef YTD; Hedef Gerçekleşme YTD %; YoY %</td></tr>
+<tr><td>Sol orta</td><td>Çizgi grafik</td><td>X: YilAy (2024); çizgiler: Satış YTD ve Hedef YTD (açığın nerede açıldığı görünür)</td></tr>
+<tr><td>Sağ orta</td><td>Madde grafiği tarzı çubuk</td><td>Kategoriler[Kategori]; çubuk: Net Satış; hedef işareti: Hedef; renk: gerçekleşme %100’ün altı/üstü</td></tr>
+<tr><td>Sol alt</td><td>Tablo</td><td>Kategori; YoY %, Büyüme Sırası (koşullu biçim)</td></tr>
+<tr><td>Sağ alt</td><td>Tablo</td><td>Temsilci (portföy); Net Satış, Müşteri, Ortalama Sepet, YoY %; alt bilgi: “Temsilci ataması geriye dönüktür.”</td></tr>
+<tr><td>Dilimleyici</td><td>Yıl, Kanal</td><td>Sağ üst köşe</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Hedefin %97,9’u gerçekleşti</b> (açık 16.134 ₺); açık Ç2’de (%93,6) oluştu. 2025’te Nisan–Haziran için erken uyarı: YTD gerçekleşme %97’nin altına inerse aylık aksiyon toplantısı.</li>
+<li><b>Hediye kategorisi %83,6</b> ile tek büyük sapma. Ya hedef gerçekçi değil ya kategori desteklenmiyor; 2025 hedefini geçmiş büyümeye (+%71) göre yeniden kur.</li>
+<li><b>Hedef dağılımını büyümeye göre güncelle:</b> Spor (+%39,9) ve Giyim (+%60,7) hedefe yakın ama yavaş büyüyor; Kozmetik ve Ev &amp; Yaşam iki kattan fazla büyüdü.</li>
+<li><b>Temsilci primini bu veriyle hesaplama:</b> 163.810 ₺ satış, temsilcinin işe girişinden önce. Sipariş anındaki temsilci bilgisi kaynak sistemden alınmalı.</li>
+<li>Rapordaki tüm kategori görsellerinde <code>Kategoriler[Kategori]</code> kullan; hedef ölçüleri <code>Urunler[Kategori]</code> ile yanlış sonuç verir.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-satis">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-eticaret/">← Vaka: e-ticaret dönüşüm hunisi ve kargo</a><a href="../hesap-tablolar/">Hesaplanmış tablolar: CALENDAR, GENERATESERIES, DATATABLE ve özet tablolar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

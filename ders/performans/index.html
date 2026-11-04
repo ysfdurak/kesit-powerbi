@@ -1,0 +1,100 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Performans ve VertiPaq | Kesit Power BI</title><meta name="description" content="Model neden yavaş? Kardinalite, sıkıştırma, Performans Analizi, DAX Studio ve iyi alışkanlıklar."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/performans/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Performans ve VertiPaq"><meta property="og:description" content="Model neden yavaş? Kardinalite, sıkıştırma, Performans Analizi, DAX Studio ve iyi alışkanlıklar."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/performans/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Performans ve VertiPaq","description":"Model neden yavaş? Kardinalite, sıkıştırma, Performans Analizi, DAX Studio ve iyi alışkanlıklar.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/performans/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Performans ve VertiPaq</h1><p class="st-l">Model neden yavaş? Kardinalite, sıkıştırma, Performans Analizi, DAX Studio ve iyi alışkanlıklar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-performans">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>VertiPaq nasıl sıkıştırır?</h2>
+<ul>
+<li><b>Sütun tabanlı:</b> Her sütun ayrı saklanır. Rapor yalnızca kullandığı sütunları okur.</li>
+<li><b>Sözlük kodlaması:</b> Metin değerleri bir sözlüğe yazılır, sütunda yalnızca tam sayı kodları tutulur. “İstanbul” milyon kez geçse de bir kez saklanır.</li>
+<li><b>Tekrar uzunluğu kodlaması (RLE):</b> Aynı değerin art arda tekrarları “değer × adet” olarak saklanır.</li>
+</ul>
+<p>Sonuç: Bir sütunun boyutunu en çok <b>kardinalitesi</b> (farklı değer sayısı) belirler. Satır sayısı ikinci sırada gelir.</p>
+<h2>Modeli küçültmek</h2>
+<ul>
+<li>Kullanılmayan sütunları Power Query'de kaldır. Özellikle benzersiz kimlikler, açıklama metinleri, GUID'ler pahalıdır.</li>
+<li>Tarih-saat sütununu <b>tarih</b> ve <b>saat</b> olarak ikiye böl; saniyeyi gerekmedikçe tutma.</li>
+<li>Ondalık hassasiyeti azalt (Sabit ondalık sayı), metin yerine tam sayı anahtar kullan.</li>
+<li>Otomatik tarih/saati kapat.</li>
+<li>Hesaplanmış sütunları mümkünse Power Query'ye ya da kaynağa taşı.</li>
+</ul>
+<h2>Ölçü ölçmek</h2>
+<ul>
+<li><b>Performans Analizi</b> (İyileştir (Optimize) sekmesi; Görünüm sekmesinden de açılır): Her görselin DAX sorgu süresi, görsel çizim süresi ve “diğer” süresi. Yavaş görselin sorgusunu kopyalayabilirsin.</li>
+<li><b>DAX Studio:</b> Ücretsiz araç. Sorgu planı, depolama motoru (SE) ve formül motoru (FE) sürelerini gösterir. VertiPaq Analyzer ile tablo ve sütun boyutlarını görürsün.</li>
+<li><b>Best Practice Analyzer</b> (Tabular Editor): Modeli kurallara göre denetler.</li>
+</ul>
+<h2>DAX alışkanlıkları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yerine</th><th>Bunu yaz</th><th>Neden?</th></tr>
+<tr><td><code>FILTER(Satislar, Satislar[Kanal] = "Web")</code></td><td><code>Satislar[Kanal] = "Web"</code></td><td>Tüm tabloyu satır satır taramak yerine tek sütunda filtre</td></tr>
+<tr><td><code>a / b</code></td><td><code>DIVIDE(a, b)</code></td><td>Sıfıra bölme güvenli; daha okunur</td></tr>
+<tr><td>Aynı ifadeyi iki kez yazmak</td><td><code>VAR</code></td><td>Bir kez hesaplanır</td></tr>
+<tr><td><code>SUMX(Satislar, [Ölçü])</code></td><td><code>SUMX(VALUES(Urunler[Urun]), [Ölçü])</code></td><td>Daha az bağlam geçişi</td></tr>
+<tr><td><code>IFERROR</code> ile hatayı gizlemek</td><td>Hatanın kaynağını düzeltmek</td><td>IFERROR motoru yavaşlatır, hatayı saklar</td></tr>
+<tr><td>Çift yönlü ilişki</td><td>Gerektiğinde <code>CROSSFILTER</code> ile ölçüde</td><td>Belirsizlik ve gereksiz filtre yayılımı</td></tr>
+</table></div>
+<h2>Büyük veri için</h2>
+<ul>
+<li><b>Artımlı yenileme:</b> Yalnızca son günleri yeniler, geçmiş bölümleri dokunmadan bırakır.</li>
+<li><b>Toplamalar (aggregations):</b> Özet tablo Import, ayrıntı DirectQuery. Motor uygun olanı seçer.</li>
+<li><b>Direct Lake:</b> Fabric'te kopyalama olmadan Import'a yakın hız.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bir sütunun bedelini ölçmek: kardinalite</h2>
+<p>Anadolu Market'in modeli büyüdükçe dosya şişiyor ve yenileme uzuyor. İlk soru “hangi tablo büyük?” değil, “<b>hangi sütun</b> pahalı?” olmalı. VertiPaq her sütunu ayrı sıkıştırır; bir sütunun boyutunu en çok farklı değer sayısı (kardinalite) belirler. Bunu ölçmenin en hızlı yolu tek satırlık bir sorgudur:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "SatirNo",   DISTINCTCOUNT(Satislar[SatirNo]),
+    "SiparisNo", DISTINCTCOUNT(Satislar[SiparisNo]),
+    "Tarih",     DISTINCTCOUNT(Satislar[Tarih]),
+    "Tutar",     DISTINCTCOUNT(Satislar[Tutar]),
+    "MusteriNo", DISTINCTCOUNT(Satislar[MusteriNo]),
+    "UrunNo",    DISTINCTCOUNT(Satislar[UrunNo]),
+    "Durum",     DISTINCTCOUNT(Satislar[Durum]),
+    "Kanal",     DISTINCTCOUNT(Satislar[Kanal])
+)</pre>
+<p>1.620 satırlık <code>Satislar</code> tablosunda sonuç: SatirNo 1.620, SiparisNo 910, Tarih 533, Tutar 357, MusteriNo 136, UrunNo 38, Durum 4, Kanal 3. <code>SatirNo</code> her satırda farklıdır: sözlüğü tablo kadar büyüktür ve art arda tekrar olmadığı için tekrar uzunluğu kodlaması (RLE) hiçbir şey kazandırmaz. <code>Kanal</code> ise 3 değerle neredeyse bedavadır. Gerçek bir modelde aynı oranlar milyonlarca satırla çarpılır.</p>
+<div class="tbl-wrap"><table><tr><th>Sütun tipi</th><th>Tipik kardinalite</th><th>Karar</th></tr>
+<tr><td>Satır kimliği, GUID, açıklama metni</td><td>Satır sayısı kadar</td><td>Raporda kullanılmıyorsa kaldır; detay gerekiyorsa ayrı bir detay sorgusu/sayfalandırılmış rapor</td></tr>
+<tr><td>Sipariş no, fatura no</td><td>Yüksek</td><td>Sayım için gerekliyse tut (<code>[Sipariş Sayısı]</code>), metin değil tam sayı olsun</td></tr>
+<tr><td>Tarih-saat</td><td>Çok yüksek</td><td>Tarih ve saat olarak böl, saniyeyi at</td></tr>
+<tr><td>Tutar, fiyat</td><td>Orta-yüksek</td><td>Gereksiz ondalığı azalt; satırda hesaplanabiliyorsa (Adet × Fiyat) iki ucu tut, sonucu ölçüde hesapla</td></tr>
+<tr><td>Kanal, durum, kategori</td><td>Çok düşük</td><td>Sorun değil</td></tr></table></div>
+<p>Tam sayı sütunları sözlük yerine <b>değer kodlaması</b> (value encoding) ile de saklanabilir; metin anahtar yerine tam sayı anahtar bu yüzden ucuzdur. Satır sırası da önemlidir: aynı değerler art arda geldikçe RLE daha iyi çalışır. VertiPaq sıralamayı kendisi seçer; sen kardinaliteyi düşürmeye odaklan.</p>
+
+<h2>Tarih-saat ve ondalık: kardinaliteyi kırmak</h2>
+<p>Saniye hassasiyetindeki bir zaman damgası bir yılda 31.536.000 farklı değer alabilir. Aynı bilgi <b>tarih</b> (365 değer) ve <b>dakika düzeyinde saat</b> (1.440 değer) olarak iki sütuna bölünürse toplam farklı değer 1.805'e iner. Bu oyun alanının <code>WebOlaylari</code> tablosu bu yüzden <code>Tarih</code> ve <code>Saat</code> sütunlarını ayrı tutar. Bölmeyi Power Query'de yap; DAX hesaplanmış sütunuyla bölersen orijinal sütun modelde kalır ve kazanç olmaz.</p>
+<p>Ondalık sayılarda da benzer bir kazanç vardır. Kuruş hassasiyeti yeten bir tutarı “Sabit ondalık sayı” (Fixed decimal) türüne almak hem boyutu hem kayan nokta yuvarlama sürprizlerini azaltır. Oran sütunlarını (ör. 0,1537291) iki-dört basamağa yuvarlamak kardinaliteyi ciddi düşürür; ama yuvarlamayı iş biriminin onayıyla yap.</p>
+
+<h2>Otomatik tarih/saat: görünmeyen tablolar</h2>
+<p>Otomatik tarih/saat açıkken Power BI modeldeki <b>her tarih sütunu</b> için gizli bir tarih tablosu oluşturur. Bu modelde <code>Satislar[Tarih]</code>, <code>Satislar[TeslimTarihi]</code>, <code>Musteriler[KayitTarihi]</code>, <code>Musteriler[IlkSiparis]</code>, <code>Calisanlar[IseGiris]</code>, projelerin üç tarih sütunu… her biri ayrı bir gizli tablo demektir. Her gizli tablo, sütundaki en eski ve en yeni yılı tam yıllarla kapsar; 1950 doğumlu bir kayıt varsa 70 yıllık bir tablo oluşur.</p>
+<ul>
+<li><b>Kapatma yolu:</b> Dosya → Seçenekler ve ayarlar → Seçenekler → <b>Geçerli Dosya → Veri Yükü</b> → Otomatik tarih/saat. Yeni dosyalar için <b>Genel</b> bölümündeki aynı ayarı da kapat.</li>
+<li><b>Önce:</b> kendi <code>Tarih</code> tablon “Tarih tablosu olarak işaretle” (Mark as date table) ile işaretlenmiş olmalı.</li>
+<li><b>Yan etki:</b> otomatik hiyerarşiyi (<code>Tarih.Yıl</code>, <code>Tarih.Ay</code>) kullanan görseller bozulur; bunları <code>Tarih</code> tablosunun sütunlarıyla yeniden kur. Hızlı ölçüler de otomatik hiyerarşiye yazılmışsa gözden geçir.</li>
+</ul>
+
+<h2>Performans Analizi'ni okumak</h2>
+<p>Performans Analizi (Performance analyzer) her görsel için üç süre verir. Kaydı başlat, <b>Görselleri yenile</b> de ve yavaş görseli aç:</p>
+<div class="tbl-wrap"><table><tr><th>Yüksek olan</th><th>Anlamı</th><th>İlk bakılacak yer</th></tr>
+<tr><td>DAX sorgusu</td><td>Model ya da ölçü yavaş</td><td>Sorguyu kopyala, DAX Studio'da Server Timings (DAX optimizasyonu dersi)</td></tr>
+<tr><td>Görsel görüntüleme</td><td>Çizim yavaş: çok nokta, ağır özel görsel, çok satırlı tablo</td><td>Nokta sayısını azalt, ilk N, özet görsel + detay sayfası</td></tr>
+<tr><td>Diğer</td><td>Görsel sırasını bekliyor; sayfadaki başka görseller önce çalışıyor</td><td>Sayfadaki görsel sayısını azalt</td></tr></table></div>
+<p>İlk ölçüm soğuk önbellekle yapılmadıysa sayılar yanıltır: ikinci yenilemede DAX süresi önbellekten gelir. Yavaş görselin süresini en az iki kez, aynı koşulla ölç.</p>
+<h3>Sayfa ve görsel sayısı</h3>
+<p>Her görsel en az bir sorgu gönderir; dilimleyiciler, kartlar ve metin kutusundaki dinamik başlıklar dahil. 30 görselli bir sayfada her biri 80 ms bile sürse sorgular sırayla beklediği için kullanıcı birkaç saniye bekler; Performans Analizi'nde bu bekleme “Diğer” sütununda birikir. Altı ayrı kart yerine çok değerli tek bir kart, on dilimleyici yerine filtre bölmesi, ayrıntı için ikinci bir sayfa kullan. Çapraz filtreleme her tıklamada sayfadaki tüm görselleri yeniden sorgulatır: gereksiz etkileşimleri “Etkileşimleri düzenle” ile kapat. Dilimleyicileri “Uygula” düğmesine bağlamak için Seçenekler → Geçerli Dosya → <b>Sorgu azaltma</b> (Query reduction) ayarlarını kullan.</p>
+
+<h2>Anti-kalıp: her soruya hesaplanmış sütun</h2>
+<p>“Hafta sonu satışı” istenince sık görülen çözüm, <code>Satislar</code>'a <code>HaftaSonuMu</code> hesaplanmış sütunu eklemektir. Bu sütun her yenilemede yeniden hesaplanır, olgu tablosunda yer kaplar ve <code>Tarih</code> tablosunda zaten olan bilgiyi kopyalar.</p>
+<pre class="dax" data-notry>-- Kaçın: olgu tablosunda hesaplanmış sütun
+HaftaSonuMu = RELATED(Tarih[HaftaSonu])</pre>
+<p>Doğru yer boyut tablosudur: <code>Tarih[HaftaSonu]</code> 1.096 satırda yaşar, filtre ilişki üzerinden <code>Satislar</code>'a iner. Ölçüde yalnızca bir sütun filtresi yazılır ve sonuç (bu modelde hafta sonları 341.997,65 ₺ net satış) aynı çıkar. Kural: <b>Satır başına bilgi boyuttan geliyorsa boyutta kalsın; olguda yalnızca anahtarlar ve sayılar dursun.</b></p>
+<div class="tip"><b>Kontrol listesi (sırayla)</b>1. Kullanılmayan sütunları kaldır (en büyük kazanç). 2. Yüksek kardinaliteli sütunları böl ya da yuvarla. 3. Otomatik tarih/saati kapat. 4. Olgu tablosundaki hesaplanmış sütunları boyuta, Power Query'ye ya da ölçüye taşı. 5. Sayfadaki görsel sayısını ve etkileşimleri azalt. 6. Ancak bundan sonra tek tek ölçüleri optimize et.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-performans">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hesaplama-gruplari/">← Hesaplama grupları, alan parametreleri, görsel hesaplamalar</a><a href="../guvenlik/">Satır ve nesne düzeyinde güvenlik →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

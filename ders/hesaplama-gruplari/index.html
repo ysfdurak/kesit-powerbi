@@ -1,0 +1,117 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hesaplama grupları, alan parametreleri, görsel hesaplamalar | Kesit Power BI</title><meta name="description" content="Ölçü patlamasını önlemek ve kullanıcıya ölçü/boyut seçtirmek."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hesaplama-gruplari/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Hesaplama grupları, alan parametreleri, görsel hesaplamalar"><meta property="og:description" content="Ölçü patlamasını önlemek ve kullanıcıya ölçü/boyut seçtirmek."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hesaplama-gruplari/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hesaplama grupları, alan parametreleri, görsel hesaplamalar","description":"Ölçü patlamasını önlemek ve kullanıcıya ölçü/boyut seçtirmek.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hesaplama-gruplari/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Hesaplama grupları, alan parametreleri, görsel hesaplamalar</h1><p class="st-l">Ölçü patlamasını önlemek ve kullanıcıya ölçü/boyut seçtirmek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hesaplama-gruplari">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Ölçü patlaması</h2>
+<p>5 temel ölçün (Satış, Kâr, Adet, Sipariş, Müşteri) ve 6 zaman varyasyonun (Cari, GY, YTD, GY YTD, YoY, YoY %) varsa 30 ölçü yazman gerekir. <b>Hesaplama grupları</b> bu varyasyonları bir kez tanımlar ve her ölçüye uygular.</p>
+<pre class="dax" data-notry>-- Hesaplama grubu: Zaman Zekâsı, öğeler:
+Cari    = SELECTEDMEASURE()
+GY      = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+YTD     = CALCULATE(SELECTEDMEASURE(), DATESYTD(Tarih[Tarih]))
+YoY %   = VAR c = SELECTEDMEASURE()
+          VAR g = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+          RETURN DIVIDE(c - g, g)</pre>
+<p><code>SELECTEDMEASURE()</code>, görselde o an kullanılan ölçünün yerine geçer. Hesaplama grubu modelde bir tablo gibi görünür; öğelerini matrisin sütununa koyduğunda her ölçü için altı varyasyon kendiliğinden gelir. Öğeler <b>biçim dizesi ifadesi</b> de taşıyabilir: YoY % öğesi sonucu yüzde olarak gösterir.</p>
+<p>Desktop'ta Model görünümünde <b>Hesaplama grubu</b> düğmesiyle (ya da Tabular Editor ile) oluşturulur. Hesaplama grubu eklenince örtük ölçüler kapanır; tüm değerler açık ölçü olmalıdır.</p>
+<h2>Alan parametreleri</h2>
+<p>Modelleme → Yeni parametre → <b>Alanlar</b>. Kullanıcıya bir dilimleyiciden “Grafiğin ekseni: Kategori / Kanal / Segment” ya da “Değer: Satış / Kâr / Adet” seçtirirsin. Arka planda özel bir tablo ve <code>NAMEOF</code> fonksiyonu kullanılır.</p>
+<h2>Görsel hesaplamalar</h2>
+<p>Görselin kendisinde, yalnızca görseldeki verilerle çalışan DAX hesapları. Model ölçüsü yazmadan kümülatif toplam, hareketli ortalama, önceki satıra göre fark:</p>
+<pre class="dax" data-notry>Kümülatif = RUNNINGSUM([Net Satış])
+Öncekine Göre = [Net Satış] - PREVIOUS([Net Satış])</pre>
+<p>Görsel hesaplamalar matris ızgarası üzerinde düşünür (satırlar, sütunlar, üst düzey). Model ölçülerinden daha basit yazılır ama yalnızca o görselde yaşar.</p>
+<h2>Dinamik biçim dizeleri</h2>
+<p>Ölçü araçları → Biçim → <b>Dinamik</b>. Ölçünün yanında, sonucun nasıl yazılacağını döndüren ikinci bir DAX ifadesi tanımlanır; sonuç <b>sayı olarak kalır</b> (sıralanır, grafikte kullanılır) ama biçimi bağlama göre değişir:</p>
+<pre class="dax" data-notry>-- [Satış (Seçili Para)] ölçüsünün biçim dizesi ifadesi:
+VAR Sembol = SELECTEDVALUE(ParaBirimleri[Sembol], "₺")
+RETURN "#,0 " & Sembol
+
+-- Büyüklüğe göre biçim:
+SWITCH(TRUE(),
+    SELECTEDMEASURE() >= 1000000, "#,0.0,, "Mn"",
+    SELECTEDMEASURE() >= 1000, "#,0.0, "B"",
+    "#,0")</pre>
+<p>FORMAT ile metne çevirmenin (Measure Lab: Akıllı Etiket) aksine, dinamik biçim dizesi sayının kendisini korur.</p>
+<h2>Alan parametresi, adım adım</h2>
+<ol>
+<li>Modelleme → Yeni parametre → <b>Alanlar</b>.</li>
+<li>Listeye ölçüleri (Net Satış, Brüt Kâr, Sipariş Sayısı) ya da sütunları (Kategori, Kanal, Segment) ekle; sırala, yeniden adlandır.</li>
+<li>“Sayfaya dilimleyici ekle” işaretli bırak. Power BI bir parametre tablosu oluşturur; her satırda <code>NAMEOF('Ölçüler'[Net Satış])</code> gibi bir başvuru vardır.</li>
+<li>Parametre sütununu görselin eksenine ya da değerine koy. Kullanıcı dilimleyiciden seçtikçe görsel alan değiştirir.</li>
+</ol>
+<p>Ölçülerle alan parametresi “ölçü seçici”, sütunlarla “eksen seçici” olur. İkisi aynı görselde birlikte kullanılabilir. Bu uygulamadaki <code>OlcuSecimi</code> tablosu ve <code>[Seçili Ölçü]</code> ölçüsü, alan parametresi gelmeden önceki SWITCH tabanlı yöntemin benzetimidir.</p>
+<div class="note"><b>Bu oyun alanında</b>Hesaplama grupları ve görsel hesaplamalar model ya da görsel düzeyinde tanımlandığı için DAX Playground’da çalıştırılamaz. Kavramları ve kalıpları bilmen sınav ve iş için yeterlidir.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Birden çok hesaplama grubu: öncelik (precedence)</h2>
+<p>Finans müdürü iki şey istiyor: her ölçüyü <b>YTD</b> görmek ve her ölçüyü <b>gün başına</b> görmek. Ekip iki ayrı hesaplama grubu kurar: <code>Zaman</code> (Cari, GY, YTD) ve <code>Ölçek</code> (Toplam, Gün Başına). Matriste ikisinden birer öğe seçilince motor iki öğeyi iç içe uygular. Hangisinin içte, hangisinin dışta olacağını grubun <b>Öncelik</b> (Precedence) özelliği belirler.</p>
+<p>Kural şudur: <b>düşük öncelikli grup içte, yüksek öncelikli grup dışta</b> çalışır. Motor en yüksek öncelikli öğeden başlar; o öğedeki <code>SELECTEDMEASURE()</code> yerine bir alttaki öğeyi koyar; en sonda gerçek ölçüye ulaşır. Ölçek grubu 10, Zaman grubu 20 ise “Gün Başına + YTD” şuna dönüşür:</p>
+<pre class="dax">Günlük Ort. YTD (Zaman dışta) =
+CALCULATE(DIVIDE([Net Satış], COUNTROWS(Tarih)), DATESYTD(Tarih[Tarih]))
+Günlük Ort. YTD (Ortalama dışta) =
+DIVIDE(CALCULATE([Net Satış], DATESYTD(Tarih[Tarih])), COUNTROWS(Tarih))</pre>
+<p>Mart 2024 hücresinde ilk yazım <b>1.707,59 ₺</b> verir: Ocak–Mart toplamı, Ocak–Mart gün sayısına bölünür. Öncelikler ters verilirse ikinci yazım çalışır ve <b>5.012,60 ₺</b> çıkar: üç aylık toplam yalnızca Mart'ın 31 gününe bölünür. İki sayı da “doğru hesaplanmış” görünür; yalnızca biri iş sorusunun cevabıdır. Öncelik bir teknik ayrıntı değil, <b>iş kuralıdır</b>.</p>
+<div class="tbl-wrap"><table><tr><th>Grup türü</th><th>Önerilen yer</th><th>Neden</th></tr>
+<tr><td>Para birimi çevirisi, ölçek (bin/milyon), gün başına</td><td>Düşük öncelik (içte)</td><td>Önce tek tek değerler dönüşür, sonra zaman penceresi uygulanır</td></tr>
+<tr><td>Zaman zekâsı (YTD, GY, YoY %)</td><td>Yüksek öncelik (dışta)</td><td>Pencere, dönüşmüş değerin tamamını sarmalı</td></tr>
+<tr><td>Yalnızca biçim değiştiren grup</td><td>En yüksek</td><td>Biçim dizesinde en yüksek öncelikli grubun ifadesi kazanır</td></tr></table></div>
+<p>Biçim dizeleri de öncelikle yarışır: en yüksek öncelikli grubun dinamik biçim dizesi geçerli olur; ölçünün kendi biçimi her hesaplama grubunun altında kalır. “YoY % neden ₺ ile görünüyor?” sorusunun cevabı çoğu zaman budur.</p>
+
+<h2>ISSELECTEDMEASURE: öğeyi her ölçüye uygulama</h2>
+<p>Zaman grubundaki <code>YoY %</code> öğesi <code>[Net Satış]</code> için anlamlıdır. Ama <code>[Kâr Marjı %]</code> için “marjın yüzde değişimi” çıkar: %20'den %22'ye çıkan marj “%10 büyüme” olarak görünür. Finans ise “2 puan arttı” demek ister. Metin döndüren ölçülerde (ör. <code>[Hedef Durumu]</code>, <code>[Dinamik Başlık]</code>) durum daha kötüdür: öğedeki aritmetik “metin sayıya çevrilemiyor” hatası verir.</p>
+<pre class="dax" data-notry>-- Zaman grubu, "YoY" öğesi
+VAR Simdi = SELECTEDMEASURE()
+VAR Once  = CALCULATE(SELECTEDMEASURE(), SAMEPERIODLASTYEAR(Tarih[Tarih]))
+RETURN
+SWITCH(TRUE(),
+    NOT ISNUMBER(Simdi), BLANK(),                              -- metin ölçüleri: dokunma
+    ISSELECTEDMEASURE([Kâr Marjı %], [Ortalama İndirim %]), (Simdi - Once) * 100,   -- oranlar: puan farkı
+    DIVIDE(Simdi - Once, Once))                                 -- tutarlar: yüzde değişim
+
+-- Aynı öğenin dinamik biçim dizesi
+IF(ISSELECTEDMEASURE([Kâr Marjı %], [Ortalama İndirim %]), "+0.0"" puan"";-0.0"" puan""", "+0.0%;-0.0%")</pre>
+<p><code>ISSELECTEDMEASURE</code> ölçüye <b>başvuru</b> alır; ölçü yeniden adlandırılınca başvuru da güncellenir. <code>SELECTEDMEASURENAME() = "Kâr Marjı %"</code> gibi metin karşılaştırması da çalışır, ama ilk yeniden adlandırmada sessizce bozulur. <code>SELECTEDMEASUREFORMATSTRING()</code> ise “ölçünün kendi biçimini koru” demenin yoludur; Cari ve GY öğelerinin biçim dizesine bunu yazarsan ₺ ölçüler ₺, adet ölçüleri adet kalır.</p>
+
+<h2>Seçim ifadeleri: çoklu ya da boş seçim</h2>
+<p>Bir dilimleyiciden aynı gruptan iki öğe seçildiğinde ne olur? Hesaplama öğesi yalnızca bağlamda <b>tek öğe</b> varken uygulanır. Varsayılan davranışta iki öğe seçilirse grup hiç uygulanmaz ve ölçü olduğu gibi görünür. Kullanıcı “YTD ve GY” seçtiğini sanırken çıplak cari değeri görür. Bunu iki isteğe bağlı grup özelliği yönetir:</p>
+<div class="tbl-wrap"><table><tr><th>Durum</th><th>İfade tanımlı değilse</th><th>Tanımlıysa</th></tr>
+<tr><td>Tek öğe seçili</td><td>Öğe uygulanır</td><td>Öğe uygulanır</td></tr>
+<tr><td>Birden çok öğe ya da çakışan seçim</td><td>Grup uygulanmaz</td><td><code>multipleOrEmptySelectionExpression</code> sonucu</td></tr>
+<tr><td>Grup hiç filtrelenmemiş</td><td>Grup uygulanmaz</td><td><code>noSelectionExpression</code> sonucu</td></tr></table></div>
+<p>Para birimi grubunda tipik kullanım: hiçbir şey seçilmemişse TL göster (<code>noSelectionExpression</code>), iki para birimi seçilmişse sayı yerine BLANK döndür ve biçim dizesinde “Tek para birimi seç” yaz. Yanlış rakam göstermek, boş göstermekten her zaman daha pahalıdır.</p>
+
+<h2>Yan etkiler: grup eklenince neler değişir?</h2>
+<ul>
+<li><b>Örtük ölçüler kapanır.</b> Modelde “örtük ölçüleri engelle” (Discourage implicit measures) açılır; sütunların yanındaki Σ kaybolur, <code>Satislar[Tutar]</code> artık değer alanına sürüklenemez. Var olan görseller çalışmaya devam eder, ama rapor yazarları için her toplam açık bir ölçü olmalıdır.</li>
+<li><b>Tüm ölçüler “variant” türüne geçer.</b> Rapor tarafında ölçünün veri türü sabit değildir. Bir ölçünün dinamik biçim dizesini başka yerde yeniden kullanıyorsan hata görebilirsin; ifadeyi <code>FORMAT(…, "")</code> ile sarmak çözüm yoludur.</li>
+<li><b>Güvenlik:</b> Hesaplama grubu tablosuna RLS ya da OLS tanımlanamaz. Güvenlik diğer tablolarda kalır (Satır ve nesne düzeyinde güvenlik dersi).</li>
+<li><b>Aynı gruptan iki öğe birleşmez.</b> “GY'nin YTD'si” tek gruptan iki öğeyle yapılamaz; ya iki ayrı grup ya da öğe içinde yan özyineleme (sideways recursion): öğe, <code>CALCULATE(SELECTEDMEASURE(), Zaman[Hesap] = "GY")</code> ile kardeş öğeyi çağırabilir.</li>
+<li><b>Ölçü içinden çağırma:</b> <code>CALCULATE([Net Satış], Zaman[Hesap] = "YTD")</code> geçerlidir. Bu, “YTD Satış” ölçüsünü ayrıca yazmadan bir kart görseline koymanın yoludur.</li>
+</ul>
+
+<h2>Alan parametresiyle birlikte kullanmak</h2>
+<p>Yönetim panosunda kullanıcı bir dilimleyiciden ölçüyü seçer (Net Satış, Brüt Kâr, Sipariş Sayısı); matrisin sütunlarında Zaman grubunun öğeleri durur. Ölçü seçiciyi alan parametresi (field parameter), varyasyonları hesaplama grubu sağlar: 3 ölçü × 3 öğe için tek ölçü yazmazsın. Dikkat edilecekler:</p>
+<ul>
+<li>Alan parametresinde örtük ölçü kullanılamaz; zaten hesaplama grubu da bunu istemez.</li>
+<li>Alan parametresi dilimleyicisinde hiçbir şey seçmemek “hepsi seçili” demektir; görsel birden çok ölçüyle dolar. Dilimleyiciyi “tek seçim” yap.</li>
+<li>Biçim: Zaman grubunun YoY öğesi biçimi ezer; kart başlığında ölçü adını göstermek için parametre tablosunun görünen ad sütununu kullan.</li>
+</ul>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne zaman?</th><th>Bakım</th><th>Dikkat</th></tr>
+<tr><td>Hesaplama grubu</td><td>Aynı dönüşüm birçok ölçüye uygulanacaksa</td><td>Tek yerde; yeni ölçü kendiliğinden kapsanır</td><td>Öncelik, variant tür, örtük ölçüler</td></tr>
+<tr><td>Alan parametresi</td><td>Kullanıcı ölçü ya da eksen seçecekse</td><td>Kolay; Desktop arayüzü</td><td>Boş seçim = hepsi</td></tr>
+<tr><td>SWITCH ölçüsü (<code>[Seçili Görünüm]</code>)</td><td>Az sayıda, özel mantık</td><td>Her ölçü için ayrı dal</td><td>Dallar çoğaldıkça okunmaz olur</td></tr>
+<tr><td>Görsel hesaplama</td><td>Tek görsele özel kümülatif/fark</td><td>Yalnızca o görselde</td><td>Başka görselde yeniden kullanılamaz</td></tr></table></div>
+
+<h2>Test etmek: önce sorguyla, sonra görselle</h2>
+<p>Hesaplama grubunu yayımlamadan önce DAX sorgu görünümünde (DAX query view) yıl × öğe ızgarası çıkar ve bilinen sayılarla karşılaştır. Bu oyun alanında aynı fikri <code>Gorunum</code> tablosu ve <code>[Seçili Görünüm]</code> ölçüsüyle deneyebilirsin:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(Tarih[Yil], Gorunum[Gorunum], "Değer", [Seçili Görünüm])</pre>
+<p>Sonuçta iki sağlama hemen görünür. Yıl düzeyinde <b>YTD = Cari</b> olmalı: 2024 için ikisi de 747.065,70 ₺. <b>2024'ün GY'si = 2023'ün Carisi</b> olmalı: 400.869,55 ₺. 2022'de GY ve YoY % satırı hiç gelmez, çünkü önceki yıl yok; BLANK olan satırı SUMMARIZECOLUMNS atar. Bu üç kural tutmuyorsa öğede ya da tarih tablosunda sorun vardır.</p>
+<div class="tip"><b>Kontrol listesi</b>Her grup için öncelik yazılı mı ve gerekçesi belgelendi mi? · Oran ve metin ölçüleri ISSELECTEDMEASURE / ISNUMBER ile korunuyor mu? · Çoklu seçim ve boş seçim ifadeleri tanımlı mı? · Yıl düzeyinde YTD = Cari, GY = önceki yılın Carisi sağlaması yapıldı mı? · Rapor yazarlarına “Σ artık yok, açık ölçü kullan” notu iletildi mi?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-hesaplama-gruplari">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-sorgu/">← DAX sorguları ve tablo fonksiyonları</a><a href="../performans/">Performans ve VertiPaq →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

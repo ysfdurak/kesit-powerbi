@@ -1,0 +1,96 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filtre bağlamı (filter context) ve satır bağlamı (row context) | Kesit Power BI</title><meta name="description" content="Aynı formül neden her hücrede farklı sonuç verir? DAX'ın iki bağlamı."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/baglam/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Filtre bağlamı (filter context) ve satır bağlamı (row context)"><meta property="og:description" content="Aynı formül neden her hücrede farklı sonuç verir? DAX'ın iki bağlamı."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/baglam/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Filtre bağlamı (filter context) ve satır bağlamı (row context)","description":"Aynı formül neden her hücrede farklı sonuç verir? DAX'ın iki bağlamı.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/baglam/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>Filtre bağlamı (filter context) ve satır bağlamı (row context)</h1><p class="st-l">Aynı formül neden her hücrede farklı sonuç verir? DAX'ın iki bağlamı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-baglam">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Filtre bağlamı: “Şu an hangi satırlar görünüyor?”</h2>
+<p>Bir matriste satıra <code>Kategoriler[Kategori]</code>, sütuna <code>Tarih[Yil]</code>, değere <code>[Toplam Satış]</code> koyduğunu düşün. “Kitap / 2024” hücresi hesaplanırken Power BI şunu yapar:</p>
+<ol>
+<li>Hücrenin koordinatlarından filtreler çıkarır: <code>Kategori = "Kitap"</code>, <code>Yil = 2024</code>.</li>
+<li>Dilimleyici, sayfa ve rapor filtrelerini ekler (ör. <code>Kanal = "Web"</code>).</li>
+<li>Filtreleri ilişkiler üzerinden <code>Satislar</code> tablosuna yayar.</li>
+<li><code>SUM(Satislar[Tutar])</code>'ı yalnızca kalan satırlar üzerinde hesaplar.</li>
+</ol>
+<p>Bu filtrelerin tümüne <b>filtre bağlamı</b> denir. Formül hiç değişmez; değişen, formülün gördüğü satırlardır. Toplam satırında kategori filtresi yoktur, bu yüzden toplam tüm kategorileri kapsar.</p>
+<div class="note"><b>Deney</b>DAX Playground’da <code>SUM(Satislar[Tutar])</code> yaz ve satır eksenini Kategori, sonra Yıl, sonra Kanal yap. Aynı formül, farklı bağlam.</div>
+<h2>Satır bağlamı: “Şu an hangi satırdayım?”</h2>
+<p>Hesaplanmış sütunlarda ve <code>SUMX</code> gibi <b>yineleyicilerde</b> (iterator) DAX tablonun satırlarını tek tek dolaşır. Her adımda “geçerli satır” vardır; <code>Satislar[Adet]</code> yazdığında o satırın adedini okursun.</p>
+<pre class="dax">Brüt Tutar = SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat])</pre>
+<p><code>SUMX</code>, filtre bağlamında görünen her satış satırı için <code>Adet × BirimFiyat</code> hesaplar ve sonuçları toplar.</p>
+<h2>İkisi aynı şey değil</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Filtre bağlamı</th><th>Satır bağlamı</th></tr>
+<tr><td>Kaynağı</td><td>Görsel, dilimleyici, filtreler, CALCULATE</td><td>Hesaplanmış sütun, X ile biten fonksiyonlar, FILTER</td></tr>
+<tr><td>Etkisi</td><td>Tablolardaki satırları süzer</td><td>Bir satırın değerlerini okumayı sağlar</td></tr>
+<tr><td>İlişkileri izler mi?</td><td>Evet, kendiliğinden</td><td>Hayır; ilişkili tabloya <code>RELATED</code> ile gidilir</td></tr>
+</table></div>
+<div class="warn"><b>Sık hata</b>Bir ölçüde çıplak sütun yazmak: <code>Fiyat Ölçüsü = Satislar[BirimFiyat]</code>. Ölçünün satır bağlamı yoktur; hangi satırın fiyatı? DAX hata verir. Toplayıcı (<code>SUM</code>, <code>AVERAGE</code>, <code>MAX</code>) ya da yineleyici kullan.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Toplam satırı neden satırların toplamı değildir?</h2>
+<p>Matristeki <b>Toplam</b> satırı, üstteki hücreleri toplamaz. Ölçü, toplam satırının kendi filtre bağlamında (yani kategori filtresi olmadan) <b>yeniden hesaplanır</b>. Toplanabilir ölçülerde (SUM gibi) bu fark görünmez; toplanamayan ölçülerde ise toplam, satırların toplamından farklı çıkar.</p>
+<pre class="dax">Müşteri Sayısı (kategori toplamı) =
+SUMX(VALUES(Urunler[Kategori]), [Müşteri Sayısı])</pre>
+<p>Bu modelde <code>[Müşteri Sayısı]</code> toplamda <b>136</b>, ama yukarıdaki ölçü <b>628</b> verir. Bir müşteri birden çok kategoriden alışveriş yaptığı için her kategoride yeniden sayılır. Hangisi doğru? Soruya bağlı: “kaç farklı müşterimiz var?” sorusunun cevabı 136’dır. Toplam satırının satırların toplamını göstermesi gerekiyorsa SUMX ile açıkça öyle yazmak gerekir.</p>
+<p>Toplam satırında farklı bir şey göstermek (ya da hiçbir şey göstermemek) için hücrenin hangi düzeyde olduğunu sorabilirsin:</p>
+<pre class="dax">Kategori Satışı (yalnızca satırlarda) =
+IF(ISINSCOPE(Urunler[Kategori]), [Net Satış], BLANK())</pre>
+<div class="note"><b>Kural</b>Bir ölçünün toplamı “yanlış” görünüyorsa önce şunu sor: toplam satırının filtre bağlamı ne? Cevap neredeyse her zaman “görselin satır filtresinin olmadığı bağlam”dır; dilimleyici ve sayfa filtreleri kalır.</div></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Hesaplanmış sütun mu, ölçü mü?</h2>
+<p>Satış müdürü iki şey istiyor: tabloda her satış satırının kâr marjı, kartta da “ortalama marjımız”. Hızlı çözüm şuna benzer: <code>Satislar</code> tablosuna bir hesaplanmış sütun (calculated column) eklenir, karta da bu sütunun ortalaması konur.</p>
+<pre class="dax" data-notry>Satır Marjı =
+DIVIDE(Satislar[Tutar] - Satislar[Maliyet], Satislar[Tutar])</pre>
+<p>Sütun, yenileme sırasında her satır için bir kez hesaplanır. Bu bir <b>satır bağlamı</b> işidir ve sorun çıkarmaz. Sorun karttadır. Sütunun ortalaması her satırı eşit sayar: 50 ₺’lik bir kitap satırı ile 5.000 ₺’lik bir monitör satırı ortalamayı aynı ölçüde etkiler. Aynı hesabı ölçü olarak yazınca farkı görürsün:</p>
+<pre class="dax">Satır Marjı Ortalaması =
+AVERAGEX(
+    FILTER(Satislar, Satislar[Durum] &lt;&gt; "İptal"),
+    DIVIDE(Satislar[Tutar] - Satislar[Maliyet], Satislar[Tutar])
+)</pre>
+<p>Bu modelde satır ortalaması <b>%35,9</b> çıkar; hazır <code>[Kâr Marjı %]</code> ise <b>%36,5</b>. Fark kategori düzeyinde daha da açılır, üstelik yönü bile değişir:</p>
+<div class="tbl-wrap"><table><tr><th>Kategori</th><th>[Kâr Marjı %] (toplam kâr / toplam satış)</th><th>Satır marjlarının ortalaması</th></tr>
+<tr><td>Elektronik</td><td>%38,0</td><td>%36,9</td></tr>
+<tr><td>Kozmetik</td><td>%35,1</td><td>%37,9</td></tr>
+<tr><td>Tüm satışlar</td><td>%36,5</td><td>%35,9</td></tr></table></div>
+<p>Kozmetikte küçük tutarlı satırların marjı yüksek, büyük tutarlı satırlarınki düşük. Satır ortalaması bu yüzden kategoriyi olduğundan iyi gösterir. Yöneticinin sorduğu “kazandığımız her 100 ₺’nin kaçı kâr?” sorusunun cevabı ilk sütundur.</p>
+<div class="tbl-wrap"><table><tr><th>Soru</th><th>Hesaplanmış sütun</th><th>Ölçü</th></tr>
+<tr><td>Ne zaman hesaplanır?</td><td>Yenilemede, bir kez</td><td>Her görsel sorgusunda, o hücrenin bağlamında</td></tr>
+<tr><td>Hangi bağlamı görür?</td><td>Yalnızca satır bağlamı</td><td>Filtre bağlamı (dilimleyici, eksen, filtreler)</td></tr>
+<tr><td>Bellek</td><td>Her satır için değer saklar, modeli büyütür</td><td>Saklamaz, yalnızca formül</td></tr>
+<tr><td>Dilimleyici / eksen olabilir mi?</td><td>Evet</td><td>Hayır</td></tr>
+<tr><td>Tipik kullanım</td><td>Gruplama etiketi (“Büyük sipariş”), sıralama anahtarı</td><td>Toplam, oran, pay, karşılaştırma</td></tr></table></div>
+<div class="tip"><b>Karar kuralı</b>Sonucu dilimleyiciye, eksene ya da satır başlığına koyacaksan sütun yaz. Sonucu bir sayı olarak, kullanıcının seçimine göre değişsin istiyorsan ölçü yaz. Oranı, ortalamayı ve payı asla sütunda saklayıp sonra toplama ya da ortalama alma.</div>
+
+<h2>Hesaplanmış sütunda filtre bağlamı yoktur</h2>
+<p>İkinci klasik tuzak: <code>Urunler</code> tablosuna her ürünün cirosunu yazan bir sütun eklemek.</p>
+<pre class="dax" data-notry>Ürün Cirosu = SUM(Satislar[Tutar])</pre>
+<p>Beklenen, her ürün satırında o ürünün cirosu. Gerçekte her satırda aynı sayı çıkar: <b>1.346.190 ₺</b>, yani bütün satışlar. Sebep şu: hesaplanmış sütunda satır bağlamı vardır ama filtre bağlamı boştur. Satır bağlamı bir filtre değildir; ilişki üzerinden <code>Satislar</code>’a hiçbir şey yaymaz. <code>SUM</code> de filtre bağlamına baktığı için tüm tabloyu toplar.</p>
+<p>Formülü <code>CALCULATE</code> içine alınca satır bağlamı bir filtreye dönüşür ve ilişki üzerinden yayılır. Bunun adı bağlam geçişidir; ayrıntısı İleri DAX’taki “Bağlam geçişi” dersinde. Etkisini bir sorguyla görebilirsin:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    TOPN(3, Urunler, Urunler[UrunNo], ASC),
+    "Ham SUM", SUM(Satislar[Tutar]),
+    "CALCULATE ile", CALCULATE(SUM(Satislar[Tutar]))
+)</pre>
+<p>Kablosuz Kulaklık, Akıllı Saat ve Bluetooth Hoparlör satırlarında “Ham SUM” hep 1.346.190 ₺ çıkar. “CALCULATE ile” sütunu ise sırasıyla 42.762 ₺, 64.906 ₺ ve 33.032 ₺ verir. Bir ölçü referansı (<code>[Toplam Satış]</code>) yazsaydın, ölçüler kendiliğinden <code>CALCULATE</code> ile sarıldığı için sonuç doğru olurdu.</p>
+
+<h2>Bir hücrenin filtre bağlamını okumak</h2>
+<p>Bazen ölçünün kendi bağlamını bilmesi gerekir: “Toplam satırında mıyım? Kullanıcı kategori seçti mi?” Bunun için dört fonksiyon var ve her biri farklı bir soruya cevap verir:</p>
+<div class="tbl-wrap"><table><tr><th>Fonksiyon</th><th>Sorduğu soru</th><th>Toplam satırında, dilimleyicide tek kategori seçiliyken</th></tr>
+<tr><td><code>ISFILTERED(Kategoriler[Kategori])</code></td><td>Bu sütuna doğrudan bir filtre var mı?</td><td>DOĞRU</td></tr>
+<tr><td><code>HASONEVALUE(Kategoriler[Kategori])</code></td><td>Görünen tek bir değer mi kaldı?</td><td>DOĞRU</td></tr>
+<tr><td><code>ISINSCOPE(Kategoriler[Kategori])</code></td><td>Görselin gruplama düzeyi bu sütun mu?</td><td>YANLIŞ</td></tr>
+<tr><td><code>COUNTROWS(VALUES(Kategoriler[Kategori]))</code></td><td>Kaç değer görünüyor?</td><td>1</td></tr></table></div>
+<p>Toplam satırını gizlemek için <code>ISINSCOPE</code>, “tek bir seçim var mı?” sorusu için <code>HASONEVALUE</code> doğru araçtır. İkisini karıştırınca toplam satırı tek seçimde bir kategori gibi davranır. Hangi hücrede hangi cevabın geldiğini görmek için şu tanı ölçüsünü bir matrise koy:</p>
+<pre class="dax">Bağlam Dedektörü =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Kategoriler[Kategori]), "Kategori satırı",
+    ISFILTERED(Kategoriler[Kategori]), "Toplam, kategori filtreli",
+    "Filtre yok"
+)</pre>
+<div class="note"><b>Kontrol listesi: bağlam sorusu</b>1) Formül nerede çalışıyor: hesaplanmış sütun mu, ölçü mü, yineleyicinin içi mi? 2) Satır bağlamı varsa, ilişkili tabloyu süzmesi gerekiyor mu? Gerekiyorsa <code>CALCULATE</code> ya da ölçü referansı kullan. 3) Sonuç bir oran mı? Oransa ölçü yaz, sütunda saklama. 4) Toplam satırında ne görünmeli? <code>ISINSCOPE</code> ile karar ver.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-baglam">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../gorsel-secimi/">← Doğru görseli seçmek</a><a href="../calculate/">CALCULATE: filtre bağlamını değiştirmek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

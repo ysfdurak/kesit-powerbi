@@ -1,0 +1,149 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAX sorguları ve tablo fonksiyonları | Kesit Power BI</title><meta name="description" content="EVALUATE, SUMMARIZECOLUMNS, ADDCOLUMNS, SELECTCOLUMNS, TOPN, DEFINE MEASURE ve ORDER BY."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-sorgu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="DAX sorguları ve tablo fonksiyonları"><meta property="og:description" content="EVALUATE, SUMMARIZECOLUMNS, ADDCOLUMNS, SELECTCOLUMNS, TOPN, DEFINE MEASURE ve ORDER BY."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-sorgu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"DAX sorguları ve tablo fonksiyonları","description":"EVALUATE, SUMMARIZECOLUMNS, ADDCOLUMNS, SELECTCOLUMNS, TOPN, DEFINE MEASURE ve ORDER BY.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-sorgu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>DAX sorguları ve tablo fonksiyonları</h1><p class="st-l">EVALUATE, SUMMARIZECOLUMNS, ADDCOLUMNS, SELECTCOLUMNS, TOPN, DEFINE MEASURE ve ORDER BY.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-sorgu">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>DAX sorgu görünümü</h2>
+<p>Power BI Desktop'taki <b>DAX sorgu görünümü</b> (ve DAX Studio gibi araçlar), bir tablo döndüren sorgular çalıştırır. Ölçüleri görsel kurmadan test etmenin, veriyi incelemenin ve hata ayıklamanın en hızlı yoludur. Bu uygulamadaki DAX Playground'nun “Sorgu” modu da aynıdır.</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    Tarih[Yil],
+    "Net Satış", [Net Satış],
+    "Hedef", [Hedef]
+)
+ORDER BY Kategoriler[Kategori], Tarih[Yil]</pre>
+<h2>Tablo fonksiyonları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Ne döndürür?</th></tr>
+<tr><td><code>SUMMARIZECOLUMNS(sütunlar…, "Ad", ifade…)</code></td><td>Grup başına satır + hesaplanmış sütunlar. Görsellerin arka planda ürettiği sorgu budur. Tüm ölçüleri boş olan satırları atar.</td></tr>
+<tr><td><code>SUMMARIZE(tablo, sütunlar…)</code></td><td>Tablodaki var olan grup kombinasyonları. Hesap eklemek için ADDCOLUMNS ile birlikte kullanılması önerilir.</td></tr>
+<tr><td><code>ADDCOLUMNS(tablo, "Ad", ifade…)</code></td><td>Tabloya hesaplanmış sütun ekler (her satırda bağlam geçişiyle).</td></tr>
+<tr><td><code>SELECTCOLUMNS(tablo, "Ad", ifade…)</code></td><td>Yalnızca seçilen ya da yeniden adlandırılan sütunlar.</td></tr>
+<tr><td><code>TOPN(n, tablo, ifade)</code></td><td>İlk n satır.</td></tr>
+<tr><td><code>FILTER</code>, <code>VALUES</code>, <code>ALL</code>, <code>CALCULATETABLE</code></td><td>Süzülmüş ya da filtresiz tablolar.</td></tr>
+<tr><td><code>{ }</code>, <code>ROW</code>, <code>GENERATESERIES</code></td><td>Elle tablo oluşturma.</td></tr>
+</table></div>
+<h2>Sorgu içinde ölçü tanımlamak</h2>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Marj] = DIVIDE([Brüt Kâr], [Net Satış])
+EVALUATE
+TOPN(5, SUMMARIZECOLUMNS(Urunler[Urun], "Satış", [Net Satış], "Marj", [Marj]), [Satış])
+ORDER BY [Satış] DESC</pre>
+<p><code>DEFINE MEASURE</code> modeli değiştirmeden geçici bir ölçü tanımlar. Desktop'ta bu ölçüyü tek tıkla modele ekleyebilirsin.</p>
+<h2>Tek değer görmek</h2>
+<pre class="dax">EVALUATE { [Net Satış] }</pre>
+<p>Birden çok değeri tek satırda görmek için <code>ROW</code> kullanılır:</p>
+<pre class="dax">EVALUATE ROW("Satış", [Net Satış], "Marj", [Kâr Marjı %])</pre>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>DAX sorgu görünümü bir test tezgâhıdır</h2>
+<p>Finans, "Net Satış" tanımından iadelerin de düşülmesini istiyor. Modeldeki ölçüyü hemen değiştirirsen ona bağlı onlarca ölçü ve rapor aynı anda değişir. Önce sorgu içinde dene:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Net Satış (İadesiz)] =
+        CALCULATE([Toplam Satış], NOT Satislar[Durum] IN {"İptal", "İade"})
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    "Eski", [Net Satış],
+    "Yeni", [Net Satış (İadesiz)],
+    "Fark", [Net Satış] - [Net Satış (İadesiz)]
+)
+ORDER BY Tarih[Yil]</pre>
+<p>Fark 2022'de 11.621,15 ₺, 2023'te 26.035,75 ₺, 2024'te 43.178,45 ₺: bu, iade tutarlarıdır. Finansa "bu değişiklik 2024 net satışını 43 bin ₺ düşürür" diyebilirsin. Power BI Desktop'taki iş akışı (Microsoft Learn'e göre):</p>
+<ol>
+<li>Veri bölmesinde ölçüye sağ tık → <b>Hızlı sorgular (Quick queries)</b> → <b>Değerlendir (Evaluate)</b>, <b>Tanımla ve değerlendir (Define and evaluate)</b> ya da <b>Başvurularla tanımla ve değerlendir (Define with references and evaluate)</b>. Sonuncusu, ölçünün dayandığı ölçüleri de DEFINE bloğuna getirir.</li>
+<li>Tanımı düzenle, çalıştır, sonuçları eski tanımla karşılaştır.</li>
+<li>Ölçünün üstündeki CodeLens bağlantısı <b>Modeli güncelle: Ölçünün üzerine yaz (Update model: Overwrite measure)</b> ya da şeritteki <b>Modeli değişikliklerle güncelle (Update model with changes)</b> ile modele yaz.</li>
+</ol>
+<ul>
+<li>Sorgudaki MEASURE, modelde aynı adlı bir ölçü varsa onu yalnızca o sorgu boyunca geçersiz kılar; model değişmez.</li>
+<li>Ölçünün üstüne <code>///</code> ile yazdığın açıklama, modele eklenince ölçünün açıklaması olur. Belgeleme işini burada yapmış olursun.</li>
+<li>Sorgu sekmeleri Desktop dosyasıyla kaydedilir. Power BI proje (PBIP) biçiminde her sekme, anlamsal model klasöründeki DAXQueries klasörüne .dax dosyası olarak yazılır; yani test sorguların Git'e girer.</li>
+<li>Canlı bağlantıda (live connect) model ölçüleri görüntülenemez ve "Modeli güncelle" seçenekleri yoktur.</li>
+</ul>
+
+<h2>Ölçü doğrulama sorguları</h2>
+<p>Her yeni ya da değiştirilmiş ölçü için birkaç sabit test yaz. Testin cevabı tek bir satır olsun; sonuç "GEÇTİ / KALDI" diye okunsun:</p>
+<pre class="dax">EVALUATE
+VAR Beklenen = 1250772.45
+RETURN
+    ROW(
+        "Net Satış", [Net Satış],
+        "Durum", IF(ABS([Net Satış] - Beklenen) &lt; 0.01, "GEÇTİ", "KALDI")
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Test</th><th>Sorgu fikri</th><th>Bu modelde</th></tr>
+<tr><td>Toplam tutarlılığı</td><td><code>[Net Satış]</code> ile <code>SUMX(VALUES(Kategoriler[Kategori]), [Net Satış])</code> eşit mi?</td><td>İkisi de 1.250.772,45</td></tr>
+<tr><td>Paylar toplamı</td><td><code>SUMX(VALUES(Kategoriler[Kategori]), [Kategori Payı %])</code> = 1 mi?</td><td>1</td></tr>
+<tr><td>Zaman zekâsı</td><td>31 Aralık 2024'teki [Satış YTD] = 2024 yılının satışı mı?</td><td>İkisi de 747.065,70</td></tr>
+<tr><td>Hedef</td><td>Kategorilere dağıtılmış hedef toplamı = genel hedef mi?</td><td>1.299.300</td></tr>
+<tr><td>Kaynakla mutabakat</td><td>Kaynak sistemdeki (SQL, ERP) toplamla aynı mı?</td><td>Kaynak sorgusuyla karşılaştır</td></tr>
+</table></div>
+<p>Kayan nokta tuzağı: <code>[Net Satış] - SUMX(...)</code> sıfır değil, −0,000000000466 çıkar. Testleri doğrudan eşitlikle değil, küçük bir toleransla (<code>ABS(fark) &lt; 0.01</code>) ya da ROUND ile yaz; yoksa doğru ölçü "KALDI" der.</p>
+
+<h2>SUMMARIZECOLUMNS + TREATAS: görseli sorguda kurmak</h2>
+<p>Bir görselin rakamı sorgulanıyor: "2024'te Web ve Mobil'de kategori satışları". Performans Analizi'nden görselin sorgusunu kopyaladığında hep aynı şekli görürsün: gruplama sütunları, dilimleyicileri temsil eden filtre tabloları ve ölçüler.</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[Dijital Marj] = DIVIDE([Brüt Kâr], [Net Satış])
+EVALUATE
+SUMMARIZECOLUMNS(
+    Kategoriler[Kategori],
+    TREATAS({2024}, Tarih[Yil]),
+    TREATAS({"Web", "Mobil"}, Satislar[Kanal]),
+    "Satış", [Net Satış],
+    "Marj", [Dijital Marj]
+)
+ORDER BY [Satış] DESC</pre>
+<p>Elektronik 168.910,60 ₺ ile başta, Hediye 8.700 ₺ ile sonda. Filtre tabloları dilimleyici gibi davranır; değerleri, gruplama satırları oluşturulmadan önce uygulanır. Üç kural:</p>
+<ul>
+<li>SUMMARIZECOLUMNS sıra garantisi vermez; testlerde her zaman ORDER BY yaz.</li>
+<li>Modeldeki "Sütuna göre sırala" (Sort by column) ayarı sorgu sonucuna uygulanmaz. Ay adlarını doğru sıralamak için AyNo'yu da sorguya alıp ona göre sırala.</li>
+<li>Sonuç ızgarasındaki sıralama ve filtre yalnızca dönen satırlara uygulanır. Sorgu başına sınır 1.000.000 değerdir (20 sütunda en fazla 50.000 satır); büyük sonuçları doğrularken filtreyi sorgunun içine yaz.</li>
+</ul>
+
+<h2>ORDER BY, START AT ve DEFINE VAR</h2>
+<p>START AT, ORDER BY'ın içinde yer alır ve sonucun hangi değerden başlayacağını belirler. Değerler sabit olmalı; ORDER BY sütun sayısından fazla değer verilemez. Büyük bir listeyi sayfa sayfa dışa aktarırken işe yarar. Bu uygulamanın motoru START AT'i desteklemez:</p>
+<pre class="dax" data-notry>EVALUATE
+SUMMARIZECOLUMNS(Urunler[Urun], "Satış", [Net Satış])
+ORDER BY Urunler[Urun] ASC
+START AT "M"</pre>
+<p>İkinci bir tuzak: ORDER BY, TOPN'in hangi satırları seçeceğini belirlemez; yalnızca seçilenleri sıralar. "İlk 10" sorusunun sırası TOPN'in kendi sıralama bağımsız değişkenindedir.</p>
+<p>DEFINE bloğunda VAR ile sorgu genelinde geçerli bir eşik tanımlayabilirsin. Belgeler DEFINE TABLE ve DEFINE COLUMN için "iç kullanım içindir, önerilmez" diyor; sorgu içi tablolar için VAR kullan:</p>
+<pre class="dax">DEFINE
+    VAR Esik = 0.3
+EVALUATE
+FILTER(SUMMARIZECOLUMNS(Urunler[Urun], "Marj", [Kâr Marjı %]), [Marj] &lt; Esik)</pre>
+<p>Marjı %30'un altında kalan 9 ürün gelir. Eşiği değiştirip yeniden çalıştırmak tek bir sayıyı düzenlemek kadar kolaydır.</p>
+
+<h2>Sorgu ile veri kalitesi kontrolü</h2>
+<p>Yeni bir veri kaynağı bağlandığında, rapor yazmadan önce tek bir "sağlık" sorgusu çalıştır. Bu modelde sonuçlar şöyle:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kontrol</th><th>İfade fikri</th><th>Sonuç</th><th>Yorum</th></tr>
+<tr><td>Anahtar benzersiz mi?</td><td><code>COUNTROWS(Satislar) - DISTINCTCOUNT(Satislar[SatirNo])</code></td><td>0</td><td>Bağlam geçişi güvenli</td></tr>
+<tr><td>Yetim ürün satırı</td><td><code>FILTER(Satislar, ISBLANK(RELATED(Urunler[Urun])))</code></td><td>0</td><td>Her satışın ürünü var</td></tr>
+<tr><td>Negatif tutar</td><td><code>Satislar[Tutar] &lt; 0</code></td><td>0</td><td>İadeler Durum ile işaretli</td></tr>
+<tr><td>Teslim, siparişten önce</td><td><code>TeslimTarihi &lt; Tarih</code></td><td>0</td><td>Tarih mantığı tutarlı</td></tr>
+<tr><td>Boş kargo günü</td><td><code>ISBLANK(Satislar[KargoGun])</code></td><td>131</td><td>121 iptal + 10 kargoda; beklenen</td></tr>
+<tr><td>Tarih tablosu kesintisiz mi?</td><td><code>COUNTROWS(Tarih)</code> ile gün farkı + 1</td><td>1.096 = 1.096</td><td>Eksik gün yok</td></tr>
+<tr><td>Hiç almamış müşteri</td><td><code>ISEMPTY(RELATEDTABLE(Satislar))</code></td><td>14</td><td>Ortalama ölçülerinde dikkat</td></tr>
+<tr><td>Şehri boş müşteri</td><td><code>COUNTBLANK(Musteriler[Sehir])</code></td><td>7</td><td>Harita ve bölge raporunda "(Boş)"</td></tr>
+<tr><td>Hiç satılmamış ürün</td><td><code>ISEMPTY(CALCULATETABLE(Satislar))</code></td><td>2</td><td>Koşu Bandı, Gurme Lokum Kutusu</td></tr>
+</table></div>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(Satislar),
+    "Yetim ürün", COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Urunler[Urun])))) + 0,
+    "Boş kargo günü", COUNTROWS(FILTER(Satislar, ISBLANK(Satislar[KargoGun]))) + 0,
+    "Tarih satırı", COUNTROWS(Tarih),
+    "Gün sayısı", DATEDIFF(MIN(Tarih[Tarih]), MAX(Tarih[Tarih]), DAY) + 1,
+    "Almayan müşteri", COUNTROWS(FILTER(Musteriler, ISEMPTY(RELATEDTABLE(Satislar)))) + 0
+)</pre>
+<p>Boş bir FILTER üzerinde COUNTROWS 0 değil BLANK döndürür. Rapor ya da test çıktısında "0" görmek istiyorsan <code>+ 0</code> ekle.</p>
+<div class="tip"><b>Ekip çalışması</b>Sağlık sorgusunu ve ölçü testlerini PBIP projesinde DAXQueries klasöründe tut. Bir ölçüyü değiştiren kişi testleri çalıştırır ve sonucu çekme isteğine (pull request) ekler. Böylece "bu rakam neden değişti?" sorusunun cevabı kayıt altında olur.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-sorgu">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../zaman-ileri/">← Gelişmiş zaman hesapları</a><a href="../hesaplama-gruplari/">Hesaplama grupları, alan parametreleri, görsel hesaplamalar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,80 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hızlı ölçüler (quick measures) ve Copilot ile DAX | Kesit Power BI</title><meta name="description" content="Kod yazmadan ölçü üretmek; üretilen DAX'ı okumak, düzeltmek ve ne zaman güvenmemek gerektiği."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hizli-olcu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Hızlı ölçüler (quick measures) ve Copilot ile DAX"><meta property="og:description" content="Kod yazmadan ölçü üretmek; üretilen DAX'ı okumak, düzeltmek ve ne zaman güvenmemek gerektiği."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hizli-olcu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hızlı ölçüler (quick measures) ve Copilot ile DAX","description":"Kod yazmadan ölçü üretmek; üretilen DAX'ı okumak, düzeltmek ve ne zaman güvenmemek gerektiği.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hizli-olcu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Temelleri</span><h1>Hızlı ölçüler (quick measures) ve Copilot ile DAX</h1><p class="st-l">Kod yazmadan ölçü üretmek; üretilen DAX'ı okumak, düzeltmek ve ne zaman güvenmemek gerektiği.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hizli-olcu">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Hızlı ölçüler</h2>
+<p>Modelleme → <b>Hızlı ölçü</b> (ya da bir ölçüye sağ tık → Yeni hızlı ölçü). Bir hesaplama türü seçip alanları kutulara sürüklersin; Power BI DAX'ı yazar.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori</th><th>Örnekler</th></tr>
+<tr><td>Kategori başına toplama</td><td>Kategori başına ortalama, varyans, maksimum</td></tr>
+<tr><td>Filtreler</td><td>Filtrelenmiş değer, filtrelenmiş değerden fark, yüzde fark, yeni müşterilerin satışı</td></tr>
+<tr><td>Zaman zekâsı</td><td>YTD, QTD, MTD, yıldan yıla değişim, hareketli ortalama</td></tr>
+<tr><td>Toplamlar</td><td>Kümülatif toplam, kategori toplamı</td></tr>
+<tr><td>Matematik</td><td>Toplama, çıkarma, çarpma, bölme, yüzde fark, korelasyon katsayısı</td></tr>
+<tr><td>Metin</td><td>Yıldız derecelendirmesi, değer listesi (birleştirilmiş)</td></tr>
+</table></div>
+<p>Oluşan ölçü normal bir ölçüdür: formül çubuğunda açıp okuyabilir, değiştirebilirsin. Örneğin “Yıldan yıla değişim” şuna benzer bir kod üretir:</p>
+<pre class="dax">Net Satış YoY% =
+VAR __PREV_YEAR = CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -1, YEAR))
+RETURN DIVIDE([Net Satış] - __PREV_YEAR, __PREV_YEAR)</pre>
+<h2>Copilot ile DAX</h2>
+<p>DAX sorgu görünümünde ve ölçü düzenleyicide Copilot'a doğal dille istek yazarsın (“geçen yılın aynı dönemine göre büyüme”). Copilot ölçüyü önerir, açıklar; DAX sorgu görünümünde test edip modele ekleyebilirsin. Ayrıca Copilot rapor sayfası önerebilir, anlatı görseli oluşturabilir ve anlam modelini özetleyebilir (PL-300'de bu beceriler ölçülüyor).</p>
+<div class="warn"><b>Güven ama doğrula</b>Hızlı ölçü ve Copilot, modeli tanımadan yazar: iptalleri dahil etmek, yanlış tarih sütununu kullanmak, toplam satırında yanlış sonuç vermek sık görülür. Her üretilen ölçüyü bir matriste toplam satırıyla birlikte kontrol et. Ölçüyü anlamadan rapora koyma.</div>
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Doğru temel ölçüyü mü kullanıyor? (<code>[Toplam Satış]</code> mı <code>[Net Satış]</code> mı?)</li>
+<li>Tarih tablosundaki sütunu mu kullanıyor, olgu tablosundakini mi?</li>
+<li>Toplam satırında ve boş dönemlerde ne veriyor?</li>
+<li>Adını ve biçimini ekip standardına göre düzelt (ör. <code>__PREV_YEAR</code> yerine <code>GecenYil</code>).</li>
+</ol>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Hızlı ölçünün ürettiği kodu okumak</h2>
+<p>Hızlı ölçü (Quick measure) kodu sen yazmasan da sorumluluğu sende. Üretilen kod genellikle doğrudur, ama modelini tanımaz. Üç tipik kalıbı okuyup iyileştirelim.</p>
+<h3>1. Kategori başına ortalama</h3>
+<p>“Kategori başına ortalama” hızlı ölçüsüne <code>Satislar[Tutar]</code> sütununu ve <code>Urunler[Kategori]</code> alanını sürüklersen şuna benzer bir kod alırsın:</p>
+<pre class="dax" data-notry>Tutar ortalaması Kategori başına =
+AVERAGEX(
+    KEEPFILTERS(VALUES(Urunler[Kategori])),
+    CALCULATE(SUM(Satislar[Tutar]))
+)</pre>
+<p>Okuma: kategorileri dolaş (<code>KEEPFILTERS</code> dış kategori filtresini koru demek), her kategoride tutarı topla, ortalamasını al. Sorunlar modelle ilgili: <code>SUM(Satislar[Tutar])</code> iptalleri de içerir; sonuç 192.313 ₺. Şirketin kuralına uyan <code>[Net Satış]</code> ile 178.682 ₺. Ayrıca <code>Urunler[Kategori]</code> hedef tablosunu süzmez; hedefle aynı görselde kullanılacaksa paylaşılan <code>Kategoriler</code> boyutu gerekir (Hedef ve gerçekleşen dersi). İyileştirilmiş hâli:</p>
+<pre class="dax">Kategori Başına Ortalama =
+AVERAGEX(VALUES(Kategoriler[Kategori]), [Net Satış])</pre>
+<h3>2. Filtrelenmiş değerden yüzde fark</h3>
+<p>“Web kanalına göre yüzde fark” hızlı ölçüsü, temel değeri ve karşılaştırılan değeri iki değişkene koyar:</p>
+<pre class="dax">Tutar Web’den fark % =
+VAR __BASELINE_VALUE = CALCULATE(SUM(Satislar[Tutar]), Satislar[Kanal] IN { "Web" })
+VAR __VALUE_TO_COMPARE = SUM(Satislar[Tutar])
+RETURN
+    IF(NOT ISBLANK(__VALUE_TO_COMPARE), DIVIDE(__VALUE_TO_COMPARE - __BASELINE_VALUE, __BASELINE_VALUE))</pre>
+<p>Yapı doğru, ama yine ham tutar kullanılmış. Mobil satırında +%23,0 gösterir; net satışla doğru değer +%31,2. Mağaza’da −%59,5 yerine −%57,7. Fark küçük görünebilir, ama yönetim sunumunda “Mobil, Web’den %23 büyük” ile “%31 büyük” farklı kararlara götürür. İyileştirme: <code>SUM(Satislar[Tutar])</code> yerine <code>[Net Satış]</code>, değişken adlarında da ekip standardı (<code>WebSatisi</code>, <code>Satis</code>).</p>
+<h3>3. Kümülatif toplam</h3>
+<p>Kümülatif toplam hızlı ölçüsü <code>ALLSELECTED</code> ve <code>ISONORAFTER</code> ile bir filtre kurar. Aynı mantığı daha okunur şekilde şöyle yazabilirsin:</p>
+<pre class="dax">Seçim İçi Kümülatif =
+CALCULATE(
+    [Net Satış],
+    FILTER(ALLSELECTED(Tarih[Tarih]), Tarih[Tarih] &lt;= MAX(Tarih[Tarih]))
+)</pre>
+<p>Önemli davranış: <code>ALLSELECTED</code> yüzünden toplam, kullanıcının seçtiği dönemin başından başlar. Dilimleyicide 2023–2024 seçiliyse 2024 satırı 1.147.935 ₺ gösterir. Hazır <code>[Kümülatif Satış]</code> ise <code>ALL</code> kullandığı için 2022’yi de katar ve 1.250.772 ₺ gösterir. Hızlı ölçü sana hangisini istediğini sormaz; sen karar ver.</p>
+
+<h2>Copilot ile ölçü yazdırıp denetlemek</h2>
+<p>DAX sorgu görünümünde Copilot (Ctrl+I) doğal dilden sorgu yazabilir, seçili bir sorguyu açıklayabilir (“Explain this query”) ve bir DAX kavramını anlatabilir. Önerilen sorguyu çalıştırır (Run), beğenirsen sekmeye eklersin (Keep query). Bu özellik Fabric kapasitesi ve yönetici ayarları gerektirir.</p>
+<p>Copilot modelin <b>meta verisini</b> görür: tablo, sütun ve ölçü adları ile açıklamaları. Verinin kendisini okumaz. Bu yüzden iki şey çok önemli:</p>
+<ul><li><b>Açıklamalar:</b> ölçü ve sütun açıklamalarına iş kuralını yaz: “Net satış: iptal edilen siparişler hariç tutar”. Açıklamanın yalnızca ilk 200 karakteri kullanılır; kuralı başa koy.</li>
+<li><b>Yapay zekâ için verileri hazırla (Prep data for AI):</b> modele yapay zekâ talimatları ekleyerek “satış dendiğinde [Net Satış] ölçüsünü kullan” gibi kuralları Copilot’a kalıcı olarak öğretebilirsin.</li></ul>
+<p>İyi bir istem, modelin adlarını kullanır ve beklenen sonucu tarif eder: “[Net Satış] ölçüsünü kullanarak her kategori için Web kanalının payını hesaplayan bir ölçü yaz; payda kategorinin tüm kanallardaki net satışı olsun.” Sonra öneriyi bilinen bir sayıyla test et:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Satislar[Kanal],
+    "Net", [Net Satış],
+    "Web'e göre fark %", DIVIDE([Net Satış] - CALCULATE([Net Satış], Satislar[Kanal] = "Web"), CALCULATE([Net Satış], Satislar[Kanal] = "Web"))
+)</pre>
+<div class="note"><b>Üretilen ölçüyü kabul etmeden önce</b>1) Temel ölçü doğru mu (<code>[Net Satış]</code> mı, ham sütun mu)? 2) Boyut sütunu paylaşılan boyuttan mı? 3) Bilinen bir sayıyla eşleşiyor mu (ör. toplam net satış 1.250.772 ₺)? 4) Toplam satırında ve boş dönemde ne veriyor? 5) Dilimleyici seçimi davranışı (ALL mı, ALLSELECTED mı) bilinçli mi? 6) Adı, biçimi ve açıklaması ekip standardına uygun mu?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-hizli-olcu">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../istatistik/">← Temel istatistik, gruplama ve kutulama</a><a href="../tema-sayfa/">Temalar, sayfa ayarları ve tuval tasarımı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,33 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1 dakikada ilk ölçün | Kesit Power BI</title><meta name="description" content="Kurulum yok: tarayıcıda ilk DAX ölçünü yaz, sonucu tabloda gör, sonra bir filtre ekle."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/ilk-olcu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="1 dakikada ilk ölçün"><meta property="og:description" content="Kurulum yok: tarayıcıda ilk DAX ölçünü yaz, sonucu tabloda gör, sonra bir filtre ekle."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/ilk-olcu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"1 dakikada ilk ölçün","description":"Kurulum yok: tarayıcıda ilk DAX ölçünü yaz, sonucu tabloda gör, sonra bir filtre ekle.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/ilk-olcu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>1 dakikada ilk ölçün</h1><p class="st-l">Kurulum yok: tarayıcıda ilk DAX ölçünü yaz, sonucu tabloda gör, sonra bir filtre ekle.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-ilk-olcu">Uygulamada aç, 3 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Power BI’da her rakamın arkasında bir <b>ölçü</b> (measure) vardır: “toplam satış”, “sipariş sayısı”, “kâr marjı” gibi. Ölçü, DAX denen formül diliyle yazılır. Excel’de <code>=TOPLA(A:A)</code> yazmaya benzer; tek fark, hücre yerine <b>sütun</b> adıyla çalışmasıdır.</p>
+<p>Bu derste kurulum yok. Anadolu Market adlı hayali bir perakende şirketinin (web, mobil, mağaza) satış verisi tarayıcında hazır bekliyor. Üç küçük adımda ilk ölçünü yazacaksın.</p>
+
+<h2>1. Adım: Toplamı al</h2>
+<p><code>Satislar</code> tablosunun <code>Tutar</code> sütunu her satırın satış tutarını tutar. Hepsini toplamak için:</p>
+<pre class="dax">İlk Ölçüm =
+SUM(Satislar[Tutar])</pre>
+<p>Kutunun sağındaki <b>Playground’da dene</b> düğmesine basarsan aynı ölçüyü kategori kırılımında görürsün. Dilimleyici seçili değilken toplam yaklaşık 1,35 milyon ₺ çıkar; Yıl = 2024 seçersen 808 bin ₺.</p>
+<div class="tip"><b>Okuma kuralı</b><code>Satislar[Tutar]</code> “Satislar tablosunun Tutar sütunu” demektir. Tablo adı dışarıda, sütun adı köşeli parantezin içinde.</div>
+
+<h2>2. Adım: Say</h2>
+<p>Kaç satış satırı var? Satırları saymak için <code>COUNTROWS</code>:</p>
+<pre class="dax">Satır Adedi =
+COUNTROWS(Satislar)</pre>
+
+<h2>3. Adım: Filtre ekle</h2>
+<p>Yalnızca Web kanalının satışını istiyorsan, ölçüye bir koşul eklersin. Bunu yapan fonksiyonun adı <code>CALCULATE</code>; ilerleyen derslerde en çok kullanacağın fonksiyon odur:</p>
+<pre class="dax">Web Satışı =
+CALCULATE(SUM(Satislar[Tutar]), Satislar[Kanal] = "Web")</pre>
+<p>Hepsi bu. Şimdi aynı üç ölçüyü kendin yaz. Yazdığın ölçü, uygulamanın beklediği sonuçla kırılım kırılım karşılaştırılır; doğruysa yeşil olur.</p>
+<div class="note"><b>Sonra ne var?</b>Sıradaki ders Power BI Desktop kurulumu, ardından ilk rapor. “Power BI’ın hikâyesi” isteğe bağlı ek okuma: Dersler sayfasında Temel seviyenin sonunda durur, zorunlu değildir.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-ilk-olcu">Alıştırmalara geç (3)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../buyuk-model/">← Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller</a><a href="../fabric-veri-alma/">Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

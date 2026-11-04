@@ -1,0 +1,106 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Query ile modele hazırlık | Kesit Power BI</title><meta name="description" content="Parametreler, gizlilik düzeyleri, başvuru ve çoğaltma, JSON gibi yarı yapılandırılmış veri, olgu/boyut ve anahtar oluşturma, yükleme ayarları."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-model/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Query ile modele hazırlık"><meta property="og:description" content="Parametreler, gizlilik düzeyleri, başvuru ve çoğaltma, JSON gibi yarı yapılandırılmış veri, olgu/boyut ve anahtar oluşturma, yükleme ayarları."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-model/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Query ile modele hazırlık","description":"Parametreler, gizlilik düzeyleri, başvuru ve çoğaltma, JSON gibi yarı yapılandırılmış veri, olgu/boyut ve anahtar oluşturma, yükleme ayarları.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-model/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Power Query ile modele hazırlık</h1><p class="st-l">Parametreler, gizlilik düzeyleri, başvuru ve çoğaltma, JSON gibi yarı yapılandırılmış veri, olgu/boyut ve anahtar oluşturma, yükleme ayarları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-model">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Kaynak ayarları ve gizlilik</h2>
+<p>Dosya → Seçenekler ve ayarlar → <b>Veri kaynağı ayarları</b>: her kaynağın kimlik bilgisini (Windows, veritabanı, kuruluş hesabı) ve <b>gizlilik düzeyini</b> değiştirirsin.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Gizlilik düzeyi</th><th>Anlamı</th></tr>
+<tr><td>Özel</td><td>Hassas veri; başka bir kaynağa hiç gönderilmez</td></tr>
+<tr><td>Kuruluş</td><td>Kuruluş içindeki kaynaklarla birleştirilebilir</td></tr>
+<tr><td>Genel</td><td>Herkese açık veri (ör. döviz kuru web sayfası)</td></tr>
+</table></div>
+<p>Power Query, farklı düzeydeki kaynakları birleştirirken (Merge) veri sızıntısını önlemek için sorgu katlamayı kısıtlayabilir. “Formula.Firewall” hatası genellikle buradan gelir.</p>
+<h2>Parametreler</h2>
+<p>Giriş → <b>Parametreleri yönet</b>. Sunucu adı, veritabanı, başlangıç tarihi gibi değerler bir kez tanımlanır, sorgularda kullanılır. Yayımladıktan sonra Service'te anlam modelinin ayarlarından değiştirilebilir; geliştirme ve canlı ortam arasında geçiş tek tıklamadır. Artımlı yenilemenin <code>RangeStart</code> / <code>RangeEnd</code> parametreleri de böyledir.</p>
+<h2>Başvuru mu, çoğaltma mı?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Başvuru (Reference)</th><th>Çoğalt (Duplicate)</th></tr>
+<tr><td>Ne yapar?</td><td>Yeni sorgu, eski sorgunun <b>sonucunu</b> kaynak alır</td><td>Eski sorgunun <b>tüm adımlarını</b> kopyalar</td></tr>
+<tr><td>Kaynak değişirse</td><td>Değişiklik yeni sorguya da yansır</td><td>Bağımsızdır</td></tr>
+<tr><td>Tipik kullanım</td><td>Ham satış sorgusundan Müşteriler ve Ürünler boyutlarını türetmek</td><td>Benzer ama ayrı bir kaynağa uyarlamak</td></tr>
+<tr><td>Dikkat</td><td>Ara sorgunun “Yüklemeyi etkinleştir” seçeneğini kapat</td><td>Mantık iki yerde bakım ister</td></tr>
+</table></div>
+<h2>Düz tablodan yıldız şemaya</h2>
+<p>Excel'den gelen tek ve geniş bir satış tablosunu (sipariş, müşteri adı, şehir, ürün adı, kategori, fiyat…) modele uygun hâle getirmek:</p>
+<ol>
+<li>Ham sorguya <b>Başvuru</b> ver → yalnızca müşteri sütunlarını seç → <b>Yinelenenleri kaldır</b> → <code>Musteriler</code> boyutu.</li>
+<li>Aynısını ürün sütunları için yap → <code>Urunler</code>.</li>
+<li>Boyutlarda doğal anahtar yoksa <b>Sütun ekle → Dizin sütunu</b> ile vekil anahtar (surrogate key) oluştur.</li>
+<li>Olgu tablosunda boyutlarla <b>Sorguları birleştir</b> → anahtar sütunu genişlet → metin sütunlarını kaldır. Geriye anahtarlar ve sayılar kalır.</li>
+<li>Ham ve ara sorgularda sağ tık → <b>Yüklemeyi etkinleştir</b> işaretini kaldır; modele yalnızca olgu ve boyutlar yüklensin.</li>
+</ol>
+<h2>Yarı yapılandırılmış veri: JSON</h2>
+<p>Bir API'den gelen JSON, Power Query'de önce <b>Kayıt</b> ya da <b>Liste</b> olarak görünür:</p>
+<ol>
+<li>Liste → <b>Tabloya dönüştür</b>.</li>
+<li>Kayıt sütununun başlığındaki genişlet düğmesi → alanları seç (iç içe kayıtlarda tekrar genişlet).</li>
+<li>İç içe liste (bir siparişin satırları) → <b>Yeni satırlara genişlet</b>.</li>
+</ol>
+<pre class="m">let
+    Kaynak = Json.Document(Web.Contents("https://api.ornek.com/siparisler")),
+    Tablo = Table.FromList(Kaynak, Splitter.SplitByNothing(), {"Kayit"}),
+    Genislet = Table.ExpandRecordColumn(Tablo, "Kayit", {"id", "tarih", "satirlar"}),
+    Satirlar = Table.ExpandListColumn(Genislet, "satirlar"),
+    Alanlar = Table.ExpandRecordColumn(Satirlar, "satirlar", {"urun", "adet", "fiyat"})
+in
+    Alanlar</pre>
+<h2>Hataları çözmek</h2>
+<ul>
+<li><b>Veri türü hatası:</b> Sütunda “Hata” hücreleri → hücreye tıklayıp nedeni oku; Giriş → Satırları kaldır → <b>Hataları kaldır</b> ya da Dönüştür → <b>Hataları değiştir</b>.</li>
+<li><b>“Sütun bulunamadı”:</b> Kaynakta sütun adı değişmiş; ilgili adımın formülünü düzelt.</li>
+<li><b>Boş ve null:</b> Değerleri değiştir (null → 0 ya da “Bilinmiyor”); boyutlarda “Bilinmiyor” satırı bırakmak, olguda eşleşmeyen anahtarları gösterir.</li>
+</ul>
+<h2>Yükleme ayarları</h2>
+<ul>
+<li><b>Yüklemeyi etkinleştir:</b> Kapalıysa sorgu modele yüklenmez (ara adım).</li>
+<li><b>Rapor yenilemeye dahil et:</b> Kapalıysa yenilemede atlanır (statik referans tabloları).</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Sorgu katlama: nerede bozuluyor, nasıl görürsün?</h2>
+<p>BT ekibi “Power BI yenilemesi veritabanını 40 dakika meşgul ediyor” diye şikâyet ediyor. İlk bakılacak yer sorgu katlamadır: adımların kaynağa tek bir SQL sorgusu olarak gidip gitmediği. Desktop’ta adıma sağ tıklayınca <b>Yerel Sorguyu Görüntüle</b> (View Native Query) etkinse o adıma kadar katlanıyordur; gri ise katlama o adımda ya da öncesinde bozulmuştur. Power Query Online’da (veri akışları, Fabric) her adımın yanında <b>katlama göstergesi</b> çıkar: katlanıyor, katlanmıyor, katlanabilir (ODBC/OData gibi bağlayıcılarda çalışma anında karar verilir), opak (belirsiz plan) ve bilinmiyor. Learn’e göre bu göstergeler yalnızca Power Query Online’da var.</p>
+<div class="tbl-wrap"><table><tr><th>Genellikle katlanan</th><th>Genellikle katlamayı bozan</th></tr>
+<tr><td>Sütun seçme/kaldırma, satır filtreleme, gruplandırma, aynı kaynaktaki tablolarla birleştirme, sıralama, basit tür değişimi</td><td>Dizin sütunu, <code>Text.Proper</code> gibi kaynağın bilmediği metin fonksiyonları, farklı kaynaklarla birleştirme, ilk N satırı tutmanın bazı biçimleri, özel M fonksiyonu çağrısı</td></tr></table></div>
+<p>Kural: <b>katlanan adımları öne, katlanmayanları sona</b>. Filtreyi ve sütun seçimini kaynak adımının hemen arkasına koy; dizin sütunu ve metin güzelleştirme en sonda kalsın. Böylece katlanmayan adımlar veritabanında zaten küçülmüş veri üzerinde çalışır. Artımlı yenileme için RangeStart/RangeEnd filtresinin katlanması zorunludur; katlanmazsa her bölüm için tüm tablo okunur.</p>
+
+<h2>Başvuru zincirinin gizli maliyeti</h2>
+<p>Başvuru ile çoğaltma farkını gördün. Ekibin sık düştüğü yanılgı: “Ham satış sorgusunu bir kez okuyorum, Musteriler ve Urunler ondan türüyor; demek kaynak bir kez okunur.” Hayır. Yenilemede her yüklenen sorgu kendi zincirini değerlendirir; ham sorgu, ona başvuran her yüklenen sorgu için ayrıca çalışabilir. Önbellekleme bazı durumlarda tekrarı azaltır ama buna güvenme. Sonuçları:</p>
+<ul>
+<li>Bir API’ye ya da yavaş bir Excel’e üç başvuru, kaynağa birden çok istek demektir.</li>
+<li>Ham sorgunun yüklemesini kapatmak onu yenilemeden çıkarmaz; başvuran sorgular onu yine çalıştırır.</li>
+<li>Büyük ve yavaş kaynaklarda hazırlığı bir kez yapıp sonucu paylaşmak için veri akışı (dataflow) daha doğru araçtır.</li>
+</ul>
+
+<h2>Parametreleri derinleştirmek</h2>
+<p>Giriş → Parametreleri Yönet → Yeni. Her parametrenin adı, açıklaması, gerekli olup olmadığı, türü, önerilen değerleri ve geçerli değeri vardır.</p>
+<ul>
+<li><b>Türü mutlaka seç.</b> “Herhangi” bırakılan bir tarih parametresi filtre adımında metin gibi davranır.</li>
+<li><b>Önerilen değerler:</b> Herhangi bir değer, değer listesi (açılır liste + varsayılan değer) ya da bir liste döndüren sorgu. “Geliştirme / Test / Canlı” sunucu adları için değer listesi idealdir.</li>
+<li><b>Sabitten parametreye:</b> Tek bir sabit döndüren sorguya sağ tık → <b>Parametreye dönüştür</b>.</li>
+<li><b>Fonksiyona dönüştürmek:</b> Parametre kullanan bir sorguya sağ tık → <b>İşlev oluştur</b>. Sorgu, parametreyi argüman olarak alan özel bir fonksiyona dönüşür; klasördeki her dosyaya aynı dönüşümü uygulamanın temeli budur.</li>
+<li>Filtre iletişim kutusunda değerin yanındaki tür düğmesinden <b>Parametre</b>’yi seçebilirsin; filtre sabit bir değer yerine parametreyi kullanır.</li>
+</ul>
+
+<h2>Sorgu bağımlılıkları görünümü</h2>
+<p>Power Query Düzenleyicisi’nde <b>Görünüm → Sorgu Bağımlılıkları</b> (Query Dependencies), sorguları ve aralarındaki başvuruları bir diyagram olarak gösterir: hangi kaynaktan hangi ara sorgu, hangi ara sorgudan hangi tablo türüyor. Yüklemesi kapalı sorgular ayrıca işaretlenir. Kullanım alanları:</p>
+<ul>
+<li>Bir kaynağı değiştirmeden önce etkisini görmek: “Bu Excel’i silersem hangi tablolar bozulur?”</li>
+<li>Yanlışlıkla yüklenen ara sorguları bulmak: yalnızca başka sorgulara hizmet eden bir düğüm modelde tablo olarak duruyorsa yüklemesini kapat.</li>
+<li>Devir teslim: diyagramın ekran görüntüsü, model belgesinin en hızlı okunan sayfasıdır.</li>
+</ul>
+
+<h2>Yükleme ayarlarının kontrol listesi</h2>
+<div class="tbl-wrap"><table><tr><th>Sorgu türü</th><th>Yüklemeyi etkinleştir</th><th>Rapor yenilemeye dahil et</th></tr>
+<tr><td>Olgu ve boyut tabloları</td><td>Açık</td><td>Açık</td></tr>
+<tr><td>Ham ve ara sorgular</td><td>Kapalı</td><td>Açık (başvuranlar zaten çalıştırır)</td></tr>
+<tr><td>Parametreler ve fonksiyonlar</td><td>Kapalı (zaten tablo değil)</td><td>—</td></tr>
+<tr><td>Hiç değişmeyen referans tablo (ör. eski bölge kodları)</td><td>Açık</td><td>Kapalı olabilir; kaynak değişirse elle yenile</td></tr></table></div>
+<div class="warn"><b>Yüklemeyi kapatınca kaybolanlar</b>Yüklemesi açık bir sorgunun yüklemesini sonradan kapatırsan modeldeki tablo silinir; o tabloya dayanan ölçüler, ilişkiler ve görseller bozulur. Kapatmadan önce Sorgu Bağımlılıkları’na ve modeldeki kullanımlarına bak.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-model">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../tema-sayfa/">← Temalar, sayfa ayarları ve tuval tasarımı</a><a href="../rol-oynayan/">Rol oynayan boyutlar ve USERELATIONSHIP →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

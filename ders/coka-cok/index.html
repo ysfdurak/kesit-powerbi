@@ -1,0 +1,167 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Çoka çok ilişkiler, köprü tablolar ve ilişki türleri | Kesit Power BI</title><meta name="description" content="Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/coka-cok/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Çoka çok ilişkiler, köprü tablolar ve ilişki türleri"><meta property="og:description" content="Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/coka-cok/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Çoka çok ilişkiler, köprü tablolar ve ilişki türleri","description":"Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/coka-cok/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Çoka çok ilişkiler, köprü tablolar ve ilişki türleri</h1><p class="st-l">Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift yönlü filtrenin riskleri ve belirsiz yollar, sınırlı (limited) ilişkiler, CROSSFILTER ve TREATAS ile ölçü içinde çözüm, toplam satırı ve çift sayma.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-coka-cok">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Yıldız şemada her ilişki çoka-birdir: bir satış satırı tek bir ürüne, tek bir müşteriye bağlanır. Gerçek iş hayatı bu kadar düzenli değildir. “Model tasarımı II” dersinde ayrıntı düzeyini (grain), “Rol oynayan boyutlar” dersinde CROSSFILTER’ı, “Tablo fonksiyonları” dersinde köprü tablonun kısa tanımını gördün. Bu ders, çoka-çok (many-to-many) durumları tanımayı, modelde ve ölçüde çözmeyi ve <b>toplam satırını kullanıcıya doğru anlatmayı</b> öğretiyor.</p>
+<p>Anadolu Market’te bu hafta gelen üç talep:</p>
+<ul>
+<li><b>Proje yönetim ofisi:</b> “Fabric veri platformu geçişi, Veri Analitiği ile Yazılım’ın ortak projesi. Departman raporunda bütçe iki departmanda da görünmeli, ama şirket toplamı şişmemeli.”</li>
+<li><b>Pazarlama:</b> “Elektronik alan müşterilerimizin toplam cirosu, yani bütün kategorilerdeki harcaması ne?”</li>
+<li><b>Satış planlama:</b> “Hedefler kategori ve ay düzeyinde. Ürün tablosundaki kategori sütunuyla rapor yapınca hedef her satırda aynı.”</li>
+</ul>
+
+<h2>1 · Çoka-çok’un üç yüzü</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Örnek</th><th>Tipik çözüm</th></tr>
+<tr><td>İki boyut arasında çok değerli ilişki</td><td>Bir proje birden çok departmanda, bir departmanın birden çok projesi var</td><td>Köprü tablo (ProjeDepartman), gerekirse ağırlık sütunu</td></tr>
+<tr><td>Olgu üzerinden iki boyut</td><td>Bir müşteri birden çok kategoriden alır, bir kategoriden birçok müşteri alır</td><td>Olgu tablosu zaten köprüdür; ölçüde küme filtresi ya da CROSSFILTER</td></tr>
+<tr><td>Farklı taneciklikte olgu</td><td>Hedefler kategori × ay, satış ürün × gün</td><td>Ortak boyut (Kategoriler); olmazsa TREATAS ya da çoka-çok kardinalite</td></tr>
+</table></div>
+<p>Hepsinin ortak sonucu aynıdır: <b>satırların toplamı, toplam satırına eşit değildir</b>. Bir proje iki departmanda görünür, toplamda bir kez sayılır. Bu bir hata değil, çoka-çok’un doğasıdır; hata, bunu kullanıcıya söylememektir.</p>
+
+<h2>2 · Köprü tablo: proje ↔ departman</h2>
+<p>Modelde Projeler[DepartmanNo] tek bir departman tutuyor. Ortak projeleri göstermek için bir köprü tablo gerekir: her satırı “bu proje, bu departmana, şu payla aittir” cümlesidir. Modelde şöyle kurulur:</p>
+<pre class="dax" data-notry>Departmanlar[DepartmanNo]  1 ──&gt; *  ProjeDepartman[DepartmanNo]
+Projeler[ProjeNo]          1 &lt;─&gt; *  ProjeDepartman[ProjeNo]     (çift yönlü)
+
+ProjeDepartman: ProjeNo | DepartmanNo | Pay
+                5       | 2 (Pazarlama)      | 0,7
+                5       | 1 (Satış)          | 0,3
+                7       | 3 (Veri Analitiği) | 0,6
+                7       | 4 (Yazılım)        | 0,4
+               12       | 3 (Veri Analitiği) | 0,5
+               12       | 1 (Satış)          | 0,3
+               12       | 2 (Pazarlama)      | 0,2</pre>
+<p>Filtrenin Departmanlar’dan Projeler’e ulaşması için köprü ile Projeler arasındaki ilişkinin çift yönlü olması gerekir: filtre Departmanlar → köprü yönünde doğal akar, köprü → Projeler yönünde ise “çoktan bire” geri gitmesi gerekir. Bu uygulamanın modelinde köprü tablo yok; aynı mantığı ölçünün içinde, sanal bir köprüyle deneyebilirsin. Önce ağırlıklı (paylaştırılmış) bütçe:</p>
+<pre class="dax">Paylaştırılmış Bütçe =
+VAR Kopru =
+    DATATABLE(
+        "ProjeNo", INTEGER, "DepartmanNo", INTEGER, "Pay", DOUBLE,
+        {
+            {5, 2, 0.7}, {5, 1, 0.3},
+            {7, 3, 0.6}, {7, 4, 0.4},
+            {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}
+        }
+    )
+VAR Gorunen = FILTER(Kopru, [DepartmanNo] IN VALUES(Departmanlar[DepartmanNo]))
+RETURN
+    SUMX(Gorunen, [Pay] * LOOKUPVALUE(Projeler[Butce], Projeler[ProjeNo], [ProjeNo]))</pre>
+<p>Sonra ağırlıksız, “dokunduğu projelerin tam bütçesi”:</p>
+<pre class="dax">Katıldığı Projelerin Bütçesi =
+VAR Kopru =
+    DATATABLE(
+        "ProjeNo", INTEGER, "DepartmanNo", INTEGER, "Pay", DOUBLE,
+        {
+            {5, 2, 0.7}, {5, 1, 0.3},
+            {7, 3, 0.6}, {7, 4, 0.4},
+            {12, 3, 0.5}, {12, 1, 0.3}, {12, 2, 0.2}
+        }
+    )
+VAR Projeler_ = SELECTCOLUMNS(FILTER(Kopru, [DepartmanNo] IN VALUES(Departmanlar[DepartmanNo])), "P", [ProjeNo])
+RETURN
+    CALCULATE([Proje Bütçesi], REMOVEFILTERS(Departmanlar), TREATAS(Projeler_, Projeler[ProjeNo]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Departman</th><th>Paylaştırılmış</th><th>Tam bütçe</th></tr>
+<tr><td>Pazarlama</td><td>165.000 ₺</td><td>450.000 ₺</td></tr>
+<tr><td>Satış</td><td>135.000 ₺</td><td>450.000 ₺</td></tr>
+<tr><td>Veri Analitiği</td><td>402.000 ₺</td><td>720.000 ₺</td></tr>
+<tr><td>Yazılım</td><td>168.000 ₺</td><td>420.000 ₺</td></tr>
+<tr><td><b>Satırların toplamı</b></td><td>870.000 ₺</td><td>2.040.000 ₺</td></tr>
+<tr><td><b>Toplam satırı</b></td><td>870.000 ₺</td><td>870.000 ₺</td></tr>
+</table></div>
+<p>Üç projenin gerçek bütçesi 870.000 ₺. Paylaştırılmış ölçü <b>toplanabilir</b>: satırlar toplama eşittir. Tam bütçe ölçüsü <b>toplanamaz</b>: her departman “benim projem” der, satırlar 2.040.000 ₺ eder. İkisi de doğrudur, ama farklı soruları cevaplar. Departman müdürü “sorumlu olduğum işlerin büyüklüğü”nü, finans “maliyetin kime yazılacağı”nı sorar. Raporda ikisini aynı ada koyma.</p>
+<div class="note"><b>Üretimde köprü</b>DATATABLE yalnızca deneme ve öğretim içindir. Gerçek köprü tablo kaynakta ya da Power Query’de üretilir; payların her proje için 1’e tamamlandığını yenilemeden sonra bir sorguyla doğrula. Fiziksel tasarımı (vekil anahtar, köprünün ambarda nasıl tutulduğu) “Fabric’te yıldız şema” dersi anlatıyor.</div>
+
+<h2>3 · Olgu tablosu bir köprüdür: müşteri ↔ kategori</h2>
+<p>Pazarlamanın sorusu: “Elektronik alanların toplam cirosu.” Burada köprü tablo kurmana gerek yok; Satislar zaten her müşteriyi aldığı kategorilere bağlıyor. Yapılacak iş, iki adımlı bir filtre:</p>
+<ol>
+<li>Görünen kategoride alışveriş yapan müşterilerin kümesini bul.</li>
+<li>Kategori filtresini kaldır, bu müşterilerin tüm satışını hesapla.</li>
+</ol>
+<pre class="dax">Alıcıların Toplam Satışı =
+VAR Alicilar = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal")
+RETURN
+    CALCULATE([Net Satış], Alicilar, REMOVEFILTERS(Kategoriler), REMOVEFILTERS(Urunler))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori</th><th>Alıcı sayısı</th><th>Kategorideki satış</th><th>Alıcıların toplam satışı</th></tr>
+<tr><td>Elektronik</td><td>95</td><td>339.304 ₺</td><td>1.104.856 ₺</td></tr>
+<tr><td>Kitap</td><td>113</td><td>151.882 ₺</td><td>1.153.184 ₺</td></tr>
+<tr><td>Hediye</td><td>30</td><td>17.370 ₺</td><td>328.027 ₺</td></tr>
+<tr><td><b>Toplam satırı</b></td><td>136</td><td>1.250.772 ₺</td><td>1.250.772 ₺</td></tr>
+</table></div>
+<p>Kitap alıcıları, şirket cirosunun %92’sini yapıyor: Kitap küçük bir kategori ama çok geniş bir müşteri kitlesine dokunuyor. Bu bilgi kategori satışından görünmez. Yedi kategorinin alıcı sayılarını toplarsan 628 eder, oysa tekil müşteri 136’dır. Bir müşteri ortalama 4,6 kategoride görünür.</p>
+<h3>Tek yönlü filtrenin tuzağı</h3>
+<p>“En az 4 kategoriden alan müşteri” sorusunda çoğu kişi <code>CALCULATE(DISTINCTCOUNT(Urunler[Kategori]))</code> yazar ve her müşteride 7 bulur. Sebep: filtre Satislar’dan Urunler’e akmaz. Müşteri filtresi Satislar’ı süzer ama Urunler tablosunun bütün satırları görünür kalır. Çözüm ya ölçü içinde <code>CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH)</code> ya da olgu üzerinden saymak: <code>COUNTROWS(SUMMARIZE(Satislar, Urunler[Kategori]))</code>. İkisiyle de dağılım şöyle çıkar: 7 kategoride 13, 6’da 40, 5’te 22, 4’te 28 müşteri; yani 136 müşterinin 103’ü en az 4 kategoriden almış.</p>
+
+<h2>4 · Çift yönlü filtre: ne zaman, neden riskli?</h2>
+<p>Çift yönlü (both) ilişki, filtrenin bir taraftan çok tarafa olduğu gibi çok taraftan bir tarafa da akmasını sağlar. Kolay görünür; üç bedeli vardır.</p>
+<h3>Bedel 1: anlam sessizce değişir</h3>
+<p>Kanal kırılımında <code>CALCULATE([Kayıtlı Müşteri], CROSSFILTER(Satislar[MusteriNo], Musteriler[MusteriNo], BOTH))</code> Mağaza’da 73 verir. [Müşteri Sayısı] ise 70. Fark, bu kanaldaki siparişlerinin hepsi iptal olan 3 müşteri: çift yönlü filtre “bu kanalda satırı olan” müşteriyi sayar, iş kuralını (iptal hariç) bilmez. Kullanıcı modelde ilişkiyi çift yönlü görünce bütün müşteri sayılarının bu yolla geldiğini varsayar.</p>
+<h3>Bedel 2: belirsiz yollar</h3>
+<p>Modelde Talepler hem Tarih’e hem Musteriler’e bağlı. Satislar–Musteriler ilişkisini çift yönlü yaparsan, Tarih’ten Talepler’e iki yol oluşur: doğrudan Tarih → Talepler ve Tarih → Satislar → Musteriler → Talepler.</p>
+<pre class="dax" data-notry>Yol 1: Tarih ──&gt; Talepler
+Yol 2: Tarih ──&gt; Satislar ──(çift yönlü)──&gt; Musteriler ──&gt; Talepler</pre>
+<p>Microsoft Learn’e göre Power BI bu durumda yolları önceliğe göre sıralar (önce doğrudan bire-çok yollar), eşit öncelik ve ağırlıkta birden çok yol kalırsa “belirsiz yol” hatası verir. Desktop çift yönlü değişikliği kaydetmeyi reddedebilir ya da belirsizliğe izin verip bir yolu seçebilir. Her iki durumda da [Talep Sayısı] gibi masum bir ölçünün anlamı, modeli kimin ne zaman değiştirdiğine bağlı hâle gelir.</p>
+<h3>Bedel 3: performans ve güvenlik</h3>
+<p>Çift yönlü ilişki her sorguda ek filtre yayılımı demektir ve büyük modellerde belirgin biçimde yavaştır. Satır düzeyi güvenlikte (RLS) güvenlik filtresi varsayılan olarak tek yönde akar; ilişki özelliklerindeki “Güvenlik filtresini her iki yönde de uygula” seçeneği açılmadıkça çift yönlü ilişki RLS’yi taşımaz. Bu seçeneği açmak ise rol tasarımını karmaşıklaştırır.</p>
+<div class="tip"><b>Kural</b>Modeldeki ilişkiler tek yönlü kalsın. Çift yönlü davranışa ihtiyaç duyan her ölçü bunu <code>CROSSFILTER(…, BOTH)</code> ile, açıkça ve yalnızca kendi içinde istesin. İstisna: köprü tablo ile ona bağlı boyut arasındaki ilişki; orada çift yön desenin parçasıdır ve belgelenmelidir.</div>
+
+<h2>5 · Farklı taneciklik: hedef kategori düzeyinde, rapor ürün tablosundan</h2>
+<p>Satış planlamanın sorunu: görselde kategoriyi Urunler[Kategori]’den kullanınca [Hedef] her satırda 1.299.300 ₺ gösteriyor. Hedefler, Urunler’e bağlı değil; Kategoriler üzerinden bağlı. Üç çözüm var:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Nasıl?</th><th>Artı</th><th>Eksi</th></tr>
+<tr><td>Ortak boyut</td><td>Görselde Kategoriler[Kategori]; Urunler[Kategori] gizlenir</td><td>Hızlı, düzenli ilişki, ölçü değişmez</td><td>Kullanıcıyı doğru alana yönlendirmek gerekir</td></tr>
+<tr><td>TREATAS (sanal ilişki)</td><td>Ölçü içinde Urunler[Kategori] değerleri Hedefler[Kategori]’ye uygulanır</td><td>Modele dokunmaz, hangi ölçüde geçerli olduğu açık</td><td>Her ölçüye ayrı yazılır, bakım yükü</td></tr>
+<tr><td>Çoka-çok kardinalite</td><td>Hedefler[Kategori] *—* Urunler[Kategori] ilişkisi</td><td>Kodsuz, sürükle-bırak</td><td>Sınırlı ilişki: yavaş, RELATED yok, boş satır yok</td></tr>
+</table></div>
+<pre class="dax">Hedef (Ürün Kategorisinden) =
+CALCULATE([Hedef], TREATAS(VALUES(Urunler[Kategori]), Hedefler[Kategori]))</pre>
+<p>Urunler[Kategori] kırılımında artık Elektronik 351.800 ₺, Kitap 156.200 ₺ gösterir; toplam 1.299.300 ₺.</p>
+<h3>Sınırlı (limited) ilişki ne demek?</h3>
+<p>Learn’e göre bir ilişki, motor “bir” tarafını garanti edemediğinde <b>sınırlı</b>dır: çoka-çok kardinalite (sütunlar benzersiz olsa bile) ve bileşik modellerde farklı kaynak grupları arasındaki ilişkiler. Sınırlı ilişkinin davranışı düzenli ilişkiden farklıdır:</p>
+<ul>
+<li>Birleşme iç birleşme (inner join) mantığıyla yapılır; eşleşmeyen satırlar için <b>boş sanal satır eklenmez</b>. Hedefte olup ürün tablosunda olmayan bir kategori raporda “(Boş)” satırı olarak görünmez, sessizce kaybolur.</li>
+<li><b>RELATED</b> ile “bir” taraftaki değer alınamaz.</li>
+<li><b>Tablo genişlemesi olmaz</b>; birinci derste gördüğün “ALL(Hedefler) Kategoriler filtresini de kaldırır” kuralı burada işlemez.</li>
+<li>İçe aktarma modelinde ilişki için yapı önceden oluşturulmaz, birleşme sorgu anında çözülür; daha yavaştır.</li>
+</ul>
+<pre class="dax" data-notry>-- Model görünümünde (bu uygulamanın motorunda kurulamaz)
+Hedefler[Kategori]  *  ──  *  Urunler[Kategori]
+Çapraz filtre yönü: Tek (Urunler filtreler Hedefler’i)</pre>
+
+<h2>6 · Ortak boyut mu, çift yönlü mü, TREATAS mı? Toplam satırındaki fark</h2>
+<p>Gider türüne göre proje bütçesini görmek isteyelim. Giderler ve Projeler, Departmanlar üzerinden birbirine dokunuyor; ama gider türü filtresinin projelere ulaşması için filtrenin Giderler’den Departmanlar’a geri akması gerekir.</p>
+<pre class="dax">Gider Türü Proje Bütçesi (CROSSFILTER) =
+CALCULATE([Proje Bütçesi], CROSSFILTER(Giderler[DepartmanNo], Departmanlar[DepartmanNo], BOTH))
+
+Gider Türü Proje Bütçesi (TREATAS) =
+CALCULATE([Proje Bütçesi], TREATAS(VALUES(Giderler[DepartmanNo]), Departmanlar[DepartmanNo]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Gider türü</th><th>Gideri yapan departman</th><th>İki ölçü de</th></tr>
+<tr><td>Personel</td><td>Satış</td><td>45.000 ₺</td></tr>
+<tr><td>Lojistik ve kargo</td><td>Satış</td><td>45.000 ₺</td></tr>
+<tr><td>Pazarlama ve reklam</td><td>Pazarlama</td><td>240.000 ₺</td></tr>
+<tr><td>Teknoloji</td><td>Yazılım</td><td>1.140.000 ₺</td></tr>
+<tr><td>Kira ve tesis, Genel yönetim</td><td>Genel Müdürlük (projesi yok)</td><td>BLANK</td></tr>
+<tr><td><b>Toplam satırı</b></td><td></td><td>CROSSFILTER: 3.040.000 ₺ · TREATAS: 1.425.000 ₺</td></tr>
+</table></div>
+<p>Satırlarda iki ölçü aynı. Toplamda ayrılıyorlar: CROSSFILTER’da Giderler hiç filtrelenmemişse Departmanlar’a yayılacak bir filtre yoktur ve bütün projeler (3.040.000 ₺) gelir. TREATAS ise her zaman “gideri olan departmanlar” kümesini uygular ve Veri Analitiği, Finans, İK, Hukuk projelerini dışarıda bırakır (1.425.000 ₺). Satırların toplamı ise 1.470.000 ₺’dir, çünkü Satış departmanının 45.000 ₺’lik projesi iki gider türünde görünür. Üç farklı “toplam” var; hangisinin doğru olduğunu iş sorusu belirler, DAX değil.</p>
+
+<h2>Karar listesi ve test</h2>
+<ol>
+<li><b>Gerçekten çoka-çok mu?</b> Önce ortak bir boyut ara. Hedef–satış sorununun %90’ı ortak boyutla çözülür.</li>
+<li><b>Köprü gerekiyorsa</b> payların toplamını doğrula, köprü–boyut ilişkisini çift yönlü yap ve bunu ilişki açıklamasına yaz.</li>
+<li><b>Ölçü içinde çöz:</b> Model tek yönlü kalsın; CROSSFILTER ya da TREATAS yalnızca gereken ölçüde.</li>
+<li><b>Toplanabilir mi?</b> Paylaştırılmış ölçü toplanır, tam değer ölçüsü toplanmaz. Ölçü adına ve araç ipucuna bunu yaz: “Toplam satırı tekil projeleri bir kez sayar.”</li>
+<li><b>Test:</b> DAX sorgu görünümünde <code>SUMX(VALUES(Boyut[Anahtar]), [Ölçü])</code> ile toplam satırını yan yana koy. Fark beklediğin fark mı?</li>
+<li><b>RLS:</b> Köprü ya da çift yönlü ilişki varsa, güvenlik filtresinin hangi yönde aktığını rol görünümüyle (Farklı görüntüle) kontrol et.</li>
+<li><b>Performans:</b> Performans Analizi’nde çift yönlü ilişkili görselin süresini, CROSSFILTER’lı ölçü sürümüyle karşılaştır.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-coka-cok">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../genisletilmis-tablolar/">← DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler</a><a href="../uzman-kaliplar/">Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

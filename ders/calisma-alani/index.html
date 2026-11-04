@@ -1,0 +1,55 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Çalışma alanı (workspace) kurmak ve raporu yayımlamak | Kesit Power BI</title><meta name="description" content="Çalışma alanını kurmak, ayarları, dört rol ve lisans etkisi; Desktop’tan Service’e yayımlarken ne gider, ne gitmez; yayımdan sonra yapılacaklar ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/calisma-alani/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Çalışma alanı (workspace) kurmak ve raporu yayımlamak"><meta property="og:description" content="Çalışma alanını kurmak, ayarları, dört rol ve lisans etkisi; Desktop’tan Service’e yayımlarken ne gider, ne gitmez; yayımdan sonra yapılacaklar ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/calisma-alani/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Çalışma alanı (workspace) kurmak ve raporu yayımlamak","description":"Çalışma alanını kurmak, ayarları, dört rol ve lisans etkisi; Desktop’tan Service’e yayımlarken ne gider, ne gitmez; yayımdan sonra yapılacaklar ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/calisma-alani/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Çalışma alanı (workspace) kurmak ve raporu yayımlamak</h1><p class="st-l">Çalışma alanını kurmak, ayarları, dört rol ve lisans etkisi; Desktop’tan Service’e yayımlarken ne gider, ne gitmez; yayımdan sonra yapılacaklar ve adlandırma düzeni.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-calisma-alani">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Rapor bitti, Desktop’ta kusursuz çalışıyor. Şimdi başkaları görecek. İlk soru “nereye yayımlayacağım?”dır ve cevabı neredeyse her zaman <b>bir çalışma alanı</b>dır. Çalışma alanı (workspace), ekibin raporlarını, anlam modellerini ve panolarını birlikte tuttuğu paylaşılan bir kaptır.</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Çalışma alanım (My workspace)</th><th>Ekip çalışma alanı</th></tr>
+<tr><td>Kim için?</td><td>Yalnız sen; deneme alanı</td><td>Ekip; gerçek içerik</td></tr>
+<tr><td>Rol atama</td><td>Yok</td><td>Yönetici, Üye, Katkıda bulunan, Görüntüleyici</td></tr>
+<tr><td>Uygulama yayımlama</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Kullanım ölçümleri, Direct Lake</td><td>Desteklenmez</td><td>Var (Direct Lake için Fabric kapasitesi gerekir)</td></tr></table></div>
+<h2>Çalışma alanı kurmak</h2>
+<p>Çalışma alanı yalnız Service’te oluşturulur; Desktop var olan bir çalışma alanına yayımlar, yenisini açamaz. <b>Çalışma alanları → Yeni çalışma alanı</b> ile ad verirsin. Ad kiracıda benzersiz olmalı. Pro ya da PPU lisansı gerekir; yönetici, oluşturmayı bir güvenlik grubuna kısıtlamış olabilir. Düğmeyi göremiyorsan önce lisansına, sonra yöneticiye bak.</p>
+<div class="tbl-wrap"><table><tr><th>Ayar</th><th>Ne işe yarar?</th><th>İyi uygulama</th></tr>
+<tr><td>İletişim listesi (Contact list)</td><td>Sorun bildirimlerini alanlar; varsayılan yöneticiler</td><td>Kişi değil, ekip grubu ekle</td></tr>
+<tr><td>Workspace SharePoint (arayüzün bazı yerlerinde eski adıyla Workspace OneDrive)</td><td>Microsoft 365 grubunun belge kitaplığını bağlar</td><td>Erişimde de aynı grubu kullan; Power BI üyeliği eşitlemez</td></tr>
+<tr><td>Lisans modu (Pro, PPU, Fabric kapasitesi)</td><td>Hangi özellik var, okuyucu ne lisans ister</td><td>Fabric öğesi gerekiyorsa kapasite şart</td></tr>
+<tr><td>Katkıda bulunanların uygulamayı güncellemesine izin ver</td><td>Uygulamayı güncelleyebilirler; ilk yayını yapamaz, erişimi değiştiremezler</td><td>Rapor ekibi sürekli güncelliyorsa aç</td></tr></table></div>
+<p>Yönetici çalışma alanını siler ve bu içeriği de siler; bu yüzden en az iki yönetici bulundur. Bir çalışma alanında toplam en fazla 1.000 Fabric ve Power BI öğesi bulunabilir; pratikte çok daha önce bölmek gerekir.</p>
+<h2>Dört rol</h2>
+<div class="tbl-wrap"><table><tr><th>İş</th><th>Yönetici</th><th>Üye</th><th>Katkıda bulunan</th><th>Görüntüleyici</th></tr>
+<tr><td>Görüntüle, etkileşim</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>İçerik oluştur, düzenle, sil</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td>.pbix indir, Excel’de analiz et</td><td>✓</td><td>✓</td><td>✓</td><td>Yalnız Derleme izniyle Excel</td></tr>
+<tr><td>Yenilemeyi zamanla</td><td>✓</td><td>✓</td><td>✓</td><td></td></tr>
+<tr><td>Uygulama yayımla, erişimini değiştir</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td>Düşük roller ekle</td><td>✓</td><td>✓</td><td></td><td></td></tr>
+<tr><td>Her kullanıcıyı ekle, çıkar; çalışma alanını sil</td><td>✓</td><td></td><td></td><td></td></tr>
+<tr><td>Satır düzeyi güvenlik uygulanır</td><td></td><td></td><td></td><td>✓</td></tr></table></div>
+<p>İki ayrıntı sorun çıkarır. Üye, var olan birinin rolünü değiştiremez; önce yönetici kullanıcıyı çıkarır. RLS yalnız Görüntüleyici için çalışır: satış müdürüne “kolay olsun” diye Katkıda bulunan verirsen bütün bölgeleri görür. Son kullanıcıyı ise çalışma alanına değil, uygulamaya ekle (“Power BI uygulamaları” dersi).</p>
+<div class="warn"><b>Lisans etkisi</b>Çalışma alanı paylaşılan kapasitedeyse içeriği görecek herkes Pro ya da PPU ister. F64 ve üstü Fabric ya da Premium kapasitede Görüntüleyici rolü ücretsiz lisansla da görür. F2-F32 kapasitede yine Pro gerekir. Kurallar değişebilir; satın almadan önce resmî lisans sayfasına bak.</div>
+<h2>Desktop’tan yayımlamak</h2>
+<ol><li>Dosyayı kaydet. <b>Giriş → Yayımla</b>.</li><li>Oturum açtığın hesabın çalışma alanlarından birini seç.</li><li>Aynı adda rapor varsa <b>Değiştir</b> sorusu gelir: içerik üzerine yazılır, rapor ve modelin kimliği korunur.</li><li>Başarı iletisindeki bağlantıyla raporu Service’te aç.</li></ol>
+<div class="tbl-wrap"><table><tr><th>Yayımla ile giden</th><th>Gitmeyen: Service’te yeniden yapılır</th></tr>
+<tr><td>Rapor sayfaları, görseller, yer işaretleri</td><td>Veri kaynağı kimlik bilgileri</td></tr>
+<tr><td>Model: tablolar, ilişkiler, ölçüler, RLS rol tanımları</td><td>RLS rol üyeleri</td></tr>
+<tr><td>Import verisi, Power Query adımları</td><td>Gizlilik düzeyleri</td></tr>
+<tr><td>Parametreler</td><td>Yenileme zamanlaması, ağ geçidi bağlantısı</td></tr></table></div>
+<p>Yayımdan sonraki bu liste bir alışkanlık olmalı. Bir kişi unuttuğunda sonuç: rapor o günün verisiyle kalır, RLS rolü boş olduğu için görüntüleyici hiçbir şey göremez. Model ve raporu ayırmayı düşünüyorsan “ince rapor” deseni “Veri akışları ve paylaşılan anlam modelleri” dersinde.</p>
+<h3>Başka yollarla öğe eklemek</h3>
+<ul><li><b>Karşıya yükle:</b> çalışma alanında .pbix ya da Excel dosyası yüklenir.</li><li><b>OneDrive ya da SharePoint’ten:</b> dosyaya bağlı öğe saatte bir denetlenir, dosya değişince güncellenir (OneDrive yenilemesi).</li><li><b>Dağıtım işlem hattı ya da Git:</b> ekip büyüdüğünde elle yayımlamanın yerini alır (“Yaşam döngüsü” dersi).</li></ul>
+<h2>Adlandırma ve düzen</h2>
+<p>“BI”, “Rapor2”, “Yeni klasör” gibi alanlar altı ay sonra kimsenin silmeye cesaret edemediği çöplüktür. Basit bir standart yeter: <code>Birim - Konu [Dev|Test|Prod]</code>. Her alanın sahibi, açıklaması ve iletişim listesi olsun. Çalışma alanı içinde klasör de kullanılabilir. Model ve raporları ayrı alanlarda tutmanın tasarımı “Yayımlama, yenileme ve yaşam döngüsü” dersinde.</p>
+<h2>Yayım öncesi mutabakat</h2>
+<p>Yayımlamadan önce modelin ana sayılarını bir sorguyla sabitle; yayımdan sonra aynı sorguyu Service’teki modelde çalıştırıp karşılaştır. Fark varsa yenileme ya da kaynak farklıdır:</p>
+<pre class="dax">EVALUATE
+ROW("Net Satış", [Net Satış], "Sipariş", [Sipariş Sayısı], "Satır", COUNTROWS(Satislar))</pre>
+<div class="tip"><b>Kendi ortamında dene</b>Service için iş ya da okul hesabı gerekir; kişisel e-posta çoğu zaman kabul edilmez. Hesabın varsa <b>Çalışma alanım</b>a Desktop’tan bir rapor yayımla, sonra kimlik bilgisi ve yenileme ayarlarını gör. Ekip çalışma alanı için Pro, PPU ya da deneme lisansı gerekir. Hesabın yoksa bu dersin alıştırmalarıyla kararları çalış; Örnek raporlar sayfası Desktop’ta olanı taklit eder, Service’i taklit etmez.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-calisma-alani">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../coklu-kaynak/">← Birden çok veri kaynağıyla çalışmak: ekle, birleştir, ilişkilendir</a><a href="../panolar/">Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

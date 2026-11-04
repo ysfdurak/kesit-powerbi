@@ -1,0 +1,156 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: müşteri kaybı (churn) | Kesit Power BI</title><meta name="description" content="Pazarlama ekibi hangi müşterileri kaybettiğini ve kimi geri kazanmaya çalışacağını soruyor. Kayıp tanımını koyar, oranı segment, yaş, şehir ve kanala göre…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kayip/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: müşteri kaybı (churn)"><meta property="og:description" content="Pazarlama ekibi hangi müşterileri kaybettiğini ve kimi geri kazanmaya çalışacağını soruyor. Kayıp tanımını koyar, oranı segment, yaş, şehir ve kanala göre…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kayip/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: müşteri kaybı (churn)","description":"Pazarlama ekibi hangi müşterileri kaybettiğini ve kimi geri kazanmaya çalışacağını soruyor. Kayıp tanımını koyar, oranı segment, yaş, şehir ve kanala göre…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-kayip/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Vaka Çalışmaları</span><h1>Vaka: müşteri kaybı (churn)</h1><p class="st-l">Pazarlama ekibi hangi müşterileri kaybettiğini ve kimi geri kazanmaya çalışacağını soruyor. Kayıp tanımını koyar, oranı segment, yaş, şehir ve kanala göre kırar, risk altındaki müşteri listesini çıkarırsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kayip">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Pazarlama müdürü. Önümüzdeki çeyrekte bir “geri kazanma” (win-back) kampanyası yapılacak. Bütçe sınırlı: herkese indirim kodu gönderilmeyecek.</p>
+<p><b>Hangi karar?</b> Kampanya kime gidecek, hangi segment ve şehre öncelik verilecek? Brif üç soruya iniyor:</p>
+<ol>
+<li>Kaç müşteriyi kaybettik ve bu oran hangi grupta yüksek?</li>
+<li>Kaybettiğimiz müşteriler geçmişte ne kadar harcamıştı?</li>
+<li>Henüz kaybetmediğimiz ama kaybetmek üzere olduğumuz müşteriler kim?</li>
+</ol>
+<p>Bu vaka, <b>Müşteri analitiği: yeni, geri dönen, kayıp, kohort, RFM</b> dersindeki tekniklere dayanır. Oradaki <code>[Kayıp Müşteri]</code> ölçüsü dönem bazlıdır: “geçen 12 ayda alıp bu dönemde almayan”. Burada kampanya için farklı bir tanım gerekiyor: müşteri bazında, son siparişten bu yana geçen gün sayısı.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Kullanım</th></tr>
+<tr><td><code>Satislar</code></td><td>Sipariş tarihi, durum (İptal hariç), kanal, tutar.</td></tr>
+<tr><td><code>Musteriler</code></td><td>Segment, şehir, bölge, yaş grubu. 150 kayıtlı müşteri.</td></tr>
+<tr><td><code>Tarih</code></td><td>Tarih filtresini kaldırmak ve “tarihe göre” sürüm için.</td></tr>
+</table></div>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li>Satış verisi 22.06.2022’de başlar, 31.12.2024’te biter. “Bugün” yerine bu <b>veri sonu tarihini</b> kullanırız. <code>TODAY()</code> kullansaydık her müşteri birkaç ay sonra “kayıp” görünürdü.</li>
+<li>150 müşteriden 14’ü hiç sipariş vermemiş. Onlar “kayıp” değil, “hiç kazanılmamış” müşteridir; paydaya girmezler.</li>
+<li>150 müşterinin yalnızca 140 farklı adı var: aynı adı taşıyan müşteriler var. Liste ve gruplamada <code>Musteriler[MusteriNo]</code> kullan, adı yalnızca etiket olarak göster.</li>
+<li>Şehri boş 7 müşteri var. Şehir kırılımında “(Boş)” satırı görünür; gizleme, raporda veri kalitesi notu olarak bırak.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Kayıp tanımı.</b> Kural: iptal edilmemiş son siparişinden bu yana <b>180 gün veya daha fazla</b> geçen müşteri kayıptır; 90–179 gün arası “risk altında”dır. Önce yapı taşları:</p>
+<pre class="dax">Son Sipariş =
+CALCULATE(
+    MAX(Satislar[Tarih]),
+    REMOVEFILTERS(Tarih),
+    REMOVEFILTERS(Satislar[Kanal]),
+    Satislar[Durum] &lt;&gt; "İptal"
+)
+Veri Sonu = MAXX(ALL(Satislar), Satislar[Tarih])
+Sessiz Gün =
+VAR Son = [Son Sipariş]
+RETURN IF(NOT ISBLANK(Son), DATEDIFF(Son, [Veri Sonu], DAY))</pre>
+<p><code>REMOVEFILTERS(Tarih)</code> önemli: rapor sayfasında bir yıl seçilse bile müşterinin gerçek son siparişini buluruz. <code>REMOVEFILTERS(Satislar[Kanal])</code> ise kanal kırılımında “bu kanaldaki son sipariş” yerine “herhangi bir kanaldaki son sipariş”i verir. <code>Veri Sonu</code> için <code>ALL(Satislar)</code> üzerinde yineleriz; hiçbir dilimleyici bu tarihi değiştirmez.</p>
+<p><b>Bulgu:</b> Sipariş vermiş 136 müşterinin 89’u aktif (90 günden az), 20’si risk altında (90–179 gün), 27’si kayıp (180+ gün).</p>
+
+<p><b>Adım 2: Kayıp sayısı ve oranı.</b></p>
+<pre class="dax">Son Sipariş =
+CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS(Tarih), REMOVEFILTERS(Satislar[Kanal]), Satislar[Durum] &lt;&gt; "İptal")
+Veri Sonu = MAXX(ALL(Satislar), Satislar[Tarih])
+Sessiz Gün =
+VAR Son = [Son Sipariş]
+RETURN IF(NOT ISBLANK(Son), DATEDIFF(Son, [Veri Sonu], DAY))
+Kaybedilen Müşteri =
+COUNTROWS(
+    FILTER(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), REMOVEFILTERS(Tarih), Satislar[Durum] &lt;&gt; "İptal"),
+        [Sessiz Gün] &gt;= 180
+    )
+)
+Alışveriş Yapmış Müşteri = CALCULATE([Müşteri Sayısı], REMOVEFILTERS(Tarih))
+Kayıp Oranı % = DIVIDE([Kaybedilen Müşteri], [Alışveriş Yapmış Müşteri])</pre>
+<p>Müşteri listesini <code>Satislar</code> üzerinden alıyoruz (<code>VALUES(Satislar[MusteriNo])</code>). Böylece kanal ve kategori gibi olgu tablosundaki filtreler de listeyi daraltır. <code>FILTER</code> içindeki <code>[Sessiz Gün]</code> çağrısı her müşteri için bağlam geçişi yapar.</p>
+<p><b>Bulgu:</b> 27 / 136 = <b>%19,9</b> kayıp oranı. Her beş müşteriden biri altı aydır sipariş vermiyor.</p>
+
+<p><b>Adım 3: Segment, yaş, şehir ve kanal kırılımı.</b> Aynı ölçüyü matriste satırlara koymak yeter.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kırılım</th><th>Kayıp / alışveriş yapan</th><th>Kayıp oranı</th></tr>
+<tr><td>Premium</td><td>8 / 30</td><td><b>%26,7</b></td></tr>
+<tr><td>Bireysel</td><td>15 / 77</td><td>%19,5</td></tr>
+<tr><td>Kurumsal</td><td>4 / 29</td><td>%13,8</td></tr>
+<tr><td>Yaş 35-44</td><td>8 / 29</td><td><b>%27,6</b></td></tr>
+<tr><td>Yaş 45-54</td><td>7 / 26</td><td>%26,9</td></tr>
+<tr><td>Yaş 18-24</td><td>4 / 18</td><td>%22,2</td></tr>
+<tr><td>Yaş 25-34</td><td>5 / 34</td><td>%14,7</td></tr>
+<tr><td>Yaş 55+</td><td>3 / 29</td><td>%10,3</td></tr>
+<tr><td>Marmara bölgesi</td><td>13 / 36</td><td><b>%36,1</b></td></tr>
+<tr><td>İç Anadolu bölgesi</td><td>6 / 44</td><td>%13,6</td></tr>
+<tr><td>Kanal: Mağaza</td><td>17 / 70</td><td>%24,3</td></tr>
+<tr><td>Kanal: Mobil</td><td>23 / 117</td><td>%19,7</td></tr>
+<tr><td>Kanal: Web</td><td>22 / 113</td><td>%19,5</td></tr>
+</table></div>
+<p>Şehir düzeyinde İstanbul öne çıkıyor: 27 müşteriden 10’u kayıp (<b>%37,0</b>). Bursa 3/9, Konya 2/5. Ancak Konya’da yalnızca 5 müşteri var; küçük gruplarda oran tek bir müşteriyle %20 oynar. Raporda oranın yanına mutlaka müşteri sayısını yaz.</p>
+<div class="note"><b>Kanal kırılımı nasıl okunur?</b>Bir müşteri birden fazla kanaldan alışveriş yapmış olabilir. Kanal satırı “bu kanalı en az bir kez kullanmış müşteriler arasında kayıp oranı”dır. Bu yüzden kanal satırlarının toplamı (17 + 23 + 22 = 62) toplam kayıptan (27) büyüktür. Toplam satırı ise doğru sonucu verir; DAX müşteriyi bir kez sayar.</div>
+
+<p><b>Adım 4: Kaybedilen müşterilerin geçmiş harcaması.</b></p>
+<pre class="dax">Son Sipariş =
+CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS(Tarih), REMOVEFILTERS(Satislar[Kanal]), Satislar[Durum] &lt;&gt; "İptal")
+Sessiz Gün =
+VAR Son = [Son Sipariş]
+RETURN IF(NOT ISBLANK(Son), DATEDIFF(Son, MAXX(ALL(Satislar), Satislar[Tarih]), DAY))
+Kaybedilen Ciro =
+CALCULATE(
+    [Net Satış],
+    REMOVEFILTERS(Tarih),
+    FILTER(VALUES(Musteriler[MusteriNo]), [Sessiz Gün] &gt;= 180)
+)</pre>
+<p><b>Bulgu:</b> Kaybedilen 27 müşteri, tüm dönemde <b>185.576 ₺</b> harcamış. Bu, toplam net satışın (1.250.772 ₺) <b>%14,8</b>’i. Kaybedilen müşteri başına geçmiş harcama 6.873 ₺; kalan müşterilerde 9.772 ₺. Yani genelde daha az harcayanları kaybediyoruz. Ama Premium istisna: kaybedilen cironun 82.328 ₺’si (%44) yalnızca 8 Premium müşteriden geliyor. Premium müşteri ortalama 11,1 sipariş veren, 16.271 ₺ harcayan bir müşteri; böyle birinin altı ay sessiz kalması güçlü bir sinyaldir.</p>
+
+<p><b>Adım 5: Zaman içinde kayıp.</b> Brif “şu an” soruyor, ama yönetim “artıyor mu?” diye de soracak. Veri sonu yerine bağlamdaki son tarihi kullanan bir sürüm:</p>
+<pre class="dax">Son Sipariş (Tarihe Kadar) =
+VAR Gun = MAX(Tarih[Tarih])
+RETURN CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS(Tarih), Satislar[Tarih] &lt;= Gun, Satislar[Durum] &lt;&gt; "İptal")
+Kayıp (Tarihe Göre) =
+VAR Gun = MAX(Tarih[Tarih])
+VAR Musteriler180 =
+    FILTER(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), REMOVEFILTERS(Tarih), Satislar[Tarih] &lt;= Gun, Satislar[Durum] &lt;&gt; "İptal"),
+        DATEDIFF([Son Sipariş (Tarihe Kadar)], Gun, DAY) &gt;= 180
+    )
+RETURN COUNTROWS(Musteriler180)</pre>
+<p><b>Bulgu:</b> Çeyrek sonlarında kayıp müşteri sayısı: 2023-Ç4 7, 2024-Ç1 12, Ç2 15, Ç3 20, Ç4 27. Bir yılda dört katına yakın arttı. Müşteri tabanı da büyüyor, ama artış hızı ciddi.</p>
+
+<p><b>Adım 6: Risk altındaki müşteriler listesi.</b> Kampanyanın asıl hedefi bu liste: henüz kaybedilmemiş, 90–179 gündür sessiz müşteriler.</p>
+<pre class="dax">EVALUATE
+VAR Liste =
+    ADDCOLUMNS(
+        VALUES(Musteriler[MusteriNo]),
+        "Müşteri", CALCULATE(MAX(Musteriler[Musteri])),
+        "Segment", CALCULATE(MAX(Musteriler[Segment])),
+        "Son", CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS(Tarih), Satislar[Durum] &lt;&gt; "İptal"),
+        "Ciro", CALCULATE([Net Satış], REMOVEFILTERS(Tarih))
+    )
+VAR Riskli =
+    FILTER(Liste, NOT ISBLANK([Son]) &amp;&amp; DATEDIFF([Son], DATE(2024, 12, 31), DAY) &gt;= 90 &amp;&amp; DATEDIFF([Son], DATE(2024, 12, 31), DAY) &lt; 180)
+RETURN TOPN(10, Riskli, [Ciro], DESC)</pre>
+<div class="warn"><b>CALCULATE’i unutma</b><code>ADDCOLUMNS</code> içinde <code>MAX(Musteriler[Segment])</code> yazarsan satır bağlamı filtreye dönüşmez ve her satıra tüm tablonun en büyük değeri (“Premium”) gelir. Bu vakayı hazırlarken ilk denemede tam olarak bu oldu ve liste “hep Premium” göründü. <code>CALCULATE(MAX(...))</code> bağlam geçişi yapar.</div>
+<p><b>Bulgu:</b> 20 risk altındaki müşteri, geçmişte toplam <b>122.492 ₺</b> harcamış. 18’i Bireysel, 2’si Kurumsal; risk listesinde hiç Premium müşteri yok. Premium’daki sorun 180+ gün grubunda: 8 kayıp. İlk üç: 97 no.lu Mehmet Doğan (90 gün, 19.457 ₺), 24 no.lu Gamze Kaya (Kurumsal, 97 gün, 16.354 ₺), 51 no.lu Eren Çelik (109 gün, 11.573 ₺).</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Üst şerit</td><td>4 kart</td><td>Alışveriş yapmış müşteri (136), Kaybedilen (27), Kayıp oranı (%19,9), Kaybedilen ciro (185.576 ₺)</td></tr>
+<tr><td>Sol orta</td><td>Çizgi grafik</td><td>X: Tarih[YilCeyrek], Y: Kayıp (Tarihe Göre)</td></tr>
+<tr><td>Sağ orta</td><td>Çubuk grafik (yatay)</td><td>Segment ve yaş grubu; değer: Kayıp Oranı %, araç ipucunda müşteri sayısı</td></tr>
+<tr><td>Sol alt</td><td>Doldurulmuş harita veya tablo</td><td>Şehir; Kayıp Oranı % ve Alışveriş Yapmış Müşteri yan yana</td></tr>
+<tr><td>Sağ alt</td><td>Tablo</td><td>Risk listesi: MusteriNo, ad, segment, son sipariş, sessiz gün, geçmiş ciro; ciroya göre azalan</td></tr>
+<tr><td>Sayfa notu</td><td>Metin kutusu</td><td>“Kayıp: veri sonu (31.12.2024) itibarıyla 180+ gün sipariş yok.”</td></tr>
+</table></div>
+<p>Risk tablosuna bir dilimleyici (Slicer) olarak “sessiz gün eşiği” eklemek istersen <b>Segmentasyon</b> dersindeki ne olur (what-if) parametresini kullan: 180 sabiti parametre değerine dönüşür.</p>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Kayıp oranı %19,9</b> (27 / 136) ve bir yılda 7’den 27’ye çıktı. Kayıp takibi aylık KPI olmalı.</li>
+<li><b>Premium en yüksek orana sahip (%26,7)</b> ve kaybedilen cironun %44’ü bu segmentten. Premium için 180 gün yerine daha kısa bir uyarı eşiği (ör. 60 gün) tanımla; bu müşteriler ortalama 11 sipariş veriyor, uzun sessizlik normal değil.</li>
+<li><b>Marmara ve özellikle İstanbul</b> (%37,0) öne çıkıyor. Bölge ekibiyle teslimat ve rakip etkisini konuş; küçük şehirlerde oranı müşteri sayısıyla birlikte oku.</li>
+<li><b>Kampanya önce risk listesine gitsin:</b> 20 müşteri, 122.492 ₺ geçmiş ciro. Kaybedilmişlere göre geri kazanmak daha ucuzdur.</li>
+<li>35-54 yaş grubunda oran %27 civarında, 55+ grubunda %10,3. Mesaj ve kanal seçimini yaş grubuna göre ayır.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-kayip">Alıştırmalara geç (5)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-yildiz/">← Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı</a><a href="../vaka-ik/">Vaka: İK analitiği →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

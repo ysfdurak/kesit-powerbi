@@ -1,0 +1,123 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: stok analizi | Kesit Power BI</title><meta name="description" content="Satın alma müdürü hangi ürünlere sipariş vereceğine ve hangi stoku eriteceğine karar verecek. Dönem sonu stok değeri, stok devir hızı, stokta kalma günü,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-stok/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: stok analizi"><meta property="og:description" content="Satın alma müdürü hangi ürünlere sipariş vereceğine ve hangi stoku eriteceğine karar verecek. Dönem sonu stok değeri, stok devir hızı, stokta kalma günü,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-stok/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: stok analizi","description":"Satın alma müdürü hangi ürünlere sipariş vereceğine ve hangi stoku eriteceğine karar verecek. Dönem sonu stok değeri, stok devir hızı, stokta kalma günü,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-stok/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Vaka Çalışmaları</span><h1>Vaka: stok analizi</h1><p class="st-l">Satın alma müdürü hangi ürünlere sipariş vereceğine ve hangi stoku eriteceğine karar verecek. Dönem sonu stok değeri, stok devir hızı, stokta kalma günü, ABC sınıfına göre stok ve stoksuz kalma riskini aylık stok görüntüsünden hesaplarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-stok">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Satın alma müdürü. Depoda yer daralıyor, finans ise stoka bağlanan parayı azaltmak istiyor.</p>
+<p><b>Hangi karar?</b> 2025 ilk çeyrek satın alma planı: hangi ürünlerde sipariş azaltılacak (aşırı stok), hangilerinde artırılacak (stoksuz kalma riski)? Brifin soruları:</p>
+<ol>
+<li>Stokta ne kadar para bağlı ve yıl içinde nasıl değişti?</li>
+<li>Stok ne kadar hızlı dönüyor; kategoriler arasında fark var mı?</li>
+<li>Satışın çoğunu getiren ürünlere mi, yoksa az satan ürünlere mi stok bağlamışız?</li>
+<li>Hangi ürünler stoksuz kaldı, hangileri hiç hareket etmiyor?</li>
+</ol>
+<p>Stok yarı toplanabilir bir değerdir: aylar boyunca toplanmaz. Kapanış değeri ve ortalama bakiye tekniklerini <b>Yarı toplanabilir ölçüler: stok, bakiye, nüfus</b> dersinde gördün; burada onları karar verdiren bir rapora dönüştürüyoruz.</p>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Kullanım</th></tr>
+<tr><td><code>StokGorunum</code></td><td>Ay sonu anlık görüntüsü: ürün, stok adedi, gelen adet, stok değeri (maliyetle). 40 ürün × 36 ay = 1.440 satır.</td></tr>
+<tr><td><code>Satislar</code></td><td>Satılan malın maliyeti: hazır <code>[Net Maliyet]</code>.</td></tr>
+<tr><td><code>Urunler</code>, <code>Kategoriler</code>, <code>Tarih</code></td><td>Ürün ve kategori kırılımı; ay ve yıl.</td></tr>
+</table></div>
+<p>Hazır ölçüler: <code>[Stok Değeri]</code> (son dolu tarihteki değer, <code>LASTNONBLANK</code>), <code>[Stok Adedi]</code> (son görüntüdeki adet).</p>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li>Görüntüler yalnızca ay sonunda alınıyor (31.01.2022 – 31.12.2024). Ay içinde stok sıfıra düşüp tekrar dolduysa bunu göremeyiz; “stoksuz ay” sayısı gerçek stoksuz gün sayısının alt sınırıdır.</li>
+<li>Satışlar Haziran 2022’de başlıyor. 2022 devir hızı yapay olarak düşük çıkar; yıllık karşılaştırmada 2023 ve 2024’ü kullan.</li>
+<li><code>Urunler[Stok]</code> sütunu statiktir ve son görüntüyle aynıdır (311 adet, 163.465 ₺). Tarihli analizde her zaman <code>StokGorunum</code>’u kullan.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Dönem sonu stok değeri.</b> Hazır <code>[Stok Değeri]</code> ölçüsünü <code>Tarih[Yil]</code> ve <code>Tarih[YilAy]</code> ile kullan.</p>
+<p><b>Bulgu:</b> Yıl sonu stok değeri 2022’de 164.498 ₺, 2023’te 166.057 ₺, 2024’te <b>163.465 ₺</b> (311 adet). Satışlar 2024’te %86 büyürken stok neredeyse sabit kaldı: bu iyi haber; aynı stokla daha çok satıyoruz.</p>
+
+<p><b>Adım 2: Ortalama stok ve stok devir hızı.</b> Devir hızı = satılan malın maliyeti ÷ ortalama stok. Ortalama stok, dönemdeki ay sonu değerlerinin ortalamasıdır:</p>
+<pre class="dax">Ortalama Stok Değeri =
+AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])
+Stok Devir Hızı =
+DIVIDE([Net Maliyet], [Ortalama Stok Değeri])
+Stokta Kalma Günü =
+VAR Gun = DATEDIFF(MIN(Tarih[Tarih]), MAX(Tarih[Tarih]), DAY) + 1
+RETURN DIVIDE(Gun, [Stok Devir Hızı])</pre>
+<p><b>Bulgu:</b> 2024’te ortalama stok 180.333 ₺, net maliyet 458.504 ₺: devir hızı <b>2,54</b>, stokta kalma <b>144 gün</b>. 2023’te 1,60 ve 228 gündü. Stok yılda iki buçuk kez dönüyor; bir ürün ortalama beş ay depoda bekliyor.</p>
+<div class="note"><b>Hazır [Stok Gün Sayısı] neden farklı?</b>Modeldeki <code>[Stok Gün Sayısı]</code> dönem sonu stokunu günlük maliyete böler ve 2024 için 130,5 gün verir. Bizim ölçümüz ortalama stoku kullanır (144 gün). Yıl içinde stok dalgalanıyorsa ortalama daha adildir; raporda hangisini kullandığını sayfa notunda yaz.</div>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori (2024)</th><th>Yıl sonu stok</th><th>Devir hızı</th><th>Stokta kalma günü</th></tr>
+<tr><td>Kitap</td><td>11.660 ₺</td><td>4,01</td><td>91</td></tr>
+<tr><td>Kozmetik</td><td>13.113 ₺</td><td>3,55</td><td>103</td></tr>
+<tr><td>Giyim</td><td>16.667 ₺</td><td>3,33</td><td>110</td></tr>
+<tr><td>Elektronik</td><td>35.209 ₺</td><td>3,08</td><td>119</td></tr>
+<tr><td>Ev &amp; Yaşam</td><td>27.423 ₺</td><td>3,00</td><td>122</td></tr>
+<tr><td>Hediye</td><td>2.545 ₺</td><td>2,93</td><td>125</td></tr>
+<tr><td><b>Spor</b></td><td><b>56.848 ₺</b></td><td><b>1,04</b></td><td><b>353</b></td></tr>
+</table></div>
+<p>Spor stokun %35’ini tutuyor ama yılda bir kez bile tam dönmüyor. Nedenini ürün düzeyinde arayalım.</p>
+
+<p><b>Adım 3: Ürün düzeyi: aşırı stok.</b> Aynı ölçüleri <code>Urunler[Urun]</code> ile tabloya koy, stokta kalma gününe göre sırala.</p>
+<p><b>Bulgu:</b></p>
+<ul>
+<li><b>Koşu Bandı:</b> 4 adet, <b>41.564 ₺</b> stok ve veride <b>hiç satışı yok</b>. Tek başına Spor stokunun %73’ü, toplam stokun %25’i. Devir hızı boş (BLANK) çıkar, çünkü maliyet yok. Boş değer “sorun yok” anlamına gelmez: tabloda en tehlikeli satır bu.</li>
+<li><b>Gurme Lokum Kutusu:</b> 955 ₺ stok, hiç satış yok.</li>
+<li>Yavaş dönenler (2024): Robot Süpürge (devir 1,14; 320 gün; 14.067 ₺), Kamp Çadırı (1,36; 268 gün), Mont (1,65; 222 gün).</li>
+</ul>
+
+<p><b>Adım 4: ABC sınıfına göre stok.</b> Ürünleri 2024 net satışına göre sırala: kümülatif payı %70’e kadar A, %90’a kadar B, kalanı C. Hazır <code>[ABC Sınıfı]</code> ölçüsü görselde ürün satırında çalışır (<code>ISINSCOPE</code>); sınıf başına stok toplamı için sorgu yazarız:</p>
+<pre class="dax">EVALUATE
+VAR T =
+    CALCULATETABLE(
+        ADDCOLUMNS(VALUES(Urunler[Urun]), "S", [Net Satış], "Stok", [Stok Değeri]),
+        Tarih[Yil] = 2024
+    )
+VAR Toplam = SUMX(T, [S])
+VAR T2 = ADDCOLUMNS(T, "Pay", VAR s = [S] RETURN DIVIDE(SUMX(FILTER(T, [S] &gt;= s), [S]), Toplam))
+VAR T3 = ADDCOLUMNS(T2, "Sınıf", IF(ISBLANK([S]), "C", IF([Pay] &lt;= 0.7, "A", IF([Pay] &lt;= 0.9, "B", "C"))))
+RETURN
+    ADDCOLUMNS(
+        DATATABLE("Sınıf", STRING, {{"A"}, {"B"}, {"C"}}),
+        "Ürün", VAR K = [Sınıf] RETURN COUNTROWS(FILTER(T3, [Sınıf] = K)),
+        "Satış", VAR K = [Sınıf] RETURN SUMX(FILTER(T3, [Sınıf] = K), [S]),
+        "Stok", VAR K = [Sınıf] RETURN SUMX(FILTER(T3, [Sınıf] = K), [Stok])
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Sınıf</th><th>Ürün</th><th>2024 satış payı</th><th>Yıl sonu stok</th><th>Stok payı</th></tr>
+<tr><td>A</td><td>19</td><td>%68,0</td><td>85.102 ₺</td><td>%52,1</td></tr>
+<tr><td>B</td><td>10</td><td>%20,9</td><td>26.789 ₺</td><td>%16,4</td></tr>
+<tr><td>C</td><td>11</td><td>%11,1</td><td>51.574 ₺</td><td><b>%31,6</b></td></tr>
+</table></div>
+<p><b>Bulgu:</b> C sınıfı satışın %11’ini getiriyor ama stokun %32’sini tutuyor. Bu fazlalığın büyük kısmı tek ürün: Koşu Bandı (C sınıfında, satışsız).</p>
+
+<p><b>Adım 5: Stoksuz kalma riski.</b> Ay sonunda adedi 0 olan ürün-ay sayısı:</p>
+<pre class="dax">Stoksuz Ürün-Ay =
+SUMX(
+    VALUES(Urunler[UrunNo]),
+    COUNTROWS(FILTER(VALUES(Tarih[YilAy]), [Stok Adedi] = 0))
+)</pre>
+<p><b>Bulgu:</b> 36 ayda toplam 17 ürün-ay stoksuz (2022’de 7, 2023’te 7, 2024’te 3). En sık stoksuz kalan <b>Çaydanlık Seti</b>: 4 ay. Bu ürün aynı zamanda en hızlı dönen ürün (2024 devir hızı 7,41; 49 gün). Türk Kahvesi Makinesi, 27" Monitör ve Dambıl Seti 10kg 2’şer ay stoksuz kaldı. 2024’te stoksuz kalanlar: Kürk Mantolu Madonna, Türk Kahvesi Makinesi, Çaydanlık Seti (1’er ay).</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Üst şerit</td><td>4 kart</td><td>Yıl sonu stok değeri, Ortalama stok, Stok devir hızı, Stokta kalma günü (yıl dilimleyicisine bağlı)</td></tr>
+<tr><td>Sol orta</td><td>Çizgi ve kümelenmiş sütun grafik</td><td>X: YilAy; sütun: Stok Değeri; çizgi: Net Maliyet</td></tr>
+<tr><td>Sağ orta</td><td>Çubuk grafik</td><td>Kategori; Stokta Kalma Günü; 180 gün sabit çizgisi (Analiz bölmesi)</td></tr>
+<tr><td>Sol alt</td><td>Dağılım grafiği (Scatter)</td><td>X: Stok Devir Hızı, Y: Stok Değeri, ayrıntı: Urun, renk: ABC sınıfı. Sağ üstte kalan ürün yok; sol üst köşe aşırı stok.</td></tr>
+<tr><td>Sağ alt</td><td>Tablo</td><td>Urun, Stok Adedi, Stok Değeri, Devir, Stokta Kalma Günü, Stoksuz Ürün-Ay; koşullu biçim</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Koşu Bandı stokunu erit:</b> 41.564 ₺, toplam stokun %25’i, hiç satış yok. Kampanya, iade ya da başka kanala aktarma; yeni sipariş verme.</li>
+<li><b>Spor kategorisinin devir hızı 1,04</b> (353 gün). Koşu Bandı çıkarıldığında kategoriyi yeniden ölç; Kamp Çadırı ve Robot Süpürge gibi yavaş ürünlerin sipariş miktarını düşür.</li>
+<li><b>Hızlı dönenlerde emniyet stoku artır:</b> Çaydanlık Seti 36 ayın 4’ünde ay sonunda stoksuz; devir hızı 7,41. Yeniden sipariş noktasını yükselt.</li>
+<li><b>C sınıfı stok payını hedefle:</b> şu an %31,6; satış payı %11,1. Hedef: C stok payını satış payına yaklaştırmak.</li>
+<li>Görüntüler aylık olduğu için ay içi stoksuzluk görünmüyor. Haftalık ya da günlük stok hareketi verisi istenmeli.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-stok">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-ik/">← Vaka: İK analitiği</a><a href="../vaka-eticaret/">Vaka: e-ticaret dönüşüm hunisi ve kargo →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

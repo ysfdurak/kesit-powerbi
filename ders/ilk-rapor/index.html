@@ -1,0 +1,56 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İlk raporunu kur | Kesit Power BI</title><meta name="description" content="Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/ilk-rapor/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="İlk raporunu kur"><meta property="og:description" content="Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/ilk-rapor/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"İlk raporunu kur","description":"Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/ilk-rapor/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>İlk raporunu kur</h1><p class="st-l">Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-ilk-rapor">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<div class="note"><b>Önce veri ve ölçüler</b>Bu dersi Desktop’ta yapacaksan: <a href="../../">veri setini indir</a>, zip’i aç, <b>Giriş → Veri al → Metin/CSV</b> ile <code>Satislar</code>, <code>Urunler</code>, <code>Kategoriler</code> ve <code>Tarih</code> dosyalarını yükle. Model görünümünde <code>Satislar[UrunNo] → Urunler[UrunNo]</code>, <code>Urunler[Kategori] → Kategoriler[Kategori]</code> ve <code>Satislar[Tarih] → Tarih[Tarih]</code> ilişkilerini kur (bu adımların nedenini “Veri modelleme” dersinde göreceksin). Sonra <b>Yeni ölçü (New measure)</b> ile şu iki ölçüyü ekle:<pre class="dax" data-notry>Net Satış = CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal")
+Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Desktop’un yoksa aynı görselleri <a href="../../">Görseller ve biçim</a> sayfasında dene.</div>
+<h2>Üç görsel, bir hikâye</h2>
+<p>İyi bir ilk sayfa üç soruya cevap verir: <b>Ne kadar?</b> (kart), <b>Nerede?</b> (kategori karşılaştırması), <b>Nasıl gidiyor?</b> (zaman içindeki eğilim). <b>Görseller ve biçim</b> sayfasında hepsini bu verilerle canlı görebilirsin.</p>
+<ol>
+<li><b>Kart:</b> Görselleştirmeler → Kart. Alanlar kutusuna <code>[Net Satış]</code>. Biçim → Belirtici → Görüntü birimleri: Milyon.</li>
+<li><b>Kümelenmiş çubuk grafik:</b> Y eksenine <code>Kategoriler[Kategori]</code>, X eksenine <code>[Net Satış]</code>. Görselin “…” menüsünden <i>Ekseni sırala (Sort axis) → Net Satış, azalan</i>.</li>
+<li><b>Çizgi grafik:</b> X eksenine <code>Tarih[YilAy]</code>, Y eksenine <code>[Net Satış]</code>. İkinci çizgi olarak <code>[Satış GY]</code> (geçen yıl) eklersen büyümeyi görürsün.</li>
+<li><b>Dilimleyici:</b> <code>Tarih[Yil]</code>. Stil: Döşeme (tile). Tüm görselleri birlikte süzer.</li>
+</ol>
+<h2>Biçimlendirme kontrol listesi</h2>
+<ul>
+<li><b>Başlık:</b> Ne gösterdiğini söylesin: “Kategoriye göre net satış, 2024”.</li>
+<li><b>Sayı biçimi:</b> Ölçüyü seç → Ölçü araçları → Biçim: Para birimi, ondalık 0. Bir kez ölçüde ayarla, her görsel bunu kullanır.</li>
+<li><b>Veri etiketleri:</b> Az sayıda çubukta aç; kalabalık grafikte kapat, araç ipuçlarına bırak.</li>
+<li><b>Renk:</b> Tek seri tek renk. Rengi anlam taşıdığında kullan (ör. hedefin altı kırmızı).</li>
+<li><b>Tema:</b> Görünüm → Temalar. Kurumsal renkleri bir kez JSON tema olarak tanımla, tüm raporlar aynı görünür.</li>
+</ul>
+<div class="tip"><b>Hızlı yol</b>Veri bölmesinde bir ölçüye tıklayıp tuvalin boş bir yerine bırakırsan Power BI uygun bir görsel önerir. Sonra görsel türünü tek tıkla değiştirebilirsin.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Boş sayfadan yayına: sekiz adımlık çalışma düzeni</h2>
+<p>İlk raporda en çok zaman kaybettiren şey, görselleri rastgele eklemek ve sonra her şeyi yeniden dizmektir. Aşağıdaki sıra, işyerinde ilk haftanda vereceğin bir raporu düzenli kurmanı sağlar.</p>
+<ol>
+<li><b>Soruyu yaz:</b> “Satış müdürü bu sayfaya bakınca hangi üç soruya cevap bulacak?” Sayfanın üstüne bir metin kutusuyla bu soruyu not al; sonra silersin.</li>
+<li><b>Kaydet ve adlandır:</b> Dosyaya anlamlı bir ad ver (“Satis_Ozet_v1.pbix”), sayfa sekmesine “Özet” de.</li>
+<li><b>Tuvali ayarla:</b> Hiçbir görsel seçili değilken Biçim → Tuval ayarları: 16:9 çoğu ekran için doğrudur.</li>
+<li><b>Üst şerit:</b> Soldan sağa 3–4 kart: [Net Satış], [Brüt Kâr], [Kâr Marjı %], [Sipariş Sayısı].</li>
+<li><b>Orta alan:</b> Solda kategoriye göre sıralı çubuk, sağda aylara göre çizgi grafik.</li>
+<li><b>Dilimleyici:</b> Üstte ya da solda tek bir yıl dilimleyicisi. Başlangıçta fazla dilimleyici koyma.</li>
+<li><b>Test et:</b> Rakamları bir kontrol değerine karşı doğrula (aşağıda).</li>
+<li><b>Yayımla:</b> Giriş → Yayımla → çalışma alanını seç. Service’te raporu açıp bir kez daha dene.</li>
+</ol>
+<h2>Sayfa düzeni: göz nereden başlar?</h2>
+<p>Soldan sağa okuyan biri sayfaya sol üstten girer, sağa ve aşağı doğru ilerler. Bu yüzden en önemli rakam sol üstte, ayrıntı sağ altta durur. Genelden özele: önce “ne kadar?”, sonra “nerede?”, en son “hangi kalemler?”. Görseller arasında eşit boşluk bırak; hizalamak için birden çok görseli seçip Biçim → Hizala komutunu kullan.</p>
+<div class="tip"><b>Az ama doğru</b>İlk sürümde bir sayfaya 6–8 görsel yeter. Daha fazlası gerekiyorsa ayrıntıyı ikinci bir sayfaya ya da detay sayfasına taşı. Kalabalık sayfa hem okunmaz hem yavaş açılır.</div>
+<h2>Kendini test et: kontrol rakamları</h2>
+<p>Rapor ne kadar güzel olursa olsun, rakam yanlışsa güven bir kez kaybolur. Yayımlamadan önce birkaç değeri başka bir kaynakla karşılaştır. Bu modelde kontrol rakamları şunlar:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kontrol</th><th>Beklenen</th><th>Fark çıkarsa ilk şüphe</th></tr>
+<tr><td>Tüm yıllar [Net Satış]</td><td>1.250.772 ₺</td><td>Rapor düzeyinde unutulmuş bir filtre</td></tr>
+<tr><td>2024 [Net Satış]</td><td>747.066 ₺</td><td>Dilimleyici başka bir yılda kalmış</td></tr>
+<tr><td>2024 iptaller dahil tutar</td><td>808.362 ₺</td><td>Karşıdaki kişi iptalleri de topluyor</td></tr>
+</table></div>
+<p>Muhasebeden biri “bizde 2024 satışı 808 bin” diyorsa ikiniz de haklı olabilirsiniz: biri iptalleri dahil ediyor, diğeri etmiyor. Bu yüzden her kartın araç ipucuna ya da sayfa altına kısa bir tanım yaz: “Net satış: iptal edilen siparişler hariç.” Ayrıntılı test yöntemleri Rapor kalitesi dersinde.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-ilk-rapor">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../toplama/">← Toplama fonksiyonları ve DIVIDE</a><a href="../gorsel-secimi/">Doğru görseli seçmek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

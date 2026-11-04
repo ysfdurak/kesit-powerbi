@@ -1,0 +1,85 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Temalar, sayfa ayarları ve tuval tasarımı | Kesit Power BI</title><meta name="description" content="Tema JSON, renk paleti, tuval boyutu, sayfa arka planı, sayfa türleri ve arka plan görseliyle tasarım."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/tema-sayfa/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Temalar, sayfa ayarları ve tuval tasarımı"><meta property="og:description" content="Tema JSON, renk paleti, tuval boyutu, sayfa arka planı, sayfa türleri ve arka plan görseliyle tasarım."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/tema-sayfa/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Temalar, sayfa ayarları ve tuval tasarımı","description":"Tema JSON, renk paleti, tuval boyutu, sayfa arka planı, sayfa türleri ve arka plan görseliyle tasarım.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/tema-sayfa/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Temalar, sayfa ayarları ve tuval tasarımı</h1><p class="st-l">Tema JSON, renk paleti, tuval boyutu, sayfa arka planı, sayfa türleri ve arka plan görseliyle tasarım.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-tema-sayfa">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Tema</h2>
+<p>Görünüm → <b>Temalar</b>. Hazır temalardan biri seçilebilir, <b>Geçerli temayı özelleştir</b> ile renkler, metin stilleri ve görsel varsayılanları değiştirilebilir, ya da bir <b>JSON tema dosyası</b> yüklenir. Tema bir kez ayarlanınca tüm görseller aynı renkleri, yazı tiplerini ve kenarlıkları kullanır; kurumsal raporların hepsi aynı görünür.</p>
+<pre class="dax" data-notry>{
+  "name": "Anadolu Market",
+  "dataColors": ["#2A78D6", "#EB6834", "#1BAF7A", "#EDA100", "#E87BA4", "#008300", "#6250D6", "#E34948"],
+  "background": "#FFFFFF",
+  "foreground": "#1B1A16",
+  "tableAccent": "#E9B10C",
+  "good": "#17855A", "neutral": "#A86A12", "bad": "#C0392B",
+  "textClasses": {
+    "title": { "fontFace": "Segoe UI Semibold", "fontSize": 14 },
+    "label": { "fontFace": "Segoe UI", "fontSize": 10, "color": "#625F55" }
+  },
+  "visualStyles": { "*": { "*": { "border": [{ "show": false }] } } }
+}</pre>
+<ul>
+<li><b>dataColors:</b> Serilerin sırayla aldığı renkler. Sıra önemlidir; renk körlüğüne dayanıklı bir sıra seç.</li>
+<li><b>good / neutral / bad:</b> KPI ve koşullu biçimdeki durum renkleri.</li>
+<li><b>textClasses:</b> Başlık, etiket, büyük sayı gibi metin sınıflarının yazı tipi ve boyutu.</li>
+<li><b>visualStyles:</b> Tüm görsellerin (ya da bir türün) varsayılan biçim ayarları; burada tüm kenarlıklar kapatılmış.</li>
+</ul>
+<h2>Sayfa ayarları</h2>
+<p>Tuvalin boş bir yerine tıklayıp Biçim bölmesini aç:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ayar</th><th>Seçenekler</th><th>Ne zaman?</th></tr>
+<tr><td>Tuval ayarları → Tür</td><td>16:9, 4:3, Mektup, Özel (ör. 1280 × 1800 uzun sayfa)</td><td>Ekranda 16:9; kaydırmalı uzun rapor için özel yükseklik</td></tr>
+<tr><td>Tuval arka planı</td><td>Renk, görüntü, saydamlık</td><td>Tasarımcıdan gelen arka plan görseli</td></tr>
+<tr><td>Duvar kâğıdı</td><td>Tuvalin dışındaki alan</td><td>Sunumlarda nötr bir renk</td></tr>
+<tr><td>Sayfa bilgileri</td><td>Ad, araç ipucu olarak kullan</td><td>Araç ipucu sayfaları için</td></tr>
+<tr><td>Görünüm (Görünüm sekmesi)</td><td>Sayfaya sığdır, genişliğe sığdır, gerçek boyut</td><td>Okuyucunun ekranına göre</td></tr>
+<tr><td>Sayfa görünürlüğü</td><td>Sayfayı gizle</td><td>Detay ve araç ipucu sayfaları</td></tr>
+</table></div>
+<h2>Arka plan görseliyle tasarım</h2>
+<p>Profesyonel raporlarda kartların kutuları, başlık şeridi ve logo PowerPoint ya da Figma'da tek bir görsel olarak tasarlanır ve <b>tuval arka planı</b> yapılır (Görüntü sığdırma: Sığdır). Görseller bu kutuların üstüne şeffaf arka planla yerleştirilir. Avantaj: Power BI'da yüzlerce şekil ve metin kutusu kullanmadan tutarlı, hafif bir tasarım.</p>
+<div class="tip"><b>Izgara</b>Görünüm → <b>Kılavuz çizgileri</b> ve <b>Izgaraya yapış</b>. Görsel kenarlarını 8 ya da 16 pikselin katlarına hizalamak, tasarımı “profesyonel” gösteren en ucuz yöntemdir.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Tema dosyasının iskeleti</h2>
+<p>Tema JSON’unda zorunlu olan tek alan <code>name</code>’dir. Değiştirmek istemediğin her şeyi yazmazsın; Power BI eksikleri kendi varsayılanıyla doldurur. Bu yüzden iyi bir kurumsal tema küçük başlar, ihtiyaç çıktıkça büyür. Üç katman vardır:</p>
+<div class="tbl-wrap"><table><tr><th>Katman</th><th>Ne ayarlar?</th><th>Örnek alanlar</th></tr>
+<tr><td>Renk sınıfları</td><td>Seriler, durum renkleri, renk ölçeği, arayüz tonları</td><td><code>dataColors</code>, <code>good/neutral/bad</code>, <code>minimum/center/maximum/null</code>, <code>background</code>, <code>tableAccent</code></td></tr>
+<tr><td>Metin sınıfları</td><td>Yazı tipi, boyut, renk</td><td><code>callout</code> (kart ve KPI sayıları), <code>title</code>, <code>header</code>, <code>label</code></td></tr>
+<tr><td>Görsel stilleri</td><td>Biçim bölmesindeki hemen her ayarın varsayılanı</td><td><code>visualStyles</code></td></tr></table></div>
+<p><code>minimum</code>, <code>center</code>, <code>maximum</code> ve <code>null</code> renkleri koşullu biçimdeki renk ölçeğinin başlangıç renkleridir. Analistler ısı haritası için her matriste aynı üç rengi elle seçeceğine bunları temaya koyar. Dört ana metin sınıfından türeyen ikincil sınıflar (örneğin <code>largeTitle</code>, <code>smallLabel</code>) ana sınıftan miras alır; yalnızca farklı olmasını istediğini yaz.</p>
+
+<h2>visualStyles: dört düzeyli adres</h2>
+<p>Bir görsel stili şu adresle yazılır: <b>görsel türü → stil ön ayarı → biçim kartı → özellik</b>. Her düzeyde <code>"*"</code> “hepsi” anlamına gelir.</p>
+<pre class="dax" data-notry>"visualStyles": {
+  "*": { "*": {
+      "title": [{ "fontSize": 12, "bold": true }],
+      "categoryAxis": [{ "gridlineStyle": "dotted" }]
+  } },
+  "card": { "*": {
+      "labels": [{ "fontSize": 28 }]
+  } },
+  "slicer": { "*": {
+      "general": [{ "responsive": true }]
+  } }
+}</pre>
+<p>İlk blok tüm görsellerin başlığını 12 punto kalın yapar ve kategori ekseni olan her görselde ızgarayı noktalı çizer; ikinci blok yalnızca kartları etkiler. Kart adları her zaman Biçim bölmesindeki etiketle aynı değildir. Doğru adı bulmanın iki yolu var: Microsoft’un GitHub’daki tema şeması (VS Code’da otomatik tamamlama verir) ya da ayarı bir görselde elle yapıp temayı dışa aktararak çıkan JSON’a bakmak. Power BI içe aktarılan temayı şemaya göre doğrular; tanımadığı bir alan içe aktarmayı hata ile durdurur.</p>
+
+<h2>Tema ile elle biçim çatıştığında</h2>
+<p>Ekip, raporun yarısını bitirdikten sonra kurumsal temayı içe aktarıyor ve bazı grafikler değişmiyor. Neden: Biçim bölmesinde elle değiştirilmiş bir ayar, temanın üstünde durur. Görseli temaya döndürmek için görselde ya da bölümde <b>Varsayılana sıfırla</b> (Reset to default) kullanılır.</p>
+<div class="warn"><b>Sıfırlamanın bedeli</b>Learn’e göre varsayılana sıfırlama yalnızca renk ve yazı tipini değil; düğme ve görüntü eylemlerini, <b>tüm koşullu biçim kurallarını</b>, adresten gelen görüntüleri ve veriye bağlı öğeleri (fx ile bağlanmış başlık, referans etiketi) de kaldırır. Bir matrisi sıfırlamadan önce koşullu biçimlerini not al. Doğru sıra: önce temayı yükle, sonra rapor yaz.</div>
+<p>Tema koşullu biçim kuralı taşıyamaz; kuralları görsel görsel uygularsın. Ama kuralın renklerini <code>good/neutral/bad</code> ve renk ölçeği alanlarından alırsan, kurumsal renk değiştiğinde tek dosya yeter.</p>
+
+<h2>Tema yaşam döngüsü</h2>
+<ol>
+<li><b>Oluştur:</b> Görünüm → Temalar → Geçerli temayı özelleştir. Renkler, metin, görsel arka planı, sayfa arka planı ve duvar kâğıdı, filtre bölmesi burada.</li>
+<li><b>Dışa aktar:</b> Aynı menüde Geçerli temayı kaydet. Çıkan JSON’u ince ayar için düzenle.</li>
+<li><b>Sürümle:</b> JSON’u ekibin ortak deposunda tut; dosya adına sürüm yaz (anadolu-tema-v3.json). Kimin hangi sürümü kullandığı ancak böyle izlenir.</li>
+<li><b>Dağıt:</b> Yeni raporlar Temalara gözat ile bu dosyayı içe aktarır. Daha iyisi: temanın, sayfa düzeninin ve standart ölçülerin hazır olduğu bir şablon dosyası (.pbit). Analist şablonu açar, veri kaynağını gösterir, boş bir kurumsal raporla başlar.</li>
+</ol>
+<div class="tip"><b>Sayfa arka planı temada da durur</b>Tuval arka planını ve duvar kâğıdını her sayfada elle ayarlamak yerine temaya koyarsan, yeni eklenen her sayfa doğru renkle doğar. Arka plan görseli ise sayfa başına ayarlanır; tasarımcının çizdiği şablonu tüm sayfalara uygulamak için sayfayı çoğalt.</div>
+</section><div class="tip"><b>Elle dene</b><a href="../../">Görseller ve biçim</a> sayfasında bir görselin Genel sekmesinden başlık, kenarlık ve arka planı değiştir; “Ne değişti?” kutusunu oku.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-tema-sayfa">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hizli-olcu/">← Hızlı ölçüler (quick measures) ve Copilot ile DAX</a><a href="../pq-model/">Power Query ile modele hazırlık →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

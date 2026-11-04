@@ -1,0 +1,66 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir | Kesit Power BI</title><meta name="description" content="Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gateway/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir"><meta property="og:description" content="Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gateway/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir","description":"Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gateway/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir</h1><p class="st-l">Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata teşhisi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gateway">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Service bulutta, Anadolu Market’in SQL Server’ı ise şirket içinde bir sunucuda. Service oraya internetten ulaşamaz. <b>Ağ geçidi (on-premises data gateway)</b>, şirket ağında bir bilgisayara kurulan köprü yazılımıdır: buluttan gelen sorguyu alır, yerel kaynağa gider, sonucu geri gönderir. Giden bağlantı kullanır; bu yüzden gelen port açılmaz.</p>
+<h2>Gerekir mi?</h2>
+<div class="tbl-wrap"><table><tr><th>Kaynak</th><th>Ağ geçidi</th></tr>
+<tr><td>Şirket içi SQL Server, Oracle, ağ klasörü</td><td>Gerekir</td></tr>
+<tr><td>Şirket içi Analysis Services canlı bağlantı</td><td>Gerekir (standart)</td></tr>
+<tr><td>Azure SQL, SharePoint Online, OneDrive, Fabric</td><td>Genelde gerekmez</td></tr>
+<tr><td>Özel ağdaki (VNet, özel uç nokta) Azure kaynağı</td><td>VNet veri ağ geçidi</td></tr>
+<tr><td>Aynı sorguda şirket içi ve bulut</td><td>Gerekir; bulut da ağ geçidinden geçer</td></tr>
+<tr><td>Bilgisayarındaki yerel Excel</td><td>Kişisel mod ile olur, ama dosyayı SharePoint’e taşımak daha iyidir</td></tr></table></div>
+<h2>Üç tür</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Standart</th><th>Kişisel</th><th>VNet</th></tr>
+<tr><td>Kim kullanır?</td><td>Çok kullanıcı, merkezî bağlantı</td><td>Tek kişi</td><td>Çok kullanıcı</td></tr>
+<tr><td>Kurulum</td><td>Sürekli açık sunucu</td><td>Kullanıcı bilgisayarı</td><td>Microsoft yönetir, kurulum yok</td></tr>
+<tr><td>DirectQuery, canlı bağlantı</td><td>Var</td><td>Yok; Import yenileme</td><td>Desteklenen kaynaklarda</td></tr>
+<tr><td>Fabric öğeleri (işlem hattı, Dataflow Gen2)</td><td>Var</td><td>Yok</td><td>Desteklenenlerde</td></tr>
+<tr><td>Yüksek erişilebilirlik</td><td>Küme</td><td>Yok</td><td>Sabit yapılandırma</td></tr>
+<tr><td>Gereksinim</td><td>Pro yeterli</td><td>Pro yeterli</td><td>Fabric ya da Premium kapasite, ek ücret</td></tr></table></div>
+<p>Learn kişisel moddan <b>mümkünse kaçınmayı</b> önerir: kullanıcının bilgisayarı kapanınca yenileme durur ve yönetilmesi zordur. Kısıtlamak için ağ geçidi kiracı ilkesi vardır. Bir bilgisayarda en çok bir standart ve bir kişisel kurulum olur.</p>
+<h2>Kurulum şartları</h2>
+<ul><li>64 bit Windows Server 2019, 2022 ya da 2025 önerilir; 8 çekirdek, 8 GB bellek, biriktirme için SSD. En düşük şart: Windows 10 ya da 11, .NET Framework 4.8.</li><li>Etki alanı denetleyicisi, Server Core ve Windows kapsayıcısına kurulmaz.</li><li>Dizüstü bilgisayar ya da uyuyan makine olmaz; kablolu ağ yeğlenir.</li><li>Kuran kişi makinede yönetici olmalı, iş hesabıyla oturum açmalı.</li><li>Aynı veri merkezine, kaynağa yakın kurmak gecikmeyi azaltır.</li></ul>
+<h3>Kurtarma anahtarı</h3>
+<p>Kurulum sırasında verdiğin <b>kurtarma anahtarı</b>, ağ geçidini taşımak ya da kümeye makine eklemek için gerekir. Microsoft geri getiremez. Parola kasasına koy; kişinin not defterinde olmasın. Ağ geçidi yöneticisi şirketten ayrıldığında anahtar da gittiyse gerçek sorun yaşarsın.</p>
+<h3>Küme (cluster)</h3>
+<p>Üretim için Learn küme kullanmayı güçlü biçimde önerir: birincil düğüm düşerse istek sıradakine gider, yük paylaşılır, güncelleme tek tek yapılır. İkinci kurulumda <b>Var olan bir ağ geçidi kümesine ekle</b> seçilir ve birincinin kurtarma anahtarı girilir. Üyeler aynı sürümde olmalı, çevrim dışı üye kaldırılmalı. Üretim ve test için ayrı küme kur.</p>
+<h2>Bağlantı ve roller</h2>
+<p>Yazılımı kurmak yetmez. Service’te <b>Ayarlar → Bağlantıları ve ağ geçitlerini yönet</b> ekranında kaynak için bağlantı oluşturursun: sunucu, veritabanı, kimlik bilgisi, gizlilik düzeyi. Sonra anlam modeli ayarlarında <b>Ağ geçidi ve bulut bağlantıları</b> altında bu bağlantıyla eşlersin.</p>
+<div class="tbl-wrap"><table><tr><th>Rol</th><th>Ne yapar?</th></tr>
+<tr><td>Ağ geçidi: Yönetici</td><td>Ağ geçidini ve üyeleri yönetir</td></tr>
+<tr><td>Ağ geçidi: Bağlantı oluşturucu (paylaşımlı ya da paylaşımsız)</td><td>Bağlantı oluşturur</td></tr>
+<tr><td>Bağlantı: Sahip, Paylaşabilen kullanıcı, Kullanıcı</td><td>Bağlantıyı kullanır, paylaşır</td></tr></table></div>
+<p>Dikkat: çalışma alanında Yönetici olmak ağ geçidi izni vermez. Yenilemeyi zamanlamak için bağlantının kullanıcı listesinde olman gerekir. Tek kurumsal hesapla bağlantı kurmak, herkesin o kimlikle sorgu göndermesi demektir; kaynak sistemde kullanıcıya göre güvenlik gerekiyorsa Entra SSO (DirectQuery) düşünülür.</p>
+<div class="warn"><b>Sık unutulan ayar</b>Desktop’taki gizlilik düzeylerine ağ geçidi uymaz; bağlantıda ayrıca ver. Bir model tek ağ geçidi bağlantısı kullanır; aynı sorgudaki bulut kaynağını da ağ geçidinde tanımla.</div>
+<h2>Bakım</h2>
+<ul><li>Her ay yeni sürüm çıkar; yalnız son altı sürüm desteklenir. Önce test kümesinde dene, sonra üretimde düğüm düğüm güncelle. Geri alma yoktur, öncesinde makine görüntüsü al.</li><li>Günlükleri ve Windows performans sayaçlarını izle. Yavaşlıkta biriktirme yerine akış, antivirüs dışlaması değerlendirilir.</li><li>Parola değişimi takvimini bağlantılarla eşle.</li></ul>
+<h2>Fabric’te ağ geçidi</h2>
+<p>Dataflow Gen2, işlem hattı ve Copy job aynı standart ağ geçidini kullanır. Fark:</p>
+<ul><li>İşlem hatları için sürüm <b>3000.214.2 ya da sonrası</b> gerekir, güvenlik duvarında <code>*.frontend.clouddatahub.net</code> çıkışı açılmalı.</li><li>Dataflow Gen2 lakehouse’a yazarken 443 yetmeyebilir: ara depodan (staging) okuma SQL analiz uç noktasına <b>TCP 1433</b> kullanır. Yenileme tablosu “Başarılı” derken <code>WriteToDatabaseTableFrom_...</code> etkinliği “Başarısız” görünebilir.</li><li>Direct Lake yalnız bulut bağlantısı kullanır, ağ geçidi kullanmaz.</li><li>Özel bağlantı (private link) açıksa şirket içi ağ geçidi desteklenmez; VNet ağ geçidi gerekir.</li></ul>
+<h2>Teşhis</h2>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Kontrol</th></tr>
+<tr><td>“Ağ geçidi çevrim dışı”</td><td>Makine açık mı, servis çalışıyor mu, küme üyesi var mı?</td></tr>
+<tr><td>“Veri kaynağı tanımlı değil”</td><td>Bağlantı adı, sunucu ve veritabanı .pbix’teki ile harfi harfine aynı mı? Bulut kaynağı da tanımlı mı?</td></tr>
+<tr><td>Kullanıcı bağlantıyı listede görmüyor</td><td>Bağlantı kullanıcı listesine eklenmemiş</td></tr>
+<tr><td>Yenileme başlıyor, sorgu zaman aşımı</td><td>Kaynak yavaş, CPU dolu; Import ve DirectQuery için ayrı küme</td></tr>
+<tr><td>Kimlik doğrulama hatası (Windows)</td><td>Makine kaynakla aynı etki alanında mı, servis hesabı yetkili mi?</td></tr>
+<tr><td>Eski sürüm uyarısı, Fabric bağlantısı olmuyor</td><td>Sürüm ve <code>*.frontend.clouddatahub.net</code> çıkışı</td></tr></table></div>
+<p>Ağ geçidi günlüğünden hangi düğümün sorun çıkardığını bulmak bir sorgudur. Örnek bir günlük tablosu üzerinde:</p>
+<pre class="dax">EVALUATE
+VAR Gunluk =
+    DATATABLE("Dugum", STRING, "Durum", STRING, {
+        {"GW-01", "Tamam"}, {"GW-01", "Tamam"}, {"GW-02", "Hata"}, {"GW-02", "Hata"}, {"GW-02", "Tamam"}
+    })
+RETURN
+    GROUPBY(Gunluk, [Dugum], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))</pre>
+<div class="tip"><b>Kendi ortamında dene</b>Windows bir bilgisayara standart ya da kişisel ağ geçidi kurmak için ücretsiz yazılımı indirmen yeter, ama kaydetmek için iş hesabı ve Service’i kullanmak için Pro ya da deneme lisansı gerekir. Şirket sunucusunda yönetici izni olmadan deneme; kendi bilgisayarında kişisel modda küçük bir Excel ile yenileme kurup Service’te izleyebilirsin. Üretimde kişisel mod önerilmez.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-gateway">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../veri-yenileme/">← Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi</a><a href="../kullanim-izleme/">Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

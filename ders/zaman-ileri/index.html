@@ -1,0 +1,126 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gelişmiş zaman hesapları | Kesit Power BI</title><meta name="description" content="Hareketli ortalama, kümülatif toplam, dönem başı/sonu ve özel dönemler."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-ileri/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Gelişmiş zaman hesapları"><meta property="og:description" content="Hareketli ortalama, kümülatif toplam, dönem başı/sonu ve özel dönemler."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-ileri/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Gelişmiş zaman hesapları","description":"Hareketli ortalama, kümülatif toplam, dönem başı/sonu ve özel dönemler.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/zaman-ileri/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Zaman Zekâsı</span><h1>Gelişmiş zaman hesapları</h1><p class="st-l">Hareketli ortalama, kümülatif toplam, dönem başı/sonu ve özel dönemler.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-ileri">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Hareketli ortalama</h2>
+<pre class="dax">3 Ay Hareketli Ort. =
+VAR Donem = DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -3, MONTH)
+RETURN DIVIDE(CALCULATE([Net Satış], Donem), 3)</pre>
+<p><code>DATESINPERIOD(tarih, başlangıç, sayı, birim)</code> başlangıçtan geriye (negatif sayı) ya da ileriye doğru bir tarih aralığı döndürür. <code>MAX(Tarih[Tarih])</code> görünen dönemin son günüdür.</p>
+<p>Ay sayısını sabit 3 yerine gerçekten verisi olan ay sayısına bölmek istersen:</p>
+<pre class="dax">3 Ay Ortalama (gerçek) =
+VAR Donem = DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -3, MONTH)
+RETURN AVERAGEX(CALCULATETABLE(VALUES(Tarih[YilAy]), Donem), [Net Satış])</pre>
+<h2>Kümülatif toplam</h2>
+<pre class="dax">Kümülatif Satış =
+CALCULATE([Net Satış], FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] &lt;= MAX(Tarih[Tarih])))</pre>
+<p><code>ALL(Tarih[Tarih])</code> tarih filtresini kaldırır, <code>FILTER</code> verinin başından görünen dönemin sonuna kadar olan günleri geri koyar. Tarih tablosu olarak işaretlenmiş tablonun tarih sütununa filtre koymak, aynı tablonun diğer sütunlarındaki (Yıl, Ay) filtreleri de kaldırır.</p>
+<h2>Dönem başı ve sonu</h2>
+<ul>
+<li><code>STARTOFMONTH</code>, <code>ENDOFMONTH</code>, <code>STARTOFYEAR</code>, <code>ENDOFYEAR</code>, <code>FIRSTDATE</code>, <code>LASTDATE</code>: tek satırlık tarih tabloları döndürür.</li>
+<li>Stok gibi <b>yarı toplanabilir</b> ölçülerde (aylar toplanmaz, dönem sonu değeri alınır): <code>CALCULATE([Stok], LASTDATE(Tarih[Tarih]))</code> ya da <code>CLOSINGBALANCEMONTH</code>.</li>
+</ul>
+<h2>Paralel dönem</h2>
+<pre class="dax">Geçen Yıl Tamamı = CALCULATE([Net Satış], PARALLELPERIOD(Tarih[Tarih], -1, YEAR))</pre>
+<p><code>PARALLELPERIOD</code>, görünen dönemi kapsayan <b>tam</b> dönemi kaydırır: Mart 2024 satırında 2023'ün tamamını verir. <code>SAMEPERIODLASTYEAR</code> ise yalnızca Mart 2023'ü.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Kümülatif toplam: "nereden başlıyor?" sorusu</h2>
+<p>Satış direktörü 2024 dilimleyicisini seçip kümülatif grafiğe bakıyor; Ocak 2024 noktası 551.139,60 ₺. "Ocak'ta bu kadar satmadık" diyor. Haklı: [Kümülatif Satış] verinin başından (Haziran 2022) sayıyor. Hangi başlangıç istendiğini önceden sor:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Başlangıç</th><th>Filtre</th><th>Ocak 2024 (2024 seçili)</th></tr>
+<tr><td>Verinin başı</td><td><code>FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] &lt;= MAX(Tarih[Tarih]))</code></td><td>551.139,60</td></tr>
+<tr><td>Seçimin başı</td><td><code>FILTER(ALLSELECTED(Tarih[Tarih]), Tarih[Tarih] &lt;= MAX(Tarih[Tarih]))</code></td><td>47.432,85</td></tr>
+<tr><td>Yılın başı</td><td><code>DATESYTD(Tarih[Tarih])</code></td><td>47.432,85</td></tr>
+</table></div>
+<p>İkinci ve üçüncü satır burada aynıdır, ama kullanıcı dilimleyicide Mart–Haziran seçerse ayrışır: seçimin başı Mart'tan, yıl başı Ocak'tan sayar. Mekanizma: ALL(Tarih[Tarih]) tarih tablosundaki tüm filtreleri kaldırır (tablo tarih tablosu olarak işaretli olduğu için); ALLSELECTED yalnızca görselin kendi satırlarından gelenleri kaldırır, dilimleyiciyi bırakır.</p>
+<p>Kenar durum: Tarih tablosu verinin bittiği günden sonra da devam ediyorsa (ör. yıl sonuna kadar), kümülatif çizgi gelecek aylarda düz bir çizgi olarak sürer. Son satış tarihinden sonraki dönemlerde ölçüyü boş döndür.</p>
+
+<h2>Hareketli toplamlar ve eksik geçmiş</h2>
+<p>"Son 12 ay" ölçüsü Aralık 2022'de 102.837,20 ₺ gösterir. Ama veri 22 Haziran 2022'de başladığı için bu sayı aslında 6 ay 9 günün toplamıdır. Grafikte bu nokta, gerçek 12 aylık değerlerin yanında "düşüş" gibi görünür. Doğru davranış, pencere tam dolmadıkça boş döndürmektir:</p>
+<pre class="dax">Tam 12 Ay Hareketli =
+VAR Son = MAX(Tarih[Tarih])
+VAR IlkSatis = CALCULATE(MIN(Satislar[Tarih]), REMOVEFILTERS(Tarih))
+VAR PencereBas = EDATE(Son, -12) + 1
+RETURN
+    IF(
+        IlkSatis &lt;= PencereBas,
+        CALCULATE([Net Satış], DATESINPERIOD(Tarih[Tarih], Son, -12, MONTH))
+    )</pre>
+<p>Yıl kırılımında 2022 boş, 2023 400.869,55 ₺, 2024 747.065,70 ₺ döner. IlkSatis ifadesi REMOVEFILTERS(Tarih) ile yalnızca tarih filtresini kaldırır; kategori filtresi kalır. Böylece sonradan satışa başlayan bir kategori kendi başlangıç tarihine göre değerlendirilir.</p>
+
+<h2>Dönem başı ve sonu: yarı toplanabilir değerler</h2>
+<p>StokGorunum her ayın son gününde alınmış anlık görüntülerdir (36 tarih × 40 ürün). Stok adedini yıllar boyunca toplamak anlamsızdır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>2024 için</th><th>İfade</th><th>Değer</th></tr>
+<tr><td>Düz toplam (yanlış)</td><td><code>SUM(StokGorunum[StokAdet])</code></td><td>4.183</td></tr>
+<tr><td>Dönem sonu</td><td><code>CLOSINGBALANCEYEAR(SUM(...), Tarih[Tarih])</code></td><td>311</td></tr>
+<tr><td>Dönem başı</td><td><code>OPENINGBALANCEYEAR(SUM(...), Tarih[Tarih])</code></td><td>309 (31 Aralık 2023)</td></tr>
+</table></div>
+<p>LASTDATE ve CLOSINGBALANCE fonksiyonları burada çalışıyor, çünkü görüntüler tam ay sonunda alınmış. Görüntü haftanın belirli bir gününde alınıyorsa ya da son gün eksikse, dönemin son günü boş döner ve stok sıfır gibi görünür. Bu durumda "dönemdeki son görüntü tarihini bul" kalıbı ([Stok Adedi] ölçüsü) daha sağlamdır. Açılış ile kapanış arasındaki fark, dönemdeki net stok değişimidir: 2023'te −16, 2024'te +2 adet.</p>
+
+<h2>Tarih tablosu sorunları</h2>
+<p>En sık görülen hata, zaman zekâsını olgu tablosunun tarih sütunuyla yazmaktır:</p>
+<pre class="dax">GY (Olgu Tarihiyle) =
+CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))</pre>
+<p>Bu ölçü her ay satırında boş, toplam satırında 376.747,20 ₺ gösterir; ikisi de yanlıştır. Neden? Satislar[Tarih] yalnızca satış olan günleri içerir ve bu sütundaki filtre, Tarih tablosundaki ay filtresini kaldırmaz. Kaydırılmış tarihlerle ay filtresinin kesişimi boştur. Toplamda ay filtresi olmadığı için "satış olan günlerin bir yıl öncesi" toplanır: anlamsız bir sayı. Doğru yazım [Satış GY]: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
+<ul>
+<li><b>Kesintisiz olmalı:</b> Bu modelde Tarih 1.096 satır ve ilk ile son gün arası 1.096 gün; eksik gün yok. Satış Haziran 2022'de başlasa da tablo yılın başından başlar; zaman zekâsı tam yılları ister.</li>
+<li><b>Tarih tablosu olarak işaretle:</b> İşaret yoksa Tarih[Tarih] filtresi diğer tarih sütunlarındaki filtreleri kaldırmaz ve ALL/REMOVEFILTERS eklemen gerekir.</li>
+<li><b>Otomatik tarih/saat (Auto date/time) kapalı:</b> Her tarih sütunu için gizli tablo üretir, modeli büyütür ve ekip içinde farklı hiyerarşiler kullanılmasına yol açar.</li>
+<li><b>Kapsam kontrolü:</b> <code>COUNTROWS(FILTER(Satislar, ISBLANK(RELATED(Tarih[Yil]))))</code> tarih tablosunun dışında kalan satış satırlarını sayar; bu modelde 0.</li>
+</ul>
+
+<h2>Mali yıl (Temmuz başlangıçlı) YTD</h2>
+<p>Finans mali yılı 1 Temmuz'da başlatıyor. Standart yol TOTALYTD'nin yıl sonu bağımsız değişkenidir:</p>
+<pre class="dax">Mali YTD (TOTALYTD) =
+TOTALYTD([Net Satış], Tarih[Tarih], "6/30")</pre>
+<p>Microsoft Learn bu dizenin, modelin oluşturulduğu istemcinin bölgesel ayarına göre yorumlandığını belirtiyor ve "ay/gün" biçimini öneriyor. Türkçe bölgesel ayarlı makinelerle çalışan bir ekipte bu bir belirsizlik kaynağıdır. Bu uygulamanın motoru dizeyi her zaman ay/gün olarak okur, ama paylaşılan bir modelde bu güvenceye yaslanamazsın. Bölgesel ayardan bağımsız, açık bir yazım:</p>
+<pre class="dax">Mali YTD (Açık) =
+VAR Son = MAX(Tarih[Tarih])
+VAR MaliBas = DATE(YEAR(Son) - IF(MONTH(Son) &lt; 7, 1, 0), 7, 1)
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], MaliBas, Son))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Ay</th><th>Takvim YTD</th><th>Mali YTD</th></tr>
+<tr><td>Haziran 2024</td><td>300.492,75</td><td>546.898,75 (Temmuz 2023 – Haziran 2024)</td></tr>
+<tr><td>Temmuz 2024</td><td>361.440,75</td><td>60.948,00 (yeni mali yıl)</td></tr>
+<tr><td>Aralık 2024</td><td>747.065,70</td><td>446.572,95</td></tr>
+</table></div>
+<p>Eksen için Tarih tablosuna Power Query'de bir mali yıl sütunu ekle. Adlandırma kuralını (mali yıl, bittiği takvim yılıyla mı anılıyor?) finansla yazılı olarak kararlaştır:</p>
+<pre class="m">= Table.AddColumn(Kaynak, "MaliYil", each if Date.Month([Tarih]) &gt;= 7 then Date.Year([Tarih]) + 1 else Date.Year([Tarih]), Int64.Type)</pre>
+<p>Mali yılın önceki yıl karşılaştırması için açık yazımı <code>CALCULATE([Mali YTD (Açık)], SAMEPERIODLASTYEAR(Tarih[Tarih]))</code> ile sarmak yeterlidir. Mali takvimi takvim nesnesiyle tanımlamak ayrı bir konudur; Takvim tabanlı zaman zekâsı dersinde ele alınır.</p>
+
+<h2>İki tarih aralığını karşılaştırmak</h2>
+<p>Pazarlama, sayfada iki ayrı tarih dilimleyicisi istiyor: "kampanya dönemi" ve "karşılaştırma dönemi". Tek Tarih tablosuyla iki bağımsız seçim yapılamaz. Desen:</p>
+<ol>
+<li>İlişkisiz ikinci bir tarih tablosu oluştur: <code>KarsilastirmaTarih = CALENDAR(DATE(2022, 1, 1), DATE(2024, 12, 31))</code>. Modelde hiçbir tabloya bağlama.</li>
+<li>Ana dilimleyici Tarih[Tarih]'i, ikinci dilimleyici KarsilastirmaTarih[Tarih]'i kullanır.</li>
+<li>Karşılaştırma ölçüsü ikinci tablonun seçimini okur ve Tarih'e uygular:</li>
+</ol>
+<pre class="dax" data-notry>Karşılaştırma Dönemi Satışı =
+VAR Bas = MIN(KarsilastirmaTarih[Tarih])
+VAR Bit = MAX(KarsilastirmaTarih[Tarih])
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], Bas, Bit))</pre>
+<p>DATESBETWEEN, işaretli tarih tablosunun Tarih sütununa filtre koyduğu için ana dilimleyicinin seçimini geçersiz kılar. Örnek: Mart–Mayıs 2024 satışı 143.723,65 ₺, Mart–Mayıs 2023 ise 74.307,45 ₺; artış %93,4. İki aralık da 92 gün olduğu için doğrudan karşılaştırılabilir.</p>
+<ul>
+<li><b>Farklı uzunluk:</b> 30 gün ile 45 günü karşılaştırıyorsan günlük ortalamaya çevir.</li>
+<li><b>Eksen tuzağı:</b> Grafikte ay ekseni ana Tarih'ten gelir; karşılaştırma ölçüsü her ayda aynı toplamı gösterir. Bu desen kartlar ve tablolar için uygundur; çizgi grafikte "dönemin kaçıncı günü" gibi ortak bir eksen gerekir.</li>
+<li><b>Varsayılan:</b> İkinci dilimleyicide seçim yoksa MIN ve MAX tüm tabloyu kapsar. Başlıkta seçili aralığı ölçüyle yazdır.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Kümülatif hangi günden başlıyor: veri, seçim, yıl?</li>
+<li>Hareketli pencerede eksik geçmiş boş mu gösteriliyor?</li>
+<li>Stok gibi değerler dönem sonu/başı ile mi alınıyor? Görüntü tarihleri dönem sonuna denk geliyor mu?</li>
+<li>Zaman zekâsı Tarih[Tarih] ile mi yazıldı? Tablo işaretli, kesintisiz mi?</li>
+<li>Mali yıl tanımı ve adlandırma kuralı finansla yazılı mı?</li>
+<li>İki dönem karşılaştırmasında uzunluklar eşit mi, eksen anlamlı mı?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-ileri">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../baglam-gecisi/">← Bağlam geçişi (context transition)</a><a href="../dax-sorgu/">DAX sorguları ve tablo fonksiyonları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

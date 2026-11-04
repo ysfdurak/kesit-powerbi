@@ -1,0 +1,217 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: pazar payı ve rakip karşılaştırması | Kesit Power BI</title><meta name="description" content="Pazarlama müdürü “büyüyoruz ama pazar da büyüyor; payımız artıyor mu?” diye soruyor. Modelde olmayan bir pazar büyüklüğü tablosunu DATATABLE ile kurar,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-pazar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: pazar payı ve rakip karşılaştırması"><meta property="og:description" content="Pazarlama müdürü “büyüyoruz ama pazar da büyüyor; payımız artıyor mu?” diye soruyor. Modelde olmayan bir pazar büyüklüğü tablosunu DATATABLE ile kurar,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-pazar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: pazar payı ve rakip karşılaştırması","description":"Pazarlama müdürü “büyüyoruz ama pazar da büyüyor; payımız artıyor mu?” diye soruyor. Modelde olmayan bir pazar büyüklüğü tablosunu DATATABLE ile kurar,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-pazar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Vaka Çalışmaları</span><h1>Vaka: pazar payı ve rakip karşılaştırması</h1><p class="st-l">Pazarlama müdürü “büyüyoruz ama pazar da büyüyor; payımız artıyor mu?” diye soruyor. Modelde olmayan bir pazar büyüklüğü tablosunu DATATABLE ile kurar, ayrıntı düzeyini ve ilişkiyi (ilişki ya da TREATAS) çözer, pazar payını, puan cinsinden pay değişimini, ilk 3 + Diğer tablosunu ve pazar büyümesine karşı bizim büyümemizi gösteren dört bölgeli bir sınıflamayı hesaplarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-pazar">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> Pazarlama müdürü. 2024’te satışımız %86 büyüdü; yönetim kurulu bunu kutlamak istiyor. Müdür ise temkinli: “Pazar da büyüdüyse, belki sadece dalgaya bindik.”</p>
+<p><b>Hangi karar?</b> 2025 pazarlama bütçesi kategoriler arasında nasıl bölünecek? Brifin soruları:</p>
+<ol>
+<li>Her kategoride pazarın yüzde kaçını alıyoruz ve bu pay geçen yıla göre kaç puan değişti?</li>
+<li>En büyük üç kategorimiz ve “Diğer” grubu pazarda nerede duruyor?</li>
+<li>Hangi kategoride pazardan hızlı büyüyoruz, hangisinde pazarın gerisinde kaldık?</li>
+</ol>
+<div class="warn"><b>Bu vakadaki pazar rakamları örnektir</b>Modelde pazar verisi yok. Aşağıdaki pazar büyüklükleri <b>ders için uydurulmuş</b> örnek değerlerdir; gerçek bir sektörü ya da kurumu temsil etmez. Gerçek işte bu tablo bir sektör derneğinden, araştırma şirketinden ya da kamu istatistiğinden gelir ve kaynağı rapora yazılır.</div>
+
+<h2>2. Veri ve model</h2>
+<p>Dış kaynaktan gelen pazar verisi genelde küçük bir Excel tablosudur. Bizim örneğimiz <b>kategori × yıl</b> düzeyinde 14 satır. Power BI’da <b>Hesaplanmış tablo (Calculated table)</b> olarak şöyle kurulabilir:</p>
+<pre class="dax">Pazar =
+DATATABLE(
+    "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+    {
+        {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+        {"Ev &amp; Yaşam", 2023, 3400000}, {"Ev &amp; Yaşam", 2024, 4760000},
+        {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+        {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+        {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+        {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+        {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+    }
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Ayrıntı düzeyi</th><th>Not</th></tr>
+<tr><td><code>Satislar</code></td><td>Sipariş satırı, gün</td><td>Bizim satışımız: <code>[Net Satış]</code></td></tr>
+<tr><td><code>Pazar</code></td><td>Kategori × yıl</td><td>Örnek pazar büyüklüğü, ₺. Yalnızca 2023 ve 2024.</td></tr>
+<tr><td><code>Kategoriler</code>, <code>Tarih</code></td><td>Kategori; gün → ay → yıl</td><td>İki tablonun ortak boyutları</td></tr>
+</table></div>
+<p><b>Ayrıntı düzeyi sorunu.</b> Satışlar gün düzeyinde, pazar yıl düzeyinde. Bu, <b>Hedef ve gerçekleşen: farklı ayrıntı düzeyleri</b> dersindeki sorunun aynısı. Bağlamak için iki yol var:</p>
+<ul>
+<li><b>Kategori için ilişki:</b> <code>Pazar[Kategori]</code> çoka-bir <code>Kategoriler[Kategori]</code>. Kategori boyutu zaten var; ilişki en temiz yoldur.</li>
+<li><b>Yıl için TREATAS:</b> modelde yıl başına bir satırlık tablo yok; <code>Tarih[Yil]</code> benzersiz değil, ilişki kurulamaz. Ya küçük bir <code>Yillar</code> boyutu eklenir ya da ölçüde sanal ilişki kurulur:</li>
+</ul>
+<pre class="dax" data-notry>Pazar Büyüklüğü =
+CALCULATE(
+    SUM(Pazar[PazarTL]),
+    TREATAS(VALUES(Tarih[Yil]), Pazar[Yil])
+)
+-- İlişki yerine kategori için de TREATAS kullanılabilir:
+-- TREATAS(VALUES(Kategoriler[Kategori]), Pazar[Kategori])</pre>
+<p><code>TREATAS</code>, <code>Tarih</code>’te seçili yılları alır ve sanki <code>Pazar[Yil]</code> sütununa konmuş bir filtreymiş gibi uygular. Ayrıntısı <b>Tablo fonksiyonları, kümeler ve sanal ilişkiler</b> dersinde. Ters yönde de çalışır: pazar tablosunun her satırına bizim satışımızı getirmek için satırın kategori ve yılını iki sütunlu bir filtreye çeviririz:</p>
+<pre class="dax">EVALUATE
+VAR Pazar = DATATABLE(
+    "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+    {
+        {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+        {"Ev &amp; Yaşam", 2023, 3400000}, {"Ev &amp; Yaşam", 2024, 4760000},
+        {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+        {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+        {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+        {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+        {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+    }
+)
+RETURN
+    ADDCOLUMNS(
+        Pazar,
+        "Bizim Satış",
+            CALCULATE(
+                [Net Satış],
+                TREATAS(ROW("K", [Kategori], "Y", [Yil]), Kategoriler[Kategori], Tarih[Yil])
+            )
+    )</pre>
+<p><b>Veri sınırları:</b> 2022 için pazar verisi yok ve bizim 2022 satışımız Haziran’da başlıyor. Pay hesabı yalnızca 2023 ve 2024’te anlamlı. Pazar verisi yıllık olduğu için ay düzeyinde pay hesaplanmaz.</p>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Pazar payı ve ayrıntı düzeyi koruması.</b> Uygulamanın motorunda <code>Pazar</code> tablosu modelde olmadığı için tabloyu ölçünün içinde bir değişkene koyarız; modelde yukarıdaki <code>TREATAS</code>’lı sürümü kullanırsın. Mantık aynı:</p>
+<pre class="dax">Pazar Büyüklüğü =
+VAR P = DATATABLE(
+        "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+        {
+            {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+            {"Ev &amp; Yaşam", 2023, 3400000}, {"Ev &amp; Yaşam", 2024, 4760000},
+            {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+            {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+            {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+            {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+            {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+        }
+    )
+RETURN
+    SUMX(
+        FILTER(P, [Kategori] IN VALUES(Kategoriler[Kategori]) &amp;&amp; [Yil] IN VALUES(Tarih[Yil])),
+        [PazarTL]
+    )
+Pazar Payı % =
+VAR TekTamYil = HASONEVALUE(Tarih[Yil]) &amp;&amp; DISTINCTCOUNT(Tarih[YilAy]) = 12
+RETURN IF(TekTamYil, DIVIDE([Net Satış], [Pazar Büyüklüğü]))
+Pay Değişimi (puan) =
+VAR Bu = [Pazar Payı %]
+VAR Gecen = CALCULATE([Pazar Payı %], SAMEPERIODLASTYEAR(Tarih[Tarih]))
+RETURN IF(NOT ISBLANK(Bu) &amp;&amp; NOT ISBLANK(Gecen), (Bu - Gecen) * 100)</pre>
+<p>Koruma neden gerekli? Koruma olmadan matriste ay satırına inersen, bir aylık satış bütün yılın pazarına bölünür: Elektronik 2024 Ocak için %0,10 gibi anlamsız küçük bir pay çıkar. Hiç yıl seçilmezse de 2022’yi içeren satış, yalnızca 2023–2024’ü içeren pazara bölünür. <code>TekTamYil</code> ikisini de engeller.</p>
+<div class="note"><b>Puan ve yüzde farkı</b>Pay %2,0’dan %2,5’e çıktıysa artış <b>0,5 puandır</b> (yüzde puan); “%25 arttı” demek de doğrudur ama başka bir şeyi anlatır. Raporda pay değişimini her zaman puanla yaz ve ölçünün adına “(puan)” ekle.</div>
+<div class="tbl-wrap"><table>
+<tr><th>Kategori</th><th>2024 satış</th><th>2024 pazar (örnek)</th><th>Pay 2023</th><th>Pay 2024</th><th>Değişim</th></tr>
+<tr><td>Kitap</td><td>95.327 ₺</td><td>1.800.000 ₺</td><td>%2,99</td><td><b>%5,30</b></td><td>+2,30 puan</td></tr>
+<tr><td>Spor</td><td>98.317 ₺</td><td>3.190.000 ₺</td><td>%3,19</td><td>%3,08</td><td>−0,11 puan</td></tr>
+<tr><td>Ev &amp; Yaşam</td><td>144.292 ₺</td><td>4.760.000 ₺</td><td>%1,97</td><td>%3,03</td><td>+1,06 puan</td></tr>
+<tr><td>Elektronik</td><td>206.432 ₺</td><td>7.800.000 ₺</td><td>%2,04</td><td>%2,65</td><td>+0,61 puan</td></tr>
+<tr><td>Kozmetik</td><td>82.908 ₺</td><td>3.380.000 ₺</td><td>%1,47</td><td>%2,45</td><td>+0,98 puan</td></tr>
+<tr><td>Giyim</td><td>110.090 ₺</td><td>5.220.000 ₺</td><td>%2,36</td><td>%2,11</td><td><b>−0,25 puan</b></td></tr>
+<tr><td>Hediye</td><td>9.700 ₺</td><td>1.140.000 ₺</td><td>%0,95</td><td>%0,85</td><td>−0,09 puan</td></tr>
+<tr><td><b>Toplam</b></td><td>747.066 ₺</td><td>27.290.000 ₺</td><td>%2,18</td><td>%2,74</td><td>+0,56 puan</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Toplam payımız %2,18’den %2,74’e çıktı (+0,56 puan): büyümenin bir kısmı gerçekten pazardan pay almaktan geliyor. Ama üç kategoride pay kaybettik: Giyim (−0,25 puan), Spor (−0,11) ve Hediye (−0,09). En güçlü kategori oransal olarak Kitap (%5,30).</p>
+
+<p><b>Adım 2: İlk 3 + Diğer.</b> Yönetim kuruluna yedi satırlık tablo yerine en büyük üç kategoriyi ve geri kalanı tek satırda gösteririz. Kalıbın ürün düzeyindeki hali <b>İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi</b> dersinde; burada sorguyla kuruyoruz:</p>
+<pre class="dax">EVALUATE
+VAR Pazar = DATATABLE(
+    "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+    {
+        {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+        {"Ev &amp; Yaşam", 2023, 3400000}, {"Ev &amp; Yaşam", 2024, 4760000},
+        {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+        {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+        {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+        {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+        {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+    }
+)
+VAR T =
+    ADDCOLUMNS(
+        VALUES(Kategoriler[Kategori]),
+        "Satış", CALCULATE([Net Satış], Tarih[Yil] = 2024),
+        "Pazar", VAR k = Kategoriler[Kategori] RETURN SUMX(FILTER(Pazar, [Kategori] = k &amp;&amp; [Yil] = 2024), [PazarTL])
+    )
+VAR Ilk3 = TOPN(3, T, [Satış], DESC)
+VAR Diger = EXCEPT(T, Ilk3)
+RETURN
+    UNION(
+        SELECTCOLUMNS(Ilk3, "Grup", Kategoriler[Kategori], "Satış", [Satış], "Pazar", [Pazar], "Pay", DIVIDE([Satış], [Pazar])),
+        ROW("Grup", "Diğer", "Satış", SUMX(Diger, [Satış]), "Pazar", SUMX(Diger, [Pazar]),
+            "Pay", DIVIDE(SUMX(Diger, [Satış]), SUMX(Diger, [Pazar])))
+    )</pre>
+<p><b>Bulgu:</b> Elektronik (%2,65), Ev &amp; Yaşam (%3,03) ve Giyim (%2,11) satışımızın %61,7’sini getiriyor. “Diğer” grubu 286.252 ₺ ile 9.510.000 ₺’lik bir pazarın %3,01’ini alıyor. Dikkat: “Diğer”in payı, içindeki Kitap’ın yüksek payıyla şişiyor. Özet tablo kararı gizleyebilir; detayı araç ipucunda (Tooltip) ver.</p>
+
+<p><b>Adım 3: Bizim büyüme ile pazar büyümesi.</b> Her kategoriyi iki soruya göre dört bölgeye koyarız: pazar, toplam pazardan (%48,3) hızlı mı büyüyor? Biz pay kazanıyor muyuz?</p>
+<pre class="dax">EVALUATE
+VAR Pazar = DATATABLE(
+    "Kategori", STRING, "Yil", INTEGER, "PazarTL", CURRENCY,
+    {
+        {"Elektronik", 2023, 5200000}, {"Elektronik", 2024, 7800000},
+        {"Ev &amp; Yaşam", 2023, 3400000}, {"Ev &amp; Yaşam", 2024, 4760000},
+        {"Giyim", 2023, 2900000}, {"Giyim", 2024, 5220000},
+        {"Spor", 2023, 2200000}, {"Spor", 2024, 3190000},
+        {"Kitap", 2023, 1500000}, {"Kitap", 2024, 1800000},
+        {"Kozmetik", 2023, 2600000}, {"Kozmetik", 2024, 3380000},
+        {"Hediye", 2023, 600000}, {"Hediye", 2024, 1140000}
+    }
+)
+VAR T =
+    ADDCOLUMNS(
+        VALUES(Kategoriler[Kategori]),
+        "Biz23", CALCULATE([Net Satış], Tarih[Yil] = 2023),
+        "Biz24", CALCULATE([Net Satış], Tarih[Yil] = 2024),
+        "P23", VAR k = Kategoriler[Kategori] RETURN SUMX(FILTER(Pazar, [Kategori] = k &amp;&amp; [Yil] = 2023), [PazarTL]),
+        "P24", VAR k = Kategoriler[Kategori] RETURN SUMX(FILTER(Pazar, [Kategori] = k &amp;&amp; [Yil] = 2024), [PazarTL])
+    )
+VAR PazarOrt = DIVIDE(SUMX(T, [P24]), SUMX(T, [P23])) - 1
+RETURN
+    ADDCOLUMNS(
+        T,
+        "Pazar Büyümesi", DIVIDE([P24], [P23]) - 1,
+        "Bizim Büyüme", DIVIDE([Biz24], [Biz23]) - 1,
+        "Kadran",
+            VAR Hizli = DIVIDE([P24], [P23]) - 1 &gt;= PazarOrt
+            VAR Kazan = DIVIDE([Biz24], [P24]) &gt; DIVIDE([Biz23], [P23])
+            RETURN SWITCH(TRUE(),
+                Hizli &amp;&amp; Kazan, "Yıldız",
+                Hizli, "Fırsat kaçıyor",
+                Kazan, "Güçleniyor",
+                "Geriliyor")
+    )</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Bölge</th><th>Anlamı</th><th>Kategoriler (pazar büyümesi / bizim büyüme)</th></tr>
+<tr><td><b>Yıldız</b></td><td>Pazar hızlı, biz daha hızlı</td><td>Elektronik (%50 / %94)</td></tr>
+<tr><td><b>Fırsat kaçıyor</b></td><td>Pazar hızlı, biz geride</td><td>Giyim (%80 / %61), Hediye (%90 / %71)</td></tr>
+<tr><td><b>Güçleniyor</b></td><td>Pazar yavaş, biz hızlı</td><td>Kitap (%20 / %112), Ev &amp; Yaşam (%40 / %115), Kozmetik (%30 / %117)</td></tr>
+<tr><td><b>Geriliyor</b></td><td>Pazar yavaş, biz daha yavaş</td><td>Spor (%45 / %40)</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Giyim %61 büyüdüğü halde pay kaybetti, çünkü pazar %80 büyüdü. 2023 payını koruyabilseydik Giyim’de 13.214 ₺, Spor’da 3.587 ₺, Hediye’de 1.073 ₺ daha fazla satış olacaktı. Elektronik sınırda bir Yıldız: pazarı %50 büyüdü, eşik %48,3. Eşiğe çok yakın kategorileri raporda ayrıca belirt.</p>
+<div class="tip"><b>Görsel olarak</b>Dağılım grafiğinde X: pazar büyümesi, Y: pay değişimi (puan), boyut: 2024 satışı. X’te %48,3, Y’de 0 için iki sabit çizgi (Analiz bölmesi) dört bölgeyi çizer. Kadran adını renk alanına koy.</div>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Üst şerit</td><td>3 kart</td><td>Toplam pazar payı 2024; Pay değişimi (puan); Pazar büyümesi ve bizim büyüme yan yana</td></tr>
+<tr><td>Sol orta</td><td>Çubuk grafik</td><td>Kategori (İlk 3 + Diğer); Pazar Payı %; araç ipucunda Diğer’in içindekiler</td></tr>
+<tr><td>Sağ orta</td><td>Dağılım grafiği</td><td>Pazar büyümesi × Pay değişimi; dört bölge</td></tr>
+<tr><td>Alt</td><td>Matris</td><td>Kategori; Net Satış, Pazar Büyüklüğü, Pazar Payı %, Pay Değişimi (puan), Kadran</td></tr>
+<tr><td>Sayfa notu</td><td>Metin kutusu</td><td>“Pazar verisi: örnek tablo, yıllık. Ay düzeyinde pay gösterilmez.” Gerçek raporda kaynak ve yayın tarihi.</td></tr>
+</table></div>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Büyümenin bir kısmı gerçek pay kazancı:</b> toplam pay %2,18’den %2,74’e (+0,56 puan). Yönetim kuruluna “%86 büyüdük” yerine “pazar %48 büyüdü, biz %86” cümlesini götür.</li>
+<li><b>Giyim ve Hediye’de fırsat kaçıyor:</b> pazar %80 ve %90 büyürken pay kaybettik. 2025 bütçesinde bu iki kategoriye ek pazarlama payı ayır.</li>
+<li><b>Spor geriliyor:</b> yavaş büyüyen pazarda bile pay kaybı (−0,11 puan). Önce ürün ve fiyat sorununu ara; bütçe artırmadan önce nedeni bul.</li>
+<li><b>Kitap, Ev &amp; Yaşam ve Kozmetik güçleniyor:</b> payı koruyacak kadar bütçe yeterli; fazlası Giyim’e kaydırılabilir.</li>
+<li><b>Pazar verisinin kaynağını ve güncelliğini yaz:</b> bu vakadaki rakamlar örnektir. Gerçek tabloda tanım farkı (ör. pazarın KDV dâhil olması) payı puanlarca değiştirebilir.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-pazar">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-kiyaslama/">← Vaka: şehir ve temsilci kıyaslaması (benchmarking)</a><a href="../vaka-tedarik/">Vaka: tedarik — üret mi, satın al mı? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

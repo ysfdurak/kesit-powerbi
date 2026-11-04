@@ -1,0 +1,105 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Satır ve nesne düzeyinde güvenlik | Kesit Power BI</title><meta name="description" content="Statik ve dinamik RLS, USERPRINCIPALNAME, OLS ve çalışma alanı rolleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/guvenlik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Satır ve nesne düzeyinde güvenlik"><meta property="og:description" content="Statik ve dinamik RLS, USERPRINCIPALNAME, OLS ve çalışma alanı rolleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/guvenlik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Satır ve nesne düzeyinde güvenlik","description":"Statik ve dinamik RLS, USERPRINCIPALNAME, OLS ve çalışma alanı rolleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/guvenlik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Satır ve nesne düzeyinde güvenlik</h1><p class="st-l">Statik ve dinamik RLS, USERPRINCIPALNAME, OLS ve çalışma alanı rolleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-guvenlik">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>RLS: herkes kendi verisini görsün</h2>
+<p><b>Satır düzeyinde güvenlik</b> (Row-Level Security), aynı raporu açan kişilerin farklı satırları görmesini sağlar. Modelleme → <b>Rolleri yönet</b>.</p>
+<h3>Statik RLS</h3>
+<pre class="dax">-- "İstanbul Ekibi" rolü, Musteriler tablosu filtresi:
+Musteriler[Sehir] = "İstanbul"</pre>
+<p>Rolün üyeleri yalnızca İstanbul'daki müşterileri ve (ilişki üzerinden) onların satışlarını görür. Her şehir için ayrı rol gerekir.</p>
+<h3>Dinamik RLS</h3>
+<p>Bir <code>Yetkiler</code> tablosu kur: <code>Eposta | Sehir</code>. Tek bir rol yeter:</p>
+<pre class="dax">-- Yetkiler tablosu filtresi:
+Yetkiler[Eposta] = USERPRINCIPALNAME()</pre>
+<p><code>USERPRINCIPALNAME()</code>, oturum açan kişinin e-postasını döndürür. Yetkiler tablosu Musteriler[Sehir] ile ilişkilendirilir (çoğu zaman çoka-çok ya da köprü tablo + “Güvenlik filtresini iki yönde uygula”). Yeni bir çalışan geldiğinde rol değişmez, yalnızca tabloya bir satır eklenir.</p>
+<h2>Test et</h2>
+<p>Desktop: Modelleme → <b>Farklı görüntüle</b> → rol ya da kullanıcı seç. Service: anlam modelinin güvenlik ayarlarında <b>Rol olarak test et</b>.</p>
+<h2>OLS: sütunu ya da tabloyu gizle</h2>
+<p><b>Nesne düzeyinde güvenlik</b> (Object-Level Security), belirli rollerden bir tabloyu ya da sütunu (ör. <code>Calisanlar[Maas]</code>) tamamen gizler. Tabular Editor gibi araçlarla tanımlanır.</p>
+<h2>Önemli ayrıntılar</h2>
+<ul>
+<li>RLS, çalışma alanında <b>Görüntüleyici</b> rolündeki kullanıcılara uygulanır. Yönetici, Üye ve Katkıda bulunan rolleri modeli düzenleyebildiği için RLS'den etkilenmez.</li>
+<li>RLS filtresi, ilişkiler üzerinden diğer tablolara yayılır; boyut tablosunda tanımlamak genellikle yeterlidir.</li>
+<li>RLS rapor sayfasını gizlemek için değil, <b>veriyi</b> korumak içindir. Sayfa gizleme bir güvenlik önlemi değildir.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Dinamik RLS: kim, hangi satırı?</h2>
+<p>Satış Müdürü Elif Doğan şunu istiyor: “Temsilcilerim yalnızca kendi satışlarını görsün. Ben ekibimin tamamını göreyim. Genel müdür her şeyi görsün.” Modelde <code>Satislar[TemsilciNo]</code> → <code>Calisanlar[CalisanNo]</code> ilişkisi ve <code>Calisanlar[Eposta]</code> sütunu zaten var. En basit dinamik rol tek satırlık bir tablo filtresidir:</p>
+<pre class="dax" data-notry>-- Rol: "Temsilci", tablo: Calisanlar
+Calisanlar[Eposta] = USERPRINCIPALNAME()</pre>
+<p>Ece Kurt oturum açtığında <code>Calisanlar</code> tek satıra iner, filtre ilişki üzerinden <code>Satislar</code>'a akar. Bunu yayımlamadan önce aynı filtreyi bir ölçüyle taklit ederek doğrulayabilirsin:</p>
+<pre class="dax">Ece Kurt Testi =
+CALCULATE([Net Satış], Calisanlar[Eposta] = "ece.kurt@anadolumarket.com")</pre>
+<p>Sonuç <b>146.836,45 ₺</b> olmalıdır; rapor “Farklı görüntüle” ile açıldığında kart bu sayıyı göstermiyorsa rol ya da ilişki hatalıdır. Dikkat edilecek üç ayrıntı:</p>
+<ul>
+<li><b>Boş e-posta:</b> Bu modelde Pınar Yıldırım, Defne Öztürk ve Kerem Yılmaz'ın <code>Eposta</code> değeri boş. Rolde olsalar bile <b>hiçbir şey görmezler</b>. Eşleşen satırı olmayan kullanıcı boş rapor görür; hata mesajı almaz.</li>
+<li><b>Biçim:</b> <code>USERPRINCIPALNAME()</code> Service'te kullanıcının UPN'ini döndürür. Tabloda büyük/küçük harf ya da eski alan adı farkı varsa eşleşme kaçar. Konuk (B2B) kullanıcılarda değer <code>#EXT#</code> içeren bir biçimde gelebilir; gerçek bir konuk hesabıyla test et.</li>
+<li><b>Boyutlar filtrelenmez:</b> Filtre <code>Calisanlar</code> → <code>Satislar</code> yönünde akar. <code>Musteriler</code> ve <code>Urunler</code> boyutlarının tüm satırları görünür kalır; temsilci tüm müşteri adlarını dilimleyicide görebilir. Bu kabul edilemezse müşteri tablosuna ayrı bir filtre gerekir.</li>
+</ul>
+<h3>Eşleme tablosu: bir kişi, birden çok bölge</h3>
+<p>Bölge müdürlerinin birden çok bölgesi varsa <code>Yetkiler(Eposta, Bolge)</code> gibi bir eşleme tablosu kurulur. İki yol vardır:</p>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Nasıl?</th><th>Artı / eksi</th></tr>
+<tr><td>İlişki + iki yönlü güvenlik filtresi</td><td>Yetkiler → Bolge boyutu ilişkisi, “Güvenlik filtresini iki yönde uygula”</td><td>Görsel olarak sade; ama iki yönlü filtre performansı düşürür ve bir tabloda yalnızca bir ilişkide açılabilir</td></tr>
+<tr><td>İlişkisiz tablo + filtre ifadesi</td><td>Musteriler rolünde: bölge, kullanıcının bölgeleri içinde mi?</td><td>Tek yönlü, öngörülebilir; ifade biraz daha uzun</td></tr></table></div>
+<pre class="dax" data-notry>-- Rol filtresi, tablo: Musteriler (Yetkiler tablosu ilişkisiz)
+Musteriler[Bolge] IN
+    CALCULATETABLE(VALUES(Yetkiler[Bolge]), Yetkiler[Eposta] = USERPRINCIPALNAME())</pre>
+
+<h2>Yönetici hiyerarşisi: PATHCONTAINS</h2>
+<p>Elif'in “ekibimin tamamını göreyim” isteği hiyerarşi ister. <code>Calisanlar[Yol]</code> sütunu <code>PATH(CalisanNo, YoneticiNo)</code> ile üretilmiştir: Ece Kurt için “1|2|9”. Rol filtresi, oturum açan kişinin numarasının satırın yolunda geçip geçmediğine bakar:</p>
+<pre class="dax" data-notry>-- Rol: "Hiyerarşi", tablo: Calisanlar
+PATHCONTAINS(
+    Calisanlar[Yol],
+    LOOKUPVALUE(Calisanlar[CalisanNo], Calisanlar[Eposta], USERPRINCIPALNAME())
+)</pre>
+<p>Analitik Müdürü Serkan Özdemir (4) için hangi satırların kalacağını bir sorguyla görebilirsin:</p>
+<pre class="dax">EVALUATE
+FILTER(
+    SELECTCOLUMNS(Calisanlar, "Ad", Calisanlar[AdSoyad], "Unvan", Calisanlar[Unvan], "Yol", Calisanlar[Yol]),
+    PATHCONTAINS([Yol], 4)
+)</pre>
+<p>Beş satır döner: Serkan ve dört ekip üyesi. Elif (2) için ise kendisi ve beş temsilci kalır; tüm satışlar bu ekipte olduğu için Elif <b>1.250.772,45 ₺</b>'nin tamamını görür, kendi adına kayıtlı satış yalnızca 183.134,35 ₺'dir. Kenar durumlar:</p>
+<ul>
+<li>E-posta tabloda yoksa <code>LOOKUPVALUE</code> BLANK döner, <code>PATHCONTAINS</code> hiçbir satırda doğru olmaz: kullanıcı boş rapor görür.</li>
+<li>Aynı e-posta iki satırda varsa <code>LOOKUPVALUE</code> hata verir ve kullanıcının <b>tüm görselleri</b> bozulur. <code>Eposta</code> sütununda benzersizlik kontrolü yap.</li>
+<li>Filtre 27 satırlık küçük bir tabloda değerlendirilir; ucuzdur. Aynı ifadeyi milyonlarca satırlık olgu tablosuna yazmak pahalıdır. RLS'yi her zaman <b>küçük boyut tablosunda</b> tanımla.</li>
+</ul>
+
+<h2>Birden çok rol: kesişim değil birleşim</h2>
+<p>Ece hem “Temsilci” rolünde hem de bir kampanya için “Ege Bölgesi” rolünde olsun. Roller <b>toplanır</b>: Ece kendi satışlarını <b>ve</b> Ege bölgesinin tüm satışlarını görür, ikisinin kesişimini değil. Bu, en geniş rolün diğerlerini boşa çıkarması demektir. “Hem kendi satışları hem yalnızca Ege” gibi bir kesişim isteniyorsa iki koşul <b>tek bir rolün</b> ifadesinde birleştirilmelidir. Birleşim etkisini test etmek için iki temsilcinin görünümünü birlikte hesapla:</p>
+<pre class="dax">İki Temsilci Birleşimi =
+CALCULATE([Net Satış], Calisanlar[CalisanNo] = 9 || Calisanlar[CalisanNo] = 10)</pre>
+<p>Ece (9) ve Can Aydın (10) birlikte 385.695,65 ₺ eder. Bir diğer kural: <b>RLS ve OLS farklı rollerden birleştirilemez</b>. Bir kullanıcı, birinde satır filtresi, diğerinde nesne gizleme olan iki role üyeyse sorgu anında hata alır. Nesne güvenliğini ve satır güvenliğini aynı rolde tanımla.</p>
+<h3>OLS ve ölçüler</h3>
+<p>OLS bir sütunu gizlediğinde o sütuna başvuran ölçüler de o rol için otomatik kısıtlanır: <code>Calisanlar[Maas]</code> gizlenirse <code>[Ortalama Maaş]</code>, <code>[Toplam Maaş]</code> ve <code>[Medyan Maaş]</code> da çalışmaz. Kullanıcı görselde “alan bulunamadı” türünde bir hata görür; bu yüzden OLS'li kullanıcılar için ayrı sayfa ya da rapor tasarla. OLS'yi Desktop'ta TMDL görünümünde ya da Tabular Editor gibi bir dış araçla tanımlarsın; rol üyeliği yine Service'te atanır.</p>
+
+<h2>Test etmek: matrisle, kişiyle, sayıyla</h2>
+<ul>
+<li><b>Desktop:</b> Modelleme → <b>Farklı görüntüle</b> (View as): rolü seç, “Diğer kullanıcı” kutusuna e-postayı yaz. Dinamik RLS ancak böyle sınanır.</li>
+<li><b>Service:</b> anlam modelinde <b>…</b> → <b>Güvenlik</b> (Security) → rolün yanındaki <b>…</b> → <b>Rol olarak test et</b> (Test as role). Belirli bir kişi ya da rol bileşimi seçilebilir. Panolar bu testte desteklenmez; sayfalandırılmış raporlarda ve SSO'lu DirectQuery modellerinde çalışmaz.</li>
+</ul>
+<div class="tbl-wrap"><table><tr><th>Test kullanıcısı</th><th>Rol</th><th>Beklenen Net Satış</th></tr>
+<tr><td>ece.kurt@…</td><td>Temsilci</td><td>146.836,45 ₺</td></tr>
+<tr><td>elif.dogan@…</td><td>Hiyerarşi</td><td>1.250.772,45 ₺</td></tr>
+<tr><td>Pınar Yıldırım (e-posta yok)</td><td>Temsilci</td><td>Boş</td></tr>
+<tr><td>Rolü olmayan bir Görüntüleyici</td><td>—</td><td>Boş</td></tr></table></div>
+<p>Bu tabloyu bir test belgesi olarak modelin yanında tut; her model değişikliğinden sonra aynı kişilerle tekrar et.</p>
+
+<h2>RLS'nin uygulanmadığı ve yanıltabildiği yerler</h2>
+<ul>
+<li><b>Çalışma alanı rolleri:</b> Yönetici, Üye ve Katkıda bulunan modeli düzenleyebildiği için RLS'den etkilenmez. Son kullanıcıları yalnızca Görüntüleyici olarak ekle ya da içerikleri uygulama ile dağıt. Derleme izni olan Görüntüleyiciler (Excel'de Çözümle dahil) RLS ile kısıtlı kalır.</li>
+<li><b>Hizmet sorumlusu:</b> rollere eklenemez; uygulamaya gömülü senaryolarda kullanıcının kimliği yerleştirme belirtecinde (embed token) etkin kimlik olarak gönderilir (Yayımlama dersi).</li>
+<li><b>ALL RLS'yi aşmaz:</b> <code>[Kategori Payı %]</code> gibi ölçülerde payda <code>ALL</code> ya da <code>REMOVEFILTERS</code> ile yazılmış olsa bile RLS filtresi geçerlidir. Ece'nin “kategori payı” kendi satışları içindeki paydır, şirket içindeki pay değil. Şirket geneli bir pay göstermek istiyorsan bu değeri ayrı ve onaylı bir yoldan (ör. RLS'siz bir özet tablo) sağlamak gerekir.</li>
+<li><b>USERELATIONSHIP:</b> RLS açıkken beklenmedik hatalar verebilir. <code>[Teslime Göre Satış]</code> gibi pasif ilişki kullanan ölçüleri rol testine dahil et.</li>
+<li><b>Performans:</b> iki yönlü güvenlik filtresi ve olgu tablosunda yazılmış karmaşık ifadeler her sorguya eklenir. Performans Analizi'ni “Farklı görüntüle” açıkken çalıştır; yönetici gözüyle hızlı olan sayfa temsilci gözüyle yavaş olabilir.</li>
+</ul>
+<div class="tip"><b>Kontrol listesi</b>Rol filtresi küçük boyut tablosunda mı? · E-posta sütunu benzersiz ve boş değer kontrolü yapıldı mı? · Konuk kullanıcı biçimi test edildi mi? · Roller birleşim olarak düşünüldü mü; RLS ve OLS aynı rolde mi? · Test kullanıcıları ve beklenen sayılar belgelendi mi? · Son kullanıcılar Görüntüleyici mi?</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-guvenlik">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../performans/">← Performans ve VertiPaq</a><a href="../yayinlama/">Yayımlama, yenileme ve yaşam döngüsü →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,92 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CALCULATE: filtre bağlamını değiştirmek | Kesit Power BI</title><meta name="description" content="DAX'ın en güçlü fonksiyonu. Filtre eklemek, değiştirmek ve kaldırmak."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/calculate/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="CALCULATE: filtre bağlamını değiştirmek"><meta property="og:description" content="DAX'ın en güçlü fonksiyonu. Filtre eklemek, değiştirmek ve kaldırmak."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/calculate/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"CALCULATE: filtre bağlamını değiştirmek","description":"DAX'ın en güçlü fonksiyonu. Filtre eklemek, değiştirmek ve kaldırmak.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/calculate/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>CALCULATE: filtre bağlamını değiştirmek</h1><p class="st-l">DAX'ın en güçlü fonksiyonu. Filtre eklemek, değiştirmek ve kaldırmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-calculate">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Söz dizimi</h2>
+<pre class="dax" data-notry>CALCULATE( &lt;ifade&gt;, &lt;filtre1&gt;, &lt;filtre2&gt;, ... )</pre>
+<p><code>CALCULATE</code>, ifadeyi <b>değiştirilmiş bir filtre bağlamında</b> hesaplar. Filtre bağımsız değişkenleri mevcut bağlamın üzerine yazılır, sonra ifade çalışır.</p>
+<h2>Filtre eklemek</h2>
+<pre class="dax">Web Satışı = CALCULATE([Toplam Satış], Satislar[Kanal] = "Web")</pre>
+<p>Bu ölçüyü kategoriye göre bir tabloya koyarsan her kategorinin <i>yalnızca web</i> satışını görürsün. Kategori filtresi korunur, kanal filtresi eklenir.</p>
+<h2>Filtrenin üzerine yazmak</h2>
+<p>Dilimleyicide “Mobil” seçili olsa bile <code>[Web Satışı]</code> web satışını gösterir. Çünkü <code>Satislar[Kanal] = "Web"</code> filtresi, aynı sütundaki mevcut filtrenin <b>yerine geçer</b>. Mevcut filtreyi korumak istersen <code>KEEPFILTERS</code> kullanırsın:</p>
+<pre class="dax">Web Satışı (seçimle) = CALCULATE([Toplam Satış], KEEPFILTERS(Satislar[Kanal] = "Web"))</pre>
+<p>Bu sürümde dilimleyicide “Mobil” seçiliyse sonuç boş olur, çünkü iki filtre kesişir.</p>
+<h2>Birden çok koşul</h2>
+<pre class="dax">Mobil Elektronik = CALCULATE(
+    [Toplam Satış],
+    Satislar[Kanal] = "Mobil",
+    Urunler[Kategori] = "Elektronik"
+)
+
+Kitap ve Spor = CALCULATE([Toplam Satış], Urunler[Kategori] IN {"Kitap", "Spor"})
+
+İptal Dışı = CALCULATE([Toplam Satış], Satislar[Durum] &lt;&gt; "İptal")</pre>
+<p>Ayrı bağımsız değişkenler <b>VE</b> ile birleşir. Aynı sütunda <b>VEYA</b> için <code>IN { }</code> ya da <code>||</code> kullanılır.</p>
+<h2>Filtre kaldırmak</h2>
+<pre class="dax">Tüm Kategoriler = CALCULATE([Toplam Satış], ALL(Urunler))
+Pay % = DIVIDE([Toplam Satış], [Tüm Kategoriler])</pre>
+<p><code>ALL</code> (ya da daha okunur adıyla <code>REMOVEFILTERS</code>) bir tablo ya da sütundaki filtreleri kaldırır. Payda her hücrede genel toplamı verir; böylece pay hesaplanır. Bir sonraki derste ayrıntısıyla göreceğiz.</p>
+<div class="tip"><b>Akılda tut</b>Boolean filtre (<code>Satislar[Kanal] = "Web"</code>) aslında <code>FILTER(ALL(Satislar[Kanal]), Satislar[Kanal] = "Web")</code> tablosunun kısa yazımıdır. Bu yüzden mevcut kanal filtresinin üzerine yazar.</div>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Filtre argümanı aslında bir tablodur</h2>
+<p><code>CALCULATE([Net Satış], Kategoriler[Kategori] = "Elektronik")</code> yazdığında DAX bunu şuna çevirir:</p>
+<pre class="dax">Elektronik Satış =
+CALCULATE([Net Satış], FILTER(ALL(Kategoriler[Kategori]), Kategoriler[Kategori] = "Elektronik"))</pre>
+<p>İçteki <code>ALL</code>, kategori sütunundaki dış filtreyi <b>kaldırır</b>. Bu yüzden ölçüyü <code>Kategoriler[Kategori]</code> eksenli bir matrise koyduğunda her satırda Elektronik’in satışı (339.304 ₺) görünür: Giyim satırında da, Kitap satırında da. Bu bir hata değil, “filtreyi değiştir” davranışıdır.</p>
+<p>Dış filtreyi silmek yerine onunla <b>kesiştirmek</b> istiyorsan KEEPFILTERS kullan:</p>
+<pre class="dax">Elektronik Satış (kesişim) =
+CALCULATE([Net Satış], KEEPFILTERS(Kategoriler[Kategori] = "Elektronik"))</pre>
+<p>Bu sürüm Elektronik satırında 339.304 ₺, diğer kategorilerde BLANK döndürür; görsel de yalnızca Elektronik satırını gösterir.</p>
+<h3>Sütun filtresi mi, tablo filtresi mi?</h3>
+<p><code>FILTER(Urunler, Urunler[Fiyat] &gt; 1000)</code> bütün <code>Urunler</code> tablosunu filtre olarak verir; tablo, o anki bağlamda görünen satırlarla ve tüm sütunlarıyla gelir. <code>Urunler[Fiyat] &gt; 1000</code> ise yalnızca Fiyat sütununu filtreler. Bu örnekte iki yazım aynı sonucu verir, ama tablo filtresi daha yavaştır ve filtre bağlamındaki diğer Urunler sütunlarını da sabitler. Önce sütun filtresini dene; tablo filtresine yalnızca koşul birden çok tablodan sütun ya da bir ölçü içerdiğinde ihtiyaç duyarsın.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Filtre bağımsız değişkeninin türleri</h2>
+<p><code>CALCULATE</code>’in ilk bağımsız değişkeninden sonra yazdığın her şey ya bir <b>tablo</b> ya da bir <b>düzenleyicidir</b>. Boolean ifade bile perde arkasında tabloya çevrilir. Hangi türü yazdığını bilmek, sonucun neden öyle çıktığını açıklar:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Örnek</th><th>Etkisi</th></tr>
+<tr><td>Boolean (sütun koşulu)</td><td><code>Satislar[Kanal] = "Web"</code></td><td>O sütundaki dış filtrenin yerine geçer</td></tr>
+<tr><td>Tablo ifadesi</td><td><code>FILTER(Satislar, …)</code>, <code>VALUES(…)</code>, bir tablo değişkeni</td><td>Tablonun satırları ve tüm sütunları filtre olur</td></tr>
+<tr><td>Kaldırıcı</td><td><code>REMOVEFILTERS(Urunler)</code>, <code>ALL(Satislar[Kanal])</code></td><td>Filtreyi siler, yerine bir şey koymaz</td></tr>
+<tr><td>Düzenleyici</td><td><code>KEEPFILTERS</code>, <code>USERELATIONSHIP</code>, <code>CROSSFILTER</code></td><td>Filtrenin nasıl birleşeceğini ya da ilişkinin nasıl çalışacağını değiştirir</td></tr></table></div>
+
+<h2>Boolean filtrenin üç sınırı</h2>
+<h3>1. İçinde ölçü olamaz</h3>
+<pre class="dax" data-notry>Hatalı = CALCULATE([Net Satış], [Net Satış] &gt; 1000)</pre>
+<p>Boolean filtre bir sütunun değerlerini süzer; ölçünün “sütunu” yoktur. Koşul bir ölçüye dayanıyorsa önce hangi satırlar üzerinde test edileceğini seçmen gerekir: <code>FILTER(VALUES(Urunler[Urun]), [Net Satış] &gt; 1000)</code>.</p>
+<h3>2. Tek bir tablonun sütunlarını kullanabilir</h3>
+<p>Kampanya ekibinin sorusu: “Web kanalından gelen <b>ya da</b> Kitap kategorisindeki satışlar ne kadar?” İlk deneme genellikle iki ayrı bağımsız değişkendir:</p>
+<pre class="dax">Web ve Kitap (yanlış soru) =
+CALCULATE([Net Satış], Satislar[Kanal] = "Web", Urunler[Kategori] = "Kitap")</pre>
+<p>Ayrı bağımsız değişkenler <b>VE</b> ile birleşir: sonuç <b>57.545 ₺</b>, yani yalnızca web’den satılan kitaplar. <code>Satislar[Kanal] = "Web" || Urunler[Kategori] = "Kitap"</code> yazmak ise hata verir, çünkü koşul iki tabloya yayılıyor. Doğru yol, koşulu satır satır test eden bir tablo filtresidir:</p>
+<pre class="dax">Web veya Kitap =
+CALCULATE(
+    [Net Satış],
+    FILTER(Satislar, Satislar[Kanal] = "Web" || RELATED(Urunler[Kategori]) = "Kitap")
+)</pre>
+<p>Sonuç <b>551.668 ₺</b>. Sağlamasını yap: web 457.331 ₺ + kitap 151.882 ₺ − ikisinin kesişimi 57.545 ₺ = 551.668 ₺. Aynı tablodaki iki sütunla VEYA kurmak ise boolean filtreyle mümkündür: <code>Satislar[Indirim] &gt; 0 || Satislar[Kanal] = "Mağaza"</code> geçerli bir filtredir.</p>
+<h3>3. Aynı sütuna iki koşul VE olur</h3>
+<p><code>CALCULATE([Net Satış], Satislar[Kanal] = "Web", Satislar[Kanal] = "Mobil")</code> BLANK döndürür. Bir satır aynı anda hem Web hem Mobil olamaz. İki kanalı birlikte istiyorsan tek koşul yaz: <code>Satislar[Kanal] IN {"Web", "Mobil"}</code>.</p>
+
+<h2>Filtre bağımsız değişkeni dış bağlamda hesaplanır</h2>
+<p>Operasyon müdürü yıllık tabloda “her yılın son günündeki ciro” sütununu istiyor:</p>
+<pre class="dax">Takvimin Son Günü =
+CALCULATE([Net Satış], Tarih[Tarih] = MAX(Tarih[Tarih]))
+
+Satışın Son Günü =
+CALCULATE([Net Satış], Satislar[Tarih] = MAX(Satislar[Tarih]))</pre>
+<p><code>MAX</code>, CALCULATE filtreyi değiştirmeden <b>önce</b>, hücrenin kendi bağlamında hesaplanır. Yıl satırında <code>MAX(Tarih[Tarih])</code> 31 Aralık’tır. 2022 ve 2023’te 31 Aralık’ta hiç satış olmadığı için ilk ölçü bu yıllarda BLANK döner; 2024’te 1.047 ₺ verir. İkinci ölçü satış olan son günü arar: 2022’de 2.871,95 ₺, 2023’te 1.216,40 ₺. Hangisi doğru? Soru “takvimin son günü” mü, “son işlem günü” mü? Bunu ölçü adında açıkça yaz.</p>
+
+<h2>Boolean filtre mi, FILTER(Satislar, …) mı?</h2>
+<p>İkisi çoğu zaman aynı sayıyı verir. Fark, dışarıda aynı sütuna bir filtre olduğunda ortaya çıkar. Satırlarda <code>Satislar[Kanal]</code> olan bir tabloda üç yazımı karşılaştır:</p>
+<div class="tbl-wrap"><table><tr><th>Yazım</th><th>Mağaza satırı</th><th>Mobil satırı</th><th>Web satırı</th><th>Neden?</th></tr>
+<tr><td><code>Satislar[Kanal] = "Web"</code></td><td>457.331</td><td>457.331</td><td>457.331</td><td>İçteki <code>ALL(Satislar[Kanal])</code> satır filtresinin yerine geçer</td></tr>
+<tr><td><code>FILTER(Satislar, Satislar[Kanal] = "Web")</code></td><td>(boş)</td><td>(boş)</td><td>457.331</td><td>FILTER yalnızca görünen satırları dolaşır; dış filtre korunur</td></tr>
+<tr><td><code>FILTER(ALL(Satislar), Satislar[Kanal] = "Web")</code></td><td>457.331</td><td>457.331</td><td>457.331</td><td>Tüm tablo filtresizleşir; kategori, tarih filtreleri de gider</td></tr></table></div>
+<p>Üçüncü yazım en tehlikelisidir. Satırlarda kategori olan bir tabloda her satırda 457.331 ₺ görürsün, çünkü <code>ALL(Satislar)</code> genişletilmiş tablo üzerinden kategori filtresini de siler (bir sonraki derste). İkinci yazım dış filtreyi korur, ama bütün <code>Satislar</code> tablosunu dolaştığı için büyük modelde yavaştır. Dış filtreyle kesişim istiyorsan aynı sonucu daha ucuza <code>KEEPFILTERS(Satislar[Kanal] = "Web")</code> verir.</p>
+<div class="note"><b>Karar ağacı</b>Koşul tek sütunda mı? Boolean yaz. Aynı tablonun birkaç sütununda mı? Yine boolean (<code>||</code>, <code>&amp;&amp;</code>). Birden çok tabloya mı yayılıyor ya da ölçü mü içeriyor? <code>FILTER</code> yaz ve dolaşılan tabloyu olabildiğince küçük seç (<code>VALUES(Urunler[Urun])</code> gibi). Dış filtreyi silmek değil kesiştirmek mi istiyorsun? <code>KEEPFILTERS</code> ekle.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-calculate">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../baglam/">← Filtre bağlamı (filter context) ve satır bağlamı (row context)</a><a href="../iteratorler/">Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

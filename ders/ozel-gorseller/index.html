@@ -1,0 +1,74 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Özel grafik teknikleri: şelale, huni, gösterge, tornado, harita ve özel görseller | Kesit Power BI</title><meta name="description" content="Standart çubuk ve çizginin yetmediği sorular: şelale ile köprü, huni ile adım kaybı, gösterge ve KPI görselinin yeri, negatif ölçüyle tornado, hedef…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/ozel-gorseller/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Özel grafik teknikleri: şelale, huni, gösterge, tornado, harita ve özel görseller"><meta property="og:description" content="Standart çubuk ve çizginin yetmediği sorular: şelale ile köprü, huni ile adım kaybı, gösterge ve KPI görselinin yeri, negatif ölçüyle tornado, hedef…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/ozel-gorseller/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Özel grafik teknikleri: şelale, huni, gösterge, tornado, harita ve özel görseller","description":"Standart çubuk ve çizginin yetmediği sorular: şelale ile köprü, huni ile adım kaybı, gösterge ve KPI görselinin yeri, negatif ölçüyle tornado, hedef…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/ozel-gorseller/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Görselleştirme</span><h1>Özel grafik teknikleri: şelale, huni, gösterge, tornado, harita ve özel görseller</h1><p class="st-l">Standart çubuk ve çizginin yetmediği sorular: şelale ile köprü, huni ile adım kaybı, gösterge ve KPI görselinin yeri, negatif ölçüyle tornado, hedef çubuğu, ağaç haritası, şerit grafik, haritalar, Analiz bölmesi çizgileri ve AppSource görselleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-ozel-gorseller">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Çoğu soruyu sıralı bir çubuk ya da bir çizgi grafik cevaplar. Bu derste, belirli bir soru tipine özel görselleri ve Power BI’da hazır olmayan iki kalıbı (tornado ve hedef çubuğu) yerleşik görsellerle kurmayı öğreneceksin. Gösterge ve KPI görselinin kurulumu “Koşullu biçimlendirme ve KPI’lar”, algı açısından değerlendirmesi “Görsel algı” dersinde.</p>
+
+<h2>Şelale (waterfall): bir sayıdan diğerine köprü</h2>
+<p>Soru: “Net satış 2023’te 400.869,55 ₺ idi, 2024’te 747.065,70 ₺ oldu. Bu 346.196,15 ₺’lik artış nereden geldi?” Şelale grafiği başlangıç ve bitiş sütununu yatay eksenden başlatır, aradaki katkıları havada yüzen sütunlar olarak çizer; artışlar ve azalışlar farklı renklidir.</p>
+<ul>
+<li><b>Kategori</b> kutusuna <code>Tarih[Yil]</code>, <b>Y ekseni</b>ne <code>[Net Satış]</code>, <b>Ayrıntı (Breakdown)</b> kutusuna <code>Kategoriler[Kategori]</code> koy ve yıl filtresinde 2023 ile 2024’ü bırak. Grafik 2023 sütunundan 2024 sütununa giden köprüyü kategorilere böler.</li>
+<li>Katkılar: Elektronik +100.284,95 ₺, Ev &amp; Yaşam +77.168,20 ₺, Kitap +50.451,60 ₺, Kozmetik +44.635,15 ₺, Giyim +41.587,70 ₺, Spor +28.038,55 ₺, Hediye +4.030 ₺.</li>
+<li><b>Biçim → Ayrıntı → En fazla ayrıntı sayısı (Maximum breakdowns)</b> kaç katkının ayrı gösterileceğini belirler; mutlak değere göre en büyükler ayrı çizilir, kalanlar “Diğer” olur. Beşte bırakırsan Spor ve Hediye 32.068,55 ₺’lik tek bir “Diğer” sütununda birleşir.</li>
+</ul>
+<p>İkinci yol: Kategori kutusuna kategorileri, Y eksenine bir <b>fark ölçüsü</b> koymak (alıştırma 2). Yılı 2024’e süzersen yedi artış sütunu ve sonda 346.196,15 ₺’lik toplam görünür. Ölçü negatif de olabilir; şelale azalışları otomatik aşağı çizer.</p>
+
+<h2>Huni (funnel): adım adım kayıp</h2>
+<p>Huni, sıralı adımlardan oluşan bir sürecin her adımında kalan miktarı gösterir. Web hunisinde (Ekim–Kasım 2024): Ziyaret 900 → Ürün görüntüleme 640 → Sepete ekleme 254 → Ödeme 137 → Satın alma 88. <b>Kategori</b>: <code>WebOlaylari[Adim]</code>, <b>Değerler</b>: <code>[Ziyaretçi]</code>. Adımları <code>AdimNo</code>’ya göre sırala; aksi hâlde huni alfabetik ya da büyüklüğe göre dizilir. Araç ipucu her adım için ilk adıma göre yüzdeyi verir; önceki adıma göre yüzde için hazır <code>[Önceki Adıma Göre %]</code> ölçüsünü araç ipucuna ekle.</p>
+<div class="warn"><b>Huni sıralı süreç ister</b>Kategorilerin satışını huniye koymak (en büyükten en küçüğe) bir süreç anlatmaz; okuyucu “Elektronik’ten Kitap’a kaç kişi geçti?” diye yanlış okur. Sıralı adım yoksa sıralı çubuk kullan.</div>
+
+<h2>Gösterge ve KPI görseli: ne zaman, hangi ayarla?</h2>
+<p><b>Gösterge (gauge)</b> tek bir değeri bir hedefe ve bir aralığa göre gösterir; kutuları <b>Değer, En küçük değer, En büyük değer, Hedef değer</b>. Tuzak, en büyük değerin otomatik seçilmesidir: aralık değişince aynı oran farklı “doluluk” gibi görünür. Maksimumu bir ölçüye bağla: 2024’te net satış ile hedefin büyüğü 763.200 ₺, bunun %10 fazlası bine yuvarlanınca 840.000 ₺ (alıştırma 3). Gösterge, filtre değişse de ölçeğini mantıklı tutar.</p>
+<p><b>KPI görseli</b> değer, hedef ve bir eğilim eksenini birlikte ister. Eğilim ekseni (ör. <code>Tarih[YilAy]</code>) olmadan anlamı azalır. Birden çok KPI için yeni kart görseli ve referans etiketleri daha az yer kaplar.</p>
+
+<h2>Tornado (kelebek) grafik: iki yönlü çubuk</h2>
+<p>İki grubu aynı kategorilerde karşılaştırmak için çubukları ortadaki sıfır çizgisinin iki yanına çizersin. Power BI’da hazır bir tornado görseli yok; <b>yığılmış çubuk grafik (stacked bar)</b> ve bir <b>negatif ölçü</b> ile kurulur:</p>
+<pre class="dax">Kadın Satışı (Sol) =
+-CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Kadın")</pre>
+<pre class="dax">Erkek Satışı (Sağ) =
+CALCULATE([Net Satış], Musteriler[Cinsiyet] = "Erkek")</pre>
+<ol>
+<li>Y eksenine <code>Musteriler[YasGrubu]</code>, X eksenine iki ölçüyü koy. Sol ölçü negatif olduğu için sola uzar.</li>
+<li>Etiketlerde ve eksende eksi işaretini gizlemek için sol ölçünün biçim dizesini <code>#,0;#,0</code> yap: noktalı virgülün sağı negatif sayının nasıl yazılacağını belirler.</li>
+<li>Y eksenini yaş sırasına göre sırala (bir sıra sütunu ya da “Sütuna göre sırala”).</li>
+</ol>
+<p>Tüm yıllarda 55+ grubunda kadın müşteriler 229.892,10 ₺, erkek müşteriler 133.129,30 ₺; 25–34 grubunda ise tablo tersine döner: 127.839,85 ₺ ile 165.068 ₺. Tornado bu “hangi tarafa yatıyor?” farkını tek bakışta gösterir.</p>
+
+<h2>Hedef çubuğu (bullet tarzı)</h2>
+<p>Bullet grafik, bir çubuğun üstünde hedefi küçük bir dikey çizgiyle gösterir. Power BI’da yerleşik bir bullet grafik yok; AppSource’ta özel görseller var. Yerleşik seçeneklerle üç yol:</p>
+<ul>
+<li><b>Hata çubukları (error bars):</b> Kümelenmiş çubuk grafiğinde <code>[Net Satış]</code> çiz, <b>Analiz</b> bölmesinde hata çubuğu ekle; üst ve alt sınırın ikisini de <code>[Hedef]</code> ölçüsüne bağla (ilişki: Mutlak). Sonuç her çubukta hedef konumunda bir işaret olur. Hata çubukları kümelenmiş çubuk, kümelenmiş sütun, çizgi ve çizgi + kümelenmiş sütun grafiklerinde var.</li>
+<li><b>Çizgi ve kümelenmiş sütun:</b> Hedefi çizgi yerine yalnızca işaretçi olarak göster (çizgi kalınlığı 0, işaretçi açık).</li>
+<li><b>Sabit çizgi:</b> Tüm çubuklar için tek bir eşik varsa (ör. %100 gerçekleşme) Analiz bölmesinden sabit çizgi yeterli.</li>
+</ul>
+
+<h2>Ağaç haritası ve şerit grafik</h2>
+<p><b>Ağaç haritası (treemap)</b> parça-bütün ilişkisini iç içe dikdörtgenlerle gösterir. 2024’te Elektronik %27,6 ile en büyük kutu, Hediye %1,3 ile en küçük. Çok sayıda kategoride ve hiyerarşide (kategori → ürün) iyi çalışır; ama göz alanı kötü karşılaştırır, yakın büyüklükleri (Spor %13,2, Kitap %12,8) ayırmak için çubuk daha iyidir.</p>
+<p><b>Şerit grafik (ribbon chart)</b> her dönemde kategorileri büyüklüğe göre üst üste dizer ve dönemler arasında şeritlerle bağlar; <b>sıra değişimi</b> sorusu içindir. Kategori satışında Ev &amp; Yaşam 2022’de ikinci, 2023’te dördüncü, 2024’te yeniden ikinci; Spor ise 2023’te ikinciliğe çıkıp 2024’te dördüncü oluyor. Çizgi grafikte bu sıra değişimi kesişen çizgiler arasında kaybolur.</p>
+
+<h2>Haritalar</h2>
+<ul>
+<li><b>Kabarcık haritası (bubble):</b> Her konuma büyüklüğe göre bir daire. Şehir bazında satış için uygundur: İstanbul 225.868,75 ₺ ile en büyük daire.</li>
+<li><b>Dolgulu harita (choropleth):</b> Bölgeyi renkle doldurur. Toplam değil <b>oran</b> göstermek için kullan (müşteri başı satış, iade oranı); büyük bölge toplam olarak her zaman koyu çıkar.</li>
+<li><b>Azure Haritalar (Azure Maps):</b> Kabarcık, dolgulu, ısı haritası, 3B sütun ve işaretçi katmanlarını tek görselde sunar. Microsoft Learn’e göre Bing tabanlı Harita görseli kullanımdan kaldırılmak üzere; tarih henüz belirlenmedi, var olan görseller çalışmaya devam ediyor. Harita ve Dolgulu harita içeren bir rapor açılınca <b>Haritaları yükselt</b> düğmesiyle hepsi Azure Haritalar’a dönüştürülebilir. Azure Haritalar kiracı yöneticisinin ayarıyla açılır; Çin, Kore ve kamu bulutlarında henüz önerilmiyor.</li>
+</ul>
+<div class="warn"><b>Konumu belirsiz bırakma</b>Şehir sütununun <b>Veri kategorisi</b>ni “Şehir” yap; yine de aynı adlı başka ülkelerdeki yerlerle karışabilir, bu yüzden “İstanbul, Türkiye” gibi birleşik bir konum sütunu daha güvenlidir. Bu modelde 7 müşterinin şehri boş; onların 63.852,75 ₺’lik satışı haritada hiçbir yerde görünmez. Haritanın yanına bir “konumsuz satış” kartı koy.</div>
+
+<h2>Analiz bölmesi: sabit çizgiler ve hata çubukları</h2>
+<p>Analiz bölmesinin tam listesi “Analiz özellikleri ve yapay zekâ görselleri” dersinde. Özel grafiklerle birlikte en çok kullanılanlar: hedef için <b>Y ekseni sabit çizgisi</b> (şelalede de var), dağılım grafiğinde dört bölge için iki sabit çizgi, belirsizlik ya da hedef aralığı için <b>hata çubukları</b>. Hata çubuğu sınırları alanlardan ya da yüzdeyle verilir; alan seçeneğinde “Mutlak” sınırın kendisi, “Göreli” ise ölçüden uzaklıktır.</p>
+
+<h2>Özel görseller: AppSource</h2>
+<p>Görselleştirmeler bölmesinde <b>…</b> → <b>Diğer görselleri al</b> ile AppSource’taki görseller eklenir ya da bir <code>.pbiviz</code> dosyası içe aktarılır.</p>
+<ul>
+<li><b>Sertifikalı (certified) görsel:</b> Power BI ekibinin kod gereksinimlerini karşılamış ve testten geçmiştir; testler görselin dış hizmetlere ya da kaynaklara erişmediğini doğrular. Sertifikasız görsel kötü değildir ama bu güvenceyi taşımaz.</li>
+<li><b>Yönetici denetimi:</b> Kiracı ayarlarında “Power BI SDK ile oluşturulan görsellere izin ver” kapatılabilir ya da “Yalnızca sertifikalı görselleri ekle ve kullan” açılabilir; o zaman sertifikasız görseller Service’te hata gösterir. Yönetici onayladığı görselleri <b>kuruluş görselleri (organizational visuals)</b> olarak herkese dağıtabilir; bunlar kiracı kısıtlarından etkilenmez.</li>
+<li><b>Bakım riski:</b> Üçüncü taraf görsel güncellenmezse ya da ücretli lisansa geçerse rapor bozulabilir. Yerleşik görselle yapılabiliyorsa yerleşik olanı seç.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-ozel-gorseller">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dashboard-kavramlar/">← Rapor kavramları: KPI, hedef ve gösterge türleri</a><a href="../ayristirma-etkileyen/">Ayrıştırma ağacı ve anahtar etkileyiciler: soru sorarak analiz →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

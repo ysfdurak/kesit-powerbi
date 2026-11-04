@@ -1,0 +1,54 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi | Kesit Power BI</title><meta name="description" content="Rapor paylaşmanın yolları ve hangisinin ne zaman doğru olduğu: bağlantı türleri, Yeniden paylaş ve Derleme izinleri, kuruluş dışı kullanıcılar, kaldırma;…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/paylasim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi"><meta property="og:description" content="Rapor paylaşmanın yolları ve hangisinin ne zaman doğru olduğu: bağlantı türleri, Yeniden paylaş ve Derleme izinleri, kuruluş dışı kullanıcılar, kaldırma;…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/paylasim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi","description":"Rapor paylaşmanın yolları ve hangisinin ne zaman doğru olduğu: bağlantı türleri, Yeniden paylaş ve Derleme izinleri, kuruluş dışı kullanıcılar, kaldırma;…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/paylasim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Paylaşım ve erişim: bağlantı türleri, izinler ve dağıtım seçimi</h1><p class="st-l">Rapor paylaşmanın yolları ve hangisinin ne zaman doğru olduğu: bağlantı türleri, Yeniden paylaş ve Derleme izinleri, kuruluş dışı kullanıcılar, kaldırma; “paylaştım ama göremiyor” teşhisi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-paylasim">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Raporu paylaştım ama göremiyor.” Power BI desteğine gelen en sık cümlelerden biri. Sebep genellikle üç şeyden biridir: lisans, modele erişim ya da yanlış bağlantı türü. Bu ders doğru dağıtım yolunu seçmeyi ve paylaşım sorunlarını teşhis etmeyi öğretir.</p>
+<h2>Dağıtım yolları</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Ne zaman doğru?</th><th>Bedel</th></tr>
+<tr><td><b>Çalışma alanı rolü</b></td><td>Birlikte geliştiren ekip</td><td>Okuyucuya verilirse görünüm karışır, RLS rolle değişir</td></tr>
+<tr><td><b>Doğrudan paylaşım</b></td><td>Birkaç kişi, tek rapor, hızlı</td><td>Kişi kişi izlemek zorlaşır, bağlantılar birikir</td></tr>
+<tr><td><b>Uygulama (app)</b></td><td>Geniş kitle, düzenli menü, kitleler</td><td>Kurulum ve güncelleme disiplini gerekir</td></tr>
+<tr><td><b>Teams, SharePoint</b></td><td>Kullanıcı zaten orada çalışıyor</td><td>Bağlantı erişim vermez; izni ayrıca verilir</td></tr>
+<tr><td><b>Abonelik</b></td><td>Düzenli e-posta anlık görüntüsü</td><td>Etkileşim yok; görüntüleme sayısını şişirebilir</td></tr>
+<tr><td><b>Web’de yayımla</b></td><td>Yalnız herkese açık veri</td><td>Kimlik doğrulaması yok, alttaki tüm veri açığa çıkar</td></tr></table></div>
+<p>Kural: <b>bir kez, küçük: paylaş. Sürekli, büyük: uygulama. Yazan ekip: rol.</b> Uygulama “Power BI uygulamaları” dersinde.</p>
+<h2>Bağlantı türleri</h2>
+<p>Rapordaki <b>Paylaş</b> düğmesi “Bağlantı gönder” penceresini açar. Üç tür vardır:</p>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Kim açabilir?</th><th>Dikkat</th></tr>
+<tr><td><b>Kuruluşundaki kişiler</b></td><td>Kuruluştan bağlantıyı alan herkes</td><td>Konuk ve dış kullanıcıda çalışmaz; yönetici kapatabilir</td></tr>
+<tr><td><b>Belirli kişiler</b></td><td>Yazdığın kişi ve gruplar, Entra B2B konukları dahil</td><td>Dış kullanıcı konuk olmalı</td></tr>
+<tr><td><b>Erişimi olan kişiler</b></td><td>Zaten erişimi olanlar</td><td>Erişim vermez; yalnız adres üretir</td></tr></table></div>
+<p>Her rapor için en fazla 1.000 paylaşım bağlantısı olabilir; sınıra gelirsen “Belirli kişiler” bağlantılarını silip doğrudan erişim verirsin. Pano doğrudan paylaşımında tek seferde en fazla 100 kullanıcı ya da grup yazılır; daha büyük kitlede grup ya da uygulama kullan.</p>
+<h2>İzinler: Yeniden paylaş ve Derleme</h2>
+<ul><li><b>Yeniden paylaş:</b> alan kişi başkasına da paylaşabilir. Rapor bağlantılarında varsayılan olarak açık gelir. Hassas raporda kapat.</li><li><b>Derleme (Build):</b> alan kişi modeli kullanarak kendi raporunu yapar, Excel’de analiz eder. Rapor bağlantısında varsayılan kapalı, pano paylaşımında varsayılan açıktır. RLS ve OLS yine geçerlidir.</li></ul>
+<div class="warn"><b>Gizleme güvenlik değildir</b>Gizli sütun, gizli sayfa ve kilitli filtre yalnız görünümü değiştirir. Derleme izni olan biri Excel’de modeli sorgular. Bir sütunu saklamak gerekiyorsa OLS, satırları saklamak gerekiyorsa RLS kullan.</div>
+<h2>Kuruluş dışı kullanıcılar</h2>
+<p>Yönetici kiracı ayarından dış paylaşımı açmış olmalı. Dış kullanıcı Microsoft Entra B2B konuğu olarak davet edilir, gönderilen e-posta adresiyle oturum açar. Bağlantıyı başkasına iletmek işe yaramaz; yalnız doğrudan alıcılar görür. Konuk panoyu yeniden paylaşamaz. İçerik Premium ya da F64+ kapasitede değilse konuğun da Pro ya da PPU lisansı gerekir.</p>
+<h2>“Paylaştım ama göremiyor” teşhisi</h2>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Olası neden</th><th>Çözüm</th></tr>
+<tr><td>“Lisans gerekiyor” iletisi</td><td>Paylaşılan kapasite ya da F64 altı, alıcı ücretsiz lisanslı</td><td>Pro/PPU ya da F64+ kapasite</td></tr>
+<tr><td>Rapor açılıyor, görseller hata veriyor</td><td>Model başka çalışma alanında, erişim yok</td><td>Modele erişim ver; zincirdeki her modele</td></tr>
+<tr><td>Rapor boş ya da bazı değerler yok</td><td>RLS rolüne eklenmemiş</td><td>Rol üyeliğini kontrol et; “Farklı görüntüle” ile test et</td></tr>
+<tr><td>“Benimle paylaşılanlar”da yok</td><td>Bağlantı “Erişimi olan kişiler” türünde</td><td>Doğru türle yeniden paylaş</td></tr>
+<tr><td>Teams sekmesinde “içerik kullanılamıyor”</td><td>Teams’e eklemek erişim vermez</td><td>Rapor iznini ayrıca ver; grup kullan</td></tr>
+<tr><td>Uygulamadaki raporu paylaşamıyor</td><td>Uygulama raporu yeniden paylaşılmaz</td><td>Uygulama sahibi kişiyi kitleye ekler</td></tr></table></div>
+<h2>Erişimi kaldırmak ve denetlemek</h2>
+<p>Raporda <b>İzinleri yönet</b> ekranından bağlantılar, doğrudan erişimler ve bekleyen talepler görülür. Pano erişimini kaldırırken ilgili rapor ve model erişimini de kaldırmayı düşün. Kullanıcıyı Entra’da devre dışı bırakmak erişim kayıtlarını silmez, yalnız kullanmasını engeller. Düzenli denetim için kimin hangi yolla geldiğini bilmek gerekir. Aşağıdaki sorgu örnek bir erişim envanterini özetler; ne kadar erişimin bağlantıyla dağıldığını gösterir:</p>
+<pre class="dax">EVALUATE
+VAR Envanter =
+    DATATABLE("Kisi", STRING, "Yol", STRING, {
+        {"ayse", "Uygulama"}, {"mert", "Uygulama"}, {"selin", "Uygulama"},
+        {"burak", "Bağlantı"}, {"kerem", "Bağlantı"}, {"deniz", "Rol"}
+    })
+RETURN
+    GROUPBY(Envanter, [Yol], "Kişi", SUMX(CURRENTGROUP(), 1))</pre>
+<p>Üç kişi uygulamadan, iki kişi tek tek bağlantıyla, bir kişi rolle geliyor. Bağlantıyla gelenler büyüyorsa uygulamaya geçme zamanıdır.</p>
+<div class="tip"><b>Kendi ortamında dene</b>Çalışma alanım’daki raporu Pro ya da deneme lisanslı bir meslektaşınla paylaş; “Belirli kişiler” bağlantısında Yeniden paylaş kutusunu kapat, İzinleri yönet ekranında sonucu gör. Paylaşım için ücretli lisans gerekir; lisansın yoksa senaryoları alıştırmalarla çalış.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-paylasim">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../panolar/">← Panolar (dashboards): kutucuk, canlı sayfa ve veri uyarısı</a><a href="../power-bi-apps/">Power BI uygulamaları (apps): kurmak, kitleler, güncellemek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

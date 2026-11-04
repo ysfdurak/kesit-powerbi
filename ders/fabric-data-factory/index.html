@@ -1,0 +1,57 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin? | Kesit Power BI</title><meta name="description" content="Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-data-factory/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?"><meta property="og:description" content="Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-data-factory/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?","description":"Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-data-factory/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?</h1><p class="st-l">Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2, not defteri arasında gerçek senaryolarla karar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-data-factory">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Fabric’e veri nasıl gelir?” sorusunun tek cevabı yok; aynı işi yapan beş araç var ve yanlış olanı seçmek haftalarca emek ya da kapasite israfı demek. <b>Data Factory</b>, Fabric’in veri alma ve düzenleme iş yüküdür. Bu ders araçları tanıtmaktan çok, seçim yapmayı öğretir. İşlem hattının içi bir sonraki derste.</p>
+<h2>Parçalar</h2>
+<div class="tbl-wrap"><table><tr><th>Öğe</th><th>Ne yapar?</th><th>Kod</th></tr>
+<tr><td><b>İşlem hattı (pipeline)</b></td><td>Etkinlikleri sıraya koyar, zamanlar, koşullar; kendi başına dönüştürmez</td><td>Az</td></tr>
+<tr><td><b>Copy job</b></td><td>Basit toplu, artımlı, CDC kopyalama; Learn’ün önerdiği taşıma yolu</td><td>Az</td></tr>
+<tr><td><b>Kopyalama etkinliği</b></td><td>İşlem hattı içinde büyük ölçekli, ayarı çok kopyalama</td><td>Az</td></tr>
+<tr><td><b>Dataflow Gen2</b></td><td>Power Query ile dönüştürür, hedefe yazar</td><td>Az</td></tr>
+<tr><td><b>Yansıtma (mirroring)</b></td><td>Operasyonel veritabanını OneLake’e yakın gerçek zamanlı çoğaltır</td><td>Yok</td></tr>
+<tr><td><b>dbt job</b></td><td>SQL tabanlı dönüşüm, ambar üzerinde</td><td>SQL</td></tr>
+<tr><td><b>Apache Airflow job</b></td><td>Python ile DAG düzenleme</td><td>Python</td></tr></table></div>
+<p>Spark not defteri ve Eventstream başka iş yüklerindendir, ama seçimde onlarla da karşılaşırsın. Azure Data Factory ayrı bir üründür, Fabric Data Factory’nin aynısı değildir; Learn’de “differences” sayfası var.</p>
+<h2>Veri kaynakları</h2>
+<p>Data Factory 170’ten fazla kaynağa bağlanır (Learn, Ağustos 2026). Sayı değil, üç soru önemli:</p>
+<div class="tbl-wrap"><table><tr><th>Kaynak nerede?</th><th>Nasıl erişilir?</th></tr>
+<tr><td>Bulutta, herkese açık uç nokta</td><td>Doğrudan bulut bağlantısı</td></tr>
+<tr><td>Şirket içinde</td><td>Şirket içi veri ağ geçidi: işlem hattı, Dataflow Gen2 ve Copy job için (“On-premises data gateway” dersi)</td></tr>
+<tr><td>Özel sanal ağda</td><td>VNet veri ağ geçidi ya da özel uç nokta</td></tr>
+<tr><td>Başka Fabric öğesinde, ADLS’te, S3’te</td><td>Önce kısayol düşün</td></tr>
+<tr><td>Akış, IoT, Kafka</td><td>Eventstream</td></tr></table></div>
+<p>Bağlantılar Power BI’dakiyle aynı <b>Bağlantıları ve ağ geçitlerini yönet</b> ekranındadır. Bağlayıcı desteği araca göre değişir: bir bağlayıcı Dataflow Gen2’de varken kopyalamada olmayabilir. Önce “Connector overview” sayfasına bak.</p>
+<h2>Karar tablosu</h2>
+<div class="tbl-wrap"><table><tr><th>Araç</th><th>En iyi olduğu iş</th><th>Dönüşüm</th><th>Beceri</th></tr>
+<tr><td>Yansıtma</td><td>Hazır kurulumla yakın gerçek zamanlı çoğaltma; hedef salt okunur</td><td>Yok</td><td>Gerekmez</td></tr>
+<tr><td>Copy job</td><td>Çok tablolu, artımlı ya da CDC taşıma</td><td>Az</td><td>ETL, SQL</td></tr>
+<tr><td>Kopyalama etkinliği</td><td>İşlem hattının parçası, elle ayar, filigran</td><td>Az</td><td>ETL, SQL</td></tr>
+<tr><td>Eventstream</td><td>Akan olay, gerçek zamanlı yönlendirme</td><td>Orta</td><td>KQL, SQL</td></tr>
+<tr><td>Dataflow Gen2</td><td>Kod yazmadan temizlik, profil</td><td>Yüksek</td><td>M, Power Query</td></tr>
+<tr><td>Not defteri</td><td>Karmaşık, büyük ölçekli, kodlu dönüşüm</td><td>Yüksek</td><td>Spark, Python</td></tr>
+<tr><td>Kısayol</td><td>Kopyasız erişim</td><td>Kısıtlı</td><td>Gerekmez</td></tr></table></div>
+<p>Dört soru: <b>Kopya gerekli mi? Ne kadar taze? Dönüşüm ne kadar karmaşık? Ekip ne biliyor?</b></p>
+<h2>Anadolu Market senaryoları</h2>
+<div class="tbl-wrap"><table><tr><th>İhtiyaç</th><th>Seçim</th><th>Neden öteki değil?</th></tr>
+<tr><td>Azure SQL’deki sipariş tablosunu yöneticiler dakikalar içinde görsün, dönüşüm yok</td><td>Yansıtma</td><td>Copy job zamanlamaya bağlı; işlem hattı gereksiz emek</td></tr>
+<tr><td>Şirket içi ERP’den 40 tabloyu her gece artımlı kopyala</td><td>Copy job, ağ geçidi</td><td>Kırk kopyalama etkinliği bakım yükü</td></tr>
+<tr><td>SharePoint listesini temizle; analist Power Query biliyor</td><td>Dataflow Gen2</td><td>Spark öğrenmek gerekmez</td></tr>
+<tr><td>Web olaylarından gün başına oturum üret; JSON iç içe, 500 milyon satır</td><td>Not defteri</td><td>Veri akışı bu ölçekte zayıf ve pahalı kalabilir</td></tr>
+<tr><td>Mağaza kasalarından saniye saniye işlem akışı, anomaliye uyarı</td><td>Eventstream, Eventhouse</td><td>Toplu araç saniyeye inmez</td></tr>
+<tr><td>Kopyala, temizle, yordam çalıştır, model yenile, hata olursa haber ver</td><td>İşlem hattı</td><td>Tek araç sırayı yönetemez</td></tr>
+<tr><td>Bölge ekibinin lakehouse tablosunu pazarlama da okusun</td><td>Kısayol</td><td>Kopya tutarsızlık üretir</td></tr></table></div>
+<h2>Yaygın yanlış seçimler</h2>
+<ul><li><b>“Her şeyi not defteriyle yazalım.”</b> Ekipte tek Spark bilen varsa o tatile çıkınca hat durur.</li><li><b>“Yansıtılmış tablodaki kolonu değiştireyim.”</b> Yansıtma hedefi salt okunurdur; dönüşüm ayrı katmanda yapılır.</li><li><b>“Dataflow Gen2 işlem hattının yerine geçer.”</b> Sorgu bağımlılığı yönetir, ama yordam çalıştırma, koşul ve uyarı için işlem hattı gerekir.</li><li><b>“Veri zaten ADLS’te; kopyalayalım.”</b> Delta ise kısayol yeter.</li></ul>
+<p>Öğrenme yolunda aynı veriyi iki yolla yükleme ödevi “Fabric’e veri getirmek” dersinde. Copilot’un bu araçlarda ne yapabildiği “Fabric’te Copilot” dersinde. Veriyi modele getirmeden önce doğrulama, tüm yollar için aynıdır: satır sayısı ve toplam.</p>
+<pre class="dax">EVALUATE
+ROW("Satır", COUNTROWS(Satislar), "Tutar", SUM(Satislar[Tutar]), "İlk Tarih", MIN(Satislar[Tarih]), "Son Tarih", MAX(Satislar[Tarih]))</pre>
+<div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Pipeline, Dataflow Gen2 ve Copy job denemede çalışır. Şirket içi kaynak için ağ geçidi gerekir; yoksa Anadolu Market CSV’leriyle çalış.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-data-factory">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-lakehouse/">← Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari</a><a href="../fabric-pipeline/">İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

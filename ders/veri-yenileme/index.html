@@ -1,0 +1,70 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi | Kesit Power BI</title><meta name="description" content="Yenilemenin altı türü ve depolama moduna göre hangisinin geçerli olduğu; zamanlama, lisans sınırları, zamanlamanın neden kendiliğinden kapandığı; yenileme…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/veri-yenileme/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi"><meta property="og:description" content="Yenilemenin altı türü ve depolama moduna göre hangisinin geçerli olduğu; zamanlama, lisans sınırları, zamanlamanın neden kendiliğinden kapandığı; yenileme…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/veri-yenileme/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi","description":"Yenilemenin altı türü ve depolama moduna göre hangisinin geçerli olduğu; zamanlama, lisans sınırları, zamanlamanın neden kendiliğinden kapandığı; yenileme…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/veri-yenileme/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi</h1><p class="st-l">Yenilemenin altı türü ve depolama moduna göre hangisinin geçerli olduğu; zamanlama, lisans sınırları, zamanlamanın neden kendiliğinden kapandığı; yenileme geçmişini okumak ve tazelik ölçüleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-yenileme">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Sabah 09:00. Genel müdür dünkü satışı soruyor, rapor üç gün öncesini gösteriyor. Yenileme “başarılı”, kimse e-posta almadı. Sorun nerede? Power BI’da <b>tek bir yenileme yoktur</b>; altı farklı şey aynı adla anılır. Doğru teşhis önce hangisinden söz ettiğini ayırmakla başlar.</p>
+<h2>Yenilemenin türleri</h2>
+<div class="tbl-wrap"><table><tr><th>Tür</th><th>Ne yapar?</th><th>Dikkat</th></tr>
+<tr><td><b>Veri yenileme</b></td><td>Kaynaktan veriyi Import modele alır</td><td>DirectQuery ve canlı bağlantıda yoktur</td></tr>
+<tr><td><b>OneDrive yenilemesi</b></td><td>.pbix, .xlsx, .csv dosyasıyla eşitler; yaklaşık saatte bir</td><td>Asıl kaynaktan veri çekmez</td></tr>
+<tr><td><b>Sorgu önbelleği</b></td><td>Kapasitede sorgu sonuçlarını saklar</td><td>Her veri yenilemesi geçersiz kılar</td></tr>
+<tr><td><b>Kutucuk yenileme</b></td><td>Pano kutucuklarını günceller</td><td>Import’ta veriyle birlikte; DirectQuery’de yaklaşık saatte bir</td></tr>
+<tr><td><b>Görsel yenileme</b></td><td>Rapor görsellerini yeniden sorgular</td><td>Canlı bağlantı için geçerlidir</td></tr>
+<tr><td><b>Şema yenileme</b></td><td>Sütun ekleme, silme, ad değişikliğini alır</td><td>Import, DirectQuery ve Direct Lake’te</td></tr></table></div>
+<div class="tbl-wrap"><table><tr><th>Mod</th><th>Veri yenileme</th><th>“Güncel” ne demek?</th></tr>
+<tr><td>Import</td><td>Zamanlanmış, isteğe bağlı</td><td>Son yenileme anı</td></tr>
+<tr><td>DirectQuery</td><td>Yok</td><td>Sorgu anı; kutucuklar saatlik</td></tr>
+<tr><td>Canlı bağlantı</td><td>Yok</td><td>Kaynak modelin tazeliği</td></tr>
+<tr><td>Direct Lake</td><td>Çerçeveleme (framing)</td><td>Delta’nın işaret edilen sürümü; “Fabric’te anlam modeli” dersi</td></tr></table></div>
+<h2>Yenileme yolları</h2>
+<ul><li><b>Zamanlanmış:</b> anlam modeli ayarları → Yenileme → Yenilemeyi zamanla. Saat dilimini bilinçli seç.</li><li><b>Şimdi yenile:</b> elle, isteğe bağlı.</li><li><b>Power Automate:</b> olaya bağlı (dosya geldi, onay verildi).</li><li><b>REST API, XMLA:</b> tablo düzeyinde, bölüm düzeyinde, kapasitede geniş denetim.</li><li><b>İşlem hattı:</b> Fabric’te veri hazır olunca (“İşlem hatları” dersi).</li></ul>
+<h2>Sınırlar</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Pro (paylaşılan)</th><th>PPU, Premium, Fabric</th></tr>
+<tr><td>Zamanlanmış yenileme</td><td>Günde 8</td><td>Günde 48</td></tr>
+<tr><td>API ile tetikleme</td><td>8’e dahil</td><td>Sabit sayı yok; kapasiteye bağlı, kuyruğa girebilir</td></tr>
+<tr><td>Şimdi yenile</td><td>8’e dahil değil</td><td>Kapasiteye bağlı</td></tr>
+<tr><td>Süre</td><td>2 saat</td><td>5 saat (XMLA ile aşılabilir)</td></tr>
+<tr><td>Başlama</td><td colspan="2">Seçilen saatten en fazla 5 dk önce, hedef 15 dk içinde; kaynak azsa 1 saate kadar gecikebilir</td></tr></table></div>
+<p>Tam yenileme bellekte modelin yaklaşık iki katını ister, çünkü sorgulara hizmet için eski kopya durur. 1 GB’ı aşan ya da saatler süren modelde “Büyük modeller” dersindeki artımlı yenilemeyi düşün. Günde 48 slotunu doldurmak iyi bir hedef değildir: veri sık değişiyor ve kaynak dayanıyorsa DirectQuery daha doğru olabilir.</p>
+<h2>Zamanlama neden kendiliğinden kapanır?</h2>
+<div class="tbl-wrap"><table><tr><th>Olay</th><th>Sonuç</th><th>Ne yapılır?</th></tr>
+<tr><td><b>Art arda 4 hata</b> ya da süresi dolmuş kimlik bilgisi</td><td>Zamanlama kapanır</td><td>Kök nedeni çöz, zamanlamayı yeniden aç. Eşik değiştirilemez.</td></tr>
+<tr><td><b>2 ay görüntülenmeme</b></td><td>Zamanlama duraklar, sahibe e-posta gider</td><td>Raporu aç ya da Şimdi yenile</td></tr></table></div>
+<p>Hata e-postasını kişisel kutuya değil ekip listesine yönlendir; biri izne çıktığında rapor sessizce eskir.</p>
+<h2>Yenileme geçmişini okumak</h2>
+<p>Anlam modeli ayarları → <b>Yenileme geçmişi</b>. Tür, başlangıç, bitiş, durum ve hata iletisi burada. Teşhis sırası:</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Kök neden</th><th>Çözüm</th></tr>
+<tr><td>Kimlik bilgileri geçersiz</td><td>Parola değişti, OAuth süresi doldu</td><td>Veri kaynağı kimlik bilgilerini güncelle, zamanlamayı aç</td></tr>
+<tr><td>Veri kaynağı tanımlı değil, ağ geçidi çevrim dışı</td><td>Bağlantı eşleşmemiş, makine kapalı</td><td>“On-premises data gateway” dersi</td></tr>
+<tr><td>Sütun bulunamadı</td><td>Kaynak şeması değişti</td><td>Power Query adımını düzelt, yeniden yayımla</td></tr>
+<tr><td>Zaman aşımı</td><td>Model büyük, katlama yok</td><td>Sütun azalt, katlamayı koru, artımlı yenileme</td></tr>
+<tr><td>Bellek hatası</td><td>Kapasite dolu, eşzamanlı yenileme</td><td>Saatleri yay, gereksiz sütun çıkar</td></tr>
+<tr><td>Başlangıç gecikiyor</td><td>Kapasite yük altında</td><td>Saatleri kaydır, “Kullanım ve izleme” dersi</td></tr>
+<tr><td>“Başarılı” ama eski veri</td><td>Üst adım bitmeden çalıştı ya da kaynak eski</td><td>Olaya bağlı zincir, tazelik göstergesi</td></tr></table></div>
+<p>En tehlikelisi son satırdır: yenileme başarılıdır ve veri yine eskidir. “Son yenileme” zaman damgası yanlış güven verir. Doğru sinyal, <b>olgu tablosundaki en son iş tarihidir</b>:</p>
+<pre class="dax">Veri Gecikmesi (gün) =
+DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), DATE(2024, 12, 31), DAY)</pre>
+<p>Uygulama verisi 2024 sonunda bittiği için referans tarih sabit; gerçek modelde <code>TODAY()</code> yazılır. <b>Eşiği sıfır yapma.</b> Gece yenilenen modelde en son iş tarihi dündür: fark her sabah 1 çıkar, kart hep kırmızı kalır ve sürekli yanan alarma kimse bakmaz. Kabul edilen gecikmeyi işin sahibiyle konuş. Her gün satış olan ve günlük yenilenen modelde fark 1’den büyükse kırmızıya çevir. Hafta sonu satış yoksa Pazartesi farkı 3 olur: eşiği buna göre ver ya da iş günü takvimiyle say. Az satan kategoride daha geniş eşik gerekir; “Bayat Rapor” vakasında 7 gün kullanılıyor.</p>
+<pre class="dax">Tazelik Rengi =
+VAR Gecikme = DATEDIFF(CALCULATE(MAX(Satislar[Tarih]), REMOVEFILTERS()), DATE(2024, 12, 31), DAY)
+RETURN IF(Gecikme &gt; 1, "#C0392B", "#2E7D32")</pre>
+<h2>Geçmişi sayıya çevirmek</h2>
+<p>Yenileme geçmişi REST API ile alınabilir, bir tabloya yazılabilir. Elde edince “hangi model kaç kez düştü?” bir DAX sorgusu olur:</p>
+<pre class="dax">EVALUATE
+VAR Gecmis =
+    DATATABLE("Model", STRING, "Durum", STRING, "Dakika", INTEGER, {
+        {"Satış", "Başarılı", 12}, {"Satış", "Başarılı", 14}, {"Satış", "Hata", 2},
+        {"Stok", "Başarılı", 41}, {"Stok", "Hata", 120}, {"Stok", "Hata", 120}
+    })
+RETURN
+    GROUPBY(Gecmis, [Model], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)), "Süre", SUMX(CURRENTGROUP(), [Dakika]))</pre>
+<p>Pro’da 120 dakikayı gören Stok modeli büyük olasılıkla süre sınırına çarpıyor. Bu tablo gerçek değil, sorgunun kalıbını göstermek için yazıldı.</p>
+<div class="note"><b>Kontrol listesi</b>Hangi tür yenilemeden söz edildiği belli mi? · Kimlik bilgisi kişiye değil, kurumsal hesaba mı bağlı? · Hata bildirimi ekip listesine gidiyor mu? · Saatler zirve dışına yayıldı mı? · Yenileme sırası (veri akışı → model) olaya mı bağlı? · Raporda iş tarihi gösteren tazelik kartı var mı? · Gizlilik düzeyi Service’te yeniden verildi mi?</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-yenileme">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../yorum-isbirligi/">← Yorum ve iş birliği: rapor üzerinde konuşmak, Teams ve PowerPoint</a><a href="../gateway/">On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,97 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar | Kesit Power BI</title><meta name="description" content="Çalışma alanı rolleri, öğe düzeyi erişim, Derleme izni, duyarlılık etiketleri, tanıtma/sertifikalama, pano oluşturma, abonelik ve veri uyarıları."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yonetisim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar"><meta property="og:description" content="Çalışma alanı rolleri, öğe düzeyi erişim, Derleme izni, duyarlılık etiketleri, tanıtma/sertifikalama, pano oluşturma, abonelik ve veri uyarıları."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yonetisim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar","description":"Çalışma alanı rolleri, öğe düzeyi erişim, Derleme izni, duyarlılık etiketleri, tanıtma/sertifikalama, pano oluşturma, abonelik ve veri uyarıları.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yonetisim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Yönetişim: erişim, etiketler, onay, abonelik ve uyarılar</h1><p class="st-l">Çalışma alanı rolleri, öğe düzeyi erişim, Derleme izni, duyarlılık etiketleri, tanıtma/sertifikalama, pano oluşturma, abonelik ve veri uyarıları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yonetisim">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Çalışma alanı rolleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yetki</th><th>Yönetici</th><th>Üye</th><th>Katkıda bulunan</th><th>Görüntüleyici</th></tr>
+<tr><td>İçeriği görüntüle</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>İçerik oluştur / düzenle / sil</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+<tr><td>Uygulama yayımla / güncelle</td><td>✓</td><td>✓</td><td>(ayarla)</td><td>—</td></tr>
+<tr><td>Başkalarını ekle</td><td>✓ (tüm roller)</td><td>✓ (Üye ve altı)</td><td>—</td><td>—</td></tr>
+<tr><td>Çalışma alanını sil / ayarları</td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>RLS uygulanır mı?</td><td>Hayır</td><td>Hayır</td><td>Hayır</td><td>Evet</td></tr>
+</table></div>
+<h2>Öğe düzeyi erişim</h2>
+<ul>
+<li><b>Paylaşım:</b> Bir raporu kişiye ya da gruba paylaşmak; “yeniden paylaşabilir” ve “derleyebilir” seçenekleri.</li>
+<li><b>Anlam modeli izinleri:</b> <b>Okuma</b> (raporları görür), <b>Derleme (Build)</b> (bu modeli kullanarak kendi raporunu yapabilir, Excel'de analiz edebilir), <b>Yeniden paylaşma</b>. Kurumsal “tek doğru model” stratejisinde rapor yazarlarına Derleme izni verilir, modeli düzenleme yetkisi verilmez.</li>
+<li><b>Uygulama kitleleri:</b> Aynı uygulamada farklı gruplara farklı rapor/sayfa gösterme.</li>
+</ul>
+<h2>Duyarlılık etiketleri</h2>
+<p>Microsoft Purview Information Protection etiketleri (Genel, İç, Gizli, Çok gizli) rapora ve modele uygulanır. Etiket Excel, PowerPoint ve PDF'e dışa aktarımda dosyaya taşınır ve şifreleme ile korunabilir. Desktop'ta Giriş → Duyarlılık; Service'te öğenin ayarları.</p>
+<h2>Onaylama: tanıtma ve sertifikalama</h2>
+<ul>
+<li><b>Tanıtılmış (Promoted):</b> Öğenin sahibi “bu kullanıma hazır” der. Herkes yapabilir.</li>
+<li><b>Sertifikalı (Certified):</b> Kuruluşun belirlediği kişiler, öğenin kalite standartlarını karşıladığını onaylar. Kiracı yöneticisi kimin sertifikalayabileceğini belirler.</li>
+<li>Onaylı modeller veri hub'ında / OneLake kataloğunda üstte listelenir; kullanıcılar doğru modeli bulur.</li>
+</ul>
+<h2>Panolar, abonelikler ve uyarılar</h2>
+<ul>
+<li><b>Pano (dashboard):</b> Service'te farklı raporlardan görselleri <b>sabitleyerek</b> (pin) oluşturulan tek sayfa. Canlı sayfa da sabitlenebilir. Bu uygulamadaki Örnek raporlar ise pano değil, rapordur; günlük dilde ikisi karıştırılır, sınavda karıştırılmaz.</li>
+<li><b>Abonelik:</b> Rapor sayfasının ya da sayfalandırılmış raporun düzenli e-posta anlık görüntüsü (günlük, haftalık, yenilemeden sonra). Başkaları adına abone yapılabilir; dinamik abonelik ile alıcıya göre filtre.</li>
+<li><b>Veri uyarıları:</b> Panodaki kart, KPI ve gösterge kutucuklarında eşik aşılınca bildirim (“Net satış 50.000'in altına düşerse”). Power Automate ile iş akışı tetiklenebilir. Fabric'te Activator daha gelişmiş kurallar sunar.</li>
+</ul>
+<h2>Ağ geçidi ne zaman gerekir?</h2>
+<p>Service'in buluttan erişemediği kaynaklar için: şirket ağındaki SQL Server, paylaşılan klasördeki dosyalar, şirket içi Analysis Services. Bulut kaynakları (Azure SQL, SharePoint Online, OneDrive, Fabric) için gerekmez. <b>Kişisel mod</b> yalnızca bir kullanıcı ve Import için; <b>standart mod</b> birden çok kullanıcı, DirectQuery ve canlı bağlantı için.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Kiracı ayarları: kim neyi yapabilir?</h2>
+<p>Anadolu Market'in denetim ekibi soruyor: “Müşteri listesini kim CSV olarak indirebilir? Bir rapor internete açılabilir mi? Kim sertifika verebilir?” Bu soruların cevabı rapor dosyalarında değil, Yönetici portalı → <b>Kiracı ayarları</b> (Tenant settings) ekranındadır. Ayarların çoğu üç biçimde açılır: tüm kuruluş, belirli güvenlik grupları ya da belirli gruplar hariç herkes.</p>
+<div class="tbl-wrap"><table><tr><th>Ayar grubu</th><th>Örnek ayarlar</th><th>Önerilen başlangıç</th></tr>
+<tr><td>Dışa aktarma</td><td>Excel'e aktar, .csv'ye aktar, PDF/PowerPoint olarak aktar, rapor indirme (.pbix), yazdırma</td><td>Açık; ama .csv yalnızca belirli gruplara</td></tr>
+<tr><td>Canlı bağlantı</td><td>Excel'de canlı bağlantıyla çalışma (Excel'de Çözümle)</td><td>Açık; RLS geçerli olduğu için güvenli</td></tr>
+<tr><td>Paylaşım</td><td>Web'de yayımla, konuk kullanıcılar, kuruluş genelinde paylaşım bağlantısı</td><td>Web'de yayımla kapalı ya da çok küçük bir grup</td></tr>
+<tr><td>Abonelik</td><td>E-posta aboneliği kurma, dış kullanıcılara gönderme</td><td>Dış gönderim kapalı</td></tr>
+<tr><td>Onaylama</td><td>Sertifikalama, ana veri onayı</td><td>Yalnızca atanmış gözden geçirenler</td></tr>
+<tr><td>Bileşik model</td><td>Power BI anlam modellerine DirectQuery bağlantıları</td><td>Açık, eğitimli yazar grubu için</td></tr></table></div>
+<p>İki pratik kural: <b>ayarı gruba bağla</b> (kişi listesi yönetilmez) ve <b>her değişikliği gerekçesiyle kaydet</b>. Kiracı ayarları değiştiği anda herkesi etkiler; değişiklik günlüğü olmayan bir kiracıda “bu ne zaman açıldı?” sorusunun cevabı yoktur. Büyük kuruluşlarda sertifikalama yetkisi etki alanı (domain) yöneticilerine devredilebilir; her iş biriminin kendi gözden geçirenleri olur.</p>
+
+<h2>Onaylama: tanıtılmış, sertifikalı, ana veri</h2>
+<div class="tbl-wrap"><table><tr><th>Rozet</th><th>Anlamı</th><th>Kim verir?</th><th>Hangi öğeler?</th></tr>
+<tr><td>Tanıtılmış (Promoted)</td><td>“Sahibi olarak bunu paylaşmaya hazır görüyorum”</td><td>Öğede yazma izni olan herkes</td><td>Panolar hariç tüm öğeler</td></tr>
+<tr><td>Sertifikalı (Certified)</td><td>Kuruluşun kalite standardından geçti</td><td>Yalnızca yöneticinin atadığı gözden geçirenler; herkes talep edebilir</td><td>Panolar hariç tüm öğeler</td></tr>
+<tr><td>Ana veri (Master data)</td><td>Kuruluşun temel referans verisi (ürün kodları, müşteri listesi)</td><td>Yalnızca yöneticinin atadığı kişiler</td><td>Yalnızca veri içeren öğeler: lakehouse, anlam modeli…</td></tr></table></div>
+<p>Rozet bir süreç sonucudur, süreç değildir. Sertifika vermeden önce gözden geçirenin baktığı somut bir liste olmalı. Bunun en kritik maddesi: <b>ölçüleri kendi kırılım sütunlarında test et</b>. Bu modelde hazır <code>[Net Satış]</code> ölçüsü Durum'a göre kesildiğinde ne olur?</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(Satislar[Durum], "Toplam Satış", [Toplam Satış], "Net Satış", [Net Satış])</pre>
+<p>Toplam Satış her durum için farklıdır (Teslim Edildi 1.049.627,00 ₺, İptal 95.417,40 ₺…), ama Net Satış <b>her satırda 1.250.772,45 ₺</b> görünür; İptal satırında bile. Ölçü sütun filtresiyle Durum filtresinin üzerine yazar (DAX optimizasyonu dersinde mekanizması var). Bu bir “hata” mı, “bilinen davranış” mı? Sertifika kararı tam olarak bunu belgelemektir: ya ölçü KEEPFILTERS ile düzeltilir ya da açıklamasına “Durum kırılımında kullanma” yazılır.</p>
+<ul>
+<li><b>Sertifika kontrol listesi:</b> sahibi ve yedek sahibi belli · tüm ölçülerin açıklaması var · kırılım testleri yapılmış · RLS test kullanıcılarıyla doğrulanmış · yenileme zamanlaması ve hata bildirimi ekip listesine gidiyor · duyarlılık etiketi uygun · etki analizi ile bağlı öğeler biliniyor.</li>
+<li><b>Sertifikayı geri almak</b> da süreçtir: model artık bakımı yapılmıyorsa rozet kaldırılmalı; aksi hâlde kullanıcılar eski modeli “güvenilir” sanar.</li>
+</ul>
+
+<h2>Duyarlılık etiketleri: devralma ve dışa aktarma</h2>
+<p>Etiketleri uygulamak için Microsoft Purview Information Protection lisansının yanında Power BI Pro ya da PPU gerekir; etiketin kullanıcıya bir etiket ilkesiyle yayımlanmış olması da şarttır. Uygulamada önemli olan, etiketin nereye <b>gittiğidir</b>:</p>
+<ul>
+<li><b>Aşağı yönlü devralma</b> varsayılan olarak açıktır: “Gizli” etiketli bir anlam modelinin üzerine kurulan raporlar ve panolar etiketi devralır.</li>
+<li><b>Veri kaynağından devralma:</b> anlam modeli etiketli bir kaynaktan (ör. etiketli bir Excel) veri alınca o etiketi alabilir.</li>
+<li><b>Zorunlu etiket ve varsayılan etiket</b> ilkeleri Power BI öğelerinde tam desteklenir: kullanıcı etiket seçmeden kaydedemez ya da varsayılan etiket kendiliğinden atanır.</li>
+<li><b>Dışa aktarma:</b> Excel, PDF, PowerPoint, Excel'de Çözümle ve .pbix indirme etiketi dosyaya taşır; etiket şifreleme içeriyorsa dosya korunur. <b>.csv ve .txt dışa aktarımı etiketi taşımaz.</b> Gizli verili modellerde .csv dışa aktarımını bu yüzden kısıtla.</li>
+<li>Power BI Projesi (PBIP) biçimi duyarlılık etiketlerini desteklemez; etiketli içeriği Git'e taşımadan önce bu farkı bil (Yaşam döngüsü dersi).</li>
+</ul>
+
+<h2>Denetim: kim neyi açtı, kim neyi dışa aktardı?</h2>
+<p>Bir müşteri listesinin dışarı sızdığı iddia ediliyor. “Son 30 günde bu raporu kim dışa aktardı?” sorusunun iki kaynağı vardır:</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Denetim günlüğü (Purview)</th><th>Etkinlik günlüğü (Power BI)</th></tr>
+<tr><td>Kapsam</td><td>Fabric ve Power BI dahil Microsoft 365 etkinlikleri</td><td>Yalnızca Power BI etkinlikleri</td></tr>
+<tr><td>Erişim</td><td>Purview portalında denetim araması</td><td>Yönetici REST API'si (ActivityEvents) ya da <code>Get-PowerBIActivityEvent</code></td></tr>
+<tr><td>Kim kullanır?</td><td>Uyumluluk ve güvenlik ekipleri</td><td>Fabric yöneticisi; otomasyonla</td></tr>
+<tr><td>Not</td><td>Diğer Microsoft 365 olaylarıyla birlikte sorgulanır</td><td>Her istek tek bir günü (UTC) kapsar; olaylar genellikle 30–60 dakika içinde düşer</td></tr></table></div>
+<p>Etkinlik günlüğünün geçmişi sınırlıdır. Kurumsal uygulama, her gece önceki günün olaylarını bir betikle çekip kendi deponda (ör. bir lakehouse tablosunda) biriktirmektir. Böylece “kim, hangi raporu, ne zaman görüntüledi ya da dışa aktardı” sorusu aylar sonra da cevaplanır ve kullanılmayan raporlar da bulunur: 90 gündür görüntülenmeyen bir rapor emekliye ayrılma adayıdır.</p>
+
+<h2>Etki analizi ve dışa aktarım kontrolü</h2>
+<p>Bir sütunun adını değiştirmeden önce Soy (lineage) görünümünde öğeyi aç ve <b>Etki analizi</b>'ne bak: kaç model, rapor, pano, kaç görüntüleme? Etkilenen öğelerin kişilerine buradan bildirim gönderebilirsin. Dışa aktarımı ise üç katmanda yönetirsin:</p>
+<ol>
+<li><b>Kiracı:</b> hangi biçimler kimlere açık (yukarıdaki tablo).</li>
+<li><b>Rapor:</b> Desktop'ta Seçenekler → Geçerli dosya → Rapor ayarları → dışa aktarma: yalnızca özetlenmiş veri, özetlenmiş ve temel veri ya da hiç. Kiracı ayarından daha geniş olamaz.</li>
+<li><b>Model:</b> RLS ve OLS. Dışa aktarılan veri de kullanıcının görebildiği satırlarla sınırlıdır; dışa aktarımı kapatmak, görmemesi gereken veriyi görmesinin çaresi değildir.</li>
+</ol>
+<div class="tip"><b>Yönetişim karar ağacı</b>Veri gizli mi? → etiket + .csv kısıtı + OLS/RLS. · Model birçok ekip tarafından kullanılıyor mu? → sertifika süreci + Derleme izni. · Dış kullanıcı var mı? → konuk ve abonelik ayarları, Web'de yayımla kapalı. · Değişiklik yapılacak mı? → etki analizi + bildirim. · Kim ne yaptı? → günlükleri her gün kendi depona al.</div>
+</section><div class="note"><b>İlgili</b>Paylaşım kararları <a href="../paylasim/">Paylaşım ve erişim</a>, izleme araçları <a href="../kullanim-izleme/">Kullanım ve izleme</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-yonetisim">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../segmentasyon/">← Segmentasyon: ABC, dinamik dilimler ve ne olur analizi</a><a href="../sayfalandirilmis/">Sayfalandırılmış raporlar (paginated reports): ne zaman, nasıl? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

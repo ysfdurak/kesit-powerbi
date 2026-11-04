@@ -1,0 +1,125 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapor tasarımı: bir vaka çalışması | Kesit Power BI</title><meta name="description" content="Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek raporları çözümle."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-tasarim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Rapor tasarımı: bir vaka çalışması"><meta property="og:description" content="Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek raporları çözümle."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-tasarim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Rapor tasarımı: bir vaka çalışması","description":"Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek raporları çözümle.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dashboard-tasarim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Görselleştirme</span><h1>Rapor tasarımı: bir vaka çalışması</h1><p class="st-l">Kitle, soru, düzen, KPI hiyerarşisi ve mobil düzen. Örnek raporları çözümle.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dashboard-tasarim">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Önce kitle ve soru</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Kitle</th><th>Soru</th><th>Sayfa tipi</th></tr>
+<tr><td>Genel müdür</td><td>“İşler yolunda mı?”</td><td>Özet: 4–5 KPI + 2 eğilim</td></tr>
+<tr><td>Kategori yöneticisi</td><td>“Hangi ürün neden geride?”</td><td>Analitik: matris, dağılım, detaya inme</td></tr>
+<tr><td>Satış ekibi</td><td>“Bugün kimi aramalıyım?”</td><td>Operasyonel: liste, uyarı, filtre</td></tr>
+</table></div>
+<h2>Düzen</h2>
+<ul>
+<li><b>Z deseni:</b> Göz sol üstten başlar. En önemli KPI'lar üst şeritte, soldan sağa.</li>
+<li><b>Özetten ayrıntıya:</b> Üstte kartlar, ortada eğilim ve karşılaştırma, altta ayrıntı tablosu.</li>
+<li><b>Izgara:</b> Görselleri hizalı tut; Görünüm → Kılavuz çizgileri ve Izgaraya yapış.</li>
+<li><b>Filtreler tek yerde:</b> Dilimleyiciler üstte ya da solda bir şeritte.</li>
+<li><b>Boşluk:</b> Görseller arasında nefes alanı bırak; her yeri doldurma.</li>
+</ul>
+<h2>KPI'ı bağlamla ver</h2>
+<p>“Net Satış: 747 B ₺” tek başına iyi mi kötü mü bilinmez. Yanına <b>hedefe göre</b>, <b>geçen yıla göre</b> karşılaştırma ve küçük bir eğilim koy. Bu uygulamadaki Yönetici Özeti raporu tam olarak bunu yapıyor.</p>
+<h2>Mobil düzen</h2>
+<p>Görünüm → <b>Mobil düzen</b>. Aynı rapor için telefon tuvaline görselleri sürükleyip dikey bir akış oluşturursun. Kartlar üstte, en önemli tek grafik altta, ayrıntı tabloları genellikle dışarıda.</p>
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Sayfa 5 saniyede ana mesajı veriyor mu?</li>
+<li>Her görselin başlığı bir soruya cevap veriyor mu?</li>
+<li>Renkler tutarlı mı, kırmızı yalnızca kötüyü mü gösteriyor?</li>
+<li>Sayılar doğru birimde ve biçimde mi (B ₺, %)?</li>
+<li>Filtrelerin hangi görselleri etkilediği açık mı?</li>
+<li>Rapor 3 saniyenin altında açılıyor mu (Performans Analizi)?</li>
+</ol>
+<p>Şimdi <b>Örnek raporlar</b> sayfasına git ve dört örneği bu listeye göre incele. Her görselin “DAX” düğmesi, arkasındaki ölçüleri gösterir.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bilgi hiyerarşisi: üç soru, üç katman</h2>
+<p>Genel müdür pazartesi toplantısında rapora 30 saniye bakacak. Bu sürede iki soruya cevap almalı: “Hedefin neresindeyiz?” ve “Sorun nerede?” Tasarımın işi, gözün bu iki cevaba ilk önce gitmesini sağlamaktır.</p>
+<div class="tbl-wrap"><table><tr><th>Katman</th><th>Soru</th><th>Anadolu Market örneği (2024)</th><th>Nerede durur?</th></tr>
+<tr><td>1. Durum</td><td>İyi mi, kötü mü?</td><td>Net satış 747.066 ₺, hedefin %97,9'u</td><td>Sol üst şerit, en büyük yazı</td></tr>
+<tr><td>2. Neden</td><td>Fark nereden geliyor?</td><td>Hediye %83,6 ile en geride; Kitap %100,2</td><td>Orta bölge: kategori × hedef, aylık eğilim</td></tr>
+<tr><td>3. Ayrıntı</td><td>Hangi ürün, hangi müşteri?</td><td>Hediye ürünleri, iade oranı, son 12 ay</td><td>Detay sayfası, araç ipucu</td></tr></table></div>
+<p>Görsel ağırlığı üç şey belirler: <b>boyut</b>, <b>konum</b> ve <b>kontrast</b>. Bir sayfada yalnızca bir öğe “en ağır” olmalı. İki büyük grafik yan yana durursa göz ikisi arasında gidip gelir ve hiyerarşi kaybolur. Hızlı test: sayfayı bulanıklaştırılmış hâlde düşün. Hâlâ seçilebilen tek bir blok kalıyorsa hiyerarşi doğrudur.</p>
+
+<h2>Izgara sistemi: piksele kadar plan</h2>
+<p>16:9 tuval 1280 × 720 pikseldir. 12 sütunlu bir ızgara kur: dış kenar boşluğu 24 px, sütun arası 16 px. Bir sütun (1280 − 2 × 24 − 11 × 16) ÷ 12 = 88 px olur.</p>
+<div class="tbl-wrap"><table><tr><th>Öğe</th><th>Sütun</th><th>Genişlik</th></tr>
+<tr><td>KPI kartı (4 adet yan yana)</td><td>3</td><td>3 × 88 + 2 × 16 = 296 px</td></tr>
+<tr><td>Ana grafik</td><td>8</td><td>8 × 88 + 7 × 16 = 816 px</td></tr>
+<tr><td>Yan grafik</td><td>4</td><td>4 × 88 + 3 × 16 = 400 px</td></tr></table></div>
+<p>Dört kart ve üç aralık tam 1.232 px eder: 1280'den iki kenar boşluğu çıkınca kalan genişlik. Görünüm (View) sekmesinde Kılavuz çizgileri (Gridlines) ve Izgaraya yasla (Snap to grid) açılır. Kesin değerler Biçim bölmesinde Genel → Özellikler → Boyut ve Konum alanlarına elle girilir. Ekipte herkes aynı ızgarayı kullansın diye ızgarayı ve başlık şeridini içeren boş bir şablon sayfası hazırla, her yeni sayfayı ondan çoğalt.</p>
+
+<h2>Sayfa mimarisi: ne nerede açılır?</h2>
+<p>Kademeli açıklamanın düğme, panel ve alan parametresi teknikleri Kullanıcı odaklı tasarım dersinde; yer işareti, araç ipucu ve detay sayfasının kurulumu Raporla hikâye anlatmak dersinde. Burada karar kısmına bakıyoruz: bir bilgi hangi mekanizmaya gider?</p>
+<div class="tbl-wrap"><table><tr><th>Kullanıcı bunu…</th><th>Mekanizma</th><th>Kural</th></tr>
+<tr><td>her açılışta görmeli</td><td>Ana sayfa görseli</td><td>Bütçeden yer kaplar; gerçekten gerekli mi?</td></tr>
+<tr><td>bir noktanın üstünde merak eder</td><td>Araç ipucu sayfası</td><td>Tek soru, 2–3 küçük görsel, hızlı açılmalı</td></tr>
+<tr><td>tek bir varlık için derine iner</td><td>Detay sayfası (drillthrough)</td><td>Bir kategori, bir müşteri; geri düğmesi zorunlu</td></tr>
+<tr><td>aynı soruya başka açıdan bakar</td><td>Alan parametresi ya da yer işareti</td><td>Görsel değişimi için önce alan parametresi</td></tr></table></div>
+<p>Tipik bir yönetici raporu: 1 özet sayfası, 2–3 analiz sayfası, 1–2 detay sayfası, 1–2 araç ipucu sayfası. Yardımcı sayfaları gizle ve adlarına önek ver (“İP_Kategori”, “DS_Ürün”). Böylece ekip arkadaşın sayfa listesinde neyin ne olduğunu bir bakışta anlar.</p>
+<div class="warn"><b>Anti-kalıp: yer işareti yığını</b>Görsel değiştirmek için 12 yer işareti kuran bir rapor, her yeni görselde 12 yer işaretinin yeniden güncellenmesini ister. Ayrıca “Veri” seçeneği açık bırakılan yer işaretleri dilimleyici seçimini de kaydeder; kullanıcı düğmeye bastığında kendi seçimi sıfırlanır. Görsel değiştirmeyi alan parametresiyle yap; yer işaretlerinde yalnızca “Görüntüle” durumunu tut.</div>
+
+<h2>Performans bütçesi</h2>
+<p>Her veri görseli en az bir sorgu gönderir. Sayfa açılırken bu sorgular paralel çalışır ama sınırsız değildir; ayrıca her görsel ayrıca çizilir. Bu yüzden görsel sayısı bir bütçedir:</p>
+<ul>
+<li><b>Özet sayfası:</b> en fazla 8–10 veri görseli. Dört ayrı kart yerine birden çok değeri tek görselde gösteren bir kart düşün.</li>
+<li><b>Ayrıntı tablosu:</b> özet sayfasında nadiren kullanılıyorsa detay sayfasına taşı. En pahalı görsel çoğunlukla çok satırlı tablodur.</li>
+<li><b>Ölç, tahmin etme:</b> Performans Analizi'nde (Performance Analyzer) her görselin DAX sorgusu ve görsel çizim süresini ayrı ayrı gör. Sorgu yavaşsa sorun DAX'ta ya da modelde; çizim yavaşsa görsel sayısında ya da görsel türündedir.</li>
+</ul>
+
+<h2>Durum rengi ve dinamik başlık</h2>
+<p>Koşullu biçimlendirmede renk kurallarını görselde tek tek tanımlamak yerine rengi bir ölçüye taşı. Kural tek yerde durur; kart, tablo ve madde grafiği aynı eşiği kullanır.</p>
+<pre class="dax">KPI Durum Rengi =
+VAR Oran = [Hedef Gerçekleşme %]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Oran), "#8A8A8A",
+        Oran &gt;= 1, "#1B7F3B",
+        Oran &gt;= 0.95, "#B26A00",
+        "#B42318"
+    )</pre>
+<p>Biçim bölmesinde renk alanının yanındaki <b>fx</b> düğmesi → Biçim stili: Alan değeri → bu ölçü. 2024'te sonuç turuncu (%97,9), Hediye kırmızı (%83,6).</p>
+<p><b>Kenar durum: yuvarlama.</b> 2023 oranı %99,6. Kart “%0” ondalıkla biçimlenmişse ekranda “%100” yazar ama renk turuncu kalır. Kullanıcı “hedefi tutturmuşuz, neden turuncu?” diye sorar. Ya bir ondalık göster (%99,6) ya da eşiği ekranda görünen yuvarlanmış değere göre kur. Renk tek başına anlam taşımamalı; yanına ▲ ▼ gibi bir simge ya da “Hedefin altında” metni koy. Bu hem renk körlüğü olan kullanıcılar hem de siyah-beyaz çıktı için gereklidir.</p>
+<pre class="dax">Seçim Özeti Başlığı =
+VAR Kat =
+    IF(
+        ISFILTERED(Kategoriler[Kategori]),
+        IF(
+            HASONEVALUE(Kategoriler[Kategori]),
+            SELECTEDVALUE(Kategoriler[Kategori]),
+            COUNTROWS(VALUES(Kategoriler[Kategori])) &amp; " kategori"
+        ),
+        "Tüm kategoriler"
+    )
+VAR Yil = IF(HASONEVALUE(Tarih[Yil]), FORMAT(SELECTEDVALUE(Tarih[Yil]), "0"), "Tüm yıllar")
+RETURN "Net satış · " &amp; Kat &amp; " · " &amp; Yil</pre>
+<p>Kitap ve Spor seçiliyse başlık “Net satış · 2 kategori · Tüm yıllar” olur. Neden ISFILTERED? Filtre yokken de HASONEVALUE yanlış döner; ISFILTERED “hiç seçim yok” ile “birden çok seçim”i ayırır. Kullanıcı Urunler[Kategori] sütunundan filtrelerse ISFILTERED(Kategoriler[Kategori]) yanlış döner; bu durumda ISCROSSFILTERED kullan.</p>
+
+<h2>Erişilebilirlik: ileri kontroller</h2>
+<ul>
+<li><b>Kontrast:</b> Metin ile arka plan arasında en az 4,5:1 kontrast hedefle. Açık gri eksen etiketleri en sık hatadır.</li>
+<li><b>Sekme sırası:</b> Seçim bölmesindeki Sekme sırası görünümünde, klavyeyle gezen kullanıcı için sırayı bilgi hiyerarşisiyle aynı yap: KPI'lar, ana grafik, ayrıntı. Dekoratif şekilleri sekme sırasından çıkar.</li>
+<li><b>Alternatif metin:</b> fx ile bir ölçüye bağlanabilir. Böylece ekran okuyucu “Net satış 747.066 ₺, hedefin %97,9'u” gibi güncel bir cümle okur.</li>
+</ul>
+<p>Temel ayarlar Mobil düzen, erişilebilirlik dersinde.</p>
+
+<h2>Tasarım eleştirisi kontrol listesi</h2>
+<p>Bir raporu eleştirirken her maddeyi <b>gözlem → etki → öneri</b> biçiminde yaz. Örnek: “İki ana grafik aynı boyutta (gözlem). Göz önce nereye bakacağını bilmiyor (etki). Hedef grafiğini 8 sütuna büyüt, eğilimi 4 sütuna al (öneri).”</p>
+<ol>
+<li>Ana mesaj 5 saniyede okunuyor mu? Tek bir “en ağır” öğe var mı?</li>
+<li>Her KPI bir karşılaştırmayla mı geliyor (hedef, geçen yıl)?</li>
+<li>Öğeler ızgaraya hizalı mı, boşluklar tutarlı mı?</li>
+<li>Başlıklar bir sonucu söylüyor mu (“Hediye hedefin %16 gerisinde”)?</li>
+<li>Renk tek bir anlam mı taşıyor, yanında simge ya da metin var mı?</li>
+<li>Görsel sayısı bütçede mi; Performans Analizi ne diyor?</li>
+<li>Detay ve araç ipucu yolları keşfedilebilir mi (“Ayrıntı için sağ tıkla → Detaya git” notu)?</li>
+<li>Sekme sırası, alternatif metin ve kontrast kontrol edildi mi?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-dashboard-tasarim">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-dili/">← M dili: Power Query'nin arkasındaki kod</a><a href="../pl300/">PL-300 sınavına hazırlık →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

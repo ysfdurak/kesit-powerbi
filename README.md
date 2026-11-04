@@ -7,13 +7,13 @@
 ![Alıştırma ekranı](ekran/alistirma.png)
 
 ## Neler var?
-- **118 ders, 937 ders içi alıştırma, 78 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
+- **134 ders, 1.068 ders içi alıştırma, 97 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
 - **12 öğrenme yolu:** veri analisti, BI geliştirici, PL-300, DP-600 / Fabric, DAX ustalığı, Excel'den Power BI'a ve diğerleri. Her yolun aşamaları ve işe hazırlık listesi var; bitirme projesi olanlar Bitirme projeleri sayfasında.
 - **Seviye testi:** geçtiğin seviyenin dersleri “sıradaki ders” listesinden atlanır; ilerleme yüzdesine tamamlanmış sayılmaz.
 - **24 örnek rapor, 104 sayfa:** yer işaretleri, araç ipucu sayfaları, detaya git, alan parametreleri ve mobil düzenle, adım adım anlatılmış. Bunlar Power BI raporu örnekleridir; Service'teki pano (dashboard) ayrı bir nesnedir.
 - **6 hayali veri seti:** Anadolu Market (derslerin modeli) ve Desktop'ta çalışmak için 5 vaka paketi: Ilgaz Bank, Kanat Havayolları, Lezzet Kurye, Pusula İK, Pedal İzmir. Her pakette CSV'ler, model planı, ölçü kütüphanesi ve beklenen sonuçlu görevler var. Ölçekler öğretim için küçültülmüştür; veri setlerinin bilerek bırakılan izleri ve sınırları uygulamadaki Veri setleri sayfasındadır.
-- **Sınav ve mülakat:** 155 özgün PL-300 / DP-600 deneme sorusu, 164 mülakat sorusu (zayıf ve güçlü cevap örnekleriyle), canlı DAX kodlama turu, ev ödevleri. Kapsam haritası her resmî sınav maddesini derse ve sorulara bağlar.
-- **Araçlar ve referans:** DAX Playground, Power Query Lab, Measure Lab, DAX Arena; 86 püf noktası, 60 sık karıştırılan kavram, sık hatalar ve iki dilli (Türkçe, İngilizce) Power BI komut listesi.
+- **Sınav ve mülakat:** 183 özgün PL-300 / DP-600 deneme sorusu, 177 mülakat sorusu (zayıf ve güçlü cevap örnekleriyle), canlı DAX kodlama turu, ev ödevleri. Kapsam haritası her resmî sınav maddesini derse ve sorulara bağlar.
+- **Araçlar ve referans:** DAX Playground, Power Query Lab, Measure Lab, DAX Arena; 86 püf noktası, 66 sık karıştırılan kavram, sık hatalar ve iki dilli (Türkçe, İngilizce) Power BI komut listesi.
 
 | Karşılama | Örnek rapor | Vaka veri seti |
 |---|---|---|

@@ -1,0 +1,238 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi | Kesit Power BI</title><meta name="description" content="Bilanço ve muhasebe denklemi, hesap planını modellemek (hiyerarşi, işaret, sıralama), dolaylı yöntemle nakit akış tablosu, FAVÖK, likidite ve kârlılık…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/finans-tablolar/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi"><meta property="og:description" content="Bilanço ve muhasebe denklemi, hesap planını modellemek (hiyerarşi, işaret, sıralama), dolaylı yöntemle nakit akış tablosu, FAVÖK, likidite ve kârlılık…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/finans-tablolar/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi","description":"Bilanço ve muhasebe denklemi, hesap planını modellemek (hiyerarşi, işaret, sıralama), dolaylı yöntemle nakit akış tablosu, FAVÖK, likidite ve kârlılık…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/finans-tablolar/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Analiz</span><h1>Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi</h1><p class="st-l">Bilanço ve muhasebe denklemi, hesap planını modellemek (hiyerarşi, işaret, sıralama), dolaylı yöntemle nakit akış tablosu, FAVÖK, likidite ve kârlılık oranları; geri ödeme, indirgenmiş geri ödeme, kârlılık endeksi, NBD profili ve iki boyutlu duyarlılık tablosu.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-finans-tablolar">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p><b>Finansal raporlama</b> dersinde satış ve maliyet satırlarından bir gelir tablosu kurduk; bütçe sapmasını, FV/PV/PMT'yi, XNPV ve XIRR'ı gördük. Bu ders o dersin devamı: gelir tablosunun iki kardeşi olan <b>bilanço</b> ve <b>nakit akış tablosu</b>, bunlardan çıkan oranlar ve bir yatırımı seçerken kullanılan ek ölçütler.</p>
+<p>Anadolu Market modelinde bilanço verisi yok. Bu yüzden kodların içinde <code>DATATABLE</code> ile küçük, <b>varsayımsal</b> bir şirket kuracağız. Gerçek bir projede bu satırlar muhasebe sisteminden gelen bir mizan ya da yevmiye tablosundan okunur.</p>
+
+<h2>Üç tablo, iki tür sayı</h2>
+<ul>
+<li><b>Gelir tablosu</b> bir <b>dönemin</b> akışıdır: Ocak–Aralık arasında ne sattın, ne harcadın. Aylar toplanabilir.</li>
+<li><b>Bilanço</b> bir <b>anın</b> fotoğrafıdır: 31 Aralık'ta kasanda, alacaklarında, borçlarında ne var. Ayların bakiyeleri toplanmaz; bu yarı toplanabilir bir ölçüdür (<b>Yarı toplanabilir ölçüler: stok, bakiye, nüfus</b> dersi).</li>
+<li><b>Nakit akış tablosu</b> yine bir dönem akışıdır: kâr ile kasadaki değişimin neden farklı olduğunu açıklar.</li>
+</ul>
+
+<h2>Bilanço ve muhasebe denklemi</h2>
+<p>Bilançonun sol tarafı (aktif) şirketin <b>varlıklarını</b>, sağ tarafı (pasif) bu varlıkların <b>kaynağını</b> gösterir. Kaynak ya borçtur (yükümlülük) ya da ortakların payıdır (özkaynak):</p>
+<p style="text-align:center"><b>Varlıklar = Yükümlülükler + Özkaynak</b></p>
+<p>Türkiye'deki Tekdüzen Hesap Planında hesap kodunun ilk hanesi sınıfı verir: <b>1</b> dönen varlıklar, <b>2</b> duran varlıklar, <b>3</b> kısa vadeli yabancı kaynaklar, <b>4</b> uzun vadeli yabancı kaynaklar, <b>5</b> özkaynaklar, <b>6</b> gelir tablosu hesapları. Bu kuralla denklemi yıl yıl kontrol edebiliriz:</p>
+<pre class="dax">EVALUATE
+VAR Bilanco = DATATABLE("Yil", INTEGER, "Hesap", STRING, "Tutar", CURRENCY, {
+    {2022, "102", 60000}, {2022, "120", 25000}, {2022, "153", 70000}, {2022, "253", 200000},
+    {2022, "300", 40000}, {2022, "320", 55000}, {2022, "400", 100000},
+    {2022, "500", 100000}, {2022, "570", 40000}, {2022, "590", 20000},
+    {2023, "102", 85000}, {2023, "120", 40000}, {2023, "153", 95000}, {2023, "253", 230000},
+    {2023, "300", 45000}, {2023, "320", 80000}, {2023, "400", 110000},
+    {2023, "500", 100000}, {2023, "570", 60000}, {2023, "590", 55000},
+    {2024, "102", 120000}, {2024, "120", 65000}, {2024, "153", 140000}, {2024, "253", 260000},
+    {2024, "300", 55000}, {2024, "320", 120000}, {2024, "400", 120000},
+    {2024, "500", 100000}, {2024, "570", 115000}, {2024, "590", 75000}})
+RETURN ADDCOLUMNS(DISTINCT(SELECTCOLUMNS(Bilanco, "Yil", [Yil])),
+    "Varlıklar", VAR Y = [Yil] RETURN SUMX(FILTER(Bilanco, [Yil] = Y &amp;&amp; LEFT([Hesap], 1) IN {"1", "2"}), [Tutar]),
+    "Yükümlülükler", VAR Y = [Yil] RETURN SUMX(FILTER(Bilanco, [Yil] = Y &amp;&amp; LEFT([Hesap], 1) IN {"3", "4"}), [Tutar]),
+    "Özkaynak", VAR Y = [Yil] RETURN SUMX(FILTER(Bilanco, [Yil] = Y &amp;&amp; LEFT([Hesap], 1) = "5"), [Tutar]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl sonu</th><th>Varlıklar</th><th>Yükümlülükler</th><th>Özkaynak</th></tr>
+<tr><td>2022</td><td>355.000</td><td>195.000</td><td>160.000</td></tr>
+<tr><td>2023</td><td>450.000</td><td>235.000</td><td>215.000</td></tr>
+<tr><td>2024</td><td>585.000</td><td>295.000</td><td>290.000</td></tr>
+</table></div>
+<p>Her yıl varlıklar, yükümlülük ile özkaynağın toplamına eşit. Raporda bu kontrolü bir ölçü olarak tut (<code>Varlıklar − Yükümlülükler − Özkaynak</code>) ve sıfırdan farklıysa kırmızı göster: veri yüklemesinde eksik hesap olduğunun en hızlı işaretidir. Hesaplar: 102 Bankalar, 120 Alıcılar, 153 Ticari mallar, 253 Tesis, makine ve cihazlar (net), 300 ve 400 Banka kredileri, 320 Satıcılar, 500 Sermaye, 570 Geçmiş yıllar kârları, 590 Dönem net kârı.</p>
+
+<h2>Hesap planını modellemek: hiyerarşi, işaret, sıralama</h2>
+<p>Muhasebe sisteminden gelen veride her satır bir hesabın <b>borç</b> ve <b>alacak</b> tutarıdır. Rapora çevirmek için üç karar gerekir:</p>
+<ol>
+<li><b>Hiyerarşi:</b> Hesap planı tablosunda kodun ilk hanesi sınıf, ilk iki hanesi grup (60 Brüt satışlar, 61 Satış indirimleri, 62 Satışların maliyeti, 63 Faaliyet giderleri, 66 Finansman giderleri…), üç hanesi hesaptır. Bu sütunları Power Query'de ya da <code>LEFT(HesapPlani[Hesap], 2)</code> gibi hesaplanmış sütunlarla üret, sonra bir hiyerarşi kur (<b>Hiyerarşiler</b> dersi).</li>
+<li><b>İşaret:</b> Gelir hesapları alacak, gider hesapları borç bakiyesi verir. Tutarı <code>Alacak − Borç</code> olarak alırsan gelir pozitif, gider negatif olur ve gelir tablosunun ara toplamları basit bir toplamla çıkar. Bilançoda ise aktif için <code>Borç − Alacak</code>, pasif için <code>Alacak − Borç</code> kullanılır; hesap planına bir <b>İşaret</b> sütunu (+1 / −1) eklemek kuralı tek yerde tutar.</li>
+<li><b>Sıralama:</b> Rapor satırlarını tutan bir tablo (Sira, Satir, AraToplam) kur ve Satir sütununu “Sütuna göre sırala” ile Sira'ya bağla. Hesap planındaki her hesap bir rapor satırına eşlenir.</li>
+</ol>
+<p>Ara toplam satırları (Net satışlar, Brüt kâr…) kendisinden önceki tüm satırların toplamıdır. Aşağıdaki sorgu 2024 mizanından gelir tablosunu bu kuralla kurar:</p>
+<pre class="dax">EVALUATE
+VAR Mizan = DATATABLE("Hesap", STRING, "Ad", STRING, "Sira", INTEGER, "Borc", CURRENCY, "Alacak", CURRENCY, {
+    {"600", "Yurt içi satışlar", 1, 0, 930000},
+    {"610", "Satıştan iadeler", 2, 30000, 0},
+    {"621", "Satılan ticari mallar maliyeti", 4, 560000, 0},
+    {"631", "Pazarlama, satış ve dağıtım giderleri", 6, 120000, 0},
+    {"632", "Genel yönetim giderleri", 6, 101250, 0},
+    {"660", "Kısa vadeli borçlanma giderleri", 8, 25000, 0},
+    {"691", "Dönem kârı vergi karşılığı", 10, 18750, 0}})
+VAR Satirlar = DATATABLE("Sira", INTEGER, "Satir", STRING, "AraToplam", BOOLEAN, {
+    {1, "Brüt satışlar", FALSE}, {2, "Satış indirimleri", FALSE}, {3, "Net satışlar", TRUE},
+    {4, "Satışların maliyeti", FALSE}, {5, "Brüt kâr", TRUE}, {6, "Faaliyet giderleri", FALSE},
+    {7, "Esas faaliyet kârı", TRUE}, {8, "Finansman giderleri", FALSE}, {9, "Vergi öncesi kâr", TRUE},
+    {10, "Vergi", FALSE}, {11, "Dönem net kârı", TRUE}})
+RETURN ADDCOLUMNS(Satirlar, "Tutar",
+    VAR S = [Sira]
+    VAR Ara = [AraToplam]
+    RETURN IF(Ara,
+        SUMX(FILTER(Mizan, [Sira] &lt; S), [Alacak] - [Borc]),
+        SUMX(FILTER(Mizan, [Sira] = S), [Alacak] - [Borc])))</pre>
+<p>Sonuç: brüt satışlar 930.000, satış indirimleri −30.000, net satışlar 900.000, satışların maliyeti −560.000, brüt kâr 340.000, faaliyet giderleri −221.250, esas faaliyet kârı 118.750, finansman giderleri −25.000, vergi öncesi kâr 93.750, vergi −18.750, <b>dönem net kârı 75.000</b>. Bu rakam bilançodaki 590 hesabının 2024 bakiyesiyle aynı; iki tablo birbirini doğruluyor.</p>
+<p>Gerçek modelde aynı mantık bir ölçüdür. Yevmiye satırları hesap planına, hesap planı rapor satırlarına bağlıdır:</p>
+<pre class="dax" data-notry>KZ Tutarı =
+VAR Sira = SELECTEDVALUE ( RaporSatirlari[Sira] )
+VAR Ara = SELECTEDVALUE ( RaporSatirlari[AraToplam] )
+VAR Tutar = SUMX ( Yevmiye, Yevmiye[Alacak] - Yevmiye[Borc] )
+RETURN
+    IF ( Ara,
+        CALCULATE ( SUMX ( Yevmiye, Yevmiye[Alacak] - Yevmiye[Borc] ),
+            REMOVEFILTERS ( RaporSatirlari ), RaporSatirlari[Sira] &lt; Sira ),
+        Tutar )</pre>
+
+<h2>Nakit akış tablosu: kâr neden kasada değil?</h2>
+<p>2024'te şirket 75.000 TL kâr etti ama bankadaki para 85.000'den 120.000'e, yani yalnızca 35.000 TL arttı. <b>Dolaylı yöntem</b> farkı açıklar: net kârdan başla, nakit çıkışı olmayan gideri (amortisman) geri ekle, işletme sermayesindeki değişimleri düzelt, sonra yatırım ve finansman akışlarını ekle.</p>
+<pre class="dax">EVALUATE
+VAR Bilanco = DATATABLE("Yil", INTEGER, "Hesap", STRING, "Tutar", CURRENCY, {
+    {2023, "102", 85000}, {2023, "120", 40000}, {2023, "153", 95000}, {2023, "253", 230000},
+    {2023, "300", 45000}, {2023, "320", 80000}, {2023, "400", 110000}, {2023, "590", 55000},
+    {2024, "102", 120000}, {2024, "120", 65000}, {2024, "153", 140000}, {2024, "253", 260000},
+    {2024, "300", 55000}, {2024, "320", 120000}, {2024, "400", 120000}, {2024, "590", 75000}})
+VAR Amortisman = 30000
+VAR Fark = ADDCOLUMNS(DISTINCT(SELECTCOLUMNS(Bilanco, "Hesap", [Hesap])),
+    "D", VAR H = [Hesap]
+         RETURN SUMX(FILTER(Bilanco, [Hesap] = H), IF([Yil] = 2024, [Tutar], -[Tutar])))
+VAR D = SELECTCOLUMNS(Fark, "Hesap", [Hesap], "D", [D])
+VAR NetKar = SUMX(FILTER(Bilanco, [Hesap] = "590" &amp;&amp; [Yil] = 2024), [Tutar])
+VAR Akis = {
+    ("İşletme", "Dönem net kârı", NetKar),
+    ("İşletme", "Amortisman (nakit çıkışı yok)", Amortisman),
+    ("İşletme", "Ticari alacak artışı", -SUMX(FILTER(D, [Hesap] = "120"), [D])),
+    ("İşletme", "Stok artışı", -SUMX(FILTER(D, [Hesap] = "153"), [D])),
+    ("İşletme", "Ticari borç artışı", SUMX(FILTER(D, [Hesap] = "320"), [D])),
+    ("Yatırım", "Maddi duran varlık alımı", -(SUMX(FILTER(D, [Hesap] = "253"), [D]) + Amortisman)),
+    ("Finansman", "Kredi değişimi (KV + UV)", SUMX(FILTER(D, [Hesap] IN {"300", "400"}), [D])) }
+RETURN UNION(Akis,
+    ROW("Bölüm", "Toplam", "Kalem", "Net nakit değişimi", "Tutar", SUMX(Akis, [Value3])),
+    ROW("Bölüm", "Kontrol", "Kalem", "102 Bankalar değişimi", "Tutar", SUMX(FILTER(D, [Hesap] = "102"), [D])))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Bölüm</th><th>Kalem</th><th>2024 (TL)</th></tr>
+<tr><td rowspan="5">İşletme</td><td>Dönem net kârı</td><td>75.000</td></tr>
+<tr><td>Amortisman (nakit çıkışı yok)</td><td>30.000</td></tr>
+<tr><td>Ticari alacak artışı</td><td>−25.000</td></tr>
+<tr><td>Stok artışı</td><td>−45.000</td></tr>
+<tr><td>Ticari borç artışı</td><td>40.000</td></tr>
+<tr><td>Yatırım</td><td>Maddi duran varlık alımı</td><td>−60.000</td></tr>
+<tr><td>Finansman</td><td>Kredi değişimi (KV + UV)</td><td>20.000</td></tr>
+<tr><td colspan="2"><b>Net nakit değişimi</b></td><td><b>35.000</b></td></tr>
+</table></div>
+<p>İşletme faaliyetlerinden gelen nakit 75.000 TL; ama alacak ve stok artışı 70.000 TL nakit bağladı, tedarikçiler 40.000 TL kredi açtı. Net nakit değişimi bankadaki 35.000 TL artışla birebir aynı. Duran varlık alımı, net defter değerindeki artış (30.000) ile o yıl ayrılan amortismanın (30.000) toplamıdır.</p>
+
+<h2>FAVÖK ve kârlılık oranları</h2>
+<p>FAVÖK (EBITDA), esas faaliyet kârına amortismanı geri ekler; şirketin borç yapısından ve yatırım muhasebesinden bağımsız “nakit üretme gücüne” yakın bir göstergedir. Kârlılık oranları kârı farklı paydalara böler:</p>
+<pre class="dax">EVALUATE
+VAR KZ = DATATABLE("Yil", INTEGER, "NetSatis", CURRENCY, "SMM", CURRENCY, "FaaliyetGideri", CURRENCY,
+    "Amortisman", CURRENCY, "Faiz", CURRENCY, "Vergi", CURRENCY, "Varlik", CURRENCY, "Ozkaynak", CURRENCY, {
+    {2022, 450000, 290000, 105000, 20000, 10000, 5000, 355000, 160000},
+    {2023, 700000, 445000, 141250, 25000, 20000, 13750, 450000, 215000},
+    {2024, 900000, 560000, 191250, 30000, 25000, 18750, 585000, 290000}})
+RETURN SELECTCOLUMNS(KZ, "Yil", [Yil],
+    "FAVÖK", [NetSatis] - [SMM] - [FaaliyetGideri],
+    "FAVÖK marjı", DIVIDE([NetSatis] - [SMM] - [FaaliyetGideri], [NetSatis]),
+    "Net kâr", [NetSatis] - [SMM] - [FaaliyetGideri] - [Amortisman] - [Faiz] - [Vergi],
+    "Net marj", DIVIDE([NetSatis] - [SMM] - [FaaliyetGideri] - [Amortisman] - [Faiz] - [Vergi], [NetSatis]),
+    "ROA", DIVIDE([NetSatis] - [SMM] - [FaaliyetGideri] - [Amortisman] - [Faiz] - [Vergi], [Varlik]),
+    "ROE", DIVIDE([NetSatis] - [SMM] - [FaaliyetGideri] - [Amortisman] - [Faiz] - [Vergi], [Ozkaynak]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl</th><th>FAVÖK</th><th>FAVÖK marjı</th><th>Net kâr</th><th>Net marj</th><th>ROA</th><th>ROE</th></tr>
+<tr><td>2022</td><td>55.000</td><td>%12,2</td><td>20.000</td><td>%4,4</td><td>%5,6</td><td>%12,5</td></tr>
+<tr><td>2023</td><td>113.750</td><td>%16,3</td><td>55.000</td><td>%7,9</td><td>%12,2</td><td>%25,6</td></tr>
+<tr><td>2024</td><td>148.750</td><td>%16,5</td><td>75.000</td><td>%8,3</td><td>%12,8</td><td>%25,9</td></tr>
+</table></div>
+<ul>
+<li><b>ROA</b> (aktif kârlılığı) = net kâr / toplam varlıklar: varlıklar ne kadar verimli kullanılıyor?</li>
+<li><b>ROE</b> (özkaynak kârlılığı) = net kâr / özkaynak: ortakların koyduğu para ne kazandırıyor? Borç arttıkça ROE, ROA'dan hızlı büyür (finansal kaldıraç).</li>
+<li>Burada payda yıl sonu bakiyesidir. Daha doğru bir sürüm <b>ortalama</b> bakiyeyi kullanır: 2024 için (215.000 + 290.000) / 2 = 252.500 ile ROE %29,7 olur. Hangi tanımı seçtiğini ölçü açıklamasına yaz.</li>
+</ul>
+
+<h2>Likidite oranları</h2>
+<p>Likidite, kısa vadeli borçları zamanında ödeyebilme gücüdür.</p>
+<ul>
+<li><b>Cari oran</b> = dönen varlıklar / kısa vadeli yükümlülükler.</li>
+<li><b>Asit-test (likidite) oranı</b> = (dönen varlıklar − stoklar) / kısa vadeli yükümlülükler. Stok hemen nakde dönmeyebileceği için dışarıda bırakılır.</li>
+</ul>
+<pre class="dax">EVALUATE
+VAR Bilanco = DATATABLE("Yil", INTEGER, "Hesap", STRING, "Tutar", CURRENCY, {
+    {2022, "102", 60000}, {2022, "120", 25000}, {2022, "153", 70000}, {2022, "300", 40000}, {2022, "320", 55000},
+    {2023, "102", 85000}, {2023, "120", 40000}, {2023, "153", 95000}, {2023, "300", 45000}, {2023, "320", 80000},
+    {2024, "102", 120000}, {2024, "120", 65000}, {2024, "153", 140000}, {2024, "300", 55000}, {2024, "320", 120000}})
+RETURN ADDCOLUMNS(DISTINCT(SELECTCOLUMNS(Bilanco, "Yil", [Yil])),
+    "Cari oran", VAR Y = [Yil] VAR B = FILTER(Bilanco, [Yil] = Y)
+        RETURN DIVIDE(SUMX(FILTER(B, LEFT([Hesap], 1) = "1"), [Tutar]), SUMX(FILTER(B, LEFT([Hesap], 1) = "3"), [Tutar])),
+    "Asit-test", VAR Y = [Yil] VAR B = FILTER(Bilanco, [Yil] = Y)
+        RETURN DIVIDE(SUMX(FILTER(B, LEFT([Hesap], 1) = "1" &amp;&amp; [Hesap] &lt;&gt; "153"), [Tutar]), SUMX(FILTER(B, LEFT([Hesap], 1) = "3"), [Tutar])))</pre>
+<p>Cari oran 2022'de 1,63, 2023'te 1,76, 2024'te 1,86; asit-test oranı sırasıyla 0,89, 1,00 ve 1,06. Cari oran iyileşirken artışın önemli kısmı stoktan geliyor (70.000 → 140.000); asit-test bu yüzden daha yavaş yükseliyor. Stokun ne kadar hızlı döndüğü de bir orandır ve bunu Anadolu Market modelinden hesaplayabiliriz:</p>
+<pre class="dax">Stok Devri (Yıl Sonu Stoğa Göre) = DIVIDE([Net Maliyet], [Stok Değeri])</pre>
+<p>2024'te net maliyet 458.504 TL, yıl sonu stok değeri 163.465 TL: stok yılda yaklaşık <b>2,80</b> kez dönüyor. Spor kategorisinde bu oran tüm dönem için 2,13 ile en düşük; Kitap'ta 8,36 ile en yüksek. Bu oranın ayrıntısı alıştırmalarda.</p>
+
+<h2>Sermaye bütçelemesi: geri ödeme, indirgenmiş geri ödeme, kârlılık endeksi</h2>
+<p>Şirket iki proje arasında seçim yapıyor. İkisi de bugün 200.000 TL yatırım istiyor, beş yıl nakit getiriyor; şirketin istediği getiri %15:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+<tr><td>Proje A (hızlı dönüş)</td><td>−200.000</td><td>110.000</td><td>90.000</td><td>60.000</td><td>30.000</td><td>10.000</td></tr>
+<tr><td>Proje B (geç açılan)</td><td>−200.000</td><td>10.000</td><td>30.000</td><td>70.000</td><td>130.000</td><td>160.000</td></tr>
+</table></div>
+<ul>
+<li><b>Geri ödeme süresi</b> (payback): Kümülatif nakdin sıfıra ulaştığı an. A'da 2. yılın sonunda tam 200.000'e ulaşılır: <b>2,00 yıl</b>. B'de 3. yıl sonunda −90.000 kalır, 4. yılın 130.000'inin 90/130'u gerekir: <b>3,69 yıl</b>. Basit ama paranın zaman değerini ve geri ödemeden sonraki nakdi yok sayar.</li>
+<li><b>İndirgenmiş geri ödeme</b>: Aynı hesap, her akış (1 + oran)^yıl ile bugüne indirgenerek yapılır.</li>
+<li><b>Kârlılık endeksi</b> (PI) = girişlerin bugünkü değeri / ilk yatırım. 1'den büyükse NBD pozitiftir; sermaye kısıtlıyken “harcanan her lira başına değer” sıralaması verir.</li>
+</ul>
+<pre class="dax">EVALUATE
+VAR Proje = DATATABLE("Yil", INTEGER, "A", DOUBLE, "B", DOUBLE, {
+    {0, -200000, -200000}, {1, 110000, 10000}, {2, 90000, 30000},
+    {3, 60000, 70000}, {4, 30000, 130000}, {5, 10000, 160000}})
+VAR Oran = 0.15
+VAR K = ADDCOLUMNS(Proje,
+    "A indirgenmiş", [A] / (1 + Oran) ^ [Yil],
+    "A kümülatif", VAR Y = [Yil] RETURN SUMX(FILTER(Proje, [Yil] &lt;= Y), [A] / (1 + Oran) ^ [Yil]))
+VAR Ilk = MINX(FILTER(K, [A kümülatif] &gt;= 0), [Yil])
+VAR Onceki = MAXX(FILTER(K, [Yil] = Ilk - 1), [A kümülatif])
+VAR OYil = MAXX(FILTER(K, [Yil] = Ilk), [A indirgenmiş])
+RETURN ROW(
+    "NBD A", SUMX(Proje, [A] / (1 + Oran) ^ [Yil]),
+    "PI A", DIVIDE(SUMX(FILTER(Proje, [Yil] &gt; 0), [A] / (1 + Oran) ^ [Yil]), 200000),
+    "İndirgenmiş geri ödeme A", Ilk - 1 + DIVIDE(-Onceki, OYil))</pre>
+<p>%15 ile A'nın NBD'si 25.280 TL, kârlılık endeksi 1,13, indirgenmiş geri ödemesi 2,92 yıl. Aynı hesap B için NBD 31.282 TL, PI 1,16 ve indirgenmiş geri ödeme 4,61 yıl verir. Geri ödemeye bakan A'yı, NBD'ye bakan B'yi seçer. Hangisi doğru? Bunu tek bir oranla değil, oran aralığıyla görmek gerekir.</p>
+
+<h2>NBD profili: iki projeyi karşılaştırmak</h2>
+<p><b>NBD profili</b>, NBD'yi bir dizi iskonto oranında çizer. <code>GENERATESERIES</code> oranları üretir; her oran için akışlar yıllık formülle indirgenir. (<b>Finansal raporlama</b> dersi tarihli akışlar için XNPV kullandı; yıllık, eşit aralıklı akışta <code>Nakit / (1 + r)^yıl</code> yeterli.)</p>
+<pre class="dax">EVALUATE
+VAR Proje = DATATABLE("Yil", INTEGER, "A", DOUBLE, "B", DOUBLE, {
+    {0, -200000, -200000}, {1, 110000, 10000}, {2, 90000, 30000},
+    {3, 60000, 70000}, {4, 30000, 130000}, {5, 10000, 160000}})
+RETURN ADDCOLUMNS(GENERATESERIES(0, 0.30, 0.05),
+    "NBD A", VAR r = [Value] RETURN SUMX(Proje, [A] / (1 + r) ^ [Yil]),
+    "NBD B", VAR r = [Value] RETURN SUMX(Proje, [B] / (1 + r) ^ [Yil]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Oran</th><th>%0</th><th>%5</th><th>%10</th><th>%15</th><th>%20</th><th>%25</th><th>%30</th></tr>
+<tr><td>NBD A</td><td>100.000</td><td>70.741</td><td>46.159</td><td>25.280</td><td>7.375</td><td>−8.115</td><td>−21.623</td></tr>
+<tr><td>NBD B</td><td>200.000</td><td>129.519</td><td>74.615</td><td>31.282</td><td>−3.331</td><td>−31.283</td><td>−54.085</td></tr>
+</table></div>
+<p>B'nin nakdi geç geldiği için oran yükseldikçe NBD'si çok daha hızlı düşer. İki eğri yaklaşık <b>%16,6</b>'da kesişir (Fisher kesişimi). Bu oranın altında B, üstünde A daha değerlidir. Eğrilerin sıfırı kestiği yerler iç verim oranlarıdır: A yaklaşık %22,3, B yaklaşık %19,5. İVO'su yüksek olan A, %15'te NBD'si düşük olan projedir; birbirini dışlayan projelerde karar <b>şirketin oranındaki NBD</b>'ye göre verilir. Çizgi grafikte oranı eksene, iki NBD'yi değerlere koy; sıfır çizgisini sabit çizgi olarak ekle.</p>
+
+<h2>Duyarlılık tablosu: iki varsayımı birlikte oynatmak</h2>
+<p>NBD iki varsayıma bağlı: iskonto oranı ve nakit girişlerinin tutturulup tutturulamayacağı. <code>CROSSJOIN</code> ile iki seriyi çaprazlayıp her hücrede NBD hesaplayınca bir matris görselinde okunabilen bir duyarlılık tablosu çıkar:</p>
+<pre class="dax">EVALUATE
+VAR Proje = DATATABLE("Yil", INTEGER, "A", DOUBLE, "B", DOUBLE, {
+    {0, -200000, -200000}, {1, 110000, 10000}, {2, 90000, 30000},
+    {3, 60000, 70000}, {4, 30000, 130000}, {5, 10000, 160000}})
+RETURN ADDCOLUMNS(
+    CROSSJOIN(
+        SELECTCOLUMNS(GENERATESERIES(0.10, 0.20, 0.05), "Oran", [Value]),
+        SELECTCOLUMNS(GENERATESERIES(-0.20, 0.20, 0.10), "Sapma", [Value])),
+    "NBD B", VAR r = [Oran] VAR s = [Sapma]
+        RETURN SUMX(Proje, IF([Yil] = 0, [B], [B] * (1 + s)) / (1 + r) ^ [Yil]))</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Oran \ Girişlerde sapma</th><th>−%20</th><th>−%10</th><th>0</th><th>+%10</th><th>+%20</th></tr>
+<tr><td>%10</td><td>19.692</td><td>47.154</td><td>74.615</td><td>102.077</td><td>129.538</td></tr>
+<tr><td>%15</td><td>−14.974</td><td>8.154</td><td>31.282</td><td>54.410</td><td>77.538</td></tr>
+<tr><td>%20</td><td>−42.665</td><td>−22.998</td><td>−3.331</td><td>16.336</td><td>36.004</td></tr>
+</table></div>
+<p>%15'te girişler %20 eksik gelirse B'nin NBD'si negatife döner; %10'luk bir sapma ise hâlâ tolere edilir. Raporda bu tabloyu ne olur parametreleriyle (oran ve sapma dilimleyicileri) etkileşimli yapabilirsin; kalıp <b>Segmentasyon</b> ve <b>Finansal raporlama</b> derslerindekiyle aynıdır. Koşullu biçimlendirmede negatif hücreleri kırmızı, sıfıra yakın olanları sarı yapmak kararın ne kadar kırılgan olduğunu bir bakışta gösterir.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-finans-tablolar">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-udf/">← DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak</a><a href="../vaka-kiyaslama/">Vaka: şehir ve temsilci kıyaslaması (benchmarking) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

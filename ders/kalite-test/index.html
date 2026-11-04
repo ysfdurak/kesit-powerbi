@@ -1,0 +1,122 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rapor kalitesi: veri mutabakatı, ölçü testleri, belgeleme ve kabul testi | Kesit Power BI</title><meta name="description" content="Raporun sayılarını kaynakla eşleştir, beklenen değerlerle bir DAX sorgu test paketi kur, uç durumları dene, ölçüleri bir veri sözlüğüyle belgele, sürüm…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/kalite-test/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Rapor kalitesi: veri mutabakatı, ölçü testleri, belgeleme ve kabul testi"><meta property="og:description" content="Raporun sayılarını kaynakla eşleştir, beklenen değerlerle bir DAX sorgu test paketi kur, uç durumları dene, ölçüleri bir veri sözlüğüyle belgele, sürüm…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/kalite-test/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Rapor kalitesi: veri mutabakatı, ölçü testleri, belgeleme ve kabul testi","description":"Raporun sayılarını kaynakla eşleştir, beklenen değerlerle bir DAX sorgu test paketi kur, uç durumları dene, ölçüleri bir veri sözlüğüyle belgele, sürüm…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/kalite-test/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>Rapor kalitesi: veri mutabakatı, ölçü testleri, belgeleme ve kabul testi</h1><p class="st-l">Raporun sayılarını kaynakla eşleştir, beklenen değerlerle bir DAX sorgu test paketi kur, uç durumları dene, ölçüleri bir veri sözlüğüyle belgele, sürüm notu yaz ve yayımlamadan önce kullanıcı kabul testini yönet.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-kalite-test">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Finans uzmanı yazıyor: <i>“Raporunuz toplam satışı 1.250.772,45 ₺ diyor, bizim ERP dökümü 1.346.189,85 ₺. Hangisi doğru?”</i> İkisi de doğru olabilir. Fark tam olarak 95.417,40 ₺ ve bu, iptal edilen satırların tutarıdır: ERP tüm satırları topluyor, rapordaki <code>[Net Satış]</code> iptalleri dışlıyor. Bu cevabı beş dakikada verebilmek için mutabakatı önceden yapmış olman gerekir. Kullanıcı bir kez “bu rapor yanlış” derse, sonra doğru da olsa güveni geri kazanmak zordur.</p>
+
+<h2>Veri mutabakatı: rapor kaynağı tutuyor mu?</h2>
+<p><b>Mutabakat (reconciliation)</b>, rapordaki sayıların kaynak sistemdeki sayılarla aynı kurala göre aynı sonucu verdiğini göstermektir. Üç katmanda yapılır:</p>
+<ol>
+<li><b>Satır sayısı:</b> Kaynakta kaç satır var, modelde kaç satır var? Bizim modelde Satislar tablosu 1.620 satır; <code>SatirNo</code> sütununda da 1.620 farklı değer var, yani yinelenen satır yok.</li>
+<li><b>Kontrol toplamları (control totals):</b> Ham tutar toplamı, durumlara göre dağılım. Ham tutar 1.346.189,85 ₺; iptal 95.417,40 ₺; ikisinin farkı net satış 1.250.772,45 ₺.</li>
+<li><b>Dönem kırılımı:</b> Toplam tutsa bile aylar kayabilir (saat dilimi, yanlış tarih sütunu). Yıl ve ay düzeyinde karşılaştır.</li>
+</ol>
+<div class="tbl-wrap"><table>
+<tr><th>Yıl</th><th>Satır</th><th>Ham tutar</th><th>Net satış</th></tr>
+<tr><td>2022</td><td>105</td><td>109.278,30 ₺</td><td>102.837,20 ₺</td></tr>
+<tr><td>2023</td><td>550</td><td>428.549,90 ₺</td><td>400.869,55 ₺</td></tr>
+<tr><td>2024</td><td>965</td><td>808.361,65 ₺</td><td>747.065,70 ₺</td></tr>
+<tr><td><b>Toplam</b></td><td><b>1.620</b></td><td><b>1.346.189,85 ₺</b></td><td><b>1.250.772,45 ₺</b></td></tr>
+</table></div>
+<p>Kaynak taraftaki karşılığını SQL ile alırsın (<code>COUNT(*)</code>, <code>SUM(Tutar)</code>, yıla göre <code>GROUP BY</code>); bunun için “Power BI analisti için SQL” dersine bak. Model tarafında aynı tabloyu DAX sorgu görünümünde (DAX query view) tek sorguyla üretirsin:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(Satislar),
+    "Tekil satır", DISTINCTCOUNT(Satislar[SatirNo]),
+    "Ham tutar", SUM(Satislar[Tutar]),
+    "İptal", CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] = "İptal"),
+    "Net", [Net Satış]
+)</pre>
+<div class="tip"><b>Mutabakatı belgeye yaz</b>Sonucu bir tabloyla sakla: “6 Ocak, kaynak: ERP satış dökümü, satır 1.620 = 1.620, ham tutar eşit, fark yok.” Bir sonraki “tutmuyor” sorusunda ilk bakacağın yer burasıdır.</div>
+
+<h2>Test sayfası ve DAX sorgu test paketi</h2>
+<p>Yazılımcılar kodlarını otomatik testlerle korur; ölçülerini sen de koruyabilirsin. Fikir: <b>bilinen değerleri</b> (brifteki ya da mutabakattaki sayılar) bir tabloya yaz, ölçülerin bugünkü sonucunu yanına koy ve farkı işaretle. Bir ölçüyü değiştirdikten sonra sorguyu tekrar çalıştırırsın; “FARK” görürsen bir şeyi bozmuşsundur.</p>
+<pre class="dax">EVALUATE
+VAR Testler =
+    DATATABLE(
+        "Test", STRING, "Beklenen", DOUBLE,
+        {
+            { "Satır sayısı", 1620 },
+            { "Net satış", 1250772.45 },
+            { "Sipariş sayısı", 838 }
+        }
+    )
+VAR Sonuc =
+    ADDCOLUMNS(
+        Testler,
+        "Gerçek",
+            SWITCH(
+                [Test],
+                "Satır sayısı", COUNTROWS(Satislar),
+                "Net satış", [Net Satış],
+                "Sipariş sayısı", [Sipariş Sayısı]
+            )
+    )
+RETURN
+    ADDCOLUMNS(Sonuc, "Durum", IF(ABS([Gerçek] - [Beklenen]) &lt; 0.01, "OK", "FARK"))</pre>
+<div class="warn"><b>Ondalık sayıları = ile karşılaştırma</b>Net satış motorda 1.250.772,4499999997 olarak hesaplanır; 1.250.772,45 ile <code>=</code> karşılaştırması “FARK” der. Para tutarlarını her zaman bir tolerans ile karşılaştır: <code>ABS(Gerçek - Beklenen) &lt; 0.01</code>.</div>
+<p>Aynı testleri raporda gizli bir <b>Test</b> sayfasına da koyabilirsin: her test için bir kart, kart değeri “OK” ya da “FARK” döndüren bir ölçü. Sayfa yayımlanan uygulamada gizlenir; geliştirici her yayından önce bakar.</p>
+
+<h2>Uç durumlar: testin asıl yeri</h2>
+<p>Ölçülerin çoğu ortalama durumda doğru çalışır. Hatalar kenarlarda saklanır. Bizim modelde her biri gerçek olan beş kenar:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Uç durum</th><th>Bu modelde</th><th>Ne kontrol edersin?</th></tr>
+<tr><td><b>Boş değer</b></td><td>131 satırda <code>KargoGun</code> boş: 121’i iptal, 10’u aralık 2024’te hâlâ kargoda olan sipariş.</td><td>Boşluk beklenen bir durum mu (henüz teslim edilmedi) yoksa veri hatası mı? Ortalama kargo günü boşları atlar; bunu tanıma yaz.</td></tr>
+<tr><td><b>Eksik boyut bilgisi</b></td><td>7 müşterinin şehri boş; bu müşterilerin net satışı 63.852,75 ₺.</td><td>Şehir grafiğinde “(Boş)” çubuğu çıkar. Gizlemek yerine veri sahibine bildir.</td></tr>
+<tr><td><b>Kısmi dönem</b></td><td>Satışlar 22 Haziran 2022’de başlıyor; haziran 2022 net satışı yalnızca 595 ₺. Temmuz 2022’nin aylık büyümesi bu yüzden +%1.902,7 görünür. Hedefler ise ocak 2022’den başlıyor: ilk beş ayın 17.500 ₺ hedefi satışsız kaldığı için 2022 gerçekleşmesi %77,0.</td><td>Büyüme ve hedef ölçülerini ilk ve son dönemde dene. Gerekirse kısmi dönemi rapordan dışla ya da not düş.</td></tr>
+<tr><td><b>Sıfıra bölme</b></td><td>Önceki ayı olmayan ilk ayda <code>[MoM %]</code> boş döner, çünkü DIVIDE kullanılıyor.</td><td>Her oranda <code>/</code> yerine DIVIDE; “BLANK, hatalar ve DAX’ta hata ayıklama” dersine bak.</td></tr>
+<tr><td><b>Toplam satırı</b></td><td>Kategori satırlarındaki sipariş sayılarının toplamı 1.377, toplam satırı 838. Kategorilerin ortalama sepetlerini toplasan 6.251,44 ₺ eder; gerçek ortalama sepet 1.492,57 ₺.</td><td>Toplam satırı satırların toplamı olmak zorunda değildir: bir sipariş birden çok kategoride ürün içerebilir, ortalamalar toplanmaz. Kullanıcıya bunun hata olmadığını açıklayan bir not ekle.</td></tr>
+</table></div>
+<p>Bunlara ek olarak her sayfayı <b>filtrelerle</b> dene: tek bir yıl, hiç verisi olmayan bir kategori ve kanal kombinasyonu, birden çok dilimleyici seçimi. Satır düzeyi güvenlik varsa “Rol olarak görüntüle” ile her rolü tek tek test et (“Satır ve nesne düzeyinde güvenlik” dersi).</p>
+
+<h2>Veri sözlüğü: her ölçünün kimliği</h2>
+<p><b>Veri sözlüğü (data dictionary)</b>, modeldeki her ölçünün ve önemli sütunun ne anlama geldiğini yazan tablodur. Raporu devralan kişinin ilk açtığı belgedir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Ölçü</th><th>İş tanımı</th><th>Biçim</th><th>Sahip</th><th>Bilinen değer</th></tr>
+<tr><td>Net Satış</td><td>İptal olmayan satırların indirim sonrası tutarı. İadeler dahil.</td><td>#.##0,00 ₺</td><td>Finans</td><td>Tüm yıllar 1.250.772,45 ₺</td></tr>
+<tr><td>Sipariş Sayısı</td><td>İptal olmayan farklı sipariş numarası sayısı. Kategoriler toplanmaz.</td><td>#.##0</td><td>Satış</td><td>838</td></tr>
+<tr><td>MoM %</td><td>Net satışın önceki aya göre değişimi. İlk ayda boş.</td><td>%0,0</td><td>Satış</td><td>Aralık 2024: %5,6</td></tr>
+</table></div>
+<p>Tanımı modelin içine de yaz: Model görünümünde ölçüyü seçip Özellikler bölmesindeki <b>Açıklama (Description)</b> alanını doldurursan, kullanıcı Veri bölmesinde ölçünün üzerine geldiğinde bu metni görür. Sözlüğün ham hâlini DAX sorgu görünümünde <code>INFO.VIEW.MEASURES()</code> fonksiyonu verir: her ölçünün adı, tablosu, açıklaması, ifadesi ve biçim dizesi gelir. İfade sütununu yalnızca modelde yazma izni olanlar görür.</p>
+<pre class="dax" data-notry>EVALUATE
+SELECTCOLUMNS(
+    INFO.VIEW.MEASURES(),
+    "Ölçü", [Name],
+    "Açıklama", [Description],
+    "Biçim", [FormatString],
+    "İfade", [Expression]
+)</pre>
+
+<h2>Sürüm notları</h2>
+<p>Her yayında kısa bir not yaz ve raporun “Hakkında” sayfasına ya da çalışma alanındaki bir belgeye ekle:</p>
+<div class="note"><b>Örnek: Satış raporu v1.3 (14 Ocak)</b><b>Eklendi:</b> Dijital kanal satırı (Web + Mobil). <b>Değişti:</b> Ortalama kargo günü tanımı: kargodaki siparişler hesaba girmiyor. <b>Düzeltildi:</b> Şehir grafiğinde boş şehir “Bilinmiyor” olarak etiketlendi. <b>Etkisi:</b> Geçmiş net satış rakamları değişmedi. <b>Testler:</b> 3/3 OK.</div>
+<p>Sürüm notunun en önemli satırı <b>etkisi</b>dir: kullanıcı, dün indirdiği Excel’deki sayının neden bugün farklı olduğunu orada görür. Dosyaları PBIP biçiminde Git’te tutuyorsan, not commit mesajıyla birlikte geçmişe de yazılır (“Yaşam döngüsü: PBIP, TMDL, Git, dağıtım işlem hatları, şablonlar” dersi).</p>
+
+<h2>Kullanıcı kabul testi (UAT)</h2>
+<p><b>Kullanıcı kabul testi (user acceptance testing)</b>, raporu yapan değil kullanan kişinin, brifteki kabul kriterlerine göre “evet, bu iş görüyor” demesidir. Kriterleri brifte yazmıştın; burada testi yönetiyorsun:</p>
+<ol>
+<li><b>Test kişilerini seç:</b> her rolden en az bir kullanıcı (müdür, bölge sorumlusu).</li>
+<li><b>Senaryo ver, tur verme:</b> “Aralıkta hedefin altında kalan kategoriyi bul ve geçen yılla karşılaştır.” Kullanıcı kendisi yapsın.</li>
+<li><b>Bulguları tek listede topla:</b> madde, kim buldu, önem (engelleyici / önemli / küçük), durum.</li>
+<li><b>Engelleyici yoksa onay al:</b> e-postayla ya da iş takip aracında “Kabul edildi” durumu, tarih ve kişi.</li>
+</ol>
+
+<h2>Yayımlamadan önce kontrol listesi</h2>
+<ul>
+<li>Test sorgusu ve test sayfası: tüm satırlar OK.</li>
+<li>Mutabakat tablosu güncel; son kontrolden sonra kaynakta yapı değişikliği yok.</li>
+<li>Uç durumlar denendi: ilk ve son dönem, boş değerler, toplam satırı, filtre kombinasyonları.</li>
+<li>Her ölçünün açıklaması dolu; veri sözlüğü güncel.</li>
+<li>Satır düzeyi güvenlik her rolle test edildi.</li>
+<li>Sayfa, Performans Analizi’nde (Performance analyzer) kabul edilebilir sürede açılıyor.</li>
+<li>Erişilebilirlik ve mobil düzen kontrol edildi (“Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme” dersi).</li>
+<li>Sürüm notu yazıldı, kullanıcılara duyuru hazır.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-kalite-test">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../paydas-iletisim/">← Paydaşlarla çalışmak: talep, önceliklendirme, demo ve geri bildirim</a><a href="../sql-analist/">Power BI analisti için SQL: kaynağı sorgulamak ve DAX ile karşılaştırmak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

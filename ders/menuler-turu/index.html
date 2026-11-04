@@ -1,0 +1,72 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Menüler turu: hangi komut nerede? | Kesit Power BI</title><meta name="description" content="Dosya, Giriş, Ekle, Modelleme, Görünüm, İyileştir ve Yardım sekmeleri; bağlama göre açılan araç sekmeleri."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/menuler-turu/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Menüler turu: hangi komut nerede?"><meta property="og:description" content="Dosya, Giriş, Ekle, Modelleme, Görünüm, İyileştir ve Yardım sekmeleri; bağlama göre açılan araç sekmeleri."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/menuler-turu/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Menüler turu: hangi komut nerede?","description":"Dosya, Giriş, Ekle, Modelleme, Görünüm, İyileştir ve Yardım sekmeleri; bağlama göre açılan araç sekmeleri.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/menuler-turu/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Menüler turu: hangi komut nerede?</h1><p class="st-l">Dosya, Giriş, Ekle, Modelleme, Görünüm, İyileştir ve Yardım sekmeleri; bağlama göre açılan araç sekmeleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-menuler-turu">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Şerit (ribbon) mantığı</h2>
+<p>Power BI Desktop'un üstündeki şerit, işi yaptığın sıraya göre düzenlenmiştir: önce veri (<b>Giriş</b>), sonra sayfa öğeleri (<b>Ekle</b>), sonra hesaplar (<b>Modelleme</b>), sonra görünüm ve kalite (<b>Görünüm</b>, <b>İyileştir</b>). Bir şeyi seçtiğinde (bir tablo, bir ölçü, bir görsel) şeride yalnızca o nesneye ait <b>bağlamsal sekmeler</b> eklenir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Sekme</th><th>En sık kullanılan komutlar</th><th>Ne zaman açarsın?</th></tr>
+<tr><td><b>Dosya</b></td><td>Kaydet, Farklı kaydet (.pbix / .pbip), Dışa aktar (.pbit şablonu, PDF), Seçenekler ve ayarlar, Yayımla</td><td>Proje başında ayarlar (otomatik tarih/saat, bölgesel ayarlar), sonunda yayımlama</td></tr>
+<tr><td><b>Giriş</b></td><td>Veri al, Excel çalışma kitabı, OneLake kataloğu, Verileri dönüştür, Yenile, Yeni görsel, Yeni ölçü, Yayımla</td><td>Her gün: veri alma ve yenileme</td></tr>
+<tr><td><b>Ekle</b></td><td>Yeni sayfa, Yeni görsel, Anahtar etkileyiciler, Ayrıştırma ağacı, Anlatı, Metin kutusu, Düğmeler, Şekiller, Görüntü</td><td>Rapor sayfasını tasarlarken</td></tr>
+<tr><td><b>Modelleme</b></td><td>İlişkileri yönet, Yeni ölçü, Yeni sütun, Yeni tablo, Hızlı ölçü, Yeni parametre (sayısal aralık / alanlar), Rolleri yönet, Farklı görüntüle, Hesaplama grubu</td><td>Model ve DAX çalışırken</td></tr>
+<tr><td><b>Görünüm</b></td><td>Temalar, Sayfa görünümü, Mobil düzen, Kılavuz çizgileri, Izgaraya yapış, Filtreler, Yer işaretleri, Seçim, Performans Analizi, Dilimleyicileri eşitle</td><td>Tasarım ve hata ayıklama</td></tr>
+<tr><td><b>İyileştir</b> (Optimize)</td><td>Görselleri duraklat, İyileştirme ön ayarları, Sorgu azaltma, Performans Analizi</td><td>Büyük modellerde rapor yavaşladığında</td></tr>
+<tr><td><b>Yardım</b></td><td>Belgeler, Topluluk, Eğitim, Hakkında (sürüm)</td><td>Sürümünü öğrenmek, öğrenme kaynakları</td></tr>
+</table></div>
+<h2>Bağlamsal sekmeler</h2>
+<ul>
+<li><b>Tablo araçları:</b> Bir tablo seçince. Ad, tarih tablosu olarak işaretle, ilişkileri yönet, yeni ölçü/sütun.</li>
+<li><b>Sütun araçları:</b> Bir sütun seçince. Ad, veri türü, biçim, <b>Sütuna göre sırala</b>, veri kategorisi (Şehir, Görüntü URL'si…), özetleme (Topla / Toplama), grupla.</li>
+<li><b>Ölçü araçları:</b> Bir ölçü seçince. Ad, giriş tablosu, biçim (para, yüzde, dinamik), ondalık basamak.</li>
+<li><b>Biçim</b> ve <b>Veri / Detaya git</b> (Görsel araçları): Bir görsel seçince. Etkileşimleri düzenle, detaya inme modu, gruplama, hizala, öne getir.</li>
+</ul>
+<h2>Bölmeler</h2>
+<p>Şeridin sağında kalan dikey paneller: <b>Veri</b> (tablolar, sütunlar, ölçüler), <b>Görselleştirmeler</b> (görsel türü + <i>Oluştur / Biçim / Analiz</i> sekmeleri), <b>Filtreler</b>. Görünüm sekmesinden <b>Yer işaretleri</b>, <b>Seçim</b>, <b>Performans Analizi</b> ve <b>Dilimleyicileri eşitle</b> bölmeleri açılır.</p>
+<div class="tip"><b>Uygulamada gez</b>Bu uygulamadaki <a href="../../">Power BI arayüzü</a> bölümünde her sekmenin her komutunu tıklayıp ne işe yaradığını, ne zaman kullanılacağını ve hangi derste geçtiğini görebilirsin.</div>
+<h2>Klavye kısayolları</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Kısayol</th><th>İş</th></tr>
+<tr><td>Ctrl + S</td><td>Kaydet</td></tr>
+<tr><td>Ctrl + G / Ctrl + Shift + G</td><td>Görselleri grupla / grubu çöz</td></tr>
+<tr><td>Ctrl + tıklama</td><td>Birden çok veri noktası seç (çapraz filtrede çoklu seçim)</td></tr>
+<tr><td>Alt + Shift + F10</td><td>Seçili görselin “Daha fazla seçenek” menüsü (erişilebilirlik)</td></tr>
+<tr><td>Ctrl + /</td><td>DAX formül çubuğunda satırı yoruma al</td></tr>
+<tr><td>Shift + Enter</td><td>Formül çubuğunda yeni satır</td></tr>
+</table></div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Seçenekler penceresi: yeni projede ilk bakılacaklar</h2>
+<p>Şeritteki komutlar günlük iştir. Bazı kararlar ise projenin başında bir kez verilir ve <b>Dosya → Seçenekler ve ayarlar → Seçenekler</b> penceresinde durur. Pencerenin solunda iki grup vardır: <b>Genel</b> (bu bilgisayardaki tüm dosyalar) ve <b>Geçerli dosya</b> (yalnızca açık dosya).</p>
+<div class="tbl-wrap"><table>
+<tr><th>Nerede?</th><th>Ayar</th><th>Neden bakarsın?</th></tr>
+<tr><td>Geçerli dosya → Veri Yükleme</td><td>Otomatik tarih/saat</td><td>Kendi tarih tablon varsa kapat; model küçülür.</td></tr>
+<tr><td>Geçerli dosya → Veri Yükleme</td><td>Yüklemeden sonra yeni ilişkileri otomatik algıla</td><td>Power BI ad benzerliğinden yanlış ilişki kurabilir. Modeli kendin kuruyorsan kapat.</td></tr>
+<tr><td>Geçerli dosya → Bölgesel ayarlar</td><td>İçeri aktarma için yerel ayar</td><td>“1.250,50” gibi Türkçe sayıları ve “31.12.2024” gibi tarihleri doğru okumak için.</td></tr>
+<tr><td>Genel → Gizlilik</td><td>Gizlilik düzeyleri</td><td>Farklı kaynakları birleştirirken verinin nereye gönderilebileceği. Veri alma dersinde.</td></tr>
+<tr><td>Genel → Önizleme özellikleri</td><td>Yeni, henüz deneme aşamasındaki özellikler</td><td>Açtığın önizleme özelliğini ekip arkadaşın da açmalı; yoksa dosya onda farklı davranır.</td></tr>
+</table></div>
+<p>Aynı menüdeki <b>Veri kaynağı ayarları</b> ise bağlandığın kaynakların listesidir: dosya yolunu değiştirir, kimlik bilgisini yeniler, izinleri düzenlersin.</p>
+<h2>Sağ tık menüleri: en kısa yol</h2>
+<p>Şeritte aradığın komutun çoğu, nesneye sağ tıkladığında da çıkar ve orada yalnızca o nesneye uygun komutlar listelenir.</p>
+<ul>
+<li><b>Veri bölmesinde tabloya sağ tık:</b> Yeni ölçü, Yeni sütun, Verileri yenile, Tarih tablosu olarak işaretle, Görünümde gizle.</li>
+<li><b>Sütuna sağ tık:</b> Yeniden adlandır, Gizle, Yeni hiyerarşi, Yeni grup.</li>
+<li><b>Görseldeki bir çubuğa sağ tık:</b> Detaya git, Ayrıntıya in, Grupla, “Tablo olarak göster” (görselin arkasındaki sayıları görmek için).</li>
+<li><b>Sayfa sekmesine sağ tık:</b> Sayfayı çoğalt, Sayfayı gizle.</li>
+</ul>
+<h2>Komutu bulamıyorsan</h2>
+<ol>
+<li><b>Bir şey seçili mi?</b> Bağlamsal sekmeler (Tablo araçları, Sütun araçları, Ölçü araçları) yalnızca ilgili nesne seçiliyken görünür.</li>
+<li><b>Doğru görünümde misin?</b> Sütuna göre sıralama Rapor ya da Tablo görünümünde çalışır; ilişki çizmek Model görünümünde.</li>
+<li><b>Pencerenin üstündeki arama kutusunu kullan:</b> Komutun adını yazınca Power BI onu bulup çalıştırır.</li>
+<li><b>Sürümünü kontrol et:</b> Yardım → Hakkında. Eğitimdeki komut senin sürümünde yoksa güncelleme gerekebilir.</li>
+</ol>
+<div class="tip"><b>Ekip kuralı</b>Projenin başında Seçenekler penceresindeki kararları (otomatik tarih kapalı, ilişki algılama kapalı, Türkçe yerel ayar) kısa bir nota yaz ve proje klasörüne koy. Ekibe yeni katılan biri aynı ayarlarla başlar.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-menuler-turu">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pl300/">← PL-300 sınavına hazırlık</a><a href="../gorsel-temel/">Temel görseller ve alan kutuları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

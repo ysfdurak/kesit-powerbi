@@ -1,0 +1,66 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata | Kesit Power BI</title><meta name="description" content="Bir hattı doğru kurmak: etkinlik türleri, başarı ve hata yolları, parametre ve ifade, filigranla artımlı yükleme, zamanlama ve olay tetikleyicisi, yeniden…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-pipeline/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata"><meta property="og:description" content="Bir hattı doğru kurmak: etkinlik türleri, başarı ve hata yolları, parametre ve ifade, filigranla artımlı yükleme, zamanlama ve olay tetikleyicisi, yeniden…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-pipeline/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata","description":"Bir hattı doğru kurmak: etkinlik türleri, başarı ve hata yolları, parametre ve ifade, filigranla artımlı yükleme, zamanlama ve olay tetikleyicisi, yeniden…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-pipeline/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata</h1><p class="st-l">Bir hattı doğru kurmak: etkinlik türleri, başarı ve hata yolları, parametre ve ifade, filigranla artımlı yükleme, zamanlama ve olay tetikleyicisi, yeniden deneme ve izleme; gece hattı teşhis senaryoları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-pipeline">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Anadolu Market’in gece işi şu: ERP’den satışları kopyala, temizle, aylık özeti hesapla, modeli yenile, sorun olursa ekibe haber ver. Her adımı ayrı saate zamanlamak çalışır, ta ki bir gece biri uzayana kadar. <b>İşlem hattı (pipeline)</b> bu adımları tek akışa bağlar. Veri dönüştürmez, düzenler.</p>
+<div class="note"><b>Tarayıcı sınırı</b>Bu uygulama Fabric’in tuval arayüzünü taklit etmez. Alıştırmalar gerçek senaryolarda karar, ifade okuma ve hata teşhisi sorar. Uygulaması için aşağıdaki “Kendi Fabric ortamında dene” bölümüne bak.</div>
+<h2>Etkinlikler</h2>
+<div class="tbl-wrap"><table><tr><th>Grup</th><th>Etkinlik</th><th>Tipik kullanım</th></tr>
+<tr><td>Taşıma</td><td>Copy data, Copy job</td><td>Kaynaktan hedefe</td></tr>
+<tr><td>Dönüştürme</td><td>Dataflow Gen2, Fabric notebook, Stored procedure, SQL script, Spark job definition, Delete data</td><td>İş mantığı burada çalışır</td></tr>
+<tr><td>Denetim</td><td>If condition, Switch, ForEach, Until, Wait, Fail, Invoke pipeline, Set variable, Lookup, Get metadata, Filter</td><td>Akış</td></tr>
+<tr><td>Çevre</td><td>Teams, Web, Webhook, Functions, Refresh SQL analytics endpoint, Lakehouse maintenance</td><td>Bildirim, bakım</td></tr></table></div>
+<p>Hat başına varsayılan sınır 120 etkinliktir (iç etkinlikler dahil). Yaklaşıyorsan <b>Invoke pipeline</b> ile böl. Modeli yenilemek için <b>Semantic model refresh</b> etkinliği vardır (Direct Lake’te çerçeveleme yapar).</p>
+<h2>Bağımlılık: dört yol</h2>
+<p>Etkinlikler arasındaki oklar koşulludur:</p>
+<div class="tbl-wrap"><table><tr><th>Koşul</th><th>Sonraki etkinlik ne zaman çalışır?</th><th>Kullanım</th></tr>
+<tr><td><b>Başarıda (UponSuccess)</b></td><td>Önceki başarılıysa</td><td>Ana akış</td></tr>
+<tr><td><b>Hatada (UponFailure)</b></td><td>Önceki başarısızsa</td><td>Teams bildirimi</td></tr>
+<tr><td><b>Tamamlandığında (UponCompletion)</b></td><td>Başarılı ya da başarısız fark etmez</td><td>Temizlik, günlük yazma</td></tr>
+<tr><td><b>Atlandığında (UponSkip)</b></td><td>Önceki atlanmışsa</td><td>Nadir yollar</td></tr></table></div>
+<div class="warn"><b>Sık hata: hata yolu bütün hattı başarılı gösterir</b>Bir adım düşüp hata yolundaki Teams etkinliği başarılı olursa hat genel durumda “başarılı” görünebilir. Düşmüşse düşmüş görünmeli: hata yolunun sonuna bir <b>Fail</b> etkinliği koy. Böylece izleme doğru rengi gösterir ve zincir durur.</div>
+<p>Birden çok ok aynı etkinliğe bağlanırsa koşullar birlikte aranır. “A hata ya da B hata” için tek bir bildirim etkinliğine iki hata oku bağlamak, ikisinin de hata vermesini bekler; ayrı bildirim kullan ya da <b>Tamamlandığında</b> ve durum ifadesiyle kur. Ayrıntı için Learn’deki güncel belgeyi izle.</p>
+<h2>Yeniden deneme ve zaman aşımı</h2>
+<div class="tbl-wrap"><table><tr><th>Ayar</th><th>Varsayılan</th><th>Not</th></tr>
+<tr><td>Timeout</td><td>12 saat; en fazla 7 gün</td><td><code>0.12:00:00</code> biçiminde</td></tr>
+<tr><td>Yeniden deneme</td><td>Ayarlı değilse denemez; açılırsa 1 kez</td><td>Geçici ağ hatası için</td></tr>
+<tr><td>Yeniden deneme aralığı</td><td>30 saniye</td><td></td></tr>
+<tr><td>Secure input/output</td><td>Kapalı</td><td>Gizli değeri günlükten saklar</td></tr></table></div>
+<p>Yeniden deneme <b>güvenli olmayan adımı tehlikeye atar</b>: “ekle” yapan bir kopyalama yeniden denenirse satırlar iki kez yazılır. Bu yüzden hat <b>yeniden çalıştırılabilir (idempotent)</b> olmalı: tam yüklemede önce temizle, artımlı yüklemede anahtarla birleştir.</p>
+<h2>Parametre, değişken, ifade</h2>
+<p><b>Parametre</b> çalışma başına sabittir. <b>Değişken</b> çalışma sırasında değişir. Değerler dinamik içerik ifadesiyle kullanılır:</p>
+<pre class="dax" data-notry>@pipeline().parameters.Ortam                       // parametre
+@variables('SonTarih')                              // değişken
+@activity('Lookup1').output.firstRow.WatermarkValue // önceki etkinliğin çıktısı
+@pipeline().RunId                                   // bu çalışmanın kimliği
+@concat('satis_', formatDateTime(utcNow(), 'yyyyMMdd'), '.csv')
+"Ortam: @{pipeline().parameters.Ortam}"             // metin içine gömme</pre>
+<p>İki ayrıntı sınavda ve işte can sıkar. <b>Birincisi:</b> tek başına <code>@pipeline().parameters.Sayi</code> sayı döndürür, <code>@{pipeline().parameters.Sayi}</code> metin döndürür. <b>İkincisi:</b> zamanlamadan parametre geçerken ad birebir eşleşmeli; yanlış yazılan ad hata vermeden yok sayılır ve varsayılan değerle çalışır.</p>
+<h2>Filigranla artımlı yükleme</h2>
+<p>Her gece her şeyi kopyalamak yerine yalnız değişeni al. Learn’ün örneğindeki kalıp:</p>
+<ol><li><b>Lookup:</b> filigran tablosundan son değeri oku.</li><li><b>Lookup:</b> kaynağın en büyük değişim zamanını oku.</li><li><b>Copy data:</b> ikisi arasındaki satırları al.</li><li><b>Stored procedure:</b> filigranı yeni değere güncelle, yalnız kopyalama başarılıysa.</li></ol>
+<pre class="dax" data-notry>SELECT * FROM dbo.Satislar
+WHERE DegisimZamani &gt; '@{activity('EskiFiligran').output.firstRow.Deger}'
+  AND DegisimZamani &lt;= '@{activity('YeniFiligran').output.firstRow.Deger}'</pre>
+<p>Üst sınır neden şimdiki zaman değil? Çünkü Lookup ile kopya arasında gelen satırlar bir sonraki gece alınsın diye en büyük değer sabitlenir. Copy job bunun büyük kısmını kendiliğinden yapar; hattı yalnız çevresinde başka iş varsa kur. Silinen satırlar filigranla görünmez; CDC ya da karşılaştırma gerekir.</p>
+<h2>Zamanlama ve tetikleyici</h2>
+<ul><li><b>Zamanlama:</b> hat başına en çok 20. Başlangıç ve bitiş tarihi zorunlu; uzun süre için uzak bir bitiş ver. Saat dilimini bilinçli seç.</li><li><b>Aralık tabanlı zamanlama (önizleme):</b> pencere başlangıç ve bitişi parametresi verir; düzenlenemez, silip yeniden kurulur.</li><li><b>Olay tetikleyici:</b> OneLake ya da Blob’a dosya düşünce çalışır. Bir Reflex öğesi oluşur, olay akışı üstüne kuruludur.</li><li><b>Çalıştırma koşulları (önizleme):</b> üst hattın ya da verinin hazır olmasını bekler.</li></ul>
+<p>Olay ifadesinde boş değere dikkat: elle test edince değer gelmez, güvenli gösterim kullan: <code>@pipeline()?.TriggerEvent?.FileName</code>. Hata e-postası <b>Hata bildirimleri</b> ayarıyla kurulur ve yalnız zamanlanmış çalışmalarda gider; elle çalıştırmada gitmez.</p>
+<h2>İzleme ve teşhis</h2>
+<p>Tuvalin altındaki <b>Çıktı</b> sekmesi her etkinliğin durumunu, süresini, girdi ve çıktısını gösterir. Geçmiş çalışmalar Monitor hub’dadır. Teşhis sırası: ilk kırmızı etkinliği bul, hata iletisini oku, girdiyi kontrol et (ifadeler doğru çözüldü mü?), sonra çıktıya bak. İşlem hattı Copilot’u hatayı açıklayabilir ama nedeni kanıtlamaz (“Fabric’te Copilot” dersi).</p>
+<div class="tbl-wrap"><table><tr><th>Belirti</th><th>Olası neden</th><th>Çözüm</th></tr>
+<tr><td>Hat başarılı, satır 0</td><td>Filigran ifadesi hep aynı, parametre adı yanlış</td><td>Girdiyi aç; adı eşleştir</td></tr>
+<tr><td>Satırlar iki kat</td><td>Ekle modu ve yeniden deneme</td><td>Temizle ya da birleştir</td></tr>
+<tr><td>Model eski veriyi gösteriyor</td><td>Yenileme bağımsız saatte, ya da hatada da çalışıyor</td><td>Başarıda oku</td></tr>
+<tr><td>Sonraki adım yeni tabloyu görmüyor</td><td>SQL uç noktası eşitlenmedi</td><td>Refresh SQL analytics endpoint</td></tr>
+<tr><td>Hata var, kimse haber almadı</td><td>Elle çalıştırma, ya da hata yolu yok</td><td>Bildirim ve Fail</td></tr>
+<tr><td>Şirket içi kopyada bağlantı hatası</td><td>Ağ geçidi sürümü, güvenlik duvarı</td><td>Sürüm ve <code>*.frontend.clouddatahub.net</code></td></tr></table></div>
+<div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Denemede: AnadoluLH lakehouse’una bağlı boş bir hat aç; <b>Copy data</b> ile <code>Files/ham/Urunler.csv</code> dosyasını <code>Urunler_PL</code> tablosuna yaz (beklenen: 40 satır). Ardından bir <b>Notebook</b> etkinliği ekle ve okla bağla. Sonuna <b>Fail</b> ve hata yolu ekle, kasıtlı olarak yanlış dosya adıyla çalıştırıp <b>Çıktı</b> sekmesini oku.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-pipeline">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-data-factory/">← Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?</a><a href="../fabric-anlam-modeli/">Fabric’te anlam modeli (semantic model): Direct Lake’i kurmak ve işletmek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

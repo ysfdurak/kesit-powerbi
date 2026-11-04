@@ -1,0 +1,82 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED | Kesit Power BI</title><meta name="description" content="Satır satır hesap yapıp sonucu toplamak; ilişkili tablodan değer çekmek."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/iteratorler/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED"><meta property="og:description" content="Satır satır hesap yapıp sonucu toplamak; ilişkili tablodan değer çekmek."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/iteratorler/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED","description":"Satır satır hesap yapıp sonucu toplamak; ilişkili tablodan değer çekmek.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/iteratorler/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED</h1><p class="st-l">Satır satır hesap yapıp sonucu toplamak; ilişkili tablodan değer çekmek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-iteratorler">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>X ile biten fonksiyonlar</h2>
+<p><code>SUMX</code>, <code>AVERAGEX</code>, <code>MINX</code>, <code>MAXX</code>, <code>COUNTX</code>, <code>CONCATENATEX</code> aynı kalıbı izler:</p>
+<pre class="dax" data-notry>SUMX( &lt;tablo&gt;, &lt;her satır için hesaplanacak ifade&gt; )</pre>
+<p>Tabloyu satır satır dolaşır (satır bağlamı), ifadeyi her satırda hesaplar, sonra toplar ya da ortalamasını alır.</p>
+<h2>RELATED: boyuttan değer getirmek</h2>
+<p>Satış satırında ürünün <b>liste fiyatı</b> yok, ama <code>Urunler</code> tablosunda var. İlişkinin “bir” tarafındaki değeri satır bağlamında okumak için <code>RELATED</code> kullanılır:</p>
+<pre class="dax">Liste Fiyatından Ciro = SUMX(Satislar, Satislar[Adet] * RELATED(Urunler[Fiyat]))</pre>
+<p>Ters yön (bir ürünün tüm satışları) için <code>RELATEDTABLE</code> vardır: <code>COUNTROWS(RELATEDTABLE(Satislar))</code> bir ürün satırında o ürünün satış satırı sayısını verir.</p>
+<h2>SUM mı SUMX mi?</h2>
+<p><code>SUM(Satislar[Tutar])</code> aslında <code>SUMX(Satislar, Satislar[Tutar])</code>'ın kısaltmasıdır. Toplanacak şey hazır bir sütunsa <code>SUM</code>; satır başına bir <b>hesap</b> gerekiyorsa <code>SUMX</code>.</p>
+<div class="tip"><b>Hesaplanmış sütun yerine SUMX</b>“Satır başına kâr” için Satislar'a sütun eklemek yerine <code>SUMX</code> içinde hesaplamak çoğu zaman daha iyidir: model küçük kalır, hesap yalnızca gerektiğinde yapılır.</div>
+<h2>Ortalamanın iki anlamı</h2>
+<pre class="dax">Satır Ortalaması = AVERAGE(Satislar[Tutar])
+Sipariş Ortalaması = AVERAGEX(VALUES(Satislar[SiparisNo]), CALCULATE(SUM(Satislar[Tutar])))</pre>
+<p>İlki sipariş <i>satırı</i> başına, ikincisi <i>sipariş</i> başına ortalamadır. <code>VALUES</code>, görünür sipariş numaralarının listesini verir; <code>AVERAGEX</code> bu liste üzerinde dolaşır. İçerideki <code>CALCULATE</code>'in görevi bir sonraki ileri derste (bağlam geçişi) açıklanıyor.</p>
+<section class="deep"><span class="eyebrow">Derinleş</span><h2>Ortalamaların ortalaması tuzağı</h2>
+<p>“Kategorilerin ortalama sepeti” ile “ortalama sepet” aynı şey değildir:</p>
+<pre class="dax">Kategori Ortalaması =
+AVERAGEX(VALUES(Urunler[Kategori]), [Ortalama Sepet])</pre>
+<p>Bu modelde <code>[Ortalama Sepet]</code> <b>1.493 ₺</b>, kategori ortalamalarının ortalaması ise <b>893 ₺</b>. AVERAGEX her kategoriye eşit ağırlık verir: 20 siparişlik bir kategori ile 300 siparişlik bir kategori ortalamayı aynı ölçüde etkiler. Bir sipariş birden çok kategoriden ürün içerdiğinde, kategori düzeyinde siparişler parçalandığı için ortalama daha da düşer.</p>
+<p>Kural: ortalamayı her zaman <b>pay ve paydanın oranı</b> olarak hesapla (<code>DIVIDE([Net Satış], [Sipariş Sayısı])</code>). AVERAGEX’i yalnızca soru gerçekten “grupların ortalaması” olduğunda kullan, ör. “bir mağazanın ortalama aylık cirosu”.</p>
+<h3>Bir iteratör kaç kez hesaplar?</h3>
+<p><code>SUMX(Satislar, ...)</code> her satırda ifadeyi bir kez hesaplar. İfade bir ölçü ise her satırda bağlam geçişi de olur. Satır sayısı arttıkça bu maliyet büyür; eşiği modelin ve ifadenin belirler, Performans Analizi ile ölç. Aynı sonucu daha az satır üzerinde döndürebilirsen (ör. <code>VALUES(Urunler[Urun])</code> üzerinde) her zaman tercih et.</p></section><section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Ağırlıklı ortalama: neyin ortalaması?</h2>
+<p>Fiyatlama ekibi soruyor: “Ortalama satış fiyatımız ne kadar?” Bu soruya üç farklı ve üçü de savunulabilir cevap var. Hangisini verdiğini bilmezsen toplantıda üç farklı sayı dolaşır.</p>
+<pre class="dax">Basit Ortalama Fiyat =
+CALCULATE(AVERAGE(Satislar[BirimFiyat]), Satislar[Durum] &lt;&gt; "İptal")
+
+Adet Ağırlıklı Fiyat =
+CALCULATE(
+    DIVIDE(SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]), SUM(Satislar[Adet])),
+    Satislar[Durum] &lt;&gt; "İptal"
+)
+
+İndirimli Birim Gelir = DIVIDE([Net Satış], [Satılan Adet])</pre>
+<div class="tbl-wrap"><table><tr><th>Ölçü</th><th>Sonuç</th><th>Cevapladığı soru</th></tr>
+<tr><td>Basit ortalama</td><td>710,16 ₺</td><td>“Ortalama bir satış satırındaki fiyat ne?” Her satır bir oy.</td></tr>
+<tr><td>Adet ağırlıklı</td><td>537,83 ₺</td><td>“Sattığımız ortalama bir ürünün liste fiyatı ne?” Her adet bir oy.</td></tr>
+<tr><td>İndirimli birim gelir</td><td>520,72 ₺</td><td>“Bir adetten ortalama ne kazanıyoruz?” İndirim de hesapta.</td></tr></table></div>
+<p>Basit ortalama en yüksek çıkıyor, çünkü pahalı ürünler genellikle tek adet satılıyor; ucuz kitaplar ise satır başına daha çok adetle. Basit ortalama her satırı eşit saydığı için pahalı satırlar ortalamayı yukarı çeker. Ağırlıklı ortalamanın genel kalıbı her zaman aynıdır:</p>
+<pre class="dax" data-notry>Ağırlıklı Ortalama =
+DIVIDE(SUMX(Tablo, Ağırlık * Değer), SUMX(Tablo, Ağırlık))</pre>
+<p>İndirimde de durum benzer. <code>AVERAGE(Satislar[Indirim])</code> tüm satırlar için %3,25 verir; brüt tutarla ağırlıklandırılmış indirim oranı %3,15’tir. Kategori düzeyinde fark büyür: Ev &amp; Yaşam’da satır ortalaması %3,81 iken ciro ağırlıklı oran %4,19. Bu kategoride indirim büyük tutarlı satışlarda yoğunlaşıyor. Satır ortalamasına bakan biri bunu kaçırır.</p>
+
+<h2>Hangi tabloyu dolaşıyorsun?</h2>
+<p>Bir yineleyicinin ilk bağımsız değişkeni, sorunun <b>tanecik (grain)</b> düzeyidir. Aynı ifade farklı tablolar üzerinde farklı sorulara cevap verir:</p>
+<div class="tbl-wrap"><table><tr><th>Dolaşılan tablo</th><th>Örnek</th><th>Soru</th></tr>
+<tr><td><code>Satislar</code></td><td><code>AVERAGEX(Satislar, …)</code></td><td>Satır başına</td></tr>
+<tr><td><code>VALUES(Satislar[SiparisNo])</code></td><td>Sipariş başına ortalama tutar</td><td>Sipariş başına</td></tr>
+<tr><td><code>VALUES(Tarih[YilAy])</code></td><td><code>MAXX(VALUES(Tarih[YilAy]), [Net Satış])</code></td><td>En iyi ay: 94.001 ₺ (Aralık 2024)</td></tr>
+<tr><td><code>VALUES(Kategoriler[Kategori])</code></td><td>Kategorilerin ortalaması</td><td>Kategori başına</td></tr></table></div>
+<h3>Boş aylar tuzağı</h3>
+<p>“Aylık ortalama satışımız ne?” sorusunu <code>AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış])</code> ile cevaplarsın. Ama <code>AVERAGEX</code> BLANK sonuçları atlar. Bu modelde satışlar Haziran 2022’de başlıyor; 2022’de satış olan yalnızca 7 ay var.</p>
+<pre class="dax">Satışlı Ay Ortalaması =
+AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış])
+
+Takvim Ayı Ortalaması =
+AVERAGEX(VALUES(Tarih[YilAy]), [Net Satış] + 0)</pre>
+<p>2022 satırında ilk ölçü 14.691 ₺ (7 aya bölünür), ikincisi 8.570 ₺ (12 aya bölünür) verir. Tüm dönemde 40.347 ₺’ye karşı 34.744 ₺. Hangisi doğru? “Faaliyet gösterdiğimiz aylarda ortalama” sorusu için ilki, “yıllık bütçeyi 12’ye böl” sorusu için ikincisi. <code>+ 0</code> hilesini dikkatli kullan: verinin henüz gelmediği gelecek ayları da sıfır sayar.</p>
+
+<h2>Yineleyicide çıplak toplayıcı tuzağı</h2>
+<p>Yineleyicinin içinde ölçü yerine doğrudan <code>AVERAGE</code> ya da <code>SUM</code> yazarsan, satır bağlamı ilişki üzerinden süzmez:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    VALUES(Kategoriler[Kategori]),
+    "Çıplak", AVERAGE(Satislar[BirimFiyat]),
+    "CALCULATE ile", CALCULATE(AVERAGE(Satislar[BirimFiyat]))
+)</pre>
+<p>“Çıplak” sütunu her kategoride 704,80 ₺ gösterir: tüm satırların ortalaması. “CALCULATE ile” sütunu ise Elektronik’te 1.462 ₺, Kitap’ta 218,80 ₺ verir. Bu hatayı fark etmenin en kolay yolu sütundaki değerlerin hepsinin aynı olmasıdır. Ölçü referansı kullanırsan (<code>[Ortalama Birim Fiyat]</code>) <code>CALCULATE</code> otomatik eklenir.</p>
+<div class="note"><b>Kontrol listesi: yineleyici yazarken</b>1) Sorunun tanecik düzeyi ne: satır, sipariş, müşteri, ay? İlk bağımsız değişken o olsun. 2) Ortalama mı istiyorsun, ağırlıklı ortalama mı? Ağırlığı açıkça yaz. 3) BLANK değerler atlansın mı, sıfır mı sayılsın? 4) İçerideki ifade ölçü değilse <code>CALCULATE</code> gerekiyor mu? 5) Dolaşılan tablo gereğinden büyük mü? 1.620 satır yerine 7 kategori dolaşmak çok daha ucuzdur.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-iteratorler">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../calculate/">← CALCULATE: filtre bağlamını değiştirmek</a><a href="../filter-all/">FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

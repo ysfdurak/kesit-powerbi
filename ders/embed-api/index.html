@@ -1,0 +1,187 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller | Kesit Power BI</title><meta name="description" content="Kuruluş için gömme ile müşteriler için gömme, hizmet sorumlusu ve gömme belirteci, etkin kimlikle gömülü RLS, Power BI ve Fabric REST API ile yenileme,…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/embed-api/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller"><meta property="og:description" content="Kuruluş için gömme ile müşteriler için gömme, hizmet sorumlusu ve gömme belirteci, etkin kimlikle gömülü RLS, Power BI ve Fabric REST API ile yenileme,…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/embed-api/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller","description":"Kuruluş için gömme ile müşteriler için gömme, hizmet sorumlusu ve gömme belirteci, etkin kimlikle gömülü RLS, Power BI ve Fabric REST API ile yenileme,…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/embed-api/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Power BI’ı uygulamalara taşımak: gömme, REST API, otomasyon ve özel görseller</h1><p class="st-l">Kuruluş için gömme ile müşteriler için gömme, hizmet sorumlusu ve gömme belirteci, etkin kimlikle gömülü RLS, Power BI ve Fabric REST API ile yenileme, listeleme ve dışa aktarma, PowerShell cmdlet’leri, not defterinde semantic link ve özel görsel geliştirme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-embed-api">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Buraya kadar raporlar Power BI Service’te yaşadı. Ama Anadolu Market’in iki yeni isteği var: bayiler kendi satışlarını Anadolu Market’in <b>bayi portalında</b> görsün (bayilerin Power BI hesabı yok), ve BT ekibi her gece yüzlerce yenilemeyi <b>elle değil, kodla</b> yönetsin. Bu ders bir BI geliştiricisinin “rapor yazmanın ötesindeki” araç kutusudur.</p>
+
+<h2>İki gömme senaryosu</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Kuruluşun için gömme (user owns data)</th><th>Müşterilerin için gömme (app owns data)</th></tr>
+<tr><td>Kim izler?</td><td>Şirket çalışanları, kendi Microsoft Entra hesaplarıyla</td><td>Dış kullanıcılar (bayi, müşteri); Power BI hesabı gerekmez</td></tr>
+<tr><td>Kimlik</td><td>Kullanıcı oturum açar; izinler Service’teki gibi</td><td>Uygulama kendi kimliğiyle (hizmet sorumlusu) belirteç üretir</td></tr>
+<tr><td>Lisans</td><td>Görüntüleyicide Pro/PPU ya da içerik uygun kapasitede</td><td>Kapasite gerekir: Fabric F, Premium P ya da Power BI Embedded; Pro/PPU üretim için yetmez</td></tr>
+<tr><td>Tipik yer</td><td>Şirket intraneti, SharePoint, iç uygulama</td><td>SaaS ürünü, müşteri portalı</td></tr>
+</table></div>
+<p>Learn, Premium P SKU’larının satıştan kaldırıldığını ve yeni projelerde Fabric F SKU’larının düşünülmesini öneriyor. Kodsuz bir seçenek de var: Power Pages raporu kod yazmadan gömebilir.</p>
+
+<h2>Hizmet sorumlusu ve gömme belirteci</h2>
+<p>Müşteriler için gömmede akış şöyledir:</p>
+<ol>
+<li>Microsoft Entra’da bir uygulama kaydı oluşturulur; bu uygulamanın kimliği <b>hizmet sorumlusudur</b> (service principal). Bir Power BI yöneticisi kiracı ayarlarında “Hizmet sorumlularının Power BI API’lerini kullanmasına izin ver” seçeneğini açar ve sorumluyu izinli gruba ekler. Sorumlu, çalışma alanına Üye ya da Yönetici olarak eklenir.</li>
+<li>Uygulamanın sunucu tarafı, sorumlunun gizli anahtarı ya da sertifikasıyla Entra’dan bir <b>erişim belirteci</b> alır.</li>
+<li>Bu belirteçle Power BI REST API’den rapor için bir <b>gömme belirteci</b> (embed token) ister.</li>
+<li>Tarayıcıdaki sayfa, gömme belirteciyle raporu bir iframe içinde açar.</li>
+</ol>
+<p>Ana kullanıcı (master user) hesabıyla da gömme yapılabilir, ama Learn üretim için hizmet sorumlusunu öneriyor: daha güvenli, otomasyona daha uygun ve sayfalandırılmış raporları da destekliyor.</p>
+<pre data-notry>POST https://api.powerbi.com/v1.0/myorg/GenerateToken
+Authorization: Bearer {sorumlunun-erişim-belirteci}
+Content-Type: application/json
+
+{
+  "reports":  [ { "id": "{raporId}" } ],
+  "datasets": [ { "id": "{modelId}" } ],
+  "identities": [
+    {
+      "username": "bayi-izmir-07",
+      "roles":    [ "BayiRolu" ],
+      "datasets": [ "{modelId}" ]
+    }
+  ]
+}</pre>
+
+<h2>Gömülü RLS: etkin kimlik</h2>
+<p>Bayiler Power BI’da oturum açmadığı için Power BI onların kim olduğunu bilmez. Bunu uygulama söyler: gömme belirteci isterken <b>etkin kimlik</b> (effective identity) gönderir. Yukarıdaki istekte <code>username</code>, modeldeki dinamik rolde <code>USERNAME()</code> ya da <code>USERPRINCIPALNAME()</code> fonksiyonunun döndüreceği değerdir; <code>roles</code> uygulanacak rol, <code>datasets</code> modeldir.</p>
+<div class="warn"><b>İki kritik kural</b>Hizmet sorumlusuyla RLS’li bir model için kimlik ya da rol göndermezsen belirteç üretimi hata verir. Ana kullanıcıyla ise belirteç üretilir ama filtre uygulanmaz ve tüm veri görünür. Ayrıca tarayıcıda JavaScript ile eklenen filtreler güvenlik değildir; kullanıcı onları kaldırabilir. Güvenlik yalnızca RLS ile sağlanır.</div>
+<p>Dinamik RLS’nin model tarafı “Satır ve nesne düzeyinde güvenlik” dersinde anlatıldı. Aynı mantığı bir ölçüyle deneyebilirsin. Bu uygulamada <code>USERPRINCIPALNAME()</code> sabit bir test kullanıcısı döndürür (ayse.kaya@anadolumarket.com). Küçük bir yetki tablosu, bu kullanıcının Ege ve Akdeniz bölgelerini görmesini söylüyor:</p>
+<pre class="dax">Benim Bölgelerim Satışı =
+VAR Yetkiler =
+    DATATABLE(
+        "Eposta", STRING, "Bolge", STRING,
+        {
+            {"ayse.kaya@anadolumarket.com", "Ege"},
+            {"ayse.kaya@anadolumarket.com", "Akdeniz"},
+            {"selim.aksoy@anadolumarket.com", "Marmara"}
+        }
+    )
+VAR Bolgelerim =
+    SELECTCOLUMNS(FILTER(Yetkiler, [Eposta] = USERPRINCIPALNAME()), "Bolge", [Bolge])
+RETURN
+    CALCULATE([Net Satış], TREATAS(Bolgelerim, Musteriler[Bolge]))</pre>
+<p>Sonuç 310.138 ₺: Ege (146.768 ₺) ile Akdeniz (163.370 ₺) toplamı. Gömülü senaryoda <code>username</code> alanına “bayi-izmir-07” gönderilseydi, aynı fonksiyon o değeri döndürür ve yetki tablosunda o bayinin satırı aranırdı.</p>
+
+<h2>Tarayıcı tarafı: istemci API’si</h2>
+<p>Sayfada gömme için <code>powerbi-client</code> JavaScript/TypeScript kitaplığı kullanılır. Bu kitaplıkla sayfalar arasında gezinme, filtre ve dilimleyici ayarlama, yer işaretleri ve olaylara (yüklendi, veri noktası seçildi) tepki verebilirsin. Learn’deki Power BI Embedded Analytics Playground denemek için örnek içerik sunar.</p>
+<pre data-notry>import * as pbi from "powerbi-client";
+
+const ayar: pbi.IEmbedConfiguration = {
+  type: "report",
+  id: raporId,
+  embedUrl: gommeAdresi,
+  accessToken: gommeBelirteci,            // sunucudan gelen embed token
+  tokenType: pbi.models.TokenType.Embed,
+  settings: { panes: { filters: { visible: false } } }
+};
+
+const servis = new pbi.service.Service(
+  pbi.factories.hpmFactory, pbi.factories.wpmpFactory, pbi.factories.routerFactory);
+
+const rapor = servis.embed(document.getElementById("rapor-alani")!, ayar);
+rapor.on("loaded", () =&gt; console.log("Rapor yüklendi"));</pre>
+<p>Gömme belirtecinin süresi dolar; uygulama süre bitmeden yenisini isteyip <code>setAccessToken</code> ile raporu kesintisiz sürdürmelidir.</p>
+
+<h2>REST API ile otomasyon</h2>
+<p>Power BI REST API (<code>api.powerbi.com/v1.0/myorg</code>) ve Fabric REST API (<code>api.fabric.microsoft.com/v1</code>), Service’te elle yaptığın işlerin çoğunu kodla yapmanı sağlar. Sık kullanılanlar:</p>
+<pre data-notry>// 1) Anlam modelini yenile (202 Accepted döner)
+POST https://api.powerbi.com/v1.0/myorg/groups/{calismaAlaniId}/datasets/{modelId}/refreshes
+{ "notifyOption": "MailOnFailure", "retryCount": 3 }
+
+// 2) Yenileme geçmişini oku (durum takibi)
+GET  https://api.powerbi.com/v1.0/myorg/groups/{calismaAlaniId}/datasets/{modelId}/refreshes?$top=10
+
+// 3) Çalışma alanlarını listele (Fabric REST API)
+GET  https://api.fabric.microsoft.com/v1/workspaces
+
+// 4) Raporu PDF olarak dışa aktar: başlat, durumu sorgula, dosyayı al
+POST https://api.powerbi.com/v1.0/myorg/groups/{calismaAlaniId}/reports/{raporId}/ExportTo
+{ "format": "PDF" }
+
+// 5) Bir Fabric işlem hattını isteğe bağlı çalıştır
+POST https://api.fabric.microsoft.com/v1/workspaces/{calismaAlaniId}/items/{ogeId}/jobs/instances?jobType=Pipeline</pre>
+<ul>
+<li>Yenileme API’si <code>Dataset.ReadWrite.All</code> kapsamı ister. Paylaşılan kapasitede günde en fazla 8 yenileme isteği yapılır (zamanlanmışlar dâhil) ve gövdede yalnızca <code>notifyOption</code> verilebilir. Kapasitede ise tablo ya da bölüm seçen <b>gelişmiş yenileme</b> yapılabilir; o zaman <code>notifyOption</code> gönderilmez.</li>
+<li><code>notifyOption</code>, hizmet sorumlusuyla yapılan çağrılarda geçerli değildir; hata bildirimini kendin kurmalısın.</li>
+<li>Her çağrıda <code>Authorization: Bearer …</code> başlığı gerekir.</li>
+</ul>
+<p>Yenileme geçmişinden gelen kayıtlar bir izleme raporuna dönüşebilir. Aşağıdaki sorgu küçük bir geçmiş tablosundan başarı oranı ve ortalama süre üretir; gerçek projede bu tablo API’den bir not defteriyle doldurulur:</p>
+<pre class="dax">EVALUATE
+VAR Gecmis =
+    DATATABLE(
+        "Model", STRING, "Durum", STRING, "Dakika", INTEGER,
+        {
+            {"Satış", "Completed", 12}, {"Satış", "Completed", 14}, {"Satış", "Failed", 3},
+            {"Stok", "Completed", 25}, {"Stok", "Completed", 31},
+            {"Web", "Failed", 1}, {"Web", "Completed", 6}, {"Web", "Completed", 5}
+        }
+    )
+VAR Basarili = FILTER(Gecmis, [Durum] = "Completed")
+RETURN
+    ROW(
+        "Deneme", COUNTROWS(Gecmis),
+        "Başarılı", COUNTROWS(Basarili),
+        "Başarı %", DIVIDE(COUNTROWS(Basarili), COUNTROWS(Gecmis)),
+        "Ort. süre (dk)", AVERAGEX(Basarili, [Dakika])
+    )</pre>
+<p>Sonuç: 8 denemenin 6’sı başarılı (%75), başarılı yenilemeler ortalama 15,5 dakika.</p>
+
+<h2>PowerShell ile yönetim</h2>
+<p>Yöneticiler için <code>MicrosoftPowerBIMgmt</code> modülü var. Windows PowerShell 3.0 ve üzeri ile PowerShell 6 ve üzeri sürümlerde çalışır. Learn, kimlik doğrulama değişikliği nedeniyle 1.3.84 ya da daha yeni bir sürüm kullanılmasını söylüyor.</p>
+<pre data-notry>Install-Module -Name MicrosoftPowerBIMgmt
+Connect-PowerBIServiceAccount
+
+# Kuruluştaki tüm çalışma alanları (yönetici yetkisi gerekir)
+Get-PowerBIWorkspace -Scope Organization -All
+
+# Bir raporu .pbix olarak indir
+Export-PowerBIReport -Id {raporId} -OutFile .SatisRaporu.pbix
+
+# Cmdlet’i olmayan bir uç noktayı çağır
+Invoke-PowerBIRestMethod -Url "groups/{calismaAlaniId}/datasets/{modelId}/refreshes" -Method Post -Body '{"notifyOption":"NoNotification"}'</pre>
+
+<h2>Not defterinden modele: semantic link</h2>
+<p><b>Semantic link</b> (SemPy), Fabric not defterinden anlam modeline Python ile erişmeyi sağlar. Spark 3.4 ve üzeri varsayılan çalışma ortamında hazır yüklüdür. Veri bilimci, ölçüleri kendisi yeniden yazmak yerine modeldeki <code>[Net Satış]</code> tanımını kullanır; böylece rapor ve model aynı sayıyı verir.</p>
+<pre data-notry>import sempy.fabric as fabric
+
+fabric.list_datasets()                               # çalışma alanındaki modeller
+fabric.list_measures("Anadolu Market Satış")         # modeldeki ölçüler
+
+# Ölçüyü kategori ve yıla göre hesapla, pandas benzeri tablo al
+df = fabric.evaluate_measure("Anadolu Market Satış", "Net Satış",
+                             ["Urunler[Kategori]", "Tarih[Yil]"])
+
+# Doğrudan DAX sorgusu
+df2 = fabric.evaluate_dax("Anadolu Market Satış",
+    "EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Net Satış\", [Net Satış])")</pre>
+<p>Sık kullanım: model kalitesini otomatik denetlemek (açıklaması olmayan ölçüler, kullanılmayan sütunlar), tahmin sonuçlarını <code>to_lakehouse_table</code> ile lakehouse’a yazıp modele geri vermek.</p>
+
+<h2>Özel görsel geliştirmek</h2>
+<p>Hazır görseller ve AppSource yetmiyorsa kendi görselini yazabilirsin. Özel görsel, Power BI görsel API’sini kullanan bir TypeScript projesidir; çizim için çoğu zaman D3 kullanılır.</p>
+<pre data-notry>npm i -g powerbi-visuals-tools@latest   # pbiviz komut satırı aracı
+pbiviz new MagazaIsiHaritasi            # proje iskeleti: capabilities.json, pbiviz.json, src/visual.ts
+cd MagazaIsiHaritasi
+pbiviz start                            # yerelde çalıştır, geliştirici görseliyle canlı izle
+pbiviz package                          # dist/ altında .pbiviz paketi üret</pre>
+<ul>
+<li><code>capabilities.json</code>: görselin alan kutuları (veri rolleri), veri eşlemesi ve biçim seçenekleri.</li>
+<li><code>pbiviz.json</code>: ad, sürüm ve kullanılan görsel API sürümü.</li>
+<li>Desktop’ta denemek için <b>Dosya → Seçenekler → Rapor ayarları → Görsel geliştir</b> seçeneği açılır; ayar yalnızca o oturum için geçerlidir.</li>
+</ul>
+<p><b>Sertifika:</b> Görsel önce Partner Center üzerinden AppSource’a gönderilir, sonra isteğe bağlı olarak sertifika istenir. Sertifikalı görsel dış servislere HTTP ya da WebSocket isteği yapamaz, <code>eval</code> gibi dinamik kod kullanamaz ve kod incelemesinden geçer. Karşılığında PowerPoint’e dışa aktarma ve e-posta aboneliklerinde görünme gibi ek yetenekler kazanır. Kurumlar çoğu zaman yalnızca sertifikalı ya da yönetici tarafından onaylanmış görsellere izin verir.</p>
+
+<h2>Hangi araç ne zaman?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İhtiyaç</th><th>Araç</th></tr>
+<tr><td>Dış kullanıcıya kendi portalımızda rapor</td><td>Müşteriler için gömme + hizmet sorumlusu + etkin kimlik</td></tr>
+<tr><td>Veri hazır olunca modeli yenile</td><td>İşlem hattı etkinliği ya da REST API</td></tr>
+<tr><td>Kiracıdaki tüm çalışma alanlarının envanteri</td><td>PowerShell ya da yönetici REST API’leri</td></tr>
+<tr><td>Modelin ölçülerini Python’da kullanmak</td><td>Semantic link</td></tr>
+<tr><td>Hiçbir görselin çizemediği bir grafik</td><td>pbiviz ile özel görsel</td></tr>
+</table></div>
+<p>Bu araçların CI/CD akışındaki yeri (Git, dağıtım işlem hatları) “Yaşam döngüsü” dersinde anlatılıyor.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-embed-api">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kql-gercek-zaman/">← Gerçek zamanlı analitik: Eventhouse, KQL ve gerçek zamanlı panolar</a><a href="../kurulum/">Power BI Desktop kurulumu: bilgisayarını hazırla →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

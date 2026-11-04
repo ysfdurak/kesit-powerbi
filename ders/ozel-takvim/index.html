@@ -1,0 +1,214 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı | Kesit Power BI</title><meta name="description" content="Temmuz başlangıçlı mali yıl, ISO hafta ve hafta tabanlı yıl, perakende 4-4-5 takvimi, 364 gün geriye hafta karşılaştırması, hazır zaman zekâsı…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/ozel-takvim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı"><meta property="og:description" content="Temmuz başlangıçlı mali yıl, ISO hafta ve hafta tabanlı yıl, perakende 4-4-5 takvimi, 364 gün geriye hafta karşılaştırması, hazır zaman zekâsı…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/ozel-takvim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı","description":"Temmuz başlangıçlı mali yıl, ISO hafta ve hafta tabanlı yıl, perakende 4-4-5 takvimi, 364 gün geriye hafta karşılaştırması, hazır zaman zekâsı…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/ozel-takvim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Zaman Zekâsı</span><h1>Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı</h1><p class="st-l">Temmuz başlangıçlı mali yıl, ISO hafta ve hafta tabanlı yıl, perakende 4-4-5 takvimi, 364 gün geriye hafta karşılaştırması, hazır zaman zekâsı fonksiyonlarının bozulduğu yerler, sütun tabanlı özel zaman zekâsı ve önizlemedeki takvim tabanlı zaman zekâsı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-ozel-takvim">Uygulamada aç, 12 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Zaman zekâsı” ve “Gelişmiş zaman hesapları” derslerinde her şey ocakta başlayan Gregoryen takvimle çalıştı. Şirketlerde bu nadiren yeterlidir. Finans ekibi yılı temmuzda başlatır, mağaza ekibi haftayla yaşar, satın alma ekibi 4-4-5 dönemleriyle plan yapar. Bu derste aynı Tarih tablosunu üç takvime çevirecek ve hazır fonksiyonların nerede yanlış sayı ürettiğini göreceksin.</p>
+
+<h2>Üç ekip, üç takvim</h2>
+<p>Anadolu Market’te pazartesi sabahı üç ayrı istek geliyor:</p>
+<ul>
+<li><b>Finans:</b> “Mali yılımız 1 Temmuz’da başlıyor. Mart 2024 satırında mali yılbaşından bugüne satışı görmek istiyorum.”</li>
+<li><b>Mağaza operasyonu:</b> “Geçen haftayı, geçen yılın aynı haftasıyla karşılaştır. Pazartesiyi pazartesiyle karşılaştırmalıyız.”</li>
+<li><b>Satın alma:</b> “Dönemlerimiz 4-4-5 haftalık. Her dönem pazartesi başlayıp pazar bitiyor. Dönem 3’ün toplamı lazım.”</li>
+</ul>
+<div class="tbl-wrap"><table>
+<tr><th>Takvim</th><th>Yıl nasıl başlar?</th><th>En küçük birim</th><th>Hazır fonksiyonlar çalışır mı?</th></tr>
+<tr><td>Gregoryen</td><td>1 Ocak</td><td>Gün → ay</td><td>Evet</td></tr>
+<tr><td>Kaydırılmış Gregoryen (mali yıl)</td><td>Sabit bir tarih (1 Temmuz)</td><td>Gün → ay</td><td>Büyük ölçüde evet, yıl sonu parametresiyle</td></tr>
+<tr><td>Hafta tabanlı (ISO, 4-4-5)</td><td>Bir pazartesi; tarihi her yıl değişir</td><td>Gün → hafta → dönem</td><td>Hayır; aylar ve yıllar tutmaz</td></tr>
+</table></div>
+<p>Modeldeki <code>Tarih[HaftaNo]</code> ISO 8601 hafta numarası, <code>Tarih[GunNo]</code> haftanın günüdür (1 = Pazartesi).</p>
+
+<h2>Mali yıl: Temmuz başlangıçlı yıl</h2>
+<h3>Hazır yol: yıl sonu parametresi</h3>
+<p><code>DATESYTD</code> ve <code>TOTALYTD</code>, isteğe bağlı bir <b>yıl sonu tarihi</b> (year_end_date) alır. Microsoft Learn’e göre bu bir metin sabitidir, yıl kısmı yok sayılır ve biçimi raporu oluşturan istemcinin yerel ayarına bağlıdır: bir makinede <code>"6-30"</code>, diğerinde <code>"30-6"</code> olabilir. Varsayılan 31 Aralık’tır.</p>
+<pre class="dax">Mali YTD (hazır) =
+TOTALYTD([Net Satış], Tarih[Tarih], "6-30")
+
+Mali YTD (DATESYTD) =
+CALCULATE([Net Satış], DATESYTD(Tarih[Tarih], "6-30"))</pre>
+<div class="note"><b>Playground’da dene</b>İki ölçü de Mart 2024 için 401.796,75 ₺ döner; takvim yılı YTD’si 155.390,75 ₺’dir. Yine de yıl sonu dizesi bölgesel ayara bağlı olduğu için ekip modellerinde aşağıdaki açık kalıp daha güvenlidir; her iki yerde de aynı sonucu verir.</div>
+<h3>Sütun ve tarih aritmetiğiyle aynı hesap</h3>
+<pre class="dax">Mali YTD =
+VAR son = MAX(Tarih[Tarih])
+VAR bas = IF(MONTH(son) &gt;= 7, DATE(YEAR(son), 7, 1), DATE(YEAR(son) - 1, 7, 1))
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))
+
+Mali YTD GY =
+CALCULATE([Mali YTD], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>
+<p>Motor görünen dönemin son gününü (<code>son</code>) okur, mali yılın ilk gününü (<code>bas</code>) hesaplar, sonra <code>DATESBETWEEN</code> Tarih[Tarih] filtresini bu aralıkla değiştirir; işaretli tarih tablosunda Yıl ve Ay filtreleri de kalkar. Sonuçlar:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Satır</th><th>Takvim YTD</th><th>Mali YTD</th><th>Mali YTD GY</th></tr>
+<tr><td>Mart 2024</td><td>155.390,75</td><td>401.796,75 (Tem 2023–Mar 2024)</td><td>169.796,10 (Tem 2022–Mar 2023)</td></tr>
+<tr><td>Temmuz 2024</td><td>—</td><td>60.948,00 (yeni mali yılın ilk ayı)</td><td>—</td></tr>
+</table></div>
+<p>Tam mali yıllar: MY2023 256.705,75; MY2024 546.898,75; MY2025 henüz yarım, 446.572,95.</p>
+<h3>Mali yıl sütunları</h3>
+<p>Ölçülerin yanında rapor da mali yılı göstermeli. Tarih tablosuna üç sütun eklenir. Aşağıdaki sorgu bu sütunları üretip her ayın ilk gününde gösterir:</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    FILTER(Tarih, Tarih[Gun] = 1),
+    "MaliYil", Tarih[Yil] + IF(Tarih[AyNo] &gt;= 7, 1, 0),
+    "MaliAyNo", MOD(Tarih[AyNo] + 5, 12) + 1,
+    "MaliCeyrek", "MÇ" &amp; (INT(MOD(Tarih[AyNo] + 5, 12) / 3) + 1)
+)</pre>
+<ul>
+<li><b>Adlandırma:</b> Mali yıl bittiği yılla adlandırılır (Tem 2023–Haz 2024 = MY2024). Bu bir şirket kararıdır; belgele.</li>
+<li><b>Sıralama:</b> Mali raporda ayları <code>MaliAyNo</code>’ya göre sırala.</li>
+<li><b>Toplam satırı:</b> Toplamda son gün 31 Aralık 2024’tür; Mali YTD 446.572,95 gösterir, bu bütün yılların toplamı değildir. Gizle ya da <code>ISINSCOPE</code> ile boş döndür.</li>
+</ul>
+
+<h2>ISO hafta ve hafta tabanlı yıl</h2>
+<p>ISO 8601’e göre hafta pazartesi başlar. Yılın ilk haftası, o yılın ilk perşembesini içeren haftadır. Bu yüzden bir yıl 52 ya da 53 hafta sürer. Yılın ilk birkaç günü önceki yılın son haftasına, son birkaç günü sonraki yılın ilk haftasına düşebilir. DAX’ta <code>WEEKNUM(tarih, 21)</code> ISO hafta numarasını verir.</p>
+<p>Modelde bunu görmek kolay: 1–2 Ocak 2022’nin <code>HaftaNo</code> değeri 52, 30–31 Aralık 2024’ün değeri 1’dir.</p>
+<h3>Anti-kalıp: Yıl × HaftaNo</h3>
+<p>Mağaza müdürü bir matrise <code>Tarih[Yil]</code> ve <code>Tarih[HaftaNo]</code> koyuyor. 2024 / Hafta 1 hücresinde 27.516,05 görünüyor. Oysa ISO 2024’ün ilk haftası (1–7 Ocak) 16.728,05’tir. Aradaki 10.788,00, 30–31 Aralık 2024’e aittir. O iki gün ISO 2025’in ilk haftasıdır ama Gregoryen yıl 2024 olduğu için aynı hücreye girer. Yani hafta 1 iki ayrı haftanın toplamıdır.</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Yanlis", CALCULATE([Net Satış], Tarih[Yil] = 2024, Tarih[HaftaNo] = 1),
+    "Dogru", CALCULATE([Net Satış],
+        FILTER(ALL(Tarih), YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024 &amp;&amp; Tarih[HaftaNo] = 1))
+)</pre>
+<p>Çözüm, haftayla birlikte <b>hafta tabanlı yılı</b> da saklamaktır. Kural basit: bir günün ISO yılı, o haftanın perşembesinin yılıdır. Perşembe = <code>Tarih - GunNo + 4</code>. Haftanın başlangıcı = <code>Tarih - GunNo + 1</code>.</p>
+<pre class="dax">EVALUATE
+ADDCOLUMNS(
+    FILTER(Tarih, Tarih[Tarih] &gt;= DATE(2024, 12, 28)),
+    "ISOYil", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4),
+    "HaftaBaslangic", Tarih[Tarih] - Tarih[GunNo] + 1,
+    "HaftaAnahtari", YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) &amp; "-H" &amp; IF(Tarih[HaftaNo] &lt; 10, "0", "") &amp; Tarih[HaftaNo]
+)</pre>
+<p>28–29 Aralık “2024-H52”, 30–31 Aralık “2025-H01” çıkar. Görselde ve dilimleyicide Yıl × HaftaNo yerine <code>HaftaAnahtari</code> (ya da ISOYil × HaftaNo) kullan.</p>
+
+<h2>Perakende 4-4-5 takvimi</h2>
+<p>Perakendede aylar karşılaştırılabilir değildir: bir ayda beş, diğerinde dört cumartesi olur. 4-4-5 takviminde yıl 52 haftadır, her çeyrek 13 haftadır ve çeyrek 4 + 4 + 5 haftalık üç döneme bölünür. Her dönem aynı gün başlar ve biter. 4-5-4 ve 5-4-4 de yaygındır.</p>
+<p>Bedeli: Gregoryen yılla her yıl bir gün (artık yılda iki) kayma birikir ve 5–6 yılda bir <b>53. hafta</b> eklenir. Bu haftanın hangi döneme gireceği bir iş kararıdır. 2026, 53 haftalık bir ISO yılıdır.</p>
+<p>ISO haftayı perakende haftası olarak kabul edersek dönem numarası haftadan hesaplanır:</p>
+<pre class="dax">EVALUATE
+VAR g =
+    ADDCOLUMNS(
+        FILTER(Tarih, YEAR(Tarih[Tarih] - Tarih[GunNo] + 4) = 2024),
+        "Donem",
+            VAR hw = Tarih[HaftaNo]
+            VAR c = MIN(4, INT((hw - 1) / 13) + 1)
+            VAR wq = hw - (c - 1) * 13
+            RETURN (c - 1) * 3 + IF(wq &lt;= 4, 1, IF(wq &lt;= 8, 2, 3)),
+        "S", [Net Satış]
+    )
+RETURN GROUPBY(g, [Donem], "SatisliGun", COUNTX(CURRENTGROUP(), [S]), "Satis", SUMX(CURRENTGROUP(), [S]))</pre>
+<p><code>MIN(4, …)</code> 53. haftayı dördüncü çeyreğe, <code>wq</code> 14 olduğu için de son döneme (D12) koyar. 2024 perakende yılının sonuçlarından birkaçı: D1 (4 hafta) 43.545,85; D3 (5 hafta) 63.251,60; D12 (5 hafta) 105.592,25. Beş haftalık dönemi dört haftalıkla doğrudan karşılaştırma; haftalık ortalamaya bak.</p>
+
+<h2>Hafta bazlı karşılaştırma: 364 gün geri</h2>
+<p>Mağaza ekibinin sorusuna dönelim: ISO 2024’ün 10. haftası (4–10 Mart 2024) net satışı 23.869,65. Geçen yılın karşılığı ne?</p>
+<div class="tbl-wrap"><table>
+<tr><th>Yöntem</th><th>Karşılaştırılan günler</th><th>Sonuç</th></tr>
+<tr><td><code>SAMEPERIODLASTYEAR</code></td><td>4–10 Mart 2023 (Cumartesi–Cuma)</td><td>7.998,30</td></tr>
+<tr><td><code>DATEADD(Tarih[Tarih], -364, DAY)</code></td><td>6–12 Mart 2023 (Pazartesi–Pazar)</td><td>7.126,30</td></tr>
+</table></div>
+<p><code>SAMEPERIODLASTYEAR</code> takvim tarihini korur, haftanın gününü değil. “Zaman serisi analizi” dersindeki gün etkisi yüzünden farklı gün karışımlı iki pencereyi karşılaştırmak büyüme oranını bozar. 364 = 52 × 7 olduğu için <code>DATEADD(…, -364, DAY)</code> her günü haftanın aynı gününe taşır.</p>
+<pre class="dax">Satış GY Hafta Hizalı =
+CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -364, DAY))</pre>
+<h3>Kenar durumlar</h3>
+<ul>
+<li><b>Yıl düzeyi:</b> 2024 satırında 364 gün kaydırma 2 Ocak 2023–2 Ocak 2024 penceresini verir: 402.716,95; <code>[Satış GY]</code> ise 400.869,55. Hizalı ölçüyü yalnızca hafta ve gün kırılımlarında kullan.</li>
+<li><b>53 haftalık yıl:</b> 53. haftanın geçen yılda karşılığı yoktur. Boş mu bırakılacak, 52. haftayla mı karşılaştırılacak? Kararı iş birimiyle ver ve ölçü açıklamasına yaz.</li>
+<li><b>Eksik veri:</b> Satışlar 22 Haziran 2022’de başlıyor; 2022’de hizalı geçen yıl boştur, büyüme için <code>DIVIDE</code> kullan.</li>
+</ul>
+
+<h2>Hazır fonksiyonlar nerede bozulur?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Mali yıl (kaydırılmış)</th><th>Hafta tabanlı / 4-4-5</th></tr>
+<tr><td><code>TOTALYTD</code>, <code>DATESYTD</code></td><td>Yıl sonu parametresiyle doğru</td><td>Yanlış: yıl başı sabit bir tarih değil</td></tr>
+<tr><td><code>SAMEPERIODLASTYEAR</code>, <code>DATEADD(…, YEAR)</code></td><td>Doğru (12 ay kaydırma)</td><td>Haftanın günü kayar</td></tr>
+<tr><td><code>TOTALMTD</code>, <code>PREVIOUSMONTH</code></td><td>Doğru (aylar aynı)</td><td>Yanlış: dönem ay değildir</td></tr>
+<tr><td><code>PARALLELPERIOD(…, QUARTER)</code></td><td>Takvim çeyreği döner, mali çeyrek değil</td><td>13 haftalık çeyrek değil</td></tr>
+<tr><td><code>STARTOFYEAR</code>, <code>ENDOFYEAR</code></td><td>Yıl sonu parametresi alır</td><td>Gregoryen yıl sınırları</td></tr>
+</table></div>
+<p>Hazır fonksiyonlar takvimi tarih aritmetiğiyle bilir; mantık <b>sütunlarda</b> yaşıyorsa (ISOYil, Donem, HaftaSira) bunu göremez.</p>
+
+<h2>Sütun tabanlı özel zaman zekâsı</h2>
+<p>Hazır fonksiyonların yerine üç adımlı bir kalıp kullanılır:</p>
+<ol>
+<li>Görünen bağlamdan konumu oku: <code>MAX(Tarih[Tarih])</code>, <code>MAX(Tarih[HaftaSira])</code>.</li>
+<li>Tarih tablosundaki filtreleri kaldır: <code>REMOVEFILTERS(Tarih)</code> ya da <code>ALL(Tarih)</code>.</li>
+<li>Yeni dönemi sütunlarla tarif et: <code>Tarih[ISOYil] = y &amp;&amp; Tarih[Tarih] &lt;= son</code>.</li>
+</ol>
+<p>Örneğin hafta başından bugüne (WTD) yalnızca tarih aritmetiğiyle yazılabilir:</p>
+<pre class="dax">Hafta Başından Satış =
+VAR son = MAX(Tarih[Tarih])
+VAR bas = son - WEEKDAY(son, 2) + 1
+RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], bas, son))</pre>
+<p>Üretim modelinde ise sütunlar fiziksel olarak Tarih tablosunda (Power Query ya da kaynakta) bulunur. <code>HaftaSira</code>, ilk haftadan itibaren 1, 2, 3… diye artan bir sıradır. “Önceki hafta” için <code>HaftaNo - 1</code> yeterli değildir, çünkü 1. haftanın öncesi 0 değil, geçen yılın 52. ya da 53. haftasıdır:</p>
+<pre class="dax" data-notry>Önceki Hafta (sütunla) =
+VAR s = MAX(Tarih[HaftaSira])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[HaftaSira] = s - 1)
+
+Perakende YTD (sütunla) =
+VAR y = MAX(Tarih[ISOYil])
+VAR son = MAX(Tarih[Tarih])
+RETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[ISOYil] = y, Tarih[Tarih] &lt;= son)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Yol</th><th>Ne zaman?</th><th>Performans</th><th>Bakım</th></tr>
+<tr><td>Tarih aritmetiği (<code>DATESBETWEEN</code>, <code>DATEADD … DAY</code>)</td><td>Kural sabit gün sayısıyla anlatılabiliyorsa</td><td>İyi</td><td>Kolay ama kural kodda gizli</td></tr>
+<tr><td><code>FILTER(ALL(Tarih), ifade)</code></td><td>Hızlı deneme, sütun eklenemiyorsa</td><td>Her satırda ifade hesaplanır; büyük takvimde yavaşlar</td><td>Zor: aynı ifade her ölçüde tekrar eder</td></tr>
+<tr><td>Fiziksel sütunlar + <code>REMOVEFILTERS</code></td><td>Kalıcı model, ekip çalışması</td><td>En iyi: basit sütun filtreleri depolama motoruna gider</td><td>Kolay: kural tek yerde, Tarih tablosunda</td></tr>
+</table></div>
+<p>“DAX optimizasyonu” dersinde gördüğün gibi basit sütun eşitlikleri depolama motorunda çözülür; satır satır ifade hesaplayan <code>FILTER</code> formül motoruna iş bırakır.</p>
+<div class="warn"><b>REMOVEFILTERS’ı unutma</b>Tarih[Tarih] üzerine filtre koyan hazır fonksiyonlar, işaretli tarih tablosunda diğer Tarih filtrelerini kendiliğinden kaldırır. Sütun filtresi (Tarih[ISOYil]) bunu yapmaz. <code>REMOVEFILTERS(Tarih)</code> olmadan, rapordaki Gregoryen Yıl = 2024 dilimleyicisi 2025-H01’in 30–31 Aralık günleriyle kesişir ve hafta yarım görünür.</div>
+<p><b>Test:</b> Her özel ölçüyü DAX sorgu görünümünde bilinen bir haftayla (2024-H10 = 23.869,65) ve yılın ilk/son haftasıyla dene.</p>
+
+<h2>Takvim tabanlı zaman zekâsı (önizleme)</h2>
+<p>Power BI 2025’te bu sorunu doğrudan çözen bir özellik getirdi: <b>takvim tabanlı zaman zekâsı</b> (calendar-based time intelligence). Tarih tablosunda bir ya da birkaç <b>takvim</b> tanımlarsın; zaman zekâsı fonksiyonlarına tarih sütunu yerine takvimin adını verirsin. Microsoft Learn sayfası özelliği Ekim 2026 itibarıyla hâlâ <b>önizleme</b> olarak etiketliyor.</p>
+<h3>Nasıl açılır, nasıl tanımlanır?</h3>
+<ol>
+<li><b>Dosya → Seçenekler ve ayarlar → Seçenekler → Önizleme özellikleri</b> altında “Enhanced DAX Time Intelligence” seçeneğini işaretle ve Desktop’ı yeniden başlat.</li>
+<li>Tarih tablosuna sağ tıkla → <b>Takvim seçenekleri</b> (Calendar options) → <b>Yeni takvim</b>.</li>
+<li><b>Kategori ekle</b> ile sütunları kategorilere bağla: Yıl, Çeyrek, Ay, Hafta, Tarih ve “yılın haftası”, “haftanın günü” gibi kısmi kategoriler. Her kategorinin bir birincil sütunu, isteğe bağlı ilişkili sütunları olur. “Tam” (complete) kategoriler bir dönemi tek başına tanımlar (2024-H10); “kısmi” kategoriler tanımlamaz (H10).</li>
+</ol>
+<pre class="dax" data-notry>table Tarih
+    calendar 'Perakende 445'
+        calendarColumnGroup = year
+            primaryColumn: ISOYil
+        calendarColumnGroup = month
+            primaryColumn: DonemAnahtari
+        calendarColumnGroup = week
+            primaryColumn: HaftaAnahtari
+        calendarColumnGroup = date
+            primaryColumn: Tarih</pre>
+<pre class="dax" data-notry>Perakende YTD = TOTALYTD([Net Satış], 'Perakende 445')
+Perakende WTD = TOTALWTD([Net Satış], 'Perakende 445')
+Perakende GY  = CALCULATE([Net Satış], DATEADD('Perakende 445', -1, YEAR))</pre>
+<p>Böylece <code>TOTALWTD</code> gibi hafta fonksiyonları kullanılabilir, “geçen yıl” takvimin kendi yılına göre hesaplanır. <code>DATEADD</code> ve <code>SAMEPERIODLASTYEAR</code> “sabit” fonksiyonlardır: yalnızca yana doğru kaydırır. Diğerleri esnektir. Bir takvim sütununa bağlam koymak, o kategorinin üstündeki ve altındaki kategorilerdeki bağlamı temizler.</p>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Klasik</th><th>Takvim tabanlı (önizleme)</th></tr>
+<tr><td>Takvim türü</td><td>Gregoryen ya da kaydırılmış Gregoryen</td><td>Her türlü takvim</td></tr>
+<tr><td>Hafta hesapları</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Yazım</td><td><code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code></td><td><code>TOTALYTD([Net Satış], 'Mali')</code></td></tr>
+</table></div>
+<h3>Sınırlamalar (Learn’e göre)</h3>
+<ul>
+<li>Canlı bağlantılı ve bileşik (composite) modellerde takvim kullanılamaz.</li>
+<li>Takvimler henüz Power BI Service’te yazılamaz; Desktop ya da harici araç gerekir.</li>
+<li>Otomatik tarih/saat tablolarıyla birlikte kullanılmamalı.</li>
+<li>Takvim tanımlı ve satır düzeyi güvenliğe (RLS) tabi bir olgu tablosunda beklenmedik sonuçlar çıkabilir.</li>
+<li>Takvim kullanan zaman zekâsı fonksiyonları iç içe yazılamaz: <code>PREVIOUSDAY(PREVIOUSMONTH('Takvim'))</code> yerine <code>CALCULATETABLE(PREVIOUSDAY('Takvim'), PREVIOUSMONTH('Takvim'))</code>.</li>
+<li>Bir sütun tek kategoriye bağlanır; tabloda 200’den az sütun olmalı.</li>
+<li>Yıl sonu parametresi (<code>"6-30"</code>) yalnızca tarih sütunu yazımında geçerlidir; takvim yazımında mali yıl, takvim tanımının içindedir.</li>
+</ul>
+<div class="note"><b>Bu uygulamada</b>Tarayıcıdaki motor takvim tanımlarını desteklemiyor; bu bölümdeki bloklar bu yüzden çalıştırılamaz. Alıştırmalar sütun tabanlı kalıpla yapılır.</div>
+<p><b>Üretim kararı:</b> Önizleme özelliği kurumsal bir modelde ana yol olmamalı. Bugün sütun tabanlı kalıbı kur; ISOYil, HaftaAnahtari, DonemAnahtari gibi sütunları zaten hazırlamış olacağın için özellik genel kullanıma geçtiğinde takvim tanımına taşımak kolaylaşır.</p>
+
+<h2>Kontrol listesi</h2>
+<ul>
+<li>Mali yıl adlandırması (bittiği yıl mı, başladığı yıl mı) belgelendi mi?</li>
+<li>Hafta görsellerinde Yıl × HaftaNo değil, ISOYil × HaftaNo ya da HaftaAnahtari mı kullanılıyor?</li>
+<li>Hafta karşılaştırmaları 364 gün mü, takvim tarihi mi? 53. hafta kuralı ne?</li>
+<li>Sütun tabanlı ölçülerde <code>REMOVEFILTERS(Tarih)</code> var mı? Toplam satırı ne gösteriyor?</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-ozel-takvim">Alıştırmalara geç (12)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../uzman-kaliplar/">← Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe</a><a href="../buyuk-model/">Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,55 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari | Kesit Power BI</title><meta name="description" content="Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-lakehouse/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari"><meta property="og:description" content="Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-lakehouse/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari","description":"Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-lakehouse/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari</h1><p class="st-l">Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın düzeni ve dosya bölümleme.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-lakehouse">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Lakehouse, gölün esnekliğini ambarın sorgu kolaylığıyla birleştirir: her türlü dosyayı koyarsın, Delta tablolarını hem Spark hem T-SQL ile sorgularsın. Bu ders lakehouse’u kurmayı değil, <b>ne zaman doğru seçim olduğunu ve tuzaklarını</b> anlatır. Elle kurulum adımları “Fabric’e veri getirmek” ve “Lakehouse ödevi” derslerinde.</p>
+<h2>İki bölüm</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Files</th><th>Tables</th></tr>
+<tr><td>Ne durur?</td><td>CSV, JSON, resim, Parquet; Delta olmayan her şey</td><td>Yönetilen Delta tabloları</td></tr>
+<tr><td>Keşif</td><td>Yok; dosyadır</td><td>Otomatik: meta veri çıkarılır, sütunlar kaydedilir</td></tr>
+<tr><td>SQL uç noktası</td><td>Görünmez</td><td>Görünür</td></tr>
+<tr><td>Kullanım</td><td>Ham iniş, arşiv</td><td>Analiz, model kaynağı</td></tr></table></div>
+<p>Tables’a Delta olmayan dosya koymak işe yaramaz; Learn şu an yalnız Delta’yı doğruladığını söyler. Parquet ya da CSV’yi sorgulamak istiyorsan önce Delta’ya çevir.</p>
+<h2>Veri yükleme yolları</h2>
+<div class="tbl-wrap"><table><tr><th>Yol</th><th>Kim için?</th><th>Örnek</th></tr>
+<tr><td>Lakehouse gezgini (karşıya yükle, Load to Tables)</td><td>Tek dosya, deneme</td><td>Aylık Excel’i bir kez</td></tr>
+<tr><td>Kısayol</td><td>Kopya istemeyen</td><td>Başka alandaki Delta</td></tr>
+<tr><td>Dataflow Gen2</td><td>Power Query bilen</td><td>SharePoint listesini temizleyip yaz</td></tr>
+<tr><td>İşlem hattı, Copy job</td><td>Taşıma ve düzen</td><td>ERP’den gece kopyası</td></tr>
+<tr><td>Not defteri, Spark iş tanımı</td><td>Kod bilen</td><td>Karmaşık dönüşüm, üretim ETL’i</td></tr></table></div>
+<h2>SQL analiz uç noktası</h2>
+<p>Her lakehouse ile otomatik gelir. Salt okunurdur: <b>SELECT evet; INSERT, UPDATE, DELETE hayır.</b> Tablo oluşturamazsın, ama görünüm, satır içi fonksiyon, saklı yordam tanımlayabilirsin ve bunlar kalıcıdır. Veriyi değiştirmek için Spark gerekir. Ayrıca:</p>
+<ul><li>Yalnız Tables altındaki Delta tabloları görünür. Spark ile oluşturulan dış Delta tablolar ek kısayol olmadan görünmez.</li><li>Meta veri otomatik eşitlenir; ama anlık değildir. Yeni yazılan tablo hemen görünmediyse eşitleme sürüyor olabilir, manuel başlatma seçeneği için “SQL analytics endpoint metadata sync” sayfasına bak. İşlem hattında <b>Refresh SQL analytics endpoint</b> etkinliği vardır.</li><li>Burada tanımlanan SQL güvenliği yalnız uç noktadan erişimde geçerlidir; Spark’ı etkilemez.</li><li>Çok tablolu işlem (transaction) yoktur; ambarda vardır.</li></ul>
+<div class="warn"><b>Varsayılan anlam modeli kalktı</b>Eski dokümanlar her lakehouse’un otomatik bir anlam modeli olduğunu yazar. Learn’e göre 5 Eylül 2025’ten beri bu model oluşturulmuyor; var olanlar 30 Kasım 2025’e kadar ayrılarak bağımsız modele dönüştü. Model artık elle oluşturulur (“Fabric’te anlam modeli” dersi).</div>
+<h2>Lakehouse mi, ambar mı, eventhouse mu?</h2>
+<div class="tbl-wrap"><table><tr><th></th><th>Lakehouse</th><th>Ambar</th><th>Eventhouse</th><th>SQL veritabanı</th></tr>
+<tr><td>Amaç</td><td>Esnek depo, büyük veri işleme</td><td>Yönetilen SQL analitiği, BI</td><td>Yüksek hacimli olay</td><td>İşlemsel uygulama</td></tr>
+<tr><td>Sorgu</td><td>Spark + salt okunur T-SQL</td><td>Tam T-SQL</td><td>KQL</td><td>Tam T-SQL</td></tr>
+<tr><td>Yazma</td><td>Spark, veri akışı, işlem hattı</td><td>T-SQL, işlem hattı</td><td>Doğal alım</td><td>Uygulama</td></tr>
+<tr><td>Ne zaman?</td><td>Çeşitli biçim, mühendislik, keşif</td><td>Yıldız şema, saklı yordam, çok tablolu işlem</td><td>Telemetri, log</td><td>Operasyon ve üstünde analiz</td></tr></table></div>
+<p>Doğru soru genelde “hangisi?” değil, “hangi katman nerede?”dir.</p>
+<h2>Katmanlı düzen: tunç, gümüş, altın</h2>
+<p>Learn lakehouse’u bu mimari için uygun bulur; Microsoft’un sabit bir tanımı olmadığı için ekipler kendi kurallarını yazar. Yaygın kullanım:</p>
+<div class="tbl-wrap"><table><tr><th>Katman</th><th>İçerik</th><th>Anadolu Market örneği</th></tr>
+<tr><td>Tunç (bronze)</td><td>Ham veri, değişmeden</td><td>ERP’den gelen <code>Satislar.csv</code>, Files/ham</td></tr>
+<tr><td>Gümüş (silver)</td><td>Temiz, türü doğru, tekil</td><td><code>satis_temiz</code> Delta tablosu</td></tr>
+<tr><td>Altın (gold)</td><td>İşe hazır yıldız şema</td><td><code>FactSatis</code>, <code>DimUrun</code>; modelin kaynağı</td></tr></table></div>
+<p>Kural: raporlar altından okur. Ham veriyi silme; hatalı dönüşümde en baştan yeniden üretebilmek için gerekir. Üç katmanı üç lakehouse ya da aynı lakehouse’ta şema olarak tutmak ekip ölçeğine bağlıdır. Altın katmanın doğruluğunu DAX ile de sınarsın: toplamları ham veriyle karşılaştır.</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Ham Tutar", SUM(Satislar[Tutar]),
+    "İptal Hariç", CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal"),
+    "Net Ölçü", [Net Satış]
+)</pre>
+<p>Bu veride ham 1.346.190 ₺, iptal hariç ve [Net Satış] 1.250.772 ₺’dir. Altın toplam ölçüyle tutmuyorsa kural farklıdır.</p>
+<h2>Bölümleme ve dosya sağlığı</h2>
+<p>DP-600 dosya bölümlemeyi ayrıca sorar. Bölümleme, sorgunun gereksiz dosyaları atlamasını sağlar: sorgular çoğunlukla ay süzüyorsa aya göre bölmek yardımcı olur. Düşük kardinaliteli bir sütun seç; günlük ve müşteri düzeyi gibi yüksek kardinalite çok küçük dosya üretir. Küçük dosya sorunu ve <code>OPTIMIZE</code>, <code>VACUUM</code> “Lakehouse ödevi” dersinde. Direct Lake’in dosya ve satır grubu sınırları “Fabric’te anlam modeli” dersinde.</p>
+<div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Denemede “Lakehouse ödevi”ni yap. SQL uç noktasında <code>INSERT</code> dene, hatayı oku. Sonuç için beklenen değerler o derste.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-lakehouse">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../fabric-onelake/">← OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik</a><a href="../fabric-data-factory/">Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin? →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

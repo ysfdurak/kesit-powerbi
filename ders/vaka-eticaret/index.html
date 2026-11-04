@@ -1,0 +1,134 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vaka: e-ticaret dönüşüm hunisi ve kargo | Kesit Power BI</title><meta name="description" content="E-ticaret müdürü sitedeki kaybın nerede olduğunu ve kargonun müşteri deneyimine etkisini soruyor. Huni adımlarını cihaz ve kaynağa göre kırar, Web ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-eticaret/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Vaka: e-ticaret dönüşüm hunisi ve kargo"><meta property="og:description" content="E-ticaret müdürü sitedeki kaybın nerede olduğunu ve kargonun müşteri deneyimine etkisini soruyor. Huni adımlarını cihaz ve kaynağa göre kırar, Web ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/vaka-eticaret/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Vaka: e-ticaret dönüşüm hunisi ve kargo","description":"E-ticaret müdürü sitedeki kaybın nerede olduğunu ve kargonun müşteri deneyimine etkisini soruyor. Huni adımlarını cihaz ve kaynağa göre kırar, Web ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/vaka-eticaret/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Vaka Çalışmaları</span><h1>Vaka: e-ticaret dönüşüm hunisi ve kargo</h1><p class="st-l">E-ticaret müdürü sitedeki kaybın nerede olduğunu ve kargonun müşteri deneyimine etkisini soruyor. Huni adımlarını cihaz ve kaynağa göre kırar, Web ve Mobil kanalların sepet, iade ve teslim performansını ölçer, kargo süresiyle iade ve tekrar sipariş ilişkisini sınarsın.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-eticaret">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>1. Şirketin sorusu ve brif</h2>
+<p><b>Kim soruyor?</b> E-ticaret müdürü. Yönetim kurulu mobil uygulamaya ek yatırım ve yeni bir kargo anlaşması için iki ayrı teklif bekliyor.</p>
+<p><b>Hangi karar?</b></p>
+<ol>
+<li>Site ve uygulamada ziyaretçi en çok hangi adımda kayboluyor; düzeltme önce nereye yapılmalı?</li>
+<li>Web ve Mobil kanal satışta, sepette ve iadede nasıl farklılaşıyor?</li>
+<li>Kargo süresi iade ya da tekrar siparişi etkiliyor mu? Daha hızlı (ve pahalı) kargo anlaşmasına değer mi?</li>
+</ol>
+
+<h2>2. Veri ve model</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Kullanım</th></tr>
+<tr><td><code>WebOlaylari</code></td><td>Ziyaretçi, adım (1 Ziyaret → 5 Satın alma), cihaz, kaynak. <code>Tarih</code> ile ilişkili.</td></tr>
+<tr><td><code>Satislar</code></td><td>Kanal (Web, Mobil, Mağaza), durum, <code>KargoGun</code>, <code>TeslimTarihi</code>.</td></tr>
+</table></div>
+<p>Hazır ölçüler: <code>[Ziyaretçi]</code>, <code>[Dönüşüm Oranı %]</code>, <code>[Önceki Adıma Göre %]</code>, <code>[İlk Adıma Göre %]</code>, <code>[Ortalama Kargo Günü]</code>, <code>[Zamanında Teslim %]</code> (3 gün ve altı), <code>[İade Oranı %]</code>, <code>[Ortalama Sepet]</code>.</p>
+<p><b>Veri sınırları:</b></p>
+<ul>
+<li><b>Web olayları yalnızca iki ay:</b> 01.10.2024 – 29.11.2024; 900 ziyaretçi, 2.019 olay. Mevsimsellik ve yıl karşılaştırması yapılamaz.</li>
+<li><b>Ziyaretçi ile müşteri bağlı değil.</b> <code>ZiyaretciNo</code> ile <code>MusteriNo</code> arasında eşleşme yok. “Huniyi tamamlayan ziyaretçi ne aldı?” sorusu cevaplanamaz; huni ve sipariş analizi ayrı yürür.</li>
+<li><b>Mağaza siparişlerinde kargo günü 0.</b> Mağaza, ortalama kargo gününü aşağı çeker ve “zamanında teslim”i %100 gösterir. Kargo analizinde yalnızca Web ve Mobil’i al.</li>
+<li>İptal edilen siparişlerde <code>KargoGun</code> boş; iade edilenlerde dolu.</li>
+</ul>
+
+<h2>3. Analiz adımları</h2>
+<p><b>Adım 1: Huni adımları ve adım dönüşümleri.</b> <code>WebOlaylari[AdimNo]</code> ve <code>[Adim]</code> satırda; değerlerde <code>[Ziyaretçi]</code>, <code>[Önceki Adıma Göre %]</code>, <code>[İlk Adıma Göre %]</code>.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Adım</th><th>Ziyaretçi</th><th>Önceki adıma göre</th><th>İlk adıma göre</th></tr>
+<tr><td>1 Ziyaret</td><td>900</td><td>–</td><td>%100</td></tr>
+<tr><td>2 Ürün görüntüleme</td><td>640</td><td>%71,1</td><td>%71,1</td></tr>
+<tr><td>3 Sepete ekleme</td><td>254</td><td><b>%39,7</b></td><td>%28,2</td></tr>
+<tr><td>4 Ödeme</td><td>137</td><td>%53,9</td><td>%15,2</td></tr>
+<tr><td>5 Satın alma</td><td>88</td><td>%64,2</td><td>%9,8</td></tr>
+</table></div>
+<p><b>Bulgu:</b> Genel dönüşüm <b>%9,8</b>. En büyük kayıp ürün görüntülemeden sepete geçişte: 640 kişiden 386’sı sepete eklemeden çıkıyor.</p>
+
+<p><b>Adım 2: Cihaz ve kaynak kırılımı.</b> Huninin hangi adımının hangi cihazda koptuğunu görmek için sepetten satın almaya geçişi ayrı ölç:</p>
+<pre class="dax">Sepetten Satın Alma % =
+DIVIDE(
+    CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 5),
+    CALCULATE([Ziyaretçi], WebOlaylari[AdimNo] = 3)
+)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Cihaz</th><th>Ziyaret</th><th>Satın alma</th><th>Dönüşüm</th><th>Sepet → ödeme</th><th>Sepetten satın alma</th></tr>
+<tr><td>Masaüstü</td><td>370</td><td>48</td><td>%13,0</td><td>%61,4</td><td>%42,1</td></tr>
+<tr><td>Mobil</td><td>530</td><td>40</td><td><b>%7,5</b></td><td><b>%47,9</b></td><td><b>%28,6</b></td></tr>
+</table></div>
+<p><b>Bulgu:</b> Mobil trafiğin %59’unu getiriyor ama daha az satın alma üretiyor. Fark en çok sepetten sonra açılıyor: mobilde sepete ekleyenlerin yalnızca %47,9’u ödeme adımına geçiyor. Bu, mobil ödeme akışında bir sürtünme olduğunu düşündürür.</p>
+<p>Kaynağa göre dönüşüm: E-posta %13,7 (124 ziyaretten 17), Doğrudan %11,9, Sosyal medya %11,5, Organik arama %9,5, <b>Reklam %6,5</b> (278 ziyaretten 18). Reklam en çok trafiği getirip en düşük dönüşümü veriyor.</p>
+
+<p><b>Adım 3: Kanal performansı.</b> Hazır ölçüleri <code>Satislar[Kanal]</code> ile matrise koy (tüm dönem):</p>
+<div class="tbl-wrap"><table>
+<tr><th>Kanal</th><th>Net satış</th><th>Sipariş</th><th>Ortalama sepet</th><th>İade</th><th>İptal</th><th>Kargo günü</th><th>Zamanında</th></tr>
+<tr><td>Mobil</td><td>599.841 ₺</td><td>386</td><td>1.554 ₺</td><td>%6,6</td><td>%4,6</td><td>3,80</td><td>%50,8</td></tr>
+<tr><td>Web</td><td>457.331 ₺</td><td>322</td><td>1.420 ₺</td><td>%7,5</td><td><b>%11,6</b></td><td>3,47</td><td>%56,9</td></tr>
+<tr><td>Mağaza</td><td>193.600 ₺</td><td>130</td><td>1.489 ₺</td><td>%5,2</td><td>%5,2</td><td>0</td><td>%100</td></tr>
+</table></div>
+<p>Web ve Mobil birlikte 1.057.172 ₺ ile net satışın %84,5’i. Kargo ölçülerini mağazasız hesapla:</p>
+<pre class="dax">E-ticaret Kargo Günü =
+CALCULATE([Ortalama Kargo Günü], Satislar[Kanal] IN {"Web", "Mobil"})
+E-ticaret Zamanında Teslim % =
+CALCULATE([Zamanında Teslim %], Satislar[Kanal] IN {"Web", "Mobil"})</pre>
+<p><b>Bulgu:</b> E-ticarette ortalama teslim <b>3,65 gün</b>, zamanında teslim <b>%53,5</b>. Mağaza dâhil edilince ortalama 3,12 gün, zamanında %60,2 görünüyordu: mağaza siparişleri kargo performansını olduğundan iyi gösteriyor. Mobil’in teslim süresi 2024’te 3,80 gün ve zamanında teslimi %48,9. Web’de ise iptal oranı (%11,6) diğer kanalların iki katından fazla.</p>
+
+<p><b>Adım 4: Kargo süresi ve iade.</b></p>
+<pre class="dax">İade Oranı (Kargo 0-3 Gün) % =
+CALCULATE([İade Oranı %], Satislar[Kanal] IN {"Web", "Mobil"}, Satislar[KargoGun] &lt;= 3)
+Kargo 7+ Gün İade % =
+CALCULATE([İade Oranı %], Satislar[Kanal] IN {"Web", "Mobil"}, Satislar[KargoGun] &gt;= 7)</pre>
+<div class="tbl-wrap"><table>
+<tr><th>Kargo süresi (Web + Mobil)</th><th>Satır</th><th>İade oranı</th></tr>
+<tr><td>0–3 gün</td><td>799</td><td>%5,4</td></tr>
+<tr><td>4–6 gün</td><td>498</td><td>%8,2</td></tr>
+<tr><td>7+ gün</td><td>94</td><td><b>%14,9</b></td></tr>
+</table></div>
+<p><b>Bulgu:</b> Teslim uzadıkça iade oranı yükseliyor: 7 gün ve üstünde gelen siparişlerde iade, 3 gün içinde gelenlerin yaklaşık 2,8 katı. Bu bir ilişkidir, kanıtlanmış neden değil: geç gelen ürünler belirli kategorilerde ya da bölgelerde toplanıyor olabilir. Kategori dilimleyicisiyle kontrol et.</p>
+<div class="note"><b>Payda farkı</b>Kargo gününe göre filtrelediğinde iptal satırları (kargo günü boş) dışarıda kalır. Genel <code>[İade Oranı %]</code> ise iptalleri de paydaya katar. Karşılaştırırken iki oranı aynı tabanda tut.</div>
+
+<p><b>Adım 5: Kargo süresi ve tekrar sipariş.</b> Soru: ilk siparişi geç gelen müşteri bir daha alıyor mu? Müşterinin ilk siparişinin kargo gününü ve sonrasındaki sipariş sayısını hesaplarız. Tekrar için zaman tanımak amacıyla yalnızca ilk siparişi 30.06.2024’e kadar olanları alırız.</p>
+<pre class="dax">EVALUATE
+VAR T =
+    ADDCOLUMNS(
+        CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] &lt;&gt; "İptal"),
+        "Ilk", CALCULATE(MIN(Satislar[Tarih]), Satislar[Durum] &lt;&gt; "İptal")
+    )
+VAR T2 =
+    ADDCOLUMNS(T,
+        "IlkKargo", VAR d = [Ilk] RETURN CALCULATE(MAX(Satislar[KargoGun]), Satislar[Tarih] = d, Satislar[Durum] &lt;&gt; "İptal"),
+        "IlkKanal", VAR d = [Ilk] RETURN CALCULATE(MAX(Satislar[Kanal]), Satislar[Tarih] = d, Satislar[Durum] &lt;&gt; "İptal"),
+        "Sonra", VAR d = [Ilk] RETURN CALCULATE(DISTINCTCOUNT(Satislar[SiparisNo]), Satislar[Tarih] &gt; d, Satislar[Durum] &lt;&gt; "İptal")
+    )
+VAR E = FILTER(T2, [IlkKanal] &lt;&gt; "Mağaza" &amp;&amp; NOT ISBLANK([IlkKargo]) &amp;&amp; [Ilk] &lt;= DATE(2024, 6, 30))
+RETURN
+    ROW(
+        "Hızlı ilk teslim", COUNTROWS(FILTER(E, [IlkKargo] &lt;= 3)),
+        "Hızlı, tekrar eden", COUNTROWS(FILTER(E, [IlkKargo] &lt;= 3 &amp;&amp; [Sonra] &gt; 0)),
+        "Geç ilk teslim", COUNTROWS(FILTER(E, [IlkKargo] &gt; 3)),
+        "Geç, tekrar eden", COUNTROWS(FILTER(E, [IlkKargo] &gt; 3 &amp;&amp; [Sonra] &gt; 0))
+    )</pre>
+<p><b>Bulgu:</b> İlk teslimi 3 gün içinde olan 43 müşterinin 43’ü (%100), geç olan 49 müşterinin 48’i (%98) tekrar sipariş vermiş. <b>Bu veride kargo süresiyle tekrar sipariş arasında anlamlı bir ilişki yok.</b> Neredeyse herkes tekrar ettiği için ölçü ayırt edici değil; bunu açıkça yaz, “ilişki bulamadık” da bir bulgudur.</p>
+
+<h2>4. Rapor sayfası taslağı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Konum</th><th>Görsel</th><th>Alanlar</th></tr>
+<tr><td>Üst şerit</td><td>4 kart</td><td>Ziyaretçi (900), Dönüşüm (%9,8), E-ticaret kargo günü (3,65), E-ticaret zamanında teslim (%53,5)</td></tr>
+<tr><td>Sol orta</td><td>Huni (Funnel)</td><td>Kategori: Adim (AdimNo’ya göre sıralı); değer: Ziyaretçi; araç ipucu: Önceki Adıma Göre %</td></tr>
+<tr><td>Sağ orta</td><td>Kümelenmiş çubuk</td><td>Adim × Cihaz; Önceki Adıma Göre % (mobil kopuşu görünür)</td></tr>
+<tr><td>Orta şerit</td><td>Tablo</td><td>Kaynak; Ziyaret, Satın alma, Dönüşüm (koşullu biçim)</td></tr>
+<tr><td>Sol alt</td><td>Matris</td><td>Kanal (Web, Mobil); Net Satış, Ortalama Sepet, İade, İptal, Kargo Günü, Zamanında</td></tr>
+<tr><td>Sağ alt</td><td>Sütun grafik</td><td>Kargo süresi grubu (0–3, 4–6, 7+); İade Oranı %</td></tr>
+<tr><td>Sayfa notu</td><td>Metin</td><td>“Web olayları: Ekim–Kasım 2024. Kargo ölçüleri mağazasız.”</td></tr>
+</table></div>
+<p>Huni görseli ve ayrıntılı huni ölçülerini <b>Analiz özellikleri ve yapay zekâ görselleri</b> ile <b>Segmentasyon</b> derslerindeki dilim mantığıyla birleştirebilirsin.</p>
+
+<h2>5. Bulgu özeti ve öneri</h2>
+<ol>
+<li><b>Mobil ödeme akışını düzelt:</b> mobil dönüşüm %7,5, masaüstü %13,0; fark sepetten sonra açılıyor (sepetten satın alma %28,6’ya karşı %42,1). Mobil yatırım teklifinin önceliği ödeme adımı olsun.</li>
+<li><b>Ürün sayfası → sepet</b> en büyük kayıp (640’tan 254’e). Fiyat, stok bilgisi ve kargo süresi ürün sayfasında görünür olmalı.</li>
+<li><b>Reklam bütçesini sorgula:</b> en yüksek trafik (278 ziyaret), en düşük dönüşüm (%6,5). E-posta %13,7 ile en verimli kaynak.</li>
+<li><b>Kargo anlaşması iade için anlamlı:</b> 7+ gün teslimde iade %14,9, 0–3 günde %5,4. Zamanında teslim yalnızca %53,5; hızlı kargo iadeyi azaltabilir. Tekrar sipariş üzerinde etkisi bu veride görülmedi.</li>
+<li><b>Web iptal oranı %11,6:</b> nedenini (ödeme hatası, stok, fiyat değişimi) ayrı bir iptal nedeni sütunuyla izle.</li>
+</ol>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-vaka-eticaret">Alıştırmalara geç (5)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../vaka-stok/">← Vaka: stok analizi</a><a href="../vaka-satis/">Vaka: satış performansı ve hedef takibi →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

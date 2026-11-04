@@ -1,0 +1,80 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük | Kesit Power BI</title><meta name="description" content="Kar tanesi ile yıldız şemanın farkı ve ne zaman düzleştirileceği, iki sütunlu anahtar sorunu, olgu tablosunun ayrıntı düzeyi cümlesi, hiyerarşiler, alan…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/model-ileri/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük"><meta property="og:description" content="Kar tanesi ile yıldız şemanın farkı ve ne zaman düzleştirileceği, iki sütunlu anahtar sorunu, olgu tablosunun ayrıntı düzeyi cümlesi, hiyerarşiler, alan…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/model-ileri/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük","description":"Kar tanesi ile yıldız şemanın farkı ve ne zaman düzleştirileceği, iki sütunlu anahtar sorunu, olgu tablosunun ayrıntı düzeyi cümlesi, hiyerarşiler, alan…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/model-ileri/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Modelleme</span><h1>Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük</h1><p class="st-l">Kar tanesi ile yıldız şemanın farkı ve ne zaman düzleştirileceği, iki sütunlu anahtar sorunu, olgu tablosunun ayrıntı düzeyi cümlesi, hiyerarşiler, alan görünürlüğü, veri kategorisi, varsayılan özetleme ve sütunun nerede hesaplanacağı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-model-ileri">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Veri modelleme: yıldız şema ve ilişkiler” dersinde olgu ve boyut tablolarını, “Hedef ve gerçekleşen” dersinde iki farklı ayrıntı düzeyindeki olguyu gördük. Bu ders modeli bir kullanıcının gözünden düzenliyor: hangi tablo nereye bağlanmalı, hangi sütun görünmeli, hangi sayı toplanmamalı.</p>
+
+<h2>Kar tanesi mi, yıldız mı?</h2>
+<p>Yıldız şemada her boyut tablosu doğrudan olgu tablosuna bağlanır. <b>Kar tanesi</b> (snowflake) şemada bir boyut, başka bir boyuta bağlanarak dallanır. Bizim modelimizde böyle bir dal var:</p>
+<pre class="dax" data-notry>Satislar[UrunNo]   *-1  Urunler[UrunNo]
+Urunler[Kategori]  *-1  Kategoriler[Kategori]
+Hedefler[Kategori] *-1  Kategoriler[Kategori]</pre>
+<p>Satış satırı, kategorisine iki adımda ulaşır. Satır bağlamında <code>RELATED</code> bu zinciri izler:</p>
+<pre class="dax">Elektronik Satışı (Zincir) =
+SUMX(
+    FILTER(Satislar, RELATED(Kategoriler[Kategori]) = "Elektronik" &amp;&amp; Satislar[Durum] &lt;&gt; "İptal"),
+    Satislar[Tutar]
+)</pre>
+<p>Sonuç 339.303,65 ₺; <code>CALCULATE([Net Satış], Urunler[Kategori] = "Elektronik")</code> ile aynıdır.</p>
+<p><b>Ne zaman düzleştirmeli?</b> Dallanan tablo yalnızca bir boyuta hizmet ediyorsa onu Power Query’de üst boyuta birleştir (birleştir + genişlet), dalı sil. Kazancın: daha az ilişki, daha kısa filtre yolu, daha sade bir Veri bölmesi ve tek tabloda kurulabilen hiyerarşiler. Dalı <b>tutmanın</b> haklı nedeni, aynı boyutu farklı ayrıntı düzeyinde başka bir olgunun da kullanmasıdır. Kategoriler tablosu tam olarak bu yüzden var: Hedefler ürün düzeyinde değil kategori düzeyinde tutuluyor ve iki olgu ortak bir kategori listesinde buluşuyor.</p>
+<div class="warn"><b>Yanlış sütun, sabit sonuç</b>Kategoriyi görsele <code>Urunler[Kategori]</code>’den koyarsan <code>[Hedef]</code> her satırda 1.299.300 ₺ gösterir, çünkü Urunler’den Hedefler’e giden bir filtre yolu yoktur. <code>Kategoriler[Kategori]</code> ise hem satışı hem hedefi süzer. Ortak boyut kullanılan bir kar tanesinde dal ucundaki sütunu (<code>Urunler[Kategori]</code>) gizle.</div>
+
+<h2>Ayrıntı düzeyi: olgu tablosunun cümlesi</h2>
+<p>Bir olgu tablosu tasarlarken önce tek bir cümle yaz: “<b>Bir satır, … demektir.</b>” Bu cümle ayrıntı düzeyini (grain) belirler; hangi boyutlara bağlanabileceğini ve hangi sorulara cevap verebileceğini sınırlar.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Tablo</th><th>Satır</th><th>Tanecik cümlesi</th></tr>
+<tr><td>Satislar</td><td>1.620</td><td>Bir satır, bir siparişteki bir ürün satırıdır (910 sipariş).</td></tr>
+<tr><td>Hedefler</td><td>252</td><td>Bir satır, bir ayın bir kategorideki hedefidir (36 ay × 7 kategori).</td></tr>
+<tr><td>StokGorunum</td><td>1.440</td><td>Bir satır, bir ürünün bir ay sonundaki stok fotoğrafıdır (36 ay × 40 ürün).</td></tr>
+</table></div>
+<p>Cümle netse hatalar erken görünür. Hedefler ay düzeyinde olduğu için gün düzeyinde bir hedef sorusu anlamsızdır; StokGorunum bir fotoğraf olduğu için aylar boyunca toplanamaz, son değeri alınır. Aynı tabloya iki farklı tanecikte satır karıştırmak (ör. ürün satırları ile sipariş başlığındaki kargo ücreti) toplamları sessizce bozar: kargo ücretini ayrı bir sipariş düzeyi tabloya ya da satırlara paylaştırarak ekle.</p>
+
+<h2>Bileşik anahtar</h2>
+<p>Power BI’da bir ilişki her iki tarafta <b>tek bir sütun</b> kullanır. StokGorunum’daki bir satırı benzersiz kılan şey ise iki sütunun birlikteliğidir: <code>Tarih</code> + <code>UrunNo</code>. Çoğu zaman bu bir sorun değildir: yıldız şemada her parça kendi boyutuna bağlanır (Tarih’e ve Urunler’e). Bileşik anahtar ancak iki sütunla tanımlanan bir boyuta bağlanman gerektiğinde gerekir; örneğin bayi kodlarının yalnızca bölge içinde benzersiz olduğu bir bayi listesi.</p>
+<p>Çözüm, iki sütunu tek bir anahtar sütununda birleştirmektir. En iyi yer Power Query’dir: iki tarafta da aynı ayraçla <b>Sütunları birleştir</b>.</p>
+<pre class="m">Table.AddColumn(Kaynak, "BayiAnahtar",
+    each Text.Combine({[BolgeKodu], Text.From([BayiKodu])}, "|"), type text)</pre>
+<p>DAX’ta hesaplanmış sütunla da yapılabilir; <code>COMBINEVALUES</code> bu iş için tasarlanmıştır:</p>
+<pre class="dax" data-notry>BayiAnahtar = COMBINEVALUES("|", Bayiler[BolgeKodu], Bayiler[BayiKodu])</pre>
+<p>Anahtarın gerçekten benzersiz olduğunu bir sorguyla kontrol et. StokGorunum’da birleşik anahtarın farklı değer sayısı satır sayısına (1.440) eşitse anahtar sağlamdır:</p>
+<pre class="dax">EVALUATE
+ROW(
+    "Satır", COUNTROWS(StokGorunum),
+    "Farklı anahtar", COUNTROWS(DISTINCT(SELECTCOLUMNS(StokGorunum, "K", COMBINEVALUES("|", StokGorunum[Tarih], StokGorunum[UrunNo]))))
+)</pre>
+<p>Ayraç önemlidir: ayraçsız “1” + “12” ile “11” + “2” aynı “112” anahtarını üretir.</p>
+
+<h2>Hiyerarşi</h2>
+<p>Hiyerarşi, kullanıcının matriste ve grafikte detaya inmesini (drill down) sağlayan sıralı bir alan grubudur: Yıl → Çeyrek → Ay ya da Kategori → Ürün. Veri bölmesinde en üst düzey alana sağ tıklayıp <b>Hiyerarşi oluştur</b> dersin, diğer alanları üzerine sürüklersin. Kısıt: <b>bir hiyerarşinin bütün düzeyleri aynı tabloda olmalı.</b> <code>Kategoriler[Kategori]</code> ile <code>Urunler[Urun]</code> farklı tablolarda olduğu için ikisiyle tek bir hiyerarşi kuramazsın; düzleştirmenin bir başka nedeni budur. Hiyerarşi içinde pay hesaplamak sık bir istektir: ürünün kendi kategorisi içindeki payı.</p>
+<pre class="dax">Kategori İçi Pay % =
+DIVIDE(
+    [Net Satış],
+    CALCULATE([Net Satış], REMOVEFILTERS(Urunler[Urun]), VALUES(Urunler[Kategori]))
+)</pre>
+<p><code>REMOVEFILTERS</code> ürün filtresini kaldırır; <code>VALUES(Urunler[Kategori])</code> ise o ürünün kategorisini filtre olarak geri koyar. 27" Monitör Elektronik satışlarının yaklaşık %30’unu oluşturur.</p>
+
+<h2>Görünürlük, klasörler ve açıklamalar</h2>
+<ul>
+<li><b>Rapor görünümünde gizle</b>: ilişki anahtarları (<code>Satislar[UrunNo]</code>, <code>Satislar[MusteriNo]</code>), yardımcı sütunlar ve ham sayı sütunları. Kullanıcı ham <code>Tutar</code>’ı değil <code>[Net Satış]</code> ölçüsünü kullanmalı.</li>
+<li><b>Görüntüleme klasörü</b> (Display folder): Model görünümünde Özellikler bölmesinden ölçüleri “Satış”, “Müşteri”, “Zaman” gibi klasörlere ayır; ters eğik çizgiyle alt klasör olur (<code>Satış\Oranlar</code>).</li>
+<li><b>Açıklama</b> (Description): Veri bölmesinde alanın üzerine gelince görünür. “Net Satış: iptal edilen siparişler hariç, indirim sonrası tutar.” Copilot da bu açıklamaları okur; “Yapay zekâ için verileri hazırla” (Prep data for AI) çalışmasının bir parçasıdır.</li>
+<li><b>Veri kategorisi</b> (Data category): Sütun araçları sekmesinde. <code>Musteriler[Sehir]</code>’i “Şehir” yaparsan harita görseli değeri doğru konumlar; “Web URL’si” bağlantıyı tıklanabilir, “Görüntü URL’si” resmi tabloda gösterir. Veri türüne uymayan kategoriler devre dışıdır.</li>
+<li><b>Varsayılan özetleme</b> (Summarization): Power BI sayısal sütunları görsele koyunca toplar. <code>UrunNo</code>, <code>Musteriler[DogumYili]</code> ya da <code>Tarih[Yil]</code> toplanınca anlamsız sayılar çıkar; bu sütunlarda özetlemeyi <b>Özetleme</b> (Don’t summarize) yap. Fiyat gibi birim değerler için toplam yerine ortalama daha doğru bir varsayılandır; asıl hesap yine ölçüyle yapılmalı.</li>
+</ul>
+
+<h2>Sütunu nerede hesaplamalı?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Yer</th><th>Artısı</th><th>Eksisi</th></tr>
+<tr><td>Kaynak (SQL görünümü, veri ambarı)</td><td>Tek doğru, tüm raporlar paylaşır, en iyi sıkıştırma.</td><td>Veritabanı ekibine bağımlılık.</td></tr>
+<tr><td>Power Query</td><td>Rapor geliştiricisinin elinde, katlanabilir, iyi sıkışır.</td><td>Yalnızca bu model (ya da veri akışı) kullanır.</td></tr>
+<tr><td>DAX hesaplanmış sütun</td><td>Model ilişkilerini ve diğer tabloları görür (RELATED, ölçüler).</td><td>Yüklemeden sonra ayrıca hesaplanır, daha az verimli saklanır, katlanmaz.</td></tr>
+</table></div>
+<p>Örneğin Satislar’a <code>RELATED(Kategoriler[Kategori])</code> ile bir kategori sütunu eklemek gereksizdir: ilişki zaten filtreyi taşır. Hesaplanmış sütun, Power Query’de kolayca yapılamayan ve model bilgisi gerektiren durumlar için kalsın; örneğin bir müşterinin ömür boyu satışına göre segment, sabit bir değer olarak gerekiyorsa.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-model-ileri">Alıştırmalara geç (5)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../veri-baglantilari/">← Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service</a><a href="../dax-tarih-metin/">DAX'ta tarih, metin ve sayma fonksiyonları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

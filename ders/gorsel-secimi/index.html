@@ -1,0 +1,54 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doğru görseli seçmek | Kesit Power BI</title><meta name="description" content="Karşılaştırma, eğilim, parça-bütün, dağılım, ilişki: her soru için bir görsel türü."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-secimi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Doğru görseli seçmek"><meta property="og:description" content="Karşılaştırma, eğilim, parça-bütün, dağılım, ilişki: her soru için bir görsel türü."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-secimi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Doğru görseli seçmek","description":"Karşılaştırma, eğilim, parça-bütün, dağılım, ilişki: her soru için bir görsel türü.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-secimi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>Doğru görseli seçmek</h1><p class="st-l">Karşılaştırma, eğilim, parça-bütün, dağılım, ilişki: her soru için bir görsel türü.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-secimi">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Önce soru, sonra grafik</h2>
+<p>Görsel türünü verinin şekli değil, <b>cevaplanacak soru</b> belirler. Aşağıdaki tabloyu bir karar ağacı gibi kullan. Her türün canlı örneği <b>Görseller ve biçim</b> sayfasında.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soru</th><th>İlk tercih</th><th>Alternatif</th><th>Kaçın</th></tr>
+<tr><td>Tek bir sayı ne?</td><td>Kart</td><td>KPI (hedefle), gösterge</td><td>Tek dilimli pasta</td></tr>
+<tr><td>Kategoriler nasıl karşılaştırılır?</td><td>Yatay çubuk (sıralı)</td><td>Sütun (az kategori)</td><td>Pasta (5+ dilim)</td></tr>
+<tr><td>Zaman içinde nasıl değişti?</td><td>Çizgi</td><td>Alan, sütun (az dönem)</td><td>Yatay çubuk</td></tr>
+<tr><td>Bütünün parçaları?</td><td>Yığılmış çubuk, %100 yığılmış</td><td>Halka (2–5 dilim), ağaç haritası</td><td>3B pasta</td></tr>
+<tr><td>Bir toplamdan diğerine ne değişti?</td><td>Şelale</td><td>Fark sütunu</td><td>İki ayrı kart</td></tr>
+<tr><td>İki ölçü arasında ilişki var mı?</td><td>Dağılım</td><td>Kabarcık</td><td>İki eksenli çizgi</td></tr>
+<tr><td>Süreç adımlarında kayıp?</td><td>Huni</td><td>Çubuk</td><td>Pasta</td></tr>
+<tr><td>Ayrıntılı sayılara bakmak?</td><td>Matris (koşullu biçimle)</td><td>Tablo</td><td>Uzun grafik</td></tr>
+</table></div>
+<h2>Sık hatalar</h2>
+<ul>
+<li><b>Sıfırdan başlamayan çubuk ekseni:</b> Farkları olduğundan büyük gösterir. Çubuklar her zaman sıfırdan başlar; çizgilerde esneklik vardır.</li>
+<li><b>İkili eksen:</b> İki farklı ölçeği üst üste bindirmek, okuyanı yanlış ilişki kurmaya iter. İki ayrı grafik kullan ya da ölçüleri aynı birime getir (ör. ikisi de %).</li>
+<li><b>Gökkuşağı renkleri:</b> Her çubuğa farklı renk, “bunlar farklı gruplar” mesajı verir. Tek seri tek renk.</li>
+<li><b>Sıralanmamış kategoriler:</b> Kategorileri değere göre sırala; zaman eksenini kronolojik bırak.</li>
+</ul>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Soru cümlesinden grafiğe</h2>
+<p>Bir yönetici sana genelde grafik türü söylemez, soru sorar. Sorudaki anahtar kelimeyi yakalarsan grafik kendiliğinden belli olur. Aşağıdaki tablo, ana dersteki karar tablosunu iş hayatında sık duyacağın cümlelerle genişletir.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Duyduğun cümle</th><th>Anahtar kelime</th><th>Görsel</th><th>Kurulum ipucu</th></tr>
+<tr><td>“En çok satan 10 ürün hangisi?”</td><td>en çok, sıralama</td><td>Sıralı yatay çubuk</td><td>İlk N filtresiyle 10 ürün, azalan sıralama</td></tr>
+<tr><td>“Hedefin neresindeyiz?”</td><td>hedef</td><td>Kart (referans etiketiyle) ya da KPI</td><td>Değer: [Net Satış], hedef: [Hedef]</td></tr>
+<tr><td>“Siparişlerin çoğu hangi tutar aralığında?”</td><td>çoğu, aralık</td><td>Histogram (sütun)</td><td>Tutarı gruplara (kutulara) böl, sipariş say</td></tr>
+<tr><td>“Mobil'in payı yıllar içinde arttı mı?”</td><td>pay + zaman</td><td>%100 yığılmış sütun</td><td>X: yıl, gösterge: kanal</td></tr>
+<tr><td>“Hangi kategori hangi yılda zayıf?”</td><td>iki boyut</td><td>Matris + koşullu biçim</td><td>Satır: kategori, sütun: yıl, arka plan rengi</td></tr>
+<tr><td>“Şehirlere göre satış?”</td><td>yer</td><td>Önce sıralı çubuk; harita yalnızca konum anlam taşıyorsa</td><td>Haritada küçük farklar görünmez</td></tr>
+<tr><td>“Bu ayın sipariş listesi lazım.”</td><td>liste</td><td>Tablo</td><td>Okuyucu dışa aktaracaksa en uygun görsel</td></tr>
+</table></div>
+<h2>Anadolu Market'ten üç örnek</h2>
+<h3>1. Kategoriler: pasta neden kötü seçim?</h3>
+<p>Yedi kategorinin net satışı Elektronik'te 339.304 ₺, Hediye'de 17.370 ₺. Pasta grafikte Hediye ince bir çizgi olarak kaybolur; Kitap (151.882 ₺) ile Kozmetik (133.564 ₺) arasındaki fark ise açılardan okunamaz. Sıralı yatay çubukta her iki fark da tek bakışta görünür.</p>
+<h3>2. Kanallar: üç dilimde halka kabul edilebilir</h3>
+<p>Mobil 599.841 ₺, Web 457.331 ₺, Mağaza 193.600 ₺. Yalnızca üç parça var ve soru “bütünün ne kadarı?” ise halka grafik işini görür. Ama soru “kanalların payı nasıl değişti?” olursa yıllara göre %100 yığılmış sütuna geçmen gerekir; tek bir halka zamanı gösteremez.</p>
+<h3>3. Hedef: tek sayı, tek bağlam</h3>
+<p>2024'te net satış 747.066 ₺, hedef 763.200 ₺; gerçekleşme yaklaşık %97,9. Bunun için bir sütun grafiği gerekmez. Kart görselinde ana değer olarak net satışı, referans etiketi olarak hedefi ve gerçekleşme oranını göster. Okuyucu üç saniyede “hedefin biraz altındayız” der.</p>
+<h2>Beş saniye testi</h2>
+<p>Grafiği yaptıktan sonra bir arkadaşına beş saniye göster ve kapat. Sonra “ne gördün?” diye sor. Cevabı senin göstermek istediğin mesaja yakınsa görsel doğrudur. Değilse sıralamayı, renkleri ya da görsel türünü değiştir. Bu küçük test, toplantıda yanlış anlaşılmanın önüne geçer. Daha fazla ilke Görselleştirme ilkeleri ve Görsel algı derslerinde.</p>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-secimi">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ilk-rapor/">← İlk raporunu kur</a><a href="../baglam/">Filtre bağlamı (filter context) ve satır bağlamı (row context) →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

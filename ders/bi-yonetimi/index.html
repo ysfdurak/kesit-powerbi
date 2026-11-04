@@ -1,0 +1,113 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme | Kesit Power BI</title><meta name="description" content="Ekip lideri ve kıdemli geliştirici için: lisans ve kapasite kararları, self-servis ile kurumsal BI arasında yönetilen self-servis, mükemmeliyet merkezi…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/bi-yonetimi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme"><meta property="og:description" content="Ekip lideri ve kıdemli geliştirici için: lisans ve kapasite kararları, self-servis ile kurumsal BI arasında yönetilen self-servis, mükemmeliyet merkezi…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/bi-yonetimi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme","description":"Ekip lideri ve kıdemli geliştirici için: lisans ve kapasite kararları, self-servis ile kurumsal BI arasında yönetilen self-servis, mükemmeliyet merkezi…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/bi-yonetimi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Yönetim ve Güvenlik</span><h1>Power BI ortamını yönetmek: lisans, kapasite, mükemmeliyet merkezi ve benimseme</h1><p class="st-l">Ekip lideri ve kıdemli geliştirici için: lisans ve kapasite kararları, self-servis ile kurumsal BI arasında yönetilen self-servis, mükemmeliyet merkezi rolleri, kiracı ayarları kontrol listesi, onaylı anlam modelleri, benimsemeyi izlemek ve 90 günlük yayılım planı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-bi-yonetimi">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Bir şirkette Power BI’ı “kurmak” bir gün sürer; <b>iyi yönetmek</b> yıllar sürer. Bu ders ekip lideri, BI yöneticisi ve kıdemli geliştirici içindir. Konu teknik ayarlardan çok kararlardır: kim ne lisans alacak, içeriği kim sahiplenecek, hangi model “resmî” sayılacak, insanlar raporları gerçekten kullanıyor mu? Microsoft bu soruları <b>Fabric benimseme yol haritası (Fabric adoption roadmap)</b> adlı bir rehber dizisinde ele alır; aşağıda onun fikirlerini kendi sözlerimizle ve Anadolu Market örneğiyle özetliyoruz.</p>
+<div class="note"><b>Fiyat yok, kural var</b>Lisans fiyatları ve paket adları sık değişir. Bu derste fiyat vermiyoruz; kuralları Ekim 2026’da Microsoft Learn’den doğruladık. Karar vermeden önce güncel sayfaya bak.</div>
+
+<h2>Lisans ve kapasite: hangi soru hangi kararı doğurur?</h2>
+<p>İki tür satın alma vardır: <b>kullanıcı başına lisans</b> ve <b>kapasite</b> (paylaşılan işlem gücü).</p>
+<div class="tbl-wrap"><table>
+<tr><th>Seçenek</th><th>Ne sağlar?</th><th>Dikkat</th></tr>
+<tr><td><b>Ücretsiz (Free)</b></td><td>Fabric’e giriş, Fabric kapasitesindeki alanlarda Power BI dışı Fabric öğeleri oluşturup paylaşmak</td><td>Paylaşılan Power BI içeriğini yalnızca F64 ve üstü kapasitede, Görüntüleyici (Viewer) rolüyle görebilir</td></tr>
+<tr><td><b>Pro</b></td><td>Power BI içeriği oluşturup paylaşmak</td><td>Power BI kullanan her kuruluşta en az bir Pro ya da PPU kullanıcı gerekir</td></tr>
+<tr><td><b>Kullanıcı başına Premium (PPU)</b></td><td>Premium özelliklerinin çoğu, kullanıcı başına</td><td>Fabric kapasitesi sağlamaz; Power BI dışı Fabric öğelerini tek başına çalıştıramaz. Learn’e göre 250’den az kullanıcı için genelde daha ekonomik</td></tr>
+<tr><td><b>Fabric kapasitesi (F SKU)</b></td><td>F2’den F8192’ye; saniye bazında faturalama, isteğe bağlı yıllık rezervasyon</td><td>Önerilen seçenek. Power BI Premium kapasite (P SKU) satın alma seçenekleri emekliye ayrılıyor</td></tr>
+<tr><td><b>Deneme (Trial)</b></td><td>60 gün; F4 ya da F64 boyutunda deneme kapasitesi</td><td>Power BI lisans kuralları denemede değişmez; Copilot denemede desteklenmez; süre bitince sona erer</td></tr>
+</table></div>
+<p><b>F64 eşiği</b> kararın merkezindedir. Learn’e göre F64’ten küçük F kapasitelerde, Power BI içeriğini görüntüleyen her kullanıcının Pro, PPU ya da bireysel deneme lisansı olmalı. F64 ve üstünde yalnızca ücretsiz lisansı olan ve çalışma alanında Görüntüleyici rolü bulunan kullanıcılar da içeriği görebilir. Kuruluş içi gömme (SharePoint, PowerPoint) için de aynı kural geçerlidir.</p>
+<p>Anadolu Market büyüyüp 20 rapor geliştiricisine ve 600 mağaza müdürüne (yalnızca okuyucu) ulaştığını varsay. Soru şudur: 600 okuyucuya Pro mu alınır, yoksa F64 ve üstü bir kapasite mi? Cevap fiyat listesine, kapasitenin başka iş yüklerine (lakehouse, not defteri) gerekip gerekmediğine ve kullanım yoğunluğuna bağlıdır. Kapasite alındıysa <b>Microsoft Fabric Capacity Metrics</b> uygulamasıyla CU tüketimi ve kısıtlama (throttling) izlenir.</p>
+<p>Kapasite ve depolama kavramlarının teknik tarafı “Microsoft Fabric’e giriş” ve “Kurumsal model” derslerinde.</p>
+
+<h2>Self-servis, yönetilen self-servis, kurumsal BI</h2>
+<p>Yol haritası içerik sahipliği için üç strateji tanımlar:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Strateji</th><th>Veriyi kim sahiplenir?</th><th>Raporu kim sahiplenir?</th><th>Ne zaman?</th></tr>
+<tr><td><b>İş birimi liderliğinde self-servis</b></td><td>İş birimi</td><td>İş birimi</td><td>Kişisel ve ekip analizleri; en esnek, en az denetim</td></tr>
+<tr><td><b>Yönetilen self-servis</b></td><td>Merkezî ekip (BT, kurumsal BI, CoE)</td><td>İş birimindeki rapor yazarları</td><td>Ekip ve departman raporları; çoğu kuruluş için hedef model</td></tr>
+<tr><td><b>Kurumsal</b></td><td>Merkezî ekip</td><td>Merkezî ekip</td><td>Şirket geneli, hassas ya da denetlenen veri, ihtiyacı net raporlar</td></tr>
+</table></div>
+<p>Microsoft yönetilen self-servisi “çekirdekte disiplin, kenarda esneklik” diye özetler. Anadolu Market’te bunun anlamı: BI ekibi tek bir <b>Satış</b> anlam modelini (Satislar, Urunler, Musteriler, Tarih, Hedefler) yayımlar ve sertifikalar; bölge analistleri bu modele canlı bağlanıp kendi raporlarını yazar. Bölgeye özel bir tabloya ihtiyaç olursa bileşik model ile ekler, ana modeli kopyalamaz.</p>
+<div class="warn"><b>Gölge BI ile self-servis aynı şey değil</b>Self-servis onaylı bir yaklaşımdır ve yönetişim kurallarına uyar. Kişisel e-postayla dolaşan Excel dosyaları ve kimsenin bilmediği çalışma alanları ise gölge BI’dır (shadow IT).</div>
+
+<h2>Mükemmeliyet merkezi (CoE): roller ve yapı</h2>
+<p><b>Mükemmeliyet merkezi (Center of Excellence, CoE)</b>, standartları koyan, eğiten ve paylaşılan veri varlıklarını yöneten küçük bir ekiptir. Yol haritasındaki roller:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Rol</th><th>Ne yapar?</th></tr>
+<tr><td>CoE lideri</td><td>Günlük işleri yönetir; üst yönetim sponsoru ve veri yönetişim kuruluyla çalışır</td></tr>
+<tr><td>Koç</td><td>Ofis saatleri, en iyi uygulama incelemeleri, birlikte geliştirme; şampiyonlar ağını destekler</td></tr>
+<tr><td>Eğitmen</td><td>İç eğitim materyali ve dokümantasyon hazırlar</td></tr>
+<tr><td>Veri analisti</td><td>İş biriminin konu uzmanı; CoE ile birim arasında köprü, sertifikasyona yardım</td></tr>
+<tr><td>Veri modelleyici</td><td>Paylaşılan anlam modellerini ve veri akışlarını yönetir</td></tr>
+<tr><td>Rapor yazarı</td><td>Rapor, pano ve ölçüm (metrics) içeriği yayımlar</td></tr>
+<tr><td>Veri mühendisi</td><td>Mimari ve dağıtım; lakehouse, ambar, işlem hattı gibi geniş kullanılan varlıklar</td></tr>
+<tr><td>Kullanıcı desteği</td><td>Veri tutarsızlıklarını ve üst seviyeye taşınan destek taleplerini çözer</td></tr>
+</table></div>
+<p>Yapı dört türlü olabilir: <b>merkezî</b> (tek ekip her şeyi yapar), <b>birleşik (unified)</b> (merkezî ekip + birimlere gömülü üyeler), <b>federe</b> (çekirdek ekip + birimlerden uydu üyeler) ve <b>dağınık</b> (her birimin kendi CoE’si). Learn’e göre çoğu kuruluş için birleşik ya da federe yapı en etkilidir, çünkü birimler arası sınırı aşar. Anadolu Market gibi orta ölçekli bir şirkette başlangıç için 2–3 kişilik merkezî bir çekirdek ve her bölgeden bir “şampiyon” yeterlidir.</p>
+
+<h2>Kiracı ayarları ve yönetişim kontrol listesi</h2>
+<p><b>Kiracı ayarları (tenant settings)</b> yönetim portalında bulunur ve bütün kuruluşu etkiler. Çoğu ayar tüm kuruluşa ya da belirli güvenlik gruplarına açılabilir. İlk gün gözden geçirilecek ayarlar:</p>
+<ul>
+<li><b>Publish to web</b> (Web’de yayımla): Herkese açık, kimlik doğrulamasız bağlantı üretir. Kapalı tut ya da çok dar bir gruba aç.</li>
+<li><b>Export to Excel</b> ve diğer dışa aktarma ayarları: Kim veriyi dışarı alabilir?</li>
+<li><b>Create workspaces</b> (Çalışma alanı oluştur): Herkes mi, yalnızca bir grup mu? Kontrolsüz alan sayısı, sahipsiz içerik demektir.</li>
+<li><b>Certification</b> (Sertifikasyon): Hangi grup içeriği sertifikalayabilir?</li>
+<li><b>Users can create Fabric items</b>: Power BI dışı Fabric öğelerini kim oluşturabilir?</li>
+<li><b>Guest users can access Microsoft Fabric</b>: Kuruluş dışı misafir kullanıcılar.</li>
+<li><b>Allow XMLA endpoints and Analyze in Excel with on-premises semantic models</b>: Dış araçların modele erişimi.</li>
+<li>Kullanım ölçümleri ve denetim (audit) ayarları: Benimseme ölçümü için açık olmalı.</li>
+</ul>
+<p>Kontrol listesine ayarların yanında şu kuralları da ekle: çalışma alanı adlandırma standardı, her alanda en az iki yönetici, geliştirme / test / üretim ayrımı (bkz. “Yaşam döngüsü” dersi), duyarlılık etiketlerinin zorunluluğu (bkz. “Yönetişim” dersi).</p>
+
+<h2>Tek doğruluk kaynağı: onaylı anlam modelleri</h2>
+<p>İki müdür aynı toplantıya farklı “net satış” rakamıyla geliyorsa sorun DAX’ta değil, yönetişimdedir. Çözüm, ortak modelleri <b>onaylamaktır (endorsement)</b>:</p>
+<ul>
+<li><b>Tanıtılan (Promoted):</b> Sahibi “bu iyi, kullanılabilir” der. Self-servis içerik için.</li>
+<li><b>Sertifikalı (Certified):</b> Yetkili bir grup kalite, belge ve destek kurallarına uyduğunu onaylar. Kurumsal ve yönetilen self-servis içerik için.</li>
+</ul>
+<p>Sertifikalı içerik veri kalitesi doğrulanmış, değişiklik yönetimine bağlı, destek sahibi belli ve belgelenmiş olmalıdır. Yol haritası bir sağlık göstergesi de önerir: <b>anlam modeli / rapor oranı</b>. Her rapor kendi modelini taşıyorsa oran yüksektir; bu, tekrar eden mantık, tutarsız rakamlar ve yüksek bakım yükü demektir. Anadolu Market’te hedef, satış raporlarının tamamının tek sertifikalı Satış modeline bağlanmasıdır.</p>
+
+<h2>Benimsemeyi izlemek</h2>
+<p>Yayımlanan raporu kimse açmıyorsa proje başarısızdır, ne kadar güzel olursa olsun. İki resmî araç vardır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Araç</th><th>Kim görür?</th><th>Ne gösterir?</th></tr>
+<tr><td><b>Kullanım ölçümleri raporu (Usage metrics report)</b></td><td>Çalışma alanında Yönetici, Üye ya da Katkıda bulunan; Pro ya da PPU lisansı gerekir. Görüntüleyici rolü yetmez</td><td>Son 30 günün rapor ve sayfa görüntülemeleri, tekil görüntüleyiciler, eğilim, tipik açılma süresi. “Çalışma alanım”da desteklenmez</td></tr>
+<tr><td><b>Yönetici izleme çalışma alanı (Admin monitoring workspace)</b></td><td>Fabric yöneticisi kurar; raporları başkalarıyla paylaşabilir</td><td>Kiracı geneli etkinlik ve envanter. Microsoft genel bakış için OneLake kataloğundaki <b>Govern</b> raporunu öneriyor; eski “Feature usage and adoption” raporu önizlemede kalacak</td></tr>
+</table></div>
+<p>Kullanım ölçümleri modeli yalnızca son 30 günü tutar. Uzun dönem eğilim için verisini düzenli olarak dışarı aktar. Basit bir benimseme ölçüsü: <b>aktif kullanıcı / lisanslı kullanıcı</b>. Aşağıdaki sorgu, örnek amaçlı küçük bir 30 günlük kullanım tablosundan bunu hesaplıyor (12 lisanslı kullanıcıdan 6’sı aktif, %50):</p>
+<pre class="dax">EVALUATE
+VAR Kullanim =
+    DATATABLE(
+        "Rapor", STRING, "Kullanici", STRING, "Goruntuleme", INTEGER,
+        {
+            {"Satış Panosu", "ayse", 18}, {"Satış Panosu", "mert", 12},
+            {"Satış Panosu", "deniz", 9}, {"Satış Panosu", "selin", 7},
+            {"Satış Panosu", "burak", 4}, {"Stok Raporu", "ayse", 3},
+            {"Stok Raporu", "kerem", 6}, {"Bölge Raporu", "mert", 1}
+        }
+    )
+VAR Lisansli = 12
+VAR Aktif = COUNTROWS(DISTINCT(SELECTCOLUMNS(Kullanim, "Kisi", [Kullanici])))
+RETURN
+    ROW("Aktif Kullanıcı", Aktif, "Benimseme %", DIVIDE(Aktif, Lisansli))</pre>
+<p>Sayının kendisi kadar <b>eğilimi</b> önemlidir: benimseme her ay artıyor mu? Hangi raporlar tek kişiye hizmet ediyor? Görüntülenme sayısı tek başına bir gösteriş ölçüsü olabilir; abonelikler de görüntüleme sayısını etkiler.</p>
+
+<h2>Olgunluk düzeyleri</h2>
+<p>Yol haritası her alanı beş olgunluk düzeyiyle değerlendirir: <b>100 Başlangıç</b> (dağınık denemeler, belgesiz bilgi), <b>200 Tekrarlanabilir</b> (planlı ama her yerde aynı değil), <b>300 Tanımlı</b> (standart süreçler birimler arasında tutarlı), <b>400 Yetkin</b> (veri yaşam döngüsü boyunca yönetiliyor, yönetişim kabul görmüş), <b>500 Verimli</b> (otomasyon, sürekli iyileştirme, kendini sürdüren topluluk). Amaç her alanda 500 değil; iş için yeterli düzeyi seçip ona ulaşmaktır.</p>
+
+<h2>90 günlük yayılım planı</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Dönem</th><th>Odak</th><th>Çıktı</th></tr>
+<tr><td>Gün 1–30</td><td>Temel</td><td>Üst yönetim sponsoru belirlendi; lisans ve kapasite kararı; kiracı ayarları gözden geçirildi; CoE çekirdeği ve adlandırma standardı; mevcut rapor envanteri çıkarıldı</td></tr>
+<tr><td>Gün 31–60</td><td>Pilot</td><td>Tek sertifikalı Satış modeli; bir pilot bölgede 2–3 rapor; şampiyonlar seçildi; ofis saatleri ve iç eğitim başladı; destek kanalı (Teams kanalı ya da form) açıldı</td></tr>
+<tr><td>Gün 61–90</td><td>Yaygınlaştırma</td><td>Diğer bölgelere uygulama olarak dağıtım; kullanım ölçümleri her ay raporlanıyor; hiç açılmayan raporlar için emeklilik süreci; ikinci veri alanı (stok) için plan</td></tr>
+</table></div>
+<div class="tip"><b>İlk metrik seti</b>Aktif kullanıcı oranı, sertifikalı modele bağlı rapor payı, 30 günde hiç açılmayan rapor sayısı, destek talebi çözüm süresi. Dördü de bir eyleme bağlanır.</div>
+<div class="note"><b>İlgili</b>Araçların ayrıntısı <a href="../kullanim-izleme/">Kullanım ve izleme</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-bi-yonetimi">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../karar-toplantisi/">← Rapordan karara: yönetici toplantısında rapor kullanmak</a><a href="../proje-yonetimi-bi/">Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

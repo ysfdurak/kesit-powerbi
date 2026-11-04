@@ -1,0 +1,92 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yapay zekânın yazdığı DAX’ı denetlemek | Kesit Power BI</title><meta name="description" content="Copilot ve sohbet asistanlarının sık yaptığı DAX hataları (uydurma adlar, SUM yerine SUMX, toplam satırı, olgu tarihiyle zaman zekâsı, ALL, VAR…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yz-dax-denetim/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yapay zekânın yazdığı DAX’ı denetlemek"><meta property="og:description" content="Copilot ve sohbet asistanlarının sık yaptığı DAX hataları (uydurma adlar, SUM yerine SUMX, toplam satırı, olgu tarihiyle zaman zekâsı, ALL, VAR…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yz-dax-denetim/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yapay zekânın yazdığı DAX’ı denetlemek","description":"Copilot ve sohbet asistanlarının sık yaptığı DAX hataları (uydurma adlar, SUM yerine SUMX, toplam satırı, olgu tarihiyle zaman zekâsı, ALL, VAR…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yz-dax-denetim/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>Yapay zekânın yazdığı DAX’ı denetlemek</h1><p class="st-l">Copilot ve sohbet asistanlarının sık yaptığı DAX hataları (uydurma adlar, SUM yerine SUMX, toplam satırı, olgu tarihiyle zaman zekâsı, ALL, VAR zamanlaması, bölme, performans) ve bir öneriyi rapora koymadan önce uygulanacak denetim listesi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yz-dax-denetim">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Yapay zekâ asistanları DAX’ı hızlı yazar; ama modelini görmeden yazar ve <b>çalışan</b> kodla <b>doğru</b> kodu ayırt etmez. Bir ölçü hata vermeden çalışıp yanlış sayı üretebilir. Bu derste asistanların en sık yaptığı hataları bizim modelde göreceğiz: her hata için önce “önerilen” kod, sonra düzeltilmiş hâli. Arka plan için “Bağlam geçişi”, “CALCULATE” ve “Zaman zekâsı” derslerine dönebilirsin.</p>
+
+<h2>1 · Var olmayan sütun ya da ölçü</h2>
+<p>Asistan, genel bir satış modeli varsayar ve <code>Satislar[Ciro]</code> ya da <code>[Total Revenue]</code> gibi adlar uydurur. Bu en masum hatadır, çünkü motor hemen hata verir:</p>
+<pre class="dax" data-notry>Ciro (önerilen) = SUM(Satislar[Ciro])   -- böyle bir sütun yok</pre>
+<p>Asıl tehlike, adın <b>var olup yanlış</b> olmasıdır: <code>Satislar[Tutar]</code> gerçekten var ama iptalleri de içerir. Bizim modelde ciro için <code>[Net Satış]</code> kullanılır. Asistana soru sorarken tablo, sütun ve ölçü listesini ver; “yalnızca bu adları kullan” de.</p>
+
+<h2>2 · SUM × SUM ya da SUMX gereken yerde SUM</h2>
+<pre class="dax">Brüt Ciro (önerilen) = SUM(Satislar[Adet]) * SUM(Satislar[BirimFiyat])</pre>
+<p>Bu kod iki toplamı çarpar: bizim modelde yaklaşık 2,97 milyar ₺ çıkar. Doğru hesap her satırda adet × fiyat yapıp sonra toplar (yaklaşık 1,29 milyon ₺, iptaller hariç):</p>
+<pre class="dax">Brüt Ciro =
+CALCULATE(
+    SUMX(Satislar, Satislar[Adet] * Satislar[BirimFiyat]),
+    Satislar[Durum] &lt;&gt; "İptal"
+)</pre>
+<p>Ters hata da görülür: tek bir sütunu toplamak için <code>SUMX(Satislar, Satislar[Tutar])</code> yazmak. Sonuç aynıdır ama gereksizdir; <code>SUM</code> yeter.</p>
+
+<h2>3 · Gereksiz FILTER(Tablo)</h2>
+<pre class="dax">Web Satışı (önerilen) = CALCULATE([Net Satış], FILTER(Satislar, Satislar[Kanal] = "Web"))</pre>
+<pre class="dax">Web Satışı = CALCULATE([Net Satış], Satislar[Kanal] = "Web")</pre>
+<p>İkisi de 457.331 ₺ verir. Ama ilki tüm olgu tablosunu satır satır tarar ve genişletilmiş tabloyu filtre olarak uygular; büyük modelde yavaştır ve bazı bağlamlarda farklı sonuç verir. Kural: tek sütuna koşul koyacaksan sütun filtresi yaz, <code>FILTER</code>’ı ölçüye bağlı koşullar için sakla.</p>
+
+<h2>4 · Toplam satırında yanlış sonuç</h2>
+<pre class="dax">Hedef Aşımı (önerilen) = IF([Net Satış] &gt; [Hedef], [Net Satış] - [Hedef], 0)</pre>
+<p>Bu ölçü bir ayda hedefi aşan kategoride doğru farkı gösterir. Ama toplam satırında toplam satışla toplam hedefi karşılaştırır: bizim modelde üç yılın tamamında satış hedefin altında kaldığı için toplam <b>0</b> çıkar. Oysa tek tek aylarda ve kategorilerde aşımlar vardır. Toplamın, ayrıntıların toplamı olması gerekiyorsa ayrıntı düzeyinde dolaş:</p>
+<pre class="dax">Hedef Aşımı =
+SUMX(
+    CROSSJOIN(VALUES(Kategoriler[Kategori]), VALUES(Tarih[YilAy])),
+    VAR Fark = [Net Satış] - [Hedef]
+    RETURN IF(Fark &gt; 0, Fark)
+)</pre>
+<p>Bu hâliyle toplam 33.447 ₺ olur. Asistanlar toplam satırını neredeyse hiç düşünmez; her öneriyi bir matriste toplam satırıyla birlikte dene.</p>
+
+<h2>5 · Zaman zekâsında olgu tablosunun tarihi</h2>
+<pre class="dax">Satış GY (önerilen) = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))</pre>
+<p>Yıl dilimleyicisi <code>Tarih</code> tablosundan gelir. Kod, olgu tablosundaki tarihleri bir yıl geri kaydırır ama <code>Tarih[Yil]</code> filtresi yerinde kalır: 2024 satırında “2024’te olup 2023 tarihli satışlar” istenir ve sonuç <b>boş</b> çıkar. Zaman zekâsı fonksiyonlarına her zaman işaretli tarih tablosunun sütununu ver: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
+
+<h2>6 · ALL ile dilimleyiciyi silmek</h2>
+<pre class="dax">Seçili Dönem Toplamı (önerilen) = CALCULATE([Net Satış], ALL(Tarih))</pre>
+<p>Amaç “seçili yılların toplamı” ise bu kod yanlıştır: <code>ALL(Tarih)</code> yıl dilimleyicisini de siler ve her satırda 1.250.772 ₺ gösterir. Seçime saygı için <code>ALLSELECTED</code>, yalnızca belirli bir sütunun filtresini kaldırmak için <code>REMOVEFILTERS(Tablo[Sütun])</code> kullan. “FILTER, ALL, ALLEXCEPT, ALLSELECTED” dersindeki üç pay türünü hatırla.</p>
+
+<h2>7 · VAR, CALCULATE’ten önce hesaplanır</h2>
+<pre class="dax">Web Payı (önerilen) =
+VAR S = [Net Satış]
+RETURN DIVIDE(CALCULATE(S, Satislar[Kanal] = "Web"), S)</pre>
+<p>Değişken tanımlandığı yerde ve bir kez hesaplanır. <code>CALCULATE(S, …)</code> artık bir sayıyı filtreler; sayı değişmez. Sonuç her hücrede %100 olur. Filtrelenecek ifade ölçünün kendisi olmalı:</p>
+<pre class="dax">Web Payı =
+VAR Toplam = [Net Satış]
+RETURN DIVIDE(CALCULATE([Net Satış], Satislar[Kanal] = "Web"), Toplam)</pre>
+
+<h2>8 · DIVIDE yerine bölü işareti</h2>
+<pre class="dax">Büyüme (önerilen) = ([Net Satış] - [Satış GY]) / [Satış GY]</pre>
+<p>İlk yıl (2022) geçen yıl boştur: payda BLANK, sonuç <b>sonsuz</b> olur ve kartta “∞” görünür. <code>DIVIDE([Net Satış] - [Satış GY], [Satış GY])</code> bu durumda BLANK döndürür. Ayrıca payın da anlamlı olup olmadığını düşün: geçen yıl yoksa fark da anlamsızdır.</p>
+
+<h2>9 · Performans: iteratör içinde ölçü</h2>
+<pre class="dax">Net Satış (önerilen) = SUMX(Satislar, [Net Satış])</pre>
+<p>Sonuç doğru çıkar, ama her satırda bağlam geçişi olur: 1.620 satırlık tabloda 1.620 kez, milyonluk tabloda milyonlarca kez. Ayrıca olgu tablosunda tekrar eden satırlar varsa sonuç bozulur. Ölçüyü iteratör içinde çağıracaksan küçük bir tabloda dolaş (<code>VALUES(Urunler[Kategori])</code> gibi). Ayrıntı “DAX optimizasyonu” dersinde.</p>
+
+<h2>Denetim kontrol listesi</h2>
+<ol>
+<li><b>Adlar:</b> Her tablo, sütun ve ölçü modelde var mı? Doğru temel ölçü mü (<code>[Net Satış]</code> mı, <code>Satislar[Tutar]</code> mı)?</li>
+<li><b>Bilinen toplam:</b> Sonucu bildiğin bir sayıyla karşılaştır (ör. Net Satış ≈ 1.250.772 ₺, 2024 ≈ 747.066 ₺).</li>
+<li><b>Toplam satırı:</b> Matriste satırları topla; toplamla tutuyor mu, tutması gerekiyor mu?</li>
+<li><b>Dilimleyici:</b> Bir yıl, bir kategori seç; sonuç beklediğin gibi değişiyor mu, değişmemesi gereken yerde sabit mi?</li>
+<li><b>Sınır durumları:</b> İlk yıl, boş ay, hiç satmamış ürün, tek gün seçimi.</li>
+<li><b>Okunabilirlik:</b> <code>__PREV_YEAR</code> gibi adları ekip standardına çevir; açıklama ekle.</li>
+</ol>
+
+<h2>DAX sorgu görünümünde test et</h2>
+<p>Ölçüyü modele eklemeden önce sorgu içinde tanımlayıp yan yana karşılaştırabilirsin. Aşağıdaki sorgu hatalı öneriyi ve doğru ölçüyü aynı tabloda gösterir; boş sütun, hatanın kanıtıdır:</p>
+<pre class="dax">DEFINE
+    MEASURE Satislar[GY (önerilen)] = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))
+EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    "Net Satış", [Net Satış],
+    "GY (önerilen)", [GY (önerilen)],
+    "GY (doğru)", [Satış GY]
+)</pre>
+<div class="tip"><b>Asistana daha iyi soru</b>“Satislar[Tutar], Satislar[Durum], Tarih[Tarih] (işaretli tarih tablosu) ve [Net Satış] ölçüsü var. İptaller hariç geçen yılın aynı dönemine göre büyüme yüzdesini yaz; ilk yılda boş dönsün; yalnızca bu adları kullan.” Bağlam verdikçe hata azalır, ama denetim yine sende.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-yz-dax-denetim">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../copilot/">← Copilot ile çalışmak ve modeli yapay zekâya hazırlamak</a><a href="../python-r/">Power BI’da Python ve R →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,94 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Query: metin, sayı ve tarih dönüşümleri | Kesit Power BI</title><meta name="description" content="Metni kırpmak, birleştirmek ve parçalamak; sayıyı yuvarlamak ve çarpmak; tarihten yıl, ay, gün adı ve süre çıkarmak. Dönüştür ile Sütun ekle sekmelerinin…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-donusum/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Query: metin, sayı ve tarih dönüşümleri"><meta property="og:description" content="Metni kırpmak, birleştirmek ve parçalamak; sayıyı yuvarlamak ve çarpmak; tarihten yıl, ay, gün adı ve süre çıkarmak. Dönüştür ile Sütun ekle sekmelerinin…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-donusum/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Query: metin, sayı ve tarih dönüşümleri","description":"Metni kırpmak, birleştirmek ve parçalamak; sayıyı yuvarlamak ve çarpmak; tarihten yıl, ay, gün adı ve süre çıkarmak. Dönüştür ile Sütun ekle sekmelerinin…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-donusum/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Veri Hazırlama</span><h1>Power Query: metin, sayı ve tarih dönüşümleri</h1><p class="st-l">Metni kırpmak, birleştirmek ve parçalamak; sayıyı yuvarlamak ve çarpmak; tarihten yıl, ay, gün adı ve süre çıkarmak. Dönüştür ile Sütun ekle sekmelerinin farkı, yerel ayarla tür değiştirme ve aynı işi DAX’ta yapmanın bedeli.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-donusum">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>“Power Query ile veri temizleme” dersinde kirli bir Excel sayfasını başlık, tür ve boş satır açısından düzelttik. Bu ders bir adım ileri gidiyor: sütunların <b>içeriğini</b> değiştiren komutlar. Hepsi şeritte üç grupta durur: <b>Metin</b>, <b>Sayı</b> ve <b>Tarih ve Saat</b>. Her komut, arka planda tek satırlık bir M fonksiyonu yazar.</p>
+
+<h2>Önce karar: Dönüştür mü, Sütun ekle mi?</h2>
+<p>Aynı komutların çoğu iki sekmede birden bulunur. Fark, sonucun nereye yazıldığıdır.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Sekme</th><th>Ne olur?</th><th>Arka plandaki M</th><th>Ne zaman?</th></tr>
+<tr><td><b>Dönüştür</b> (Transform)</td><td>Seçili sütun <b>yerinde</b> değişir; eski değer kalmaz.</td><td><code>Table.TransformColumns</code></td><td>Eski değere ihtiyacın yoksa: boşluklu şehir adını düzeltmek gibi.</td></tr>
+<tr><td><b>Sütun ekle</b> (Add Column)</td><td>Sonuç <b>yeni bir sütuna</b> yazılır; kaynak sütun durur.</td><td><code>Table.AddColumn</code></td><td>İkisi de lazımsa: Tarih dururken yanına Ay adı eklemek gibi.</td></tr>
+</table></div>
+<p>Örnek: <code>Tarih</code> sütununu seçip <b>Dönüştür → Tarih → Ay → Ay adı</b> dersen tarih kaybolur, yerine “Ocak” yazar. Artık o sütunla Tarih tablosuna ilişki kuramazsın. Aynı komutu <b>Sütun ekle</b> sekmesinden çalıştırırsan tarih korunur.</p>
+
+<h2>Metin dönüşümleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>İşlem</th><th>Şeritteki yeri</th><th>M karşılığı</th></tr>
+<tr><td>Kırp (Trim): baş ve sondaki boşluklar</td><td>Biçim</td><td><code>Text.Trim</code></td></tr>
+<tr><td>Temizle (Clean): satır sonu gibi görünmez karakterler</td><td>Biçim</td><td><code>Text.Clean</code></td></tr>
+<tr><td>BÜYÜK, küçük, Her Sözcüğün İlk Harfi</td><td>Biçim</td><td><code>Text.Upper</code>, <code>Text.Lower</code>, <code>Text.Proper</code></td></tr>
+<tr><td>Önek / sonek ekle (Add prefix / suffix)</td><td>Biçim</td><td><code>each "TR-" &amp; _</code></td></tr>
+<tr><td>Uzunluk (Length)</td><td>Ayıkla</td><td><code>Text.Length</code></td></tr>
+<tr><td>İlk / son karakterler, aralık</td><td>Ayıkla</td><td><code>Text.Start</code>, <code>Text.End</code>, <code>Text.Middle</code></td></tr>
+<tr><td>Sınırlayıcılar arasındaki metin</td><td>Ayıkla</td><td><code>Text.BetweenDelimiters</code></td></tr>
+<tr><td>Sütunları birleştir (Merge Columns), ayraçla</td><td>Metin sütunu</td><td><code>Table.CombineColumns</code>, <code>Text.Combine</code></td></tr>
+<tr><td>Değerleri değiştir (Replace Values)</td><td>Giriş / Dönüştür</td><td><code>Table.ReplaceValue</code></td></tr>
+</table></div>
+<p>Değerleri değiştir iki biçimde çalışır. <b>Hücrenin tamamı eşleşsin</b> işaretliyse yalnızca tam olarak “-” olan hücre değişir (<code>Replacer.ReplaceValue</code>). İşaret kaldırılırsa metnin içindeki her geçiş değişir (<code>Replacer.ReplaceText</code>): “Merkez Bayi” içindeki “ Bayi” silinir ve “Merkez” kalır.</p>
+<pre class="m">let
+    Kaynak = Musteriler,
+    Kirpilmis = Table.TransformColumns(Kaynak, {{"Sehir", Text.Trim, type text}}),
+    Etiket = Table.AddColumn(Kirpilmis, "Konum",
+        each Text.Combine({[Sehir], [Bolge]}, " / "), type text),
+    Kod = Table.AddColumn(Etiket, "MusteriKodu",
+        each "M-" &amp; Text.PadStart(Text.From([MusteriNo]), 4, "0"), type text),
+    Kisa = Table.AddColumn(Kod, "SehirKisa",
+        each Text.Upper(Text.Start([Sehir], 3), "tr-TR"), type text)
+in
+    Kisa</pre>
+<p><code>Text.Combine</code> boş (null) parçaları atlar. Musteriler tablomuzda şehri boş müşteriler var. Onlarda <code>Konum</code> yalnızca bölge adı olur, başında fazladan ayraç kalmaz.</p>
+<div class="warn"><b>Türkçe İ sorunu</b>Kültür vermeden büyük harfe çevirmek “izmir”i “IZMIR” yapar. Şeritteki komut ya da <code>Text.Upper([Sehir], "tr-TR")</code> “İZMİR” üretir. Dilimleyicide aynı şehrin iki yazımı görünüyorsa önce buna bak.</div>
+
+<h2>Sayı dönüşümleri</h2>
+<ul>
+<li><b>Standart</b>: topla, çarp, böl, yüzde. İki sütunu seçip <b>Sütun ekle → Standart → Çarp</b> dersen <code>[Adet] * [BirimFiyat]</code> gibi satır tutarı sütunu oluşur. <b>Yüzde</b> komutu sütunun belirli bir yüzdesini hesaplar (ör. KDV için %20).</li>
+<li><b>Yuvarlama</b>: <code>Number.Round</code>, <code>Number.RoundUp</code>, <code>Number.RoundDown</code>.</li>
+<li><b>Bilimsel</b>: mutlak değer (<code>Number.Abs</code>), karekök (<code>Number.Sqrt</code>), logaritma (<code>Number.Log10</code>, <code>Number.Ln</code>), üs.</li>
+</ul>
+<div class="note"><b>Yuvarlama iki dilde farklı</b>M’de <code>Number.Round</code> varsayılan olarak <b>çifte yuvarlar</b> (RoundingMode.ToEven): 2,5 → 2, 3,5 → 4. DAX’ta <code>ROUND(2.5, 0)</code> ise 3 verir. Muhasebe toplamlarını eşleştirmen gerekiyorsa M’de kipi açıkça yaz: <code>Number.Round([Tutar], 0, RoundingMode.AwayFromZero)</code>.</div>
+<p>Mutlak değer, iade satırları eksi tutarla gelen bir sistemde “hareket büyüklüğü” için işe yarar. Logaritma ve karekök ise rapor için nadiren gerekir: çok çarpık bir dağılımı (birkaç dev müşteri, yüzlerce küçük müşteri) dağılım grafiğinde okunur yapmak ya da bir modele girdi hazırlamak için kullanılır. Rapordaki eksenin logaritmik olması yetiyorsa veriyi değiştirme; görselin eksen ayarını kullan.</p>
+
+<h2>Tarih dönüşümleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Çıkarılan</th><th>M karşılığı</th><th>Örnek (27.04.2023)</th></tr>
+<tr><td>Yıl, ay, gün</td><td><code>Date.Year</code>, <code>Date.Month</code>, <code>Date.Day</code></td><td>2023, 4, 27</td></tr>
+<tr><td>Ay adı</td><td><code>Date.MonthName([Tarih], "tr-TR")</code></td><td>Nisan</td></tr>
+<tr><td>Gün adı</td><td><code>Date.DayOfWeekName([Tarih], "tr-TR")</code></td><td>Perşembe</td></tr>
+<tr><td>Yılın haftası</td><td><code>Date.WeekOfYear</code></td><td>17</td></tr>
+<tr><td>Çeyrek</td><td><code>Date.QuarterOfYear</code></td><td>2</td></tr>
+<tr><td>Ay başı / ay sonu</td><td><code>Date.StartOfMonth</code>, <code>Date.EndOfMonth</code></td><td>01.04.2023, 30.04.2023</td></tr>
+</table></div>
+<p>İki tarih arasındaki süre için iki sütunu seçip <b>Sütun ekle → Tarih → Günleri çıkar</b> komutunu kullan; sonuç bir <b>süre</b> (duration) değeridir, <code>Duration.Days</code> onu gün sayısına çevirir. <b>Yaş</b> (Age) komutu ise bugünle fark alır: her yenilemede değer değişir. Bu bazen istenir (müşterinin bugünkü yaşı), bazen yanıltır (siparişin verildiği andaki yaş).</p>
+<pre class="m">let
+    Kaynak = Siparisler,
+    Sure = Table.AddColumn(Kaynak, "TeslimGunu",
+        each Duration.Days([TeslimTarihi] - [Tarih]), Int64.Type),
+    AyAdi = Table.AddColumn(Sure, "AyAdi",
+        each Date.MonthName([Tarih], "tr-TR"), type text)
+in
+    AyAdi</pre>
+<div class="tip"><b>Olgu tablosuna takvim sütunu ekleme</b>Satislar tablosunun her satırına Yıl, Ay, Gün adı yazmak yerine “Tarih tablosu” dersindeki gibi ayrı bir takvim kullan. Olgu tablosunda yalnızca tarih kalsın; ay adı, çeyrek ve hafta takvimden gelsin. Tarih dönüşümleri en çok, takvimi kendisi kuran tablolar ve kaynakta düzeltilmesi gereken metin tarihler için gerekir.</div>
+
+<h2>Yerel ayarla tür değiştirme</h2>
+<p>“03/04/2024” ABD biçiminde 4 Mart değil 3 Nisan değildir; tam tersidir. Power Query metni çözerken dosyanın <b>yerel ayarını</b> (locale) kullanır. Kaynak dosya başka bir ülkeden geliyorsa sütun başlığına sağ tıkla: <b>Türü değiştir → Yerel ayarı kullanarak</b> (Using Locale). Açılan pencerede hedef türü ve kaynağın yerel ayarını seç. Arka planda <code>Table.TransformColumnTypes</code> fonksiyonuna üçüncü bir bağımsız değişken eklenir:</p>
+<pre class="m">Table.TransformColumnTypes(Kaynak, {{"Tarih", type date}, {"Tutar", type number}}, "en-US")</pre>
+<p>Aynı ayar sayıları da etkiler: “1,250.50” en-US ile 1250,5 okunur, tr-TR ile hata verir. Dosyanın varsayılan yerel ayarı <b>Seçenekler → Geçerli dosya → Bölgesel ayarlar</b> altındadır.</p>
+
+<h2>Aynı işi DAX’ta yapmak</h2>
+<p>Bir ay adı sütununu DAX’ta hesaplanmış sütun olarak da yazabilirsin:</p>
+<pre class="dax" data-notry>Ay Adı = FORMAT(Satislar[Tarih], "MMMM")</pre>
+<p>Sonuç aynı görünür ama maliyeti farklıdır. Hesaplanmış sütun, Power Query yüklemesi bittikten sonra modelde ayrıca hesaplanır; yenileme süresine eklenir ve kaynakta yapılan sütunlar kadar iyi sıkıştırılmaz. Sorgu katlamayla kaynağa da gönderilemez, başka modeller (ör. veri akışları) onu yeniden kullanamaz. Genel kural: <b>dönüşümü olabildiğince kaynağa yakın, gerektiği kadar rapora yakın yap.</b> Satır düzeyindeki temizlik Power Query’nin işidir.</p>
+<p>DAX’ın gerçekten gerekli olduğu yer, hesaplamanın <b>model ilişkilerine</b> ya da filtre bağlamına ihtiyaç duyduğu durumlardır. Örneğin müşterinin sipariş anındaki ortalama yaşını bir ölçüyle hesaplamak, her satış satırına yaş sütunu yazmaktan esnektir; kategoriye ve yıla göre kendiliğinden değişir:</p>
+<pre class="dax">Ortalama Alım Yaşı =
+AVERAGEX(Satislar, YEAR(Satislar[Tarih]) - RELATED(Musteriler[DogumYili]))</pre>
+<p>Modelimizde bu değer tüm satışlarda yaklaşık 41,5; 2022’de 38,1, 2024’te 42,0’dır.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-donusum">Alıştırmalara geç (5)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../kademeli-tasarim/">← Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler</a><a href="../pq-ileri/">Power Query: join türleri, dizin sütunu ve gruplu sıra →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

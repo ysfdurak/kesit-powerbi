@@ -1,0 +1,130 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap | Kesit Power BI</title><meta name="description" content="PATH, PATHITEM, PATHLENGTH, PATHCONTAINS; ebeveyne göre pay; ISINSCOPE ile düzey bilinçli ölçüler."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hiyerarsi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap"><meta property="og:description" content="PATH, PATHITEM, PATHLENGTH, PATHCONTAINS; ebeveyne göre pay; ISINSCOPE ile düzey bilinçli ölçüler."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hiyerarsi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap","description":"PATH, PATHITEM, PATHLENGTH, PATHCONTAINS; ebeveyne göre pay; ISINSCOPE ile düzey bilinçli ölçüler.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hiyerarsi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Uzman DAX</span><h1>Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap</h1><p class="st-l">PATH, PATHITEM, PATHLENGTH, PATHCONTAINS; ebeveyne göre pay; ISINSCOPE ile düzey bilinçli ölçüler.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hiyerarsi">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Doğal hiyerarşi ve ebeveyn-çocuk hiyerarşisi</h2>
+<p>Kategori → Ürün ya da Yıl → Çeyrek → Ay gibi <b>doğal hiyerarşiler</b> farklı sütunlarda durur ve matrise satır satır eklenir. Organizasyon şeması ise tek tabloda <b>ebeveyn-çocuk</b> (parent-child) biçimindedir: <code>Calisanlar[CalisanNo]</code> ve <code>Calisanlar[YoneticiNo]</code>. Derinlik sabit değildir; buna <b>düzensiz</b> (ragged) hiyerarşi denir.</p>
+<h2>PATH ailesi</h2>
+<pre class="dax" data-notry>-- Hesaplanmış sütunlar (Calisanlar tablosunda):
+Yol = PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo])        -- "1|2|9"
+Seviye = PATHLENGTH(Calisanlar[Yol])                             -- 3
+Seviye1 = LOOKUPVALUE(Calisanlar[AdSoyad], Calisanlar[CalisanNo], PATHITEM(Calisanlar[Yol], 1, INTEGER))
+Seviye2 = LOOKUPVALUE(Calisanlar[AdSoyad], Calisanlar[CalisanNo], PATHITEM(Calisanlar[Yol], 2, INTEGER))
+Seviye3 = LOOKUPVALUE(Calisanlar[AdSoyad], Calisanlar[CalisanNo], PATHITEM(Calisanlar[Yol], 3, INTEGER))</pre>
+<p>Seviye1–3 sütunları matrisin satırlarına konunca organizasyon şeması açılıp kapanan bir hiyerarşi olur. Boş seviyeleri gizlemek için düzey bilinçli bir ölçü kullanılır:</p>
+<pre class="dax" data-notry>Satış (Hiyerarşi) =
+VAR Derinlik = MAX(Calisanlar[Seviye])
+VAR GosterilenDuzey =
+    ISINSCOPE(Calisanlar[Seviye1])
+        + ISINSCOPE(Calisanlar[Seviye2])
+        + ISINSCOPE(Calisanlar[Seviye3])
+RETURN
+    IF(GosterilenDuzey <= Derinlik, [Ekip Satışı])</pre>
+<p>Matris, bir çalışanın gerçek derinliğinden daha alt bir düzeyi gösteriyorsa (ör. temsilcinin altında boş bir “Seviye4”) ölçü boş döner ve o satır gizlenir. TRUE/FALSE değerleri toplanınca 1/0 olur.</p>
+<h2>Ekibin toplamı: PATHCONTAINS</h2>
+<p>Bir yöneticinin satırında, hiyerarşide altındaki herkesin toplamı:</p>
+<pre class="dax">Ekip Satışı =
+VAR Kisi = SELECTEDVALUE(Calisanlar[CalisanNo])
+RETURN CALCULATE([Net Satış], FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], Kisi)))</pre>
+<h2>Hiyerarşide pay: ebeveyne göre</h2>
+<p>Matriste Kategori → Ürün varken, ürün satırında ürünün kategorisi içindeki payını, kategori satırında kategorinin genel paydaki yerini göstermek:</p>
+<pre class="dax">Ebeveyne Göre Pay % =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Urunler[Urun]),
+        DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Urunler[Urun]))),
+    ISINSCOPE(Urunler[Kategori]),
+        DIVIDE([Net Satış], CALCULATE([Net Satış], ALLSELECTED(Urunler[Kategori]))),
+    1
+)</pre>
+<p><code>ISINSCOPE</code> en alt düzeyden başlayarak kontrol edilir: ürün düzeyinde kategori de “kapsamda”dır.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Bu modelin organizasyon ağacı</h2>
+<p>Calisanlar tablosunda 27 kişi ve üç düzey var: Genel Müdür Selim Aksoy (düzey 1), altında altı müdür (düzey 2), onların altında 20 uzman ve temsilci (düzey 3). Satış yapanlar Satış Müdürü Elif Doğan ve ekibindeki beş kişi. Satışın 183.134,35 ₺'si düzey 2'de (Elif Doğan'ın kendisi), 1.067.638,10 ₺'si düzey 3'te.</p>
+<p>Bu yapı, gerçek şirketlerde sık görülen bir sorunu taşır: müdür hem yönetir hem satar. Matris açıldığında müdürün kendi satışı nereye düşer? Bu soru düzensiz hiyerarşinin (ragged hierarchy) özüdür.</p>
+
+<h2>Düzensiz hiyerarşi: boşluklar nereden gelir?</h2>
+<p>Matrise Seviye1 → Seviye2 → Seviye3 sütunları konduğunda Elif Doğan'ın satırı düzey 2'de biter; Seviye3 değeri boştur. Matris onun 183.134,35 ₺'lik kendi satışını Elif Doğan'ın altında "(Boş)" adlı bir satırda gösterir. Kullanıcı "Boş kim?" diye sorar. Üç çözüm:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Çözüm</th><th>Artı</th><th>Eksi</th></tr>
+<tr><td>Boş düzeyi ISINSCOPE'lu bir ölçüyle gizlemek (ana bölümdeki "Satış (Hiyerarşi)")</td><td>Model değişmez</td><td>Müdürün kendi satışı hiçbir alt satırda görünmez, yalnızca toplamında</td></tr>
+<tr><td>Boş düzeyi kişinin kendi adıyla doldurmak</td><td>Her tutar adı olan bir satırda</td><td>Müdür kendi altında bir kez daha görünür</td></tr>
+<tr><td>Boş düzeyi "(kendi satışı)" gibi bir etiketle doldurmak</td><td>Açık ve okunur</td><td>Etiket kuralı belgelenmeli</td></tr>
+</table></div>
+<pre class="dax" data-notry>-- Calisanlar tablosunda hesaplanmış sütun
+Seviye3 (Dolu) =
+VAR Kendi = Calisanlar[AdSoyad]
+VAR Uc = LOOKUPVALUE(
+    Calisanlar[AdSoyad], Calisanlar[CalisanNo],
+    PATHITEM(Calisanlar[Yol], 3, INTEGER)
+)
+RETURN IF(PATHLENGTH(Calisanlar[Yol]) &lt; 3, Kendi &amp; " (kendi satışı)", Uc)</pre>
+<p>Hangi çözümü seçersen seç, matrisin toplamları değişmez; değişen, kullanıcının tutarı nerede bulduğudur. Organizasyon raporlarında en az soru getiren seçenek genellikle üçüncüsüdür.</p>
+
+<h2>PATH ailesi: derinlemesine</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Fonksiyon</th><th>Gamze Özkan için (Yol = "1|2|8")</th><th>Not</th></tr>
+<tr><td><code>PATHLENGTH(Yol)</code></td><td>3</td><td>Düzey</td></tr>
+<tr><td><code>PATHITEM(Yol, 1, INTEGER)</code></td><td>1</td><td>Kök (Genel Müdür)</td></tr>
+<tr><td><code>PATHITEMREVERSE(Yol, 2, INTEGER)</code></td><td>2</td><td>Sondan ikinci: doğrudan yönetici</td></tr>
+<tr><td><code>PATHCONTAINS(Yol, 2)</code></td><td>DOĞRU</td><td>Elif Doğan'ın ağacında mı?</td></tr>
+</table></div>
+<p>PATHITEM'in üçüncü bağımsız değişkenini unutma: varsayılan dönüş türü metindir. Metin "2" ile tamsayı CalisanNo, LOOKUPVALUE'da eşleşmez. Microsoft Learn'deki kurallar, PATH sütunu yenilemede hata vermeden önce veri kalitesini kontrol etmeni gerektirir:</p>
+<ul>
+<li>Kimlik ve ebeveyn sütunu aynı türde olmalı: ikisi de metin ya da ikisi de tamsayı.</li>
+<li>Ebeveyn sütunu boşsa PATH yalnızca kişinin kendi kimliğini döndürür (kök).</li>
+<li>Ebeveyn sütunundaki her değer kimlik sütununda bulunmalı.</li>
+<li>Kimlikte dikey çizgi (|) varsa hata alırsın.</li>
+<li>Aynı kimlik farklı ebeveynlerle iki kez geçiyorsa hata alırsın.</li>
+<li>DirectQuery modunda hesaplanmış sütunda ve RLS kuralında desteklenmez.</li>
+</ul>
+<p>Yenilemeden önce şu sorguyla "yöneticisi tabloda olmayan" kayıtları ara:</p>
+<pre class="dax">EVALUATE
+EXCEPT(VALUES(Calisanlar[YoneticiNo]), VALUES(Calisanlar[CalisanNo]))</pre>
+<p>Bu modelde tek satır gelir ve değeri boştur: kök çalışanın boş YoneticiNo'su. Başka bir değer gelirse PATH o çalışanda hata verecek demektir.</p>
+
+<h2>Yönetici bazında toplama: üç farklı soru</h2>
+<p>İK direktörü "Elif Doğan'ın satışı ne kadar?" diye soruyor. Bu cümle üç farklı sayıya karşılık gelebilir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Soru</th><th>Ölçü fikri</th><th>Elif Doğan</th><th>Selim Aksoy</th></tr>
+<tr><td>Kişinin kendi satışı</td><td><code>[Net Satış]</code></td><td>183.134,35</td><td>boş</td></tr>
+<tr><td>Doğrudan bağlıları</td><td><code>Calisanlar[YoneticiNo] = Kisi</code></td><td>1.067.638,10</td><td>183.134,35</td></tr>
+<tr><td>Tüm alt ağaç (kendisi dahil)</td><td><code>PATHCONTAINS(Calisanlar[Yol], Kisi)</code></td><td>1.250.772,45</td><td>1.250.772,45</td></tr>
+</table></div>
+<p>Mekanizma: <code>FILTER(ALL(Calisanlar), PATHCONTAINS(Calisanlar[Yol], Kisi))</code>, satırdaki kişiye ait filtreyi kaldırır ve yerine ekibin satırlarını koyar. Bu filtre TemsilciNo ilişkisi üzerinden Satislar'a iner. Raporda hangi sayının gösterildiği başlıkta yazmalı; yoksa üç ayrı toplantıda üç ayrı rakam konuşulur.</p>
+<p>Ekip içindeki pay da aynı mantıkla hesaplanır: payda, kişinin yöneticisinin alt ağacıdır. Gamze Özkan'ın payı Elif Doğan ağacının %21,2'si; Elif Doğan'ın kendi payı ise Genel Müdür ağacının %14,6'sı.</p>
+<div class="warn"><b>RLS ile birlikte</b>Satır düzeyi güvenlik (RLS) kişiyi kendi alt ağacıyla sınırlıyorsa (ör. <code>PATHCONTAINS(Calisanlar[Yol], ...USERPRINCIPALNAME()...)</code>), ölçüdeki ALL(Calisanlar) RLS'nin gizlediği satırları geri getirmez. Müdür kendi ekibinin toplamını doğru görür; temsilci yalnızca kendini görür. "Şirket toplamına göre pay" ise RLS altında "görebildiğim toplama göre pay" olur. Bu farkı raporun kullanım notuna yaz.</div>
+
+<h2>ISINSCOPE ile düzeye göre farklı hesap</h2>
+<p>Satış direktörü Departman → Çalışan matrisi istiyor: çalışan satırında kişinin tüm alt ağacının satışı, departman satırında departmanın satışı görünsün.</p>
+<pre class="dax">Düzeye Göre Ekip Satışı =
+SWITCH(
+    TRUE(),
+    ISINSCOPE(Calisanlar[AdSoyad]), [Ekip Satışı],
+    ISINSCOPE(Departmanlar[Departman]), [Net Satış],
+    [Net Satış]
+)</pre>
+<p>Bunun bir bedeli var: alt toplam artık çocukların toplamı değildir. Satış departmanı satırı 1.250.772,45 ₺ gösterir; altındaki çalışan satırlarının toplamı ise 2.318.410,55 ₺'dir, çünkü Elif Doğan'ın satırı ekibinin satışını da içerir. Kullanıcı satırları toplarsa yanlış sonuca varır. Bu tür ölçülerde:</p>
+<ul>
+<li>Ölçünün adı farkı söylesin ("Ekip Satışı (alt ağaç)").</li>
+<li>Kenara bir not ekle: "Çalışan satırları toplanmaz."</li>
+<li>ISINSCOPE kullan, HASONEVALUE değil: dilimleyicide tek departman seçiliyken HASONEVALUE toplam satırında da DOĞRU döner; ISINSCOPE yalnızca o düzey matriste gerçekten açıkken DOĞRU döner.</li>
+</ul>
+
+<h2>Kontrol listesi</h2>
+<ol>
+<li>Kök kayıt dışında, yöneticisi tabloda olmayan çalışan var mı? (EXCEPT sorgusu)</li>
+<li>PATHITEM'de dönüş türü INTEGER mı?</li>
+<li>Müdürün kendi satışı matriste adı olan bir satırda görünüyor mu?</li>
+<li>"Kendi", "doğrudan bağlı" ve "alt ağaç" sayılarından hangisi gösteriliyor?</li>
+<li>RLS altında ALL'ın göremeyeceği satırlar düşünüldü mü?</li>
+<li>Düzeye göre değişen ölçüde alt toplamların çocukların toplamı olmadığı belirtildi mi?</li>
+</ol>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-hiyerarsi">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ileri-kaliplar/">← İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi</a><a href="../istatistik-ileri/">İleri istatistik: eğilim, z-skoru, mevsimsellik →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

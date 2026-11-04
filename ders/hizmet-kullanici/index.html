@@ -1,0 +1,77 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI Service’te rapor kullanmak | Kesit Power BI</title><meta name="description" content="Raporu yapan değil, kullanan tarafta ol: Service’te raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/hizmet-kullanici/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power BI Service’te rapor kullanmak"><meta property="og:description" content="Raporu yapan değil, kullanan tarafta ol: Service’te raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/hizmet-kullanici/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power BI Service’te rapor kullanmak","description":"Raporu yapan değil, kullanan tarafta ol: Service’te raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/hizmet-kullanici/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Power BI Service’te rapor kullanmak</h1><p class="st-l">Raporu yapan değil, kullanan tarafta ol: Service’te raporu bul, filtrele, ayrıntıya in, kendi görünümünü kaydet, veriyi Excel’e al, abone ol ve Copilot’a sor.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-hizmet-kullanici">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Bu derste Desktop’u kapatıyoruz. Bir meslektaşın raporu yayımladı, sen de tarayıcıdan <b>app.powerbi.com</b> adresine girip onu <b>kullanacaksın</b>. Raporu yapanların da bu dersi bilmesi gerekir: kullanıcının ne yapabildiğini bilmeyen tasarımcı, gereksiz düğmeler ve dilimleyicilerle sayfayı doldurur.</p>
+
+<h2>Service’e giriş: gezinti bölmesi</h2>
+<p>Sol kenardaki dikey şerit <b>gezinti bölmesidir (navigation pane)</b>. Bir içeriği bulmanın yolu, onun sana nasıl ulaştığına bağlıdır:</p>
+<div class="tbl-wrap"><table>
+<tr><th>İçerik sana nasıl geldi?</th><th>Nerede bulursun?</th></tr>
+<tr><td>Biri raporu doğrudan seninle paylaştı</td><td><b>Göz at (Browse)</b> → <b>Benimle paylaşılanlar (Shared with me)</b></td></tr>
+<tr><td>Ekip, içeriği bir uygulama olarak dağıttı</td><td><b>Uygulamalar (Apps)</b> ya da Giriş sayfasındaki uygulama listesi</td></tr>
+<tr><td>Bir ekip çalışma alanının üyesisin</td><td><b>Çalışma alanları (Workspaces)</b> → ilgili alan</td></tr>
+<tr><td>Dün açtığın raporu tekrar arıyorsun</td><td><b>Giriş (Home)</b> ya da Göz at → <b>Son kullanılanlar</b>; sık açtığın raporu yıldızla <b>Sık kullanılanlara</b> ekle</td></tr>
+<tr><td>E-postayla bir bağlantı ya da abonelik geldi</td><td>Bağlantı raporu doğrudan açar</td></tr>
+</table></div>
+<p>Çalışma alanı ve uygulamanın yazar tarafındaki anlamı “Yayımlama, yenileme ve yaşam döngüsü” dersinde. Burada yalnızca okuyucuyuz.</p>
+<div class="note"><b>Adlar değişebilir</b>Microsoft Service arayüzünü sık yeniler; Türkçe arayüzde bazı adlar farklı çevrilmiş olabilir. Simgeler ve yerleri genelde aynı kalır. Raporların çoğu <b>Okuma görünümünde (Reading view)</b> açılır; <b>Düzenle</b> düğmesi soluksa raporu değiştirme iznin yoktur. Paylaşılan içeriği görmek için genellikle Pro ya da PPU lisansı gerekir; içerik Premium ya da yeterli büyüklükte Fabric kapasitesindeyse ücretsiz kullanıcı da görebilir.</div>
+
+<h2>Raporu okumak: filtreler ve dilimleyiciler</h2>
+<ul>
+<li><b>Sayfalar:</b> Rapor sayfaları solda listelenir ya da alttaki sekmelerdedir.</li>
+<li><b>Dilimleyiciler (Slicer):</b> Sayfanın üstündeki “Yıl”, “Kanal” düğmeleri. Seçim sayfadaki tüm görselleri süzer.</li>
+<li><b>Filtreler bölmesi (Filters pane):</b> Sağ kenarda açılır. Yazarın sana açık bıraktığı filtre kartlarını değiştirebilirsin. Kilit simgeli kartı göremez değil, değiştiremezsin; gizli kartı hiç görmezsin ama çalışır.</li>
+<li><b>Seçimin hatırlanır:</b> Raporu kapatıp açınca son filtrelerin geri gelir. Yazarın yayımladığı hâle dönmek için eylem çubuğundaki <b>Varsayılana sıfırla (Reset to default)</b> düğmesini kullan.</li>
+</ul>
+<p>Filtre düzeyleri ve dilimleyici türleri “Filtreler bölmesi ve dilimleyiciler” dersinde ayrıntılı.</p>
+
+<h2>Görsellerle etkileşim</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Ne yapmak istiyorsun?</th><th>Nasıl?</th></tr>
+<tr><td>Bir kategoriye göre tüm sayfayı süzmek</td><td>Çubuğa tıkla: diğer görseller <b>çapraz filtrelenir</b> ya da <b>vurgulanır</b> (seçilmeyen kısım soluklaşır). Ctrl ile birden çok çubuk seçilir. Aynı çubuğa tekrar tıklayınca seçim kalkar.</td></tr>
+<tr><td>Yıldan aya inmek</td><td>Görselin üstündeki <b>detaya inme</b> oklarını kullan (görselde hiyerarşi varsa).</td></tr>
+<tr><td>Bir görseli büyük görmek</td><td>Görselin köşesindeki <b>Odak modu (Focus mode)</b> simgesi. Geri dönmek için “Rapora dön”.</td></tr>
+<tr><td>Sayıların arkasındaki satırları görmek</td><td>Görselin <b>…</b> menüsü → <b>Tablo olarak göster (Show as a table)</b>. Tek bir çubuğa sağ tıklayıp <b>Veri noktasını tablo olarak göster</b> o noktanın ayrıntısını açar.</td></tr>
+<tr><td>Bir sayının ayrıntısını hızla görmek</td><td>Üzerine gel: <b>araç ipucu (tooltip)</b> açılır.</td></tr>
+<tr><td>Sıralamayı değiştirmek</td><td><b>…</b> → Sıralama ölçütü.</td></tr>
+</table></div>
+<div class="warn"><b>Her görselde yok</b>“Tablo olarak göster” kart ve KPI gibi görsellerde çalışmaz. Değer kutusunda ölçü varsa “Veri noktasını tablo olarak göster” de çıkmayabilir.</div>
+
+<h2>Kendi görünümünü kaydetmek: kişisel yer işaretleri</h2>
+<p>Her sabah raporu açıp “2024, Mobil kanal” seçiyorsan bunu bir kez kaydet. Eylem çubuğundaki <b>Yer işaretleri</b> → <b>Kişisel yer işaretleri</b> → <b>Ekle</b>. Ad ver; raporun hep bu hâlde açılması için <b>Varsayılan yap</b> kutusunu işaretle.</p>
+<ul>
+<li>Kişisel yer işareti; sayfayı, filtreleri, dilimleyici seçimlerini, sıralamayı ve detaya inme konumunu saklar.</li>
+<li>Yalnızca sen görürsün; raporu değiştirmez. Yazarın eklediği <b>rapor yer işaretleri</b> ise herkese görünür.</li>
+<li>Bir raporda en fazla 20 kişisel yer işareti tutabilirsin.</li>
+</ul>
+
+<h2>Veriyi dışarı almak, abone olmak, uyarı kurmak</h2>
+<ul>
+<li><b>Excel’e aktarma:</b> Görselin <b>…</b> menüsü → <b>Verileri dışa aktar</b>. Yazarın izin verdiği düzeyde (yalnızca özet ya da temel satırlar) bir .xlsx dosyası iner. Tüm raporu Excel’de PivotTable gibi incelemek için <b>Excel’de Analiz Et</b> vardır. Satır düzeyi güvenlik dışa aktarmada da geçerlidir: görmediğin satırı indiremezsin.</li>
+<li><b>Abonelik (Subscribe):</b> Eylem çubuğundaki <b>Abone ol</b> ile sayfanın anlık görüntüsü seçtiğin sıklıkla e-postana gelir.</li>
+<li><b>Veri uyarısı (Data alert):</b> Yalnızca <b>panodaki</b> kart, KPI ve gösterge kutucuklarında kurulur. Rapordaki bir kart görselinde uyarı düğmesi yoktur; önce görseli bir panoya sabitlemek gerekir.</li>
+</ul>
+
+<h2>Rapor mu, pano mu?</h2>
+<div class="tbl-wrap"><table>
+<tr><th></th><th>Rapor (report)</th><th>Pano (dashboard)</th></tr>
+<tr><td>Sayfa</td><td>Birden çok sayfa</td><td>Tek sayfa, kutucuklar</td></tr>
+<tr><td>Kaynak</td><td>Tek bir anlam modeli</td><td>Farklı raporlardan sabitlenmiş görseller</td></tr>
+<tr><td>Etkileşim</td><td>Filtre bölmesi, dilimleyici, detaya inme</td><td>Kutucuğa tıklayınca kaynak rapora gider</td></tr>
+<tr><td>Veri uyarısı</td><td>Klasik uyarı yok; Fabric Activator ile kural kurulabilir</td><td>Kart, KPI, gösterge kutucuklarında var</td></tr>
+<tr><td>Nerede yapılır?</td><td>Desktop ya da Service</td><td>Yalnızca Service</td></tr>
+</table></div>
+
+<h2>Copilot’a soru sormak</h2>
+<p>Rapor açıkken <b>Copilot</b> bölmesini açıp doğal dille sorabilirsin: “Bu sayfayı özetle”, “2024’te hangi kategori hedefin üstünde?”. Bizim modelde doğru cevap <b>Kitap</b>’tır (hedef gerçekleşme %100,2); diğer altı kategori hedefin altında. Copilot cevabını rapordaki görsellerle karşılaştır; özellikle “neden” sorularında yorum yapar, kanıt göstermez.</p>
+<div class="warn"><b>Copilot herkese açık değil</b>Copilot, çalışma alanı ücretli bir Fabric (F2 ve üstü) ya da Power BI Premium (P1 ve üstü) kapasitesindeyse ya da kurumda bir Fabric Copilot kapasitesi tanımlıysa çalışır. Deneme kapasitelerinde çalışmaz; yönetici kiracı ya da kapasite ayarından kapatmış olabilir. Yalnızca Pro lisanslı paylaşılan bir çalışma alanındaki raporda Copilot bölmesi görünmüyorsa sebep genellikle budur. Eski Soru-Cevap (Q&amp;A) özelliği kaldırılıyor (Learn: Şubat 2027); doğal dil soruları Copilot’la soruluyor.</div>
+<div class="tip"><b>Kullanıcı gibi test et</b>Raporu yayımladıktan sonra Service’te bir “Görüntüleyici” hesabıyla aç: filtreleri değiştir, varsayılana sıfırla, Excel’e aktar, kişisel yer işareti ekle. Kullanıcının takıldığı yer, tasarımın düzeltilecek yeridir.</div>
+<div class="note"><b>Yazar tarafı</b>Yayımlamak için <a href="../calisma-alani/">Çalışma alanı kurmak</a>, yorum için <a href="../yorum-isbirligi/">Yorum ve iş birliği</a>, pano için <a href="../panolar/">Panolar</a> derslerine bak.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-hizmet-kullanici">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../mulakat/">← DAX ve Power BI mülakatına hazırlık</a><a href="../rapor-brifi/">Talepten rapor brifine: ihtiyaç toplama ve sayfa planı →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

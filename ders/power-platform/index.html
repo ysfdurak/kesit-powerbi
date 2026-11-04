@@ -1,0 +1,80 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları | Kesit Power BI</title><meta name="description" content="Rapordaki bir düğmeyle filtrelenmiş veriyi bir akışa göndermek, rapora Power Apps formu gömüp veri yazmak, işlemsel-analitik görev akışları ve Fabric…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/power-platform/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları"><meta property="og:description" content="Rapordaki bir düğmeyle filtrelenmiş veriyi bir akışa göndermek, rapora Power Apps formu gömüp veri yazmak, işlemsel-analitik görev akışları ve Fabric…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/power-platform/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları","description":"Rapordaki bir düğmeyle filtrelenmiş veriyi bir akışa göndermek, rapora Power Apps formu gömüp veri yazmak, işlemsel-analitik görev akışları ve Fabric…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/power-platform/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları</h1><p class="st-l">Rapordaki bir düğmeyle filtrelenmiş veriyi bir akışa göndermek, rapora Power Apps formu gömüp veri yazmak, işlemsel-analitik görev akışları ve Fabric kullanıcı veri işlevleri, pano uyarıları ve Fabric Activator; lisans ve yönetişim uyarıları.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-power-platform">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<p>Bir rapor “ne oldu?” sorusunu yanıtlar. Ama kullanıcı çoğu zaman bir sonraki adımı da raporun içinden atmak ister: hedefin altında kalan bölgeleri yöneticisine bildirmek, bir müşterinin durumunu güncellemek, bir yoruma not düşmek. Power BI bunun için Power Platform'un iki aracıyla ve Fabric'in yeni işlevleriyle çalışır.</p>
+
+<h2>Rapordan eyleme: dört yol</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Araç</th><th>Ne yapar?</th><th>Tipik senaryo</th></tr>
+<tr><td>Power Automate görseli</td><td>Düğmeye basınca bir akış çalıştırır; filtrelenmiş veriyi akışa gönderir</td><td>Seçili müşteri listesini Teams kanalına ya da e-postaya göndermek</td></tr>
+<tr><td>Power Apps görseli</td><td>Rapora bir tuval uygulaması gömer; uygulama rapordaki veriyi görür</td><td>Bir kaydı düzeltmek, yorum ya da onay girmek (geri yazma)</td></tr>
+<tr><td>Veri işlevi düğmesi (işlemsel-analitik görev akışı)</td><td>Fabric'teki bir Python işlevini parametrelerle çağırır</td><td>Durum güncelleme, indirim talebi, harici API çağrısı</td></tr>
+<tr><td>Veri uyarıları ve Fabric Activator</td><td>Bir ölçü eşiği geçince bildirim ya da eylem başlatır</td><td>Hedef gerçekleşme %95'in altına düşünce e-posta</td></tr>
+</table></div>
+
+<h2>Power Automate görseli: düğmeye basınca akış</h2>
+<p>Desktop'ta <b>Ekle → Power Platform → Power Automate</b> ya da Görselleştirmeler bölmesindeki simgeyle eklenir. Görselin <b>Power Automate verileri</b> alanına koyduğun sütunlar ve ölçüler akışa dinamik girdi olur. Görselin <b>…</b> menüsü → Düzenle ile akışı rapordan oluşturursun (sıfırdan ya da şablondan bir anında bulut akışı). Akışı doğrudan Power Automate portalında değil, rapordan oluştur; aksi halde tetikleyici rapordaki alanları görmez.</p>
+<ul>
+<li><b>Bağlama duyarlı:</b> Akışa giden değerler kullanıcının o anki filtrelerine göre değişir. Bölge dilimleyicisinde “Ege” seçiliyse akış yalnızca Ege satırlarını alır.</li>
+<li><b>Sınır:</b> Görsel en fazla <b>1.000 kayıt</b> işler. Yalnızca akışta gerçekten kullanılan alanlar gönderilir.</li>
+<li><b>Test:</b> Düzenleme modunda düğmeye <b>Ctrl</b> basılı tıkla. Çalıştırma geçmişini görselin menüsündeki Ayrıntılar'da görürsün.</li>
+<li><b>Kim çalıştırabilir?</b> Akışın <b>yalnızca çalıştırma kullanıcıları</b> (run-only users) listesine kişi ya da Microsoft Entra grubu ekle. Raporu görmek akışı çalıştırma yetkisi vermez.</li>
+<li><b>Desteklenmeyenler:</b> Web'de yayımla (kimlik doğrulamasız erişim), müşteriler için gömme senaryoları ve dışa aktarma. Veri, akışın dağıtıldığı coğrafyada işlenir; veri yerleşimi kuralı olan kurumlarda bunu sor.</li>
+</ul>
+<p>Akışa giden veriyi DAX ile hazırlamak çoğu zaman işi kolaylaştırır. Örneğin akışın e-postasına tek satırlık bir özet metni koymak için:</p>
+<pre class="dax">Kanal Özeti (Akış) =
+CONCATENATEX(
+    VALUES(Satislar[Kanal]),
+    Satislar[Kanal] &amp; " " &amp; FORMAT([Net Satış], "#,0"),
+    " | ",
+    [Net Satış], DESC)</pre>
+<p>Filtresiz sonuç: <b>Mobil 599.841 | Web 457.331 | Mağaza 193.600</b>. Kullanıcı bir yıl seçerse metin de o yıla göre değişir; akış bu metni olduğu gibi e-postaya yazar.</p>
+
+<h2>Power Apps görseli: rapora form gömmek</h2>
+<p>Power Apps görseli rapora bir <b>tuval uygulaması</b> (canvas app) yerleştirir. Uygulama, görselin alanlarına koyduğun veriyi <code>PowerBIIntegration.Data</code> adlı salt okunur bir kaynak olarak görür; kullanıcı rapordan bir müşteri seçince form o müşteriye göre dolar. Kullanıcı formda bir alanı değiştirip kaydettiğinde uygulama değişikliği Dataverse ya da SQL gibi <b>yazılabilir bir kaynağa</b> yazar. Buna <b>geri yazma</b> (write-back) denir.</p>
+<ul>
+<li>Görsel üzerinden en fazla <b>1.000 kayıt</b> aktarılır.</li>
+<li>Raporun yazmadan sonra hemen güncellenmesi için uygulamanın <b>görselin içinden oluşturulmuş</b> olması ve <code>PowerBIIntegration.Refresh()</code> çağırması gerekir. Bu işlev yalnızca <b>DirectQuery</b> ile bağlanmış kaynaklarda çalışır. İçeri aktarma modelinde değişiklik bir sonraki yenilemede görünür.</li>
+<li>Görsel rapora geri filtre gönderemez. Uygulamayı rapordan <b>ayrıca paylaşman</b> gerekir. Oluşturma ve düzenleme Edge ve Chrome'da desteklenir; önce raporu yayımlayıp sonra uygulamayı Service’te oluşturmak önerilir.</li>
+<li>Gömme yalnızca “kuruluşun için gömme” senaryosunda desteklenir; Power BI Rapor Sunucusu desteklemez.</li>
+</ul>
+
+<h2>İşlemsel-analitik görev akışları ve kullanıcı veri işlevleri</h2>
+<p><b>Translytical task flows</b> (işlemsel + analitik görev akışları) Power BI raporundan doğrudan kayıt ekleme, düzenleme, silme ya da harici bir API çağırma imkânı verir. Arkada <b>Fabric kullanıcı veri işlevleri</b> (user data functions) çalışır: Fabric'te barındırılan, Python ile yazılmış, sunucusuz işlevler. Bu iki özellik 2025'te önizleme olarak geldi; Microsoft artık ikisini de <b>genel kullanımda</b> (GA) olarak duyuruyor. Yine de alt parçaların durumu değişebilir; kurmadan önce Learn sayfasını kontrol et.</p>
+<ol>
+<li>Fabric'te bir kullanıcı veri işlevi yaz ve yayımla. Yazma işlemleri için Learn çoğu senaryoda <b>Fabric SQL veritabanını</b> öneriyor; ambar ve lakehouse dosyaları da desteklenir.</li>
+<li>Desktop'ta <b>Ekle → Düğme → Veri işlevi</b>. Biçim bölmesinde Eylem altındaki <b>fx</b> ile işlevi OneLake kataloğundan seç.</li>
+<li>Her parametreyi bir <b>ölçüye</b> ya da bir <b>dilimleyiciye</b> bağla. Kullanıcının metin yazması için <b>giriş dilimleyicisi</b> (input slicer), seçenek seçmesi için <b>düğme dilimleyicisi</b> (button slicer) kullanılır. Dilimleyiciler parametre listesinde başlıklarıyla görünür; anlamlı başlık ver.</li>
+<li>“Başarılı sonuçtan sonra raporu yenile” seçeneğini aç. Direct Lake ya da DirectQuery ile rapor yazılan değeri hemen gösterir.</li>
+</ol>
+<div class="note"><b>Learn'deki iki kural</b>Rapora bağlanan işlev bir <b>metin (str)</b> döndürmelidir; Power BI bu metni kullanıcıya sonuç mesajı olarak gösterir. Veri işlevi düğmesi belirli bir çalışma alanına, işlev kümesine ve işleve sabit bir başvuru tutar; raporu dağıtım işlem hattıyla başka bir çalışma alanına taşıdığında <b>başvuru otomatik değişmez</b>, hedefte güncellemen gerekir.</div>
+
+<h2>Uyarılar: pano uyarısı ve Fabric Activator</h2>
+<p><b>Klasik veri uyarısı</b> Service’teki bir <b>panonun</b> kart, KPI ya da gösterge kutucuğunda kurulur: “Net satış 50.000'in altına düşerse haber ver.” Learn'e göre yalnızca sayısal değerlerle ve yenilenen veriyle çalışır, Desktop'ta yoktur, en fazla 250 uyarı kurabilirsin ve uyarılar kişiseldir. Uyarı bir Power Automate akışını da tetikleyebilir. Pano ve abonelik ayrıntıları <b>Yönetişim</b> dersinde.</p>
+<p><b>Rapor görselinde uyarı</b> ise <b>Fabric Activator</b> ile çalışır (eski adı Data Activator). Görselin menüsünden <b>Uyarı ayarla</b> (Set alert) seçilir; izlenecek ölçü, koşul ve eşik belirlenir, bildirim e-postayla ya da Teams'le gelir. Power BI bir <b>Activator öğesi</b> oluşturur ve modeli izlemeye başlar; kural Activator'da genişletilip başka kişilere bildirim ya da Power Automate akışı eklenebilir. Learn bu özelliği <b>genel önizleme</b> olarak işaretliyor ve Fabric kapasitesi olan (sayfaya göre F64 ya da üstü veya Premium) bir çalışma alanında yazma izni istiyor.</p>
+<p>Uyarıyı doğrudan bir oran yerine bir <b>bayrak ölçüsüne</b> kurmak, kuralı modelde tutar ve herkes için aynı tanımı sağlar:</p>
+<pre class="dax">Hedef Alarmı (Kategori Sayısı) =
+COUNTROWS(
+    FILTER(VALUES(Kategoriler[Kategori]),
+        VAR Oran = [Hedef Gerçekleşme %]
+        RETURN NOT ISBLANK(Oran) &amp;&amp; Oran &lt; 0.95))</pre>
+<p>Filtresiz durumda yalnızca 1 kategori (Hediye, %68,9) %95'in altında. Kart görselindeki bu sayı 0'dan büyük olduğunda uyarı çalışır.</p>
+
+<h2>Yönetişim ve lisans uyarıları</h2>
+<ul>
+<li><b>Lisans:</b> Standart bağlayıcılar çoğu Microsoft 365 lisansında gelir. Dataverse ya da SQL gibi premium bağlayıcı kullanan akış ve uygulamalar, onları çalıştıran kullanıcılar için ek Power Platform lisansı gerektirir. Kullanıcı veri işlevleri ve Activator Fabric kapasitesi tüketir. Kesin durumu kurumunun lisans rehberinden doğrula.</li>
+<li><b>Sahiplik:</b> Akışın sahibi şirketten ayrılınca akış durabilir. Önemli akışları bir ekip ya da hizmet hesabı sahipliğinde tut, ortak sahip ekle.</li>
+<li><b>Veri kaybı önleme (DLP):</b> Power Platform yönetim merkezindeki DLP ilkeleri hangi bağlayıcıların birlikte kullanılabileceğini sınırlar. Raporun verisini kişisel bir e-posta ya da dış bir Service’e gönderen akış bu ilkelere takılabilir; takılması da iyidir.</li>
+<li><b>Güvenlik:</b> RLS raporda kullanıcının gördüğünü sınırlar; ama geri yazılan kaynağın yetkileri ayrıdır. Kullanıcının hangi kaydı değiştirebileceğini yazılan kaynakta da kontrol et.</li>
+<li><b>Geri yazmayı doğrula:</b> Formdaki her alan bir giriş denetimi ister (boş, negatif, aralık dışı). Kimin neyi ne zaman değiştirdiğini tutan bir denetim sütunu ekle.</li>
+<li><b>Ortam:</b> Akış ve uygulamayı kişisel varsayılan ortam yerine ekibin ortamında oluştur; geliştirme ve üretim ortamlarını ayır.</li>
+</ul>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-power-platform">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../excel-entegrasyon/">← Power BI ve Excel birlikte: Excel’de analiz et, bağlı tablolar, dışa aktarma</a><a href="../dax-udf/">DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

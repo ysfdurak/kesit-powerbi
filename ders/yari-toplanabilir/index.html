@@ -1,0 +1,78 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış | Kesit Power BI</title><meta name="description" content="Bazı boyutlarda toplanan, zamanda toplanmayan değerler; dönem sonu, dönem başı ve ortalama bakiye."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/yari-toplanabilir/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış"><meta property="og:description" content="Bazı boyutlarda toplanan, zamanda toplanmayan değerler; dönem sonu, dönem başı ve ortalama bakiye."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/yari-toplanabilir/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış","description":"Bazı boyutlarda toplanan, zamanda toplanmayan değerler; dönem sonu, dönem başı ve ortalama bakiye.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/yari-toplanabilir/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış</h1><p class="st-l">Bazı boyutlarda toplanan, zamanda toplanmayan değerler; dönem sonu, dönem başı ve ortalama bakiye.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-yari-toplanabilir">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Üç tür ölçü</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Tür</th><th>Örnek</th><th>Davranış</th></tr>
+<tr><td>Toplanabilir</td><td>Satış tutarı, adet</td><td>Her boyutta toplanır</td></tr>
+<tr><td>Yarı toplanabilir</td><td>Stok adedi, banka bakiyesi, çalışan sayısı, abone sayısı</td><td>Ürünler/şubeler arasında toplanır; zamanda toplanmaz</td></tr>
+<tr><td>Toplanamaz</td><td>Oran, ortalama, yüzde</td><td>Hiçbir boyutta toplanmaz; her düzeyde yeniden hesaplanır</td></tr>
+</table></div>
+<p><code>StokGorunum</code> tablosu her ürünün her ay sonundaki stokunu tutar. 2024 satırında <code>SUM(StokGorunum[StokAdet])</code> 12 ayın stokunu toplar; gerçek stokun yaklaşık 12 katıdır. Doğru cevap: yılın <b>son</b> görüntüsü.</p>
+<h2>Dönem sonu (kapanış) değeri</h2>
+<pre class="dax">Stok Adedi =
+VAR SonTarih = CALCULATE(MAX(StokGorunum[Tarih]))
+RETURN CALCULATE(SUM(StokGorunum[StokAdet]), Tarih[Tarih] = SonTarih)</pre>
+<p>Alternatifler: <code>LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum)))</code> veri olan son günü bulur; <code>CLOSINGBALANCEMONTH / QUARTER / YEAR</code> takvimin son gününü kullanır (o gün veri yoksa boş döner).</p>
+<div class="warn"><b>Ürün bazında farklı son tarih</b>Bazı ürünler son ayda kaydedilmemişse, ürünlerin kendi son değerlerini toplamak gerekir: <code>SUMX(VALUES(Urunler[UrunNo]), CALCULATE(SUM(StokGorunum[StokAdet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(StokGorunum)))))</code>.</div>
+<h2>Dönem başı ve ortalama bakiye</h2>
+<pre class="dax">Açılış Stoku =
+CALCULATE([Stok Adedi], PREVIOUSDAY(STARTOFMONTH(Tarih[Tarih])))
+
+Ortalama Stok =
+AVERAGEX(VALUES(Tarih[YilAy]), [Stok Adedi])</pre>
+<p>Ortalama stok, stok devir hızı hesabında kullanılır: <code>Stok Devir Hızı = DIVIDE([Net Maliyet], [Ortalama Stok Değeri])</code>.</p>
+<h2>Toplanabilir yanı unutma</h2>
+<p><code>GelenAdet</code> (depoya giren) toplanabilir bir hareket ölçüsüdür: <code>SUM</code> doğrudur. İyi bir stok raporu ikisini birlikte gösterir: hareket (giren/çıkan) ve görüntü (bakiye). <a href="../../">Stok raporu</a> bu ayrımı kullanıyor.</p>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Yanlışın boyutu: SUM stoku ne kadar şişirir?</h2>
+<p>Depo müdürü yıl sonu raporunda “stok adedi” satırında 4.183 görüyor ve şaşırıyor. Depoda 311 ürün var. Fark, ay sonu görüntülerinin toplanmasından geliyor. Bunu tek sorguyla göster:</p>
+<pre class="dax">EVALUATE
+SUMMARIZECOLUMNS(
+    Tarih[Yil],
+    "Toplanmış (yanlış)", SUM(StokGorunum[StokAdet]),
+    "Kapanış", [Stok Adedi],
+    "Toplanmış değer", SUM(StokGorunum[StokDegeri]),
+    "Kapanış değeri", [Stok Değeri]
+)</pre>
+<div class="tbl-wrap"><table><tr><th>Yıl</th><th>SUM(StokAdet)</th><th>Kapanış adedi</th><th>SUM(StokDegeri)</th><th>Kapanış değeri</th></tr>
+<tr><td>2022</td><td>3.541</td><td>325</td><td>1.964.884 ₺</td><td>164.498 ₺</td></tr>
+<tr><td>2023</td><td>4.181</td><td>309</td><td>2.048.566 ₺</td><td>166.057 ₺</td></tr>
+<tr><td>2024</td><td>4.183</td><td>311</td><td>2.163.992 ₺</td><td>163.465 ₺</td></tr></table></div>
+<p>Toplanmış değer kapanışın 13 katından fazla. “12 ay toplandıysa 12 kat olmalı” diye düşünme: stok ay içinde dalgalandığı için oran sabit değildir. Bu yüzden yanlış sayıyı 12’ye bölerek “düzeltmek” de yanlıştır. Tüm dönem satırında fark daha da büyük: 11.905’e karşı 311.</p>
+
+<h2>Kapanışı bulmanın üç yolu</h2>
+<div class="tbl-wrap"><table><tr><th>Yöntem</th><th>Hangi günü seçer?</th><th>Zayıf noktası</th></tr>
+<tr><td><code>MAX(StokGorunum[Tarih])</code> ile (hazır [Stok Adedi])</td><td>Görünen dönemde kaydı olan son gün</td><td>Bir ürün son ayda kaydedilmediyse o ürün kapanışta yok olur</td></tr>
+<tr><td><code>LASTNONBLANK(Tarih[Tarih], …)</code> (hazır [Stok Değeri])</td><td>İfadenin boş olmadığı son gün</td><td>Aynı sorun; ürün bazında çözüm için <code>SUMX(VALUES(Urunler[UrunNo]), …)</code> gerekir</td></tr>
+<tr><td><code>CLOSINGBALANCEMONTH / YEAR</code></td><td>Takvimin son günü (ay ya da yıl sonu)</td><td>O gün kayıt yoksa boş döner; ayın ortasına kadar süzülmüş bir dönemde bile ay sonunu getirir</td></tr></table></div>
+<p>Bu modelde her ürünün her ay sonunda kaydı olduğu için üç yöntem aynı sayıyı verir. Gerçek hayatta öyle olmaz: yeni açılan bir ürün, satıştan kalkan bir ürün ya da geç gelen bir depo dosyası farkı ortaya çıkarır. Bir kenar durum daha: kullanıcı tarih dilimleyicisinde 1–15 Aralık 2024’ü seçerse <code>[Stok Adedi]</code> BLANK döner, çünkü bu günlerde görüntü yok. <code>CLOSINGBALANCEMONTH</code> ise 31 Aralık değerini getirir, yani seçilen dönemin dışındaki bir günü. İkisinden hangisi doğru, rapor sahibinin kararıdır. Ama kararı bilinçli ver ve görsel başlığına yaz.</p>
+
+<h2>Açılış, kapanış ve hareket mutabakatı</h2>
+<p>Stok kontrolünün temel denklemi: <b>Kapanış − Açılış = Giren − Çıkan</b>. Görüntü ölçüsü ile hareket ölçüsünü yan yana koymak veri kalitesini test eder.</p>
+<pre class="dax">Yıllık Stok Değişimi =
+VAR Kapanis = [Stok Adedi]
+VAR Acilis = CALCULATE([Stok Adedi], PREVIOUSDAY(FIRSTDATE(Tarih[Tarih])))
+RETURN IF(NOT ISBLANK(Acilis), Kapanis - Acilis)</pre>
+<p>2023’te stok 325’ten 309’a indi (−16), 2024’te 311’e çıktı (+2). 2022 satırı BLANK’tir: veri Ocak 2022’de başlıyor, açılış görüntüsü yok. <code>IF(NOT ISBLANK(Acilis), …)</code> bu yüzden var. Yoksa ölçü 2022’de “+325” gösterirdi, yani bütün stok o yıl gelmiş gibi.</p>
+<p>2024’te depoya 1.489 adet girdi (<code>[Gelen Adet]</code>). Denklemden çıkan adet 1.489 − 2 = 1.487 olur. Oysa <code>[Satılan Adet]</code> 1.426. Aradaki 61 adet fire, iade, sayım farkı ya da veri hatasıdır. Böyle bir fark rapordan önce tedarik ekibine sorulacak bir sorudur. Bir stok raporunun en değerli satırı bazen bu mutabakat satırıdır.</p>
+
+<h2>Ortalama bakiye ve devir hızı</h2>
+<p>Stok devir hızı “stok yılda kaç kez yenileniyor?” sorusunu cevaplar: dönem maliyeti / ortalama stok değeri. Ortalama stok, ay sonu görüntülerinin ortalamasıdır:</p>
+<pre class="dax">Ay Sonu Ortalama Stok Değeri =
+AVERAGEX(VALUES(Tarih[YilAy]), [Stok Değeri])
+
+Yıllıklaştırılmış Stok Devri =
+DIVIDE([Net Maliyet], [Ay Sonu Ortalama Stok Değeri])
+    * DIVIDE(12, COUNTROWS(VALUES(Tarih[YilAy])))</pre>
+<p>2024: ortalama stok değeri 180.333 ₺, net maliyet 458.504 ₺, devir 2,54. Yıllıklaştırma çarpanı neden var? Tüm dönem satırında maliyet 36 ayın maliyetidir; çarpan olmadan sonuç “3 yıllık devir” olur ve yıllık sayılarla karşılaştırılamaz. Çarpanla tüm dönem 1,54. Kategori düzeyinde en hızlı dönen Kitap (2,36), en yavaş Spor (0,68). Spor’da ortalama 59.005 ₺’lik stok duruyor; nakit bağlayan kategori burası.</p>
+<div class="warn"><b>Eksik yıl</b>2022’de devir 0,39 çıkar. Stok 12 ay boyunca var, ama satışlar Haziran 2022’de başlıyor. Maliyet 7 ayın, ortalama stok 12 ayın. Bu bir iş sonucu değil veri sonucu; görselde not düş ya da yılı karşılaştırmadan çıkar.</div>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-yari-toplanabilir">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../rol-oynayan/">← Rol oynayan boyutlar ve USERELATIONSHIP</a><a href="../hikaye/">Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

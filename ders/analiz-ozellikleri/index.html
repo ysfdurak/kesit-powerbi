@@ -1,0 +1,80 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analiz özellikleri ve yapay zekâ görselleri | Kesit Power BI</title><meta name="description" content="Referans çizgileri, hata çubukları, tahmin, anomali, Analiz (artışı açıkla), anahtar etkileyiciler, ayrıştırma ağacı, Copilot anlatısı ve Copilot için…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/analiz-ozellikleri/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Analiz özellikleri ve yapay zekâ görselleri"><meta property="og:description" content="Referans çizgileri, hata çubukları, tahmin, anomali, Analiz (artışı açıkla), anahtar etkileyiciler, ayrıştırma ağacı, Copilot anlatısı ve Copilot için…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/analiz-ozellikleri/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Analiz özellikleri ve yapay zekâ görselleri","description":"Referans çizgileri, hata çubukları, tahmin, anomali, Analiz (artışı açıkla), anahtar etkileyiciler, ayrıştırma ağacı, Copilot anlatısı ve Copilot için…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/analiz-ozellikleri/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Analiz özellikleri ve yapay zekâ görselleri</h1><p class="st-l">Referans çizgileri, hata çubukları, tahmin, anomali, Analiz (artışı açıkla), anahtar etkileyiciler, ayrıştırma ağacı, Copilot anlatısı ve Copilot için veriyi hazırlama.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-analiz-ozellikleri">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<article class="panel theory">
+<h2>Analiz bölmesi</h2>
+<p>Bir grafik seçiliyken Görselleştirmeler bölmesindeki <b>büyüteç</b> simgesi. Seçenekler görsel türüne göre değişir:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Öğe</th><th>Ne çizer?</th><th>Ne zaman?</th></tr>
+<tr><td>Sabit çizgi</td><td>Elle verilen değerde yatay çizgi (fx ile ölçüye bağlanabilir)</td><td>Hedef, eşik, bütçe</td></tr>
+<tr><td>Ortalama / Medyan</td><td>Görünen noktaların ortalaması / ortancası</td><td>“Ortalamanın üstündekiler”</td></tr>
+<tr><td>Minimum / Maksimum</td><td>Uç değer çizgisi</td><td>Aralığı vurgulamak</td></tr>
+<tr><td>Yüzdebirlik</td><td>Ör. 90. yüzdebirlik</td><td>Üst dilimi ayırmak</td></tr>
+<tr><td>Eğilim çizgisi</td><td>Doğrusal regresyon</td><td>Uzun dönem yön (çizgi ve dağılımda)</td></tr>
+<tr><td>Tahmin</td><td>Gelecek dönemler + güven aralığı (üstel düzeltme)</td><td>Yalnızca sürekli tarih eksenli çizgi grafikte</td></tr>
+<tr><td>Hata çubukları</td><td>Her noktada üst/alt sınır (ölçülerden)</td><td>Belirsizlik, hedef aralığı, min–max</td></tr>
+<tr><td>Anomali bul</td><td>Beklenen aralığın dışındaki noktalar ve açıklamaları</td><td>Zaman serisinde sıra dışı aylar</td></tr>
+<tr><td>Gölge alan / X ekseni sabit çizgisi</td><td>Dağılım grafiğinde bölgeler</td><td>Dört bölgeli (kadran) analiz</td></tr>
+</table></div>
+<p><b>Tahmin</b> ayarları: tahmin uzunluğu (ör. 6 ay), güven aralığı (%95), mevsimsellik (otomatik ya da 12), son N noktayı yok say (eksik son ayı tahmine katmamak için).</p>
+<h2>Analiz et: artışı / azalışı açıkla</h2>
+<p>Bir çizgi ya da sütun grafikteki noktaya sağ tık → <b>Analiz et</b> → <b>Artışı açıkla</b>. Power BI modeldeki diğer alanları tarar ve değişime en çok katkı yapan kırılımları (ör. “Mobil kanaldaki Elektronik”) küçük grafiklerle gösterir. “Dağılım bakımından farklılıkları bul” ise bir kategorinin diğerlerinden hangi alanda ayrıştığını gösterir.</p>
+<h2>Yapay zekâ görselleri</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Görsel</th><th>Soru</th><th>Kurulum</th></tr>
+<tr><td><b>Anahtar etkileyiciler</b></td><td>“İade olasılığını en çok ne artırıyor?”</td><td>Çözümle: hedef (Durum = İade ya da bir ölçü). Açıklayan: Kanal, Kategori, İndirim bandı…</td></tr>
+<tr><td><b>Ayrıştırma ağacı</b></td><td>“Bu toplam hangi parçalardan oluşuyor?”</td><td>Çözümle: ölçü. Açıklama ölçütü: boyutlar. Kullanıcı istediği sırayla dallanır; “Yüksek değer” yapay zekâ bölmesi en büyük dalı kendisi seçer.</td></tr>
+<tr><td><b>Copilot (Soru-Cevap’ın yerine)</b></td><td>Doğal dil soruları, rapor özeti</td><td>Soru-Cevap kaldırılıyor (Learn: Şubat 2027; önceki duyuru Aralık 2026). Copilot’un doğru cevap vermesi için Giriş → Yapay zekâ için verileri hazırla: veri şeması, onaylı cevaplar, yapay zekâ talimatları (ciro = Net Satış).</td></tr>
+<tr><td><b>Anlatı</b> (Copilot / akıllı anlatı)</td><td>Sayfanın özetini metin olarak yaz</td><td>Ekle → Anlatı. Metin filtrelerle güncellenir.</td></tr>
+</table></div>
+<h2>Aykırı değer ve anomali</h2>
+<p>Yerleşik “Anomali bul” eğilimi ve mevsimselliği hesaba katar. Kendi kuralınla işaretlemek için z-skoru ölçüsü yazılır (İleri seviye Measure Lab: <i>Z-skoru ile aykırı ay tespiti</i>) ve koşullu biçimlendirmeyle renklendirilir.</p>
+<div class="warn"><b>Dikkat</b>Tahmin ve yapay zekâ görselleri keşif araçlarıdır. Bir yönetim raporuna koymadan önce sonucun iş açısından mantıklı olup olmadığını kontrol et ve varsayımları (güven aralığı, mevsimsellik) görsel başlığında ya da notta belirt.</div>
+<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Anomali algılama: koşulları ve okuma biçimi</h2>
+<p>Operasyon müdürü aylık net satış çizgisinde “normal dışı” ayları otomatik görmek istiyor. Çizgi grafiği seç → Analiz bölmesi → <b>Anomaliler</b> (Anomalies) → Ekle. Power BI beklenen aralığı gölge olarak çizer, aralık dışındaki noktaları işaretler. Learn’e göre koşullar sıkıdır:</p>
+<ul>
+<li>Yalnızca <b>çizgi grafik</b>, eksende zaman serisi.</li>
+<li>En az <b>4 veri noktası</b>.</li>
+<li><b>Gösterge (legend), birden çok değer ya da ikincil değer</b> varken çalışmaz. Kanal göstergeli bir çizgide anomali istiyorsan kanal başına küçük katlar kullan ya da tek kanalı filtrele.</li>
+<li><b>Tahmin, ortalama, medyan, min/max ve yüzdebirlik çizgileriyle</b> birlikte kullanılamaz. Bir grafikte ya tahmin ya anomali.</li>
+<li>Hiyerarşide detaya inme desteklenmez.</li>
+</ul>
+<p><b>Duyarlılık</b> (sensitivity) kaydırıcısı artırıldıkça küçük sapmalar da işaretlenir. İşaretli bir noktaya tıklayınca açılan bölmede Power BI modeli tarar ve olası nedenleri güç sırasıyla listeler. Taramayı ilgili alanlarla sınırlamak için <b>Açıklama ölçütü</b> (Explain by) kutusuna alan koy: Kanal, Kategori, Bölge. Güç, o kırılımın beklenenden sapmasının toplam sapmaya oranıdır.</p>
+<div class="warn"><b>Bu modelde dikkat</b>Satış 2022’de yıl ortasında başlıyor ve şirket hızla büyüyor (2022’de yaklaşık 103 bin TL, 2024’te 747 bin TL). Güçlü büyüme dönemlerinde ilk aylar “düşük anomali” görünebilir. İşaretleri iş bilgisiyle oku: yeni açılan kanal, kampanya, eksik veri.</div>
+
+<h2>Kendi beklenen aralığını yazmak</h2>
+<p>Yerleşik özellik kara kutudur ve bir yönetim raporunda “neden bu ay kırmızı?” sorusuna formülle cevap veremez. Basit ve açıklanabilir bir alternatif: görünen ayların ortalaması ± 2 standart sapma. Modelde satışı olan 31 ayda aylık ortalama yaklaşık 40.347 TL, standart sapma yaklaşık 23.536 TL. Üst sınır yaklaşık 87.419 TL çıkar ve 31 aydan yalnızca 2’si onu aşar: 2024 Kasım ve Aralık. Bunlar sıra dışı aylar değil, büyümenin en ileri noktasıdır. Büyüyen bir seride sabit bant anomaliyi değil eğilimi yakalar. Ders: sabit bir bant yerine hareketli bir ortalama (3 Ay Hareketli Ort. gibi) çevresinde bant kur ya da İleri istatistik dersindeki z-skoru ve mevsimsellik yöntemlerine geç.</p>
+<pre class="dax">Aylık Üst Bant =
+VAR Aylar = VALUES(Tarih[YilAy])
+RETURN
+    AVERAGEX(Aylar, [Net Satış]) + 2 * STDEVX.P(Aylar, [Net Satış])</pre>
+<p>Bu ölçüyü Analiz bölmesinde <b>Hata çubukları</b> ya da sabit çizgi ile göstermek, kuralı herkesin okuyabileceği bir yere taşır.</p>
+
+<h2>Akıllı anlatı: Özel mod ile Copilot modu</h2>
+<p>Görselleştirmeler bölmesindeki <b>Anlatı</b> (Narrative) görselinin iki modu var:</p>
+<div class="tbl-wrap"><table><tr><th></th><th>Özel (Custom) mod</th><th>Copilot modu</th></tr>
+<tr><td>Metni kim yazar?</td><td>Sen; içine dinamik değerler eklersin</td><td>Copilot, seçtiğin sayfa ya da görsellerden</td></tr>
+<tr><td>Filtre değişince</td><td>Değerler kendiliğinden güncellenir</td><td>Okuyucu yenile düğmesine basmalı</td></tr>
+<tr><td>Metni düzenlemek</td><td>Doğrudan</td><td>Doğrudan değil; komut (prompt) ile</td></tr>
+<tr><td>Gereksinim</td><td>Ek lisans yok</td><td>Copilot açık kiracı, ücretli Fabric kapasitesi; deneme kapasitesi desteklenmez</td></tr>
+<tr><td>Kaynak</td><td>Senin seçtiğin alan ve ölçüler</td><td>Tuvaldeki görseller (model değil); dipnotlar kaynağa götürür</td></tr></table></div>
+<p>Özel modda “+ Değer” ile bir ölçü ya da alan seçer, özetleme ve biçim verirsin. Learn’e göre bu mod görsel başına en fazla 4, sayfa başına en fazla 16 özet üretir. Tablo, matris, özel görseller ve hesaplama grupları desteklenmez.</p>
+<p>Copilot anlatısı tuvali okuduğu için görsel ve eksen adları açık yazılmalı; “Ölçü 1” adlı bir sütunu kimse doğru özetleyemez. Üretilen metni yayımlamadan önce dipnotlardan tek tek doğrula. Copilot’un modeli anlaması ve “Yapay zekâ için verileri hazırla” adımları için Copilot dersine bak; Soru-Cevap görseli Aralık 2026’da kaldırılacağı için yeni raporlarda yer vermiyoruz.</p>
+
+<h2>Hangi araç ne zaman? Karar listesi</h2>
+<ul>
+<li>“Gelecek 6 ay ne olur?” → Tahmin (yalnızca çizgi; varsayımları başlığa yaz).</li>
+<li>“Hangi ay sıra dışı?” → Anomaliler; yönetim raporunda açıklanabilir DAX bandı.</li>
+<li>“Bu artış nereden geldi?” → Analiz et → Artışı açıkla; derinlemesine sorgu için ayrıştırma ağacı.</li>
+<li>“Sayfayı iki cümleyle özetle” → Anlatı; sayılar kesin olmalıysa Özel mod.</li>
+<li>Hiçbiri karar vermez: her bulguyu iş sahibine doğrulat.</li>
+</ul>
+</section></article>
+<div class="st-c"><a class="st-p" href="../../#ders-analiz-ozellikleri">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../hikaye/">← Raporla hikâye anlatmak: yer işareti, araç ipucu, detay, gezinme</a><a href="../mobil-erisilebilirlik/">Mobil düzen, erişilebilirlik, dışa aktarma ve kişiselleştirme →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>
