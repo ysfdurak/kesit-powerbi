@@ -402,8 +402,8 @@ function opErr(op, a, b) { return exprErr('We cannot apply operator ' + op + ' t
 function convErr(v, t) { return exprErr('We cannot convert the value ' + fmt(v, 1) + ' to type ' + t + '.', v); }
 function range(lo, hi, out) {
   if (lo === null || hi === null) throw exprErr('We cannot convert the value null to type Number.');
-  if (typeof lo !== 'number' || typeof hi !== 'number') throw exprErr('Liste aralığı ({a..b}) yalnız tam sayıyla kurulur.');
-  if (lo !== Math.floor(lo) || hi !== Math.floor(hi)) throw exprErr('Liste aralığı ({a..b}) yalnız tam sayıyla kurulur.');
+  if (typeof lo === 'string' && typeof hi === 'string' && [...lo].length === 1 && [...hi].length === 1) { const a = lo.codePointAt(0), b = hi.codePointAt(0); if (b - a > 70000) throw new MUnsup('Bu metin aralığı alt küme sınırını aşıyor.', 'limit'); for (let c = a; c <= b; c++) out.push(String.fromCodePoint(c)); return; }
+  if (typeof lo !== 'number' || typeof hi !== 'number' || lo !== Math.floor(lo) || hi !== Math.floor(hi)) throw new MUnsup('Bu liste aralığı biçimi bu alt kümede yok: yalnız tam sayı ({1..5}) ve tek karakterli metin ({"a".."z"}) aralığı çalışır.');
   if (hi - lo > 1000000) throw new MUnsup('Bu aralık alt küme sınırını (1.000.000 öğe) aşıyor.', 'limit');
   for (let i = lo; i <= hi; i++) out.push(i);
 }
@@ -448,12 +448,15 @@ function itemAt(t, i, opt) {
 }
 
 /* ---------- İşleçler ---------- */
+const TYPE_EQ_NOTE = 'M belirtimi tür eşitliğini uygulamaya bırakır. Bu alt küme yalnız yalın türleri karşılaştırır, ötekinde sonuç tahmin etmez. Uyumluluk için “is”, Value.Is ya da Type.Is kullan.';
+function typeEq(a, b) { if (a.row || a.item || b.row || b.item || (a.facet || '') !== (b.facet || '')) throw new MUnsup(TYPE_EQ_NOTE); return a.kind === b.kind && !!a.nullable === !!b.nullable; }
 function valEq(a, b) {
   if (isErrCell(a)) liftCell(a); if (isErrCell(b)) liftCell(b);
   if (a === b) return true; if (a === null || b === null || a === undefined || b === undefined) return false;
   if (typeof a === 'number' && typeof b === 'number') return a === b;
   if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime() && isDT(a) === isDT(b);
   if (a instanceof MDuration && b instanceof MDuration) return a.ms === b.ms;
+  if (a instanceof MType && b instanceof MType) return typeEq(a, b);
   if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => valEq(x, b[i]));
   if (a instanceof MRecord && b instanceof MRecord) return a.names.length === b.names.length && a.names.every(n => b.f.has(n) && valEq(recGet(a, n), recGet(b, n)));
   if (isTable(a) && isTable(b)) return tablesEq(a, b);
@@ -484,7 +487,7 @@ function binop(op, a, b) {
   if (typeof a === 'number' && typeof b === 'number') { return op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : a / b; }
   if (a instanceof Date && b instanceof MDuration && (op === '+' || op === '-')) { const ms = a.getTime() + (op === '+' ? b.ms : -b.ms); if (isDT(a)) return mkDT(ms); if (b.ms % 86400000 !== 0) return mkDT(ms); return new Date(ms); }
   if (a instanceof MDuration && b instanceof Date && op === '+') return binop('+', b, a);
-  if (a instanceof Date && b instanceof Date && op === '-') return new MDuration(a.getTime() - b.getTime());
+  if (a instanceof Date && b instanceof Date && op === '-') { if (isDT(a) !== isDT(b)) throw new MUnsup('date ile datetime arasında çıkarma bu alt kümede yok: belge karışık türü göstermiyor. Önce ikisini aynı türe çevir (DateTime.Date ya da DateTime.From).'); return new MDuration(a.getTime() - b.getTime()); }
   if (a instanceof MDuration && b instanceof MDuration && (op === '+' || op === '-')) return new MDuration(op === '+' ? a.ms + b.ms : a.ms - b.ms);
   if (a instanceof MDuration && typeof b === 'number' && (op === '*' || op === '/')) return new MDuration(op === '*' ? a.ms * b : a.ms / b);
   if (typeof a === 'number' && b instanceof MDuration && op === '*') return new MDuration(a * b.ms);
@@ -607,26 +610,29 @@ function sortCompare(a, b) {
 }
 function keyList(v) { return Array.isArray(v) ? v.map(liftCell) : [v]; }
 function truth(v, fname) { if (v === true) return true; if (v === false || v === null) return false; throw convErr(v, 'Logical'); }
-const CULT = c => { if (c === null || c === undefined) return null; if (c instanceof MRecord) return recGet(c, 'Culture'); need(c, 'text'); return c; };
+const CULTURES = /^(tr|tr-TR|en-US|fr-FR|de-DE)$/i;
+const CULT = c => { if (c === null || c === undefined) return null; const v = c instanceof MRecord ? recGet(c, 'Culture') : need(c, 'text'); if (v !== null && !CULTURES.test(v)) throw unsup('“' + v + '” kültürü', 'tr-TR, en-US, fr-FR ve de-DE çalışır; sonuç tahmin edilmez'); return v; };
 function isTr(c) { return c && /^tr/i.test(c); }
+const commaDec = c => c && /^(tr|fr|de)/i.test(c);
 const up = (s, c) => s.toLocaleUpperCase(isTr(c) ? 'tr-TR' : 'en-US'), lo = (s, c) => s.toLocaleLowerCase(isTr(c) ? 'tr-TR' : 'en-US');
 const proper = (s, c) => lo(s, c).replace(/(^|[^\p{L}\p{Nd}])(\p{L})/gu, (m, a, b) => a + up(b, c));
 const MONTHS = { tr: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'], en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] };
 const DAYS = { tr: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'], en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] };
-const lng = c => isTr(c) ? 'tr' : 'en';
+const lng = c => { if (c && /^(fr|de)/i.test(c)) throw unsup('“' + c + '” kültüründe ay ve gün adı', 'tr-TR ve en-US çalışır'); return isTr(c) ? 'tr' : 'en'; };
 const pad2 = n => String(n).padStart(2, '0');
 function fmtDatePat(d, f, c) {
-  const y = d.getUTCFullYear(), m = d.getUTCMonth(), dd = d.getUTCDate(), wd = d.getUTCDay(); const L = lng(c);
+  const y = d.getUTCFullYear(), m = d.getUTCMonth(), dd = d.getUTCDate(), wd = d.getUTCDay(); const L = /MMM|ddd/.test(f) ? lng(c) : 'en';
   return f.replace(/yyyy|yy|MMMM|MMM|MM|M|dddd|ddd|dd|d|HH|H|mm|ss|'[^']*'/g, t => {
     switch (t) { case 'yyyy': return String(y).padStart(4, '0'); case 'yy': return pad2(y % 100); case 'MMMM': return MONTHS[L][m]; case 'MMM': return MONTHS[L][m].slice(0, 3); case 'MM': return pad2(m + 1); case 'M': return String(m + 1); case 'dddd': return DAYS[L][wd]; case 'ddd': return DAYS[L][wd].slice(0, 3); case 'dd': return pad2(dd); case 'd': return String(dd); case 'HH': return pad2(d.getUTCHours()); case 'H': return String(d.getUTCHours()); case 'mm': return pad2(d.getUTCMinutes()); case 'ss': return pad2(d.getUTCSeconds()); }
     return t.slice(1, -1);
   });
 }
-function numToText(n, c) { const s = fmtNum(n); return isTr(c) ? s.replace('.', ',') : s; }
+function numToText(n, c) { const s = fmtNum(n); return commaDec(c) ? s.replace('.', ',') : s; }
 function textToNum(s, c) {
   const raw = String(s), t = raw.trim(); const bad = () => err('DataFormat.Error', 'We couldn\'t convert to Number.', raw);
   if (t === '') throw bad();
-  if (isTr(c)) { if (!/^[-+]?(\d{1,3}(\.\d{3})+|\d+)(,\d+)?$/.test(t)) throw bad(); return +t.replace(/\./g, '').replace(',', '.'); }
+  if (c && /^fr/i.test(c)) { if (!/^[-+]?\d+(,\d+)?$/.test(t)) throw bad(); return +t.replace(',', '.'); }
+  if (c && /^(tr|de)/i.test(c)) { if (!/^[-+]?(\d{1,3}(\.\d{3})+|\d+)(,\d+)?$/.test(t)) throw bad(); return +t.replace(/\./g, '').replace(',', '.'); }
   if (!/^[-+]?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?([eE][-+]?\d+)?$/.test(t)) throw bad();
   return +t.replace(/,/g, '');
 }
@@ -634,10 +640,9 @@ function textToDate(s, c) {
   const t = String(s).trim(); const bad = () => err('DataFormat.Error', 'We couldn\'t parse the input provided as a Date value.', String(s));
   const ok = (y, mo, d) => { const x = mkDate(y, mo, d); if (x.getUTCMonth() !== mo - 1 || x.getUTCDate() !== d) throw bad(); return x; };
   let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if (m) return ok(+m[1], +m[2], +m[3]);
-  if (isTr(c)) { m = t.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); if (m) return ok(+m[3], +m[2], +m[1]); throw bad(); }
+  if (c && /^(tr|fr|de)/i.test(c)) { m = t.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})$/); if (m) return ok(+m[3], +m[2], +m[1]); throw bad(); }
   if (c && /^en-US/i.test(c)) { m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if (m) return ok(+m[3], +m[1], +m[2]); throw bad(); }
-  if (c) throw unsup('Tarih kültürü “' + c + '”', 'tr-TR ve en-US destekleniyor');
-  if (/^\d{1,2}[./]\d{1,2}[./]\d{4}$/.test(t)) throw err('DataFormat.Error', 'Bu tarih biçimi bilgisayarın bölge ayarına bağlıdır. Kültürü açıkça ver: Date.FromText(x, [Culture = "tr-TR"]) ya da Table.TransformColumnTypes(t, {{"Tarih", type date}}, "tr-TR").', String(s));
+  if (/^\d{1,2}[./]\d{1,2}[./]\d{4}$/.test(t)) throw new MUnsup('Bu tarih biçimi bilgisayarın bölge ayarına bağlıdır, burada tahmin edilmez. Kültürü açıkça ver: Date.FromText(x, [Culture = "tr-TR"]) ya da Table.TransformColumnTypes(t, {{"Tarih", type date}}, "tr-TR").');
   throw bad();
 }
 const typeCode = t => colTypeOf(t);
@@ -659,8 +664,8 @@ function convertTo(v, t, c) {
 function badConv(v, t) { throw err('Expression.Error', 'We cannot convert the value ' + fmt(v, 1) + ' to type ' + t + '.', v); }
 function toText(v, c) {
   if (v === null) return null; if (typeof v === 'string') return v; if (typeof v === 'number') return numToText(v, c); if (typeof v === 'boolean') return v ? 'true' : 'false';
-  if (isDT(v)) return fmtDatePat(v, isTr(c) ? 'dd.MM.yyyy HH:mm:ss' : 'M/d/yyyy H:mm:ss', c);
-  if (isDate(v)) return fmtDatePat(v, isTr(c) ? 'dd.MM.yyyy' : 'M/d/yyyy', c);
+  if (isDT(v)) return fmtDatePat(v, c && /^(tr|de)/i.test(c) ? 'dd.MM.yyyy HH:mm:ss' : c && /^fr/i.test(c) ? 'dd/MM/yyyy HH:mm:ss' : 'M/d/yyyy H:mm:ss', c);
+  if (isDate(v)) return fmtDatePat(v, c && /^(tr|de)/i.test(c) ? 'dd.MM.yyyy' : c && /^fr/i.test(c) ? 'dd/MM/yyyy' : 'M/d/yyyy', c);
   if (v instanceof MDuration) return fmt(v);
   throw exprErr('We cannot convert a value of type ' + typeName(v) + ' to type Text.');
 }
@@ -673,7 +678,7 @@ function bankRound(x, d) {
 function roundMode(x, d, m) {
   const f = Math.pow(10, d || 0), y = +(x * f).toPrecision(15);
   const r = Math.floor(y), half = Math.abs(y - r - 0.5) < 1e-9; if (!half) return Math.round(y) / f;
-  switch (m) { case 0: return r + 1 > r && (r + 1) / f; case 1: return r / f; case 2: return (y < 0 ? r : r + 1) / f; case 3: return (y < 0 ? r + 1 : r) / f; case 4: return bankRound(x, d); }
+  switch (m) { case 0: return (r + 1) / f; case 1: return r / f; case 2: return (y < 0 ? r : r + 1) / f; case 3: return (y < 0 ? r + 1 : r) / f; case 4: return bankRound(x, d); }
   throw exprErr('RoundingMode değeri tanınmadı.');
 }
 const dateParts = d => [d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()];
@@ -738,7 +743,7 @@ def('List.Skip', 1, 2, (l, c) => { const n = c === null ? 1 : countOrCond(l, c);
 def('List.RemoveFirstN', 1, 2, (l, c) => { const n = c === null ? 1 : countOrCond(l, c); return l.slice(n); });
 def('List.RemoveLastN', 1, 2, (l, c) => { const n = c === null ? 1 : countOrCond(l, c, true); return n <= 0 ? l.slice() : l.slice(0, -n); });
 def('List.Reverse', 1, 1, l => need(l, 'list').slice().reverse());
-def('List.Single', 1, 1, l => { const a = need(l, 'list'); if (a.length !== 1) throw exprErr('There were too many elements in the enumeration to complete the operation.'); return liftCell(a[0]); });
+def('List.Single', 1, 1, l => { const a = need(l, 'list'); if (!a.length) throw exprErr('There weren\'t enough elements in the enumeration to complete the operation.'); if (a.length > 1) throw exprErr('There were too many elements in the enumeration to complete the operation.'); return liftCell(a[0]); });
 def('List.SingleOrDefault', 1, 2, (l, d) => { const a = need(l, 'list'); if (a.length > 1) throw exprErr('There were too many elements in the enumeration to complete the operation.'); return a.length ? liftCell(a[0]) : d; });
 def('List.Range', 2, 3, (l, off, c) => { need(l, 'list'); return c === null ? l.slice(off) : l.slice(off, off + c); });
 function sortBy(a, crit, getter) {
@@ -748,7 +753,7 @@ function sortBy(a, crit, getter) {
   else if (typeof crit === 'number') ord = crit;
   else if (crit instanceof MFunc) { if (crit.min === 2) cmpF = crit; else keyF = crit; }
   else if (Array.isArray(crit)) { keyF = crit[0]; ord = crit[1] === undefined ? 0 : crit[1]; need(keyF, 'function'); }
-  else throw exprErr('Sıralama ölçütü tanınmadı.');
+  else throw new MUnsup('Bu sıralama ölçütü biçimi bu alt kümede yok.');
   return a.map((x, i) => [x, i]).sort((p, q) => {
     let c; if (cmpF) c = call(cmpF, p[0], q[0]); else { const u = keyF ? call(keyF, p[0]) : p[0], v = keyF ? call(keyF, q[0]) : q[0]; c = sortCompare(u, v); }
     if (ord === 1) c = -c; return c || p[1] - q[1];
@@ -820,7 +825,7 @@ textFn('Text.Insert', 3, 3, (s, o, x) => s.slice(0, o) + x + s.slice(o));
 textFn('Text.PadStart', 2, 3, (s, c, ch) => s.padStart(c, ch === null ? ' ' : ch));
 textFn('Text.PadEnd', 2, 3, (s, c, ch) => s.padEnd(c, ch === null ? ' ' : ch));
 textFn('Text.PositionOf', 2, 4, (s, x, occ, c) => { need(x, 'text'); const ci = ciOf(c, 'Text.PositionOf'); const A = ci ? foldTr(s) : s, B = ci ? foldTr(x) : x; const o = occ === null ? 0 : occ; if (o === 0) return A.indexOf(B); if (o === 1) return A.lastIndexOf(B); const out = []; let i = A.indexOf(B); while (i >= 0 && B) { out.push(i); i = A.indexOf(B, i + B.length); } return out; });
-function delimIdx(i) { if (i === null) return [0, 0]; if (typeof i === 'number') return [i, 0]; if (Array.isArray(i) && typeof i[0] === 'number') { if (i[1] === 1) throw unsup('Text.*Delimiter RelativePosition.FromEnd'); return [i[0], 0]; } throw exprErr('index tanınmadı.'); }
+function delimIdx(i) { if (i === null) return [0, 0]; if (typeof i === 'number') return [i, 0]; if (Array.isArray(i) && typeof i[0] === 'number') { if (i[1] === 1) throw unsup('Text.*Delimiter RelativePosition.FromEnd'); return [i[0], 0]; } throw new MUnsup('Text.*Delimiter için bu index biçimi bu alt kümede yok.'); }
 function nthPos(s, d, n) { let p = -1, st = 0; for (let k = 0; k <= n; k++) { p = s.indexOf(d, st); if (p < 0) return -1; st = p + d.length; } return p; }
 textFn('Text.BeforeDelimiter', 2, 3, (s, d, i) => { const [n] = delimIdx(i); const p = nthPos(s, d, n); return p < 0 ? s : s.slice(0, p); });
 textFn('Text.AfterDelimiter', 2, 3, (s, d, i) => { const [n] = delimIdx(i); const p = nthPos(s, d, n); return p < 0 ? '' : s.slice(p + d.length); });
@@ -836,13 +841,14 @@ def('Number.Round', 1, 3, nn((x, d, m) => { need(x, 'number'); return m === null
 def('Number.RoundUp', 1, 2, nn((x, d) => { const f = Math.pow(10, d === null ? 0 : d); return Math.ceil(+(x * f).toPrecision(15)) / f; }));
 def('Number.RoundDown', 1, 2, nn((x, d) => { const f = Math.pow(10, d === null ? 0 : d); return Math.floor(+(x * f).toPrecision(15)) / f; }));
 def('Number.RoundTowardZero', 1, 2, nn((x, d) => { const f = Math.pow(10, d === null ? 0 : d); return Math.trunc(+(x * f).toPrecision(15)) / f; }));
-def('Number.RoundAwayFromZero', 1, 2, nn((x, d) => { const f = Math.pow(10, d === null ? 0 : d), y = +(Math.abs(x) * f).toPrecision(15); return Math.sign(x) * Math.round(y) / f; }));
+/* Belge: pozitif yukarı, negatif aşağı. Number.Round(x, d, RoundingMode.AwayFromZero) ile karıştırma: o yalnız yarım değerde ayrışır. */
+def('Number.RoundAwayFromZero', 1, 2, nn((x, d) => { const f = Math.pow(10, d === null ? 0 : d), y = +(Math.abs(x) * f).toPrecision(15); return Math.sign(x) * Math.ceil(y) / f; }));
 n1('Number.Abs', Math.abs); n1('Number.Sign', Math.sign); n1('Number.Sqrt', Math.sqrt); n1('Number.Exp', Math.exp); n1('Number.Ln', Math.log); n1('Number.Sin', Math.sin); n1('Number.Cos', Math.cos); n1('Number.Tan', Math.tan);
 def('Number.Log', 1, 2, nn((x, b) => (b === null ? Math.log(x) : Math.log(x) / Math.log(b))));
 n1('Number.Log10', Math.log10); n1('Number.IsNaN', Number.isNaN); n1('Number.IsEven', x => x % 2 === 0); n1('Number.IsOdd', x => Math.abs(x % 2) === 1);
 n1('Number.Factorial', x => { let r = 1; for (let i = 2; i <= x; i++) r *= i; return r; });
 def('Number.Power', 2, 2, (a, b) => (a === null || b === null ? null : Math.pow(a, b)));
-def('Number.Mod', 2, 3, (a, b, pr) => { if (pr !== null) throw unsup('Number.Mod precision'); if (a === null || b === null) return null; if (b === 0) throw exprErr('We cannot divide by zero.'); return a - b * Math.trunc(a / b); });
+def('Number.Mod', 2, 3, (a, b, pr) => { if (pr !== null) throw unsup('Number.Mod precision'); if (a === null || b === null) return null; if (b === 0) throw exprErr('We cannot divide by zero.'); return a % b; });
 def('Number.IntegerDivide', 2, 3, (a, b, pr) => { if (pr !== null) throw unsup('Number.IntegerDivide precision'); if (a === null || b === null) return null; if (b === 0) throw exprErr('We cannot divide by zero.'); return Math.trunc(a / b); });
 def('Int64.From', 1, 3, (v, c, m) => { if (v === null) return null; if (m !== null) { const x = typeof v === 'string' ? textToNum(v, CULT(c)) : v; return roundMode(x, 0, m); } return convertTo(v, new MType('number', { facet: 'int' }), CULT(c)); });
 def('Int32.From', 1, 3, (v, c) => (v === null ? null : convertTo(v, new MType('number', { facet: 'int' }), CULT(c))));
@@ -907,7 +913,10 @@ def('Record.FromTable', 1, 1, t => { need(t, 'table'); const a = colI(t, 'Name')
 /* --- Value, Type, Error, Function --- */
 LIB.set('Value.Is', new MFunc(a => { const v = force(a[0]), t = force(a[1]); if (!(t instanceof MType)) throw convErr(t, 'Type'); return isType(v, t); }, 'Value.Is', 2, 2));
 LIB.set('Value.As', new MFunc(a => { const v = force(a[0]), t = force(a[1]); if (!(t instanceof MType)) throw convErr(t, 'Type'); return asType(v, t); }, 'Value.As', 2, 2));
-LIB.set('Value.Type', new MFunc(a => { const v = force(a[0]); return new MType(v === null ? 'null' : typeName(v).toLowerCase()); }, 'Value.Type', 1, 1));
+LIB.set('Value.Type', new MFunc(a => { const v = force(a[0]); if (isTable(v)) return new MType('table', { row: v.cols.map(c => [c.name, new MType('any')]) }); if (v instanceof MFunc) return new MType('function', { item: true }); return new MType(v === null ? 'null' : typeName(v).toLowerCase()); }, 'Value.Type', 1, 1));
+/* Belge: ilk bağımsız değişken her tür, ikincisi yalın ya da nullable yalın tür */
+LIB.set('Type.Is', new MFunc(a => { const x = force(a[0]), y = force(a[1]); if (!(x instanceof MType)) throw convErr(x, 'Type'); if (!(y instanceof MType)) throw convErr(y, 'Type'); if (y.row || y.item) throw new MUnsup('Type.Is ikinci bağımsız değişken olarak yalnız yalın ya da nullable yalın tür alır.'); if (y.kind === 'any') return true; if (y.kind === 'none') return x.kind === 'none'; if (x.kind === 'null') return !!y.nullable || y.kind === 'null'; if (y.kind === 'anynonnull') return !x.nullable && x.kind !== 'any'; return x.kind === y.kind && (!!y.nullable || !x.nullable); }, 'Type.Is', 2, 2));
+LIB.set('Type.NonNullable', new MFunc(a => { const x = force(a[0]); if (!(x instanceof MType)) throw convErr(x, 'Type'); return new MType(x.kind, Object.assign({}, x, { nullable: false })); }, 'Type.NonNullable', 1, 1));
 def('Value.Equals', 2, 3, (a, b, c) => eqFn(c, 'Value.Equals')(a, b));
 LIB.set('Error.Record', new MFunc(a => mkRecord([['Reason', force(a[0])], ['Message', a.length > 1 ? force(a[1]) : null], ['Detail', a.length > 2 ? force(a[2]) : null]]), 'Error.Record', 1, 4));
 LIB.set('Function.Invoke', new MFunc(a => callF(need(force(a[0]), 'function'), need(force(a[1]), 'list').slice()), 'Function.Invoke', 2, 2));
@@ -937,7 +946,7 @@ def('Table.FromRecords', 1, 3, (l, c, m) => { if (m !== null) throw unsup('Table
 function namesFrom(c, w) { if (c === null) return Array.from({ length: w }, (_, i) => 'Column' + (i + 1)); if (typeof c === 'number') return Array.from({ length: c }, (_, i) => 'Column' + (i + 1)); if (c instanceof MType) return c.row.map(f => f[0]); return listOf(c); }
 def('Table.FromRows', 1, 2, (rows, c) => { const data = items(rows).map(r => need(r, 'list').slice()); const w = data.reduce((m, r) => Math.max(m, r.length), 0); const names = namesFrom(c, w); data.forEach(r => { if (r.length !== names.length) throw exprErr('The specified row contains ' + r.length + ' values, but the table has ' + names.length + ' columns.'); }); return { cols: names.map((n, i) => ({ name: n, type: c instanceof MType ? colTypeOf(c.row[i][1]) : 'any' })), rows: data }; });
 def('Table.FromColumns', 1, 2, (colsL, c) => { const a = items(colsL).map(x => need(x, 'list')); const h = a.reduce((m, x) => Math.max(m, x.length), 0); const names = namesFrom(c, a.length); return mkTable(names, Array.from({ length: h }, (_, i) => a.map(x => (i < x.length ? x[i] : null)))); });
-def('Table.FromList', 1, 5, (l, sp, c, dflt, extra) => { if (dflt !== null || extra !== null) throw unsup('Table.FromList default/extraValues'); need(l, 'list'); const splitF = sp === null ? null : need(sp, 'function'); const parts = l.map(x => { const v = liftCell(x); if (splitF) { const r = call(splitF, v); return Array.isArray(r) ? r : [r]; } if (v === null) return [null]; if (typeof v === 'string') return v.split(','); if (Array.isArray(v)) return v.slice(); return [v]; }); const w = parts.reduce((m, r) => Math.max(m, r.length), 0); const names = namesFrom(c, w); return mkTable(names, parts.map(r => names.map((_, i) => (i < r.length ? r[i] : null)))); });
+def('Table.FromList', 1, 5, (l, sp, c, dflt, extra) => { if (dflt !== null || extra !== null) throw unsup('Table.FromList default/extraValues'); need(l, 'list'); const splitF = sp === null ? null : need(sp, 'function'); const parts = l.map(x => { const v = liftCell(x); if (splitF) { const r = call(splitF, v); return Array.isArray(r) ? r : [r]; } if (v === null) return [null]; if (typeof v === 'string') return v.split(','); if (Array.isArray(v)) return v.slice(); throw convErr(v, 'Text'); }); const w = parts.reduce((m, r) => Math.max(m, r.length), 0); const names = namesFrom(c, w); return mkTable(names, parts.map(r => names.map((_, i) => (i < r.length ? r[i] : null)))); });
 def('Table.ToRecords', 1, 1, t => need(t, 'table').rows.map(r => rowRecord(t, r)));
 def('Table.ToRows', 1, 1, t => need(t, 'table').rows.map(r => r.slice()));
 def('Table.ToColumns', 1, 1, t => { need(t, 'table'); return t.cols.map((c, i) => t.rows.map(r => r[i])); });
@@ -975,8 +984,9 @@ def('Table.TransformColumns', 2, 4, (t, ops, dflt, m) => {
   return out;
 });
 def('Table.TransformColumnTypes', 2, 3, (t, ops, c) => {
-  need(t, 'table'); const cu = CULT(c); const out = cloneT(t);
-  opsList(ops).forEach(o => { const i = colI(t, o[0]); const ty = o[1]; if (!(ty instanceof MType)) throw convErr(ty, 'Type'); out.rows.forEach(r => { r[i] = protect(() => convertTo(r[i], ty, cu)); }); out.cols[i].type = colTypeOf(ty); });
+  need(t, 'table'); let mode = 'err'; if (c instanceof MRecord) { c.names.forEach(n => { if (n !== 'Culture' && n !== 'MissingField') throw unsup('Table.TransformColumnTypes seçeneği ' + n); }); if (c.f.has('MissingField')) mode = missing(recGet(c, 'MissingField')); }
+  const cu = CULT(c); const out = cloneT(t);
+  opsList(ops).forEach(o => { const ty = o[1]; if (!(ty instanceof MType)) throw convErr(ty, 'Type'); let i = out.cols.findIndex(x => x.name === o[0]); if (i < 0) { if (mode === 'err') throw exprErr('The column \'' + o[0] + '\' of the table wasn\'t found.', o[0]); if (mode === 'ignore') return; out.cols.push({ name: o[0], type: colTypeOf(ty) }); out.rows.forEach(r => r.push(null)); return; } out.rows.forEach(r => { r[i] = protect(() => convertTo(r[i], ty, cu)); }); out.cols[i].type = colTypeOf(ty); });
   return out;
 });
 def('Table.TransformRows', 2, 2, (t, f) => { need(t, 'table'); need(f, 'function'); return t.rows.map(r => protect(() => call(f, rowRecord(t, r)))); });
@@ -990,6 +1000,7 @@ def('Table.Group', 3, 5, (t, key, agg, kind, cmp) => {
 });
 function sortSpec(spec) { if (spec instanceof MFunc) return [[spec, 0]]; if (typeof spec === 'string') return [[spec, 0]]; need(spec, 'list'); if (spec.length === 2 && (typeof spec[1] === 'number') && !Array.isArray(spec[0])) return [[spec[0], spec[1]]]; return spec.map(x => { if (Array.isArray(x)) return [x[0], x[1] === undefined ? 0 : x[1]]; return [x, 0]; }); }
 def('Table.Sort', 2, 2, (t, spec) => { need(t, 'table'); const sp = sortSpec(spec).map(s => { if (typeof s[0] === 'string') { const i = colI(t, s[0]); return [r => liftCell(r[i]), s[1]]; } need(s[0], 'function'); return [r => call(s[0], rowRecord(t, r)), s[1]]; }); const rows = t.rows.map((r, i) => [r, i]).sort((a, b) => { for (const s of sp) { let c = sortCompare(s[0](a[0]), s[0](b[0])); if (s[1] === 1) c = -c; if (c) return c; } return a[1] - b[1]; }).map(x => x[0]); return { cols: t.cols.map(c => Object.assign({}, c)), rows }; });
+def('Table.PrefixColumns', 2, 2, (t, x) => { need(t, 'table'); need(x, 'text'); const o = cloneT(t); o.cols.forEach(c => { c.name = x + '.' + c.name; }); return o; });
 def('Table.Distinct', 1, 2, (t, cr) => { need(t, 'table'); let idxs = t.cols.map((c, i) => i); let eq = valEq; if (cr !== null) { if (typeof cr === 'string') idxs = [colI(t, cr)]; else if (Array.isArray(cr)) { if (cr.length === 2 && cr[1] instanceof MFunc) { idxs = listOf(cr[0]).map(x => colI(t, x)); eq = eqFn(cr[1], 'Table.Distinct'); } else idxs = cr.map(x => colI(t, x)); } else throw unsup('Table.Distinct ölçütü'); } const out = []; const safeEq = (a, b) => { if (isErrCell(a) || isErrCell(b)) return isErrCell(a) && isErrCell(b) && a.pqErr === b.pqErr; return eq(a, b); }; t.rows.forEach(r => { if (!out.some(o => idxs.every(i => safeEq(o[i], r[i])))) out.push(r); }); return { cols: t.cols.map(c => Object.assign({}, c)), rows: out }; });
 function rowCount(t, c, fromEnd) { if (typeof c === 'number') return c; need(c, 'function'); const R = t.rows; let n = 0; if (fromEnd) { for (let i = R.length - 1; i >= 0 && truth(call(c, rowRecord(t, R[i]))); i--) n++; } else { while (n < R.length && truth(call(c, rowRecord(t, R[n])))) n++; } return n; }
 const withRows = (t, rows) => ({ cols: t.cols.map(c => Object.assign({}, c)), rows });
@@ -1054,7 +1065,7 @@ def('Table.ExpandListColumn', 2, 2, (t, c) => { need(t, 'table'); const i = colI
 def('Table.Pivot', 4, 5, (t, vals, attr, val, agg) => {
   need(t, 'table'); const pv = items(vals); const ia = colI(t, attr), iv = colI(t, val); pv.forEach(p => need(p, 'text'));
   const kept = t.cols.map((c, i) => i).filter(i => i !== ia && i !== iv); const groups = [];
-  t.rows.forEach(r => { const k = kept.map(i => r[i]); let g = groups.find(x => x.k.every((v, j) => valEq(v, k[j]))); if (!g) { g = { k, m: new Map() }; groups.push(g); } const a = r[ia]; if (a === null) throw exprErr('Pivot öznitelik sütununda null var.'); if (!g.m.has(a)) g.m.set(a, []); g.m.get(a).push(r[iv]); });
+  t.rows.forEach(r => { const k = kept.map(i => r[i]); let g = groups.find(x => x.k.every((v, j) => valEq(v, k[j]))); if (!g) { g = { k, m: new Map() }; groups.push(g); } const a = r[ia]; if (a === null) throw new MUnsup('Pivot öznitelik sütununda null var: gerçek davranış belgede yazmıyor, burada durduruldu. Önce null satırları süz.'); if (!g.m.has(a)) g.m.set(a, []); g.m.get(a).push(r[iv]); });
   if (agg !== null) need(agg, 'function');
   const rows = groups.map(g => g.k.concat(pv.map(p => {
     const a = g.m.get(p); if (agg !== null) return protect(() => call(agg, a || []));
@@ -1182,5 +1193,5 @@ function errorText(r) {
   if (r.kind === 'runtime') return r.reason + ': ' + r.message;
   return r.message;
 }
-W.PBI_M = { run, fmt, compareResult, applyStep, isTable, isErrCell, MRecord, MFunc, MType, MDuration, MBinary, supported, errorText, typeName, FILES, QN, recGet, QUERY_NAMES: () => Object.keys(refreshQueries()), LIMIT: 'Kaynağa bağlanmaz, sorgu katlamaz; zaman (time) ve saat dilimi türleri, gizlilik düzeyleri ve bağlayıcılar yoktur. Dosya işlevleri benzetimdir. Desteklenmeyen işlevde hata verir, tahmin yürütmez.' };
+W.PBI_M = { run, fmt, compareResult, applyStep, isTable, isErrCell, MRecord, MFunc, MType, MDuration, MBinary, supported, errorText, typeName, FILES, QN, recGet, QUERY_NAMES: () => Object.keys(refreshQueries()), LIMIT: 'Kaynağa bağlanmaz, sorgu katlamaz; zaman (time) ve saat dilimi türleri, gizlilik düzeyleri ve bağlayıcılar yoktur. Dosya işlevleri benzetimdir. Kültür olarak tr-TR, en-US, fr-FR, de-DE çalışır. Desteklenmeyen işlevde hata verir, try bile bu hatayı yakalamaz, tahmin yürütülmez.' };
 })(window);
