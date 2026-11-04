@@ -138,7 +138,7 @@ W.PBI_PLACEMENT = [
   { lv: 'A1', q: 'Power BI Desktop’ta bir görsel seçiliyken alanları (X ekseni, Y ekseni…) hangi bölmede kutulara koyarsın?', o: ['Filtreler bölmesi', 'Görselleştirmeler → Oluştur', 'Yer işaretleri bölmesi', 'Seçim bölmesi'], a: 1 },
   { lv: 'A1', q: 'Raporu Power BI Service’e göndermek için kullanılan komut?', o: ['Dışa aktar → PDF', 'Yayımla', 'Kaydet', 'Yenile'], a: 1 },
   { lv: 'A1', q: 'Zaman içindeki eğilimi göstermek için en uygun görsel?', o: ['Halka', 'Çizgi grafik', 'Ağaç haritası', 'Kart'], a: 1 },
-  { lv: 'A1', q: 'Dilimleyiciye ya da grafik eksenine hangisi konabilir?', o: ['Ölçü', 'Sütun', 'Yalnızca hesaplanmış tablo', 'Hiçbiri'], a: 1 },
+  { lv: 'A1', q: 'Dilimleyiciye ya da grafik eksenine hangisi konabilir?', o: ['Ölçü', 'Sütun', 'Yalnızca hesaplanmış tablo', 'Yalnızca KPI'], a: 1 },
   { lv: 'A2', q: 'Power Query’deki dönüşümlerin arkasındaki dil hangisidir?', o: ['DAX', 'M', 'SQL', 'Python'], a: 1 },
   { lv: 'A2', q: 'Yıldız şemada filtreler varsayılan olarak hangi yöne akar?', o: ['Olgudan boyuta', 'Boyuttan olguya (bir → çok)', 'Her iki yöne', 'Hiçbir yöne'], a: 1 },
   { lv: 'A2', q: 'Bir siparişte birden çok satır olabiliyorsa sipariş sayısını hangisi verir?', o: ['COUNTROWS(Satislar)', 'DISTINCTCOUNT(Satislar[SiparisNo])', 'SUM(Satislar[SiparisNo])', 'COUNT(Satislar[Adet])'], a: 1 },

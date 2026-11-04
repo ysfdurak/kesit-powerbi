@@ -233,7 +233,7 @@ function sqlPct(where, p) {
     '<b>Veri başlangıcı etkisi:</b> Veri 1 Ekim 2024’te başlıyor. [Yeni Müşteri] ölçüsü Ekim’de sipariş veren herkesi “yeni” sayar, çünkü daha eski sipariş görünmüyor. Yeni müşteri trendini Kasım’dan itibaren yorumla ya da kayıt tarihini (signup_date) kullan; Kasım’daki tüm yeni kayıtların aynı davetçiden geldiği de böyle görülür.'
   ],
   portfolio: [
-    'Başlık-detay modelini (sipariş ve sipariş satırı iki ayrı olgu) doğru kurdum; teslim ücretinin satır düzeyinde toplandığında yaklaşık iki kat sayıldığını gösterip ölçü kütüphanesini buna göre tasarladım.',
+    'Başlık-detay modelini (sipariş ve sipariş satırı iki ayrı olgu) doğru kurdum; teslim ücretinin satır düzeyinde toplandığında yaklaşık %50 fazla sayıldığını gösterip ölçü kütüphanesini buna göre tasarladım.',
     'Operasyon için ortalama yerine medyan ve P90 teslim süresi, 35 dakikalık SLA uyumu ve hazırlık süresi göstergelerini tanımladım. Gecikmeli 10 günün tüm şehirlere yayıldığını, yani dış etkili olduğunu gösterdim.',
     'İade alarmını bir soruşturmaya çevirdim: tek restoran–kurye ikilisinde yoğunlaşan iadeleri, 5 dakikanın altındaki fiziksel olarak imkânsız teslimleri ve bunları veren 9 hesabın tek bir davetçiye bağlandığını DAX ile kanıtlayıp zararı TL olarak raporladım.',
     'Teknik olarak USERELATIONSHIP (rol oynayan tarih), TREATAS (ilişkisiz filtre taşıma), bağlam geçişiyle gün bazlı filtreleme, PERCENTILEX.INC ve PREVIOUSMONTH kullandım; her sayıyı SQL ile bağımsız doğruladım.',

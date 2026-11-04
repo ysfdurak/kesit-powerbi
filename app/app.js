@@ -30,7 +30,7 @@ const colKey = o => o.t + '[' + o.c + ']';
 /* ---------- Depolama ---------- */
 const KEY = 'pbipatika.v1';
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
-const FRESH = () => ({ weak: {}, skillStat: {}, rv: {}, rvc: 0, reports: [], exams: {}, arena: null, theme: 'auto', welcomed: false, bkDone: 0, vd: {}, done: {}, ex: {}, xp: 0, days: {}, placement: null, drafts: {}, last: null, seen: {}, mine: [], studio: null, gclosed: {}, final: {}, labSeen: {}, trickSeen: {}, goal: null, cap: {}, ready: {}, cert: {}, name: '', navc: {}, ivr: {}, testDone: null, _v: 2, _ts: 0 });
+const FRESH = () => ({ weak: {}, skillStat: {}, rv: {}, rvc: 0, reports: [], exams: {}, arena: null, theme: 'auto', welcomed: false, bkDone: 0, vd: {}, done: {}, ex: {}, xp: 0, days: {}, placement: null, drafts: {}, last: null, seen: {}, mine: [], studio: null, gclosed: {}, final: {}, labSeen: {}, trickSeen: {}, goal: null, cap: {}, ready: {}, cert: {}, name: '', navc: {}, ivr: {}, testDone: null, pilot: { tests: [], aktifDk: 0, dersBaslangic: {}, dersBitis: {} }, _v: 2, _ts: 0 });
 /* Kayıtlı ilerlemeyi şemaya göre temizle: bozuk ya da eski biçimli alanlar varsayılana döner, uygulama asla beyaz ekranda kalmaz */
 const kindOf = v => v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v;
 function sanitize(o) {
@@ -42,16 +42,38 @@ function sanitize(o) {
     if (kb === 'null') out[k] = (kv === 'object' || kv === 'string' || kv === 'null') ? v : null;
     else if (kb === kv) out[k] = v; else out[k] = b; });
   if (!isFinite(out.xp)) out.xp = 0; if (!isFinite(out.rvc)) out.rvc = 0;
+  out.pilot = cleanPilot(out.pilot, out.testDone);
   return out;
+}
+/* Pilot özeti: sunucu yok, kişisel veri yok. tests en fazla 20 kayıt; ilk test hep kalır (ilk + son 19). Eski tek kayıtlı testDone ilk test sayılır */
+const PILOT_MAX = 20;
+function capTests(a) { const s = a.slice().sort((x, y) => String(x.tarih) < String(y.tarih) ? -1 : String(x.tarih) > String(y.tarih) ? 1 : 0); return s.length <= PILOT_MAX ? s : [s[0]].concat(s.slice(1 - PILOT_MAX)); }
+function cleanPilot(p, td) {
+  const o = kindOf(p) === 'object' ? p : {}, strMap = m => { const r = {}; if (kindOf(m) === 'object') Object.keys(m).forEach(k => { if (typeof m[k] === 'string') r[k] = m[k]; }); return r; };
+  let tests = (Array.isArray(o.tests) ? o.tests : []).filter(t => t && typeof t.tarih === 'string' && isFinite(t.puan) && isFinite(t.toplam)).map(t => ({ tarih: t.tarih, puan: +t.puan, toplam: +t.toplam, seviye: typeof t.seviye === 'string' ? t.seviye : 'baslangic' }));
+  if (!tests.length && td && typeof td === 'object' && isFinite(td.total)) tests = [{ tarih: String(td.at || ''), puan: +td.total, toplam: (window.PBI_PLACEMENT || []).length, seviye: td.lv || 'baslangic' }];
+  const dk = +o.aktifDk;
+  return { tests: capTests(tests), aktifDk: isFinite(dk) && dk > 0 ? Math.floor(dk) : 0, dersBaslangic: strMap(o.dersBaslangic), dersBitis: strMap(o.dersBitis) };
+}
+/* İki pilot alanını birleştir: testler birleşir, dakika büyük olanı, ders zamanlarında en erken olanı */
+function mergePilot(a, b) {
+  a = cleanPilot(a); b = cleanPilot(b); const seen = new Set(), tests = []; a.tests.concat(b.tests).forEach(t => { const k = JSON.stringify([t.tarih, t.puan, t.toplam, t.seviye]); if (!seen.has(k)) { seen.add(k); tests.push(t); } });
+  const early = (x, y) => { const r = Object.assign({}, x); Object.keys(y).forEach(k => { if (!r[k] || y[k] < r[k]) r[k] = y[k]; }); return r; };
+  return { tests: capTests(tests), aktifDk: Math.max(a.aktifDk, b.aktifDk), dersBaslangic: early(a.dersBaslangic, b.dersBaslangic), dersBitis: early(a.dersBitis, b.dersBitis) };
 }
 const P = sanitize(load());
 if (P.placement) { P.placement = TIER(P.placement); if (LVI(P.placement) < 0) P.placement = null; }
 let saveT = null;
 let STORE_OK = true, storeWarned = false;
 /* Ana sayfanın (ysfdurak.github.io) okuduğu özet: yalnız geçerli ders kimlikleri sayılır */
-function writeOzet() { try { localStorage.setItem('kesit.ozet.pbi', JSON.stringify({ bitti: Object.keys(P.done || {}).filter(k => LMAP[k]).length, toplam: LESSONS.length })); } catch (e) {} }
+function writeOzet() { try { localStorage.setItem('kesit.ozet.pbi', JSON.stringify({ bitti: Object.keys(P.done || {}).filter(k => LMAP[k]).length, toplam: LESSONS.length, alistirma: Object.keys(P.ex || {}).filter(k => P.ex[k]).length })); } catch (e) {} }
 function save() { clearTimeout(saveT); saveT = setTimeout(() => { P._ts = Date.now(); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); STORE_OK = true; } catch (e) { STORE_OK = false; if (!storeWarned) { storeWarned = true; toast('Tarayıcın ilerlemeyi kaydetmeye izin vermiyor (gizli pencere ya da dolu depolama). Profil sayfasından ilerlemeni dosya olarak indirebilirsin.'); } } try { window.dispatchEvent(new CustomEvent('pbi-saved')); } catch (e) {} }, 150); }
 function flushSave() { clearTimeout(saveT); P._ts = Date.now(); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
+/* Aktif süre: sayfa görünür ve son 60 saniyede etkileşim varken dakika sayılır */
+let actAt = Date.now(), actSn = 0;
+['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart'].forEach(n => window.addEventListener(n, () => { actAt = Date.now(); }, { passive: true, capture: true }));
+setInterval(() => { if (document.visibilityState !== 'visible' || Date.now() - actAt > 60000) return; actSn += 15; if (actSn >= 60) { actSn -= 60; P.pilot.aktifDk++; save(); } }, 15000);
+document.addEventListener('pbi-lesson-done', ev => { const id = ev.detail && ev.detail.id; if (id && !P.pilot.dersBitis[id]) { P.pilot.dersBitis[id] = new Date().toISOString(); save(); } });
 window.addEventListener('pagehide', flushSave); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
 /* Dışarıdan gelen ilerlemeyi (dosya ya da bulut) yerine koy */
 function replaceProgress(o) { const n = sanitize(o); Object.keys(P).forEach(k => { delete P[k]; }); Object.assign(P, n); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} render(); }
@@ -173,6 +195,13 @@ const head = (eyebrow, title, desc, v) => { const gn = /·/.test(eyebrow) ? null
 
 /* ---------- İlerleme ---------- */
 const exKey = (l, i) => l.id + ':' + i;
+const hasProgress = () => !!(P.last || Object.keys(P.ex || {}).some(k => P.ex[k]) || Object.keys(P.done || {}).length);
+const startedIn = ids => ids.some(id => P.done[id] || P.seen[id] || P.last === id || (LMAP[id] && lessonState(LMAP[id]) !== 'none'));
+/* Profil’deki “Özeti kopyala”: düz JSON, kişisel veri ve yazılan kod içermez */
+function pilotSummary() {
+  const wk = Object.entries(P.weak || {}).filter(([id]) => LMAP[id]).sort((a, b) => b[1] - a[1])[0];
+  return { uygulama: 'kesit-powerbi', surum: window.PBI_SYNC ? window.PBI_SYNC.version : null, tests: P.pilot.tests, aktifDk: P.pilot.aktifDk, tamamlananDers: Object.keys(P.done || {}).filter(k => LMAP[k]).length, cozulenAlistirma: Object.keys(P.ex || {}).filter(k => P.ex[k]).length, sonDers: P.last && LMAP[P.last] ? P.last : null, enCokTakilinan: wk ? wk[0] : null };
+}
 function lessonState(l) { if (P.done[l.id]) return 'done'; const n = (l.ex || []).filter((e, i) => P.ex[exKey(l, i)]).length; return n ? 'part' : 'none'; }
 function pct(ids) { if (!ids.length) return 0; return Math.round(ids.filter(id => P.done[id]).length / ids.length * 100); }
 const levelIds = lv => LESSONS.filter(l => l.lvl === lv).map(l => l.id);
@@ -322,7 +351,7 @@ function viewHome() {
   const GOAL = window.PBI_CAREER && P.goal && PMAP[P.goal.path];
   h += GOAL ? '<section class="hero">' + window.PBI_CAREER.homeGoal() + '<div style="display:none">' : '';
   h += (GOAL ? '' : '<section class="hero">') + '<div class="panel hero-main"><div class="bars-deco" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="eyebrow">Power BI · DAX · Fabric · Türkçe</span><h1>Sıfırdan <em>işe hazır</em> Power BI uzmanlığına.</h1><p>Rolüne göre yol seç, tarayıcında DAX yaz, bitirme projesiyle portföyünü kur.<br>' + LESSONS.length + ' ders, ' + C.ex.toLocaleString('tr-TR') + ' alıştırma, ' + C.dash + ' örnek rapor. Kurulum ve hesap gerekmez.</p><div class="row">';
-  h += nx ? '<button class="btn pri" data-lesson="' + nx.id + '"' + (hctx ? ' data-ctx="' + hctx + '"' : '') + '>' + (done || P.placement ? 'Devam et' : 'Hemen başla') + ': ' + esc(nx.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>';
+  h += nx ? '<button class="btn pri" data-lesson="' + nx.id + '"' + (hctx ? ' data-ctx="' + hctx + '"' : '') + '>' + (done || P.placement || hasProgress() ? 'Devam et' : 'Hemen başla') + ': ' + esc(nx.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>';
   h += P.testDone ? '<button class="btn" data-go="paths">Öğrenme yolu seç</button>' : '<button class="btn" data-go="test">Seviyemi belirle</button>';
   h += '</div></div>' + (GOAL ? '</div>' : '');
   h += '<div class="panel today"><div class="sec-head"><h3>Bugün</h3><span class="muted" style="font-size:.85rem">Günlük hedef ' + DAILY_GOAL + ' XP</span></div><div class="bar"><i style="width:' + Math.min(100, td / DAILY_GOAL * 100) + '%"></i></div>';
@@ -354,7 +383,7 @@ function viewPath(id) {
   let h = '<div class="wrap"><div class="crumbs"><button data-go="paths">Öğrenme yolları</button><span>/</span><span>' + esc(p.name) + '</span></div>';
   h += '<section class="panel hero-main"><div class="row"><span class="ic" style="background:' + p.color + ';height:46px;min-width:46px">' + p.short + '</span><div class="grow"><span class="eyebrow">Öğrenme yolu</span><h1 style="font-size:1.9rem">' + esc(p.name) + '</h1></div></div><p>' + esc(p.long || p.desc) + '</p>';
   if (p.skills) h += '<div class="row" style="gap:6px">' + p.skills.map(s => '<span class="chip">' + esc(s) + '</span>').join('') + '</div>';
-  h += '<div class="bar"><i style="width:' + pct(p.lessons) + '%;background:' + p.color + '"></i></div><div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + p.id + '">' + (pct(p.lessons) ? 'Devam et' : 'Yola başla') + '</button>' : '<span class="chip">Yol tamamlandı</span><button class="btn pri" data-go="projeler">Bitirme projesi</button>') + '<span class="muted num">' + ls.filter(l => P.done[l.id]).length + '/' + ls.length + ' ders · %' + pct(p.lessons) + '</span></div></section>';
+  h += '<div class="bar"><i style="width:' + pct(p.lessons) + '%;background:' + p.color + '"></i></div><div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + p.id + '">' + (startedIn(p.lessons) ? 'Devam et' : 'Yola başla') + '</button>' : '<span class="chip">Yol tamamlandı</span><button class="btn pri" data-go="projeler">Bitirme projesi</button>') + '<span class="muted num">' + ls.filter(l => P.done[l.id]).length + '/' + ls.length + ' ders · %' + pct(p.lessons) + '</span></div></section>';
   LEVELS.forEach(L => { const items = ls.filter(l => l.lvl === L.id); if (!items.length) return; h += '<section class="lvl-block"><div class="lvl-head">' + '<h2>' + L.name + ' seviye</h2><span class="muted" style="font-size:.88rem">' + items.length + ' ders</span></div><div class="panel lessons">' + items.map(l => lessonRow(l, p.id)).join('') + '</div></section>'; });
   return h + '</div>';
 }
@@ -388,7 +417,7 @@ function currList() {
 let ED = null;
 function viewLesson() {
   const l = LMAP[S.id]; if (!l) return '<div class="wrap"><div class="panel empty">Ders bulunamadı.</div></div>';
-  P.last = l.id; save(); const ex = l.ex || [];
+  P.last = l.id; if (!P.pilot.dersBaslangic[l.id]) P.pilot.dersBaslangic[l.id] = new Date().toISOString(); save(); const ex = l.ex || [];
   let h = '<div class="wrap" style="gap:18px"><div class="lhead"><div class="crumbs">' + (S.ctx && PMAP[S.ctx] ? '<button data-go="path" data-id="' + S.ctx + '">' + esc(PMAP[S.ctx].name) + '</button>' : '<button data-go="curr">Dersler</button>') + '<span>/</span>' + lvBadge(l.lvl) + '<span>' + esc(l.mod) + '</span></div>';
   if (S.ctx && PMAP[S.ctx] && PMAP[S.ctx].lessons.includes(l.id)) { const arr = PMAP[S.ctx].lessons, pos = arr.indexOf(l.id), dn = arr.filter(x => P.done[x]).length; let msn = ''; if (window.PBI_CAREER) { const ms = window.PBI_CAREER.milestones(PMAP[S.ctx]); const mi = ms.findIndex(m => m.ids.includes(l.id)); if (mi >= 0 && ms.length > 1) msn = ' · Aşama ' + (mi + 1) + ': ' + ms[mi].t; } h += '<div class="lctx"><span>' + esc(PMAP[S.ctx].name) + ' ' + (pos + 1) + '/' + arr.length + msn + '</span><span class="bar"><i style="width:' + Math.round(dn / arr.length * 100) + '%"></i></span></div>'; }
   h += '<div class="row" style="justify-content:space-between;align-items:end"><h1 style="font-size:clamp(1.5rem,3.4vw,2.1rem)">' + esc(l.title) + '</h1><span class="muted" style="font-size:.85rem" title="Tahmin: okuma ve alıştırmalar dahil">' + dkAralik(l) + '</span></div>';
@@ -439,7 +468,7 @@ function mcView(e, k) {
   return h + '</div><div id="mcFb">' + (solved && e.why ? '<div class="msg ok"><b>Doğru.</b>' + e.why + '</div>' : '') + '</div></div>';
 }
 const DEFAULT_GRID = [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }];
-function copyText(t){ const ok=()=>toast('Kopyalandı. İstediğin yapay zekâ aracına yapıştır.'), fb=()=>{ const a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); let r=false; try{ r=document.execCommand('copy'); }catch(er){} a.remove(); r?ok():toast('Kopyalanamadı. Tarayıcın panoya yazmaya izin vermiyor.'); }; if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fb); else fb(); }
+function copyText(t, msg){ const ok=()=>toast(msg||'Kopyalandı. İstediğin yapay zekâ aracına yapıştır.'), fb=()=>{ const a=document.createElement('textarea'); a.value=t; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); let r=false; try{ r=document.execCommand('copy'); }catch(er){} a.remove(); r?ok():toast('Kopyalanamadı. Tarayıcın panoya yazmaya izin vermiyor.'); }; if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok,fb); else fb(); }
 function htmlText(h){ const d=new DOMParser().parseFromString(String(h||''),'text/html').body; return (d.textContent||'').replace(/\s+\n/g,'\n').trim(); }
 function aiPrompt(o){ return o.dil+' öğreniyorum. Aşağıdaki görevde takıldım.\n\nÇözümü doğrudan yazma. Önce yanlışımı bulmama yardım edecek kısa bir ipucu ver, sonra beni düşündürecek tek bir soru sor. Ben istemedikçe tam çözümü verme. Türkçe cevap ver.\n\nGörev:\n'+htmlText(o.gorev)+(o.ek?'\n\n'+o.ek:'')+'\n\nŞu ana kadar yazdığım kod:\n'+(String(o.kod||'').trim()||'(Henüz kod yazmadım.)')+'\n\nSon sonuç veya hata:\n'+(htmlText(o.sonuc).slice(0,1500)||'(Henüz çalıştırmadım.)'); }
 function aiCopyDAX() { const e = curX().e; const o = $('#out'); copyText(aiPrompt({ dil: 'DAX', gorev: e.q, ek: e.t === 'query' ? 'Görev türü: EVALUATE sorgusu' : 'Yazmam gereken ölçü: ' + e.name, kod: ED ? ED.get() : '', sonuc: o ? o.innerHTML : '' })); }
@@ -509,6 +538,13 @@ function checkEx(grade, quiet) {
     out.innerHTML = daxErrHTML(er);
   }
 }
+/* Türkçe İ ya da ı ile yazılmış fonksiyon ve anahtar sözcükler: metin ve köşeli ayraç içi sayılmaz, ifade değiştirilmez */
+const DAX_WORDS = new Set(['DEFINE', 'MEASURE', 'EVALUATE', 'RETURN', 'VAR', 'ORDER', 'BY', 'IN', 'NOT', 'AND', 'OR', 'ASC', 'DESC', 'COLUMN', 'TABLE', 'TRUE', 'FALSE']);
+function turkishI(src) {
+  const bare = String(src || '').replace(/"[^"]*"/g, ' ').replace(/'[^']*'/g, ' ').replace(/\[[^\]]*\]/g, ' '), out = [], seen = new Set();
+  (bare.match(/[A-Za-zÇĞİÖŞÜçğıöşü_][\wÇĞİÖŞÜçğıöşü.]*/g) || []).forEach(w => { if (!/[İı]/.test(w) || seen.has(w)) return; seen.add(w); const f = w.replace(/[İı]/g, 'I').toUpperCase(); if (FNSET.has(f) || DAX_WORDS.has(f)) out.push([w, f]); });
+  return out;
+}
 function daxErrHTML(er, src) {
   if (src == null) { const ta = document.querySelector('.ed-shell textarea'); src = ta ? ta.value : ''; }
   const raw = String(er && er.message || er || ''); const tips = [];
@@ -517,6 +553,7 @@ function daxErrHTML(er, src) {
   const t = String(src || '').trim();
   if (/^=/.test(t)) tips.push('Başta “=” işaretine gerek yok: Excel’deki gibi değil. Burada yalnızca ifadeyi yaz (örnek: SUM(Satislar[Tutar])). Ölçüyü tanımlarken “Ad = ifade” biçimi Power BI’ın kendi formül çubuğuna özgüdür.');
   if (/;/.test(t.replace(/"[^"]*"/g, ''))) tips.push('Bağımsız değişkenleri “;” ile ayırmışsın. Bu uygulama, Power BI’ın varsayılan ayarı gibi “,” bekler. Türkçe bölgesel ayarlı Power BI Desktop’ta “;” görebilirsin; burada virgül kullan.');
+  turkishI(t).reverse().forEach(([yazilan, dogru]) => tips.unshift('Türkçe klavye: “' + yazilan + '” değil, “' + dogru + '” yaz. DAX’ta noktalı İ ile noktasız I farklı harflerdir; ekranda aynı görünen sözcük bu yüzden tanınmaz. Türkçe klavyede büyük I için Shift ile ı tuşuna bas. Formülünü değiştirmedik, kendin düzeltmelisin.'));
   if (/[“”‘’]/.test(t)) tips.push('Akıllı tırnak (“ ” ‘ ’) var. Metinler için düz çift tırnak ("), tablo adları için düz tek tırnak (\') kullan.');
   return '<div class="msg err"><b>DAX hatası</b><span class="vend">' + esc(msg) + '</span>' + tips.map(x => '<p class="errtip"><b>İpucu:</b> ' + esc(x) + '</p>').join('') + '</div>';
 }
@@ -719,25 +756,32 @@ function libSection() {
 
 /* ---------- Seviye testi ---------- */
 let T = null;
+/* Her testte yeni düzen: sorular seviye içinde karışır, kolaydan zora akış korunur. Doğru şıkkın konumu seviye başına dengeli dağıtılır: “hepsine A” şans üstü puan almaz */
+const shuffled = a => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+function newTest() {
+  const groups = {}, keys = []; window.PBI_PLACEMENT.forEach(q => { const k = TIER(q.lv); if (!groups[k]) { groups[k] = []; keys.push(k); } groups[k].push(q); });
+  const qs = []; keys.forEach(k => { const list = shuffled(groups[k]), slots = shuffled(list.map((_, i) => i)); list.forEach((q, i) => { const n = q.o.length, want = slots[i] % n, rest = shuffled(q.o.map((_, j) => j).filter(j => j !== q.a)); rest.splice(want, 0, q.a); qs.push({ q, ord: rest }); }); });
+  return { i: 0, score: {}, ans: [], qs };
+}
 /* Sonuç: kişinin hedefi varsa o yol, yoksa geçtiği seviyeye uyan yol */
 function testResult(res) {
   const Q2 = window.PBI_PLACEMENT, lv = res.lv, nextL = LEVELS[lv ? LVI(lv) + 1 : 0];
   const rec = placementPath();
   const start = nextLesson(rec), skipped = PMAP[rec] ? PMAP[rec].lessons.filter(id => LMAP[id] && isSkipped(LMAP[id])).length : 0;
-  return '<div class="wrap"><div class="panel hero-main"><span class="eyebrow">Seviye testi · sonuç</span><h1>' + res.total + '/' + Q2.length + ' doğru · <em>' + (lv ? lvName(lv) : 'Başlangıç') + '</em></h1><p>' + (lv ? lvName(lv) + ' seviyesini geçtin. Bu seviyenin dersleri sıradaki ders listesinden atlanır' + (skipped ? ' (önerilen yol ' + esc(PMAP[rec].name) + ': ' + skipped + ' ders)' : '') + '; istersen yine açabilirsin. İlerleme yüzdesine ve belgeye tamamlanmış sayılmazlar. ' : 'Temel seviyeden başlamak en hızlı yol olacak. ') + (nextL ? 'Sıradaki seviye: <b>' + nextL.name + '</b>. ' + esc(nextL.desc) : 'Tüm seviyeleri geçtin; bitirme projesiyle kendini sına.') + '</p><div class="row">' + (start ? '<button class="btn pri" data-lesson="' + start.id + '" data-ctx="' + rec + '">Şuradan başla: ' + esc(start.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>') + '<button class="btn" data-go="path" data-id="' + rec + '">' + esc(PMAP[rec] ? PMAP[rec].name : 'Öğrenme yolu') + ' yolunu gör</button><button class="btn ghost" data-act="test-again">Testi yeniden çöz</button>' + (lv ? '<button class="btn ghost" data-act="test-clear">Atlamayı kaldır</button>' : '') + '</div></div>' +
+  return '<div class="wrap"><div class="panel hero-main"><span class="eyebrow">Seviye testi · sonuç</span><h1>' + res.total + '/' + Q2.length + ' doğru · <em>' + (lv ? lvName(lv) : 'Başlangıç') + '</em></h1>' + (P.pilot.tests.length > 1 ? '<p class="muted" style="margin:0 0 6px">İlk testin: ' + P.pilot.tests[0].puan + '/' + P.pilot.tests[0].toplam + '. Çözdüğün test: ' + P.pilot.tests.length + '. Bütün testler Profil’de, Pilot özeti kutusunda.</p>' : '') + '<p>' + (lv ? lvName(lv) + ' seviyesini geçtin. Bu seviyenin dersleri sıradaki ders listesinden atlanır' + (skipped ? ' (önerilen yol ' + esc(PMAP[rec].name) + ': ' + skipped + ' ders)' : '') + '; istersen yine açabilirsin. İlerleme yüzdesine ve belgeye tamamlanmış sayılmazlar. ' : 'Temel seviyeden başlamak en hızlı yol olacak. ') + (nextL ? 'Sıradaki seviye: <b>' + nextL.name + '</b>. ' + esc(nextL.desc) : 'Tüm seviyeleri geçtin; bitirme projesiyle kendini sına.') + '</p><div class="row">' + (start ? '<button class="btn pri" data-lesson="' + start.id + '" data-ctx="' + rec + '">Şuradan başla: ' + esc(start.title) + '</button>' : '<button class="btn pri" data-go="projeler">Bitirme projelerine geç</button>') + '<button class="btn" data-go="path" data-id="' + rec + '">' + esc(PMAP[rec] ? PMAP[rec].name : 'Öğrenme yolu') + ' yolunu gör</button><button class="btn ghost" data-act="test-again">Testi yeniden çöz</button>' + (lv ? '<button class="btn ghost" data-act="test-clear">Atlamayı kaldır</button>' : '') + '</div></div>' +
     '<div class="panel lessons">' + LEVELS.map(L => { const n = Q2.filter(q => q.lv === L.id).length; const sc = (res.score || {})[L.id] || 0; return '<div class="litem" style="cursor:default"><span>' + lvBadge(L.id) + '</span><span><b>' + L.name + ' seviye</b><small>' + sc + '/' + n + ' doğru · ' + (sc >= Math.ceil(n * 0.75) ? 'geçildi' : 'çalışılmalı') + '</small></span><span class="bar" style="width:120px"><i style="width:' + (sc / n * 100) + '%"></i></span></div>'; }).join('') + '</div></div>';
 }
 function viewTest() {
   const Q2 = window.PBI_PLACEMENT;
   if (!T && P.testDone) return testResult(P.testDone);
-  if (!T) T = { i: 0, score: {}, ans: [] };
+  if (!T) T = newTest();
   if (T.i >= Q2.length) {
     let lv = null; for (const L of LEVELS) { const n = Q2.filter(q => q.lv === L.id).length; if (n && (T.score[L.id] || 0) >= Math.ceil(n * 0.75)) lv = L.id; else break; }
-    P.placement = lv; P.last = null; P.testDone = { lv, total: T.ans.filter(Boolean).length, score: Object.assign({}, T.score), at: today() }; save(); try { document.dispatchEvent(new CustomEvent('pbi-placement', { detail: { lv: lv || 'baslangic' } })); } catch (e) {}
+    P.placement = lv; P.last = null; P.testDone = { lv, total: T.ans.filter(Boolean).length, score: Object.assign({}, T.score), at: today() }; P.pilot.tests = capTests(P.pilot.tests.concat([{ tarih: new Date().toISOString(), puan: P.testDone.total, toplam: Q2.length, seviye: lv || 'baslangic' }])); save(); try { document.dispatchEvent(new CustomEvent('pbi-placement', { detail: { lv: lv || 'baslangic' } })); } catch (e) {}
     const res = P.testDone; T = null; return testResult(res);
   }
-  const q = Q2[T.i];
-  return '<div class="wrap">' + head('Seviye testi · ' + (T.i + 1) + '/' + Q2.length, 'Seviye testi', null, 'test') + '<div class="bar"><i style="width:' + (T.i / Q2.length * 100) + '%"></i></div><div class="panel brief" style="max-width:760px">' + lvBadge(q.lv) + '<div class="q">' + esc(q.q) + '</div><div class="mc">' + optOrder(q).map((i, pos) => '<button data-tq="' + i + '"><span class="key">' + String.fromCharCode(65 + pos) + '</span><span>' + esc(q.o[i]) + '</span></button>').join('') + '<button data-tq="-1"><span class="key">?</span><span>Bilmiyorum</span></button></div></div></div>';
+  const cur = T.qs[T.i], q = cur.q;
+  return '<div class="wrap">' + head('Seviye testi · ' + (T.i + 1) + '/' + Q2.length, 'Seviye testi', null, 'test') + '<div class="bar"><i style="width:' + (T.i / Q2.length * 100) + '%"></i></div><div class="panel brief" style="max-width:760px">' + lvBadge(q.lv) + '<div class="q">' + esc(q.q) + '</div><div class="mc">' + cur.ord.map((i, pos) => '<button data-tq="' + i + '"><span class="key">' + String.fromCharCode(65 + pos) + '</span><span>' + esc(q.o[i]) + '</span></button>').join('') + '<button data-tq="-1"><span class="key">?</span><span>Bilmiyorum</span></button></div></div></div>';
 }
 
 /* ---------- Sözlük ---------- */
@@ -774,7 +818,7 @@ document.addEventListener('click', ev => {
     else { t.classList.add('wrong'); const box = $('#mc'), yn = (+box.dataset.yanlis || 0) + 1; box.dataset.yanlis = yn; $('#mcFb').innerHTML = '<div class="msg err"><b>Tekrar dene.</b>' + (yn >= 2 && e.why ? e.why : 'Bu seçenek doğru değil.') + '</div>'; noteWrong(CX); }
     return;
   }
-  if (d.tq !== undefined) { const q = window.PBI_PLACEMENT[T.i]; const ok = +d.tq === q.a; if (ok) T.score[q.lv] = (T.score[q.lv] || 0) + 1; T.ans.push(ok); T.i++; render(); return; }
+  if (d.tq !== undefined) { const q = T.qs[T.i].q; const ok = +d.tq === q.a; if (ok) T.score[q.lv] = (T.score[q.lv] || 0) + 1; T.ans.push(ok); T.i++; render(); return; }
   if (d.tbl && S.view === 'model') return showTable(d.tbl);
   if (d.try) return openInStudio(d.try);
   if (d.smode) { ST.mode = d.smode; saveStudio(); render(); return; }
@@ -801,7 +845,7 @@ document.addEventListener('click', ev => {
   if (act === 'st-save') { const src = SED.get(); const dd = X.stripDef(src); if (!dd.name) { toast('Kaydetmek için ölçüye ad ver: Ad = ifade'); return; } const er = X.check(src); if (er) { toast('Önce hatayı düzelt: ' + er); return; } if (upsertMine(dd.name, dd.expr.trim())) { ST.side = 'measures'; saveStudio(); document.querySelectorAll('[data-side]').forEach(b => b.setAttribute('aria-pressed', b.dataset.side === 'measures')); $('#sideList').innerHTML = sideList(); } return; }
   if (act === 'mine-del') { P.mine.splice(+d.i, 1); save(); $('#sideList').innerHTML = sideList(); toast('Ölçü silindi'); return; }
   if (act === 'mine-edit') { const m = P.mine[+d.i]; SED.set(m.name + ' =\n' + m.expr); studioRun(); return; }
-  if (act === 'test-again') { T = { i: 0, score: {}, ans: [] }; render(); return; }
+  if (act === 'test-again') { T = newTest(); render(); return; }
   if (act === 'test-clear') { P.placement = null; save(); toast('Atlama kaldırıldı: dersler yine sırayla önerilir.'); render(); return; }
   if (act === 'reset-ask') { $('#resetBox').innerHTML = '<span class="muted" style="font-size:.85rem">Tüm ilerleme, XP ve kayıtlı ölçüler silinecek.</span><button class="btn sm" data-act="reset-yes">Evet, sıfırla</button><button class="btn sm ghost" data-act="reset-no">Vazgeç</button>'; return; }
   if (act === 'reset-yes') { Object.keys(P).forEach(k => delete P[k]); Object.assign(P, FRESH()); save(); toast('İlerleme sıfırlandı'); render(); return; }
@@ -842,5 +886,5 @@ function start() {
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const d = VIEWS[S.view]; if (d && d.resize) d.resize(); }, 250); });
   fromHash(); writeOzet(); render();
 }
-window.PBI_CORE = { tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, sureDk, dkAralik, saatAralik, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
+window.PBI_CORE = { copyText, mergePilot, pilotSummary, hasProgress, startedIn, tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, sureDk, dkAralik, saatAralik, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
 })();

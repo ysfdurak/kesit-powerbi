@@ -34,7 +34,7 @@ const t = `# Kesit Power BI
 - Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (${nFn} fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
 - İlerleme yalnızca kullanıcının tarayıcısında saklanıyor; Profil sayfasından dosyaya kaydedilip başka cihazda yüklenebiliyor, mevcut ilerlemeyle birleştiriliyor. Hesap yok, kişisel veri toplanmıyor. Yazı tipleri siteyle birlikte sunuluyor, üçüncü taraf sunucuya istek gitmiyor.
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
-- Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları Power BI Desktop'ta tek tek denenmedi.
+- Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
 
 ## Kaynak kod ve yapım
 - Bu dal (\`main\`) yayınlanan derlenmiş sitedir. Düzenlenebilir kaynak, derleme betikleri ve doğrulayıcılar [\`kaynak\` dalında](https://github.com/ysfdurak/kesit-powerbi/tree/kaynak); başlangıç noktası \`NASIL.md\`.

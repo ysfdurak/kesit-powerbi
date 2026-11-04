@@ -105,8 +105,8 @@ const FIX = [
   ['test', 'SUMX(Musteriler, [Toplam Satış])', ['Ölçü çağrısı bağlam geçişi yapar', 'SUMX her satırda kendiliğinden filtre uygular', 'Musteriler ilişkisi iki yönlü olduğu için', 'Ölçü yineleyicide hesaplanmış sütun gibi çalışır']],
   ['test', 'İlişkisi olmayan bir parametre tablosundaki', ['FILTER(ALL(Urunler), Urunler[Kategori] = …)', 'TREATAS(VALUES(Param[Kategori]), Urunler[Kategori])', 'RELATED(Param[Kategori]) ile satır bazında eşleme', 'USERELATIONSHIP(Param[Kategori], Urunler[Kategori])']],
   ['test', 'DAX Studio’da bir sorgunun süresinin', ['Sütunlar çok büyük ve sıkıştırılamıyor', 'SE’ye itilemeyen yineleyiciler', 'Ağ gecikmesi ve veri aktarımı', 'Sayfadaki görsel sayısı']],
-  ['test', 'Raporu Git ile sürüm kontrolünde', ['.pbix (ikili rapor dosyası)', '.pbit (şablon, verisiz)', '.pbip + TMDL', '.xlsx (Analyze in Excel)']],
-  ['test', '“İlk N ürün tek tek, kalanlar', ['Yalnızca görsel filtresinde İlk N', 'Bağlantısız eksen tablosu + ölçü', 'Ürün ile Satış arasında iki yönlü ilişki', 'Ürünü “Diğer”e çeviren hesaplanmış sütun']]
+  ['test', 'Raporu Git ile sürüm kontrolünde', ['.pbix (ikili rapor dosyası)', '.pbit (şablon, veri içermez)', '.pbip + TMDL', '.xlsx (Analyze in Excel)']],
+  ['test', '“İlk N ürün tek tek, kalanlar', ['Yalnızca görsel filtresinde İlk N ayarı', 'Bağlantısız eksen tablosu + ölçü', 'Ürün ile Satış arasında iki yönlü ilişki', 'Ürünü “Diğer”e çeviren hesaplanmış sütun']]
 ];
 
 /* İkinci geçiş: ilk düzeltmeden sonra doğru cevap %55 oranında en kısa şık olmuştu (ters ipucu).
@@ -146,11 +146,11 @@ const FIX2 = [
   ['pq-temel', 'Bayi tablosunda <code>Tutar</code>', '“-” hücresi Error olur; artık değiştirilecek “-” metni kalmaz'],
   ['ilk-rapor', 'Ölçünün para birimi biçimini', 'Ölçünün kendisinde (Ölçü araçları → Biçim)'],
   ['dax-giris', 'Müşterileri doğum yılına göre', 'Hesaplanmış sütun (ya da Power Query’de sütun)'],
-  ['test', 'SUMX(Musteriler, [Toplam Satış])', 'Ölçü çağrısı gizli bir CALCULATE ile bağlam geçişi yapar'],
-  ['test', 'Raporu Git ile sürüm kontrolünde', '.pbip (Power BI Projesi) + TMDL metin dosyaları'],
-  ['test', 'Ay adlarının Ocak, Şubat', 'Sütun araçları → Sütuna göre sırala → AyNo'],
-  ['test', '“İlk N ürün tek tek, kalanlar', 'Bağlantısız eksen tablosu (ürünler + “Diğer”) ve dallanan ölçü'],
-  ['test', 'Stok adedini yıllar boyunca toplamak', 'Stok bir bakiyedir; zamanda dönem sonu değeri alınır'],
+  ['test', 'SUMX(Musteriler, [Toplam Satış])', 'Ölçü çağrısı gizli CALCULATE ile bağlam geçirir'],
+  ['test', 'Raporu Git ile sürüm kontrolünde', '.pbip (metin dosyaları)'],
+  ['test', 'Ay adlarının Ocak, Şubat', 'Sütuna göre sırala → AyNo'],
+  ['test', '“İlk N ürün tek tek, kalanlar', 'Bağlantısız eksen tablosu ve ölçü'],
+  ['test', 'Stok adedini yıllar boyunca toplamak', 'Stok bir bakiyedir; zamanda toplanmaz'],
   ['test', 'Yıldız şemada filtreler varsayılan', 'Boyuttan olguya (bir → çok)']
 ];
 const plain = s => String(s).replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"');

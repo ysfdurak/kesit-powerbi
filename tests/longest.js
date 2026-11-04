@@ -15,7 +15,7 @@ if (process.argv[2]) console.log(flagged.join('\n'));
 const fs0 = require('fs'), vm0 = require('vm');
 const fileEx = f => { const src = fs0.readFileSync(P + f + '.js', 'utf8'); const w = { PBI_LESSONS: [], PBI_ORDER: [], console }; w.window = w; vm0.runInNewContext(src, w); return w.PBI_LESSONS.flatMap(l => (l.ex || []).filter(e => e.t === 'mc')); };
 ['bank', 'certskills', 'certdata_x', 'confused', 'confused2'].forEach(f => require(P + f + '.js'));
-const GROUPS = { c25: fileEx('c25'), c26: fileEx('c26'), 'Pratik Senaryo': PBI_PRACTICE.filter(p => p.t === 'mc'), 'Sınav ek (-tNN)': PBI_CERTQ.filter(q => /-t\d\d$/.test(q.id) && q.type === 'mc') };
+const GROUPS = { 'Seviye testi': PBI_PLACEMENT, c25: fileEx('c25'), c26: fileEx('c26'), 'Pratik Senaryo': PBI_PRACTICE.filter(p => p.t === 'mc'), 'Sınav ek (-tNN)': PBI_CERTQ.filter(q => /-t\d\d$/.test(q.id) && q.type === 'mc') };
 let bad = 0;
 for (const g in GROUPS) { const a = GROUPS[g]; let lo = 0, sh = 0, gap = 0; a.forEach(e => { const L = e.o.map(o => plain(o).length), mx = Math.max(...L), mn = Math.min(...L), so = L.slice().sort((x, y) => y - x); if (L[e.a] === mx && L.filter(x => x === mx).length === 1) lo++; if (L[e.a] === mn && L.filter(x => x === mn).length === 1) sh++; if (L[e.a] !== mx && so[0] > 1.3 * so[1]) gap++; });
   const pc = x => Math.round(x / a.length * 100); console.log(g, a.length, 'mc · doğru=en uzun %' + pc(lo), '· en kısa %' + pc(sh), '· yanlış şık belirgin uzun %' + pc(gap));

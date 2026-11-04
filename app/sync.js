@@ -42,16 +42,17 @@ function importProgress(file) {
   }; r.onerror = () => C.toast('Dosya okunamadı.'); r.readAsText(file);
 }
 /* Bilinmeyen ders kimlikleri ilerlemeye girmez */
-function cleanIds(d) { const o = Object.assign({}, d); if (o.done && typeof o.done === 'object') { o.done = {}; Object.keys(d.done).forEach(k => { if (C.LMAP[k]) o.done[k] = d.done[k]; }); } if (o.ex && typeof o.ex === 'object') { o.ex = {}; Object.keys(d.ex).forEach(k => { if (C.LMAP[k.split(':')[0]] || !/^[\w-]+:\d+$/.test(k)) o.ex[k] = d.ex[k]; }); } return o; }
+function cleanIds(d) { const o = Object.assign({}, d); if (o.done && typeof o.done === 'object') { o.done = {}; Object.keys(d.done).forEach(k => { if (C.LMAP[k]) o.done[k] = d.done[k]; }); } if (o.ex && typeof o.ex === 'object') { o.ex = {}; Object.keys(d.ex).forEach(k => { if (C.LMAP[k.split(':')[0]] || !/^[\w-]+:\d+$/.test(k)) o.ex[k] = d.ex[k]; }); } if (o.pilot && typeof o.pilot === 'object') { const only = m => { const r = {}; Object.keys(m || {}).forEach(k => { if (C.LMAP[k]) r[k] = m[k]; }); return r; }; o.pilot = Object.assign({}, o.pilot, { dersBaslangic: only(o.pilot.dersBaslangic), dersBitis: only(o.pilot.dersBitis) }); } return o; }
 /* İki ilerlemeyi birleştir: bitenler ve çözülenler birleşir, sayılar büyük olanı alır; ayarlarda bu cihazdaki kalır */
 function merge(a, b) {
-  const out = JSON.parse(JSON.stringify(a || {})); b = b || {};
+  const out = JSON.parse(JSON.stringify(a || {})); b = b || {}; const pilot = (a && a.pilot) || (b && b.pilot) ? C.mergePilot(a && a.pilot, b.pilot) : null;
   const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
   Object.keys(b).forEach(k => { const x = out[k], y = b[k];
     if (x === undefined || x === null || x === '' || x === false) { out[k] = y; return; }
     if (typeof x === 'number' && typeof y === 'number') { out[k] = Math.max(x, y); return; }
     if (Array.isArray(x) && Array.isArray(y)) { const seen = new Set(x.map(v => JSON.stringify(v))); y.forEach(v => { const s = JSON.stringify(v); if (!seen.has(s)) { seen.add(s); x.push(v); } }); return; }
     if (isObj(x) && isObj(y)) { Object.keys(y).forEach(j => { const p = x[j], q = y[j]; if (p === undefined || p === null || p === false || p === '') x[j] = q; else if (typeof p === 'number' && typeof q === 'number') x[j] = Math.max(p, q); else if (isObj(p) && isObj(q)) x[j] = Object.assign({}, q, p); }); } });
+  if (pilot) out.pilot = pilot;
   out._ts = Date.now(); return out;
 }
 /* ---- bulut ---- */
@@ -86,5 +87,5 @@ setTimeout(connect, 600);
 /* Sorun bildirimi: yazma izni olan görünümlerde paylaşılan `feedback` koleksiyonuna gider; sahibi okur */
 let DB = null;
 async function feedback(rep) { try { if (!DB) { const cl = window.claude; DB = cl && cl.use ? await cl.use('db') : null; } if (!DB) return false; await DB.collection('feedback').add({ w: String(rep.w).slice(0, 200), t: rep.t, d: rep.d, at: Date.now(), ua: navigator.userAgent.slice(0, 120) }); return true; } catch (e) { return false; } }
-window.PBI_SYNC = { panel, exportProgress, push, feedback, merge, parseBackup };
+window.PBI_SYNC = { version: APP_VER, panel, exportProgress, push, feedback, merge, parseBackup };
 })();
