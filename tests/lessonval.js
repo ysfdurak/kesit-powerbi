@@ -4,7 +4,7 @@ const BASE = ['data','data2','dax','measures','patterns','levels','c1','c2','c3'
 BASE.forEach(f => require(P + f + '.js'));
 const before = new Set(PBI_LESSONS.map(l => l.id)); const MODS0 = new Set(PBI_LESSONS.map(l => l.mod));
 const files = process.argv.slice(2); files.forEach(f => require(require('path').resolve(f)));
-require(P + 'pqdata.js'); require(P + 'extra.js');
+require(P + 'mengine.js'); require(P + 'pqdata.js'); require(P + 'extra.js');
 const X = PBI_DAX; const base = {}; PBI_MEASURES.forEach(m => base[m.name] = { name: m.name, expr: m.expr });
 const ms = ex => { const o = {}; for (const k in base) if (k !== ex) o[k] = base[k]; return o; };
 let bad = 0; const err = (...a) => { bad++; console.log('SORUN', ...a); };
@@ -32,6 +32,7 @@ NEW.forEach(l => {
     else if (e.t === 'dax') { if (!e.name || !e.q || !e.sol || !e.hint) return err(we, 'dax şema (name,q,sol,hint)'); if (base[e.name]) err(we, 'ad hazır ölçüyle çakışıyor', e.name);
       try { const tot = e.noTotal ? null : X.evalMeasure(ms(e.name), e.sol, []); const g = e.grid || [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }]; const cells = g.flatMap(c => X.query({ rows: [c], measures: ms(e.name), values: [e.sol], totals: false, keepBlank: true }).rows.map(r => r.vals[0])); if (cells.every(v => v === null)) err(we, 'tüm hücreler boş'); const u = new Set(cells.map(v => JSON.stringify(v))); if (u.size <= 1 && cells.length > 1) err(we, 'her hücrede aynı değer (kırılım anlamsız ya da sabit)'); } catch (x) { err(we, 'DAX hata', x.message.slice(0, 120)); } }
     else if (e.t === 'query') { if (!e.sol) return err(we, 'query sol'); try { const r = X.runQuery(ms(), e.sol); if (!r.rows.length) err(we, 'sorgu boş'); } catch (x) { err(we, 'sorgu hata', x.message.slice(0, 120)); } }
+    else if (e.t === 'mcode') { const r = PBI_M.run(e.sol); if (!r.ok) err(we, 'mcode hata', PBI_M.errorText(r)); }
     else if (e.t === 'pq') { try { const r = PBI_PQ.run(PBI_PQ.exSource(e), e.sol); if (r.error) err(we, 'pq hata', r.error.msg); } catch (x) { err(we, 'pq hata', x.message); } }
     else err(we, 'tip', e.t); });
 });

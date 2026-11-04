@@ -245,6 +245,23 @@ W.PBI_CATALOG.push(
   ['CEILING / FLOOR / MROUND', 'Matematik', 'FLOOR(Sayı, Kat)', 'Bir sayıyı verilen kata yuvarlar: histogram kutuları ve fiyat bantları.', 'FLOOR(1234, 500)']
 );
 W.PBI_GLOSSARY.push(
+  ['M dili', 'Power Query’nin formül dili. Büyük küçük harfe duyarlı, tembel değerlendirilen, işlevsel bir dil. Her Uygulanan adım bir M ifadesidir.'],
+  ['let ve in', 'M’de ara adlar tanımlayıp sonucu söyleyen yapı. Uygulanan adımların her biri let içinde bir addır.'],
+  ['each', 'Tek parametreli fonksiyonun kısaltması: each [Tutar] * 2 ile (_) => _[Tutar] * 2 aynıdır.'],
+  ['Kayıt (record)', 'M’de adlı alanlardan oluşan değer: [Ad = "Ayşe", Yas = 30]. Tablonun bir satırı kayıttır.'],
+  ['Liste (list)', 'M’de sıralı değer dizisi: {1, 2, 3}. Tablonun bir sütunu listedir. Dizin 0’dan başlar.'],
+  ['Binary', 'M’de yorumlanmamış dosya içeriği. Folder.Files’ın Content sütununda bulunur; Csv.Document gibi bir işlevle okunur.'],
+  ['List.Accumulate', 'Listeyi başlangıç durumundan başlayarak tek değere indirir: (durum, öğe) => yeni durum. M’de döngü yerine kullanılır.'],
+  ['List.Generate', 'Başlangıç, koşul, sonraki değer ve isteğe bağlı seçiciyle adım adım liste üretir. Sayfalı API kalıbı.'],
+  ['Table.Buffer', 'Tabloyu belleğe alıp değerlendirme sırasında sabitler. Sonraki adımların katlanmasını engeller, her zaman hızlandırmaz.'],
+  ['Value.NativeQuery', 'Kaynağa yerel sorgu gönderir, parametreleri güvenli geçirir. Salt okunur hesapla kullanılmalı.'],
+  ['Column from Examples', 'Örnek değer yazınca dönüşümü kendisi bulan Sütun ekle komutu. Üretilen M okunmalıdır.'],
+  ['Sorgu tanılaması (Query Diagnostics)', 'Araçlar sekmesindeki izleme: sorguların süresini ve kaynağa gidenleri gösterir. Durdurmadan sonuç çıkmaz.'],
+  ['Görsel hesaplama', 'Modelde değil görselde çalışan DAX hesabı: RUNNINGSUM, PREVIOUS, FIRST gibi. Yalnız o görselde görünür.'],
+  ['SSIS', 'SQL Server Integration Services: SQL Server’ın ETL aracı. Paket, denetim akışı ve veri akışıyla çalışır.'],
+  ['Data mart', 'Bir iş birimine yönelik küçük, konu odaklı veri ambarı. Genel ambar teriminden daha dar kapsamlıdır.']
+);
+W.PBI_GLOSSARY.push(
   ['OneLake', 'Kiracı başına tek veri gölü. Tablolar açık biçimde (Delta, Iceberg) tutulur; Spark, T-SQL ve Power BI aynı dosyayı kopyalamadan okur.'],
   ['Lakehouse', 'Files (her dosya) ve Tables (Delta) bölümleri olan Fabric öğesi. Spark ile yazılır, SQL analiz uç noktasıyla salt okunur sorgulanır.'],
   ['SQL analiz uç noktası', 'Her lakehouse ile gelen salt okunur T-SQL katmanı. Görünüm ve yordam tanımlanır, tablo verisi değiştirilemez.'],

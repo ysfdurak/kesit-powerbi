@@ -6,7 +6,7 @@ const PR = window.PBI_PRACTICE || [], PRT = window.PBI_PR_TOPICS || {}, PRMAP = 
 const prKey = p => 'pr:' + p.id;
 const prDone = p => !!P.ex[prKey(p)];
 const plain = s => String(s || '').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mc: 'Senaryo' };
+const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mcode: 'M kodu', mc: 'Senaryo' };
 P.rv = P.rv || {}; P.reports = P.reports || []; P.exams = P.exams || {};
 
 /* ---------- Tema (Otomatik / Açık / Koyu) ---------- */
@@ -100,7 +100,7 @@ function stats() {
   const lv = {}; C.LEVELS.forEach(L => lv[L.id] = C.pct(C.LESSONS.filter(l => l.lvl === L.id).map(l => l.id)));
   const exK = Object.keys(P.ex).filter(k => !k.startsWith('rv:') && exByKey(k));
   const exs = window.PBI_EXAMS || []; const passed = exs.filter(e => (P.exams[e.id] || {}).best >= e.pass).length;
-  return { ex: exK.length, pq: exK.filter(k => exByKey(k).e.t === 'pq').length, done: Object.keys(P.done).filter(k => C.LMAP[k]).length, best: bestStreak(), lv, rvc: P.rvc || 0, paths: (window.PBI_PATHS || []).filter(p => p.lessons.length && p.lessons.every(id => P.done[id])).length, passed, pts: (P.arena && P.arena.pts) || 0 };
+  return { ex: exK.length, pq: exK.filter(k => { const t = exByKey(k).e.t; return t === 'pq' || t === 'mcode'; }).length, done: Object.keys(P.done).filter(k => C.LMAP[k]).length, best: bestStreak(), lv, rvc: P.rvc || 0, paths: (window.PBI_PATHS || []).filter(p => p.lessons.length && p.lessons.every(id => P.done[id])).length, passed, pts: (P.arena && P.arena.pts) || 0 };
 }
 function heat() {
   const end = new Date(); const dow = (end.getDay() + 6) % 7; const start = new Date(end); start.setDate(end.getDate() - dow - 7 * 16);

@@ -4,9 +4,9 @@
 'use strict';
 /* Genel sıra: ilk saat (ölçü → kurulum → ilk rapor → arayüz), bitişik DAX yayı, kariyer ve sınav en sonda */
 W.PBI_ORDER = [
-  'ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'veri-alma', 'pq-temel', 'pq-donusum', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'gorsel-secimi', 'bicim-temel', 'filtreler', 'rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi', 'menuler-turu', 'hizmet-kullanici', 'excel-entegrasyon', 'tarih',
-  'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa', 'pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari', 'pq-ileri', 'rol-oynayan', 'yari-toplanabilir', 'vaka-stok', 'hedef', 'model-ileri', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'python-r', 'power-platform', 'mobil-erisilebilirlik', 'kalite-test', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'yerel-gelistirme', 'proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar',
-  'dashboard-tasarim', 'baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'finans-tablolar', 'istatistik-ileri', 'vaka-kayip', 'vaka-eticaret', 'vaka-kredi', 'vaka-tedarik', 'vaka-ik', 'm-dili', 'performans', 'dax-opt', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis', 'kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-hazirlama', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'fabric-tsql-odev', 'fabric-spark-odev', 'kql-gercek-zaman', 'fabric-yildiz', 'fabric-anlam-modeli', 'fabric-copilot', 'yasam-dongusu', 'embed-api', 'pl300', 'dp600', 'mulakat', 'portfoy-kariyer', 'final-hazirlik'
+  'ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'veri-alma', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'dax-metin-pratik', 'hesap-tablolar', 'gorsel-secimi', 'bicim-temel', 'filtreler', 'rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi', 'menuler-turu', 'hizmet-kullanici', 'excel-entegrasyon', 'tarih',
+  'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa', 'pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari', 'pq-ileri', 'rol-oynayan', 'yari-toplanabilir', 'vaka-stok', 'hedef', 'model-ileri', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'karar-toplantisi', 'copilot', 'python-r', 'power-platform', 'mobil-erisilebilirlik', 'kalite-test', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'yerel-gelistirme', 'proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama', 'vaka-pazar',
+  'dashboard-tasarim', 'baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'gorsel-hesaplama', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'finans-tablolar', 'istatistik-ileri', 'vaka-kayip', 'vaka-eticaret', 'vaka-kredi', 'vaka-tedarik', 'vaka-ik', 'm-dili', 'm-yaz', 'm-yapi', 'm-tablo', 'm-liste-metin', 'm-islev-pratik', 'm-fonksiyon', 'm-klasor', 'm-hata', 'm-performans', 'performans', 'dax-opt', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis', 'kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-hazirlama', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'fabric-tsql-odev', 'fabric-spark-odev', 'kql-gercek-zaman', 'fabric-yildiz', 'fabric-anlam-modeli', 'fabric-copilot', 'yasam-dongusu', 'embed-api', 'pl300', 'dp600', 'mulakat', 'portfoy-kariyer', 'final-hazirlik'
 ];
 W.PBI_LEVEL_OF = Object.assign(W.PBI_LEVEL_OF || {}, { 'fabric-giris': 'C1' });
 /* İsteğe bağlı ek okuma: hiçbir yolun zorunlu dersi değildir */
@@ -28,18 +28,19 @@ const STAGES = {
     G('Service’te yayımla, paylaş, izle', 'Çalışma alanı, pano, uygulama, yenileme, ağ geçidi, kullanım, yerel geliştirme', slice('calisma-alani', 'yerel-gelistirme')),
     G('Analist olarak işte', 'Proje, paydaş, vaka', slice('proje-yonetimi-bi', 'vaka-pazar')),
     G('İleri DAX ve analitik', 'Bağlam geçişi, pencere, müşteri, finans', slice('dashboard-tasarim', 'vaka-ik')),
-    G('Performans, güvenlik, kurumsal model', 'M, optimizasyon, RLS, yönetişim', slice('m-dili', 'buyuk-model')),
+    G('Performans, güvenlik, kurumsal model', 'M kodu, optimizasyon, RLS, yönetişim', slice('m-dili', 'buyuk-model')),
     G('Fabric ve yaşam döngüsü', 'Veri hazırlama ödevleri, Git, gömme', slice('fabric-giris', 'embed-api')),
     G('Sınav, mülakat, bitirme', 'Kariyer dersleri en sonda', slice('pl300', 'final-hazirlik'))
   ],
   analist: [
     G('Power BI’ı tanı', 'İlk ölçü, kurulum, ilk rapor', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'hizmet-kullanici']),
-    G('Veriyi hazırla ve modelle', '', ['veri-alma', 'pq-temel', 'pq-donusum', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar']),
+    G('Veriyi hazırla ve modelle', '', ['veri-alma', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'dax-metin-pratik', 'hesap-tablolar']),
     G('İlk rapor ve brif', '', ['gorsel-secimi', 'bicim-temel', 'filtreler', 'rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi']),
-    G('DAX çekirdeği', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa']),
+    G('DAX çekirdeği', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'siralama', 'hizli-olcu', 'istatistik', 'eda', 'kosullu-bicim', 'tema-sayfa']),
     G('Veri tarafı: SQL ve Power Query', '', ['pq-model', 'pq-orta', 'coklu-kaynak', 'sql-analist', 'veri-akislari', 'pq-ileri']),
+    G('M ile kod yazmak', 'Elle kod, tablo işlevleri, hata yönetimi', ['m-dili', 'm-yaz', 'm-yapi', 'm-tablo', 'm-islev-pratik', 'm-fonksiyon', 'm-hata']),
     G('Yarı toplanabilir, rol oynayan, hedef', '', ['rol-oynayan', 'yari-toplanabilir', 'hedef']),
-    G('Rapor tasarımı ve hikâye', '', ['gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'copilot', 'dashboard-tasarim']),
+    G('Rapor tasarımı ve hikâye', '', ['gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'analiz-ozellikleri', 'gorsel-hesaplama', 'ayristirma-etkileyen', 'copilot', 'dashboard-tasarim']),
     G('Yayımla ve paylaş', 'Çalışma alanı, uygulama, yenileme, RLS', ['kalite-test', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'yorum-isbirligi', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'yayinlama', 'guvenlik']),
     G('İşte: paydaş ve vaka', '', ['proje-yonetimi-bi', 'paydas-iletisim', 'vaka-satis', 'vaka-kiyaslama']),
     G('Müşteri analitiği ve bitirme', '', ['baglam-gecisi', 'musteri-analitigi', 'segmentasyon', 'portfoy-kariyer', 'final-hazirlik'])
@@ -47,29 +48,30 @@ const STAGES = {
   /* Sıra, resmî çalışma kılavuzundaki alan sırasıdır */
   pl300: [
     G('Başlangıç', '', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'menuler-turu']),
-    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-orta', 'coklu-kaynak', 'pq-ileri', 'pq-model']),
-    G('Modelle', '%25–30', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'rol-oynayan', 'model-ileri', 'coka-cok', 'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'istatistik', 'hizli-olcu', 'yari-toplanabilir', 'hedef', 'hesaplama-gruplari', 'performans']),
+    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'pq-orta', 'coklu-kaynak', 'pq-ileri', 'pq-model', 'm-yaz', 'm-hata']),
+    G('Modelle', '%25–30', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'rol-oynayan', 'model-ileri', 'coka-cok', 'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'gorsel-hesaplama', 'dax-metin-pratik', 'siralama', 'istatistik', 'hizli-olcu', 'yari-toplanabilir', 'hedef', 'hesaplama-gruplari', 'performans']),
     G('Görselleştir ve analiz et', '%25–30', ['gorsel-temel', 'gorsel-secimi', 'bicim-temel', 'tema-sayfa', 'filtreler', 'kosullu-bicim', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'pencere', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'mobil-erisilebilirlik', 'eda', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'copilot']),
     G('Yönet ve güvenli hâle getir', '%15–20', ['hizmet-kullanici', 'excel-entegrasyon', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'yayinlama', 'sayfalandirilmis', 'guvenlik', 'yonetisim']),
     G('Sınav', '', ['pl300'])
   ],
   gelistirici: [
-    G('Model ve DAX temeli', '', ['veri-alma', 'pq-temel', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'hesap-tablolar']),
+    G('Model ve DAX temeli', '', ['veri-alma', 'pq-temel', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'hesap-tablolar']),
     G('Rapor kurmak', 'Geliştirici de rapor teslim eder', ['bicim-temel', 'kosullu-bicim', 'etkilesim', 'hikaye']),
-    G('Bağlam ve CALCULATE', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama']),
+    G('Bağlam ve CALCULATE', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'siralama']),
     G('Veri katmanı', '', ['pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari']),
     G('İleri model kalıpları', '', ['rol-oynayan', 'yari-toplanabilir', 'model-ileri', 'kalite-test']),
     G('İleri DAX', '', ['baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf', 'hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi']),
-    G('Performans, güvenlik, yönetim', '', ['m-dili', 'performans', 'dax-opt', 'calisma-alani', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis']),
+    G('M dili ve Power Query kodu', 'Elle M: tablo, liste, fonksiyon, klasör, hata, katlama', ['m-dili', 'm-yaz', 'm-yapi', 'm-tablo', 'm-liste-metin', 'm-islev-pratik', 'm-fonksiyon', 'm-klasor', 'm-hata', 'm-performans']),
+    G('Performans, güvenlik, yönetim', '', ['performans', 'dax-opt', 'calisma-alani', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'kullanim-izleme', 'guvenlik', 'yayinlama', 'yonetisim', 'bi-yonetimi', 'sayfalandirilmis']),
     G('Fabric ve kurumsal model', '', ['kurumsal-model', 'buyuk-model', 'fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-hazirlama', 'fabric-data-factory', 'fabric-pipeline', 'fabric-yildiz', 'fabric-anlam-modeli']),
     G('Yaşam döngüsü ve entegrasyon', '', ['yerel-gelistirme', 'yasam-dongusu', 'embed-api', 'python-r', 'power-platform']),
     G('Ekip içinde çalışmak ve bitirme', '', ['proje-yonetimi-bi', 'paydas-iletisim', 'portfoy-kariyer', 'final-hazirlik'])
   ],
   dax: [
     G('DAX temelleri', '', ['dax-giris', 'toplama', 'dax-tarih-metin', 'hesap-tablolar']),
-    G('Bağlamlar', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'siralama', 'istatistik']),
+    G('Bağlamlar', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'siralama', 'istatistik']),
     G('Pay, sıra, ilişkiler', '', ['rol-oynayan', 'yari-toplanabilir', 'hedef', 'kalite-test']),
-    G('İleri DAX', '', ['baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf']),
+    G('İleri DAX', '', ['baglam-gecisi', 'genisletilmis-tablolar', 'tablo-fonk', 'coka-cok', 'zaman-ileri', 'ozel-takvim', 'zaman-serisi', 'gorsel-hesaplama', 'pencere', 'dax-sorgu', 'yz-dax-denetim', 'dax-udf']),
     G('İş kalıpları', '', ['hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'istatistik-ileri']),
     G('Optimizasyon', '', ['performans', 'dax-opt'])
   ],
@@ -140,8 +142,8 @@ paths.forEach(p => { const r = roles[p.id]; if (r && r.title) p.name = r.title; 
 /* Kapsam haritası: resmî madde → ana ders */
 W.PBI_SKILL_LESSON = {
   'pl-gc1': ['veri-alma', 'coklu-kaynak'], 'pl-gc2': ['veri-baglantilari'], 'pl-gc3': ['veri-alma', 'model-ileri'], 'pl-gc4': ['pq-model'],
-  'pl-pc1': ['pq-temel'], 'pl-pc2': ['pq-temel', 'pq-donusum'], 'pl-pc3': ['pq-temel'],
-  'pl-tl1': ['pq-temel'], 'pl-tl2': ['pq-donusum'], 'pl-tl3': ['pq-orta'], 'pl-tl4': ['pq-orta', 'coklu-kaynak'], 'pl-tl5': ['pq-model'], 'pl-tl6': ['pq-model', 'model-temel'], 'pl-tl7': ['pq-model'], 'pl-tl8': ['pq-orta'], 'pl-tl9': ['pq-model'], 'pl-tl10': ['pq-model'],
+  'pl-pc1': ['pq-temel', 'pq-menu'], 'pl-pc2': ['pq-temel', 'pq-donusum'], 'pl-pc3': ['pq-temel', 'm-hata'],
+  'pl-tl1': ['pq-temel'], 'pl-tl2': ['pq-donusum', 'pq-menu-2', 'pq-uygulama'], 'pl-tl3': ['pq-orta'], 'pl-tl4': ['pq-orta', 'coklu-kaynak', 'pq-menu-2', 'pq-pivot-devrik'], 'pl-tl5': ['pq-model'], 'pl-tl6': ['pq-model', 'model-temel'], 'pl-tl7': ['pq-model'], 'pl-tl8': ['pq-orta'], 'pl-tl9': ['pq-model'], 'pl-tl10': ['pq-model'],
   'pl-dm1': ['model-temel'], 'pl-dm2': ['rol-oynayan'], 'pl-dm3': ['model-temel', 'model-ileri'], 'pl-dm4': ['tarih-tablosu'], 'pl-dm5': ['dax-giris', 'hesap-tablolar'],
   'pl-dx1': ['toplama'], 'pl-dx2': ['calculate'], 'pl-dx3': ['zaman'], 'pl-dx4': ['istatistik'], 'pl-dx5': ['yari-toplanabilir'], 'pl-dx6': ['hizli-olcu'], 'pl-dx7': ['hesap-tablolar'], 'pl-dx8': ['hesaplama-gruplari'],
   'pl-op1': ['pq-temel', 'performans'], 'pl-op2': ['performans'], 'pl-op3': ['performans', 'model-ileri'],

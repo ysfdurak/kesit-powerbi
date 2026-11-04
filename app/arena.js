@@ -14,9 +14,9 @@ const fmtV = (v, f) => f === 'metin' ? String(v) : v === null || v === undefined
 function rank() { const a = A(); let i = 0; RANKS.forEach((r, j) => { if (a.pts >= r[0]) i = j; }); const next = RANKS[i + 1]; return { i, name: RANKS[i][1], next, pct: next ? Math.round((a.pts - RANKS[i][0]) / (next[0] - RANKS[i][0]) * 100) : 100 }; }
 function award(n, why) { if (!n) return; const a = A(); a.pts += n; C.addXP(Math.round(n / 2)); C.save(); C.toast('+' + n + ' puan · ' + why); }
 const todayKey = () => C.today();
-const daily = () => { const pool = CH.filter(c => c.diff !== 'kolay'); return pool[hash('gun' + todayKey()) % pool.length]; };
+const daily = () => { const pool = CH.filter(c => c.diff !== 'kolay' && c.t === 'dax'); return pool[hash('gun' + todayKey()) % pool.length]; };
 const weekKey = () => { const d = new Date(); const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y = t.getUTCFullYear(); const wk = Math.ceil(((t - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7); return y + '-H' + String(wk).padStart(2, '0'); };
-const tourSet = wk => seeded(CH.filter(c => c.diff !== 'kolay'), 'tur' + wk).slice(0, 5);
+const tourSet = wk => seeded(CH.filter(c => c.diff !== 'kolay' && c.t === 'dax'), 'tur' + wk).slice(0, 5);
 const head = (title, sub) => '<div class="lhead"><div class="crumbs"><button data-go="arena">DAX Arena</button><span>/</span><span>' + esc(title) + '</span></div>' + (sub ? '<p class="muted" style="margin:0;max-width:80ch">' + sub + '</p>' : '') + '</div>';
 
 /* ---------- Merkez ---------- */
@@ -48,6 +48,7 @@ function chList() {
   return h + '</div>';
 }
 function sample(c) {
+  if (c.t === 'mcode') return '';
   const g = (c.grid || [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }])[0];
   try { const ms = C.measureSet(c.name); const r = X.query({ rows: [g], measures: ms, values: [c.sol], slicers: [], totals: !c.noTotal, keepBlank: false }); const f = C.fmtOf(c.name) || C.guessFmt(c.name);
     return '<div class="ar-sample"><b>Örnek çıktı</b><table><thead><tr><th>' + esc(g.t + '[' + g.c + ']') + '</th><th class="nc">' + esc(c.name) + '</th></tr></thead><tbody>' + r.rows.slice(0, 5).map(x => '<tr><td>' + esc(V.fmt(x.keys[0])) + '</td><td class="nc">' + esc(C.fmtVal(x.vals[0], f)) + '</td></tr>').join('') + (r.rows.length > 5 ? '<tr><td colspan="2" class="muted">… ' + (r.rows.length - 5) + ' satır daha</td></tr>' : '') + (!c.noTotal && r.total !== undefined ? '<tr class="tot"><td>Toplam</td><td class="nc">' + esc(C.fmtVal(Array.isArray(r.total) ? r.total[0] : r.total, f)) + '</td></tr>' : '') + '</tbody></table></div>'; }

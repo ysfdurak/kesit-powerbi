@@ -157,11 +157,11 @@ W.PBI_MENUS = [
       ['Yapay zekâ içgörüleri (AI insights)', 'Metin analizi, görüntü işleme, Azure ML (kapasite gerekir).', 'Duygu analizi, anahtar ifade.', 'pq-orta']
     ] },
     { id: 'pq-donustur', name: 'Dönüştür', desc: 'Seçili sütunu yerinde değiştirir.', cmds: [
-      ['Grupla / İlk satırı başlık yap / Devrik (Group by / Use first row as headers / Transpose)', 'Tablo şekli.', 'Ters dönmüş Excel tabloları için devrik.', 'pq-orta'],
+      ['Grupla / İlk satırı başlık yap / Devrik (Group by / Use first row as headers / Transpose)', 'Tablo şekli.', 'Ters dönmüş Excel tabloları için devrik.', 'pq-pivot-devrik'],
       ['Satır sayısını say (Count rows)', 'Tablonun satır sayısı.', 'Hızlı kontrol.', 'pq-temel'],
       ['Veri türü / Türleri algıla / Yeniden adlandır (Data type / Detect data type / Rename)', 'Tür ve ad.', '—', 'pq-temel'],
       ['Değerleri değiştir / Hataları değiştir / Doldur (aşağı, yukarı) (Replace values / Replace errors / Fill)', 'Değer düzeltme; birleştirilmiş Excel hücrelerindeki boşlukları doldurur.', 'Excel raporlarından gelen veri.', 'pq-temel'],
-      ['Özet sütun / Sütunların özetini kaldır (Pivot column / Unpivot columns)', 'Pivot ve unpivot.', 'Bütçe tablolarını uzun biçime çevirme.', 'pq-orta'],
+      ['Özet sütun / Sütunların özetini kaldır (Pivot column / Unpivot columns)', 'Pivot ve unpivot.', 'Bütçe tablolarını uzun biçime çevirme.', 'pq-pivot-devrik'],
       ['Liste olarak dönüştür / Sütunu böl / Biçim (kırp, temizle, büyük/küçük harf, önek/sonek) (Convert to list / Split column / Format)', 'Metin işlemleri.', 'Temizlik.', 'pq-temel'],
       ['Ayıkla (uzunluk, ilk/son karakterler, sınırlayıcılar arasında) (Extract)', 'Metinden parça alır.', 'Kod parçalama.', 'pq-temel'],
       ['İstatistikler / Standart / Bilimsel / Trigonometri / Yuvarlama (Statistics / Standard / Scientific / Trigonometry / Rounding)', 'Sayısal işlemler.', 'Birim çevirme.', 'pq-temel'],
@@ -170,12 +170,12 @@ W.PBI_MENUS = [
       ['R / Python betiği çalıştır (Run R / Python script)', 'Betikle dönüşüm.', 'Özel istatistik; kişisel ağ geçidi gerekebilir.', 'pq-orta']
     ] },
     { id: 'pq-sutun', name: 'Sütun ekle', desc: 'Mevcut sütunları koruyup yeni sütun ekler.', cmds: [
-      ['Örneklerden sütun (Column from examples)', 'Birkaç örnek yazarsın, Power Query kuralı çıkarır.', 'Karmaşık metin dönüşümleri.', 'pq-orta'],
-      ['Özel sütun (Custom column)', 'M formülüyle yeni sütun.', 'Hesap: [Adet] * [Fiyat].', 'm-dili'],
+      ['Örneklerden sütun (Column from examples)', 'Birkaç örnek yazarsın, Power Query kuralı çıkarır.', 'Karmaşık metin dönüşümleri.', 'pq-uygulama'],
+      ['Özel sütun (Custom column)', 'M formülüyle yeni sütun.', 'Hesap: [Adet] * [Fiyat].', 'pq-menu-2'],
       ['Koşullu sütun (Conditional column)', 'Eğer/değilse sihirbazı.', 'Gruplama, bantlama.', 'pq-orta'],
       ['Dizin sütunu (Index column)', '0 ya da 1\'den başlayan sıra numarası.', 'Vekil anahtar; katlamayı bozabilir, sona koy.', 'pq-model'],
       ['Sütunu çoğalt (Duplicate column)', 'Kopya sütun.', 'Orijinali koruyup dönüştürmek için.', 'pq-temel'],
-      ['Özel işlev çağır (Invoke custom function)', 'Kaydedilmiş bir M fonksiyonunu her satıra uygular.', 'Yeniden kullanılabilir temizlik.', 'm-dili'],
+      ['Özel işlev çağır (Invoke custom function)', 'Kaydedilmiş bir M fonksiyonunu her satıra uygular.', 'Yeniden kullanılabilir temizlik.', 'm-fonksiyon'],
       ['Biçim / Ayıkla / İstatistik / Tarih / Saat (Format / Extract / Statistics / Date / Time)', 'Dönüştür sekmesindekilerin yeni sütun üreten sürümleri.', '—', 'pq-temel']
     ] },
     { id: 'pq-gorunum', name: 'Görünüm', desc: 'Profil çıkarma ve görünüm ayarları.', cmds: [
@@ -186,7 +186,7 @@ W.PBI_MENUS = [
       ['Sütuna git / Boşlukları göster (Go to column / Show whitespace)', 'Gezinme.', '—', 'pq-temel']
     ] },
     { id: 'pq-araclar', name: 'Araçlar ve adım menüsü', desc: 'Tanılama ve adım düzeyi işlemler.', cmds: [
-      ['Sorgu tanılaması (Query diagnostics)', 'Sorgunun kaynağa gönderdiği istekleri ve sürelerini kaydeder.', 'Yavaş yenileme teşhisi.', 'performans'],
+      ['Sorgu tanılaması (Query diagnostics)', 'Sorgunun kaynağa gönderdiği istekleri ve sürelerini kaydeder.', 'Yavaş yenileme teşhisi.', 'pq-menu'],
       ['Yerel sorguyu görüntüle (View Native Query, adıma sağ tık)', 'Adımın kaynağa SQL olarak katlanıp katlanmadığını gösterir.', 'Sorgu katlama kontrolü.', 'pq-orta'],
       ['Yüklemeyi etkinleştir / Rapor yenilemeye dahil et (Enable load / Include in report refresh, sorguya sağ tık)', 'Sorgunun modele yüklenip yüklenmeyeceği ve yenilemeye katılıp katılmayacağı.', 'Ara sorgular.', 'pq-model'],
       ['Başvuru / Çoğalt (Reference / Duplicate, sorguya sağ tık)', 'Yeni sorguyu sonuca bağlı ya da bağımsız oluşturur.', 'Boyut türetme.', 'pq-model'],

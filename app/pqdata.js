@@ -75,6 +75,11 @@ function parseParam(s, type) {
 const mStr = s => '"' + String(s).replace(/"/g, '""') + '"';
 const mList = a => '{' + a.map(mStr).join(', ') + '}';
 const mVal = v => v === null ? 'null' : typeof v === 'number' ? String(v) : v instanceof Date ? '#date(' + v.getUTCFullYear() + ', ' + (v.getUTCMonth() + 1) + ', ' + v.getUTCDate() + ')' : mStr(v);
+const isGen = n => /^[\p{L}_][\p{L}\p{Nd}_.]*( [\p{L}\p{Nd}_.]+)*$/u.test(n);
+const mF = n => '[' + (isGen(n) ? n : '#"' + String(n).replace(/"/g, '""') + '"') + ']';
+const mLit = v => { const t = String(v == null ? '' : v).trim(); if (/^null$/i.test(t)) return 'null'; if (/^-?\d+(?:[.,]\d+)?$/.test(t)) return t.replace(',', '.'); return mStr(v == null ? '' : v); };
+/* Yeni komutlar üretilen M kodunu yorumlayıcıda çalıştırır: Lab sonucu ile M kodu aynı kalır */
+const viaM = (t, code) => { try { return W.PBI_M.applyStep(t, code); } catch (e) { if (isErr(e)) throw e; throw ERR(e.m ? W.PBI_M.errorText(e.m) : e.message); } };
 const OPS = {
   removeTop: { name: 'Üst satırları kaldır', group: 'Satırları kaldır', step: 'Kaldırılan Üst Satırlar', form: [{ k: 'n', label: 'Kaç satır?', type: 'num', d: 1 }],
     run: (t, s) => { const out = clone(t); out.rows = out.rows.slice(Math.max(0, +s.n || 0)); return out; },
@@ -107,7 +112,7 @@ const OPS = {
   filter: { name: 'Satırları filtrele', group: 'Giriş', step: 'Filtrelenen Satırlar', sel: 1, single: true,
     form: [{ k: 'cmp', label: 'Koşul', type: 'sel', o: [['notnull', 'boş değil'], ['=', 'eşittir'], ['<>', 'eşit değil'], ['>', 'büyüktür'], ['>=', 'büyük ya da eşit'], ['<', 'küçüktür'], ['<=', 'küçük ya da eşit'], ['contains', 'içerir'], ['null', 'boş']], d: 'notnull' }, { k: 'v', label: 'Değer', type: 'text', d: '', hideIf: s => s.cmp === 'notnull' || s.cmp === 'null' }],
     run: (t, s) => { const i = idx(t, s.cols[0]); const x = parseParam(s.v, t.cols[i].type); const out = clone(t); out.rows = out.rows.filter(r => cmp(r[i], s.cmp, x)); return out; },
-    m: (p, s) => { const c = '[' + s.cols[0] + ']'; const x = mVal(parseParam(s.v, 'any')); const body = s.cmp === 'notnull' ? c + ' <> null and ' + c + ' <> ""' : s.cmp === 'null' ? c + ' = null' : s.cmp === 'contains' ? 'Text.Contains(' + c + ', ' + x + ', Comparer.OrdinalIgnoreCase)' : c + ' ' + s.cmp + ' ' + mVal(isNaN(+String(s.v).replace(',', '.')) || s.v === '' ? s.v : +String(s.v).replace(',', '.')); return 'Table.SelectRows(' + p + ', each ' + body + ')'; },
+    m: (p, s) => { const c = mF(s.cols[0]); const x = mVal(parseParam(s.v, 'any')); const body = s.cmp === 'notnull' ? c + ' <> null and ' + c + ' <> ""' : s.cmp === 'null' ? c + ' = null' : s.cmp === 'contains' ? 'Text.Contains(' + c + ', ' + x + ', Comparer.OrdinalIgnoreCase)' : c + ' ' + s.cmp + ' ' + mVal(isNaN(+String(s.v).replace(',', '.')) || s.v === '' ? s.v : +String(s.v).replace(',', '.')); return 'Table.SelectRows(' + p + ', each ' + body + ')'; },
     what: 'Koşulu sağlamayan satırları atar. Kaynakta yapılabiliyorsa sorgu katlamayla kaynağa gönderilir.' },
   type: { name: 'Veri türü', group: 'Dönüştür', step: 'Değiştirilen Tür', sel: 1,
     form: [{ k: 'to', label: 'Tür', type: 'sel', o: [['text', 'Metin (ABC)'], ['number', 'Ondalık sayı (1.2)'], ['int', 'Tam sayı (123)'], ['date', 'Tarih'], ['any', 'Herhangi (ABC123)']], d: 'number' }],
@@ -133,7 +138,7 @@ const OPS = {
   replace: { name: 'Değerleri değiştir', group: 'Giriş', step: 'Değiştirilen Değer', sel: 1,
     form: [{ k: 'find', label: 'Aranacak değer', type: 'text', d: '' }, { k: 'repl', label: 'Yeni değer (boş için null yaz)', type: 'text', d: 'null' }, { k: 'whole', label: 'Hücrenin tamamı eşleşsin', type: 'chk', d: true }],
     run: (t, s) => { const out = clone(t); s.cols.forEach(c => { const i = idx(out, c); const typ = out.cols[i].type; const f = parseParam(s.find, typ), r2 = parseParam(s.repl, typ); out.rows.forEach(r => { const v = r[i]; if (isErr(v)) return; if (s.whole === false && typeof v === 'string' && typeof f === 'string' && f) { r[i] = v.split(f).join(r2 === null ? '' : String(r2)); return; } if (keyOf(v) === keyOf(f) || (f === '' && v === null) || (typeof v === 'number' && typeof f === 'string' && f !== '' && +f.replace(',', '.') === v)) r[i] = r2; }); }); return out; },
-    m: (p, s) => 'Table.ReplaceValue(' + p + ', ' + mVal(parseParam(s.find, 'any')) + ', ' + mVal(parseParam(s.repl, 'any')) + ', Replacer.' + (s.whole === false ? 'ReplaceText' : 'ReplaceValue') + ', ' + mList(s.cols) + ')',
+    m: (p, s, t) => { const c0 = t && t.cols.find(c => c.name === (s.cols || [])[0]); const ty = c0 ? c0.type : 'any'; return 'Table.ReplaceValue(' + p + ', ' + mVal(parseParam(s.find, ty)) + ', ' + mVal(parseParam(s.repl, ty)) + ', Replacer.' + (s.whole === false ? 'ReplaceText' : 'ReplaceValue') + ', ' + mList(s.cols) + ')'; },
     what: 'Bir değeri başka bir değerle değiştirir. “-” gibi “veri yok” işaretlerini null yapmak türü değiştirmeden önce gerekir; yoksa o hücreler Error olur.' },
   replaceErr: { name: 'Hataları değiştir', group: 'Dönüştür', step: 'Değiştirilen Hatalar', sel: 1,
     form: [{ k: 'v', label: 'Hata yerine yazılacak değer', type: 'text', d: '0' }],
@@ -169,7 +174,7 @@ const OPS = {
       t.rows.forEach(r => { const k = ks.map(i => keyOf(r[i])).join('␟'); if (!g.has(k)) g.set(k, { key: ks.map(i => r[i]), vals: [], n: 0 }); const G = g.get(k); G.n++; if (si >= 0) G.vals.push(r[si]); });
       const agg = G => { if (s.agg === 'count') return G.n; if (G.vals.some(isErr)) return ERR('Gruptaki bir hücre hatalı.'); const v = G.vals.filter(x => typeof x === 'number'); if (!v.length) return null; return s.agg === 'sum' ? v.reduce((a, b) => a + b, 0) : s.agg === 'avg' ? v.reduce((a, b) => a + b, 0) / v.length : s.agg === 'min' ? Math.min(...v) : Math.max(...v); };
       return { cols: ks.map(i => Object.assign({}, t.cols[i])).concat([{ name, type: s.agg === 'count' ? 'int' : 'number' }]), rows: [...g.values()].map(G => G.key.concat([agg(G)])) }; },
-    m: (p, s) => { const f = { sum: 'List.Sum', avg: 'List.Average', min: 'List.Min', max: 'List.Max' }[s.agg]; return 'Table.Group(' + p + ', ' + mList(s.cols) + ', {{' + mStr(String(s.name || 'Sayı').trim()) + ', ' + (s.agg === 'count' ? 'each Table.RowCount(_), Int64.Type' : 'each ' + f + '([' + s.src + ']), type nullable number') + '}})'; },
+    m: (p, s) => { const f = { sum: 'List.Sum', avg: 'List.Average', min: 'List.Min', max: 'List.Max' }[s.agg]; return 'Table.Group(' + p + ', ' + mList(s.cols) + ', {{' + mStr(String(s.name || 'Sayı').trim()) + ', ' + (s.agg === 'count' ? 'each Table.RowCount(_), Int64.Type' : 'each ' + f + '(' + mF(s.src) + '), type nullable number') + '}})'; },
     what: 'Seçili sütun(lar)a göre gruplar ve her grup için tek satır üretir; SQL’deki GROUP BY. Ayrıntıyı kaybedersin: modelde ayrıntıyı tutup DAX ile toplamak çoğu zaman daha esnektir.' }
 };
 
@@ -181,7 +186,7 @@ function run(src, steps, upto) {
   for (let i = 0; i < end; i++) {
     const s = steps[i], op = OPS[s.op]; const prevName = states[states.length - 1].ref || 'Kaynak';
     const name = stepName(s.op, used); const ref = '#"' + name + '"';
-    let m = ''; try { m = op.m(prevName, s); } catch (e) { m = '…'; }
+    let m = ''; try { m = op.m(prevName, s, t); } catch (e) { m = '…'; }
     try { if (op.sel && (!s.cols || !s.cols.length)) need(s); t = op.run(t, s); states.push({ name, ref, table: t, m }); }
     catch (e) { if (!isErr(e)) throw e; error = { i, msg: e.pqErr }; states.push({ name, ref, table: null, m, error: e.pqErr }); break; }
   }
@@ -249,6 +254,16 @@ const SOURCES = {
       ['104', 'ALİ ŞAHİN', null, '2024-01-09'],
       ['105', 'Elif Çelik', 'elif.celik@icloud.com', '2024-02-30']
     ]) },
+  satis: { name: 'Satışlar (temiz, türleri belli)', qn: 'Satislar', desc: 'Temizlenmiş sipariş tablosu: tarih, sayı ve metin sütunları doğru türde. Sütun Ekle komutları ve M alıştırmaları için.',
+    m: 'Sql.Database("srv", "AnadoluMarket"){[Schema = "dbo", Item = "Satislar"]}[Data]',
+    table: { cols: [{ name: 'SiparisNo', type: 'int' }, { name: 'Tarih', type: 'date' }, { name: 'Şehir', type: 'text' }, { name: 'Kategori', type: 'text' }, { name: 'Adet', type: 'int' }, { name: 'Tutar', type: 'number' }], rows: [
+      [1001, D(2024, 1, 5), 'İstanbul', 'Elektronik', 2, 2598], [1002, D(2024, 1, 9), 'Ankara', 'Kitap', 3, 435], [1003, D(2024, 1, 21), 'İzmir', 'Giyim', 1, 780],
+      [1004, D(2024, 2, 2), 'İstanbul', 'Kitap', 5, 900], [1005, D(2024, 2, 14), 'Bursa', 'Elektronik', 1, 3499], [1006, D(2024, 2, 27), 'Ankara', 'Spor', 2, 918],
+      [1007, D(2024, 3, 3), 'İzmir', 'Elektronik', 1, 649], [1008, D(2024, 3, 11), 'Antalya', 'Spor', 1, 3299], [1009, D(2024, 3, 19), 'İstanbul', 'Giyim', 4, 2240], [1010, D(2024, 3, 30), 'Ankara', 'Kitap', 2, null]] } },
+  aylik: { name: 'Bölge ve ay satışları (uzun tablo)', qn: 'Aylik_Satis', desc: 'Bir bölgenin bir ayı bir satır. Sunum için “Özet sütun” ile genişletilir.',
+    m: 'Sql.Database("srv", "AnadoluMarket"){[Schema = "rapor", Item = "AylikSatis"]}[Data]',
+    table: { cols: [{ name: 'Bölge', type: 'text' }, { name: 'Ay', type: 'text' }, { name: 'Tutar', type: 'number' }], rows: [
+      ['Marmara', 'Oca', 12400], ['Marmara', 'Şub', 13150], ['Marmara', 'Mar', 14020], ['Ege', 'Oca', 6100], ['Ege', 'Şub', 5900], ['Akdeniz', 'Oca', 4300], ['Akdeniz', 'Mar', 5200]] } },
   bayi_sub: { name: 'Bayi satışları: Şubat (CSV)', qn: 'Bayi_Subat', desc: 'İkinci kaynak: muhasebenin ortak klasöre bıraktığı Şubat dosyası. Temiz ve türleri belli. Ocak raporuna “Sorguları ekle” ile eklenir.',
     m: 'Csv.Document(File.Contents("\\\\\\\\sunucu\\\\ortak\\\\bayi_subat.csv"), [Delimiter = ";", Encoding = 65001])',
     table: { cols: [{ name: 'Bayi', type: 'text' }, { name: 'Şehir', type: 'text' }, { name: 'Tarih', type: 'date' }, { name: 'Tutar', type: 'number' }], rows: [
@@ -270,6 +285,154 @@ OPS.merge = { name: 'Sorguları birleştir', group: 'Birleştir', step: 'Birleş
   run: (t, s) => { const src = SOURCES[s.with]; const b = src && src.table; if (!b) throw ERR('Expression.Error: “' + s.with + '” sorgusu bulunamadı.'); const i = idx(t, s.cols[0]), kb = b.cols.findIndex(c => c.name === src.key); const others = b.cols.map((c, j) => j).filter(j => j !== kb); const map = new Map(); b.rows.forEach(r => { const k = keyOf(r[kb]); if (!map.has(k)) map.set(k, r); }); const out = { cols: t.cols.map(c => Object.assign({}, c)), rows: [] }; if (s.kind !== 'anti') others.forEach(j => { if (out.cols.some(c => c.name === b.cols[j].name)) throw ERR('Expression.Error: “' + b.cols[j].name + '” sütunu tabloda zaten var.'); out.cols.push(Object.assign({}, b.cols[j])); }); t.rows.forEach(r => { const hit = !isErr(r[i]) && !isBlank(r[i]) ? map.get(keyOf(r[i])) : undefined; if (s.kind === 'inner' && !hit) return; if (s.kind === 'anti') { if (!hit) out.rows.push(r.slice()); return; } out.rows.push(r.concat(others.map(j => hit ? hit[j] : null))); }); return out; },
   m: (p, s) => { const src = SOURCES[s.with] || {}; const b = src.table ? src.table.cols.map(c => c.name).filter(n => n !== src.key) : []; const kind = s.kind === 'inner' ? 'JoinKind.Inner' : s.kind === 'anti' ? 'JoinKind.LeftAnti' : 'JoinKind.LeftOuter'; const j = 'Table.NestedJoin(' + p + ', {' + mStr(s.cols[0]) + '}, ' + (src.qn || s.with) + ', {' + mStr(src.key || '') + '}, "Eşleşen", ' + kind + ')'; return s.kind === 'anti' ? 'Table.RemoveColumns(' + j + ', {"Eşleşen"})' : 'Table.ExpandTableColumn(' + j + ', "Eşleşen", ' + mList(b) + ')'; },
   what: 'Seçili sütunu ikinci sorgunun anahtarıyla eşleştirir, eşleşen sütunları ekler. Eşleşme büyük/küçük harfe ve boşluğa duyarlıdır: “ANKARA” ile “Ankara” eşleşmez. Bu yüzden önce temizle, sonra birleştir.' };
+
+
+/* ---------- Dönüştür ve Sütun Ekle: M kodu yorumlayıcıda çalışan komutlar ---------- */
+const AGGF = { sum: 'List.Sum', count: 'List.Count', min: 'List.Min', max: 'List.Max', avg: 'List.Average' };
+function detected(t) {
+  return t.cols.map((c, i) => {
+    if (c.type !== 'any' && c.type !== 'text') return null;
+    const vals = t.rows.slice(0, 200).map(r => r[i]).filter(v => !isBlank(v) && !isErr(v)); if (!vals.length || !vals.every(v => typeof v === 'string')) return null;
+    if (vals.every(v => { const n = parseNumTR(v); return !isErr(n) && n !== null; })) return { name: c.name, to: vals.every(v => /^-?\d+$/.test(v.trim())) ? 'int' : 'number' };
+    if (vals.every(v => !isErr(parseDateTR(v)))) return { name: c.name, to: 'date' };
+    return null;
+  }).filter(Boolean);
+}
+Object.assign(OPS, {
+  keepTop: { name: 'Keep top rows (İlk satırları tut)', group: 'Satırları tut', step: 'Tutulan İlk Satırlar', form: [{ k: 'n', label: 'Kaç satır?', type: 'num', d: 5 }],
+    run: (t, s) => viaM(t, OPS.keepTop.m('Prev', s)), m: (p, s) => 'Table.FirstN(' + p + ', ' + (+s.n || 0) + ')',
+    what: 'Yalnız ilk N satırı bırakır. Geliştirirken veriyi küçültmek için işe yarar; adımı işin sonunda kaldırmayı unutursan model eksik yüklenir.' },
+  removeBottom: { name: 'Remove bottom rows (Alt satırları kaldır)', group: 'Satırları kaldır', step: 'Kaldırılan Alt Satırlar', form: [{ k: 'n', label: 'Kaç satır?', type: 'num', d: 1 }],
+    run: (t, s) => viaM(t, OPS.removeBottom.m('Prev', s)), m: (p, s) => 'Table.RemoveLastN(' + p + ', ' + (+s.n || 0) + ')',
+    what: 'Sondaki N satırı siler. Rapor dosyalarının altındaki “Genel Toplam” satırları için. Sayı sabit değilse koşullu RemoveLastN gerekir.' },
+  sort: { name: 'Sırala', group: 'Sırala', step: 'Sıralanan Satırlar', sel: 1, single: true, form: [{ k: 'order', label: 'Yön', type: 'sel', o: [['asc', 'Artan'], ['desc', 'Azalan']], d: 'asc' }],
+    run: (t, s) => viaM(t, OPS.sort.m('Prev', s)), m: (p, s) => 'Table.Sort(' + p + ', {{' + mStr(s.cols[0]) + ', Order.' + (s.order === 'desc' ? 'Descending' : 'Ascending') + '}})',
+    what: 'Satırları seçili sütuna göre sıralar. Tüm satırları okumak zorunda olduğu için yavaş bir adımdır; rapor sırası için gerekmez, görselde sıralanır.' },
+  pivot: { name: 'Pivot sütunu', group: 'Dönüştür', step: 'Özetlenen Sütun', sel: 1, single: true,
+    form: [{ k: 'val', label: 'Değer sütunu', type: 'col', d: '' }, { k: 'agg', label: 'Toplama', type: 'sel', o: [['sum', 'Toplam'], ['count', 'Sayı'], ['min', 'En küçük'], ['max', 'En büyük'], ['avg', 'Ortalama'], ['none', 'Toplama yapma']], d: 'sum' }],
+    run: (t, s) => viaM(t, OPS.pivot.m('Prev', s)),
+    m: (p, s) => 'Table.Pivot(' + p + ', List.Distinct(' + p + mF(s.cols[0]) + '), ' + mStr(s.cols[0]) + ', ' + mStr(s.val || '') + (s.agg && s.agg !== 'none' ? ', ' + AGGF[s.agg] : '') + ')',
+    what: 'Seçili sütunun değerlerini sütun başlığına çevirir (uzundan genişe). “Toplama yapma” seçilirken aynı hücreye iki değer düşerse o hücre Error olur. Model için çoğu zaman uzun tablo daha iyidir.' },
+  transpose: { name: 'Transpose (Devrik)', group: 'Tablo', step: 'Devrik Tablo',
+    run: (t, s) => viaM(t, OPS.transpose.m('Prev', s)), m: p => 'Table.Transpose(' + p + ')',
+    what: 'Satırları sütun, sütunları satır yapar. Eski sütun adları kaybolur ve her sütun Column1, Column2 olur; adları korumak için önce “Use headers as first row”.' },
+  reverse: { name: 'Satırları ters çevir', group: 'Tablo', step: 'Ters Çevrilen Satırlar',
+    run: (t, s) => viaM(t, OPS.reverse.m('Prev', s)), m: p => 'Table.ReverseRows(' + p + ')',
+    what: 'Son satırı başa alır. Yukarı doldurma ya da “sondan ilk kayıt” kalıpları için. Değerlere göre sıralamaz; sıralama için Sırala.' },
+  detect: { name: 'Detect data type (Türü algıla)', group: 'Tablo', step: 'Değiştirilen Tür',
+    run: (t, s) => { const d = detected(t); return d.length ? viaM(t, OPS.detect.m('Prev', s, t)) : t; },
+    m: (p, s, t) => { const d = t ? detected(t) : []; return d.length ? 'Table.TransformColumnTypes(' + p + ', {' + d.map(x => '{' + mStr(x.name) + ', ' + TYPES[x.to].m + '}').join(', ') + '}, "tr-TR")' : p; },
+    what: 'Metin sütunların ilk 200 satırına bakıp tür seçer. Tahmindir: bugün sayı görünen kod sütunu (0123) yarın bozulabilir, adımı gözden geçir.' },
+  demote: { name: 'Use headers as first row (Başlıkları indir)', group: 'Tablo', step: 'İndirilen Başlıklar',
+    run: (t, s) => viaM(t, OPS.demote.m('Prev', s)), m: p => 'Table.DemoteHeaders(' + p + ')',
+    what: 'Sütun adlarını ilk satıra indirir, sütunları Column1, Column2 yapar. Devrik almadan önce adları korumak için kullanılır.' },
+  addCustom: { name: 'Özel sütun', group: 'Genel', step: 'Eklenen Özel Sütun',
+    form: [{ k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Özel' }, { k: 'expr', label: 'Özel sütun formülü (M)', type: 'text', d: '' }, { k: 'to', label: 'Veri türü', type: 'sel', o: [['any', 'Herhangi'], ['text', 'Metin'], ['number', 'Ondalık sayı'], ['int', 'Tam sayı'], ['date', 'Tarih']], d: 'any' }],
+    run: (t, s) => viaM(t, OPS.addCustom.m('Prev', s)),
+    m: (p, s) => { const e = String(s.expr || '').trim().replace(/^=\s*/, '').replace(/^each\s+/, ''); return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Özel').trim()) + ', each ' + (e || 'null') + (s.to && s.to !== 'any' ? ', ' + TYPES[s.to].m : '') + ')'; },
+    what: 'Her satır için bir M ifadesi hesaplar: [Tutar] * 1.2 gibi. Tür seçmezsen sütun “Herhangi” kalır; modele yüklemeden önce tür ver.' },
+  addCond: { name: 'Koşullu sütun', group: 'Genel', step: 'Eklenen Koşullu Sütun', sel: 1, single: true,
+    form: [{ k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Koşullu' }, { k: 'cmp', label: 'İşleç', type: 'sel', o: [['=', 'eşittir'], ['<>', 'eşit değil'], ['>', 'büyüktür'], ['>=', 'büyük ya da eşit'], ['<', 'küçüktür'], ['<=', 'küçük ya da eşit']], d: '>' }, { k: 'v', label: 'Değer', type: 'text', d: '' }, { k: 'then', label: 'Çıkış', type: 'text', d: '' }, { k: 'els', label: 'Değilse', type: 'text', d: '' }],
+    run: (t, s) => viaM(t, OPS.addCond.m('Prev', s)),
+    m: (p, s) => 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Koşullu').trim()) + ', each if ' + mF(s.cols[0]) + ' ' + s.cmp + ' ' + mLit(s.v) + ' then ' + mLit(s.then) + ' else ' + mLit(s.els) + ')',
+    what: 'Koşullar yukarıdan aşağı denenir, ilk doğru olan kazanır. Sütun “Herhangi” türünde gelir. Sütunda null varsa ve işleç büyüktür gibiyse o satırda hücre Error olur (if null olamaz).' },
+  addIndex: { name: 'Dizin sütunu', group: 'Genel', step: 'Eklenen Dizin', form: [{ k: 'name', label: 'Sütun adı', type: 'text', d: 'Dizin' }, { k: 'start', label: 'Başlangıç', type: 'num', d: 0 }, { k: 'step', label: 'Artış', type: 'num', d: 1 }],
+    run: (t, s) => viaM(t, OPS.addIndex.m('Prev', s)),
+    m: (p, s) => 'Table.AddIndexColumn(' + p + ', ' + mStr(String(s.name || 'Dizin').trim()) + ', ' + (+s.start || 0) + ', ' + (s.step === '' || s.step == null ? 1 : +s.step) + ', Int64.Type)',
+    what: 'Her satıra sıra numarası verir. Sırası belirsiz kaynaktan gelen tabloda numaralar yenilemede değişebilir; kalıcı anahtar sanma.' },
+  dupCol: { name: 'Duplicate column (Sütunu çoğalt)', group: 'Genel', step: 'Çoğaltılan Sütun', sel: 1, single: true,
+    run: (t, s) => viaM(t, OPS.dupCol.m('Prev', s)),
+    m: (p, s) => 'Table.DuplicateColumn(' + p + ', ' + mStr(s.cols[0]) + ', ' + mStr(s.cols[0] + ' - Kopya') + ')',
+    what: 'Sütunun kopyasını sona ekler. Aslını koruyup kopyayı dönüştürmek için.' },
+  mergeCols: { name: 'Merge columns (Sütunları birleştir)', group: 'Metinden', step: 'Eklenen Birleştirilmiş Sütun', sel: 2, form: [{ k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Birleştirilmiş' }, { k: 'd', label: 'Ayırıcı', type: 'text', d: ' ' }],
+    run: (t, s) => { if (!s.cols || s.cols.length < 2) need(s, 2); return viaM(t, OPS.mergeCols.m('Prev', s, t)); },
+    m: (p, s, t) => 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Birleştirilmiş').trim()) + ', each Text.Combine({' + s.cols.map(c => { const col = t && t.cols.find(x => x.name === c); return col && col.type !== 'text' ? 'Text.From(' + mF(c) + ', "tr-TR")' : mF(c); }).join(', ') + '}, ' + mStr(s.d == null ? ' ' : s.d) + '), type text)',
+    what: 'Seçili sütunları ayırıcıyla tek metinde toplar, asıl sütunlar kalır. null olan parça atlanır. Metin olmayan sütun Text.From ile çevrilir.' },
+  textCol: { name: 'Metinden çıkar', group: 'Metinden', step: 'Eklenen Metin Sütunu', sel: 1, single: true, form: [{ k: 'what', label: 'Ne?', type: 'sel', o: [['len', 'Uzunluk'], ['first', 'İlk karakterler'], ['last', 'Son karakterler'], ['before', 'Sınırlayıcıdan önce'], ['after', 'Sınırlayıcıdan sonra']], d: 'len' }, { k: 'n', label: 'Sayı ya da sınırlayıcı', type: 'text', d: '' }, { k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Çıkarılan' }],
+    run: (t, s) => viaM(t, OPS.textCol.m('Prev', s)),
+    m: (p, s) => { const c = mF(s.cols[0]); const n = String(s.n == null ? '' : s.n); const b = s.what === 'first' ? 'Text.Start(' + c + ', ' + (+n || 0) + ')' : s.what === 'last' ? 'Text.End(' + c + ', ' + (+n || 0) + ')' : s.what === 'before' ? 'Text.BeforeDelimiter(' + c + ', ' + mStr(n) + ')' : s.what === 'after' ? 'Text.AfterDelimiter(' + c + ', ' + mStr(n) + ')' : 'Text.Length(' + c + ')'; return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Çıkarılan').trim()) + ', each ' + b + ', ' + (s.what === 'len' ? 'Int64.Type' : 'type text') + ')'; },
+    what: 'Metnin bir parçasını ya da uzunluğunu yeni sütuna alır. Metin olmayan hücrede Error verir; önce türü düzelt.' },
+  numOp: { name: 'Sayı işlemi', group: 'Sayıdan', step: 'Eklenen Hesap', sel: 1, single: true, form: [{ k: 'what', label: 'İşlem', type: 'sel', o: [['add', 'Topla'], ['sub', 'Çıkar'], ['mul', 'Çarp'], ['div', 'Böl'], ['idiv', 'Böl (tam sayı)'], ['mod', 'Modulo'], ['pct', 'Yüzdesi'], ['round', 'Yuvarla'], ['up', 'Yukarı yuvarla'], ['down', 'Aşağı yuvarla'], ['abs', 'Mutlak değer'], ['sq', 'Kare'], ['sqrt', 'Karekök']], d: 'mul' }, { k: 'v', label: 'Değer (yuvarlamada basamak)', type: 'text', d: '' }, { k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Hesap' }],
+    run: (t, s) => viaM(t, OPS.numOp.m('Prev', s)),
+    m: (p, s) => { const c = mF(s.cols[0]); const v = String(s.v == null ? '' : s.v).trim().replace(',', '.'); const x = /^-?\d+(\.\d+)?$/.test(v) ? v : '0'; const b = { add: c + ' + ' + x, sub: c + ' - ' + x, mul: c + ' * ' + x, div: c + ' / ' + x, idiv: 'Number.IntegerDivide(' + c + ', ' + x + ')', mod: 'Number.Mod(' + c + ', ' + x + ')', pct: c + ' * ' + x + ' / 100', round: 'Number.Round(' + c + ', ' + x + ')', up: 'Number.RoundUp(' + c + ')', down: 'Number.RoundDown(' + c + ')', abs: 'Number.Abs(' + c + ')', sq: 'Number.Power(' + c + ', 2)', sqrt: 'Number.Sqrt(' + c + ')' }[s.what]; return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Hesap').trim()) + ', each ' + b + ', type number)'; },
+    what: 'Sayı sütunundan yeni sütun hesaplar. Number.Round varsayılan olarak bankacı yuvarlaması yapar: 2,5 → 2, 3,5 → 4. Metin hücrede Error, null hücrede null verir.' },
+  dateOp: { name: 'Tarih işlemi', group: 'Tarihten', step: 'Eklenen Tarih Sütunu', sel: 1, single: true, form: [{ k: 'what', label: 'İşlem', type: 'sel', o: [['year', 'Yıl'], ['month', 'Ay'], ['quarter', 'Çeyrek'], ['day', 'Gün'], ['dow', 'Haftanın günü (Pazartesi 0)'], ['week', 'Yılın haftası'], ['monthName', 'Ay adı'], ['dayName', 'Gün adı'], ['som', 'Ayın başlangıcı'], ['eom', 'Ayın sonu'], ['soy', 'Yılın başlangıcı']], d: 'year' }, { k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Tarih Bilgisi' }],
+    run: (t, s) => viaM(t, OPS.dateOp.m('Prev', s)),
+    m: (p, s) => { const c = mF(s.cols[0]); const b = { year: ['Date.Year(' + c + ')', 'Int64.Type'], month: ['Date.Month(' + c + ')', 'Int64.Type'], quarter: ['Date.QuarterOfYear(' + c + ')', 'Int64.Type'], day: ['Date.Day(' + c + ')', 'Int64.Type'], dow: ['Date.DayOfWeek(' + c + ', Day.Monday)', 'Int64.Type'], week: ['Date.WeekOfYear(' + c + ', Day.Monday)', 'Int64.Type'], monthName: ['Date.MonthName(' + c + ', "tr-TR")', 'type text'], dayName: ['Date.DayOfWeekName(' + c + ', "tr-TR")', 'type text'], som: ['Date.StartOfMonth(' + c + ')', 'type date'], eom: ['Date.EndOfMonth(' + c + ')', 'type date'], soy: ['Date.StartOfYear(' + c + ')', 'type date'] }[s.what]; return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Tarih Bilgisi').trim()) + ', each ' + b[0] + ', ' + b[1] + ')'; },
+    what: 'Tarih sütunundan yıl, ay, çeyrek, ay adı gibi bilgiler çıkarır. Sütun tarih türünde olmalı: metin tarihte hücre Error olur. Ay adı kültür verilmezse sistem diliyle gelir.' }
+});
+
+Object.assign(OPS, {
+  keepBottom: { name: 'Keep bottom rows (Son satırları tut)', group: 'Satırları tut', step: 'Tutulan Son Satırlar', form: [{ k: 'n', label: 'Kaç satır?', type: 'num', d: 5 }],
+    run: (t, s) => viaM(t, OPS.keepBottom.m('Prev', s)), m: (p, s) => 'Table.LastN(' + p + ', ' + (+s.n || 0) + ')',
+    what: 'Yalnız son N satırı bırakır. Son eklenen kayıtlar kaynağın sonundaysa işe yarar; sıra garantili değilse önce sırala.' },
+  keepRange: { name: 'Keep range of rows (Satır aralığı tut)', group: 'Satırları tut', step: 'Tutulan Satır Aralığı', form: [{ k: 'first', label: 'İlk satır (1’den)', type: 'num', d: 1 }, { k: 'n', label: 'Kaç satır?', type: 'num', d: 5 }],
+    run: (t, s) => viaM(t, OPS.keepRange.m('Prev', s)), m: (p, s) => 'Table.Range(' + p + ', ' + Math.max(0, (+s.first || 1) - 1) + ', ' + (+s.n || 0) + ')',
+    what: 'Belirli satır aralığını tutar. Şeritte ilk satır 1’den sayılır, M’de konum 0’dan başlar: dikkat, kod bir eksik yazar.' },
+  keepDups: { name: 'Keep duplicates (Yinelenenleri tut)', group: 'Satırları tut', step: 'Tutulan Yinelenenler', sel: 1,
+    run: (t, s) => viaM(t, OPS.keepDups.m('Prev', s)),
+    m: (p, s) => 'let\n        columnNames = ' + mList(s.cols) + ',\n        addCount = Table.Group(' + p + ', columnNames, {{"Count", Table.RowCount, type number}}),\n        selectDuplicates = Table.SelectRows(addCount, each [Count] > 1),\n        removeCount = Table.RemoveColumns(selectDuplicates, "Count")\n    in\n        Table.Join(' + p + ', columnNames, removeCount, columnNames, JoinKind.Inner)',
+    what: 'Seçili sütunda birden çok kez geçen değerlerin tüm satırlarını tutar. Anahtar denetimi için: temiz anahtarda sonuç boştur.' },
+  removeAlt: { name: 'Remove alternate rows (Dönüşümlü satır kaldır)', group: 'Satırları kaldır', step: 'Kaldırılan Dönüşümlü Satırlar', form: [{ k: 'first', label: 'İlk kaldırılacak satır (1’den)', type: 'num', d: 1 }, { k: 'rm', label: 'Kaldırılacak', type: 'num', d: 1 }, { k: 'keep', label: 'Tutulacak', type: 'num', d: 1 }],
+    run: (t, s) => viaM(t, OPS.removeAlt.m('Prev', s)), m: (p, s) => 'Table.AlternateRows(' + p + ', ' + Math.max(0, (+s.first || 1) - 1) + ', ' + (+s.rm || 0) + ', ' + (+s.keep || 0) + ')',
+    what: 'Belli bir düzenle satır atlar: rapor çıktısında her ikinci satır boş ya da ara başlıksa.' },
+  fillUp: { name: 'Fill up (Yukarı doldur)', group: 'Dönüştür', step: 'Yukarı Doldurulan', sel: 1,
+    run: (t, s) => viaM(t, OPS.fillUp.m('Prev', s)), m: (p, s) => 'Table.FillUp(' + p + ', ' + mList(s.cols) + ')',
+    what: 'null hücreleri alttaki ilk değerle doldurur. Grup başlığı alt satırda olan raporlar için.' },
+  unpivotSel: { name: 'Unpivot only selected columns (Seçili sütunların özetini kaldır)', group: 'Dönüştür', step: 'Özeti Kaldırılan Sütunlar', sel: 1,
+    run: (t, s) => viaM(t, OPS.unpivotSel.m('Prev', s)), m: (p, s) => 'Table.Unpivot(' + p + ', ' + mList(s.cols) + ', "Öznitelik", "Değer")',
+    what: 'Yalnız seçtiğin sütunları satıra çevirir, gerisi kalır. Kod sütun adlarını yazar: yeni ay eklenirse içeri girmez. Yeni sütunları da istiyorsan Diğer sütunlar komutunu kullan.' },
+  prefix: { name: 'Add prefix / suffix (Önek, sonek ekle)', group: 'Biçim', step: 'Eklenen Önek', sel: 1, single: true, form: [{ k: 'mode', label: 'Nereye?', type: 'sel', o: [['pre', 'Önek'], ['suf', 'Sonek']], d: 'pre' }, { k: 'x', label: 'Metin', type: 'text', d: '' }],
+    run: (t, s) => viaM(t, OPS.prefix.m('Prev', s)),
+    m: (p, s) => 'Table.TransformColumns(' + p + ', {{' + mStr(s.cols[0]) + ', each ' + (s.mode === 'suf' ? '_ & ' + mStr(s.x || '') : mStr(s.x || '') + ' & _') + ', type text}})',
+    what: 'Değerlerin başına ya da sonuna metin ekler. Sayı sütununda Error verir: & yalnız metin birleştirir, önce metne çevir.' },
+  extract: { name: 'Extract (Ayıkla)', group: 'Biçim', step: 'Ayıklanan Metin', sel: 1, single: true, form: [{ k: 'what', label: 'Ne?', type: 'sel', o: [['len', 'Uzunluk'], ['first', 'İlk karakterler'], ['last', 'Son karakterler'], ['before', 'Sınırlayıcıdan önce'], ['after', 'Sınırlayıcıdan sonra']], d: 'first' }, { k: 'n', label: 'Sayı ya da sınırlayıcı', type: 'text', d: '' }],
+    run: (t, s) => viaM(t, OPS.extract.m('Prev', s)),
+    m: (p, s) => { const n = String(s.n == null ? '' : s.n); const f = s.what === 'first' ? 'each Text.Start(_, ' + (+n || 0) + ')' : s.what === 'last' ? 'each Text.End(_, ' + (+n || 0) + ')' : s.what === 'before' ? 'each Text.BeforeDelimiter(_, ' + mStr(n) + ')' : s.what === 'after' ? 'each Text.AfterDelimiter(_, ' + mStr(n) + ')' : 'Text.Length'; return 'Table.TransformColumns(' + p + ', {{' + mStr(s.cols[0]) + ', ' + f + ', ' + (s.what === 'len' ? 'Int64.Type' : 'type text') + '}})'; },
+    what: 'Sütunu yerinde metnin bir parçasıyla değiştirir. Asıl değer gider; korumak için Sütun ekle sekmesindeki Metinden çıkar.' },
+  mergeT: { name: 'Merge columns (yerinde)', group: 'Biçim', step: 'Birleştirilen Sütunlar', sel: 2, form: [{ k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Birleştirilmiş' }, { k: 'd', label: 'Ayırıcı', type: 'text', d: ' ' }],
+    run: (t, s) => viaM(t, OPS.mergeT.m('Prev', s)),
+    m: (p, s) => 'Table.CombineColumns(' + p + ', ' + mList(s.cols) + ', Combiner.CombineTextByDelimiter(' + mStr(s.d == null ? ' ' : s.d) + ', QuoteStyle.None), ' + mStr(String(s.name || 'Birleştirilmiş').trim()) + ')',
+    what: 'Dönüştür sekmesindeki birleştirme: asıl sütunlar gider, yerine tek sütun gelir. Yalnız metin sütunlarında: sayı sütununda Error verir.' },
+  dateSub: { name: 'Subtract days (Gün çıkarma)', group: 'Tarihten', step: 'Eklenen Gün Farkı', sel: 1, single: true, form: [{ k: 'ref', label: 'Karşı tarih (gg.aa.yyyy)', type: 'text', d: '31.12.2024' }, { k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Gün Farkı' }],
+    run: (t, s) => viaM(t, OPS.dateSub.m('Prev', s)),
+    m: (p, s) => { const d = parseDateTR(s.ref); const dv = isErr(d) || !d ? '#date(2024, 12, 31)' : mVal(d); return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Gün Farkı').trim()) + ', each Duration.Days(' + dv + ' - ' + mF(s.cols[0]) + '), Int64.Type)'; },
+    what: 'İki tarih arasındaki gün sayısını hesaplar. Tarih eksi tarih süre (duration) verir; Duration.Days ile sayıya çevrilir. Şeritte iki tarih sütunu seçilince aynı komut sütun farkı alır.' },
+  fromEx: { name: 'Column from Examples (Örneklerden sütun)', group: 'Genel', step: 'Eklenen Örnekten Sütun', sel: 1, single: true, form: [{ k: 'ex1', label: 'İlk satır için beklenen', type: 'text', d: '' }, { k: 'ex2', label: 'İkinci satır için (isteğe bağlı)', type: 'text', d: '' }, { k: 'name', label: 'Yeni sütun adı', type: 'text', d: 'Örnekten' }],
+    run: (t, s) => viaM(t, OPS.fromEx.m('Prev', s, t)),
+    m: (p, s, t) => { const c = t ? exRule(t, s) : 'Text.Start(' + mF(s.cols[0]) + ', 3)'; return 'Table.AddColumn(' + p + ', ' + mStr(String(s.name || 'Örnekten').trim()) + ', each ' + c + ')'; },
+    what: 'Beklenen sonucu yazarsın, kural aranır. Lab küçük bir kural listesi dener: kopya, harf durumu, baştan ve sondan parça, sınırlayıcı, uzunluk, tarih parçaları. Gerçek özellik çok daha geniştir. Örnek birden çok kurala uyuyorsa ikinci örnek ver, üretilen M’yi mutlaka oku.' }
+});
+/* Örneklerden sütun: dürüst, küçük kural arayıcı. Sırayla dener; örnekle uyan ilk kuralı döndürür. */
+function exRule(t, s) {
+  const i = t.cols.findIndex(c => c.name === s.cols[0]); if (i < 0) throw ERR('Expression.Error: sütun bulunamadı.'); const c = mF(s.cols[0]);
+  const ex = [s.ex1, s.ex2].map(x => (x == null ? '' : String(x))).filter((x, j) => j === 0 || x !== '');
+  if (!ex[0]) throw ERR('İlk satır için beklenen değeri yaz.');
+  const vals = t.rows.slice(0, ex.length).map(r => r[i]);
+  const cand = [];
+  if (vals.some(v => v instanceof Date)) [['Date.Year', 'Date.Year(' + c + ')', d => String(d.getUTCFullYear())], ['Date.Month', 'Date.Month(' + c + ')', d => String(d.getUTCMonth() + 1)], ['Date.Day', 'Date.Day(' + c + ')', d => String(d.getUTCDate())], ['Q', 'Date.QuarterOfYear(' + c + ')', d => String(Math.floor(d.getUTCMonth() / 3) + 1)], ['MN', 'Date.MonthName(' + c + ', "tr-TR")', d => ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'][d.getUTCMonth()]]].forEach(x => cand.push(x));
+  else {
+    const str = v => (v === null || v === undefined ? '' : String(v));
+    cand.push(['copy', c, str], ['up', 'Text.Upper(' + c + ', "tr-TR")', v => trUp(str(v))], ['lo', 'Text.Lower(' + c + ', "tr-TR")', v => trLo(str(v))], ['pr', 'Text.Proper(' + c + ', "tr-TR")', v => proper(str(v))], ['tr', 'Text.Trim(' + c + ')', v => str(v).trim()], ['len', 'Text.Length(' + c + ')', v => String(str(v).length)]);
+    const f = str(vals[0]); [' ', '-', '@', '.', '/', ',', ';'].forEach(d => { if (f.includes(d)) { cand.push(['b' + d, 'Text.BeforeDelimiter(' + c + ', ' + mStr(d) + ')', v => { const x = str(v), p = x.indexOf(d); return p < 0 ? x : x.slice(0, p); }], ['a' + d, 'Text.AfterDelimiter(' + c + ', ' + mStr(d) + ')', v => { const x = str(v), p = x.indexOf(d); return p < 0 ? '' : x.slice(p + d.length); }]); } });
+    for (let n = 1; n <= Math.min(20, f.length); n++) cand.push(['s' + n, 'Text.Start(' + c + ', ' + n + ')', v => str(v).slice(0, n)], ['e' + n, 'Text.End(' + c + ', ' + n + ')', v => str(v).slice(-n)]);
+  }
+  const hit = cand.filter(k => vals.every((v, j) => v !== null && !isErr(v) && k[2](v) === ex[j]));
+  if (!hit.length) throw ERR('Örneğe uyan bir kural bulunamadı. Lab yalnız küçük bir kural listesi dener; gerçek Column from Examples daha geniştir. Özel sütun ile M yaz.');
+  return hit[0][1];
+}
+
+/* ---------- Görünüm sekmesi: sütun profili gerçek veriden ---------- */
+function profile(t, name) {
+  const i = t.cols.findIndex(c => c.name === name); if (i < 0) return null;
+  const vals = t.rows.map(r => r[i]); const er = vals.filter(isErr).length, em = vals.filter(v => !isErr(v) && isBlank(v)).length;
+  const good = vals.filter(v => !isErr(v) && !isBlank(v)); const freq = new Map(); vals.forEach(v => { if (isErr(v)) return; const k = keyOf(v); if (!freq.has(k)) freq.set(k, { v, n: 0 }); freq.get(k).n++; });
+  const top = [...freq.values()].sort((a, b) => b.n - a.n);
+  const num = good.filter(v => typeof v === 'number'); const allNum = good.length > 0 && num.length === good.length;
+  const sorted = good.filter(v => typeof v !== 'object' || v instanceof Date).slice().sort((a, b) => { const x = a instanceof Date ? a.getTime() : a, y = b instanceof Date ? b.getTime() : b; return typeof x === typeof y ? (x < y ? -1 : x > y ? 1 : 0) : (typeof x < typeof y ? -1 : 1); });
+  const mean = allNum ? num.reduce((a, b) => a + b, 0) / num.length : null;
+  return { count: vals.length, valid: good.length, err: er, empty: em, distinct: freq.size, unique: top.filter(x => x.n === 1).length, min: sorted.length ? sorted[0] : null, max: sorted.length ? sorted[sorted.length - 1] : null, avg: mean, sd: allNum && num.length > 1 ? Math.sqrt(num.reduce((a, b) => a + (b - mean) * (b - mean), 0) / (num.length - 1)) : null, zero: allNum ? num.filter(v => v === 0).length : null, top: top.slice(0, 8), type: t.cols[i].type };
+}
 
 /* ---------- Alıştırmalar ---------- */
 const S = (op, cols, extra) => Object.assign({ op, cols: cols || [] }, extra || {});
@@ -311,5 +474,5 @@ function exSource(e) {
 }
 function target(e) { const s = exSource(e); return run(s, e.sol).table; }
 
-W.PBI_PQ = { OPS, TYPES, SOURCES, run, mCode, quality, compare, exSource, target, isErr, isBlank, fmtDate, keyOf, source };
+W.PBI_PQ = { OPS, TYPES, SOURCES, run, mCode, quality, profile, compare, exSource, target, isErr, isBlank, fmtDate, keyOf, source };
 })(window);

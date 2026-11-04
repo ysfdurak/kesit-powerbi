@@ -260,11 +260,12 @@ let CUR = null;
 function curX() { if (CUR) return CUR; const l = LMAP[S.id], i = S.step - 1; const k = exKey(l, i); return { l, i, e: l.ex[i], k, onSolved: q => solved(l, i, k, q) }; }
 /* Yanlış denemeler ders bazında sayılır; Profil “en çok zorlandığın konular”ı buradan gösterir */
 function noteWrong(CX) { if (CX.onWrong) CX.onWrong(); const lid = CX.l ? CX.l.id : (CX.e && CX.e.lesson); if (lid && !String(CX.k || '').startsWith('mt:')) { P.weak = P.weak || {}; P.weak[lid] = (P.weak[lid] || 0) + 1; save(); } }
-function exView(e, k, onSolved, extra) { CUR = Object.assign({ e, k, onSolved: onSolved || (() => {}) }, extra || {}); return e.t === 'mc' ? mcView(e, k) : e.t === 'pq' ? window.PBI_PQUI.lessonView(e, k) : daxView(e, k); }
+function exView(e, k, onSolved, extra) { CUR = Object.assign({ e, k, onSolved: onSolved || (() => {}) }, extra || {}); return e.t === 'mc' ? mcView(e, k) : e.t === 'pq' ? window.PBI_PQUI.lessonView(e, k) : e.t === 'mcode' ? window.PBI_PQUI.mLessonView(e, k) : daxView(e, k); }
 function exMount() { const c = CUR; if (!c) return; mountEx(c.e, c.k, c.onSolved); }
 function mountEx(e, k, onSolved) {
   if (!e || e.t === 'mc') return;
   if (e.t === 'pq') { window.PBI_PQUI.mountLesson(e, k, () => onSolved()); return; }
+  if (e.t === 'mcode') { window.PBI_PQUI.mMount(e, k, q => onSolved(q)); return; }
   const init = P.drafts[k] != null ? P.drafts[k] : (e.start || (e.t === 'query' ? 'EVALUATE\n' : ''));
   ED = makeEditor($('#ed'), init, () => checkEx(true), e.t === 'query');
   ED.onChange = v => { P.drafts[k] = v; save(); };
@@ -286,6 +287,7 @@ function render() {
   }
 }
 function enhance(root) {
+  if (window.PBI_PQUI && window.PBI_PQUI.mBlocks) window.PBI_PQUI.mBlocks(root);
   root.querySelectorAll('pre.dax').forEach(pre => {
     if (pre.dataset.done) return; pre.dataset.done = 1; const src = pre.textContent; pre.innerHTML = hl(src);
     const wrap = document.createElement('div'); wrap.className = 'codebox'; pre.parentNode.insertBefore(wrap, pre); wrap.appendChild(pre);
@@ -329,11 +331,11 @@ function bindMarks() { if (!tipsBound) { V.bindTips(document.body); tipsBound = 
 
 /* ---------- Ana sayfa ---------- */
 function lessonRow(l, ctx) {
-  const st = lessonState(l), n = (l.ex || []).length; const nd = (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, npq = (l.ex || []).filter(e => e.t === 'pq').length;
+  const st = lessonState(l), n = (l.ex || []).length; const nd = (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, npq = (l.ex || []).filter(e => e.t === 'pq' || e.t === 'mcode').length;
   return '<button class="litem" data-lesson="' + l.id + '"' + (ctx ? ' data-ctx="' + ctx + '"' : '') + '><span class="check ' + (st === 'done' ? 'done' : st === 'part' ? 'part' : '') + '">' + (st === 'done' ? ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(l.title) + '</b><small>' + esc(l.sum || '') + '</small></span><span class="row" style="gap:6px;flex-wrap:nowrap">' + (nd ? '<span class="chip dx">' + nd + ' DAX</span>' : '') + (npq ? '<span class="chip pqc">' + npq + ' PQ</span>' : '') + '<span class="chip">' + (n ? n + ' alıştırma' : 'okuma') + '</span>' + (isSkipped(l) ? '<span class="chip skipc" title="Seviye testinde geçtin. Sıradaki dersten atlanır, ilerlemeye sayılmaz.">Atlandı</span>' : '') + lvBadge(l.lvl) + '</span></button>';
 }
 function counts() {
-  const ex = LESSONS.reduce((a, l) => a + (l.ex || []).length, 0), dx = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, 0), pq = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'pq').length, 0);
+  const ex = LESSONS.reduce((a, l) => a + (l.ex || []).length, 0), dx = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, 0), pq = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'pq' || e.t === 'mcode').length, 0);
   const cmds = (window.PBI_MENUS || []).reduce((a, g) => a + g.tabs.reduce((b, t) => b + t.cmds.length, 0), 0);
   return { ex, dx, pq, cmds, pat: (window.PBI_PATTERNS || []).length, dash: (window.PBI_DASHES || []).length, tricks: (window.PBI_TRICKS || []).length };
 }
@@ -421,12 +423,12 @@ function viewLesson() {
   let h = '<div class="wrap" style="gap:18px"><div class="lhead"><div class="crumbs">' + (S.ctx && PMAP[S.ctx] ? '<button data-go="path" data-id="' + S.ctx + '">' + esc(PMAP[S.ctx].name) + '</button>' : '<button data-go="curr">Dersler</button>') + '<span>/</span>' + lvBadge(l.lvl) + '<span>' + esc(l.mod) + '</span></div>';
   if (S.ctx && PMAP[S.ctx] && PMAP[S.ctx].lessons.includes(l.id)) { const arr = PMAP[S.ctx].lessons, pos = arr.indexOf(l.id), dn = arr.filter(x => P.done[x]).length; let msn = ''; if (window.PBI_CAREER) { const ms = window.PBI_CAREER.milestones(PMAP[S.ctx]); const mi = ms.findIndex(m => m.ids.includes(l.id)); if (mi >= 0 && ms.length > 1) msn = ' · Aşama ' + (mi + 1) + ': ' + ms[mi].t; } h += '<div class="lctx"><span>' + esc(PMAP[S.ctx].name) + ' ' + (pos + 1) + '/' + arr.length + msn + '</span><span class="bar"><i style="width:' + Math.round(dn / arr.length * 100) + '%"></i></span></div>'; }
   h += '<div class="row" style="justify-content:space-between;align-items:end"><h1 style="font-size:clamp(1.5rem,3.4vw,2.1rem)">' + esc(l.title) + '</h1><span class="muted" style="font-size:.85rem" title="Tahmin: okuma ve alıştırmalar dahil">' + dkAralik(l) + '</span></div>';
-  h += '<div class="steps"><button data-step="0" aria-current="' + (S.step === 0) + '" class="' + (P.seen[l.id] ? 'done' : '') + '">Konu</button>' + ex.map((e, i) => '<button data-step="' + (i + 1) + '" aria-current="' + (S.step === i + 1) + '" class="' + (P.ex[exKey(l, i)] ? 'done' : '') + '" aria-label="Alıştırma ' + (i + 1) + '">' + (i + 1) + (e.t === 'pq' ? '<i class="dxdot pq" title="Power Query"></i>' : e.t !== 'mc' ? '<i class="dxdot" title="DAX"></i>' : '') + '</button>').join('') + '</div></div>';
+  h += '<div class="steps"><button data-step="0" aria-current="' + (S.step === 0) + '" class="' + (P.seen[l.id] ? 'done' : '') + '">Konu</button>' + ex.map((e, i) => '<button data-step="' + (i + 1) + '" aria-current="' + (S.step === i + 1) + '" class="' + (P.ex[exKey(l, i)] ? 'done' : '') + '" aria-label="Alıştırma ' + (i + 1) + '">' + (i + 1) + (e.t === 'pq' || e.t === 'mcode' ? '<i class="dxdot pq" title="' + (e.t === 'pq' ? 'Power Query' : 'M kodu') + '"></i>' : e.t !== 'mc' ? '<i class="dxdot" title="DAX"></i>' : '') + '</button>').join('') + '</div></div>';
   if (S.step === 0) {
     h += '<article class="panel theory">' + l.body + '</article><div class="pager"><span></span>' + (ex.length ? '<button class="btn pri" data-step="1">Alıştırmalara geç (' + ex.length + ')</button>' : (P.done[l.id] ? nextBtn(l) : '<button class="btn pri" data-act="read-done">Okudum, dersi tamamla</button>')) + '</div>';
   } else if (S.step <= ex.length) {
     const e = ex[S.step - 1], k = exKey(l, S.step - 1);
-    h += e.t === 'mc' ? mcView(e, k) : e.t === 'pq' ? window.PBI_PQUI.lessonView(e, k) : daxView(e, k);
+    h += e.t === 'mc' ? mcView(e, k) : e.t === 'pq' ? window.PBI_PQUI.lessonView(e, k) : e.t === 'mcode' ? window.PBI_PQUI.mLessonView(e, k) : daxView(e, k);
     h += '<div class="pager"><button class="btn" data-step="' + (S.step - 1) + '">Geri</button>' + (window.PBI_PRACTICE_UI ? window.PBI_PRACTICE_UI.reportBtn('Ders ' + l.id + ' · alıştırma ' + S.step) : '') + (S.step < ex.length ? '<button class="btn" data-step="' + (S.step + 1) + '">Sonraki alıştırma</button>' : (P.done[l.id] ? nextBtn(l) : '<button class="btn" data-step="0">Konuya dön</button>')) + '</div>';
   }
   return h + '</div>';
@@ -449,6 +451,7 @@ function optOrder(q) {
 }
 /* Kademeli ipuçları: yazarın ipucu → kullanılan fonksiyonlar ve ölçüler → çözümün iskeleti */
 function hintsOf(e) {
+  if (e.t === 'mcode') { const fns = []; (String(e.sol).match(/\b[A-Z][A-Za-z0-9]*\.[A-Z][A-Za-z0-9.]*/g) || []).forEach(f => { if (!fns.includes(f)) fns.push(f); }); return [e.hint ? esc(e.hint) : 'Hedef sonucu aç, önce sonucun türüne bak: tablo mu, liste mi, tek değer mi?', fns.length ? 'Çözümde kullanılan işlevler: <code>' + fns.map(esc).join('</code>, <code>') + '</code>.' : 'Bu görev yalnız dil öğeleriyle çözülür: let, each, işleçler.', 'Çözüm ' + String(e.sol).split('\n').length + ' satır. Takıldıysan bir adım yaz, Çalıştır ile ara sonucu gör.']; }
   if (e.t === 'pq') { const O = window.PBI_PQ.OPS; const names = []; e.sol.forEach(s => { if (!names.includes(O[s.op].name)) names.push(O[s.op].name); }); return [e.hint ? esc(e.hint) : 'Hedef tabloyu aç ve kendi tablonla sütun sütun karşılaştır.', 'Örnek çözüm ' + e.sol.length + ' adım; kullanılan komutlar: ' + names.map(n => '<b>' + esc(n) + '</b>').join(', ') + '.', 'Adımlar sırasıyla: ' + e.sol.map(s => '<code>' + esc(O[s.op].name) + (s.cols && s.cols.length ? ' → ' + s.cols.join(', ') : '') + '</code>').join(' · ')]; }
   const out = []; const sol = String(e.sol || '');
   if (e.hint) { const ch = CHK.cleanHint(e); out.push(ch === e.hint ? esc(ch) : ch); }
