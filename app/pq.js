@@ -56,7 +56,7 @@ function profilePanel(t) {
   const val = v => v === null || v === undefined ? '-' : v instanceof Date ? Q.fmtDate(v) : typeof v === 'number' ? v.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : esc(String(v));
   const rows = [['Sayı', f.count], ['Geçerli', f.valid], ['Hata', f.err], ['Boş', f.empty], ['Ayrı', f.distinct], ['Tek', f.unique], ['En küçük', val(f.min)], ['En büyük', val(f.max)]].concat(f.avg !== null ? [['Ortalama', val(f.avg)], ['Standart sapma', val(f.sd)], ['Sıfır', f.zero]] : []);
   const mx = f.top.length ? f.top[0].n : 1;
-  return '<div class="pqprof"><div><b>Sütun istatistikleri · ' + esc(c) + '</b><table>' + rows.map(r => '<tr><th>' + r[0] + '</th><td>' + r[1] + '</td></tr>').join('') + '</table></div><div><b>Değer dağılımı</b>' + f.top.map(x => '<div class="pqbar"><span>' + (x.v === null || x.v === undefined || x.v === '' ? '<i>boş</i>' : val(x.v)) + '</span><i style="width:' + (x.n / mx * 100) + '%"></i><em>' + x.n + '</em></div>').join('') + '</div></div>';
+  return '<div class="pqprof"><div><b>Sütun istatistikleri · ' + esc(c) + '</b><table>' + rows.map(r => '<tr><th>' + r[0] + '</th><td>' + r[1] + '</td></tr>').join('') + '</table></div><div><b>Değer dağılımı</b>' + f.top.map(x => '<div class="pqbar"><span>' + (x.v === null || x.v === undefined || x.v === '' ? '<i>boş</i>' : val(x.v)) + '</span><i style="width:' + (x.n / mx * 100) + '%"></i><em>' + x.n + '</em></div>').join('') + '<p class="muted" style="margin:8px 0 0;font-size:.76rem">Sayılar bu tablonun tüm satırlarından hesaplandı. Gerçek düzenleyici varsayılan olarak ilk 1000 satıra bakar; durum çubuğundan tüm veri kümesine geçilir.</p></div></div>';
 }
 function form(cols) {
   if (!E.form) return ''; const op = OPS[E.form]; const fv = E.fv;
@@ -125,7 +125,7 @@ function viewPQ() {
   h += '<div class="pqsrcs" role="tablist">' + Object.keys(Q.SOURCES).map(id => '<button role="tab" data-pqsrc="' + id + '" aria-selected="' + (PQS.src === id) + '"><b>' + esc(Q.SOURCES[id].name) + '</b><small>' + Q.SOURCES[id].table.rows.length + ' satır · ' + Q.SOURCES[id].table.cols.length + ' sütun</small></button>').join('') + '</div>';
   h += '<p class="muted" style="margin:0;max-width:80ch">' + esc(Q.SOURCES[PQS.src].desc) + '</p><div class="panel pqwrap" id="pqHost"></div>';
   h += mFreeHTML();
-  h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Derslerdeki alıştırmalar</span><h2>Hedef tabloya ulaş, kontrol ettir</h2></div></div><div class="panel lessons">' + exs.map(x => '<button class="litem" data-lesson="' + x.l.id + '" data-pqstep="' + (x.i + 1) + '"><span class="check ' + (P.ex[x.l.id + ':' + x.i] ? 'done' : '') + '">' + (P.ex[x.l.id + ':' + x.i] ? C.ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(x.e.q.replace(/<[^>]+>/g, '').split('.')[0]) + '</b><small>' + esc(x.l.title) + ' · ' + esc(Q.SOURCES[x.e.src].name) + ' · örnek çözüm ' + x.e.sol.length + ' adım</small></span>' + C.lvBadge(x.l.lvl) + '</button>').join('') + '</div></section>';
+  h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Derslerdeki alıştırmalar</span><h2>Hedef tabloya ulaş, kontrol ettir</h2></div></div><div class="panel lessons">' + exs.map(x => '<button class="litem" data-lesson="' + x.l.id + '" data-pqstep="' + (x.i + 1) + '"><span class="check ' + (P.ex[x.l.id + ':' + x.i] ? 'done' : '') + '">' + (P.ex[x.l.id + ':' + x.i] ? C.ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(x.e.q.replace(/<[^>]+>/g, '').split('.')[0]) + '</b><small>' + esc(x.l.title) + ' · ' + esc(x.e.t === 'mcode' ? 'M kodu' : Q.SOURCES[x.e.src].name) + (x.e.t === 'mcode' ? '' : ' · örnek çözüm ' + x.e.sol.length + ' adım') + '</small></span>' + C.lvBadge(x.l.lvl) + '</button>').join('') + '</div></section>';
   h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Komut listesi</span><h2>Her komut ne yapar?</h2></div></div><div class="fgrid">' + Object.keys(OPS).map(k => '<div class="panel fcard"><b>' + esc(OPS[k].name) + ' <span class="chip">' + esc(OPS[k].group) + '</span></b><p>' + esc(OPS[k].what) + '</p><code class="syn">' + esc(OPS[k].m('#"Önceki Adım"', sample(k))) + '</code></div>').join('') + '</div></section>';
   return h + '</div>';
 }
@@ -256,7 +256,7 @@ function mCheck(silent) {
   if (!c.ok) { res.innerHTML = '<div class="msg err" role="alert"><b>Henüz değil</b>' + esc(c.msg) + '</div>'; if (!silent) C.noteWrong(C.curX()); return; }
   const missing = (e.must || []).filter(f => !stripC(src).includes(f));
   if (missing.length) { res.innerHTML = '<div class="msg info"><b>Sonuç doğru, ama görev başka</b>Bu görevde şu işlevi kullan: ' + missing.map(esc).join(', ') + '.</div>'; return; }
-  res.innerHTML = '<div class="msg ok"><b>Doğru!</b>Kodun hedefle aynı sonucu üretiyor. Unutma: Burada doğrulayan bir alt küme yorumlayıcısı; Power BI Desktop’ta da aynı kod çalışır, ama bağlayıcı ve katlama davranışını yalnız orada görürsün.</div>';
+  res.innerHTML = '<div class="msg ok"><b>Doğru!</b>Kodun hedefle aynı sonucu üretiyor. Burada doğrulayan, küçük bir alt küme yorumlayıcısı; son sözü Power BI Desktop söyler. Bağlayıcı ve katlama davranışı yalnız orada görülür.</div>';
   if (onSolved) onSolved(silent);
 }
 document.addEventListener('click', ev => {

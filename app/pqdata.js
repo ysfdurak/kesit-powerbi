@@ -254,7 +254,7 @@ const SOURCES = {
       ['104', 'ALİ ŞAHİN', null, '2024-01-09'],
       ['105', 'Elif Çelik', 'elif.celik@icloud.com', '2024-02-30']
     ]) },
-  satis: { name: 'Satışlar (temiz, türleri belli)', qn: 'Satislar', desc: 'Temizlenmiş sipariş tablosu: tarih, sayı ve metin sütunları doğru türde. Sütun Ekle komutları ve M alıştırmaları için.',
+  satis: { name: 'Satışlar (temiz, türleri belli)', qn: 'Satislar', desc: 'Temizlenmiş sipariş tablosu: tarih, sayı ve metin sütunları doğru türde. Sütun ekle komutları ve M alıştırmaları için.',
     m: 'Sql.Database("srv", "AnadoluMarket"){[Schema = "dbo", Item = "Satislar"]}[Data]',
     table: { cols: [{ name: 'SiparisNo', type: 'int' }, { name: 'Tarih', type: 'date' }, { name: 'Şehir', type: 'text' }, { name: 'Kategori', type: 'text' }, { name: 'Adet', type: 'int' }, { name: 'Tutar', type: 'number' }], rows: [
       [1001, D(2024, 1, 5), 'İstanbul', 'Elektronik', 2, 2598], [1002, D(2024, 1, 9), 'Ankara', 'Kitap', 3, 435], [1003, D(2024, 1, 21), 'İzmir', 'Giyim', 1, 780],

@@ -83,6 +83,7 @@ node yolval.js                # öğrenme yolları: sıra, aşama, belge şartı
 node termval.js               # ürün dili: eski adlar (patika, Stüdyo, yer imi…) görünür metinde kalmadı
 node extval.js /home/claude/pbi/x_*.js             # ders genişletme dosyaları (şablon A)
 for f in ilgaz kanat lezzet pusula pedal; do node vdval.js /home/claude/pbi/vd_$f.js | tail -1; done   # vaka paketleri: DAX = beklenen = SQLite
+node mval.js                  # M alt küme yorumlayıcısı: resmî Learn örnekleri, desteklenmeyen işlevde hata, Lab komutu ile M çapraz denetimi, ders kod blokları, mcode çözümleri
 node longest.js               # şık uzunluğu ipucu vermesin: doğru şık en uzun ve en kısa %15-35, yanlış şık yapay uzun değil (c25, c26, Pratik Senaryo, Sınav ek); son satır SORUN 0. Yeni içerik dosyasını GROUPS listesine ekle
 node dups.js                  # yinelenen adlar (bilgi)
 ```
@@ -100,6 +101,8 @@ node $S/car.js           # kariyer: hedef, patika, bitirme projesi, belge, veri 
 W=400 node $S/dt.js      # dashboard sayfaları belirli genişlikte
 node $S/vdui.js          # vaka veri setleri sayfaları, indirme, işaretleme (1280 ve 390)
 node $S/pf.js            # portföy özellikleri: karşılama, Hakkında, geri bildirim, Giscus, yedek/birleştirme
+node $S/pilot.js 1280        # seviye testi, pilot özeti (PORT değişkeni ile)
+node $S/mlab.js 1280         # Power Query Lab, Görünüm, M editörü, mcode alıştırması (390 için de çalıştır)
 node $S/newf.js          # arama, kısayollar, hata ipuçları, dashboard seçici, belgeler, geri tuşu
 node $S/slow.js          # 700 ms'yi aşan alıştırma çözümleri (node, sunucu gerekmez)
 ```
