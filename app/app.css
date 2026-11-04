@@ -1099,3 +1099,4 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 
 .ic{color:#000}
 .ed-top{color:#A8A392}
+.ic[style*="--s6"]{color:#fff}@media (prefers-color-scheme:light){.ic[style*="--s7"]{color:#fff}}[data-theme="light"] .ic[style*="--s7"]{color:#fff}[data-theme="dark"] .ic[style*="--s7"]{color:#000}
