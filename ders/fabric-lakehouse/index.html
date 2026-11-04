@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari</h1><p class="st-l">Lakehouse’un içi, veri yükleme yolları, SQL analiz uç noktasının yapabildikleri ve yapamadıkları, lakehouse mi ambar mı eventhouse mu, tunç-gümüş-altın düzeni ve dosya bölümleme.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-fabric-lakehouse">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Lakehouse, gölün esnekliğini ambarın sorgu kolaylığıyla birleştirir: her türlü dosyayı koyarsın, Delta tablolarını hem Spark hem T-SQL ile sorgularsın. Bu ders lakehouse’u kurmayı değil, <b>ne zaman doğru seçim olduğunu ve tuzaklarını</b> anlatır. Elle kurulum adımları “Fabric’e veri getirmek” ve “Lakehouse ödevi” derslerinde.</p>
 <h2>İki bölüm</h2>
@@ -50,6 +51,6 @@ ROW(
 <p>DP-600 dosya bölümlemeyi ayrıca sorar. Bölümleme, sorgunun gereksiz dosyaları atlamasını sağlar: sorgular çoğunlukla ay süzüyorsa aya göre bölmek yardımcı olur. Düşük kardinaliteli bir sütun seç; günlük ve müşteri düzeyi gibi yüksek kardinalite çok küçük dosya üretir. Küçük dosya sorunu ve <code>OPTIMIZE</code>, <code>VACUUM</code> “Lakehouse ödevi” dersinde. Direct Lake’in dosya ve satır grubu sınırları “Fabric’te anlam modeli” dersinde.</p>
 <div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Denemede “Lakehouse ödevi”ni yap. SQL uç noktasında <code>INSERT</code> dene, hatayı oku. Sonuç için beklenen değerler o derste.</div>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-fabric-lakehouse">Alıştırmalara geç (8)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-lakehouse/1">Alıştırmalara geç (8)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../fabric-onelake/">← OneLake: tek veri gölü, kısayol, yansıtma ve güvenlik</a><a href="../fabric-data-factory/">Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin? →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

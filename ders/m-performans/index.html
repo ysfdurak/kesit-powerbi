@@ -1,0 +1,64 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sorgu katlama, Table.Buffer, performans, Value.NativeQuery | Kesit Power BI</title><meta name="description" content="Tam, kısmi ve hiç katlama; katlamayı bozan adımlar; Table.Buffer ve List.Buffer ne zaman; Sorgu tanılaması; Value.NativeQuery ile parametreli SQL ve…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-performans/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Sorgu katlama, Table.Buffer, performans, Value.NativeQuery"><meta property="og:description" content="Tam, kısmi ve hiç katlama; katlamayı bozan adımlar; Table.Buffer ve List.Buffer ne zaman; Sorgu tanılaması; Value.NativeQuery ile parametreli SQL ve…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-performans/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sorgu katlama, Table.Buffer, performans, Value.NativeQuery","description":"Tam, kısmi ve hiç katlama; katlamayı bozan adımlar; Table.Buffer ve List.Buffer ne zaman; Sorgu tanılaması; Value.NativeQuery ile parametreli SQL ve…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-performans/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Veri Hazırlama</span><h1>Sorgu katlama, Table.Buffer, performans, Value.NativeQuery</h1><p class="st-l">Tam, kısmi ve hiç katlama; katlamayı bozan adımlar; Table.Buffer ve List.Buffer ne zaman; Sorgu tanılaması; Value.NativeQuery ile parametreli SQL ve riskleri.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-performans">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><div class="warn"><b>Bu dersin sınırı</b>Yorumlayıcı kaynağa bağlanmadığı için katlama burada gözlenemez. Bu ders kavram ve karar öğretir. Kod blokları salt okunurdur ya da sonucu değil söz dizimini gösterir. Gerçek sınama için Power BI Desktop ve bir SQL kaynağı gerekir.</div>
+<h2>Sorgu katlama</h2>
+<p>Learn: Sorgu katlama, Power Query’nin dönüşümleri tek bir kaynak sorgusuna (örneğin tek bir <code>SELECT</code>) çevirmesidir. DirectQuery ve Dual tablolarda zorunludur. Import’ta en iyi yenileme performansını verir. Üç sonuç vardır: tam katlama, kısmi katlama (bir noktaya kadar kaynak, sonrası motor), katlama yok.</p>
+<pre class="m">let
+    Kaynak = Sql.Database("srv", "AnadoluMarket"),
+    Satis = Kaynak{[Schema = "dbo", Item = "Satislar"]}[Data],
+    Filtre = Table.SelectRows(Satis, each [Tarih] >= #date(2024, 1, 1)),   // katlanır
+    Sutun = Table.SelectColumns(Filtre, {"Tarih", "Tutar"}),               // katlanır
+    Grup = Table.Group(Sutun, {"Tarih"}, {{"T", each List.Sum([Tutar])}}), // katlanır
+    Dizin = Table.AddIndexColumn(Grup, "Sıra", 1, 1)                       // çoğu kaynakta katlanmaz
+in
+    Dizin</pre>
+<h2>Nasıl anlarsın?</h2>
+<ul><li>Adıma sağ tık, <b>View Native Query</b>. Soluk ise o adım büyük olasılıkla katlanmıyordur; ama kesin kanıt değildir.</li>
+<li>Power Query Online’da <b>katlama göstergeleri</b> adım yanında durum gösterir.</li>
+<li><b>Araçlar → Diagnose Step</b> kaynağa gönderilen sorguyu <code>Data Source Query</code> sütununda gösterir (bağlayıcıya bağlıdır).</li>
+<li>Kaynak tarafında SQL Profiler ya da benzeri izleme kesin sonuç verir.</li></ul>
+<h2>Katlamayı koruyan düzen</h2>
+<ol><li>Filtre ve sütun seçimini en başa al. Learn: akış işlemleri önce, pahalı işlemler sona.</li>
+<li>Katlanmayan adımı bul, sonrasındaki adımları önüne alabiliyorsan al.</li>
+<li>Özel M fonksiyonu, Text.Proper gibi kaynakta karşılığı olmayan işlevler, farklı kaynakları birleştirmek, Dizin ve Table.Buffer katlamayı genellikle bozar.</li>
+<li>Bir SELECT ile yapılabilecek işi görünüm olarak veri tabanına taşı.</li>
+<li>Artımlı yenileme filtre katlanmazsa anlamını yitirir; önce katlamayı doğrula.</li></ol>
+<h2>Table.Buffer ve List.Buffer</h2>
+<p><code>Table.Buffer</code> tabloyu belleğe alır, değerlendirme sırasında dış değişikliklerden yalıtır. Learn’ün uyarısı açık: <b>hızlandırmayabilir; hepsini okuyup bellekte tutmak yavaşlatabilir ve sonraki adımların katlanmasını engeller.</b> Yalnız katlamayı durdurmak istiyorsan <code>Table.StopFolding</code> var. Buffer sığdır: hücredeki kayıt, liste ve tablo içeriklerini zorlamaz.</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Durum</th><th>Buffer?</th></tr></thead><tbody>
+<tr><td>Sıralı sonucu sabitleyip sonra Distinct ya da gruplama</td><td>Evet, sonuç sırası kritikse</td></tr>
+<tr><td>Bir sorguyu satır fonksiyonunda defalarca okuyorsun</td><td>Evet: List.Buffer ya da Table.Buffer ile tek okuma</td></tr>
+<tr><td>“Yavaş” diye rastgele her adıma</td><td>Hayır: bellek artar, katlama bozulur</td></tr>
+<tr><td>Veri kaynağı katlıyor, filtre sonra gelecek</td><td>Hayır: tüm satırları çeker</td></tr>
+</tbody></table></div>
+<h2>Sorgu tanılaması</h2>
+<p><b>Araçlar → Start Diagnostics</b>, yenile, <b>Stop Diagnostics</b>. İki sorgu gelir: özet ve ayrıntılı. <code>Exclusive duration (%)</code> nerede vakit geçtiğini gösterir; yalnız aynı Id içinde toplanır. Power Query filtre listeleri ve üst veri için de sorgu çalıştırdığından tekrarlar görürsün.</p>
+<h2>Value.NativeQuery</h2>
+<p>Elle SQL gerektiğinde Learn’ün önerdiği yol budur: değerleri metne eklemek yerine parametre olarak geçirir.</p>
+<pre class="m">let
+    Source = Sql.Database("server", "database"),
+    Result = Value.NativeQuery(
+        Source,
+        "SELECT * FROM Sales WHERE SalesYear = @year",
+        [year = 2024]
+    )
+in
+    Result</pre>
+<ul><li>Sonraki adımlar katlanmaz; mümkün olan her işi sorgunun içine koy.</li>
+<li>Learn’e göre DirectQuery modeli düz <code>SELECT</code> ister: CTE ve saklı yordam olmaz.</li>
+<li>Artımlı yenileme yerel SQL ile çalışmaz: Power Query tüm satırları çekip kendisi süzer.</li>
+<li>Geçerli her ifade çalışır, veri değiştiren ifade dahil. En az yetkili, salt okunur hesap kullan.</li>
+<li>Seçenek kaydı kaynağa özgüdür. SQL için kullanılan <code>[EnableFolding = true]</code> üzerine sonraki adımların katlanması denenir, ama her kaynakta desteklenmez; sayfa bunu kaynağa bırakır.</li>
+<li>Metin birleştirerek SQL kurma: <code>"... WHERE Yil = " &amp; Text.From(x)</code> hem yönetilmesi zordur hem de enjeksiyona açıktır.</li></ul>
+<div class="note"><b>Lab’de dene</b><code>Value.NativeQuery</code> burada “bu alt kümede çalışmaz” der. Bunu <a href="../../">M editöründe</a> görebilirsin.</div>
+<h2>Kısa performans listesi</h2>
+<ul><li>Gereksiz sütunu baştan at: en ucuz iyileştirme budur.</li><li>Filtreyi erken uygula, sıralamayı en sona bırak.</li><li>Başvuru zincirini anla: Learn’e göre başvuru, kaynağı iki kez sorgulatabilir.</li><li>Birleştirmede küçük tarafı tampon yap, anahtarı temizle.</li><li>Geliştirirken ilk N satırla çalış, adımı sonra sil.</li><li>Tasarımdan önce ölç: tanılama yoksa “yavaş” bir his olarak kalır.</li></ul></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-performans/1">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-hata/">← M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri</a><a href="../pq-pivot-devrik/">Pivot, Unpivot ve Transpose: tablonun yönünü değiştirmek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

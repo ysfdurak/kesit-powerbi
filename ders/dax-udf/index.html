@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · İleri DAX</span><h1>DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak</h1><p class="st-l">Neden UDF (kopyala-yapıştır ölçü ve hesaplama gruplarıyla karşılaştırma), DAX sorgu görünümünde DEFINE FUNCTION ile tanımlayıp EVALUATE ile denemek, modele kaydetmek ve TMDL, imza tasarımı, parametre türleri, val ve expr geçiş modlarının bağlama etkisi, sınırlar.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-dax-udf">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Büyüyen bir modelde aynı mantık onlarca ölçüde tekrar eder: “geçen yıla göre değişim”, “payda sıfırsa boş döndür”, “şu kanalın payı”. Bir gün tanım değişir (ör. iadeler de düşülecek) ve sen otuz ölçüyü tek tek düzeltirsin; birini unutursun. <b>DAX kullanıcı tanımlı fonksiyonları</b> (user-defined functions, UDF) bu mantığı parametreli bir fonksiyon olarak <b>bir kez</b> yazmanı sağlar.</p>
 <div class="note"><b>Durum</b>UDF'ler 2025'te önizleme olarak geldi. Microsoft Learn'e göre <b>Haziran 2026</b> sürümünden itibaren Power BI Desktop ve Service’te genel kullanımdadır ve veritabanı uyumluluk düzeyi <b>1702</b> ya da üstünü ister. Bu uygulamanın Playground motoru <code>FUNCTION</code> sözcüğünü desteklemez: UDF kodlarını okuyup anla, alıştırmalarda fonksiyon çağrısının <b>açılmış (inline) hâlini</b> yaz.</div>
@@ -102,6 +103,6 @@ SUMMARIZECOLUMNS(Tarih[Yil],
 </ul>
 <div class="tip"><b>Kütüphane gibi düşün</b>Fonksiyonları bir ad alanı altında topla (<code>Finans.</code>, <code>Zaman.</code>), her birine <code>///</code> açıklaması ve <code>@param</code> satırları yaz, bir test sorgusunu PBIP deposunda sakla. Fonksiyonu değiştirince test sorgusunu yeniden çalıştır.</div>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-dax-udf">Alıştırmalara geç (8)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-udf/1">Alıştırmalara geç (8)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../power-platform/">← Power Platform ile eyleme geçmek: Power Automate, Power Apps ve veri uyarıları</a><a href="../finans-tablolar/">Finansal tablolar ve yatırım analizi: bilanço, nakit akışı, oranlar ve sermaye bütçelemesi →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

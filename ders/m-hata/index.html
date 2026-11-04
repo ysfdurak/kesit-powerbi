@@ -1,0 +1,62 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri | Kesit Power BI</title><meta name="description" content="Adım hatası ve hücre hatası, try sonuç kaydı, otherwise ve catch, error ile kendi hatanı üretmek, hata günlüğü sorgusu, try’ın yakalamadığı ertelenmiş…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-hata/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri"><meta property="og:description" content="Adım hatası ve hücre hatası, try sonuç kaydı, otherwise ve catch, error ile kendi hatanı üretmek, hata günlüğü sorgusu, try’ın yakalamadığı ertelenmiş…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-hata/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri","description":"Adım hatası ve hücre hatası, try sonuç kaydı, otherwise ve catch, error ile kendi hatanı üretmek, hata günlüğü sorgusu, try’ın yakalamadığı ertelenmiş…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-hata/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Veri Hazırlama</span><h1>M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri</h1><p class="st-l">Adım hatası ve hücre hatası, try sonuç kaydı, otherwise ve catch, error ile kendi hatanı üretmek, hata günlüğü sorgusu, try’ın yakalamadığı ertelenmiş hata.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-hata">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>İki tür hata</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tür</th><th>Örnek</th><th>Davranış</th></tr></thead><tbody>
+<tr><td><b>Adım düzeyi</b></td><td>Olmayan sütun, olmayan dosya</td><td>Sorgu durur, sonuç yok</td></tr>
+<tr><td><b>Hücre düzeyi</b></td><td>Metni sayıya çevirme, null ile if</td><td>Satır kalır, hücre Error olur. Yüklemede satır hatası sayılır.</td></tr>
+</tbody></table></div>
+<h2>try</h2>
+<p><code>try x</code> kayıt döndürür: başarılıysa <code>[HasError = false, Value = x]</code>, değilse <code>[HasError = true, Error = hata]</code>. Hata da bir kayıttır: <code>Reason</code>, <code>Message</code>, <code>Detail</code>.</p>
+<pre class="m" data-run>let
+    Iyi = try 1 + 1,
+    Kotu = try "a" + 1
+in
+    [Iyi = Iyi[Value], Mesaj = Kotu[Error][Message], Neden = Kotu[Error][Reason]]</pre>
+<div class="note"><b>Belgede küçük bir tutarsızlık</b>M dil belirtimi anlatımda <code>HasErrors</code> yazar, aynı sayfadaki örnekler <code>x[HasError]</code> kullanır. Biz örnekleri izledik.</div>
+<h2>otherwise ve catch</h2>
+<p><code>try x otherwise y</code> hatada y döndürür. Hepsini tek değere bağlamak en kısa yoldur ama nedeni kaybettirir. <code>catch (e) =&gt; ...</code> hata kaydını da verir:</p>
+<pre class="m" data-run>let
+    Ham = #table({"Kod", "Tutar"}, {{"A", "120"}, {"B", "yok"}, {"C", "75"}}),
+    Sayi = Table.AddColumn(Ham, "Sayi", each try Number.From([Tutar]) otherwise null, type number),
+    Neden = Table.AddColumn(Sayi, "Neden", each try Number.From([Tutar]) catch (e) => e[Reason])
+in
+    Neden</pre>
+<h2>error: kendi hatanı üret</h2>
+<p>Bir iş kuralı bozulduğunda sessizce devam etmek yerine hata üret: <code>error "metin"</code>, <code>error Error.Record("Neden", "Mesaj", ayrıntı)</code>. Beklenmeyen durumda durmak, yanlış raporu paylaşmaktan iyidir.</p>
+<pre class="m" data-run>let
+    Kontrol = (t as table) as table =>
+        if Table.IsEmpty(t) then error Error.Record("VeriYok", "Tablo boş geldi", null) else t,
+    Sonuc = try Kontrol(Table.FirstN(Satislar, 0))
+in
+    Sonuc[Error][Reason]</pre>
+<h2>Hata satırlarını bulmak</h2>
+<p><code>Table.SelectRowsWithErrors</code> yalnız hatalı satırları, <code>Table.RemoveRowsWithErrors</code> geri kalanını verir. Uygun desen: asıl sorgu temiz satırları yükler, ikinci sorgu hatalı satırları bir denetim sayfasına yükler. Hataları silmek toplamı sessizce küçültür; hangi satırların gittiğini izle.</p>
+<pre class="m" data-run>let
+    Ham = #table({"Kod", "Tutar"}, {{"A", "120"}, {"B", "yok"}}),
+    Tipli = Table.TransformColumnTypes(Ham, {{"Tutar", type number}})
+in
+    [Temiz = Table.RowCount(Table.RemoveRowsWithErrors(Tipli)), Hatali = Table.RowCount(Table.SelectRowsWithErrors(Tipli))]</pre>
+<h2>Ertelenmiş hata tuzağı</h2>
+<p>M tembeldir: <code>try</code> yalnız o an değerlendirdiğini yakalar. Kayıt alanının içindeki hata, alan okununcaya kadar oluşmaz. Learn’deki örnek:</p>
+<pre class="m" data-notry>let
+    f = (x) => [a = error "bad", b = x],
+    g = try f(42) otherwise 123
+in
+    g[a]  // yine de error "bad"</pre>
+<p>Çözüm, hatayı olduğu yerde ele almak: alanın içinde <code>try</code> kullan.</p>
+<h2>Karar tablosu</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Durum</th><th>Yöntem</th></tr></thead><tbody>
+<tr><td>Bilinen, zararsız değer (“-”, “yok”)</td><td>Tür öncesi Replace Values ile null</td></tr>
+<tr><td>Az sayıda bozuk satır ve kaynak düzeltilemiyor</td><td><code>try ... otherwise null</code> ve hata günlüğü sorgusu</td></tr>
+<tr><td>İş kuralı bozuldu</td><td><code>error</code> ile dur</td></tr>
+<tr><td>Az sayıda hücre hatası</td><td>Replace Errors değil, ayrı sütunda <code>Neden</code>. Hata toplamı etkiler: M’de <code>List.Sum</code> hata verir</td></tr>
+</tbody></table></div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-hata/1">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-klasor/">← Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular</a><a href="../m-performans/">Sorgu katlama, Table.Buffer, performans, Value.NativeQuery →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

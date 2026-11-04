@@ -1,0 +1,54 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M kodu yazmaya başla: değerler, let, each, if, tür sistemi | Kesit Power BI</title><meta name="description" content="Gelişmiş Düzenleyici’de elle yazmak: değer türleri, let ve in, tembel değerlendirme, each ve alt çizgi, if, null kuralları, is ve as."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-yaz/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="M kodu yazmaya başla: değerler, let, each, if, tür sistemi"><meta property="og:description" content="Gelişmiş Düzenleyici’de elle yazmak: değer türleri, let ve in, tembel değerlendirme, each ve alt çizgi, if, null kuralları, is ve as."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-yaz/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"M kodu yazmaya başla: değerler, let, each, if, tür sistemi","description":"Gelişmiş Düzenleyici’de elle yazmak: değer türleri, let ve in, tembel değerlendirme, each ve alt çizgi, if, null kuralları, is ve as.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-yaz/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>M kodu yazmaya başla: değerler, let, each, if, tür sistemi</h1><p class="st-l">Gelişmiş Düzenleyici’de elle yazmak: değer türleri, let ve in, tembel değerlendirme, each ve alt çizgi, if, null kuralları, is ve as.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-yaz">Uygulamada aç, 12 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><p><a href="../m-dili/">M dili</a> dersi arkadaki kodu okumayı öğretti. Bu derste kodu sen yazıyorsun.</p><div class="note"><b>Burada çalışan ne?</b>Alıştırmalar ve Çalıştır düğmeleri, uygulamanın içindeki küçük bir M alt kümesi yorumlayıcısında çalışır. Gerçek Power Query motoru değildir: kaynağa bağlanmaz, sorgu katlamaz. Desteklenmeyen işlevde sonuç uydurmaz, “bu alt kümede yok” der. Hazır sorgular: <code>Satislar</code>, <code>Aylik_Satis</code>, <code>Bayi_Subat</code>, <code>Sehir_Bolge</code>, <code>Hedefler</code>, <code>Urun_Listesi</code>, <code>Musteri_Ham</code>, <code>Bayi_Ocak</code>.</div>
+<h2>Her şey bir değer, her ifade bir sonuç</h2>
+<p>M bir formül dilidir: komut sırası çalıştırmaz, tek bir ifadeyi değerlendirir. Değer türleri: null, logical, number, text, date, datetime, duration, binary, list, record, table, function, type.</p>
+<pre class="m" data-run>let
+    Tutar = 1000,
+    Oran = 0.2,
+    KDV = Tutar * Oran
+in
+    Tutar + KDV</pre>
+<p><code>let</code> ara adlar tanımlar, <code>in</code> sonucu söyler. Uygulanan adımlar listesindeki her satır, let içindeki bir addır. Son adımdan sonra virgül olmaz; bu, elle yazarken en sık hatadır.</p>
+<h2>Tembel değerlendirme</h2>
+<p>M, gereken değeri hesaplar. Sonuçta kullanılmayan adım çalışmaz. Aşağıdaki kod hata vermez, çünkü <code>Kotu</code> hiç istenmiyor:</p>
+<pre class="m" data-run>let
+    Kotu = error "çalışsaydı patlardı",
+    Iyi = 5
+in
+    Iyi</pre>
+<p>Sıra da bağlayıcı değildir: adımlar birbirine adla bağlanır. Yine de okunurluk için sırayla yaz.</p>
+<h2>each ve alt çizgi</h2>
+<p><code>each</code>, tek parametreli fonksiyonun kısaltmasıdır: <code>each [Tutar] * 2</code> ile <code>(_) =&gt; _[Tutar] * 2</code> aynı şeydir. Köşeli parantez, <code>_</code> kaydının alanını okur. Listelerde alan yoktur, doğrudan <code>_</code> yazılır.</p>
+<pre class="m" data-run>let
+    Satirlar = Table.SelectRows(Satislar, each [Şehir] = "Ankara"),
+    Ciftler = List.Select({1, 2, 3, 4}, each Number.IsEven(_))
+in
+    [Tablo = Table.RowCount(Satirlar), Liste = Ciftler]</pre>
+<h2>null kuralları ve if</h2>
+<ul><li>İşlemde null varsa sonuç null’dur: <code>1 + null</code> null döner.</li>
+<li>Karşılaştırmada da: <code>[Tutar] &gt; 1000</code>, Tutar null ise null olur.</li>
+<li><code>if</code> yalnız true ya da false kabul eder. <code>if null then</code> hata verir: <i>We cannot convert the value null to type Logical</i>.</li>
+<li><code>Table.SelectRows</code> null sonucu olan satırı atar; bu yüzden filtre sessizce çalışır, Koşullu sütun ise aynı satırda hata verir.</li>
+<li>Çözüm: önce null’u sına ya da <code>??</code> kullan: <code>([Tutar] ?? 0) &gt; 1000</code>.</li></ul>
+<h2>Metin birleştirme ve tür dönüşümü</h2>
+<p>M örtük tür dönüşümü yapmaz. <code>"Tutar: " &amp; 1250</code> hata verir; <code>Text.From(1250)</code> gerekir. Excel ve DAX alışkanlığının en çok çarptığı yer burasıdır. Büyük küçük harf de önemlidir: <code>table.addcolumn</code> tanınmaz.</p>
+<h2>Tür sistemi: değer türü ve sütun türü</h2>
+<p><code>x is number</code> sınar, <code>x as number</code> doğrular ve uymazsa hata verir. Fonksiyon parametresinde de aynı denetim çalışır. Sütun türü ayrı bir bilgidir: <code>Table.TransformColumnTypes</code> değerleri çevirir, <code>Table.AddColumn(..., type number)</code> ise yalnız etiket koyar, değeri çevirmez.</p>
+<pre class="m" data-run>let
+    Sinama = [Sayi = 5 is number, Metin = "5" is number, BosMetin = null is nullable text],
+    Cevirme = Number.FromText("12.5") + 1
+in
+    [Sinama = Sinama, Cevirme = Cevirme]</pre>
+<h2>Türleri karşılaştırmak</h2><p>Değerin türünü sınamak için <code>x is number</code> ya da <code>Value.Is(x, type number)</code> yaz. Türü bir değer olarak sınamak için <code>Type.Is(Value.Type(x), type number)</code>. <code>Value.Type(1) = type number</code> yazma: M belirtimi tür eşitliğini uygulamaya bırakır, yalın türlerde true dönebileceğini söyler ama <code>(type [a = text]) = (type [a = text])</code> için dönmeyebilir. Bu alt küme yalın türde true verir, kayıt ve tablo türünde tahmin etmez, durur.</p>
+<pre class="m" data-run>[Bir = Type.Is(type text, type nullable text), Iki = Type.Is(type nullable text, type text), Uc = Type.Is(Value.Type(5), type number)]</pre>
+<div class="warn"><b>Kültür</b>Metin sayıya ya da tarihe çevrilirken kültür belirleyicidir: <code>Table.TransformColumnTypes(t, {{"Tarih", type date}}, "tr-TR")</code>. Kültür vermezsen bilgisayarın bölge ayarı kullanılır, aynı kod başka makinede başka sonuç verebilir. Lab kültürsüz durumda tarihi kabul etmez, kültür ister.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-yaz/1">Alıştırmalara geç (12)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-menu-2/">← Power Query menü haritası 2: Dönüştür ve Sütun ekle</a><a href="../m-yapi/">M’de kayıt, liste, tablo: yapıları kurmak ve gezmek →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

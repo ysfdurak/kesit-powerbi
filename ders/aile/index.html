@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Temel · Başlangıç</span><h1>Power BI ailesi ve iş akışı</h1><p class="st-l">Desktop, Service, Mobile, Report Server, lisans türleri ve bir raporun baştan sona yolculuğu.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-aile">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Hangi parça ne işe yarar?</h2>
 <div class="tbl-wrap"><table>
@@ -33,7 +34,19 @@
 <li><b>Yayımla ve paylaş:</b> Service'e gönder, yenilemeyi zamanla, uygulama olarak dağıt.</li>
 </ol>
 <p>Bu uygulamadaki menü de aynı sırayı izler: <b>Anadolu Market modeli</b> (2–3. adım), <b>DAX Playground</b> ve <b>DAX fonksiyonları</b> (4. adım), <b>Görseller ve biçim</b> ile <b>Örnek raporlar</b> (5. adım).</p>
-<section class="deep"><span class="eyebrow">Uzmanlaş</span>
+<h2>Tableau ya da Qlik biliyorsan</h2>
+<p>Kavramlar büyük ölçüde eşlenir, ama birebir değildir. En büyük fark: Power BI’da model ve DAX merkezdedir. Yaklaşık eşleme:</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tableau</th><th>Qlik</th><th>Power BI</th></tr></thead><tbody>
+<tr><td>Data Source, Extract</td><td>Load script, QVD</td><td>Power Query ve anlam modeli, Import</td></tr>
+<tr><td>Live bağlantı</td><td>Direct Discovery</td><td>DirectQuery</td></tr>
+<tr><td>Tableau Prep</td><td>Data Load Editor</td><td>Power Query, Dataflow Gen2</td></tr>
+<tr><td>Calculated Field</td><td>Master Measure, ifade</td><td>Ölçü ya da hesaplanmış sütun</td></tr>
+<tr><td>LOD ifadesi</td><td>Set Analysis, Aggr</td><td>CALCULATE, ALL ailesi, SUMX</td></tr>
+<tr><td>Table Calculation</td><td>Above, RangeSum</td><td>Görsel hesaplama, WINDOW, OFFSET</td></tr>
+<tr><td>Worksheet, gösterge paneli</td><td>Sheet</td><td>Görsel, rapor sayfası</td></tr>
+<tr><td>Tableau Server, Cloud</td><td>Qlik Sense Enterprise, Cloud</td><td>Power BI hizmeti</td></tr>
+</tbody></table></div>
+<p><b>Alışkanlık değiştiren iki nokta.</b> Qlik’in ilişkisel motoru alan adlarıyla otomatik ilişki kurar; Power BI’da ilişkileri sen tasarlarsın ve filtre yönünü bilinçli seçersin. Tableau’da hesap çoğu kez görselin ayrıntı düzeyinde düşünülür; DAX’ta filtre bağlamını düşünürsün. <a href="../baglam/">Bağlam dersi</a> bu yüzden önemlidir.</p><section class="deep"><span class="eyebrow">Uzmanlaş</span>
 <h2>Service’teki nesneler: kim kimin içinde?</h2>
 <p>Raporunu yayımladığında Power BI Service’te (Service) tek bir dosya görmezsin; birkaç ayrı nesne oluşur. Bunları bilmek, “raporu sildim, veri de gitti mi?” gibi soruları cevaplamanı sağlar.</p>
 <div class="tbl-wrap"><table>
@@ -63,6 +76,6 @@
 </ul>
 <p>Bu derste rolleri kısaca tanıdın; erişim ve güvenlik ayrıntıları Yönetişim ve Satır düzeyinde güvenlik derslerinde.</p>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-aile">Alıştırmalara geç (6)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-aile/1">Alıştırmalara geç (6)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../tarih/">← Power BI'ın hikâyesi: Excel eklentisinden veri platformuna</a><a href="../arayuz/">Desktop arayüz turu →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

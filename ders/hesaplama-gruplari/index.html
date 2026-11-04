@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Hesaplama grupları, alan parametreleri, görsel hesaplamalar</h1><p class="st-l">Ölçü patlamasını önlemek ve kullanıcıya ölçü/boyut seçtirmek.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-hesaplama-gruplari">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Ölçü patlaması</h2>
 <p>5 temel ölçün (Satış, Kâr, Adet, Sipariş, Müşteri) ve 6 zaman varyasyonun (Cari, GY, YTD, GY YTD, YoY, YoY %) varsa 30 ölçü yazman gerekir. <b>Hesaplama grupları</b> bu varyasyonları bir kez tanımlar ve her ölçüye uygular.</p>
@@ -112,6 +113,6 @@ SUMMARIZECOLUMNS(Tarih[Yil], Gorunum[Gorunum], "Değer", [Seçili Görünüm])</
 <p>Sonuçta iki sağlama hemen görünür. Yıl düzeyinde <b>YTD = Cari</b> olmalı: 2024 için ikisi de 747.065,70 ₺. <b>2024'ün GY'si = 2023'ün Carisi</b> olmalı: 400.869,55 ₺. 2022'de GY ve YoY % satırı hiç gelmez, çünkü önceki yıl yok; BLANK olan satırı SUMMARIZECOLUMNS atar. Bu üç kural tutmuyorsa öğede ya da tarih tablosunda sorun vardır.</p>
 <div class="tip"><b>Kontrol listesi</b>Her grup için öncelik yazılı mı ve gerekçesi belgelendi mi? · Oran ve metin ölçüleri ISSELECTEDMEASURE / ISNUMBER ile korunuyor mu? · Çoklu seçim ve boş seçim ifadeleri tanımlı mı? · Yıl düzeyinde YTD = Cari, GY = önceki yılın Carisi sağlaması yapıldı mı? · Rapor yazarlarına “Σ artık yok, açık ölçü kullan” notu iletildi mi?</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-hesaplama-gruplari">Alıştırmalara geç (10)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-hesaplama-gruplari/1">Alıştırmalara geç (10)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../dax-sorgu/">← DAX sorguları ve tablo fonksiyonları</a><a href="../performans/">Performans ve VertiPaq →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

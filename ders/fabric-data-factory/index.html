@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Data Factory ve veri kaynakları: Fabric’e veriyi hangi yolla getirirsin?</h1><p class="st-l">Data Factory’nin parçaları, Fabric’in veri kaynağı yelpazesi ve şirket içi erişim; Copy job, kopyalama etkinliği, yansıtma, Eventstream, Dataflow Gen2, not defteri arasında gerçek senaryolarla karar.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-fabric-data-factory">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>“Fabric’e veri nasıl gelir?” sorusunun tek cevabı yok; aynı işi yapan beş araç var ve yanlış olanı seçmek haftalarca emek ya da kapasite israfı demek. <b>Data Factory</b>, Fabric’in veri alma ve düzenleme iş yüküdür. Bu ders araçları tanıtmaktan çok, seçim yapmayı öğretir. İşlem hattının içi bir sonraki derste.</p>
 <h2>Parçalar</h2>
@@ -51,7 +52,14 @@
 <pre class="dax">EVALUATE
 ROW("Satır", COUNTROWS(Satislar), "Tutar", SUM(Satislar[Tutar]), "İlk Tarih", MIN(Satislar[Tarih]), "Son Tarih", MAX(Satislar[Tarih]))</pre>
 <div class="tip"><b>Kendi Fabric ortamında dene</b>Fabric deneme kapasitesi 60 gün sürer, F4 ya da F64 olarak açılır, OneLake’te 1 TB’a kadar yer verir. Başlatmak için Fabric hesabı ve kuruluşunun iki ayarı (Users can create Fabric items, Users can try Microsoft Fabric paid features) gerekir; uygunluk bölgeye ve kiracıya göre değişir, garanti değildir. Denemede Copilot, veri ajanı ve yapay zekâ fonksiyonları çalışmaz. Bitince öğeler pasif olur, içerik OneLake’te 7 gün durur. Güncel koşullar için resmî “Fabric trial capacity” sayfasına bak. Pipeline, Dataflow Gen2 ve Copy job denemede çalışır. Şirket içi kaynak için ağ geçidi gerekir; yoksa Anadolu Market CSV’leriyle çalış.</div>
-</article>
-<div class="st-c"><a class="st-p" href="../../#ders-fabric-data-factory">Alıştırmalara geç (8)</a></div>
+<h2>Bu adlarla karşına çıkar: SSIS, Azure Data Factory, data mart</h2>
+<p>İlanlar çoğu kez Fabric yerine şu adları yazar. Köprü:</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Terim</th><th>Nedir</th><th>Fabric’te yakın karşılığı</th></tr></thead><tbody>
+<tr><td><b>SSIS</b></td><td>SQL Server’ın ETL aracı: paket, denetim akışı, veri akışı</td><td>Pipeline ve Dataflow Gen2 kavramsal olarak yakın. Learn’ün karşılaştırma sayfasına göre Fabric Data Factory’de SSIS çalıştırma etkinliği yok, bu tasarım sürüyor; SSIS paketlerin varsa şimdilik ADF’de kalmayı planla.</td></tr>
+<tr><td><b>Azure Data Factory</b></td><td>PaaS veri tümleştirme: işlem hattı, etkinlik, tetikleyici</td><td>Fabric pipeline: etkinlik, tetikleyici, parametre modeli aynı kalır; Fabric’te yayımlama adımı yoktur. Mapping Data Flow için Dataflow Gen2’deki MDF dönüşümleri önizlemededir.</td></tr>
+<tr><td><b>Data mart</b></td><td>Bir iş birimine yönelik, konu odaklı küçük ambar. Genel bir veri ambarı terimi.</td><td>Fabric warehouse ya da lakehouse üzerinde konu şeması. Power BI’daki “datamart” öğesi ayrı bir üründü; güncel durumunu Learn’den denetle, biz Kasım 2026’da doğrulayamadık.</td></tr>
+</tbody></table></div>
+<p>Görüşmede söylemen gereken: “SSIS ve ADF’de elle çalışmadım ama işlem hattı, etkinlik, tetikleyici ve artımlı yükleme kavramlarını Fabric üzerinde biliyorum.” Yapmadığın işi yaptım deme.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-data-factory/1">Alıştırmalara geç (8)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../fabric-lakehouse/">← Lakehouse: Files ve Tables, SQL analiz uç noktası, katmanlı mimari</a><a href="../fabric-pipeline/">İşlem hatları (pipelines): etkinlik, bağımlılık, parametre, zamanlama ve hata →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

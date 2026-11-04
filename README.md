@@ -7,12 +7,12 @@
 ![Alıştırma ekranı](ekran/alistirma.png)
 
 ## Neler var?
-- **134 ders, 1.068 ders içi alıştırma, 97 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
+- **150 ders, 1.250 ders içi alıştırma, 117 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
 - **12 öğrenme yolu:** veri analisti, BI geliştirici, PL-300, DP-600 / Fabric, DAX ustalığı, Excel'den Power BI'a ve diğerleri. Her yolun aşamaları ve işe hazırlık listesi var; bitirme projesi olanlar Bitirme projeleri sayfasında.
 - **Seviye testi:** geçtiğin seviyenin dersleri “sıradaki ders” listesinden atlanır; ilerleme yüzdesine tamamlanmış sayılmaz.
 - **24 örnek rapor, 104 sayfa:** yer işaretleri, araç ipucu sayfaları, detaya git, alan parametreleri ve mobil düzenle, adım adım anlatılmış. Bunlar Power BI raporu örnekleridir; Service'teki pano (dashboard) ayrı bir nesnedir.
 - **6 hayali veri seti:** Anadolu Market (derslerin modeli) ve Desktop'ta çalışmak için 5 vaka paketi: Ilgaz Bank, Kanat Havayolları, Lezzet Kurye, Pusula İK, Pedal İzmir. Her pakette CSV'ler, model planı, ölçü kütüphanesi ve beklenen sonuçlu görevler var. Ölçekler öğretim için küçültülmüştür; veri setlerinin bilerek bırakılan izleri ve sınırları uygulamadaki Veri setleri sayfasındadır.
-- **Sınav ve mülakat:** 183 özgün PL-300 / DP-600 deneme sorusu, 177 mülakat sorusu (zayıf ve güçlü cevap örnekleriyle), canlı DAX kodlama turu, ev ödevleri. Kapsam haritası her resmî sınav maddesini derse ve sorulara bağlar.
+- **Sınav ve mülakat:** 193 özgün PL-300 / DP-600 deneme sorusu, 185 mülakat sorusu (zayıf ve güçlü cevap örnekleriyle), canlı DAX kodlama turu, ev ödevleri. Kapsam haritası her resmî sınav maddesini derse ve sorulara bağlar.
 - **Araçlar ve referans:** DAX Playground, Power Query Lab, Measure Lab, DAX Arena; 86 püf noktası, 66 sık karıştırılan kavram, sık hatalar ve iki dilli (Türkçe, İngilizce) Power BI komut listesi.
 
 | Karşılama | Örnek rapor | Vaka veri seti |
@@ -23,7 +23,7 @@
 - Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (206 fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
 - İlerleme yalnızca kullanıcının tarayıcısında saklanıyor; Profil sayfasından dosyaya kaydedilip başka cihazda yüklenebiliyor, mevcut ilerlemeyle birleştiriliyor. Hesap yok, kişisel veri toplanmıyor. Yazı tipleri siteyle birlikte sunuluyor, üçüncü taraf sunucuya istek gitmiyor.
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
-- Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları Power BI Desktop'ta tek tek denenmedi.
+- Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
 
 ## Kaynak kod ve yapım
 - Bu dal (`main`) yayınlanan derlenmiş sitedir. Düzenlenebilir kaynak, derleme betikleri ve doğrulayıcılar [`kaynak` dalında](https://github.com/ysfdurak/kesit-powerbi/tree/kaynak); başlangıç noktası `NASIL.md`.

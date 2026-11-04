@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Veri Modelleme</span><h1>Rol oynayan boyutlar ve USERELATIONSHIP</h1><p class="st-l">Bir tarih tablosu, iki tarih sütunu: sipariş ve teslim tarihi. Pasif ilişkiyi ölçüde etkinleştirmek.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-rol-oynayan">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Sorun</h2>
 <p><code>Satislar</code> tablosunda iki tarih var: <code>Tarih</code> (sipariş) ve <code>TeslimTarihi</code>. İkisi de <code>Tarih</code> tablosuna bağlanmak ister. Ama iki tablo arasında aynı anda yalnızca <b>bir etkin ilişki</b> olabilir. Diğeri <b>pasif</b> (model diyagramında kesik çizgi) kalır.</p>
@@ -71,6 +72,6 @@ CALCULATE([Satış YTD], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))<
 <p>Lojistik müdürü bir matris istiyor: satırlarda sipariş ayı, sütunlarda teslim ayı, hücrede sipariş sayısı. Bu soru USERELATIONSHIP ile cevaplanamaz, çünkü aynı görselde aynı tablonun iki rolü aynı anda filtre olamaz. Burada ikinci bir tarih tablosu (ör. <code>TeslimTakvimi</code>) gerekir. Bu modelde siparişlerin %91,7’si verildiği ay içinde teslim ediliyor. Matrisin köşegeni dolu, köşegen dışı ise sınır aylarındaki kaymayı gösterir.</p>
 <div class="note"><b>İkinci tablo kurarken</b>1) Sütun adlarını rolüyle başlat (“Teslim Yıl”, “Teslim Ay”); kullanıcı iki “Yil” sütununu karıştırmasın. 2) Tabloyu da tarih tablosu olarak işaretle. 3) Zaman zekâsı ölçüleri hangi takvimi kullanıyorsa adında yazsın. 4) Dilimleyicilerde iki takvimi aynı sayfada kullanacaksan hangi dilimleyicinin hangi rolü süzdüğünü başlıkta belirt.</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-rol-oynayan">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-rol-oynayan/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../pq-model/">← Power Query ile modele hazırlık</a><a href="../yari-toplanabilir/">Yarı toplanabilir ölçüler (semi-additive): stok, bakiye, kapanış →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

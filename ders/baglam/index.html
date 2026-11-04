@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>Filtre bağlamı (filter context) ve satır bağlamı (row context)</h1><p class="st-l">Aynı formül neden her hücrede farklı sonuç verir? DAX'ın iki bağlamı.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-baglam">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Filtre bağlamı: “Şu an hangi satırlar görünüyor?”</h2>
 <p>Bir matriste satıra <code>Kategoriler[Kategori]</code>, sütuna <code>Tarih[Yil]</code>, değere <code>[Toplam Satış]</code> koyduğunu düşün. “Kitap / 2024” hücresi hesaplanırken Power BI şunu yapar:</p>
@@ -91,6 +92,6 @@ SWITCH(
 )</pre>
 <div class="note"><b>Kontrol listesi: bağlam sorusu</b>1) Formül nerede çalışıyor: hesaplanmış sütun mu, ölçü mü, yineleyicinin içi mi? 2) Satır bağlamı varsa, ilişkili tabloyu süzmesi gerekiyor mu? Gerekiyorsa <code>CALCULATE</code> ya da ölçü referansı kullan. 3) Sonuç bir oran mı? Oransa ölçü yaz, sütunda saklama. 4) Toplam satırında ne görünmeli? <code>ISINSCOPE</code> ile karar ver.</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-baglam">Alıştırmalara geç (8)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-baglam/1">Alıştırmalara geç (8)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../gorsel-secimi/">← Doğru görseli seçmek</a><a href="../calculate/">CALCULATE: filtre bağlamını değiştirmek →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

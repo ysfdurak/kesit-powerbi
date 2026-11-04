@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar</h1><p class="st-l">Genel toplama göre pay, ebeveyne göre pay, seçime göre pay ve satır koşullu filtreler.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-filter-all">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>FILTER: satır satır koşul</h2>
 <pre class="dax">Büyük Satırlar = CALCULATE([Toplam Satış], FILTER(Satislar, Satislar[Tutar] &gt; 2000))</pre>
@@ -81,6 +82,6 @@ SWITCH(
 <p>Sıra önemlidir. Ürün satırında hem ürün hem kategori kapsamdadır. Bu yüzden en derin düzey önce denenir. 27" Monitör, Elektronik’in %30,1’i; Elektronik de şirketin %27,1’i. Toplam satırında hiçbir koşul doğru olmadığı için ölçü BLANK döner. %100 göstermek anlamsız olacağından bu bilinçli bir tercihtir.</p>
 <div class="note"><b>Kontrol listesi: pay ölçüsü</b>1) Payda kim: şirket, seçim, ebeveyn, yıl? Ölçü adına yaz. 2) Görselde hangi sütunla grupluyorsun? Paydada o sütunun (ya da tablosunun) filtresini kaldır. 3) Dilimleyici filtresi paydada kalmalı mı? Kalmalıysa olgu tablosunu değil boyutu hedefle. 4) Toplam satırında ne görünmeli: %100 mü, BLANK mi?</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-filter-all">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-filter-all/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../iteratorler/">← Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED</a><a href="../zaman/">Zaman zekâsı: YTD, geçen yıl, büyüme →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

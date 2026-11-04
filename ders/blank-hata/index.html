@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>BLANK, hatalar ve DAX’ta hata ayıklama</h1><p class="st-l">BLANK’in aritmetikte ve karşılaştırmada davranışı, COALESCE ve ISBLANK, sıfıra bölme, IFERROR’ın tuzakları ve bir ölçüyü adım adım ayıklama yöntemi.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-blank-hata">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>BLANK: “değer yok”</h2>
 <p>DAX’ta bir ölçünün hesaplayacak satırı yoksa sonuç <b>BLANK</b> olur. Hiç satılmamış bir ürünün <code>[Net Satış]</code>’ı 0 değil, BLANK’tir. Görseller BLANK olan satırları varsayılan olarak gizler: matriste hiç satmayan ürün görünmez. Bu çoğu zaman istenen davranıştır.</p>
@@ -54,6 +55,6 @@ RETURN ROW("İptal satırı", COUNTROWS(Iptaller), "İptal tutarı", SUMX(Iptall
 <tr><td>Beklenmedik toplam</td><td>Toplam satırı, satırların toplamı değil, ölçünün toplam bağlamındaki sonucudur.</td><td>Satır satır toplam isteniyorsa <code>SUMX(VALUES(...), [Ölçü])</code>.</td></tr>
 </table></div>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-blank-hata">Alıştırmalara geç (7)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-blank-hata/1">Alıştırmalara geç (7)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../final-hazirlik/">← Bitirme projesine hazırlık</a><a href="../mulakat/">DAX ve Power BI mülakatına hazırlık →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

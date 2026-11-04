@@ -1,0 +1,51 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak | Kesit Power BI</title><meta name="description" content="Fonksiyon söz dizimi, isteğe bağlı parametre, tür denetimi, tablo alan fonksiyon, Invoke Custom Function, @ ile özyineleme, Manage Parameters, Create…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-fonksiyon/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak"><meta property="og:description" content="Fonksiyon söz dizimi, isteğe bağlı parametre, tür denetimi, tablo alan fonksiyon, Invoke Custom Function, @ ile özyineleme, Manage Parameters, Create…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-fonksiyon/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak","description":"Fonksiyon söz dizimi, isteğe bağlı parametre, tür denetimi, tablo alan fonksiyon, Invoke Custom Function, @ ile özyineleme, Manage Parameters, Create…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-fonksiyon/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Veri Hazırlama</span><h1>Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak</h1><p class="st-l">Fonksiyon söz dizimi, isteğe bağlı parametre, tür denetimi, tablo alan fonksiyon, Invoke Custom Function, @ ile özyineleme, Manage Parameters, Create Function.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-fonksiyon">Uygulamada aç, 12 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>Fonksiyon bir değerdir</h2>
+<p>Parametreler parantezde, gövde <code>=&gt;</code> sonrasında. Tür yazmak isteğe bağlıdır ama hatayı erken yakalar. <code>optional</code> parametre verilmezse null olur, <code>??</code> ile varsayılan verilir.</p>
+<pre class="m" data-run>let
+    KdvEkle = (tutar as number, optional oran as nullable number) as number =>
+        tutar * (1 + (oran ?? 0.2))
+in
+    [Varsayilan = KdvEkle(100), Yuzde10 = KdvEkle(100, 0.1)]</pre>
+<h2>Sütunda çağırmak: Invoke Custom Function</h2>
+<p>Şeritte <b>Sütun ekle → Genel → Invoke Custom Function</b>. Ürettiği kod:</p>
+<pre class="m" data-run>let
+    Sinif = (t as nullable number) as text =>
+        if t = null then "Bilinmiyor" else if t > 1000 then "Büyük" else "Küçük",
+    Sonuc = Table.AddColumn(Satislar, "Sınıf", each Sinif([Tutar]), type text)
+in
+    Sonuc</pre>
+<p>Power BI’da fonksiyonu ayrı bir sorgu olarak tutarsın, adı <code>fnSinif</code> gibi olur, her sorgudan çağrılır. Lab’de tek kod kutusu olduğu için let içinde tanımlıyoruz.</p>
+<h2>Tablo alan fonksiyon</h2>
+<p>Fonksiyon tablo alıp tablo döndürebilir. Sütun adını parametre yapmak için <code>Table.Column</code> ya da <code>Record.Field</code> gerekir:</p>
+<pre class="m" data-run>let
+    Ozet = (t as table, kirilim as text, deger as text) as table =>
+        Table.Group(t, {kirilim}, {{"Toplam", each List.Sum(Table.Column(_, deger)), type number}})
+in
+    Ozet(Satislar, "Kategori", "Tutar")</pre>
+<h2>Özyineleme: @</h2>
+<p>Fonksiyon kendine <code>@</code> ile başvurur. Learn’deki örnek faktöriyeldir. Sonsuz özyineleme burada durdurulur.</p>
+<pre class="m" data-run>let
+    fact = (num) => if num = 0 then 1 else num * @fact(num - 1)
+in
+    fact(5)</pre>
+<h2>Parametreler</h2>
+<p><b>Giriş → Manage Parameters</b> ad, tür ve geçerli değer ister. Arkada parametre sıradan bir sorgudur:</p>
+<pre class="m" data-run>let
+    EsikTutar = 1000 meta [IsParameterQuery = true, Type = "Number", IsParameterQueryRequired = true],
+    Sonuc = Table.SelectRows(Satislar, each [Tutar] > EsikTutar)
+in
+    Sonuc</pre>
+<p>Power BI’da <code>EsikTutar</code> ayrı sorgudur; burada aynı kutuya yazdık. <code>meta</code> kısmı değeri değiştirmez, arayüze “bu bir parametredir” der. Service’te anlam modeli ayarlarından değiştirilebilir, bu da geliştirme ve canlı sunucu arasında geçişi çözer.</p>
+<h2>Şeritten fonksiyon üretmek</h2>
+<p>Learn’ün önerdiği yol: Bir parametre, ona başvuran örnek sorgu, sonra sorguya sağ tık <b>Create Function</b>. Örnek sorguda yaptığın değişiklik fonksiyona yansır. Fonksiyonun kodunu elle değiştirirsen bu bağ kopar; düzenleyici de uyarır. Fonksiyona sonradan parametre eklersen çağıran adım hata verir: adımı yeniden aç, değeri gir.</p>
+<div class="warn"><b>Performans ve katlama</b>Bir satır için fonksiyon çağırmak, özellikle fonksiyon kaynağa sorgu gönderiyorsa, kaynağa satır sayısı kadar istek demektir. Fonksiyon adımından sonraki adımlar da genellikle katlanmaz.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-fonksiyon/1">Alıştırmalara geç (12)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-liste-metin/">← List, Text, Date: List.Accumulate, List.Generate, Text.Split</a><a href="../m-klasor/">Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

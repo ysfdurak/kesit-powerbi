@@ -1,0 +1,40 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M işlevleri alıştırması: Text, List, Record, Date | Kesit Power BI</title><meta name="description" content="Sık kullanılan M işlevlerini kısa görevlerle yazmak: Text.Contains, Text.Remove, List.Sort, List.Max, Record.AddField, Record.ToTable, Table.Profile, M…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-islev-pratik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="M işlevleri alıştırması: Text, List, Record, Date"><meta property="og:description" content="Sık kullanılan M işlevlerini kısa görevlerle yazmak: Text.Contains, Text.Remove, List.Sort, List.Max, Record.AddField, Record.ToTable, Table.Profile, M…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-islev-pratik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"M işlevleri alıştırması: Text, List, Record, Date","description":"Sık kullanılan M işlevlerini kısa görevlerle yazmak: Text.Contains, Text.Remove, List.Sort, List.Max, Record.AddField, Record.ToTable, Table.Profile, M…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-islev-pratik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>M işlevleri alıştırması: Text, List, Record, Date</h1><p class="st-l">Sık kullanılan M işlevlerini kısa görevlerle yazmak: Text.Contains, Text.Remove, List.Sort, List.Max, Record.AddField, Record.ToTable, Table.Profile, M ile takvim.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-islev-pratik">Uygulamada aç, 19 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><p>Bu ders neredeyse tamamen koddur. Learn’deki işlev başvuruları: <code>Text.*</code>, <code>List.*</code>, <code>Record.*</code>, <code>Date.*</code>. Takıldığında sonucun türüne bak: bu görevlerin çoğu tablo değil, liste, kayıt ya da tek değer döndürür.</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Aile</th><th>Bu derste</th></tr></thead><tbody>
+<tr><td>Text</td><td>Contains, StartsWith, Select, PadStart, Combine</td></tr>
+<tr><td>List</td><td>Max, Min, Average, Count, Sort, Distinct, PositionOf, RemoveNulls, Zip</td></tr>
+<tr><td>Record</td><td>FieldNames, HasFields, AddField, RemoveFields, SelectFields, TransformFields, ToTable</td></tr>
+<tr><td>Date</td><td>AddMonths, Year, QuarterOfYear, ToText; List.Dates ve List.Min ile takvim</td></tr>
+</tbody></table></div>
+<h2>Record: kayıt üstünde çalışmak</h2>
+<pre class="m" data-run>let
+    R = [Ad = "Ayşe", Yas = 30],
+    Eklendi = Record.AddField(R, "Sehir", "Bursa"),
+    Sade = Record.RemoveFields(Eklendi, "Yas")
+in
+    [Adlar = Record.FieldNames(Sade), Var = Record.HasFields(Sade, "Ad"), Tablo = Record.ToTable(Sade)]</pre>
+<h2>Table.Profile</h2>
+<p>Görünüm sekmesindeki sütun profilinin kod karşılığı: her sütun için en küçük, en büyük, ortalama, standart sapma, sayım, null ve ayrı sayısı. Denetim sorgusu olarak yükleyebilirsin.</p>
+<pre class="m" data-run>Table.Profile(Satislar)</pre>
+<h2>Takvim: M ile</h2>
+<p>PL-300’ün ortak tarih tablosu maddesi DAX ya da M ile yapılabilir. Veriye bağlı aralık kurmak için <code>List.Min</code> ve <code>List.Max</code> kullanılır:</p>
+<pre class="m" data-run>let
+    Bas = List.Min(Satislar[Tarih]),
+    Son = List.Max(Satislar[Tarih]),
+    Gun = Duration.Days(Son - Bas) + 1,
+    T = Table.FromList(List.Dates(Bas, Gun, #duration(1, 0, 0, 0)), Splitter.SplitByNothing(), {"Tarih"}),
+    Tipli = Table.TransformColumnTypes(T, {{"Tarih", type date}}),
+    Yil = Table.AddColumn(Tipli, "Yıl", each Date.Year([Tarih]), Int64.Type),
+    Ay = Table.AddColumn(Yil, "Ay", each Date.Month([Tarih]), Int64.Type)
+in
+    Table.FirstN(Ay, 5)</pre></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-islev-pratik/1">Alıştırmalara geç (19)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-uygulama/">← Power Query komutları uygulama: satır, sütun, ayıklama, örnekten sütun</a><a href="../dax-metin-pratik/">DAX metin fonksiyonları: LEFT, MID, SEARCH, SUBSTITUTE, VALUE alıştırmaları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

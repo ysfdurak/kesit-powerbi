@@ -1,0 +1,55 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>List, Text, Date: List.Accumulate, List.Generate, Text.Split | Kesit Power BI</title><meta name="description" content="Liste işlevleri ile döngü yerine katlama, List.Generate ile adım adım üretim, metin bölme ve ayıklama, tarih aritmetiği, takvim tablosu."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-liste-metin/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="List, Text, Date: List.Accumulate, List.Generate, Text.Split"><meta property="og:description" content="Liste işlevleri ile döngü yerine katlama, List.Generate ile adım adım üretim, metin bölme ve ayıklama, tarih aritmetiği, takvim tablosu."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-liste-metin/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"List, Text, Date: List.Accumulate, List.Generate, Text.Split","description":"Liste işlevleri ile döngü yerine katlama, List.Generate ile adım adım üretim, metin bölme ve ayıklama, tarih aritmetiği, takvim tablosu.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-liste-metin/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>List, Text, Date: List.Accumulate, List.Generate, Text.Split</h1><p class="st-l">Liste işlevleri ile döngü yerine katlama, List.Generate ile adım adım üretim, metin bölme ve ayıklama, tarih aritmetiği, takvim tablosu.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-liste-metin">Uygulamada aç, 14 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>M’de döngü yok, liste işlevi var</h2>
+<p>M’de for ya da while yoktur. Yerine dört kalıp kullanırsın:</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>İş</th><th>İşlev</th><th>Örnek</th></tr></thead><tbody>
+<tr><td>Her öğeyi dönüştür</td><td><code>List.Transform</code></td><td><code>List.Transform({1, 2}, each _ * 2)</code></td></tr>
+<tr><td>Süz</td><td><code>List.Select</code></td><td><code>List.Select(x, each _ &gt; 0)</code></td></tr>
+<tr><td>Tek değere indir</td><td><code>List.Accumulate</code></td><td>Bir toplam, birleşik metin, ardışık uygulama</td></tr>
+<tr><td>Önceki değerden yenisini üret</td><td><code>List.Generate</code></td><td>Sayfalı API, ardışık tarihler</td></tr>
+</tbody></table></div>
+<h2>List.Accumulate</h2>
+<p>Üç bağımsız değişken: liste, başlangıç durumu, <code>(durum, öğe) =&gt; yeni durum</code>. Durum yalnız sayı değildir: tablo olabilir. Bir sözlükteki tüm değişimleri sırayla bir sütuna uygulamak bunun klasik kullanımıdır.</p>
+<pre class="m" data-run>let
+    Degisim = {{"ist", "İstanbul"}, {"ank", "Ankara"}},
+    Metin = "ist ve ank",
+    Sonuc = List.Accumulate(Degisim, Metin, (durum, d) => Text.Replace(durum, d{0}, d{1}))
+in
+    Sonuc</pre>
+<h2>List.Generate</h2>
+<p>Dört bağımsız değişken: başlangıç (fonksiyon), devam koşulu, sonraki değer, isteğe bağlı seçici. Hepsi fonksiyondur; ilki bile <code>() =&gt;</code> ister. Koşul hiç yanlış olmazsa sorgu bitmez: burada durdurulur, gerçek motorda takılır.</p>
+<pre class="m" data-run>List.Generate(() => 1, each _ &lt;= 100, each _ * 2)</pre>
+<pre class="m" data-run>List.Generate(
+    () => [Sayfa = 1, Toplam = 10],
+    each [Sayfa] &lt;= 3,
+    each [Sayfa = [Sayfa] + 1, Toplam = [Toplam] + 10],
+    each [Toplam]
+)</pre>
+<h2>Metin</h2>
+<p><code>Text.Split</code> liste döndürür, <code>{0}</code> ile parçaya erişilir. <code>Text.BeforeDelimiter</code>, <code>Text.AfterDelimiter</code>, <code>Text.Start</code>, <code>Text.Middle</code>, <code>Text.Replace</code>, <code>Text.Contains</code> en sık kullanılanlar. Büyük küçük harf için üçüncü bağımsız değişken: <code>Comparer.OrdinalIgnoreCase</code>. Türkçede <code>Text.Upper(x, "tr-TR")</code> kültürünü ver; yoksa sonuç bilgisayarın diline bağlıdır, İngilizce ortamda i harfi I olur.</p>
+<pre class="m" data-run>let
+    Kod = "PTY-CM1090-LAX",
+    P = Text.Split(Kod, "-")
+in
+    [Kalkis = P{0}, Sirket = Text.Start(P{1}, 2), Ucus = Text.End(P{1}, 4), Varis = P{2}]</pre>
+<h2>Tarih</h2>
+<p>Tarih aritmetiği süre (duration) ile yapılır: <code>#date(2024, 3, 1) - #date(2024, 2, 1)</code> 29 günlük süre verir. Gün eklemek için <code>Date.AddDays</code>. Takvim tablosu üretmek klasik bir M işidir; rapor için bir kez kurulur.</p>
+<pre class="m" data-run>let
+    Baslangic = #date(2024, 1, 1),
+    Gunler = List.Dates(Baslangic, 5, #duration(1, 0, 0, 0)),
+    T = Table.FromList(Gunler, Splitter.SplitByNothing(), {"Tarih"}),
+    Tipli = Table.TransformColumnTypes(T, {{"Tarih", type date}}),
+    Ay = Table.AddColumn(Tipli, "Ay Adı", each Date.MonthName([Tarih], "tr-TR"), type text)
+in
+    Ay</pre>
+<h2>List.Buffer</h2>
+<p><code>List.Buffer</code> listeyi bellekte sabitler. Filtrede <code>List.Contains</code> her satır için listeyi yeniden üretiyorsa bir kez arabelleğe almak ciddi hız kazandırabilir. Sonucu değiştirmez, yalnız değerlendirme davranışını değiştirir; bu yüzden Lab’de fark görünmez.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-liste-metin/1">Alıştırmalara geç (14)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-tablo/">← Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir</a><a href="../m-fonksiyon/">Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

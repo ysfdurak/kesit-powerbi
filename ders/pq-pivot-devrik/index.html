@@ -1,0 +1,45 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pivot, Unpivot ve Transpose: tablonun yönünü değiştirmek | Kesit Power BI</title><meta name="description" content="PL-300 maddesi “Pivot, unpivot, and transpose”: üçünün farkı, Diğer ve Seçili sütunlar, toplama işlevi, sütun adını korumak, hangisi model için doğru."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/pq-pivot-devrik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Pivot, Unpivot ve Transpose: tablonun yönünü değiştirmek"><meta property="og:description" content="PL-300 maddesi “Pivot, unpivot, and transpose”: üçünün farkı, Diğer ve Seçili sütunlar, toplama işlevi, sütun adını korumak, hangisi model için doğru."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/pq-pivot-devrik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Pivot, Unpivot ve Transpose: tablonun yönünü değiştirmek","description":"PL-300 maddesi “Pivot, unpivot, and transpose”: üçünün farkı, Diğer ve Seçili sütunlar, toplama işlevi, sütun adını korumak, hangisi model için doğru.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/pq-pivot-devrik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Pivot, Unpivot ve Transpose: tablonun yönünü değiştirmek</h1><p class="st-l">PL-300 maddesi “Pivot, unpivot, and transpose”: üçünün farkı, Diğer ve Seçili sütunlar, toplama işlevi, sütun adını korumak, hangisi model için doğru.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-pivot-devrik">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>Üç komut, üç farklı dönüş</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Komut</th><th>Ne yapar</th><th>Önce</th><th>Sonra</th></tr></thead><tbody>
+<tr><td><b>Unpivot</b></td><td>Sütunları satıra çevirir: genişten uzuna</td><td>Kategori | Oca | Şub</td><td>Kategori | Ay | Hedef</td></tr>
+<tr><td><b>Pivot sütunu</b></td><td>Bir sütunun değerlerini başlık yapar: uzundan genişe</td><td>Bölge | Ay | Tutar</td><td>Bölge | Oca | Şub | Mar</td></tr>
+<tr><td><b>Transpose</b></td><td>Tabloyu çevirir: her satır sütun, her sütun satır olur</td><td>Satır başlıkları solda</td><td>Column1, Column2, ...</td></tr>
+</tbody></table></div>
+<p>Yıldız şemada olgu tablosu uzun olur: ay bir sütundur, ölçü bir sütundur. Unpivot bu yüzden Pivot’tan çok daha sık kullanılır. Pivot’u sunum için ya da satır başına bir nesne gerektiğinde (örneğin her müşteri için tek satır, anahtar ve değer çiftlerinden gelen veri) kullan.</p>
+<h2>Unpivot: Diğer mi, Seçili mi?</h2>
+<p>Şeritte üç komut var. Learn’e göre <b>Unpivot columns</b> ve <b>Unpivot other columns</b> yenilemede yeni sütunu da satıra çevirir; <b>Unpivot only selected columns</b> çevirmez. Kod düzeyinde fark şu iki işlevdedir:</p>
+<pre class="m" data-run>Table.UnpivotOtherColumns(Hedefler, {"Kategori"}, "Ay", "Hedef")</pre>
+<pre class="m" data-run>Table.Unpivot(Hedefler, {"Oca", "Şub"}, "Ay", "Hedef")</pre>
+<p>İlki yalnız sabit kalacak sütunu yazar; yeni ay gelince o da satıra döner. İkincisi dönecek sütunları yazar; yeni ay sütun olarak kalır. Aylık büyüyen dosyada <b>Other Columns</b> doğrudur. <b>Unpivot Only Selected</b> ise yeni sütun dönmesin istediğin dosyalarda doğrudur. Hangi kodun üretildiğini formül çubuğundan oku. null hücreler satır üretmez: Giyim’in Mart’ı yok, sonuçta o satır da yoktur.</p>
+<h2>Pivot: değer listesi ve toplama</h2>
+<p>Pivot sütunu kutusu değer sütununu ve <b>toplama işlevini</b> sorar. Learn’deki iki durum:</p>
+<pre class="m" data-run>Table.Pivot(
+    Table.FromRecords({
+        [key = "x", attribute = "a", value = 1],
+        [key = "x", attribute = "c", value = 3],
+        [key = "x", attribute = "c", value = 5],
+        [key = "y", attribute = "a", value = 2]
+    }),
+    {"a", "b", "c"}, "attribute", "value", List.Max
+)</pre>
+<p>Toplama işlevini silersen, “x ve c” kesişimine iki değer düştüğü için o hücre hata olur. Kesişimi olmayan hücreler null gelir. Şerit değer listesini <code>List.Distinct(t[Ay])</code> diye yazar; yenilemede yeni ay yeni sütun demektir. Bu modelin sütun yapısını değiştirir, bu yüzden model tablosunda pivot riskli, son sunum adımında daha güvenlidir.</p>
+<div class="warn"><b>Metin dışı başlık</b>Pivot edilen sütun metin olmalı: sütun adları metindir. Sayı ya da tarih sütununu Pivot’tan önce metne çevir; şerit bunu kendisi ekler.</div>
+<h2>Transpose: başlık kaybolur</h2>
+<p>Transpose sütun adlarını siler. Korumak için önce <b>Use headers as first row</b> (Başlıkları ilk satıra indir), sonra Transpose, sonra <b>Use first row as headers</b>:</p>
+<pre class="m" data-run>let
+    Indir = Table.DemoteHeaders(Hedefler),
+    Cevir = Table.Transpose(Indir),
+    Basliklar = Table.PromoteHeaders(Cevir)
+in
+    Basliklar</pre>
+<p>Sonuçta her kategori bir sütun, her ay bir satır olur. Transpose genellikle Excel’deki yan yatık özet tablolarını düzeltmek içindir. Çift başlıklı tablo gibi işlerde Unpivot ile birlikte kullanılır.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-pivot-devrik/1">Alıştırmalara geç (10)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-performans/">← Sorgu katlama, Table.Buffer, performans, Value.NativeQuery</a><a href="../pq-uygulama/">Power Query komutları uygulama: satır, sütun, ayıklama, örnekten sütun →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

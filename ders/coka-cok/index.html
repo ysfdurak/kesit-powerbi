@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · İleri Modelleme</span><h1>Çoka çok ilişkiler, köprü tablolar ve ilişki türleri</h1><p class="st-l">Gerçek çoka-çok senaryoları (bir proje birden çok departmanda, bir müşteri birden çok kategoride, bütçe farklı taneciklikte), köprü tablo ve ağırlık, çift yönlü filtrenin riskleri ve belirsiz yollar, sınırlı (limited) ilişkiler, CROSSFILTER ve TREATAS ile ölçü içinde çözüm, toplam satırı ve çift sayma.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-coka-cok">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Yıldız şemada her ilişki çoka-birdir: bir satış satırı tek bir ürüne, tek bir müşteriye bağlanır. Gerçek iş hayatı bu kadar düzenli değildir. “Model tasarımı II” dersinde ayrıntı düzeyini (grain), “Rol oynayan boyutlar” dersinde CROSSFILTER’ı, “Tablo fonksiyonları” dersinde köprü tablonun kısa tanımını gördün. Bu ders, çoka-çok (many-to-many) durumları tanımayı, modelde ve ölçüde çözmeyi ve <b>toplam satırını kullanıcıya doğru anlatmayı</b> öğretiyor.</p>
 <p>Anadolu Market’te bu hafta gelen üç talep:</p>
@@ -162,6 +163,6 @@ CALCULATE([Proje Bütçesi], TREATAS(VALUES(Giderler[DepartmanNo]), Departmanlar
 <li><b>Performans:</b> Performans Analizi’nde çift yönlü ilişkili görselin süresini, CROSSFILTER’lı ölçü sürümüyle karşılaştır.</li>
 </ol>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-coka-cok">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-coka-cok/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../genisletilmis-tablolar/">← DAX’ın iç mantığı: genişletilmiş tablolar, veri soyu ve keyfi biçimli filtreler</a><a href="../uzman-kaliplar/">Uzman kalıplar: devam eden olaylar, karşılaştırılabilir dönem, döviz çevirme ve farklı taneciklikte bütçe →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

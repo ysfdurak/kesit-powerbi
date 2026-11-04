@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Temel · Görselleştirme</span><h1>İlk raporunu kur</h1><p class="st-l">Kart, sütun ve çizgi grafiği; alan kutuları, sayı biçimleri ve tema.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-ilk-rapor">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <div class="note"><b>Önce veri ve ölçüler</b>Bu dersi Desktop’ta yapacaksan: <a href="../../">veri setini indir</a>, zip’i aç, <b>Giriş → Veri al → Metin/CSV</b> ile <code>Satislar</code>, <code>Urunler</code>, <code>Kategoriler</code> ve <code>Tarih</code> dosyalarını yükle. Model görünümünde <code>Satislar[UrunNo] → Urunler[UrunNo]</code>, <code>Urunler[Kategori] → Kategoriler[Kategori]</code> ve <code>Satislar[Tarih] → Tarih[Tarih]</code> ilişkilerini kur (bu adımların nedenini “Veri modelleme” dersinde göreceksin). Sonra <b>Yeni ölçü (New measure)</b> ile şu iki ölçüyü ekle:<pre class="dax" data-notry>Net Satış = CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] &lt;&gt; "İptal")
 Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Desktop’un yoksa aynı görselleri <a href="../../">Görseller ve biçim</a> sayfasında dene.</div>
@@ -51,6 +52,6 @@ Satış GY = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>Des
 </table></div>
 <p>Muhasebeden biri “bizde 2024 satışı 808 bin” diyorsa ikiniz de haklı olabilirsiniz: biri iptalleri dahil ediyor, diğeri etmiyor. Bu yüzden her kartın araç ipucuna ya da sayfa altına kısa bir tanım yaz: “Net satış: iptal edilen siparişler hariç.” Ayrıntılı test yöntemleri Rapor kalitesi dersinde.</p>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-ilk-rapor">Alıştırmalara geç (7)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-ilk-rapor/1">Alıştırmalara geç (7)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../toplama/">← Toplama fonksiyonları ve DIVIDE</a><a href="../gorsel-secimi/">Doğru görseli seçmek →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

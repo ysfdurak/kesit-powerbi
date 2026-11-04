@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Yönetim ve Güvenlik</span><h1>On-premises data gateway: ne zaman gerekir, nasıl kurulur, nasıl teşhis edilir</h1><p class="st-l">Standart, kişisel ve sanal ağ (VNet) ağ geçidi arasında seçim; kurulum şartları, kurtarma anahtarı, küme, bağlantı ve roller; Fabric’te kullanım ve hata teşhisi.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-gateway">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Service bulutta, Anadolu Market’in SQL Server’ı ise şirket içinde bir sunucuda. Service oraya internetten ulaşamaz. <b>Ağ geçidi (on-premises data gateway)</b>, şirket ağında bir bilgisayara kurulan köprü yazılımıdır: buluttan gelen sorguyu alır, yerel kaynağa gider, sonucu geri gönderir. Giden bağlantı kullanır; bu yüzden gelen port açılmaz.</p>
 <h2>Gerekir mi?</h2>
@@ -61,6 +62,6 @@ RETURN
     GROUPBY(Gunluk, [Dugum], "Hata", SUMX(CURRENTGROUP(), IF([Durum] = "Hata", 1)))</pre>
 <div class="tip"><b>Kendi ortamında dene</b>Windows bir bilgisayara standart ya da kişisel ağ geçidi kurmak için ücretsiz yazılımı indirmen yeter, ama kaydetmek için iş hesabı ve Service’i kullanmak için Pro ya da deneme lisansı gerekir. Şirket sunucusunda yönetici izni olmadan deneme; kendi bilgisayarında kişisel modda küçük bir Excel ile yenileme kurup Service’te izleyebilirsin. Üretimde kişisel mod önerilmez.</div>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-gateway">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-gateway/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../veri-yenileme/">← Veri yenileme: türler, zamanlama, sınırlar ve hata teşhisi</a><a href="../kullanim-izleme/">Kullanım ve izleme: kim açıyor, ne yavaş, kapasite nereye gidiyor? →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

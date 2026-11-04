@@ -1,0 +1,41 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M’de kayıt, liste, tablo: yapıları kurmak ve gezmek | Kesit Power BI</title><meta name="description" content="Kayıt ve liste kurma, alan ve öğe erişimi, ? ile güvenli erişim, #table, Table.ToRecords, Record.Field ile değişken alan adı."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-yapi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="M’de kayıt, liste, tablo: yapıları kurmak ve gezmek"><meta property="og:description" content="Kayıt ve liste kurma, alan ve öğe erişimi, ? ile güvenli erişim, #table, Table.ToRecords, Record.Field ile değişken alan adı."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-yapi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"M’de kayıt, liste, tablo: yapıları kurmak ve gezmek","description":"Kayıt ve liste kurma, alan ve öğe erişimi, ? ile güvenli erişim, #table, Table.ToRecords, Record.Field ile değişken alan adı.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-yapi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>M’de kayıt, liste, tablo: yapıları kurmak ve gezmek</h1><p class="st-l">Kayıt ve liste kurma, alan ve öğe erişimi, ? ile güvenli erişim, #table, Table.ToRecords, Record.Field ile değişken alan adı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-yapi">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>Üç yapı, üç parantez</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Yapı</th><th>Kurma</th><th>Erişim</th><th>Karşılığı</th></tr></thead><tbody>
+<tr><td>Liste</td><td><code>{1, 2, 3}</code>, <code>{1..12}</code></td><td><code>x{0}</code> (0’dan başlar)</td><td>Tablodaki bir sütun: <code>t[Şehir]</code></td></tr>
+<tr><td>Kayıt</td><td><code>[Ad = "Ayşe", Yas = 30]</code></td><td><code>r[Ad]</code></td><td>Tablodaki bir satır: <code>t{0}</code></td></tr>
+<tr><td>Tablo</td><td><code>#table({"a"}, {{1}})</code>, <code>Table.FromRecords</code></td><td><code>t{0}[a]</code>, <code>t{[a = 1]}</code></td><td>Sorgu sonucu</td></tr>
+</tbody></table></div>
+<p>Süslü parantez öğe, köşeli parantez alan okur. Bu ikisini ayırmak M’yi okumanın yarısıdır.</p>
+<pre class="m" data-run>let
+    Satir = Satislar{0},
+    Sutun = Satislar[Tutar],
+    Hucre = Satislar{0}[Şehir],
+    Anahtar = Satislar{[SiparisNo = 1005]}[Tutar]
+in
+    [Ilk = Satir[Tarih], Adet = List.Count(Sutun), Hucre = Hucre, Anahtar = Anahtar]</pre>
+<p>Sütun listedir, satır kayıttır: <code>Satislar[Tutar]</code> dediğinde liste işlevleri, <code>Satislar{0}</code> dediğinde kayıt işlevleri kullanılır. Kayıt alanı başka bir kayıt, liste ya da tablo olabilir; birleştirmeden sonra hücrede gördüğün Table ve Record yazısı bu yüzdendir.</p><h2>Soru işareti: bulunmazsa null</h2>
+<p><code>r[x]</code> alan yoksa hata verir, <code>r[x]?</code> null döner. Listede de aynı: <code>{1, 2}{5}?</code>. Şeması oynak kaynaklarda işe yarar; ama yazım hatasını da gizler, her yere koyma.</p>
+<h2>Tablo satırları kayıttır</h2>
+<p><code>Table.ToRecords</code> tabloyu kayıt listesine çevirir. Satır fonksiyonunda eline gelen <code>_</code> de budur. Alan adı bir değişkendeyse köşeli parantez çalışmaz: <code>r[alan]</code> sabit “alan” adlı alanı okur. Değişken ad için <code>Record.Field</code> gerekir.</p>
+<pre class="m" data-run>let
+    Alan = "Bölge",
+    Kayitlar = Table.ToRecords(Sehir_Bolge),
+    Bolgeler = List.Transform(Kayitlar, each Record.Field(_, Alan))
+in
+    List.Distinct(Bolgeler)</pre>
+<h2>Tabloyu elle kurmak</h2>
+<pre class="m" data-run>#table(
+    type table [Kod = text, Oran = number],
+    {{"A", 0.1}, {"B", 0.2}}
+)</pre>
+<p>Küçük eşleme tablolarını Enter Data yerine böyle yazmak, kodun okunur ve karşılaştırılabilir kalmasını sağlar.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-yapi/1">Alıştırmalara geç (11)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-yaz/">← M kodu yazmaya başla: değerler, let, each, if, tür sistemi</a><a href="../m-tablo/">Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

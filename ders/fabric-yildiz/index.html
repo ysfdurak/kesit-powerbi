@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric’te yıldız şema: SCD Tip 2, köprü tablolar ve Delta bakımı</h1><p class="st-l">Lakehouse ve ambarda boyut-olgu tasarımı, vekil anahtar, yavaş değişen boyutlar (Tip 1, Tip 2) ve olgu satırını doğru sürüme bağlamak, köprü tablo, T-SQL ile MERGE ve CTAS, OPTIMIZE, V-Order ve VACUUM, DAX’ta “o tarihteki değer”.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-fabric-yildiz">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>“Veri modelleme: yıldız şema ve ilişkiler” dersinde yıldız şemayı Power BI modelinin içinde kurdun. Fabric’te aynı tasarımı bir katman aşağıya, <b>lakehouse ya da ambar tablolarına</b> indirirsin: Direct Lake modelde Power Query adımı yoktur, hesaplanmış sütun ve tablo desteği de sınırlı ve yeni olduğu için (önizleme) şema, Delta tablolar yazılırken hazır olmalıdır. Bu ders o tasarımın üç zor parçasını işliyor: tarih boyunca değişen boyutlar, çok değerli boyutlar ve tabloların fiziksel bakımı.</p>
 
@@ -139,6 +140,6 @@ CALCULATE(
 )</pre>
 <p>Sonuç: Tip 1 görünümde (<code>Musteriler[Segment] = "Premium"</code>) 2023 Premium satışı 164.865 ₺, tarihsel görünümde 154.847 ₺. Fark tam olarak 4 numaralı müşterinin 2023’teki Bireysel dönemi (−10.594 ₺) ve 8 numaralı müşterinin 2023’teki Premium dönemidir (+576 ₺). Bu ölçü öğreticidir ama satır satır arama yaptığı için büyük olguda yavaştır; üretimde sürüm anahtarını yükleme sırasında olguya yaz.</p>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-fabric-yildiz">Alıştırmalara geç (6)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-yildiz/1">Alıştırmalara geç (6)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../fabric-giris/">← Microsoft Fabric’e giriş: OneLake, lakehouse, ambar ve Direct Lake</a><a href="../vaka-kayip/">Vaka: müşteri kaybı (churn) →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

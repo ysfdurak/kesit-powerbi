@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Veri Modelleme</span><h1>Hedef ve gerçekleşen: farklı ayrıntı düzeyleri</h1><p class="st-l">Günlük satışla aylık hedefi aynı görselde göstermek; ortak boyutlar ve doğru kategori sütunu.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-hedef">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Sorun: iki olgu, iki tanecik</h2>
 <p><code>Satislar</code> sipariş satırı düzeyinde ve günlük; <code>Hedefler</code> ise <b>ay × kategori</b> düzeyinde. İkisini tek tabloya birleştirmek yerine her iki olguyu da <b>ortak boyutlara</b> bağlarız:</p>
@@ -64,6 +65,6 @@ COUNTROWS(FILTER(VALUES(Tarih[YilAy]), [Net Satış] &gt;= [Hedef]))</pre>
 <p>2023’te 5 ay, 2024’te yalnızca 2 ay hedef tutturuldu. Ama 2024’ün yıllık gerçekleşmesi 2023’ten çok farklı değil (%97,9’a karşı %99,6). Yani 2024’te çoğu ay hedefe yakın kalıp aşamamış. Kategori kırılımında Giyim 36 ayın 13’ünde, Hediye 7’sinde hedefi tutmuş. Oran ve sıklık birlikte okununca hikâye tamamlanır.</p>
 <div class="note"><b>Kontrol listesi: hedef görseli</b>1) Gerçekleşme oranı toplam/toplam mı? 2) Kategori ve tarih paylaşılan boyutlardan mı geliyor? 3) Ay içi seçimlerde hedef gün payına göre mi? 4) YTD gerçekleşme aylık gerçekleşmenin yanında mı? 5) Oran ile tutar açığı birlikte mi gösteriliyor?</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-hedef">Alıştırmalara geç (8)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-hedef/1">Alıştırmalara geç (8)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../etkilesim/">← Etkileşimler: dilimleyici, detaya inme, araç ipucu, yer işareti</a><a href="../kosullu-bicim/">Koşullu biçimlendirme ve KPI'lar →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

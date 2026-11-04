@@ -1,0 +1,40 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular | Kesit Power BI</title><meta name="description" content="Folder.Files çıktısı, Content sütunundaki Binary, Csv.Document, fonksiyonla okuma ve genişletme; Combine Files’ın yardımcı sorguları ve tipik tuzaklar."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-klasor/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular"><meta property="og:description" content="Folder.Files çıktısı, Content sütunundaki Binary, Csv.Document, fonksiyonla okuma ve genişletme; Combine Files’ın yardımcı sorguları ve tipik tuzaklar."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-klasor/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular","description":"Folder.Files çıktısı, Content sütunundaki Binary, Csv.Document, fonksiyonla okuma ve genişletme; Combine Files’ın yardımcı sorguları ve tipik tuzaklar.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-klasor/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Veri Hazırlama</span><h1>Klasörden dosya birleştirme: Folder.Files, Binary, yardımcı sorgular</h1><p class="st-l">Folder.Files çıktısı, Content sütunundaki Binary, Csv.Document, fonksiyonla okuma ve genişletme; Combine Files’ın yardımcı sorguları ve tipik tuzaklar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-klasor">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>Combine Files ne yapar?</h2>
+<p>Klasör bağlayıcısı dosya başına bir satır getirir. Şerit <b>Combine</b> ile bir örnek dosya seçer, o dosyadaki temizliği fonksiyona çevirir ve her dosyaya uygular. Yardımcı sorgular grubunda örnek dosya, parametre, işlev ve <b>Transform Sample file</b> oluşur. Sen temizliği yalnız bu örnek sorguda yaparsın.</p>
+<div class="note"><b>Benzetim</b>Lab gerçek diske bağlanmaz. <code>Folder.Files("C:\Veri\Satis")</code> üç aylık CSV ve bir notlar dosyasından oluşan sabit bir klasör döndürür; dosya içeriği <code>Binary</code> olarak taşınır. Gerçek Binary’nin bayt işlemleri, Excel.Workbook ve kodlama seçenekleri alt küme dışındadır. Mantık gerçek klasör birleştirmeyle aynıdır.</div>
+<h2>Elle yazılışı</h2>
+<pre class="m" data-run>Folder.Files("C:\Veri\Satis")</pre>
+<p>Learn: Folder.Files klasördeki ve alt klasörlerdeki her dosya için bir satır, özellikler ve içeriğe bağlantı döndürür. Dört adım var: dosyaları süz, tek dosyayı okuyan fonksiyon yaz, her satırda çağır, genişlet.</p>
+<pre class="m" data-run>let
+    Dosyalar = Folder.Files("C:\Veri\Satis"),
+    Csvler = Table.SelectRows(Dosyalar, each [Extension] = ".csv"),
+    Oku = (ikili as binary) as table =>
+        Table.PromoteHeaders(Csv.Document(ikili, [Delimiter = ";"])),
+    Okunan = Table.AddColumn(Csvler, "Veri", each Oku([Content])),
+    Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),
+    Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"}),
+    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}})
+in
+    Tipli</pre>
+<p><code>Name</code> sütununu tutmak iyi alışkanlıktır: Combine Files bunun için <code>Source.Name</code> sütununu üretir, hatalı satırın hangi dosyadan geldiğini gösterir.</p>
+<h2>Tipik tuzaklar</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead><tbody>
+<tr><td>Fazladan null satırlar</td><td>Klasördeki yabancı dosya da okundu</td><td>Combine yerine Transform data ile önce uzantıya ve ada göre süz</td></tr>
+<tr><td><i>The column 'Column1' of the table wasn't found</i></td><td>Örnek sorguda başlık yükselttin, çıktı sorgusundaki eski tür adımı Column1’i arıyor</td><td>O adımı Uygulanan adımlardan sil</td></tr>
+<tr><td>Bir dosyada sütun eksik</td><td>Yeni dosyanın şeması farklı</td><td>Genişletmede null gelir ya da tür adımı hata verir; dosya sözleşmesi koy, <code>Name</code> ile bul</td></tr>
+<tr><td>Yeni sütun gelmiyor</td><td>ExpandTableColumn’daki sütun listesi kalıcıdır</td><td>Listeyi kodda güncelle ya da <code>Table.ColumnNames</code> ile dinamik üret</td></tr>
+<tr><td>Türler Herhangi geliyor</td><td>Birleşik sütunların türü yok</td><td>Son adım tür ver</td></tr>
+<tr><td>Sonuç filtre listesinde eksik görünüyor</td><td>Liste eksik olabilir uyarısı</td><td>Load more ile genişlet, sonra karar ver</td></tr>
+</tbody></table></div>
+<h2>Klasör yolunu parametre yap</h2>
+<p>Yolu parametre yaparsan başka makine ve bulutta çalışır. Bulutta paylaşılmış klasör için <code>SharePoint.Files</code> ve ağ geçidi gerekir; yerel yol Service’te ağ geçidi ister. Çok dosyada Learn’ün tavsiyesi: filtreyi erken uygula, yalnız gereken dosyaları oku.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-klasor/1">Alıştırmalara geç (9)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-fonksiyon/">← Özel fonksiyon ve parametre: tekrar eden işi tek yere toplamak</a><a href="../m-hata/">M’de hata yönetimi: try, otherwise, catch, error, hata hücreleri →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

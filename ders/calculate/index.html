@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>CALCULATE: filtre bağlamını değiştirmek</h1><p class="st-l">DAX'ın en güçlü fonksiyonu. Filtre eklemek, değiştirmek ve kaldırmak.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-calculate">Uygulamada aç, 10 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Söz dizimi</h2>
 <pre class="dax" data-notry>CALCULATE( &lt;ifade&gt;, &lt;filtre1&gt;, &lt;filtre2&gt;, ... )</pre>
@@ -87,6 +88,6 @@ CALCULATE([Net Satış], Satislar[Tarih] = MAX(Satislar[Tarih]))</pre>
 <p>Üçüncü yazım en tehlikelisidir. Satırlarda kategori olan bir tabloda her satırda 457.331 ₺ görürsün, çünkü <code>ALL(Satislar)</code> genişletilmiş tablo üzerinden kategori filtresini de siler (bir sonraki derste). İkinci yazım dış filtreyi korur, ama bütün <code>Satislar</code> tablosunu dolaştığı için büyük modelde yavaştır. Dış filtreyle kesişim istiyorsan aynı sonucu daha ucuza <code>KEEPFILTERS(Satislar[Kanal] = "Web")</code> verir.</p>
 <div class="note"><b>Karar ağacı</b>Koşul tek sütunda mı? Boolean yaz. Aynı tablonun birkaç sütununda mı? Yine boolean (<code>||</code>, <code>&amp;&amp;</code>). Birden çok tabloya mı yayılıyor ya da ölçü mü içeriyor? <code>FILTER</code> yaz ve dolaşılan tabloyu olabildiğince küçük seç (<code>VALUES(Urunler[Urun])</code> gibi). Dış filtreyi silmek değil kesiştirmek mi istiyorsun? <code>KEEPFILTERS</code> ekle.</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-calculate">Alıştırmalara geç (10)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-calculate/1">Alıştırmalara geç (10)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../baglam/">← Filtre bağlamı (filter context) ve satır bağlamı (row context)</a><a href="../iteratorler/">Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

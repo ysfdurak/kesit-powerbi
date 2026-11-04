@@ -1,0 +1,46 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir | Kesit Power BI</title><meta name="description" content="Table.Group, Table.Pivot, Table.UnpivotOtherColumns, Table.NestedJoin, Table.Transpose, Table.TransformColumns; şeridin ürettiği kodu sadeleştirmek."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/m-tablo/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir"><meta property="og:description" content="Table.Group, Table.Pivot, Table.UnpivotOtherColumns, Table.NestedJoin, Table.Transpose, Table.TransformColumns; şeridin ürettiği kodu sadeleştirmek."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/m-tablo/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir","description":"Table.Group, Table.Pivot, Table.UnpivotOtherColumns, Table.NestedJoin, Table.Transpose, Table.TransformColumns; şeridin ürettiği kodu sadeleştirmek.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/m-tablo/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Table işlevlerini elle yazmak: grupla, pivot, unpivot, birleştir</h1><p class="st-l">Table.Group, Table.Pivot, Table.UnpivotOtherColumns, Table.NestedJoin, Table.Transpose, Table.TransformColumns; şeridin ürettiği kodu sadeleştirmek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-m-tablo">Uygulamada aç, 12 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><h2>Adımlar tablo alır, tablo döndürür</h2>
+<p>Table işlevlerinin ilk bağımsız değişkeni tablodur, sonucu da tablodur. Bu yüzden adımlar zincirlenir. Şeridin yazdığı kod çoğu zaman tek bir ifadeye indirilebilir, ama okunurluk için adlı adımları koru.</p>
+<h2>Table.Group: agregasyon listesi</h2>
+<p>Üçüncü bağımsız değişken <code>{ad, fonksiyon, tür}</code> listelerinin listesidir. Fonksiyona o grubun alt tablosu gelir; <code>[Tutar]</code> bu yüzden tek değer değil listedir.</p>
+<pre class="m" data-run>Table.Group(
+    Satislar,
+    {"Şehir"},
+    {
+        {"Toplam", each List.Sum([Tutar]), type number},
+        {"Sipariş", each Table.RowCount(_), Int64.Type}
+    }
+)</pre>
+<div class="warn"><b>Tuzak</b>Fonksiyon <code>each _</code> olursa her grubun hücresine alt tablo düşer. “Tüm satırlar” seçeneği budur; ilk satırı alma ya da grup içi sıralama gibi kalıplar buna dayanır.</div>
+<h2>Table.Pivot ve Table.UnpivotOtherColumns</h2>
+<p>Pivot’un ikinci bağımsız değişkeni, sütun olacak değerlerin listesidir. Şerit bunu <code>List.Distinct(t[Ay])</code> diye yazar. Sabit liste yazarsan yeni ay sütun açmaz. Aşağıdaki kodda Ege’nin Mart’ı yoktur: o hücre null gelir.</p>
+<pre class="m" data-run>Table.Pivot(Aylik_Satis, List.Distinct(Aylik_Satis[Ay]), "Ay", "Tutar", List.Sum)</pre>
+<pre class="m" data-run>Table.UnpivotOtherColumns(Hedefler, {"Kategori"}, "Ay", "Hedef")</pre>
+<p>Giyim’in Mart hücresi null olduğundan unpivot satırı üretmez: 12 yerine 11 satır çıkar. Bu, ürünün bilinen davranışıdır; Learn sayfası ayrıca yazmıyor. Rapor toplamını değiştirmez ama satır sayısını şaşırtabilir.</p>
+<h2>Birleştirme: NestedJoin ve genişletme</h2>
+<pre class="m" data-run>let
+    Birlesik = Table.NestedJoin(Bayi_Subat, {"Şehir"}, Sehir_Bolge, {"Şehir"}, "Eslesme", JoinKind.LeftOuter),
+    Acik = Table.ExpandTableColumn(Birlesik, "Eslesme", {"Bölge"})
+in
+    Acik</pre>
+<p><code>Table.NestedJoin</code> eşleşen satırları hücrede tablo olarak tutar, <code>Table.ExpandTableColumn</code> açar. Şeridin “Merge” komutu da aynı kodu üretir. <code>Table.Join</code> doğrudan düz sonuç verir. Aynı adlı anahtar sütun sonuçta bir kez görünür (Learn örnek 1). Anahtar dışında aynı adlı sütun varsa Learn davranışı yazmıyor, örnek 2 <code>Table.PrefixColumns</code> ile çakışmayı önlüyor; bu alt küme hata verir.</p>
+<h2>Sütun dönüştürme ve tür</h2>
+<pre class="m" data-run>let
+    Basliklar = Table.PromoteHeaders(Musteri_Ham),
+    Temiz = Table.TransformColumns(Basliklar, {{"E-posta", Text.Lower, type text}, {"Ad Soyad", each Text.Proper(_, "tr-TR"), type text}}),
+    Tipli = Table.TransformColumnTypes(Temiz, {{"MusteriNo", Int64.Type}}),
+    Tekil = Table.Distinct(Tipli, {"MusteriNo"})
+in
+    Tekil</pre>
+<p><code>TransformColumns</code> için alan adı <code>{"Sütun", fonksiyon, tür}</code> biçimindedir; fonksiyonun aldığı değer hücredir, satır değil. Bu yüzden <code>[Alan]</code> yazılmaz, <code>_</code> yazılır.</p>
+<div class="tip"><b>Sadeleştirme</b>Uzun otomatik adların yerine kısa adlar kullan, gereksiz Changed Type adımlarını sil, aynı sütunu üç kez dönüştüren adımları birleştir. Kod kısalır, davranış aynı kalır.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-m-tablo/1">Alıştırmalara geç (12)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-yapi/">← M’de kayıt, liste, tablo: yapıları kurmak ve gezmek</a><a href="../m-liste-metin/">List, Text, Date: List.Accumulate, List.Generate, Text.Split →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Temel · Veri Hazırlama</span><h1>Power Query: metin, sayı ve tarih dönüşümleri</h1><p class="st-l">Metni kırpmak, birleştirmek ve parçalamak; sayıyı yuvarlamak ve çarpmak; tarihten yıl, ay, gün adı ve süre çıkarmak. Dönüştür ile Sütun ekle sekmelerinin farkı, yerel ayarla tür değiştirme ve aynı işi DAX’ta yapmanın bedeli.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-pq-donusum">Uygulamada aç, 5 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>“Power Query ile veri temizleme” dersinde kirli bir Excel sayfasını başlık, tür ve boş satır açısından düzelttik. Bu ders bir adım ileri gidiyor: sütunların <b>içeriğini</b> değiştiren komutlar. Hepsi şeritte üç grupta durur: <b>Metin</b>, <b>Sayı</b> ve <b>Tarih ve Saat</b>. Her komut, arka planda tek satırlık bir M fonksiyonu yazar.</p>
 
@@ -89,6 +90,6 @@ in
 AVERAGEX(Satislar, YEAR(Satislar[Tarih]) - RELATED(Musteriler[DogumYili]))</pre>
 <p>Modelimizde bu değer tüm satışlarda yaklaşık 41,5; 2022’de 38,1, 2024’te 42,0’dır.</p>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-pq-donusum">Alıştırmalara geç (5)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-donusum/1">Alıştırmalara geç (5)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../kademeli-tasarim/">← Kullanıcı odaklı tasarım: kademeli açığa çıkarma, düğme durumları ve simgeler</a><a href="../pq-ileri/">Power Query: join türleri, dizin sütunu ve gruplu sıra →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Veri bağlantıları: veritabanı, yerel SQL sorgusu, Desktop ile Service</h1><p class="st-l">Bir SQL veritabanına bağlanmak, gezgin ile yerel SQL sorgusu arasında seçim yapmak, M, DAX ve SQL’in yeri, bağlantıyı parametreyle yönetmek ve Desktop’ta kurulan bağlantının Service’te nasıl yenilendiği.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-veri-baglantilari">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>“Veri alma ve bağlantı modları” dersinde İçeri aktarma ile DirectQuery farkını gördük. Bu ders bir bağlantının yaşam döngüsüne bakıyor: Desktop’ta nasıl kurulur, hangi bilgileri saklar ve rapor yayımlandıktan sonra Service’te neden bazen yenilenmez.</p>
 
@@ -87,7 +88,16 @@ in
 
 <h2>Artımlı yenileme: kısa bir bakış</h2>
 <p>Milyonlarca satırlık bir olgu tablosunu her gece baştan yüklemek yerine yalnızca son günleri yenilemek mümkündür. Bunun için <code>RangeStart</code> ve <code>RangeEnd</code> adlı iki tarih/saat parametresiyle tabloyu filtreler ve tabloya bir yenileme ilkesi tanımlarsın. Filtrenin kaynağa katlanması şarttır; yerel SQL sorgusu bu yüzden burada risklidir. Ayrıntılar “Kurumsal model” dersinde.</p>
-<div class="note"><b>Devamı</b>Ağ geçidinin kurulumu ve teşhisi <a href="../gateway/">On-premises data gateway</a>, yenilemenin türleri ve sınırları <a href="../veri-yenileme/">Veri yenileme</a> dersinde.</div></article>
-<div class="st-c"><a class="st-p" href="../../#ders-veri-baglantilari">Alıştırmalara geç (6)</a></div>
+<h2>ERP ve kurumsal veri tabanı kaynakları</h2>
+<p>İş ilanlarında sık geçer. Kısa karar özeti:</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kaynak</th><th>Bağlayıcı</th><th>Dikkat</th></tr></thead><tbody>
+<tr><td><b>PostgreSQL</b></td><td><code>PostgreSQL.Database</code>, Import ve DirectQuery</td><td>Desktop ve ağ geçidi Npgsql’i içerir. Yerel sorguda katlama varsayılan açıktır; <code>Value.NativeQuery</code> isteğe bağlı parametre alırsa katlanmaz.</td></tr>
+<tr><td><b>Oracle</b></td><td><code>Oracle.Database</code>, Import ve DirectQuery</td><td>Oracle 12c (12.1.0.2) ve sonrası. Güncel Desktop ve ağ geçidinde yerleşik sürücü var. Kişisel ağ geçidi desteklenmez, kurumsal ağ geçidi gerekir.</td></tr>
+<tr><td><b>SAP HANA, SAP BW</b></td><td>Adanmış bağlayıcılar (SAP HANA database, SAP Business Warehouse)</td><td>SAP’nin hazır analitik görünümlerini ya da BW sorgularını okumak çoğu zaman ham tablolardan daha doğrudur. Lisans ve yetkiyi SAP ekibiyle netleştir.</td></tr>
+<tr><td><b>Oracle ERP</b></td><td>Oracle ERP (önizleme) bağlayıcısı listede</td><td>Önizleme: üretimde kullanmadan önce sınırlarını oku.</td></tr>
+<tr><td><b>Logo, Netsis, Mikro gibi yerel ERP’ler</b></td><td>Power Query bağlayıcı listesinde adanmış bağlayıcı görmedik (Kasım 2026)</td><td>Pratikte erişim çoğu kurulumda arkadaki veri tabanından ya da üreticinin raporlama yolundan olur. Tablo yapısını, lisans koşulunu ve okuma yetkisini üreticiden ve BT’den doğrula. Bu cümle bizim saha gözlemimizdir, resmî belge değildir.</td></tr>
+</tbody></table></div>
+<p><b>Üç kural.</b> ERP’nin canlı işlem tablolarına ağır sorgu atma: mümkünse salt okunur kopya, rapor görünümü ya da ambar kullan. Ham tabloyu değil, ERP ekibinin onayladığı görünümü oku. Fatura ve iade mantığını kendin yeniden kurarken Finans’ın rakamıyla mutabakat yap.</p><div class="note"><b>Devamı</b>Ağ geçidinin kurulumu ve teşhisi <a href="../gateway/">On-premises data gateway</a>, yenilemenin türleri ve sınırları <a href="../veri-yenileme/">Veri yenileme</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-baglantilari/1">Alıştırmalara geç (6)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../pq-ileri/">← Power Query: join türleri, dizin sütunu ve gruplu sıra</a><a href="../model-ileri/">Model tasarımı II: kar tanesi şema, bileşik anahtar, ayrıntı düzeyi ve görünürlük →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

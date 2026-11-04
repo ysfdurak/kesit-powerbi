@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · Analiz</span><h1>Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar</h1><p class="st-l">Satış ve maliyet verisinden küçük bir kâr-zarar tablosu kurmak (yardımcı tablo + SWITCH), bütçe sapması, oran panosu, FV/PV/PMT ile paranın zaman değeri, XNPV ve XIRR ile yatırım kararı ve ne olur parametresiyle duyarlılık.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-finans">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Finans ekibi bir raporda üç şey arar: <b>tutarlar bir gelir tablosu düzeninde mi</b>, <b>bütçeye göre neredeyiz</b> ve <b>bir kararın parasal değeri ne</b>. Anadolu Market modelinde faaliyet giderleri <code>Giderler</code>, bütçesi <code>GiderButce</code>, türleri <code>GiderTurleri</code> tablosundadır; bilanço yoktur. Gelir tablosunu faaliyet kârına kadar gerçek veriyle kurarız. Şirket ölçeği öğretim için sıkıştırılmıştır: <code>Giderler</code> tutarları satışa göre küçük, <code>Calisanlar[Maas]</code> ile aynı ölçekte değildir.</p>
 
@@ -126,6 +127,6 @@ VAR Akis = SELECTCOLUMNS(GENERATESERIES(0, 8),
 RETURN ADDCOLUMNS(GENERATESERIES(0.10, 0.40, 0.05), "NBD", XNPV(Akis, [Nakit], [Tarih], [Value]))</pre>
 <p>%10'da 59.949 TL, %20'de 27.750 TL, %30'da 1.336 TL, %35'te −10.159 TL. Satış tarafında aynı soruyu Segmentasyon dersindeki fiyat senaryosuyla sorarsın: fiyat %5 artarsa adet ve kâr ne olur? İkisini bir sayfada birleştirmek, yatırımın getirisinin fiyat varsayımına ne kadar bağlı olduğunu gösterir.</p>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-finans">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-finans/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../zaman-serisi/">← Zaman serisi analizi: gün etkisi, mevsimsellik, tahmin ve büyüme oranları</a><a href="../copilot/">Copilot ile çalışmak ve modeli yapay zekâya hazırlamak →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

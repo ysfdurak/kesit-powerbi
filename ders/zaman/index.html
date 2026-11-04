@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Zaman Zekâsı</span><h1>Zaman zekâsı: YTD, geçen yıl, büyüme</h1><p class="st-l">TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, PREVIOUSMONTH ve yıllık büyüme ölçüleri.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-zaman">Uygulamada aç, 9 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Ön koşul</h2>
 <p>Zaman zekâsı fonksiyonları kesintisiz bir tarih sütununa ihtiyaç duyar; iyi uygulama, ayrı bir tarih tablosu kurup “Tarih tablosu olarak işaretle”mektir. İlişki tarih türünde bir sütunla kurulduysa işaretlemeden de çalışır; tarih dışı bir anahtarla kurulduysa işaret şarttır. Bu modelde <code>Tarih[Tarih]</code> o sütundur. Görselde tarih bilgisini her zaman <b>Tarih tablosundan</b> al (<code>Tarih[Yil]</code>, <code>Tarih[YilAy]</code>), olgu tablosundaki tarihten değil.</p>
@@ -72,6 +73,6 @@ RETURN IF(OncekiBas &gt;= IlkSatis, [YoY %])</pre>
 <p>2023 yıl satırında önceki dönem 1 Ocak 2022’de başlar. Bu tarih ilk satıştan önce olduğu için ölçü BLANK döner. 2024 satırında %86,4 görünür. Ay satırlarında Temmuz 2023’ten itibaren değer çıkar.</p>
 <div class="note"><b>Tarih tablosu kontrol listesi</b>1) Her gün bir satır, boşluk yok; ilk yılın 1 Ocak’ından son yılın 31 Aralık’ına. 2) Tarih sütununda saat yok (00:00 olmayan değerler ilişkiyi bozar). 3) “Tarih tablosu olarak işaretle” yapıldı. 4) Seçenekler’de “Otomatik tarih/saat” kapalı; yoksa her tarih sütunu için gizli bir tarih tablosu oluşur. 5) Ay adı gibi metin sütunları “Sütuna göre sırala” ile sayıya bağlı (Ay → AyNo). 6) Verinin başladığı ve bittiği tarih biliniyor; eksik dönemli karşılaştırmalar gizleniyor.</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-zaman">Alıştırmalara geç (9)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman/1">Alıştırmalara geç (9)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../filter-all/">← FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar</a><a href="../var-mantik/">VAR / RETURN, IF ve SWITCH →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

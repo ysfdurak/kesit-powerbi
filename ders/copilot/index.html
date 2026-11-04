@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Analiz</span><h1>Copilot ile çalışmak ve modeli yapay zekâya hazırlamak</h1><p class="st-l">Copilot’un Power BI’daki yerleri, kapasite ve kiracı gereksinimleri, Soru-Cevap’tan Copilot’a geçiş, “Yapay zekâ için verileri hazırla” ile veri şeması, onaylı cevaplar ve talimatlar; iyi soru yazmak ve cevabı doğrulamak.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-copilot">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Copilot, Power BI’da doğal dille soru sorduğun, rapor sayfası istediğin ya da DAX yazdırdığın yapay zekâ yardımcısıdır. Ama Copilot <b>modelini</b> okur: tablo, sütun ve ölçü adlarını, açıklamaları, ilişkileri. Model dağınıksa cevap da dağınık olur. Bu derste önce Copilot’un nerede olduğunu, sonra modeli ona nasıl hazırlayacağını öğreneceksin. DAX tarafındaki ilk adımlar “Hızlı ölçüler ve Copilot ile DAX” dersinde; burada rapor, model ve yönetim tarafına odaklanıyoruz.</p>
 
@@ -92,7 +93,16 @@ Belirsizlik
 <li><b>Sayfa özetini yayına koymadan önce oku:</b> Anlatı görseli yanlış bir neden-sonuç cümlesi kurabilir.</li>
 </ul>
 <div class="warn"><b>Güvenlik ve gizlilik</b>Copilot kullanıcının izinlerine uyar: satır düzeyi güvenlik (RLS) varsa yalnızca görebildiği veriyle cevap verir. Yine de duyarlı alanları (maaş, e-posta) yapay zekâ veri şemasından çıkarmak iyi bir alışkanlıktır.</div>
-<div class="note"><b>Fabric’in geri kalanı</b>Data Factory, not defteri ve ambarda Copilot <a href="../fabric-copilot/">Fabric ve Power BI’da Copilot</a> dersinde.</div></article>
-<div class="st-c"><a class="st-p" href="../../#ders-copilot">Alıştırmalara geç (6)</a></div>
+<h2>Copilot ile model: özet, açıklama, denetim</h2>
+<p>PL-300 maddesi “Copilot ile model özeti” bu bölüm içindir. Learn’e göre dört yüzey vardır:</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Yüzey</th><th>Nerede</th><th>Ne yapar</th></tr></thead><tbody>
+<tr><td>Veriye soru</td><td>Desktop, yayımlanmış rapor, mobil</td><td>Doğal dilde soru: görsel ve özet döndürür. Model hakkında “bu modelde hangi tablolar var, satış nasıl hesaplanıyor” diye sorabilirsin.</td></tr>
+<tr><td>DAX sorgu görünümü</td><td>Desktop</td><td>DAX yazar, açıklar, yorum ekler</td></tr>
+<tr><td>Ölçü açıklaması üret</td><td>Desktop</td><td>Ölçüler için açıklama yazar; belgeleme ve Copilot’un kendisi için dayanak olur</td></tr>
+<tr><td>Copilot ile web’de modelleme</td><td>Service, Model görünümü, düzenleme modu</td><td>Modeli sorun için çözümler, şema değişikliği önerir; her değişikliği kabul etmeden gözden geçir</td></tr>
+</tbody></table></div>
+<p><b>Model özetinin kalitesi modelinkidir.</b> Copilot dayanağını ad, açıklama, eşanlamlı ve yapıdan alır. Yanıtlar belirlenimci değildir: aynı soru farklı sonuç verebilir. Canlı bağlantıda ölçü DAX’ını ve gizli nesneleri göremez. Eski konuşma da dayanak olur: ilgisiz soru için bölmeyi kapatıp aç.</p>
+<p><b>Uygulamada süreç.</b> Önce yıldız şema ve okunur adlar. Sonra ölçü açıklamalarını üret ve doğrula. Sonra AI veri şeması ve eşanlamlılar. En sonda “bu modeli özetle” de ve özeti sen okuyarak denetle: özet doğruysa model anlaşılırdır, yanlışsa çoğu zaman modeli düzeltmek gerekir. Desktop’ta Copilot için çalışma alanı F2 ya da P1 kapasitesinde olmalıdır. Bu uygulamada Copilot arayüzü yok, taklit de etmiyoruz.</p><div class="note"><b>Fabric’in geri kalanı</b>Data Factory, not defteri ve ambarda Copilot <a href="../fabric-copilot/">Fabric ve Power BI’da Copilot</a> dersinde.</div></article>
+<div class="st-c"><a class="st-p" href="../../#ders-copilot/1">Alıştırmalara geç (6)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../finans/">← Finansal raporlama: gelir tablosu, bütçe sapması, oranlar ve finansal fonksiyonlar</a><a href="../yz-dax-denetim/">Yapay zekânın yazdığı DAX’ı denetlemek →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

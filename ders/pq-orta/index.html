@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Power Query: birleştirme, ekleme, özetten çıkarma</h1><p class="st-l">Merge (join türleri), Append, Unpivot, Group By, koşullu sütun, parametreler ve sorgu katlama.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-pq-orta">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Sorguları birleştir (Merge)</h2>
 <p>İki tabloyu ortak bir sütun üzerinden yan yana getirir; SQL'deki JOIN'in karşılığıdır. Giriş → <b>Sorguları Birleştir</b>.</p>
@@ -84,6 +85,6 @@
     try Date.FromText([KayitTarihi], [Culture = "tr-TR"]) otherwise null, type date)</pre>
 <div class="warn"><b>Sessiz düzeltme tehlikesi</b>Hatayı 0 ile değiştirmek raporda “satış yok” gibi görünür; null ile değiştirmek ise “bilinmiyor” demektir. Tutar için 0 değil null tercih et ve hatalı satır sayısını bir denetim sorgusunda izle.</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-pq-orta">Alıştırmalara geç (11)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-pq-orta/1">Alıştırmalara geç (11)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../siralama/">← Sıralama ve ilk N: RANKX ve TOPN</a><a href="../gorsel-ilkeler/">Görselleştirme ilkeleri →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

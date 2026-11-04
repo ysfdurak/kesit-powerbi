@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">İleri · Müşteri Analitiği</span><h1>Müşteri analitiği: yeni, geri dönen, kayıp, kohort, RFM</h1><p class="st-l">Müşteri yaşam döngüsünü ölçen uzun DAX kalıpları ve her birinin adım adım mantığı.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-musteri-analitigi">Uygulamada aç, 11 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <h2>Müşteri yaşam döngüsü soruları</h2>
 <div class="tbl-wrap"><table>
@@ -162,6 +163,6 @@ RETURN IF(NOT ISBLANK(Ay) &amp;&amp; Ay &gt;= 0, DIVIDE(Aktif, Boyut))</pre>
 <p>Ölçü dilimleyiciye tepki verir; keşif için iyidir. Ama CRM ekibi “1 Kasım'da Şampiyon olanlara kampanya gönderdik” dediğinde rapor aynı listeyi yeniden üretebilmelidir. Bunun için her ay sonunda bir <b>anlık görüntü tablosu</b> (Ay, MusteriNo, Segment) yazılır; segment geçişleri de bu tablodan basit bir sayımla çıkar. Milyonlarca müşteride ölçü her hücrede müşteri başına üç CALCULATE çalıştırır; o ölçekte anlık görüntü zorunludur (DAX optimizasyonu dersi).</p>
 <div class="tip"><b>Yayın öncesi kontrol listesi</b>Tanımlar veri sözlüğünde mi? Çapa verinin son günü mü? Kayıp eşiği aralık dağılımına dayanıyor mu? Kohortta olgun payda, büyüklük sütunu ve ay farkı ≥ 0 filtresi var mı? CLV aralık ve varsayımlarıyla mı sunuluyor? Kampanya segmentleri anlık görüntüden mi?</div>
 </section></article>
-<div class="st-c"><a class="st-p" href="../../#ders-musteri-analitigi">Alıştırmalara geç (11)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-musteri-analitigi/1">Alıştırmalara geç (11)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../pencere/">← Pencere fonksiyonları (window functions) ve görsel hesaplamalar (visual calculations)</a><a href="../segmentasyon/">Segmentasyon: ABC, dinamik dilimler ve ne olur analizi →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

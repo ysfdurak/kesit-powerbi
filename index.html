@@ -11,7 +11,7 @@
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="Kesit Power BI">
 <meta property="og:title" content="Kesit Power BI: sıfırdan işe hazır Power BI">
-<meta property="og:description" content="Kurulum yok, hesap yok. DAX'ı benzeten tarayıcı motoruyla 134 ders, 1.000'i aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
+<meta property="og:description" content="Kurulum yok, hesap yok. DAX'ı benzeten tarayıcı motoruyla 150 ders, 1.000'i aşkın alıştırma, 24 örnek rapor ve 5 vaka veri seti.">
 <meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png">
 <meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/">
 <meta name="twitter:card" content="summary_large_image">
@@ -1634,6 +1634,34 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 .ic{color:#000}
 .ed-top{color:#A8A392}
 .ic[style*="--s6"]{color:#fff}@media (prefers-color-scheme:light){.ic[style*="--s7"]{color:#fff}}[data-theme="light"] .ic[style*="--s7"]{color:#fff}[data-theme="dark"] .ic[style*="--s7"]{color:#000}
+/* Power Query Lab: Görünüm sekmesi ve M editörü */
+.pqvo{display:inline-flex; align-items:center; gap:5px; font-size:.82rem; padding:4px 8px; white-space:nowrap}
+.pqd td{vertical-align:bottom}
+.dbars{display:flex; align-items:flex-end; gap:2px; height:26px; min-width:60px; margin-bottom:2px}
+.dbars i{display:block; flex:1 1 0; min-width:3px; max-width:14px; background:var(--s7); opacity:.75; border-radius:1px 1px 0 0}
+.pqprof{display:grid; grid-template-columns:minmax(200px,1fr) minmax(200px,1.4fr); gap:18px; margin-top:10px; padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--surface); font-size:.82rem}
+.pqprof.muted{display:block}
+.pqprof table{border-collapse:collapse; margin-top:6px; width:100%}
+.pqprof th{text-align:left; font-weight:500; color:var(--muted); padding:2px 8px 2px 0}
+.pqprof td{text-align:right; padding:2px 0; font-variant-numeric:tabular-nums}
+.pqbar{display:grid; grid-template-columns:minmax(70px,120px) 1fr auto; align-items:center; gap:6px; margin-top:4px}
+.pqbar span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pqbar>i{display:block; height:10px; background:var(--s7); opacity:.75; border-radius:2px}
+.pqbar em{font-style:normal; color:var(--muted); font-variant-numeric:tabular-nums}
+.pqnest{font-style:normal; color:var(--s7); font-weight:600}
+.mbox{padding:14px; min-width:0}
+.mta{display:block; width:100%; box-sizing:border-box; font-family:var(--mono,ui-monospace,Consolas,monospace); font-size:.86rem; line-height:1.5; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--surface-2); color:var(--ink); resize:vertical; white-space:pre; overflow:auto; tab-size:4}
+.mta:focus{outline:2px solid var(--s7); outline-offset:1px}
+#mRes:not(:empty),#mOut:not(:empty),#mSol:not(:empty){margin-top:10px}
+.mbox pre.m{overflow:auto; max-width:100%}
+.msup{margin-top:12px; font-size:.82rem}
+.msup summary{cursor:pointer; font-weight:600}
+.msup p{margin:6px 0; max-width:90ch}
+.msup ul{margin:4px 0 8px; padding-left:18px}
+.mfn{overflow-wrap:anywhere}
+@media (max-width:640px){.pqprof{grid-template-columns:1fr}}
+.mrunb{margin:-4px 0 8px}
+.mrunout:not(:empty){margin:0 0 12px}
 </style>
 <noscript><p><a href="ders/">Ders metinlerini JavaScript olmadan oku</a></p></noscript>
 <a class="skip" href="#main" onclick="document.getElementById('main').focus();return false;">İçeriğe geç</a>
@@ -1646,7 +1674,9 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
   </aside>
   <div class="grow" style="min-width:0">
     <header class="topbar"><a class="brand" href="#" data-go="home" style="padding:0"><span class="marker k" aria-hidden="true"><svg viewBox="0 0 26 26" width="26" height="26"><rect x="0.5" y="0.5" width="25" height="25" rx="7" fill="var(--accent)"/><path d="M0.5 15.5 L15.5 0.5 H20.5 L0.5 20.5 Z" fill="var(--bg)"/><rect x="13.4" y="14.5" width="2.6" height="6.5" rx="1.1" fill="var(--accent-ink)"/><rect x="17.2" y="11.5" width="2.6" height="9.5" rx="1.1" fill="var(--accent-ink)"/><rect x="21" y="8.5" width="2.6" height="12.5" rx="1.1" fill="var(--accent-ink)"/></svg></span><b>Kesit<span> Power BI</span></b></a><div class="mini"><span id="miniStats"></span></div></header>
-    <main id="main" tabindex="-1"></main>
+    <main id="main" tabindex="-1"><div class="wrap" id="bootmsg"><div class="panel empty" role="status" style="padding:24px;text-align:left"><b>Kesit Power BI yükleniyor…</b><p style="margin:6px 0 0" id="bootsub">İlk açılışta yaklaşık 2 MB indirilir, mobil veride birkaç saniye sürebilir. Sonraki açılışlar daha hızlıdır.</p></div></div></main>
+    <noscript><style>#bootmsg{display:none}</style></noscript>
+    <script>setTimeout(function(){var b=document.getElementById('bootsub');if(b)b.textContent='Hâlâ yükleniyor. Bağlantın yavaş olabilir: bekleyebilir ya da sayfayı yenileyebilirsin.';},20000);</script>
     <footer class="legal sitefoot"><p><b>Kesit Power BI</b> bağımsız bir eğitim uygulamasıdır; Microsoft ile bağlantılı değildir, Microsoft tarafından onaylanmamış ya da desteklenmemiştir. Microsoft, Power BI, Fabric, Excel ve PL-300/DP-600 adları Microsoft Corporation’ın ticari markalarıdır.</p><p>Sınav ve alıştırma soruları özgün olarak yazılmıştır; gerçek sınav sorusu ya da sınav dökümü değildir. Örnek veriler kurgusaldır. İlerlemen yalnızca bu tarayıcıda saklanır. Profil sayfasından yedeğini indirebilirsin.</p><p class="row" style="gap:12px"><button class="linkbtn" data-go="hakkinda">Hakkında</button><button class="linkbtn" data-go="veriler">Veri setleri</button><button class="linkbtn" data-kfb="Genel" id="footFb">Geri bildirim</button></p></footer>
   </div>
   <nav class="tabbar" id="tabbar" aria-label="Alt menü"></nav>

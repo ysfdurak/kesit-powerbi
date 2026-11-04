@@ -1,0 +1,41 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Görsel hesaplamalar: kavram, işlevler ve ne zaman ölçü yerine | Kesit Power BI</title><meta name="description" content="RUNNINGSUM, MOVINGAVERAGE, PREVIOUS, NEXT, FIRST, LAST; Axis ve Reset; ölçü ve hesaplanmış sütundan farkı, sınırlar. Bu uygulamanın motoru görsel…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-hesaplama/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Görsel hesaplamalar: kavram, işlevler ve ne zaman ölçü yerine"><meta property="og:description" content="RUNNINGSUM, MOVINGAVERAGE, PREVIOUS, NEXT, FIRST, LAST; Axis ve Reset; ölçü ve hesaplanmış sütundan farkı, sınırlar. Bu uygulamanın motoru görsel…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-hesaplama/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Görsel hesaplamalar: kavram, işlevler ve ne zaman ölçü yerine","description":"RUNNINGSUM, MOVINGAVERAGE, PREVIOUS, NEXT, FIRST, LAST; Axis ve Reset; ölçü ve hesaplanmış sütundan farkı, sınırlar. Bu uygulamanın motoru görsel…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/gorsel-hesaplama/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · İleri DAX</span><h1>Görsel hesaplamalar: kavram, işlevler ve ne zaman ölçü yerine</h1><p class="st-l">RUNNINGSUM, MOVINGAVERAGE, PREVIOUS, NEXT, FIRST, LAST; Axis ve Reset; ölçü ve hesaplanmış sütundan farkı, sınırlar. Bu uygulamanın motoru görsel hesaplamayı çalıştırmaz: senaryo ve elle hesap.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-hesaplama">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory"><div class="warn"><b>Bu ders senaryo ile</b>Bu uygulamanın DAX motoru görsel hesaplamayı çalıştırmaz. Bu yüzden kod görevi yok, Çalıştır düğmesi de yok; formülleri küçük tablolarda elle izliyoruz. Uygulaması için Power BI Desktop’ta bir görsel seçip düzenleme modunu aç.</div>
+<h2>Nedir?</h2>
+<p>Learn’e göre görsel hesaplama, anlam modelinde değil doğrudan bir görselde çalışan DAX hesabıdır. Yalnız o görselde görünen toplanmış veriyi kullanır: filtre bağlamı ve model ilişkileriyle uğraşmadan yürüyen toplam, hareketli ortalama, önceki dönem farkı yazarsın.</p>
+<pre class="dax" data-notry>Running sum = RUNNINGSUM([Sales Amount])
+MovingAverageSales = MOVINGAVERAGE([Sales Amount], 2)
+ProfitVSPrevious = [Profit] - PREVIOUS([Profit])
+ProfitVSFirst = [Profit] - FIRST([Profit])</pre>
+<h2>Ölçü, hesaplanmış sütun, görsel hesaplama</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th></th><th>Hesaplanmış sütun</th><th>Ölçü</th><th>Görsel hesaplama</th></tr></thead><tbody>
+<tr><td>Yeri</td><td>Modelde</td><td>Modelde</td><td>Görselde</td></tr>
+<tr><td>Ne zaman</td><td>Yenilemede</td><td>Sorguda</td><td>Sorguda, görselin toplanmış verisi üstünde</td></tr>
+<tr><td>Başka görselde</td><td>Var</td><td>Var</td><td>Yok: kopyalanamaz, yeniden kullanılamaz</td></tr>
+<tr><td>İlişki fonksiyonları</td><td>Var</td><td>Var</td><td>USERELATIONSHIP, RELATED, RELATEDTABLE yok</td></tr>
+</tbody></table></div>
+<h2>İşlevler</h2>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>İşlev</th><th>Anlam</th><th>Kısayolu olduğu</th></tr></thead><tbody>
+<tr><td><code>RUNNINGSUM</code></td><td>Eksen boyunca yürüyen toplam</td><td>WINDOW</td></tr>
+<tr><td><code>MOVINGAVERAGE</code></td><td>Eksen boyunca hareketli ortalama</td><td>WINDOW</td></tr>
+<tr><td><code>PREVIOUS, NEXT</code></td><td>Önceki ve sonraki satır</td><td>OFFSET(-1), OFFSET(1)</td></tr>
+<tr><td><code>FIRST, LAST</code></td><td>İlk ve son satır</td><td>INDEX(1), INDEX(-1)</td></tr>
+</tbody></table></div>
+<p>Pencere fonksiyonları ile bağ kurmak için <a href="../pencere/">Pencere fonksiyonları</a> dersine bak: orada OFFSET ve WINDOW’u bu uygulamada çalıştırabilirsin.</p>
+<h2>Axis ve Reset</h2>
+<p><b>Axis</b> hesabın matriste hangi yönde yürüdüğünü söyler. Varsayılan ilk eksendir, genellikle ROWS; COLUMNS, ROWPAGES ya da <code>ROWS COLUMNS</code> olabilir. <b>Reset</b> hesabın nerede sıfırlandığını söyler: varsayılan NONE. Pozitif sayı hiyerarşinin üstünden sayar: Yıl ve Ay satırlarında <code>RUNNINGSUM([Sales Amount], 1)</code> her yıl yeniden başlar. Negatif sayı bulunduğun yerden yukarı sayar: <code>-1</code> bir üst düzeyde sıfırlar. Eşanlamlılar: HIGHESTPARENT, LOWESTPARENT, NONE.</p>
+<h2>Sınırlar</h2>
+<ul><li>Dilimleyici, R, Python, Temel Etmenler, Ayrıştırma Ağacı, Q&amp;A, Akıllı Anlatı, Metrikler, sayfalandırılmış rapor, Power Apps, Power Automate görsellerinde ve özel görsellerde kullanılmaz.</li>
+<li>Filtreleme ve sıralama görsel hesaplama üzerinde çalışmaz; biçimi dinamik yapamazsın; toplamayı değiştiremezsin.</li>
+<li>Panoya iğnelenemez, Publish to web ile yayımlanamaz. Veri dışa aktarmada sonuçlar yer almaz.</li></ul>
+<h2>Ne zaman hangisi?</h2>
+<p>Yalnız bu görselde gereken, eksene bağlı bir hesap ise görsel hesaplama hızlı ve basittir. Birden çok görselde, Copilot’ta, dışa aktarmada, panoda ya da başka ölçünün içinde lazımsa ölçü yaz. Learn de görsel hesaplamaların toplanmış veri üstünde çalıştığı için çoğu zaman eşdeğer ölçüden daha iyi performans verdiğini söyler.</p></article>
+<div class="st-c"><a class="st-p" href="../../#ders-gorsel-hesaplama/1">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../zaman-donem/">← Dönem fonksiyonları: DATESMTD, DATESQTD, STARTOF, ENDOF, OPENING ve CLOSINGBALANCE</a><span></span></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -5,6 +5,7 @@
 <body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
 <main id="icerik" class="st-m"><span class="st-e">Orta · Veri Hazırlama</span><h1>Veri akışları ve paylaşılan anlam modelleri: hazırlığı bir kez yap, herkes kullansın</h1><p class="st-l">Veri akışı Gen2 ile Gen1 arasındaki fark, çıkış hedefleri, hazırlığın nerede yapılacağı (veri akışı, modeldeki Power Query, SQL görünümü), paylaşılan ve onaylı anlam modelleri, canlı bağlantı, ince rapor deseni, yenileme sırası ve veri tazeliği ölçüsü.</p>
 <div class="st-c"><a class="st-p" href="../../#ders-veri-akislari">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
 <article class="panel theory">
 <p>Anadolu Market’te dört analist var. Her biri kendi .pbix dosyasında aynı ürün listesini temizliyor: boşlukları siliyor, kategori adlarını düzeltiyor, iptal edilen siparişleri ayıklıyor. Ay sonunda dört raporda dört farklı “net satış” çıkıyor. Sorun DAX’ta değil, <b>hazırlığın dört kez yapılmasında</b>. Bu derste hazırlığı tek bir yere taşımayı ve herkesin aynı anlam modelini kullanmasını öğreneceksin.</p>
 <p>İki katman var: <b>veri katmanı</b> (temizlenmiş tablolar) ve <b>anlam katmanı</b> (ilişkiler, ölçüler, güvenlik). Veri akışı birinci katmanı, paylaşılan anlam modeli ikinci katmanı ortak hâle getirir.</p>
@@ -81,6 +82,6 @@ SUMMARIZECOLUMNS(
 )</pre>
 <p>Sonuçta altı kategori 0 ya da 1 gün geride, <b>Hediye</b> ise 16 gün (son satış 15.12.2024). Bu bir veri hatası olmayabilir; belki o kategoride gerçekten satış yoktur. Ama göstergeyi gören kişi soruyu sorar, rakamı körü körüne kullanmaz.</p>
 </article>
-<div class="st-c"><a class="st-p" href="../../#ders-veri-akislari">Alıştırmalara geç (7)</a></div>
+<div class="st-c"><a class="st-p" href="../../#ders-veri-akislari/1">Alıştırmalara geç (7)</a></div>
 <nav class="st-n" aria-label="Ders sırası"><a href="../proje-yonetimi-bi/">← Bir BI projesini baştan sona yürütmek: plan, sprint, teslim ve bakım</a><a href="../fabric-hazirlama/">Fabric’te veriyi hazırlamak: T-SQL görünümleri, saklı yordamlar, not defterleri ve işlem hatları →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>
