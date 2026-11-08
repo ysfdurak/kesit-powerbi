@@ -58,12 +58,12 @@ function merge(a, b) {
 /* ---- bulut ---- */
 let pushT = null;
 function pushSoon() { if (!SY.ref) return; clearTimeout(pushT); pushT = setTimeout(push, 4000); }
-async function push() {
+async function push() { if (KESIT_STORAGE.isBlocked()) return;
   if (!SY.ref || SY.busy) return; const json = JSON.stringify(P); if (json === SY.last) return;
   if (json.length > 240000) { SY.state = 'hata'; SY.note = 'İlerleme verin buluta sığmayacak kadar büyük; dosya yedeğini kullan.'; return; }
   SY.busy = true; try { await SY.ref.set({ json, ts: P._ts || Date.now(), v: 2 }); SY.last = json; SY.state = 'acik'; SY.at = new Date(); } catch (e) { SY.state = 'hata'; SY.note = 'Bulut eşitlemesi şu an çalışmıyor; ilerlemen bu tarayıcıda güvende.'; } finally { SY.busy = false; }
 }
-async function connect() {
+async function connect() { if (KESIT_STORAGE.isBlocked()) return;
   try {
     const cl = window.claude; if (!cl || !cl.use) return;
     const [db, user] = await Promise.all([cl.use('db'), cl.use('user')]); DB = db; if (!db || !user) return;

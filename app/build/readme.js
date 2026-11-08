@@ -1,5 +1,5 @@
 /* README.md üretir (sayılar uygulamanın içeriğinden) */
-global.window = global; const P = '/home/claude/pbi/', fs = require('fs');
+global.window = global; const P = (require('path').resolve(__dirname, '..') + '/'), fs = require('fs');
 const files = fs.readFileSync(P + 'index.html', 'utf8').match(/src="[^"]+"/g).map(s => s.slice(5, -1));
 const skip = /^(app|pq|practice|examui|arena|guides|career|sync|portfolio|vdata|pages)\.js$/;
 for (const f of files) { if (skip.test(f)) continue; try { require(P + f); } catch (e) {} }

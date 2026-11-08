@@ -1,5 +1,5 @@
 /* Öğrenme yolları: ders kimlikleri, aşamalar, ön koşul sırası, PL-300 maddeleri, DP-600 payı, kapsam haritası, belge şartı */
-global.window = global; const P = '/home/claude/pbi/'; const fs = require('fs');
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/'); const fs = require('fs');
 const files = fs.readFileSync(P + 'index.html', 'utf8').match(/src="[^"]+"/g).map(s => s.slice(5, -1));
 for (const f of files) { if (/^(app|pq|practice|examui|arena|guides|career|sync|portfolio|vdata|pages)\.js$/.test(f)) continue; require(P + f); }
 let bad = 0; const fail = s => { bad++; console.log('SORUN ' + s); };

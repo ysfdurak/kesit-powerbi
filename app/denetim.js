@@ -108,5 +108,52 @@ function cleanHint(e) {
   if (revealsSol(out, e.sol)) out = 'Kullanılacak fonksiyonlar bir sonraki ipucunda. Önce sonucu cümleyle söyle: hangi satırlar, hangi filtre, hangi toplama?';
   return out;
 }
-W.PBI_CHECK = { autoHidden, techOf, techIssue, compareQuery, revealsSol, cleanHint, plain };
+
+/* Yeni veri senaryoları: ana modeli değiştirmeden bağımsız motor/önbellek kullanılır.
+   Bunlar güvenlik sınırı değildir; tarayıcıdaki eğitim denetimini güçlendirir. */
+let variantEngines;
+function dataEngines() {
+  if (variantEngines) return variantEngines;
+  variantEngines = [0, 1].map(mode => {
+    const model = structuredClone(W.PBI_MODEL);
+    Object.values(model.tables).filter(t => t.kind === 'fact').forEach(t => {
+      if (mode === 1) t.rows = t.rows.filter((r,i) => i % 11 !== 3);
+      else t.rows.forEach((r,i) => ['Tutar','Maliyet','BirimFiyat','Hedef','StokDegeri'].forEach(c => {
+        if (typeof r[c] === 'number') r[c] = Math.round(r[c] * (1.13 + (i % 5) * .07) * 100) / 100;
+      }));
+    });
+    return W.PBI_CREATE_DAX(model);
+  });
+  return variantEngines;
+}
+function dataIssue(e, measures, src) {
+  const eq = (a,b) => {
+    if(a==null || b==null) return a==null && b==null;
+    if(typeof a==='number' && typeof b==='number') return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(b));
+    return String(a)===String(b);
+  };
+  const grid = (eng,expr) => {
+    const out=[];
+    if(!e.noTotal)out.push([eng.evalMeasure(measures,expr,[])]);
+    (e.grid||DEFAULT_GRID).forEach(col=>{
+      const r=eng.query({rows:[col],measures,values:[expr],slicers:[],totals:false,keepBlank:true});
+      out.push(r.rows.map(x=>[x.keys[0],x.vals[0]]));
+    });return out;
+  };
+  const deepEq = (a,b) => Array.isArray(b) ? Array.isArray(a)&&a.length===b.length&&b.every((v,i)=>deepEq(a[i],v)) : eq(a,b);
+  for(const eng of dataEngines()) {
+    let ref;
+    // Bir senaryoda referans motor hatası varsa başarı verilemez.
+    try { ref=e.t==='query'?eng.runQuery(measures,e.sol):grid(eng,e.sol); }
+    catch(er){return 'Yeni veri denetimi bu görev için tamamlanamadı. Başarı kaydedilmedi; sorunu geri bildirimle iletebilirsin.';}
+    try {
+      const mine=e.t==='query'?eng.runQuery(measures,src):grid(eng,eng.stripDef(src).expr);
+      const ok=e.t==='query'?compareQuery(mine,ref,e,src).ok:deepEq(mine,ref);
+      if(!ok)return 'Görünen sonuç doğru, fakat satış tutarları veya satır sayısı değiştiğinde sonuç ayrışıyor. Görünen değerleri sabitlemek yerine veriden hesapla.';
+    }catch(er){return 'İfaden yeni veri senaryosunda hesaplanamadı. Görünen veriye özel sabitleri ve varsayımları kontrol et.';}
+  }
+  return '';
+}
+
+W.PBI_CHECK = { dataIssue, autoHidden, techOf, techIssue, compareQuery, revealsSol, cleanHint, plain };
 })(typeof window !== 'undefined' ? window : globalThis);

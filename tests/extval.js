@@ -1,5 +1,5 @@
 /* Ders genişletme dosyalarını doğrular: node extval.js /home/claude/pbi/x_ileri1.js [...] */
-global.window = global; const P = '/home/claude/pbi/';
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/');
 const BASE = ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep','c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20'].filter(x => require('fs').existsSync(P + x + '.js'));
 BASE.forEach(f => require(P + f + '.js'));
 const before = new Set(PBI_LESSONS.map(l => l.id)); const MODS0 = new Set(PBI_LESSONS.map(l => l.mod));

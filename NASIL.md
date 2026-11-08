@@ -1,5 +1,12 @@
 # Kesit Power BI · kaynak dalı: derleme ve test
 
+> **8 Kasım 2026 güncellemesi:** Ana derleme ve Node doğrulayıcıları artık depo konumuna göre yol çözümler; aşağıdaki eski oturuma ait sembolik bağlantı kurulumu bu işler için gerekli değildir. Eski tek seferlik yardımcılar hâlâ eski yollar içerebilir.
+>
+> Linux/macOS: `cd app && sh build/ghpack.sh`. Paket yeni bir geçici klasöre yazılır, önceki paket silinmez.
+> Windows: WSL veya Git Bash içinde aynı komut. Node ve Python 3 gerekir. Yerel Windows uygulaması/Power BI Desktop kontrolü bu komutun kapsamında değildir.
+> CSV kaynağı varsayılanı `scratchpad/ds`; başka kaynak için `KESIT_DATA_ROOT` ortam değişkenini kullan.
+> Node test örneği: depo kökünden `node tests/hiddenval.js` ve `node tests/newdata.cjs`. Node 20+ gerekir.
+
 Bu dal (`kaynak`) uygulamanın kaynak dosyalarını, derleme betiklerini ve test araçlarını içerir.
 Kod kimlikleri, adresler ve `pbipatika.v1` depolama anahtarı eski adla kaldı; görünür metin “öğrenme yolu” der.
 Yayındaki site `main` dalındadır ve bu daldan **üretilir**; `main`'i elle düzenleme.

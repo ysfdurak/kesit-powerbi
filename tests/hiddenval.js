@@ -1,6 +1,6 @@
 /* F1–F4 denetimi: her alıştırmanın çözümü kendi şartlarını geçer; ALL↔ALLSELECTED, HASONEVALUE↔ISINSCOPE mutasyonları yakalanır;
    ipucu çözümü ele vermez; sorgularda sütun sırası sonuç değiştirmez, ad eksikse yakalanır. */
-global.window = global; const P = '/home/claude/pbi/'; const fs = require('fs');
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/'); const fs = require('fs');
 const files = fs.readFileSync(P + 'index.html', 'utf8').match(/src="[^"]+"/g).map(s => s.slice(5, -1));
 for (const f of files) { if (/^(app|pq|practice|examui|arena|guides|career|sync|portfolio|vdata|pages)\.js$/.test(f)) continue; require(P + f); }
 const X = PBI_DAX, CHK = PBI_CHECK; const base = {}; PBI_MEASURES.forEach(m => base[m.name] = { name: m.name, expr: m.expr });

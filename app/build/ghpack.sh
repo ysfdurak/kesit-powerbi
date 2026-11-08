@@ -1,9 +1,10 @@
 #!/bin/sh
 # GitHub Pages paketi: sh build/ghpack.sh → scratchpad/gh/kesit-powerbi.zip
 set -e
-R=/home/claude/pbi
-O=/tmp/claude-0/-home-claude/53cd9548-0d28-57c3-99dc-de41d98193f5/scratchpad/gh
-rm -rf $O/kesit-powerbi && mkdir -p $O/kesit-powerbi/veri $O/kesit-powerbi/ekran
+R=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+# Yeni geçici klasör: önceki çıktıları veya kullanıcı dosyalarını silmez.
+O=$(mktemp -d "${TMPDIR:-/tmp}/kesit-powerbi.XXXXXX")
+mkdir -p "$O/kesit-powerbi/veri" "$O/kesit-powerbi/ekran"
 cd $R && sh build/build.sh && node build/vdpack.js > /dev/null
 # Tüm uygulama dosyaları tek pakette (config.js ayrı kalır: yayıncı yalnızca onu düzenler)
 : > $O/kesit-powerbi/kesit.js

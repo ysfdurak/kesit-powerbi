@@ -1,7 +1,7 @@
 /* Vaka veri seti paketlerini üretir: node build/vdpack.js  →  /home/claude/pbi/veri/<id>.zip
    Her zip: CSV'ler + BENIOKU.md (vaka, tablolar, model, hazırlık, takvim) + olcular.dax + gorevler.md + cozumler.md */
 const fs = require('fs'), path = require('path'), cp = require('child_process');
-const ROOT = '/home/claude/pbi', DS = '/tmp/claude-0/-home-claude/53cd9548-0d28-57c3-99dc-de41d98193f5/scratchpad/ds';
+const ROOT = path.resolve(__dirname, '..'), DS = process.env.KESIT_DATA_ROOT || path.resolve(ROOT, '../scratchpad/ds');
 global.window = global; window.PBI_DATASETS = [];
 fs.readdirSync(ROOT).filter(f => /^vd_.*\.js$/.test(f)).sort().forEach(f => require(path.join(ROOT, f)));
 const strip = h => String(h || '').replace(/<li>/g, '\n- ').replace(/<\/p>|<br\s*\/?>/g, '\n').replace(/<h3>/g, '\n### ').replace(/<\/h3>/g, '\n').replace(/<code>(.*?)<\/code>/g, '`$1`').replace(/<b>(.*?)<\/b>/g, '**$1**').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/\n{3,}/g, '\n\n').trim();
@@ -9,7 +9,7 @@ const fmt = (v, u) => v == null ? 'boş (BLANK)' : typeof v !== 'number' ? Strin
 const LV = { temel: 'Temel', orta: 'Orta', ileri: 'İleri' };
 const out = path.join(ROOT, 'veri'); fs.mkdirSync(out, { recursive: true });
 for (const d of window.PBI_DATASETS) {
-  const tmp = fs.mkdtempSync('/tmp/claude-0/-home-claude/53cd9548-0d28-57c3-99dc-de41d98193f5/scratchpad/vdp-'); const dir = path.join(tmp, 'kesit-powerbi-' + d.id); fs.mkdirSync(path.join(dir, 'veri'), { recursive: true });
+  const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'kesit-vdp-')); const dir = path.join(tmp, 'kesit-powerbi-' + d.id); fs.mkdirSync(path.join(dir, 'veri'), { recursive: true });
   d.tables.forEach(t => fs.copyFileSync(path.join(DS, 'csv', d.src, t.name + '.csv'), path.join(dir, 'veri', t.name + '.csv')));
   let md = '# ' + d.name + ' · Kesit Power BI vaka paketi\n\n' + (d.sector ? '**Sektör:** ' + d.sector + ' · ' : '') + (d.period ? '**Dönem:** ' + d.period : '') + '\n\n> ' + (d.tagline || '') + '\n\n';
   md += 'Bu paketteki şirket, kişiler ve kayıtlar tamamen hayalidir. İçerik CC BY-NC 4.0 lisanslıdır: kaynak göstererek, ticari olmayan amaçlarla paylaşılabilir.\n\n## Başlamadan önce bil\n\n- **Power BI Desktop gerekir ve Desktop yalnız Windows’ta çalışır.** Mac ya da telefonda CSV’lere bakabilirsin, görevleri yapamazsın.\n- **Adımlar henüz gerçek Power BI Desktop’ta baştan sona denenmedi.** Beklenen sayılar Kesit Power BI’ın DAX’ı benzeten motorunda ve SQL’de hesaplandı; menü adları ve `olcular.dax` Desktop’ta çalıştırılmadı. Bir menü adı ya da adım tutmazsa hata sende olmayabilir.\n\n## Vaka\n\n' + strip(d.story) + '\n\n## Dosyalar\n\n- `veri/` klasörü: CSV tabloları (UTF-8, virgülle ayrılmış, ondalık ayırıcı nokta, tarih YYYY-MM-DD)\n- `olcular.dax`: ölçü kütüphanesi\n- `gorevler.md`: görevler ve beklenen sonuçlar\n- `cozumler.md`: örnek çözümler (önce kendin dene)\n\n## Tablolar\n\n';

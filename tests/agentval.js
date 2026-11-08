@@ -1,5 +1,5 @@
 /* İçerik doğrulayıcı: node agentval.js dosya.js [dosya2.js ...] */
-global.window = global; const P = '/home/claude/pbi/';
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/');
 for (const f of ['data','data2','dax','measures','patterns','levels','c1','c2','c3','c4','c5','c6','c7','c8','deep',...['c9','c10','c11','c12','c13','c14','c15','c16','c17','c18','c19','c20','c21','c22','c23','c24','c25','c26','c27','c28','x_temel','x_orta1','x_orta2','x_ileri1','x_ileri2','x_ileri3'].filter(x=>require('fs').existsSync(P+x+'.js')),'mengine','pqdata','extra','exams','certskills']) require(P + f + '.js');
 const files = process.argv.slice(2); files.forEach(f => require(require('path').resolve(f)));
 const X = PBI_DAX; const base = {}; PBI_MEASURES.forEach(m => base[m.name] = { name: m.name, expr: m.expr });

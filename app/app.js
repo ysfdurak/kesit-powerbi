@@ -29,7 +29,7 @@ const colKey = o => o.t + '[' + o.c + ']';
 
 /* ---------- Depolama ---------- */
 const KEY = 'pbipatika.v1';
-function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+function load() { try { return JSON.parse(KESIT_STORAGE.getItem(KEY)) || {}; } catch (e) { return {}; } }
 const FRESH = () => ({ weak: {}, skillStat: {}, rv: {}, rvc: 0, reports: [], exams: {}, arena: null, theme: 'auto', welcomed: false, bkDone: 0, vd: {}, done: {}, ex: {}, xp: 0, days: {}, placement: null, drafts: {}, last: null, seen: {}, mine: [], studio: null, gclosed: {}, final: {}, labSeen: {}, trickSeen: {}, goal: null, cap: {}, ready: {}, cert: {}, name: '', navc: {}, ivr: {}, testDone: null, pilot: { tests: [], aktifDk: 0, dersBaslangic: {}, dersBitis: {} }, _v: 2, _ts: 0 });
 /* Kayıtlı ilerlemeyi şemaya göre temizle: bozuk ya da eski biçimli alanlar varsayılana döner, uygulama asla beyaz ekranda kalmaz */
 const kindOf = v => v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v;
@@ -66,9 +66,9 @@ if (P.placement) { P.placement = TIER(P.placement); if (LVI(P.placement) < 0) P.
 let saveT = null;
 let STORE_OK = true, storeWarned = false;
 /* Ana sayfanın (ysfdurak.github.io) okuduğu özet: yalnız geçerli ders kimlikleri sayılır */
-function writeOzet() { try { localStorage.setItem('kesit.ozet.pbi', JSON.stringify({ bitti: Object.keys(P.done || {}).filter(k => LMAP[k]).length, toplam: LESSONS.length, alistirma: Object.keys(P.ex || {}).filter(k => P.ex[k]).length })); } catch (e) {} }
-function save() { clearTimeout(saveT); saveT = setTimeout(() => { P._ts = Date.now(); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); STORE_OK = true; } catch (e) { STORE_OK = false; if (!storeWarned) { storeWarned = true; toast('Tarayıcın ilerlemeyi kaydetmeye izin vermiyor (gizli pencere ya da dolu depolama). Profil sayfasından ilerlemeni dosya olarak indirebilirsin.'); } } try { window.dispatchEvent(new CustomEvent('pbi-saved')); } catch (e) {} }, 150); }
-function flushSave() { clearTimeout(saveT); P._ts = Date.now(); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
+function writeOzet() { try { KESIT_STORAGE.setItem('kesit.ozet.pbi', JSON.stringify({ bitti: Object.keys(P.done || {}).filter(k => LMAP[k]).length, toplam: LESSONS.length, alistirma: Object.keys(P.ex || {}).filter(k => P.ex[k]).length })); } catch (e) {} }
+function save() { if (KESIT_STORAGE.isBlocked()) return; clearTimeout(saveT); saveT = setTimeout(() => { P._ts = Date.now(); writeOzet(); try { KESIT_STORAGE.setItem(KEY, JSON.stringify(P)); STORE_OK = true; } catch (e) { STORE_OK = false; if (!storeWarned) { storeWarned = true; toast('Tarayıcın ilerlemeyi kaydetmeye izin vermiyor (gizli pencere ya da dolu depolama). Profil sayfasından ilerlemeni dosya olarak indirebilirsin.'); } } try { window.dispatchEvent(new CustomEvent('pbi-saved')); } catch (e) {} }, 150); }
+function flushSave() { if (KESIT_STORAGE.isBlocked()) return; clearTimeout(saveT); P._ts = Date.now(); writeOzet(); try { KESIT_STORAGE.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
 /* Aktif süre: sayfa görünür ve son 60 saniyede etkileşim varken dakika sayılır */
 let actAt = Date.now(), actSn = 0;
 ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart'].forEach(n => window.addEventListener(n, () => { actAt = Date.now(); }, { passive: true, capture: true }));
@@ -76,7 +76,7 @@ setInterval(() => { if (document.visibilityState !== 'visible' || Date.now() - a
 document.addEventListener('pbi-lesson-done', ev => { const id = ev.detail && ev.detail.id; if (id && !P.pilot.dersBitis[id]) { P.pilot.dersBitis[id] = new Date().toISOString(); save(); } });
 window.addEventListener('pagehide', flushSave); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
 /* Dışarıdan gelen ilerlemeyi (dosya ya da bulut) yerine koy */
-function replaceProgress(o) { const n = sanitize(o); Object.keys(P).forEach(k => { delete P[k]; }); Object.assign(P, n); writeOzet(); try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} render(); }
+function replaceProgress(o) { const n = sanitize(o); Object.keys(P).forEach(k => { delete P[k]; }); Object.assign(P, n); writeOzet(); try { KESIT_STORAGE.setItem(KEY, JSON.stringify(P)); } catch (e) {} render(); }
 const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 const today = () => ymd(new Date());
 function streak() { let n = 0; const d = new Date(); if (!P.days[today()]) d.setDate(d.getDate() - 1); for (;;) { if (P.days[ymd(d)]) { n++; d.setDate(d.getDate() - 1); } else break; } return n; }
@@ -516,6 +516,8 @@ function checkEx(grade, quiet) {
       const ref = X.runQuery(measureSet(), e.sol);
       const cmp = CHK.compareQuery(mine, ref, e, src), tq = cmp.ok ? CHK.techIssue(e, k && CX.l ? CX.l.id + '#' + CX.i : null, src) : '';
       if (cmp.ok && tq) { out.innerHTML = '<div class="msg info"><b>Sonuç doğru, ama teknik farklı</b>' + esc(tq) + '</div>' + html; return; }
+      const dataError = cmp.ok ? CHK.dataIssue(e, measureSet(), src) : '';
+      if (dataError) { out.innerHTML = '<div class="msg err"><b>Yeni veri denetimi</b>' + esc(dataError) + '</div>' + html; return; }
       if (cmp.ok) { CX.onSolved(quiet); out.innerHTML = '<div class="msg ok"><b>Doğru!</b>Sorgun beklenen ' + ref.rows.length + ' satırı döndürdü.' + (CX.exam ? '' : explainBox(e)) + '</div>' + html; }
       else { noteWrong(CX); out.innerHTML = '<div class="msg err"><b>Henüz değil</b>' + esc(cmp.msg) + '</div>' + html; }
       return;
@@ -531,9 +533,11 @@ function checkEx(grade, quiet) {
     let hid = null; const allHidden = (e.hidden || []).concat(CHK.autoHidden(e));
     if (!bad) for (const hc of allHidden) { const g2 = hc.grid || grid, nt = hc.noTotal !== undefined ? hc.noTotal : e.noTotal; const r2 = gridEval(measureSet(e.name), e.sol, g2, nt, hc.slicers), m2 = gridEval(ms, expr, g2, nt, hc.slicers); let b2 = 0; r2.forEach((G, gi) => G.rows.forEach(r => { const m = (m2[gi].rows.find(x => X.keyOf(x.k) === X.keyOf(r.k)) || {}).v; if (!cmpVal(m, r.v)) b2++; })); if (b2) { hid = hc; break; } }
     if (hid) { noteWrong(CX); out.innerHTML = '<div class="msg err"><b>Gizli test başarısız</b>Görünen tablo doğru, ama ölçün şu durumda farklı sonuç veriyor: <b>' + esc(hid.label) + '</b>. ' + esc(hid.why || 'Sabit bir değere ya da belirli bir filtreye dayanıyor olabilir.') + '</div>' + gridHTML(mine, null, e.name); return; }
+    const dataError = !bad ? CHK.dataIssue(e, ms, src) : '';
+    if (dataError) { noteWrong(CX); out.innerHTML = '<div class="msg err"><b>Yeni veri denetimi</b>' + esc(dataError) + '</div>' + gridHTML(mine, null, e.name); return; }
     const tech = bad ? '' : CHK.techIssue(e, CX.l ? CX.l.id + '#' + CX.i : null, src);
     if (tech) { out.innerHTML = '<div class="msg info"><b>Sonuç doğru, ama teknik farklı</b>' + esc(tech) + '</div>' + gridHTML(mine, null, e.name); return; }
-    if (!bad) { CX.onSolved(quiet); out.innerHTML = '<div class="msg ok"><b>Doğru!</b>' + total + ' hücrenin tamamı beklenen sonuçla aynı' + (allHidden.length ? ' ve ' + allHidden.length + ' gizli test de geçti' : '') + '.' + (CX.exam ? '' : explainBox(e)) + '</div>' + gridHTML(mine, CX.exam ? null : ref, e.name); }
+    if (!bad) { CX.onSolved(quiet); out.innerHTML = '<div class="msg ok"><b>Doğru!</b>' + total + ' hücrenin tamamı ve iki yeni veri senaryosu beklenen sonuçla aynı' + (allHidden.length ? ' ve ' + allHidden.length + ' gizli test de geçti' : '') + '.' + (CX.exam ? '' : explainBox(e)) + '</div>' + gridHTML(mine, CX.exam ? null : ref, e.name); }
     else if (CX.exam) { noteWrong(CX); out.innerHTML = '<div class="msg err"><b>Henüz değil</b>' + total + ' hücreden ' + bad + ' tanesi beklenenden farklı. Sınavda beklenen değerler gösterilmez.</div>' + gridHTML(mine, null, e.name); }
     else { noteWrong(CX); out.innerHTML = '<div class="msg err"><b>Henüz değil</b>' + total + ' hücreden ' + bad + ' tanesi beklenenden farklı. Farklı hücreler işaretli; “beklenen” değerleri ipucu olarak kullan.</div>' + gridHTML(mine, ref, e.name); }
   } catch (er) {

@@ -1,5 +1,5 @@
 /* Ürün dili: görünür veri ve arayüz metinlerinde eski adlar kalmamalı. Kod yorumları, kimlikler ve adresler kapsam dışı. */
-global.window = global; const P = '/home/claude/pbi/'; const fs = require('fs');
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/'); const fs = require('fs');
 const files = fs.readFileSync(P + 'index.html', 'utf8').match(/src="[^"]+"/g).map(s => s.slice(5, -1));
 const UI = /^(app|pq|practice|examui|arena|guides|career|sync|portfolio|vdata|pages)\.js$/;
 for (const f of files) { if (UI.test(f)) continue; require(P + f); }

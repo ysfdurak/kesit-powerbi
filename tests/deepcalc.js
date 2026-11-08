@@ -1,4 +1,4 @@
-global.window = global; const P = '/home/claude/pbi/';
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/');
 for (const f of ['data','data2','dax','measures']) require(P + f + '.js');
 const X = PBI_DAX; const ms = {}; PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
 const M = PBI_MODEL; console.log('kanal', [...new Set(M.tables.Satislar.rows.map(r => r.Kanal))], 'yilay', M.tables.Tarih.rows[40].YilAy, 'yillar', [...new Set(M.tables.Tarih.rows.map(r=>r.Yil))]);

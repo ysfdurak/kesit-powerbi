@@ -1,6 +1,6 @@
 /* DAX motoru: bağımsız değişken sayısı ve tür hataları. Gerçek DAX'ın hata verdiği ifadeler burada da hata vermeli;
    hiçbir fonksiyon, hiçbir girdiyle ham JavaScript hatası üretmemeli. */
-global.window = global; const P = '/home/claude/pbi/';
+global.window = global; const P = (require('path').resolve(__dirname, '../app') + '/');
 for (const f of ['data', 'data2', 'dax', 'measures']) require(P + f + '.js');
 const X = window.PBI_DAX; const ms = {}; window.PBI_MEASURES.forEach(m => ms[m.name] = { name: m.name, expr: m.expr });
 let bad = 0; const fail = m => { bad++; console.log('SORUN ' + m); };

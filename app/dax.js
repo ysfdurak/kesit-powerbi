@@ -1,6 +1,6 @@
 /* Kesit Power BI — tarayıcıda çalışan DAX motoru (öğretim amaçlı alt küme)
    Filtre bağlamı, satır bağlamı, bağlam geçişi, CALCULATE, zaman zekâsı, tablo fonksiyonları, EVALUATE. */
-(function (root) {
+(function createDax(root) {
   'use strict';
   const M = root.PBI_MODEL;
   const T = M.tables;
@@ -1086,5 +1086,6 @@
   }
   function check(src, isQuery) { try { const t = stripDef(src); if (isQuery) parse(src).query(); else parse(t.expr).expr(); return null; } catch (e) { return e.message; } }
 
+  root.PBI_CREATE_DAX = model => { const isolated = { PBI_MODEL: model }; createDax(isolated); return isolated.PBI_DAX; };
   root.PBI_DAX = { batch: withCache, parse, tokenize, evalMeasure, query, runQuery, format, fmtNum, str, isBlank, isDate, keyOf, fmtDate, stripDef, check, FN, T, TNAMES, DaxError, sortCompare };
 })(typeof window !== 'undefined' ? window : globalThis);
