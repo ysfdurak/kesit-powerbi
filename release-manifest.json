@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "sourceCommit": "9337c9e7a9a57abe03ccc75f32e4c662ded39335",
+  "checks": [
+    "6 kurtarma kontrolü",
+    "443 referans çözüm",
+    "Sahte cevap reddi",
+    "2 eşdeğer çözüm"
+  ],
+  "files": {
+    "index.html": "0a2df5bb44f66fc05a2318a7301c65381d203c670cdac4261c068acf1eb9b5d8",
+    "kesit.js": "d84aee73f7794daadc5addb08c3db67add31a4d017b4c51df4c3ad12b8d3ca58",
+    "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
+    "sw.js": "a34d49f56162682690a17764ccd711191373a9b9ffdb469a22cb739108abe839"
+  }
+}
