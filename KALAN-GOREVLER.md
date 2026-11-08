@@ -1,0 +1,25 @@
+# Kesit Power BI — dört etap
+
+8 Kasım 2026. Başlangıç kaynak sürümü: c9fe9cf.
+
+## 1. Güvenilir yayın ve paket eşleşmesi
+
+Kapsam: mevcut cevap doğrulama ve kayıt kurtarma düzeltmelerini test etmek, kaynak derlemesinden yayın paketini üretmek, main dalına aktarmak, Pages sonucunu ve canlı çekirdek dosyalarının SHA-256 özetlerini kontrol etmek. Test araçları yayın paketi üzerinde de çalıştırılır. Geçmiş test beyanı yeni test sonucu yerine kullanılmaz.
+
+Kabul: 443 referans çözüm geçer; sabit cevap reddedilir; iki eşdeğer çözüm kabul edilir; altı kayıt koruma kontrolü geçer; kaynak bütünlük kontrolü geçer; Pages başarılıdır; dört çekirdek dosya canlı yayında manifestle eşleşir.
+
+## 2. Gerçek Power BI Desktop referans raporu
+
+G04: Tek bir vaka için açık üretim adımları, model/ilişki şeması, ölçüler, filtreli ve filtresiz kontrol sayıları, rapor sayfaları ve inceleme kaydı. Desktop'ta açılıp doğrulanmayan dosya doğrulanmış PBIX diye sunulmaz. İnsan/Desktop doğrulaması ayrı durum taşır.
+
+## 3. Rol bazlı yeterlik ve teslim kanıtları
+
+G07, G17–G19, G21: rol beklentilerini gerçek görev/çıktıya bağlama; benzetim ve gerçek uygulama ayrımı; yardımlı/bağımsız çözüm ayrımı; bitirme projesinde dosya/model/karar notu kanıtı; farklı veride transfer görevi. Uzman incelemesi G08 ayrıca kaydedilir.
+
+## 4. Kullanıcı deneyimi, performans ve bakım
+
+G09, G12–G16, G20, G22–G23, G36: kalan eski yol bağımlılıkları, içerik yükleme bütçesi, mobil gezinme ve editör, koyu tema/klavye odağı, geçmiş rapor durumları ve sayı manifesti. Fiziksel Android ve gözlemli kullanıcı pilotu sonuçları otomatik testten ayrı tutulur.
+
+## Sınırlar
+
+Teslimat vakasının portföy deposundaki G05/G24–G27 işleri ayrı proje kapsamındadır. Önceden yapılmış düzeltmeler yeniden açık iş sayılmaz; eksik doğrulama açık kalır. Bu plan bütün içerik için uzman onayı vermez.
