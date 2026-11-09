@@ -1,6 +1,6 @@
 /* Kesit Power BI service worker: önce ağ, ağ yoksa son kaydedilen kopya.
    Kurulumda uygulama dosyaları önbelleğe alınır; yeni sürümde eski önbellekler silinir. Sürüm ghpack.sh ile yazılır. */
-const CACHE = 'kesit-powerbi-7a90acdf0e';
+const CACHE = 'kesit-powerbi-dc51d5bd75';
 const CORE = ['./', './index.html', './kesit.js', './config.js', './vendor/fonts.css', './favicon.svg', './manifest.webmanifest'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {}).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('kesit-powerbi-') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));

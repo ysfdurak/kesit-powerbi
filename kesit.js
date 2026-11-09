@@ -32093,7 +32093,8 @@ W.PBI_ROLES = {
     title: 'BT İş Analisti için Power BI', who: 'Rapor talebi toplayan, gereksinim yazan ve raporu kabul eden iş analistleri için. Önce Kesit SQL’deki BT İş Analisti yolunun SQL bölümünü bitirmeni öneririz.', jobs: ['BT iş analisti', 'İş analisti', 'Ürün ve süreç analisti'], level: 'Temel → Orta',
     long: 'Rapor geliştiricisi olmak için değil, geliştiriciyle aynı dili konuşmak için: yıldız şemayı ve ölçüleri okumak, CALCULATE ve zaman zekâsı ifadelerinin ne yaptığını anlamak, talebi rapor brifine ve KPI tanımına çevirmek, raporu mutabakat ve kabul testiyle teslim almak, yayımlamanın ve paylaşmanın kavramlarını bilmek. Bu 18 ders tek başına bir işe hazırlamaz; iş analistliğinin kendisi Kesit SQL’deki yolda anlatılır.',
     outcomes: ['Bir rapor talebini kitle, karar ve KPI listesi olan tek sayfalık brife çeviririm.', 'Her KPI için tanım kartı yazarım: formül, kapsam, kaynak, sahip, hedef.', 'Model görünümünü okur, bir ölçünün hangi ayrıntı düzeyinde çalıştığını sorarım.', 'CALCULATE, VAR ve zaman zekâsı içeren bir ölçünün ne hesapladığını okuyup açıklarım.', 'Raporu kaynakla mutabık kılar, kabul kriterlerine göre test eder ve kaydederim.', 'Çalışma alanı, uygulama, yenileme ve RLS kavramlarını gereksinime yazabilecek kadar bilirim.'],
-    cap: { title: 'Kupon raporu için gereksinim ve kabul paketi', brief: 'Kesit SQL yolundaki geç teslim kuponu canlıya çıktı. Operasyon müdürü haftalık bir izleme raporu istiyor. Raporu sen kurmayacaksın; geliştiriciye verilecek gereksinim paketini hazırlayıp teslimi kabul testiyle alacaksın. Model olarak Veri setlerindeki Lezzet Kurye paketini kullan.', data: 'Veri setleri sayfasındaki Lezzet Kurye paketi (hayali veri). Uygulamadaki Anadolu Market modeliyle ölçü okuma alıştırması yapabilirsin.',
+    cap: { title: 'Kupon raporu için gereksinim ve kabul paketi', brief: 'Kesit SQL yolundaki geç teslim kuponu canlıya çıktı. Operasyon müdürü haftalık bir izleme raporu istiyor. Raporu sen kurmayacaksın; geliştiriciye verilecek gereksinim paketini hazırlayıp teslimi kabul testiyle alacaksın. Model olarak Veri setlerindeki Lezzet Kurye paketini kullan.', data: 'Lezzet Kurye sentetik verisi. Sipariş ve teslim alanları SLA kontrolünde kullanılabilir. Kupon kimliği ve kupon tutarı ayrı alanlar olarak bulunmadığından bu iki KPI için kaynak gereksinimi yaz.',
+      download: 'veri/lezzet-kurye.zip',
       steps: ['Rapor brifini yaz: kitle, verilecek karar, yenileme sıklığı, sayfa planı.', 'Beş KPI için tanım kartı yaz: geç teslim oranı, kupon adedi, kupon tutarı, ortalama teslim süresi, ortalama kurye puanı. Her kartta formül, dahil ve hariç olanlar, kaynak tablo, sahip, hedef.', 'Her KPI için Given/When/Then kalıbında bir kabul kriteri yaz.', 'Geliştiricinin yazacağı bir ölçüyü ön gör: geç teslim oranını DAX ile nasıl okursun, hangi filtre bağlamında hangi sayı çıkmalı?', 'Rapor UAT listesi hazırla: mutabakat için SQL ya da kaynak toplamı, filtreyle kontrol, RLS rolüyle görüntüleme, boş veri durumu.', 'Yayım gereksinimini yaz: çalışma alanı, uygulama kitlesi, yenileme saati, sorumlu.'],
       check: ['Rapor brifi', 'Beş KPI tanım kartı', 'Kabul kriterleri', 'Rapor UAT listesi ve mutabakat sayıları', 'Yayım gereksinimi'], rubric: null, present: null },
     ready: [L('Modeli ve ölçüleri okumak', ['model-temel', 'dax-giris', 'baglam', 'calculate', 'var-mantik', 'zaman'], ''), L('Gereksinim ve KPI', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi'], ''), L('Kabul ve yayım', ['kalite-test', 'yayinlama', 'paydas-iletisim'], ''), CAP('Gereksinim ve kabul paketinin tüm teslimleri')]
@@ -32157,6 +32158,94 @@ const hz = (W.PBI_PATHS || []).find(p => p.id === 'hizli'); if (hz) W.PBI_ROLES.
 const INS = { gelistirici: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['model-ileri', 'coka-cok'], ['zaman-ileri', 'ozel-takvim'], ['kurumsal-model', 'buyuk-model']], dax: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['zaman-ileri', 'ozel-takvim']], dp600: [['kurumsal-model', 'buyuk-model']], pl300: [['model-ileri', 'coka-cok']] };
 (W.PBI_PATHS || []).forEach(p => (INS[p.id] || []).forEach(([after, id]) => { if (!(W.PBI_LESSONS || []).some(l => l.id === id) || p.lessons.includes(id)) return; const i = p.lessons.indexOf(after); p.lessons.splice(i < 0 ? p.lessons.length : i + 1, 0, id); }));
 (W.PBI_PATHS || []).forEach(p => { const r = W.PBI_ROLES[p.id]; if (r && r.title) { p.short0 = p.name; p.name = r.title; } });
+/* Öğrenme yollarındaki portföy görevleri; proje kontrol listesindeki eski sıra korunur. */
+const EVIDENCE = {
+  profesyonel: {
+    environment: 'Power BI Desktop. Service yenileme ve yetki denetimi için ayrıca erişim gerekir.',
+    task: 'Anadolu Market yönetim kokpitinde satış ve kârlılığı tek karar sorusuna bağla. Aynı aya ait kaynak toplamı ile rapor toplamını ve kategori filtresi altındaki sonucu karşılaştır.',
+    hint: 'Sipariş satırı tane düzeyini yaz, tarih ve ürün boyutlarının ilişki yönünü kontrol et, ardından toplamı kaynakta ayrı hesapla.',
+    transfer: 'Lezzet Kurye sipariş verisinde aynı model ve mutabakat akışını uygula. Net satış yerine 35 dakika teslimat SLA’sını tanımla; iade ve iptal kayıtlarının etkisini göster.',
+    files: ['Rapor dosyası (.pbix veya .pbip proje klasörü)', 'Model şeması ve ölçü listesi', 'Filtreli ve filtresiz mutabakat tablosu'],
+  },
+  analist: {
+    environment: 'Power BI Desktop ve ayrı bir CSV, SQL veya Excel kontrol hesabı.',
+    task: 'Anadolu Market’te düşük marjı hangi ürün kategorilerinin sürüklediğini incele. İki bulgu için dönem, filtre, örneklem ve karşılaştırma değerini yaz.',
+    hint: 'Marj yüzdesini satır oranlarının ortalaması yerine toplam kâr / toplam satış olarak yeniden hesapla.',
+    transfer: 'Lezzet Kurye’de aynı analiz akışını ilçe bazında SLA uyumuna taşı. Az siparişli ilçeyi göster ve bu grupta önerinin ne kadar güvenilir olduğunu açıkla.',
+    files: ['Rapor dosyası ve model şeması', 'Kaynak hesapları ile rapor sonuçlarının karşılaştırması', 'İki bulgu ve öneri'],
+  },
+  pl300: {
+    environment: 'Power BI Desktop. Service çalışma alanı ve rol davranışı için ayrıca erişim gerekir.',
+    task: 'Anadolu Market için CSV’yi temizle, yıldız şema ve ölçülerle bir rapor kur. Bir filtreli toplamı ve bir RLS rolünün görünür satırlarını kontrol et.',
+    hint: 'Dört işi ayrı kaydet: hazırlama, modelleme, görselleştirme ve erişim. Rol testinde görünmemesi gereken bir örnek satır seç.',
+    transfer: 'Pusula İK verisinde aynı akışı bölüm bazında uygula. Bölüm rolüyle başka bölümün kaydının görünmediğini test et.',
+    files: ['Rapor dosyası ve Power Query adımları', 'Model şeması ve ölçüler', 'RLS rol ve beklenen/gerçek sonuç tablosu'],
+  },
+  gelistirici: {
+    environment: 'Power BI Desktop ve Performans Çözümleyicisi. Dağıtım ve yetki testleri için erişilebilir bir geliştirme ortamı.',
+    task: 'Anadolu Market modelinde yavaş bir görseli seç. Tek bir değişiklik yap, aynı filtreyle önce/sonra sürelerini ve ölçü sonucunu karşılaştır.',
+    hint: 'Önce aynı filtreyi ve aynı ölçüyü sabitle. Bir kez ölçmek yerine birkaç tekrar kaydet ve önbellek koşulunu belirt.',
+    transfer: 'Ilgaz Bank işlem verisinde aynı performans ölçüm planını çalıştır. Veri hacmi ve tane düzeyi değişince hangi model kararını değiştirdiğini açıkla.',
+    files: ['Model ve ölçü değişiklikleri', 'Önce/sonra süre ve doğruluk ölçümleri', 'Dağıtım ve geri dönüş notu'],
+  },
+  dax: {
+    environment: 'Tarayıcıda DAX alıştırması, gerçek model davranışı için Power BI Desktop.',
+    task: 'Anadolu Market’te kategori payı ölçüsünü yaz. Genel toplam, seçili kategoriler ve tek kategori bağlamlarında paydanın nasıl değiştiğini göster.',
+    hint: 'Ölçüyü yazmadan önce üç filtre bağlamı için elle beklenen pay ve paydayı yaz. ALL ile ALLSELECTED arasındaki farkı bu sonuçlardan incele.',
+    transfer: 'Lezzet Kurye’de ilçe payını teslim edilen siparişlerle yeniden kur. İlçe filtresi varken tarih filtresinin paydada korunmasını test et.',
+    files: ['DAX ölçüsü ve alternatif ifade', 'Üç bağlam için beklenen ve gerçekleşen sonuç', 'Payda davranışını açıklayan model notu'],
+  },
+  dp600: {
+    environment: 'Tasarım tarayıcıda yapılabilir. Çalışan işlem hattı ve Direct Lake için Fabric çalışma alanı gerekir.',
+    task: 'Anadolu Market’te ham dosyadan rapora tek akış tasarla. Her katmanın girişini, çıkışını ve yeniden çalıştırma koşulunu belirt.',
+    hint: 'Lakehouse, ambar ve anlam modelinin sorumluluklarını bir çizimde ayır. Her geçişe bir satır sayısı kontrolü koy.',
+    transfer: 'Kanat Havayolları uçuş verisini aynı akışa uyarla. Gecikme verisi geç geldiğinde hangi tablonun ve kontrolün yeniden çalışacağını göster.',
+    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Çalıştırma ve mutabakat kaydı ya da doğrulama planı'],
+  },
+  yonetici: {
+    environment: 'Kaynak karşılaştırması Excel veya CSV ile yapılabilir. Otomatik yenileme ve rapor için Power BI Desktop.',
+    task: 'Anadolu Market aylık Excel özetindeki satış ve sipariş adedini Power BI raporuyla karşılaştır. Bir ay ve kategori filtresi altında fark varsa kaynağını bul.',
+    hint: 'Excel ve Power BI’da aynı tarih aralığını, boş satır kuralını ve sipariş sayım yöntemini kullan.',
+    transfer: 'Lezzet Kurye’de aynı kontrolü sipariş haftası ve restoran ilçesi için yap. Tüm siparişler ile yalnızca teslim edilen siparişleri ayrı say.',
+    files: ['Power Query adımları ve model şeması', 'Eski/yeni rapor karşılaştırması', 'Yenileme adımları ve fark notu'],
+  },
+  'is-analisti': {
+    environment: 'Brif ve UAT tasarımı tarayıcıda hazırlanabilir. Referans rapor davranışını denemek için Power BI Desktop gerekir.',
+    task: 'Lezzet Kurye için 35 dakika teslimat SLA’sının KPI kartını ve iki UAT senaryosunu yaz. Filtresiz durum ile bir hafta ve bir ilçe seçildiğindeki beklenen değerleri kaynaktan hesapla.',
+    hint: 'Teslim edilen siparişleri paydaya al. 35:00 sınırını, iptal ve iadeleri, boş filtre sonucunu ayrı kabul koşullarına çevir. Kupon alanları için varsayım ile kaynak kanıtını ayır.',
+    transfer: 'Kanat Havayolları’nda 15 dakika uçuş gecikmesi için yeni KPI kartı ve iki UAT senaryosu yaz. Birim, iptal kapsamı ve veri kaynağına ilişkin kararları yeniden belirt.',
+    files: ['Rapor brifi ve KPI kartı', 'Model/alan eşlemesi ve filtre matrisi', 'Beklenen ve gerçekleşen sonuçlu UAT kaydı'],
+  },
+  karar: {
+    environment: 'Örnek raporlarla karar provası yapılabilir. Gerçek kurum raporu için yetkili erişim gerekir.',
+    task: 'Satış hedefi sapmasında bir bölgeyi seç. Dönemi ve karşılaştırma tabanını yazarak karar önerisi, sorumlu ve yeniden ölçüm tarihini belirle.',
+    hint: 'Yüzde ile yüzde puanı ayır. Tek bir kırmızı göstergeye bakmadan hacmi ve önceki dönemi birlikte kontrol et.',
+    transfer: 'Lezzet Kurye’de düşük SLA uyumlu bir ilçe için aynı karar notunu yaz. Sipariş hacmini dikkate al ve nedeni doğrulamak için hangi ek veriyi isteyeceğini belirt.',
+    files: ['Filtreler görünen rapor görüntüsü veya tablo', 'İki dönemin sayısal karşılaştırması', 'Sorumlusu ve kontrol tarihi olan karar notu'],
+  },
+  hizli: {
+    environment: 'Tarayıcıda ilk prova, çalışır rapor dosyası için Power BI Desktop.',
+    task: 'Anadolu Market için ay ve kategoriye göre satışları gösteren tek sayfa hazırla. Bir ay filtresi seç ve satış toplamını kaynakla karşılaştır.',
+    hint: 'Bir tarih ve bir ürün boyutu kullan. Önce tek toplam kartı kur, sonra ay grafiğini ve kategori dilimleyicisini ekle.',
+    transfer: 'Lezzet Kurye’de tek sayfayı sipariş adedi ve haftalık filtreyle yeniden kur. Filtresiz ve tek hafta sayısını kontrol et.',
+    files: ['Tek sayfalık rapor dosyası', 'İlişki şeması ve ölçüler', 'İki satırlık mutabakat tablosu'],
+  },
+  mulakat: {
+    environment: 'Tarayıcıda prova. Dosya teslimi istenen vakada Power BI Desktop.',
+    task: 'Süre tutarak bir satış KPI’ını modelle ve iki filtre altında doğrula. Üç dakikada problemi, kendi katkını, kontrol sonucunu ve bir sınırı anlat.',
+    hint: 'Durum, görev, eylem ve sonuç için birer cümle yaz. Sonuç cümlesine rapor ekranından bağımsız bir kontrol sayısı koy.',
+    transfer: 'Aynı sunumu Kanat Havayolları gecikme metriğiyle, önceki dosyayı açmadan yap. Değişen kapsam kuralını mülakatçıya açıklamayı ekle.',
+    files: ['Süreli vaka teslim dosyası', 'Filtreli iki kontrol örneği', 'Üç dakikalık mülakat notu'],
+  },
+  vaka: {
+    environment: 'Örnek veriyle tarayıcıda analiz provası. Teslim raporu için Power BI Desktop veya belgelenmiş başka bir analiz ortamı.',
+    task: 'Pedal İzmir vakasında istasyon doluluğu veya dengeleme için bir karar sorusu seç. Analiz tane düzeyini ve bir kontrol senaryosunu belirt.',
+    hint: 'Önce karar sahibini ve gerekli zaman aralığını yaz. İstasyon ile yolculuk verisinin aynı tane düzeyinde olmadığını kontrol et.',
+    transfer: 'Pusula İK’da aynı analiz planını bölüm bazlı devamsızlık sorusuna taşı. Payda ve kapsam kuralını yeni iş problemine göre yeniden yaz.',
+    files: ['Vaka brifi ve model şeması', 'Sorgu/ölçüler ve kontrol sonuçları', 'Karar sayfası ve veri sınırlamaları'],
+  },
+};
+Object.entries(EVIDENCE).forEach(([id, evidence]) => { W.PBI_ROLES[id].cap.evidence = evidence; });
 })(window);
 
 ;
@@ -34753,10 +34842,56 @@ function prereqBlock(r) {
   const ids = (q.lessons || []).filter(id => C.LMAP[id]); const d = ids.filter(id => P.done[id]).length;
   return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + (q.sqlYol ? ' <a class="lnk" href="' + esc(((window.KESIT_CONFIG || window.PBI_CONFIG || {}).sqlUrl || 'https://ysfdurak.github.io/kesit-sql/') + '#patika-' + q.sqlYol) + '">Kesit SQL: BT İş Analisti yolu</a>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
 }
+const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
+function evidenceMode(id) {
+  const value = (P.cap[id] || {}).workMode;
+  return Object.hasOwn(WORK_MODES, value) ? value : '';
+}
+function evidenceBlock(id, evidence) {
+  const current = evidenceMode(id);
+  const options = Object.entries(WORK_MODES).map(([value, label]) =>
+    '<option value="' + value + '"' + (current === value ? ' selected' : '') + '>' + label + '</option>').join('');
+  return '<div id="role-evidence" class="cap-brief">' +
+    '<span class="eyebrow">Rol görevi · portföy kanıtı</span><h3>' + esc(R[id].title) + '</h3>' +
+    '<p><b>İş görevi</b> · ' + esc(evidence.task) + '</p>' +
+    '<p class="muted"><b>Çalışma ortamı</b> · ' + esc(evidence.environment) + '</p>' +
+    '<details class="note"><summary>Yardımlı çalışma ipucunu aç</summary><p>' + esc(evidence.hint) + '</p></details>' +
+    '<p><b>Bağımsız tekrar</b> · Önceki çözümü ve ipucunu açmadan, farklı veride şu görevi çöz. ' + esc(evidence.transfer) + '</p>' +
+    '<p><button class="lnk" data-go="veriler">Uygulama veri setlerini aç</button></p>' +
+    '<p><b>Teslim dosyaları</b></p><ul class="capsteps">' + evidence.files.map(item => '<li>' + esc(item) + '</li>').join('') +
+    '<li>Bir sayfalık karar notu: bulgu, dayandığı sayı, öneri, sınır ve sonraki adım.</li></ul>' +
+    '<div class="row"><label>Çalışma biçimini kaydet <select class="input" data-evidence-mode="' + id + '">' +
+    '<option value="">Seçilmedi</option>' + options + '</select></label>' +
+    '<button class="btn sm" data-act="evidence-dl" data-id="' + id + '">Teslim şablonunu indir (.md)</button></div>' +
+    '<p class="muted">Çalışma biçimi kendi beyanındır. Tarayıcı provası ve Desktop/Service/Fabric’te yapılan kontrolleri teslim notunda ayrı yaz.</p></div>';
+}
+function downloadEvidence(id) {
+  const c = capOf(id), evidence = c && c.evidence;
+  if (!evidence) return;
+  const lines = [
+    '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
+    '## Çalışma ortamı', evidence.environment, '',
+    '- Kullandığım ortam ve sürüm: …', '- Çalışma biçimim: ' + (WORK_MODES[evidenceMode(id)] || '…'),
+    '- Kullandığım ipucu veya destek: …', '- Doğrulama durumu (bekliyor / denendi / geçti / kaldı): …',
+    '', '## Teslim dosyaları',
+    ...evidence.files.map(item => '- [ ] ' + item + ' · dosya adı veya bağlantı: …'),
+    '', '## Mutabakat ve kabul',
+    '| Senaryo ve filtre | Veri kaynağı | Beklenen | Gerçekleşen | Durum |',
+    '|---|---|---:|---:|---|', '| Filtresiz | … | … | … | … |', '| Filtreli | … | … | … | … |',
+    '', '## Karar notu', '- Bulgu ve kanıt: …', '- Öneri ve sorumlu: …',
+    '- Veri sınırı ve sonraki adım: …', '', '## Farklı veride bağımsız tekrar',
+    evidence.transfer, '- Kullanılan veri, sonuç ve değişen varsayım: …', '',
+  ];
+  return saveFile('kesit-powerbi-teslim-' + id + '.md', lines.join('\n'));
+}
 function capBlock(id) {
   const c = capOf(id), st = P.cap[id] || {}, cs = capState(id);
   let h = '<section class="lvl-block" id="cap"><div class="sec-head"><div><span class="eyebrow">Bitirme projesi · portföyüne koy</span><h2>' + esc(c.title) + '</h2></div><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></div><div class="panel capbox">';
-  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px"><button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button></div>' : '') + '</div>';
+  const dataDownload = c.download
+    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' Lezzet Kurye verisini indir (.zip, CSV)</a>'
+    : '<button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button>';
+  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + '</div>' : '') + '</div>';
+  if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
   h += '<div><span class="eyebrow">Teslim kontrol listesi</span><ul class="chk">' + (c.check || []).map((x, i) => '<li><label><input type="checkbox" data-capchk="' + id + ':' + i + '"' + (st[i] ? ' checked' : '') + '> <span>' + x + '</span></label></li>').join('') + '</ul></div>';
   if (c.rubric) h += '<div><span class="eyebrow">Değerlendirme ölçütü (kendini puanla)</span><div class="tbl-wrap"><table class="rubric"><tr><th>Ölçüt</th><th>Yeterli</th><th>İyi</th><th>Çok iyi</th></tr>' + c.rubric.map(rw => '<tr><td><b>' + esc(rw[0]) + '</b></td><td>' + esc(rw[1]) + '</td><td>' + esc(rw[2]) + '</td><td>' + esc(rw[3]) + '</td></tr>').join('') + '</table></div></div>';
@@ -34846,11 +34981,18 @@ document.addEventListener('click', ev => {
   if (t.dataset.act === 'cert-print') { try { window.print(); } catch (e) { C.toast('Yazdırma bu görünümde kapalı; “Belgeyi indir”i kullan.'); } return; }
   if (t.dataset.act === 'cert-dl') { const h = certHtml(); if (h) saveFile('kesit-powerbi-belge-' + (t.dataset.id || '') + '.html', h); return; }
   if (t.dataset.act === 'data-zip') { downloadData(); return; }
+  if (t.dataset.act === 'evidence-dl') { downloadEvidence(t.dataset.id); return; }
   if (t.dataset.scroll) { const sc = t.dataset.scroll; setTimeout(() => { const el = document.getElementById(sc); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
 });
 function rerenderKeep(sel) { const y = window.scrollY; C.render(); window.scrollTo(0, y); const n = document.querySelector(sel); if (n) n.focus({ preventScroll: true }); }
 document.addEventListener('change', ev => {
   const el = ev.target;
+  const id = el.dataset && el.dataset.evidenceMode;
+  if (id && capOf(id)?.evidence && (el.value === '' || Object.hasOwn(WORK_MODES, el.value))) {
+    P.cap[id] = P.cap[id] || {};
+    P.cap[id].workMode = el.value;
+    C.save();
+  }
   if (el.dataset && el.dataset.capchk) { const [id, i] = el.dataset.capchk.split(':'); P.cap[id] = P.cap[id] || {}; P.cap[id][i] = el.checked; if (el.checked) C.addXP(5); C.save(); rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]'); }
   if (el.dataset && el.dataset.rdy) { const [id, i] = el.dataset.rdy.split(':'); P.ready[id] = P.ready[id] || {}; P.ready[id][i] = el.checked; C.save(); rerenderKeep('[data-rdy="' + el.dataset.rdy + '"]'); }
 });
