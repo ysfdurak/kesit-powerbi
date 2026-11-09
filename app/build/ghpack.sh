@@ -16,8 +16,9 @@ cp build/gh/LICENSE build/gh/LICENSE-ICERIK.md $O/kesit-powerbi/
 [ -d build/gh/ekran ] && cp build/gh/ekran/*.png $O/kesit-powerbi/ekran/ || true
 touch $O/kesit-powerbi/.nojekyll
 cp -r build/gh/static/. $O/kesit-powerbi/
-V=$(cat $O/kesit-powerbi/kesit.js $O/kesit-powerbi/config.js | sha1sum | cut -c1-10); sed -i "s/__SURUM__/$V/" $O/kesit-powerbi/sw.js
 python3 build/ghhead.py $O/kesit-powerbi/index.html
+V=$(cat $O/kesit-powerbi/index.html $O/kesit-powerbi/kesit.js $O/kesit-powerbi/config.js | sha1sum | cut -c1-10)
+sed -i "s/__SURUM__/$V/" $O/kesit-powerbi/sw.js
 node build/readme.js > $O/kesit-powerbi/README.md
 cd $O && rm -f kesit-powerbi.zip && python3 -c "import shutil; shutil.make_archive('kesit-powerbi','zip','.','kesit-powerbi')"
 ls -la $O/kesit-powerbi.zip; ls $O/kesit-powerbi | wc -l
