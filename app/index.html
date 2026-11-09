@@ -1610,6 +1610,19 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 .vd-limit{padding:6px 0; border-top:1px solid var(--line)}
 .vd-limit summary{cursor:pointer}
 @media (max-width:760px),(pointer:coarse){.kbdhint{display:none}}
+.dax-output-head{display:none}
+@media (max-width:760px){
+  .ed textarea,.ed pre,.ed-top select{font-size:16px}
+  .ed-keys{display:grid; gap:4px}
+  .ed-key-row{display:flex; flex-wrap:wrap; gap:6px}
+  .ed-key-row button{min-inline-size:36px; min-block-size:40px}
+  .ed-functions{color:var(--code-ink)}
+  .ed-functions summary{padding:7px 0; cursor:pointer; font-size:.82rem}
+  .dax-output:not(:has(> div:last-child:empty)) .dax-output-head{display:flex; justify-content:space-between; margin-bottom:8px}
+  .dax-output-head h2{margin:0; font-size:1.1rem}
+  .ed:focus-within{box-shadow:inset 0 0 0 2px var(--accent)}
+}
+
 @media (max-width:760px){.morelist{gap:6px}.morelist .tool{display:grid; grid-template-columns:34px 1fr; column-gap:10px; align-items:center; padding:9px 12px}.morelist .tool .tic{grid-row:span 2; width:34px; height:34px}.morelist .tool b{font-size:.95rem}.morelist .tool small{font-size:.78rem}}
 .lhead .row{flex-wrap:wrap}
 .lfb{order:3; flex:1 1 100%; margin:0}

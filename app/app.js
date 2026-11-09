@@ -252,12 +252,15 @@ function hashFor(v, id, ctx, step, section) {
   return h;
 }
 function writeHash(hash, replace) { try { const url = hash ? ('#' + hash) : location.pathname + location.search; if (replace || ('#' + hash) === location.hash || (!hash && !location.hash)) history.replaceState(null, '', url); else history.pushState(null, '', url); lastHash = location.hash; } catch (e) {} }
+function scrollBelowTopbar(target) {
+  const topbar = $('.topbar');
+  const headerSpace = topbar.offsetHeight ? topbar.offsetHeight + (parseFloat(getComputedStyle(topbar).top) || 0) : 0;
+  window.scrollTo(0, window.scrollY + target.getBoundingClientRect().top - headerSpace - 12);
+}
 function revealPathSection() {
   const section = S.section && document.getElementById(S.section);
   if (!section) return false;
-  const topbar = $('.topbar');
-  const headerSpace = topbar.offsetHeight ? topbar.offsetHeight + (parseFloat(getComputedStyle(topbar).top) || 0) : 0;
-  window.scrollTo(0, window.scrollY + section.getBoundingClientRect().top - headerSpace - 12);
+  scrollBelowTopbar(section);
   const heading = section.querySelector('h2');
   heading.tabIndex = -1;
   heading.focus({ preventScroll: true });
@@ -292,7 +295,7 @@ function mountEx(e, k, onSolved) {
   if (e.t === 'pq') { window.PBI_PQUI.mountLesson(e, k, () => onSolved()); return; }
   if (e.t === 'mcode') { window.PBI_PQUI.mMount(e, k, q => onSolved(q)); return; }
   const init = P.drafts[k] != null ? P.drafts[k] : (e.start || (e.t === 'query' ? 'EVALUATE\n' : ''));
-  ED = makeEditor($('#ed'), init, () => checkEx(true), e.t === 'query');
+  ED = makeEditor($('#ed'), init, () => submitDax(() => checkEx(true), 'out'), e.t === 'query');
   ED.onChange = v => { P.drafts[k] = v; save(); };
   if (P.ex[k] && P.drafts[k] != null) checkEx(false, true);
 }
@@ -511,7 +514,7 @@ function daxView(e, k) {
   const exm = CUR && CUR.exam, arn = CUR && CUR.arena;
   if (!exm) h += '<div class="row" style="gap:8px">' + '<button class="btn sm" data-act="hint">' + (arn ? 'İpucu (−%30 puan)' : 'İpucu') + '</button>' + (arn ? '' : '<button class="btn sm ghost" data-act="sol">Çözümü göster</button><button class="btn sm ghost" data-act="ex-studio">Playground’da aç</button><button class="btn sm ghost" data-act="ai-copy" title="Görevi, kodunu ve hatanı bir isteme kopyalar. Hiçbir yere gönderilmez.">Yapay zekâ için kopyala</button>') + '</div>';
   h += '<div id="hintBox"></div><div id="solBox"></div></div>';
-  h += '<div class="work"><div class="ed-shell"><div class="ed-top"><span>' + (isQ ? 'EVALUATE sorgusu' : esc(e.name) + ' =') + '</span><span class="kbdhint">Ctrl/⌘ + Enter: kontrol et</span></div><div id="ed"></div></div><div class="ed-actions"><button class="btn pri" data-act="check">Kontrol et</button><button class="btn" data-act="run">Yalnızca çalıştır</button><button class="btn ghost sm" data-act="reset-ed">Baştan başla</button></div><div id="out" aria-live="polite"></div></div></div>';
+  h += '<div class="work"><div class="ed-shell"><div class="ed-top"><span>' + (isQ ? 'EVALUATE sorgusu' : esc(e.name) + ' =') + '</span><span class="kbdhint">Ctrl/⌘ + Enter: kontrol et</span></div><div id="ed"></div></div><div class="ed-actions"><button class="btn pri" data-act="check">Kontrol et</button><button class="btn" data-act="run">Yalnızca çalıştır</button><button class="btn ghost sm" data-act="reset-ed">Baştan başla</button></div>' + daxOutput('out') + '</div></div>';
   return h;
 }
 function mountLesson() {
@@ -623,8 +626,13 @@ function resultTable(cols, rows, lim) {
 
 /* ---------- Editör ---------- */
 function makeEditor(host, init, onSubmit, isQ) {
-  const keys = ['[', ']', '(', ')', '"', ',', '=', '&', '{', '}', 'CALCULATE(', 'SUM(', 'DIVIDE(', 'FILTER(', 'ALL(', 'VAR ', 'RETURN '].concat(isQ ? ['EVALUATE', 'SUMMARIZECOLUMNS('] : []);
-  host.innerHTML = '<div class="ed"><pre aria-hidden="true"><code></code></pre><textarea spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="DAX editörü" id="daxEditor"></textarea></div><div class="ed-keys">' + keys.map(k => '<button type="button" data-k="' + esc(k) + '">' + esc(k.trim()) + '</button>').join('') + '</div>';
+  const symbols = ['[', ']', '(', ')', '"', ',', '=', '&', '{', '}'];
+  const functions = ['CALCULATE(', 'SUM(', 'DIVIDE(', 'FILTER(', 'ALL(', 'VAR ', 'RETURN '];
+  if (isQ) functions.push('EVALUATE ', 'SUMMARIZECOLUMNS(');
+  const keyButtons = keys => keys.map(k => '<button type="button" data-k="' + esc(k) + '">' + esc(k.trim()) + '</button>').join('');
+  host.innerHTML = '<div class="ed"><pre aria-hidden="true"><code></code></pre><textarea spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="DAX editörü" id="daxEditor"></textarea></div>' +
+    '<div class="ed-keys"><div class="ed-key-row" role="group" aria-label="DAX işaretleri">' + keyButtons(symbols) + '</div>' +
+    '<details class="ed-functions"><summary>DAX kısayolları</summary><div class="ed-key-row">' + keyButtons(functions) + '</div></details></div>';
   const ta = $('textarea', host), code = $('code', host), pre = $('pre', host);
   const api = { get: () => ta.value, set: v => { ta.value = v; paint(); api.onChange && api.onChange(v); }, onChange: null, focus: () => ta.focus(), insert: t => insert(t) };
   function paint() { code.innerHTML = hl(ta.value) + '\n'; pre.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; }
@@ -638,8 +646,26 @@ function makeEditor(host, init, onSubmit, isQ) {
     else if (ev.key === 'Enter') { const before = ta.value.slice(0, ta.selectionStart); const ln = before.split('\n').pop(); const ind = (ln.match(/^\s*/) || [''])[0] + (/[(,]\s*$/.test(ln) ? '    ' : ''); ev.preventDefault(); insert('\n' + ind); }
   });
   function insert(t) { const s = ta.selectionStart, e = ta.selectionEnd; ta.setRangeText(t, s, e, 'end'); ta.dispatchEvent(new Event('input')); }
-  host.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () => { insert(b.dataset.k); ta.focus(); }));
+  host.querySelectorAll('[data-k]').forEach(b => {
+    b.addEventListener('mousedown', ev => { if (document.activeElement === ta) ev.preventDefault(); });
+    b.addEventListener('click', () => { insert(b.dataset.k); ta.focus({ preventScroll: true }); });
+  });
   return api;
+}
+
+function daxOutput(id) {
+  return '<div class="dax-output"><div class="row dax-output-head"><h2 tabindex="-1">Sonuç</h2>' +
+    '<button type="button" class="btn sm" data-act="dax-edit">Editöre dön</button></div>' +
+    '<div id="' + id + '" aria-live="polite"></div></div>';
+}
+function submitDax(run, id) {
+  run();
+  if (!window.matchMedia('(max-width: 760px)').matches) return;
+  const heading = document.getElementById(id)?.parentElement.querySelector('.dax-output-head h2');
+  if (heading) {
+    heading.focus({ preventScroll: true });
+    scrollBelowTopbar(heading.parentElement);
+  }
 }
 
 /* ---------- Veri Modeli ---------- */
@@ -713,7 +739,7 @@ function viewStudio() {
     h += '<div class="panel vset"><label>Satır ekseni<select id="stAxis">' + axisOpts(ST.axis) + '</select></label><label>Sütun ekseni<select id="stAxis2">' + axisOpts(ST.axis2, true) + '</select></label><label>Görsel<select id="stChart">' + [['table', 'Matris'], ['column', 'Sütun'], ['bar', 'Çubuk'], ['line', 'Çizgi'], ['donut', 'Halka'], ['card', 'Kart']].map(([v, t]) => '<option value="' + v + '"' + (v === ST.chart ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>';
     h += '<div class="slrow"><span class="eyebrow">Dilimleyici: Yıl</span>' + [2022, 2023, 2024].map(y => '<button class="chip" data-styil="' + y + '" aria-pressed="' + ST.yil.includes(y) + '">' + y + '</button>').join('') + '</div><div class="slrow"><span class="eyebrow">Kanal</span>' + ['Web', 'Mobil', 'Mağaza'].map(k => '<button class="chip" data-stkanal="' + k + '" aria-pressed="' + ST.kanal.includes(k) + '">' + k + '</button>').join('') + '</div></div>';
   }
-  h += '<div id="stOut"></div></div></div></div>';
+  h += daxOutput('stOut') + '</div></div></div>';
   return h;
 }
 function sideList() {
@@ -724,7 +750,7 @@ function sideList() {
   Object.keys(groups).forEach(g => { h += '<details' + (g === 'Temel' ? ' open' : '') + '><summary>' + g + '<span>' + groups[g].length + '</span></summary><ul>' + groups[g].map(m => '<li><button data-ins="[' + esc(m.name) + ']" title="' + esc(m.name + ' = ' + m.expr) + '">' + esc(m.name) + '</button></li>').join('') + '</ul></details>'; });
   return h + '<p class="muted" style="font-size:.78rem;margin:8px 4px 0">Hazır ölçüler örnek raporlarda kullanılır. Üzerine gelince formülü görünür; dokununca editöre eklenir.</p>';
 }
-function mountStudio() { SED = makeEditor($('#sed'), ST.code[ST.mode] || '', studioRun, ST.mode === 'q'); SED.onChange = v => { ST.code[ST.mode] = v; saveStudio(); }; studioRun(); }
+function mountStudio() { SED = makeEditor($('#sed'), ST.code[ST.mode] || '', () => submitDax(studioRun, 'stOut'), ST.mode === 'q'); SED.onChange = v => { ST.code[ST.mode] = v; saveStudio(); }; studioRun(); }
 function upsertMine(name, expr, quiet) {
   P.mine = P.mine || []; const i = P.mine.findIndex(m => m.name.toLowerCase() === name.toLowerCase());
   if (LIBMAP[name]) { if (!quiet) toast('“' + name + '” hazır bir ölçünün adı; başka bir ad seç.'); return false; }
@@ -872,11 +898,16 @@ document.addEventListener('click', ev => {
   if (act === 'sol') { const e = curX().e; $('#solBox').innerHTML = '<div class="codebox"><pre class="dax" data-done="1">' + hl((e.name ? e.name + ' =\n' : '') + e.sol) + '</pre></div>' + (e.explain ? '<div class="explain"><b>Mantığı</b>' + e.explain + '</div>' : '') + '<div class="row" style="margin-top:6px"><button class="btn sm" data-act="take-sol">Editöre al</button></div>'; return; }
   if (act === 'take-sol') { const e = curX().e; ED.set(e.sol); return; }
   if (act === 'ex-studio') { const e = curX().e; const src = ED.get(); openInStudio(e.t === 'query' ? src : (X.stripDef(src).name ? src : e.name + ' = ' + src)); return; }
-  if (act === 'check') return checkEx(true);
-  if (act === 'run') return checkEx(false);
+  if (act === 'check' || act === 'run') return submitDax(() => checkEx(act === 'check'), 'out');
+  if (act === 'dax-edit') {
+    const shell = t.closest('.work').querySelector('.ed-shell');
+    shell.querySelector('textarea').focus({ preventScroll: true });
+    scrollBelowTopbar(shell);
+    return;
+  }
   if (act === 'reset-ed') { const e = curX().e; ED.set(e.start || (e.t === 'query' ? 'EVALUATE\n' : '')); $('#out').innerHTML = ''; return; }
   if (act === 'read-done') { const l = LMAP[S.id]; if (!P.done[l.id]) { P.done[l.id] = true; addXP(5); save(); try { document.dispatchEvent(new CustomEvent('pbi-lesson-done', { detail: { id: l.id, title: l.title } })); } catch (e) {} } render(); return; }
-  if (act === 'st-run') return studioRun();
+  if (act === 'st-run') return submitDax(studioRun, 'stOut');
   if (act === 'st-clear') { SED.set(''); $('#stOut').innerHTML = ''; return; }
   if (act === 'st-save') { const src = SED.get(); const dd = X.stripDef(src); if (!dd.name) { toast('Kaydetmek için ölçüye ad ver: Ad = ifade'); return; } const er = X.check(src); if (er) { toast('Önce hatayı düzelt: ' + er); return; } if (upsertMine(dd.name, dd.expr.trim())) { ST.side = 'measures'; saveStudio(); document.querySelectorAll('[data-side]').forEach(b => b.setAttribute('aria-pressed', b.dataset.side === 'measures')); $('#sideList').innerHTML = sideList(); } return; }
   if (act === 'mine-del') { P.mine.splice(+d.i, 1); save(); $('#sideList').innerHTML = sideList(); toast('Ölçü silindi'); return; }
