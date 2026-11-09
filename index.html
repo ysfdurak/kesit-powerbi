@@ -26,7 +26,7 @@
 :root{
   --bg:#F1F0EC; --surface:#FFFFFF; --surface-2:#F7F6F2; --ink:#1B1A16; --muted:#625F55; --line:#DEDBD2;
   --accent:#E9B10C; --accent-text:#8A6200; --accent-soft:#FBF1D2; --accent-ink:#1B1505;
-  --ok:#17855A; --ok-ink:#fff; --ok-soft:#E1F3EA; --warn:#A86A12; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
+  --ok:#17855A; --ok-ink:#fff; --ok-soft:#E1F3EA; --warn:#89530C; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
   --code-bg:#17150F; --code-ink:#E8E4D8; --code-kw:#F2C14E; --code-fn:#8FC8FF; --code-str:#B8E07A; --code-num:#F5A86B; --code-com:#B7B2A2; --code-var:#E2A8FF; --code-line:#2A271E; --code-tab:#201D16;
   --ic-color-share:62%; --l1:#1F7F47; --l3:#3866D1; --l5:#B8418F; --l6:#C2410C;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
@@ -687,7 +687,7 @@ tr.vmark.sel td{background:var(--accent-soft)}
 .dash-card{padding:16px; display:flex; flex-direction:column; gap:14px}
 .dq{margin:6px 0 2px; font-size:.95rem; max-width:80ch}
 .dash-sl{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end}
-.dgrid2.busy{opacity:.55; transition:opacity .2s; pointer-events:none}
+.dgrid2.busy{pointer-events:none}
 .dtile.skel .dt-body{min-height:120px}
 .skbar{height:12px; border-radius:6px; background:linear-gradient(90deg, var(--surface-2), var(--line), var(--surface-2)); background-size:200% 100%; animation:sk 1.2s linear infinite; margin:10px 0}
 @keyframes sk{to{background-position:-200% 0}}
@@ -968,7 +968,8 @@ svg.viz text{pointer-events:none}
 .badge{display:flex; flex-direction:column; gap:3px; padding:12px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface)}
 .badge .bi{display:inline-grid; place-items:center; width:38px; height:38px; border-radius:50%; background:var(--accent); color:var(--accent-ink); font-family:var(--f-display); font-weight:800; font-size:.82rem; margin-bottom:4px}
 .badge small{color:var(--muted); font-size:.78rem}
-.badge.off{opacity:.55} .badge.off .bi{background:var(--surface-2); color:var(--muted); border:1px dashed var(--line)}
+.badge.off{background:var(--surface-2); border-style:dashed}
+.badge.off .bi{background:var(--surface); color:var(--muted); border:1px dashed var(--line)}
 .replist{margin:0; padding-left:20px; font-size:.88rem; display:flex; flex-direction:column; gap:6px}
 .rep{display:inline-flex; flex-direction:column; gap:6px; align-items:flex-end; min-width:0}
 .repform{display:flex; gap:6px; align-items:flex-start; flex-wrap:wrap; justify-content:flex-end}

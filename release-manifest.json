@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-09",
-  "sourceCommit": "a26c2223455773833e77f897ca8ecff2a85b597d",
+  "sourceCommit": "c76f61765c430717160765e037bb3ad3bb222a93",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -15,13 +15,14 @@
     "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları",
     "Mobil menüden öğrenme yolu ve bitirme projesine geçiş",
     "Mobil DAX editörü, çalıştırma ve sonuç akışı",
-    "Koyu tema, yol rozetleri, durum işaretleri ve kod kontrastı"
+    "Koyu tema, yol rozetleri, durum işaretleri ve kod kontrastı",
+    "Açık tema, profil rozetleri, rapor yükleme ve Power Query uyarıları"
   ],
   "files": {
-    "index.html": "8b9dfe406952297c8a2f8803c156ff8cf1031797db46499d6c2d6129709c5105",
+    "index.html": "1a08990fb09b9dbb1ffad527f27f39d37d7b20bbf9d34ab40a5574f28a58a5c3",
     "kesit.js": "405bf219c6f8f041155da1397768b424dce480335756afa40cea2403e5486814",
     "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
-    "sw.js": "c2b480bb49ff4072e9c1ff83cc1c0a42c7577ebc475c7ab3f4862e47dc7392a4",
+    "sw.js": "d167a2b944fd00100aea2aef87334be4169b750bc03f8a0af3f8a6da2fe6b934",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
