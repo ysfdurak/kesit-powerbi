@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-09",
-  "sourceCommit": "41122f0543c10c3232ad78d3fed6182e502cdfdd",
+  "sourceCommit": "cd713c6672e4e6551f8c0f8a48c9e075a227591f",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -17,16 +17,19 @@
     "Mobil DAX editörü, çalıştırma ve sonuç akışı",
     "Koyu tema, yol rozetleri, durum işaretleri ve kod kontrastı",
     "Açık tema, profil rozetleri, rapor yükleme ve Power Query uyarıları",
-    "Klavye odağı, DAX editörü, mobil gezinme ve rapor ayrıntısı"
+    "Klavye odağı, DAX editörü, mobil gezinme ve rapor ayrıntısı",
+    "Örnek rapor ayarları, ön koşul sırası, açılış bütçesi ve içerik sayımı"
   ],
   "files": {
-    "index.html": "a33795b687c395427d61a2e3f23b0d555d263a4663d616ebc885ae1e58392d8f",
-    "kesit.js": "b6d21e8852eda1b0796a8387ada5c661a1186864d66b56a2d177a604a8558756",
+    "index.html": "e384cfc7928500173a5d3eed46f8b441cb4659c668f70abd8ca9eed2a49535cd",
+    "kesit.js": "3e111f2e57423e81c9946914fbd5600fd099dfd7e880d9283449bad0ab180fe1",
     "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
-    "sw.js": "91b3535f2d226d71298970605f92abd16b74f01800f2175a4aed87555bc41aa5",
+    "sw.js": "d7ced37344cedac599697ee524b86b78403af2ef600576223ea3abdeb865cccf",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
-    "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b"
+    "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
+    "README.md": "174c44b9146c1849ebbb99dcc68b1dba5e7c87a1e9f87b4b24ed60a2c93c1d7c",
+    "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552"
   }
 }
