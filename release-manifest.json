@@ -12,7 +12,8 @@
     "Kaynak hiddenval 337 DAX + 106 query, 0 sorun",
     "Rol görevleri, çalışma biçimi kaydı ve teslim şablonu",
     "Depo sevkiyat vakası: CSV kaynak mutabakatı ve ayrı teslim ilerlemesi",
-    "İlk uygulama ve bağımsız tekrar: ayrı kayıt, yedek birleştirme ve Markdown"
+    "İlk uygulama ve bağımsız tekrar: ayrı kayıt, yedek birleştirme ve Markdown",
+    "DP-600: dört alan, yol aşaması, hazırlık listesi ve kapsam haritası eşleşmesi"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -50,11 +51,19 @@
     "tests/snip.js": "9ded7e59deaceb137e028cc75ce72f4855ec98515d5ea226a9d846bc7f480843",
     "tests/termval.js": "a5673c3801a4639f6e254720280d64e48ee509998c9893687c2b43659b7e78d1",
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
-    "tests/yolval.js": "dcd0e7a709ce12cfd0fe220f9aa521ba4882c9c9b668ba87dc6d4e9798c1a03c",
-    "app/roles.js": "705f3d0a8fd170551520fee8f7ed91c67259b50c82a026b3eaeec4138e2c9657",
-    "app/career.js": "737b7b9149a5db5366e2cb148f90b3ad915b555ceb57f9255fe26e042fc895b0",
-    "KALAN-GOREVLER.md": "1c856a75665bc92aace18ad1970f2c55d2f37a91201ee7f9db63f4313ab8e7cf",
+    "tests/yolval.js": "ef9a5e1f8339e39c57282f5aff45bd8a371e8961832c6b9c1c8e631696a62306",
+    "app/roles.js": "8e02e7d255f551f9c92096a3a926c26403a6fcc7072cacea5a9d6974c03390c5",
+    "app/career.js": "3de381721784da6f9ed569c1b83d10cca55aea56b3ba281af1f6e5c1c71b38e8",
+    "KALAN-GOREVLER.md": "be40ca059607a64404e669ae3c3d628a457c2e708cdb2c1d8ea3bccd77d24376",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
-    "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664"
+    "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
+    "app/c24.js": "decf6b224935543ed4c01f291ab823ea744ee1af4bcd664fa47c9345985fb387",
+    "app/c7.js": "aaee3e8d6b9dbaff611b1ecf50f96f59ddffcfc3d13ba7b41a566eaff16beced",
+    "app/certskills.js": "c83e7c1a2af081e5bb65cf7fc9c9f3b5e0cbed9eb6b565969d07c49f787b6ed5",
+    "app/examui.js": "1211cb1cc701abe12242bbecebc9dd1d14fcab6bd659e1b2b7c47957be8f9e16",
+    "app/x_ileri3.js": "256185c1d62ecbc59eafed856c93cb45e32fdc8c3bb88c8903330e9f62216963",
+    "app/yollar.js": "bf4ea76142d087c2844d3ba7660bdee5d6ad4b1d65ccf979e26c1e9357bb0c15",
+    "app/build/gh/static/ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
+    "app/build/gh/static/ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b"
   }
 }

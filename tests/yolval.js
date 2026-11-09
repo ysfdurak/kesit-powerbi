@@ -25,8 +25,20 @@ if (!PBI_ROLES.dp600.prereq) fail('DP-600 ön koşul yok'); PBI_ROLES.dp600.prer
 const dp = gp('dp600').lessons, tot = dp.reduce((a, id) => a + est(L[id]), 0), DATA = ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'fabric-data-factory', 'fabric-pipeline', 'gateway', 'veri-baglantilari', 'veri-akislari', 'fabric-veri-alma', 'pq-orta', 'sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz', 'kql-gercek-zaman', 'dax-sorgu'], dat = DATA.reduce((a, id) => a + est(L[id]), 0);
 console.log('DP-600 veri hazırlama payı %' + Math.round(dat / tot * 100) + ' (' + dat + '/' + tot + ' dk)');
 if (dat / tot < 0.4) fail('DP-600 veri hazırlama payı düşük');
+const domains = PBI_CERT_INFO.dp600.domains;
+const expectedWeights = [[10,15], [40,45], [20,25], [20,25]];
+if (JSON.stringify(domains.map(d => d.slice(2))) !== JSON.stringify(expectedWeights)) fail('DP-600 sınav ağırlıkları');
+const role = PBI_ROLES.dp600;
+domains.forEach(([title, , lo, hi]) => {
+  const weight = '%' + lo + '–' + hi;
+  if (!role.ms.some(m => m.t === title && m.d.includes(weight))) fail('DP-600 aşaması: ' + title);
+  if (!role.ready.some(r => r.t === title && r.d === weight && r.lessons.length)) fail('DP-600 hazırlık maddesi: ' + title);
+  if (!PBI_CERT_SKILLS.dp600.some(s => s.d === title && !s.extra)) fail('DP-600 kapsam alanı: ' + title);
+});
+if (PBI_CERT_SKILLS.dp600.some(s => !domains.some(d => d[0] === s.d))) fail('DP-600 eşleşmeyen kapsam alanı');
 const SK = PBI_SKILL_LESSON || {}; const ids = Object.keys(SK);
 ids.forEach(k => { const pth = k.startsWith('pl') ? gp('pl300') : gp('dp600'); SK[k].forEach(id => { if (!L[id]) fail('kapsam ' + k + ' ' + id); else if (k.startsWith('pl') && !pth.lessons.includes(id)) fail('PL-300 maddesi yolda olmayan derse bağlı: ' + k + ' ' + id); }); });
 const src = fs.readFileSync(P + 'certskills.js', 'utf8'); (src.match(/\['((?:pl|dp)-\w+)',/g) || []).map(x => x.slice(2, -2)).forEach(k => { if (!SK[k]) fail('kapsam haritasında ders yok: ' + k); });
 console.log('yol ' + PBI_PATHS.length + ' ders ' + PBI_LESSONS.length + ' ' + PBI_PATHS.map(p => p.id + ':' + p.lessons.length).join(' '));
 console.log('SORUN ' + bad);
+if (bad) process.exitCode = 1;

@@ -17,6 +17,11 @@ const RUB_BASE = [
   ['İletişim', 'Bulgular yazılı', 'Bulgu → kanıt → öneri sırasıyla anlatılmış', 'Etkisi sayıyla ölçülmüş, sonraki adımlar sahibi ve tarihiyle belirlenmiş']
 ];
 
+const DP_DOMAINS = W.PBI_CERT_INFO.dp600.domains;
+const dpArea = (index, lessons) => {
+  const [title, , lo, hi] = DP_DOMAINS[index];
+  return L(title, lessons, '%' + lo + '–' + hi);
+};
 W.PBI_ROLES = {
   profesyonel: {
     title: 'Tam program', who: 'Hiç Power BI açmamış biri için; Excel bilmen yeterli. Temel’den İleri’ye bütün dersler.', jobs: ['Veri analisti', 'BI uzmanı', 'BI geliştirici'], level: 'Temel → İleri',
@@ -67,13 +72,21 @@ W.PBI_ROLES = {
     ready: [L('Bağlamlar ve CALCULATE', ['baglam', 'calculate', 'iteratorler', 'filter-all', 'baglam-gecisi'], ''), L('Tablo, pencere ve zaman', ['tablo-fonk', 'pencere', 'zaman', 'zaman-ileri', 'dax-udf'], ''), L('İş kalıpları', ['musteri-analitigi', 'segmentasyon', 'ileri-kaliplar', 'finans'], ''), L('Optimizasyon ve test', ['dax-opt', 'kalite-test'], ''), EXAM('DAX kodlama sınavı (ileri) en az %75', 'kod-c', 75, '', ['sinav', null, 'Sınavlar']), { t: 'DAX Arena’da 500 puan', arena: 500, d: '', go: ['arena', null, 'Arena'] }, CAP('Kalıp kütüphanesinin tüm teslimleri')]
   },
   dp600: {
-    title: 'Fabric Analitik Mühendisi (DP-600)', who: 'Power BI’ın ötesine geçip Microsoft Fabric’te lakehouse, ambar, gerçek zamanlı analitik ve kurumsal anlam modelleriyle çalışmak isteyenler için; 19 Ekim 2026 beceri listesine göre.', jobs: ['Analitik mühendisi', 'Fabric geliştirici', 'BI mimarı'], level: 'Orta → İleri',
-    long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) dahil: OneLake, lakehouse ve ambar, T-SQL ve not defterleri, işlem hatları ve veri akışları, Eventhouse ve KQL, Direct Lake, kurumsal anlam modeli, güvenlik, Git ve dağıtım işlem hatları.',
+    title: 'Fabric Analitik Mühendisi (DP-600)', who: 'Power BI’ın ötesine geçip Microsoft Fabric’te lakehouse, ambar, gerçek zamanlı analitik ve kurumsal anlam modelleriyle çalışmak isteyenler için.', jobs: ['Analitik mühendisi', 'Fabric geliştirici', 'BI mimarı'], level: 'Orta → İleri',
+    long: 'Fabric hazırlığı dört alanı birleştirir: çözüm yönetimi, veriyi hazırlama ve sunma, anlam modeli, veri keşfi ve analizi. Tarayıcıda kavramları çalış, gerçek Fabric uygulamasını ayrı kanıtla.',
     outcomes: ['Bir ihtiyaç için lakehouse, ambar ya da eventhouse arasında gerekçeli seçim yaparım.', 'T-SQL görünümleri, not defterleri, veri akışları ve işlem hatlarıyla veriyi hazırlarım.', 'Fabric’te yıldız şema, SCD ve köprü tabloları kurarım.', 'Direct Lake modeli tasarlar, geri dönüş (fallback) ve yenileme davranışını yönetirim.', 'KQL ile gerçek zamanlı veriyi sorgular ve panolara bağlarım.', 'Çalışma alanını Git, dağıtım işlem hatları ve etki analiziyle yönetirim.'],
     cap: { title: 'Fabric uçtan uca: lakehouse → ambar → Direct Lake raporu', brief: 'Anadolu Market satış verisini Fabric’e taşı: ham veriyi lakehouse’a al, ambar katmanında yıldız şemayı kur, Direct Lake anlam modeli ve rapor yayımla.', data: DATA + ' Fabric deneme kapasitesi ya da şirketinin geliştirme çalışma alanı gerekir.',
       steps: ['Mimariyi çiz: bronz / gümüş / altın katmanlar ve hangi öğenin nerede durduğu.', 'CSV’leri lakehouse’a yükle; bir not defteriyle temizle (tekrarlar, boşlar, türler).', 'Ambarda boyut ve olgu tablolarını T-SQL ile oluştur; müşteri boyutu için SCD Tip 2.', 'Direct Lake anlam modeli: ilişkiler, ölçüler, hesaplama grubu, RLS.', 'Bir işlem hattıyla yüklemeyi zamanla; hata durumunda uyarı kur.', 'Çalışma alanını Git’e bağla, dağıtım işlem hattı planını yaz.'],
-      check: ['Mimari çizim', 'Lakehouse yükleme ve temizlik not defteri', 'Ambarda yıldız şema ve SCD2', 'Direct Lake modeli ve rapor', 'İşlem hattı ve zamanlama', 'Git + dağıtım planı'], rubric: null, present: PRESENT },
-    ready: [L('Fabric temelleri ve veri hazırlama', ['fabric-giris', 'fabric-hazirlama', 'veri-akislari', 'sql-analist'], '%45–50'), L('Gerçek zamanlı analitik', ['kql-gercek-zaman'], ''), L('Anlam modeli', ['kurumsal-model', 'fabric-yildiz', 'hesaplama-gruplari', 'dax-opt'], '%25–30'), L('Sürdürme ve güvenlik', ['guvenlik', 'yonetisim', 'yasam-dongusu'], '%25–30'), EXAM('DP-600 denemesinde en az 700', 'dp600', 70, '', ['sinav', null, 'Sınavlar']), CAP('Fabric uçtan uca projesinin tüm teslimleri'), SELF('Fabric deneme kapasitesinde bir lakehouse ve ambar oluşturdum', 'Gerçek ortamda en az bir kez.')]
+      check: ['Mimari çizim', 'Lakehouse yükleme ve temizlik not defteri', 'Ambarda yıldız şema ve SCD2', 'Direct Lake modeli ve rapor', 'İşlem hattı tasarımı ve varsa çalıştırma kaydı', 'Git + dağıtım planı'], rubric: null, present: PRESENT },
+    ready: [
+      dpArea(0, ['calisma-alani', 'guvenlik', 'yonetisim', 'yasam-dongusu']),
+      dpArea(1, ['fabric-giris', 'fabric-veri-alma', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
+      dpArea(2, ['kurumsal-model', 'fabric-anlam-modeli', 'hesaplama-gruplari', 'dax-opt']),
+      dpArea(3, ['sql-analist', 'kql-gercek-zaman', 'dax-sorgu']),
+      EXAM('Kesit DP-600 denemesinde en az %70', 'dp600', 70, 'Bu oran uygulama içi hazırlık hedefidir.', ['sinav', null, 'Sınavlar']),
+      CAP('Fabric uçtan uca projesinin tüm teslimleri'),
+      SELF('Fabric ortamında lakehouse ve ambarı kurdum', 'Tasarım notuna ek olarak gerçek çalıştırma kaydını sakla.'),
+    ]
   },
   yonetici: {
     title: 'Excel’den Power BI’a', who: 'Pivot tablo ve formüllerle rapor hazırlayan raporlama, finans ve satış operasyon ekipleri için hızlı geçiş.', jobs: ['Raporlama uzmanı', 'Finansal analist', 'Satış operasyon'], level: 'Temel → Orta',
@@ -212,7 +225,7 @@ const EVIDENCE = {
     task: 'Anadolu Market’te ham dosyadan rapora tek akış tasarla. Her katmanın girişini, çıkışını ve yeniden çalıştırma koşulunu belirt.',
     hint: 'Lakehouse, ambar ve anlam modelinin sorumluluklarını bir çizimde ayır. Her geçişe bir satır sayısı kontrolü koy.',
     transfer: 'Kanat Havayolları uçuş verisini aynı akışa uyarla. Gecikme verisi geç geldiğinde hangi tablonun ve kontrolün yeniden çalışacağını göster.',
-    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Çalıştırma ve mutabakat kaydı ya da doğrulama planı'],
+    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Tasarım kanıtı: doğrulama planı ve yeniden çalıştırma koşulu', 'Çalıştırma kanıtı: Fabric çalışma kimliği, sonuç ve mutabakat. Ortam yoksa bekliyor olarak kaydet.'],
   },
   yonetici: {
     environment: 'Kaynak karşılaştırması Excel veya CSV ile yapılabilir. Otomatik yenileme ve rapor için Power BI Desktop.',

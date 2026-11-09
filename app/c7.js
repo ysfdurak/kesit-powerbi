@@ -279,18 +279,18 @@ AnadoluMarket.Report/
 {
   id: 'dp600', lv: 'C2', mod: 'Sınav Hazırlığı', min: 16,
   title: 'DP-600 Fabric Analytics Engineer hazırlığı',
-  sum: 'Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları.',
+  sum: 'DP-600’ün dört sınav alanı, güncel ağırlıkları ve Kesit Power BI’daki çalışma karşılıkları.',
   body: `
 <h2>Sınav hakkında</h2>
 <p><b>DP-600: Implementing Analytics Solutions Using Microsoft Fabric</b> sınavını geçenler <i>Microsoft Certified: Fabric Analytics Engineer Associate</i> unvanını alır. PL-300'ün bir üst basamağı gibi düşünülebilir: rapor yazmaktan çok veriyi hazırlamak, kurumsal anlam modeli kurmak ve çözümü yönetmek ölçülür. Geçme puanı 1000 üzerinden 700'dür.</p>
-<h2>Ölçülen beceriler (Ekim 2026)</h2>
-<div class="warn"><b>Listeyi kendin kontrol et</b>Sertifika sayfası (Ekim 2026) üç alan gösteriyor ve aşağıdaki tablo ona dayanıyor. Kasım 2026’daki kontrolde çalışma kılavuzunun bazı dil sürümleri eski dört alanlı listeyi gösterdi. Sınava girmeden önce resmî kılavuzda “Skills measured” tarihini kendin oku.</div>
-
+<h2>Ölçülen beceriler</h2>
+<p>Ağırlıklar 9 Kasım 2026’da <a href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600" target="_blank" rel="noopener">Microsoft Learn çalışma kılavuzundan</a> doğrulandı. Kılavuzun son güncellemesi 30 Ekim 2026.</p>
 <div class="tbl-wrap"><table>
 <tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
-<tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yerel geliştirme, Yaşam döngüsü, Kurumsal model, Kullanım ve izleme</td></tr>
-<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>OneLake, Lakehouse, Data Factory, İşlem hatları, Ağ geçidi, ödevler, Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
-<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
+<tr><td><b>Analitik çözümü planla, uygula ve yönet</b></td><td>%10–15</td><td>Ortam ve kapasite seçimi, erişim, çalışma alanı, sürüm denetimi ve dağıtım</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yaşam döngüsü</td></tr>
+<tr><td><b>Veriyi hazırla ve sun</b></td><td>%40–45</td><td>Veri alma, kopyalama, zamanlama, dönüşüm ve yükleme performansı</td><td>Lakehouse, Data Factory, İşlem hatları, T-SQL ve PySpark ödevleri</td></tr>
+<tr><td><b>Anlam modellerini uygula ve yönet</b></td><td>%20–25</td><td>Direct Lake, model ilişkileri, DAX, RLS/OLS ve performans</td><td>Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
+<tr><td><b>Veriyi keşfet ve analiz et</b></td><td>%20–25</td><td>Profilleme, betimleyici ve tanısal analiz, tahmin ve SQL/XMLA ile sorgulama</td><td>SQL analizi, kapsam haritasındaki keşif dersleri ve ek sorgu pratiği</td></tr>
 </table></div>
 <h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
 <ul>

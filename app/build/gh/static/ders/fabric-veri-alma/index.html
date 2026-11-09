@@ -1,0 +1,49 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli) | Kesit Power BI</title><meta name="description" content="Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-veri-alma/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)"><meta property="og:description" content="Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/fabric-veri-alma/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)","description":"Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"İleri","url":"https://ysfdurak.github.io/kesit-powerbi/ders/fabric-veri-alma/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">İleri · Fabric</span><h1>Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)</h1><p class="st-l">Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a yükleme ödevi.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-veri-alma">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<p>DP-600 çalışma kılavuzunda veriyi hazırlama ve sunma alanı %40–45 ağırlıktadır. Lakehouse veya ambara veri almayı, kopyalamayı, dönüştürmeyi ve yükleme performansını kapsar. Bu ders veri alma araçlarını karşılaştırır. Ardından T-SQL ve PySpark ödevleriyle dönüşümü uygula.</p>
+<div class="note"><b>Tarayıcı sınırı</b>Bu uygulama T-SQL, PySpark ya da KQL çalıştırmaz. Bu üç derste ödevleri gerçek Fabric’te yaparsın, sonucu aşağıdaki beklenen değerlerle karşılaştırırsın. Alıştırmalar ise kavramı ve DAX karşılığını denetler.</div>
+
+<h2>Deneme kapasitesi</h2>
+<p>Fabric deneme kapasitesi (trial) 60 gün sürer ve F4 ya da F64 olarak açılır. Fabric ana sayfasındaki hesap menüsünden <b>Start trial</b> ile başlatılır ya da sahibi olduğun bir çalışma alanında Fabric öğesi oluşturmaya çalışınca önerilir. Uygunluk kuruluşun kiracı ayarlarına, lisansa ve bölgeye bağlıdır; garanti değildir. Açamazsan SQL bölümlerini <a href="https://ysfdurak.github.io/kesit-sql/">Kesit SQL</a>’de, Power Query bölümlerini Power BI Desktop’ta çalış; kısayol ve işlem hattı adımlarını yalnızca oku.</p>
+
+<h2>Önce karar: kopyala mı, yerinde mi eriş?</h2>
+<div class="tbl-wrap"><table>
+<tr><th>Durum</th><th>Araç</th><th>Neden</th></tr>
+<tr><td>Veri başka bir Fabric öğesinde ya da ADLS, S3, Google Cloud Storage’da duruyor, dönüşüm gerekmiyor</td><td><b>Kısayol (shortcut)</b></td><td>Kopya oluşmaz; sembolik bağlantı gibi davranır</td></tr>
+<tr><td>Az kodla bağlan, temizle, hedefe yaz</td><td><b>Dataflow Gen2</b></td><td>Power Query bilgisi yeterli</td></tr>
+<tr><td>Büyük hacimli kopyalama, zamanlama, adımları sıraya koyma</td><td><b>İşlem hattı (data pipeline)</b></td><td>Düzenleyicidir; not defteri, veri akışı ve saklı yordam da çağırır</td></tr>
+<tr><td>Kod gerektiren dönüşüm, çok dosya, kendi kuralın</td><td><b>Not defteri (notebook)</b></td><td>PySpark ile tam denetim</td></tr>
+</table></div>
+
+<h2>Kısayol hakkında dört gerçek</h2>
+<ul>
+<li>Dahili kısayol lakehouse, ambar, KQL veritabanı gibi Fabric öğelerine, çalışma alanları arasında da işaret edebilir. Harici kısayol ADLS Gen2, Amazon S3, Google Cloud Storage, Azure Blob, Dataverse, OneDrive ve SharePoint’e işaret edebilir.</li>
+<li><code>Tables</code> klasöründe yalnızca en üst düzeyde oluşturulur; hedef Delta biçimindeyse tablo olarak tanınır. <code>Files</code> klasöründe her düzeyde ve her biçimde oluşturulur, tablo keşfi olmaz.</li>
+<li>Kısayolu silmek hedef veriye dokunmaz.</li>
+<li>Ama kısayolun <b>içindeki</b> bir dosyayı silersen, iznin varsa hedefteki dosya da silinir.</li>
+</ul>
+
+<h2>Ödev 1: Anadolu Market’i lakehouse’a yükle</h2>
+<ol>
+<li><a href="../../">Anadolu Market modeli</a> sayfasından veri setini indir ve zip’i aç.</li>
+<li>Fabric’te bir çalışma alanı aç, içinde <code>AnadoluLH</code> adlı bir lakehouse oluştur.</li>
+<li>CSV’leri <code>Files/ham</code> klasörüne yükle.</li>
+<li><code>Satislar.csv</code>, <code>Urunler.csv</code>, <code>Kategoriler.csv</code> ve <code>Tarih.csv</code> için <b>Load to Tables</b> ile Delta tablo oluştur.</li>
+<li>SQL analiz uç noktasında satır sayılarını kontrol et.</li>
+</ol>
+<div class="tip"><b>Beklenen sonuç</b>Satislar 1.620, Urunler 40, Kategoriler 7, Tarih 1.096 satır. <code>Satislar</code> üzerinde <code>Tutar</code> toplamı 1.346.189,85.</div>
+<p>Dosya UTF-8 BOM ile başlıyor. Bir araç ilk sütun adının başında görünmez bir karakter bırakırsa sütun adını düzelt; Türkçe karakterlerin bozulduğunu görürsen kodlamayı kontrol et.</p>
+
+<h2>Ödev 2: İki yolu karşılaştır</h2>
+<p>Aynı <code>Urunler.csv</code> dosyasını bir kez Dataflow Gen2 ile <code>Urunler_DF</code> tablosuna yaz, sonra işlem hattındaki <b>Copy data</b> etkinliğiyle <code>Urunler_PL</code> tablosuna yaz. Her ikisi de 40 satır olmalı. Hangisini ne zaman seçeceğini iki cümleyle not et; sınavda “en az efor” ve “dönüşüm gerekiyor mu” ipuçlarını ararsın.</p>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-fabric-veri-alma/1">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ilk-olcu/">← 1 dakikada ilk ölçün</a><a href="../fabric-tsql-odev/">Ambar ödevi: T-SQL ile yıldız şema, görünüm ve saklı yordam →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

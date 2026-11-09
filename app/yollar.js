@@ -15,6 +15,10 @@ const G = (t, d, ids) => ({ t, d, ids });
 const ORDERED = ids => ids.slice().sort((a, b) => W.PBI_ORDER.indexOf(a) - W.PBI_ORDER.indexOf(b));
 const ALLNOOPT = W.PBI_ORDER.filter(id => !W.PBI_OPTIONAL.includes(id));
 const slice = (a, b) => { const i = ALLNOOPT.indexOf(a), j = ALLNOOPT.indexOf(b); return ALLNOOPT.slice(i, j + 1); };
+const dpStage = (index, ids) => {
+  const [title, , lo, hi] = W.PBI_CERT_INFO.dp600.domains[index];
+  return G(title, 'Sınav ağırlığı %' + lo + '–' + hi, ids);
+};
 const STAGES = {
   profesyonel: [
     G('Power BI’ı tanı', 'İlk ölçü, kurulum, ilk rapor', slice('ilk-olcu', 'gorsel-temel')),
@@ -75,14 +79,12 @@ const STAGES = {
     G('İş kalıpları', '', ['hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'istatistik-ileri']),
     G('Optimizasyon', '', ['performans', 'dax-opt'])
   ],
-  /* Süre payı sınava uyar: veri hazırlama en büyük aşama */
   dp600: [
-    G('Veriyi hazırla: al', 'Sınavın %45–50’si veri hazırlama', ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'veri-baglantilari', 'gateway', 'veri-akislari', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'pq-orta']),
-    G('Veriyi hazırla: dönüştür', 'T-SQL ve PySpark ödevleri', ['sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
-    G('Veriyi hazırla: sorgula', 'SQL, KQL, DAX', ['kql-gercek-zaman', 'dax-sorgu']),
-    G('Anlam modeli', '%25–30', ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model', 'fabric-anlam-modeli']),
-    G('Çözümü yönet', '%25–30', ['calisma-alani', 'guvenlik', 'yonetisim', 'yerel-gelistirme', 'yasam-dongusu', 'kalite-test', 'kullanim-izleme', 'fabric-copilot']),
-    G('Sınav', '', ['dp600'])
+    dpStage(1, ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'veri-baglantilari', 'gateway', 'veri-akislari', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'pq-orta', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
+    dpStage(3, ['sql-analist', 'kql-gercek-zaman', 'dax-sorgu']),
+    dpStage(2, ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model', 'fabric-anlam-modeli']),
+    dpStage(0, ['calisma-alani', 'guvenlik', 'yonetisim', 'yerel-gelistirme', 'yasam-dongusu', 'kalite-test', 'kullanim-izleme', 'fabric-copilot']),
+    G('Sınav hazırlığı', '', ['dp600'])
   ],
   yonetici: [
     G('Power BI’ı tanı', '', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'hizmet-kullanici', 'excel-entegrasyon']),
@@ -123,9 +125,9 @@ if (roles.profesyonel && roles.profesyonel.cap) { roles.profesyonel.cap.guide = 
 RO('pl300', { title: 'PL-300 sertifika hazırlığı', long: 'Sınavın dört alanı (veriyi hazırla, modelle, görselleştir ve analiz et, yönet ve güvenli hâle getir) çalışma kılavuzundaki sırayla, ders ders işlenir. Sınavlar sayfasındaki kapsam haritası her resmî maddeyi ilgili derse bağlar. Sınav tarzı sorular, vaka çalışmaları, seri sorular ve arayüz soruları deneme sınavlarında.' });
 T('pl300', { desc: 'Microsoft Power BI Data Analyst sertifikasının dört alanı.', long: 'Sınavın dört alanını resmî çalışma kılavuzundaki sırayla kapsar: veriyi hazırla %25–30, modelle %25–30, görselleştir ve analiz et %25–30, yönet ve güvenli hâle getir %15–20.', skills: ['Veriyi hazırla', 'Modelle', 'Görselleştir ve analiz et', 'Yönet ve güvenli hâle getir'] });
 RO('gelistirici', { prereq: { t: 'Önce analist temeli', d: 'Bu yol kurumsal model ve ileri DAX’a odaklanır; temel rapor derslerinin yalnız bir kısmını içerir. Rapor kurma ve görsel seçme rahat değilse önce şuradan başla:', path: 'analist', lessons: [] } });
-RO('dp600', { long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) en büyük aşamadır: OneLake, lakehouse, ambar, Data Factory ve işlem hatları, T-SQL ve PySpark ödevleri, kısayollar, KQL ve gerçek zamanlı analitik. Ardından kurumsal anlam modeli ve Direct Lake (%25–30), performans, güvenlik ve yaşam döngüsü (%25–30). T-SQL, PySpark ve KQL tarayıcıda çalışmaz: ödevleri Fabric deneme kapasitesinde yapıp sonucu beklenen değerle karşılaştırırsın.',
+RO('dp600', {
   prereq: { t: 'PL-300 düzeyi varsayılır', d: 'Bu yol filtre bağlamını, CALCULATE’i ve yıldız şemayı bildiğini varsayar; bu dersler yolun içinde değildir ve belge şartına girmez. Rahat değilsen önce şu dersleri bitir ya da PL-300 yolunu izle.', path: 'pl300', lessons: ['model-temel', 'pq-temel', 'dax-giris', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'baglam-gecisi', 'tablo-fonk'] } });
-T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600): veri hazırlama, kurumsal anlam modeli, çözümün yönetimi.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
+T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600) için dört çalışma alanı ve Fabric ödevleri.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
 T('dax', {});
 RO('is-analisti', { prereq: { t: 'Önce SQL', d: 'Bu yol iş analistliğinin kendisini anlatmaz; talep, gereksinim, süreç ve UAT Kesit SQL’deki BT İş Analisti yolundadır. SQL biliyorsan buradan başlayabilirsin, bilmiyorsan önce o yolun SQL bölümünü bitirmeni öneririz.', sqlYol: 'is-analisti', lessons: [] } });
 RO('yonetici', { level: 'Temel → Orta' });
@@ -152,6 +154,10 @@ W.PBI_SKILL_LESSON = {
   'pl-pt1': ['analiz-ozellikleri'], 'pl-pt2': ['istatistik'], 'pl-pt3': ['analiz-ozellikleri'], 'pl-pt4': ['analiz-ozellikleri', 'eda'], 'pl-pt5': ['copilot'],
   'pl-ws1': ['calisma-alani', 'yayinlama'], 'pl-ws2': ['power-bi-apps', 'paylasim', 'yayinlama'], 'pl-ws3': ['calisma-alani', 'panolar', 'yayinlama'], 'pl-ws4': ['panolar', 'yayinlama'], 'pl-ws5': ['yonetisim'], 'pl-ws6': ['gateway', 'veri-yenileme', 'veri-baglantilari'],
   'pl-sg1': ['calisma-alani', 'yonetisim'], 'pl-sg2': ['paylasim', 'yonetisim'], 'pl-sg3': ['guvenlik'], 'pl-sg4': ['yonetisim'],
+  'dp-plan1': ['fabric-giris', 'gateway', 'calisma-alani'], 'dp-plan2': ['tema-sayfa'], 'dp-env1': ['fabric-giris', 'calisma-alani'], 'dp-env2': ['fabric-lakehouse', 'yonetisim'],
+  'dp-part1': ['fabric-lakehouse'], 'dp-copy1': ['fabric-veri-alma', 'fabric-pipeline'], 'dp-copy2': ['fabric-pipeline', 'fabric-data-factory'], 'dp-load1': ['fabric-hazirlama', 'fabric-yildiz'],
+  'dp-an1': ['eda', 'analiz-ozellikleri'], 'dp-an2': ['analiz-ozellikleri', 'istatistik-ileri'], 'dp-an3': ['yasam-dongusu', 'dax-sorgu'],
+  'dp-model1': ['performans', 'dax-opt'], 'dp-model2': ['guvenlik', 'fabric-anlam-modeli'],
   'dp-sg1': ['calisma-alani', 'yonetisim'], 'dp-sg2': ['fabric-onelake', 'guvenlik'], 'dp-sg3': ['yonetisim'],
   'dp-lc1': ['yasam-dongusu'], 'dp-lc2': ['yerel-gelistirme', 'yasam-dongusu'], 'dp-lc3': ['yasam-dongusu'], 'dp-lc4': ['yasam-dongusu'], 'dp-lc5': ['yasam-dongusu'], 'dp-lc6': ['yasam-dongusu'],
   'dp-gd1': ['fabric-data-factory', 'gateway', 'fabric-veri-alma', 'veri-baglantilari'], 'dp-gd2': ['fabric-onelake', 'fabric-hazirlama', 'kql-gercek-zaman'], 'dp-gd3': ['fabric-onelake', 'fabric-data-factory', 'fabric-veri-alma'], 'dp-gd4': ['fabric-lakehouse', 'fabric-giris', 'fabric-hazirlama'], 'dp-gd5': ['kql-gercek-zaman'],

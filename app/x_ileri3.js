@@ -477,9 +477,9 @@ MEDIANX(
 
 /* ───────────────────────── 6. DP-600 ───────────────────────── */
 ext('dp600', { min: 16, html: `
-<h2>Çerçeveyi doğrula: 19 Ekim 2026 sürümü</h2>
-<p>Microsoft Learn'deki DP-600 çalışma kılavuzunun ölçülen beceriler listesi <b>19 Ekim 2026</b> tarihli. Alan ağırlıkları değişmedi: analitik çözümü sürdürme %25–30, veriyi hazırlama %45–50, anlam modellerini uygulama ve yönetme %25–30. Değişiklik günlüğünde yalnızca “Veriyi sorgulama ve analiz etme” alt başlığında küçük bir değişiklik var. İngilizce sürüm önce güncellenir; yerelleştirilmiş sürüm birkaç hafta geriden gelebilir. Geçme puanı 700.</p>
-<p>Ağırlıkların anlamı açık: sınavın neredeyse yarısı veriyi hazırlamak. Burada T-SQL görünümleri, saklı yordamlar, yıldız şemayı lakehouse ya da ambarda kurmak, yinelenen ve eksik veriyi temizlemek ve veriyi dört araçla sorgulamak var: görsel sorgu düzenleyici, SQL, KQL ve DAX. Power BI geçmişinden gelen biri için en büyük açık genellikle SQL'dir.</p>
+<h2>Çalışma süreni planla</h2>
+<p>Veriyi hazırlama ve sunma en geniş alandır. Yükleme, zamanlama, dönüşüm ve performans için bir Fabric veri akışını uçtan uca kur. Veri keşfi alanında ise kaynakları profille, SQL ile bir bulguyu çıkar ve raporda nasıl sunulacağını açıkla.</p>
+<p>Kapsam haritası mevcut ders ve soru bağlantılarını gösterir. “Ek pratik” etiketli KQL, DAX sorgusu ve Direct Lake ayrıntıları Fabric’i anlamaya yardımcı olur. Fabric ortamına erişimin varsa tasarım notunu gerçek çalıştırma ve mutabakat kanıtıyla tamamla.</p>
 
 <h2>Depo kararı: bir karar ağacı</h2>
 <ol>
@@ -492,7 +492,7 @@ ext('dp600', { min: 16, html: `
 <p>Ayrıntılı tasarım Fabric'te yıldız şema ve Fabric'te veriyi hazırlamak derslerinde.</p>
 
 <h2>Direct Lake: OneLake mı, SQL uç noktası mı?</h2>
-<p>Beceri listesinde ayrı bir madde var: “Direct Lake on OneLake ile Direct Lake on SQL analytics endpoint arasında seçim”. Fabric belgelerindeki farklar:</p>
+<p>Direct Lake depolama modu için ek uygulama: OneLake ve SQL uç noktası yaklaşımlarını karşılaştır.</p>
 <div class="tbl-wrap"><table><tr><th>Konu</th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL</th></tr>
 <tr><td>Kaynak</td><td>Bir ya da birden çok Fabric öğesi (kısayollar dahil)</td><td>SQL analiz uç noktası olan tek kaynak</td></tr>
 <tr><td>DirectQuery'ye geri dönüş</td><td>Yok</td><td>Var (açıksa); kapalıysa sorgu hata verir</td></tr>

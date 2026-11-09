@@ -9,7 +9,7 @@ add('fabric-hazirlama', {
   title: 'Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)',
   sum: 'Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a yükleme ödevi.',
   body: `
-<p>DP-600’ün en ağır alanı veri hazırlamadır. Çalışma kılavuzunun 19 Ekim 2026 listesinde <b>Prepare data</b> sınavın %45–50’sini oluşturur ve üç başlığa ayrılır: <b>Get data</b>, <b>Transform data</b>, <b>Query and analyze data</b>. Bu ders birincisini, sonraki iki ödev ötekileri işler.</p>
+<p>DP-600 çalışma kılavuzunda veriyi hazırlama ve sunma alanı %40–45 ağırlıktadır. Lakehouse veya ambara veri almayı, kopyalamayı, dönüştürmeyi ve yükleme performansını kapsar. Bu ders veri alma araçlarını karşılaştırır. Ardından T-SQL ve PySpark ödevleriyle dönüşümü uygula.</p>
 <div class="note"><b>Tarayıcı sınırı</b>Bu uygulama T-SQL, PySpark ya da KQL çalıştırmaz. Bu üç derste ödevleri gerçek Fabric’te yaparsın, sonucu aşağıdaki beklenen değerlerle karşılaştırırsın. Alıştırmalar ise kavramı ve DAX karşılığını denetler.</div>
 
 <h2>Deneme kapasitesi</h2>

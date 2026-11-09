@@ -1,12 +1,17 @@
-/* Kesit Power BI — Resmî sınav kapsamı (Microsoft Learn çalışma kılavuzları). PL-300: 20 Nisan 2026; DP-600: 19 Ekim 2026.
+/* Kesit Power BI — Resmî sınav kapsamı (Microsoft Learn çalışma kılavuzları). PL-300: 20 Nisan 2026; DP-600: 30 Ekim 2026 çalışma kılavuzu.
    Her sertifika sorusu bu maddelerden birine (s alanı) etiketlenir; Sınavlar ekranındaki kapsam haritası buradan üretilir. */
 (function (W) {
 'use strict';
 W.PBI_CERT_INFO = {
   pl300: { code: 'PL-300', name: 'Microsoft Power BI Data Analyst', asOf: '20 Nisan 2026', url: 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-300',
     domains: [['Veriyi hazırla', 'Prepare the data', 25, 30], ['Modelle', 'Model the data', 25, 30], ['Görselleştir ve analiz et', 'Visualize and analyze the data', 25, 30], ['Yönet ve güvenli hâle getir', 'Manage and secure Power BI', 15, 20]] },
-  dp600: { code: 'DP-600', name: 'Implementing Analytics Solutions Using Microsoft Fabric', asOf: '19 Ekim 2026', url: 'https://learn.microsoft.com/credentials/certifications/resources/study-guides/dp-600',
-    domains: [['Analitik çözümü yönet', 'Maintain a data analytics solution', 25, 30], ['Veriyi hazırla', 'Prepare data', 45, 50], ['Anlam modelini uygula', 'Implement and manage semantic models', 25, 30]] }
+  dp600: { code: 'DP-600', name: 'Implementing Analytics Solutions Using Microsoft Fabric', asOf: '30 Ekim 2026', url: 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600',
+    domains: [
+      ['Analitik çözümü planla, uygula ve yönet', 'Plan, implement, and manage a solution for data analytics', 10, 15],
+      ['Veriyi hazırla ve sun', 'Prepare and serve data', 40, 45],
+      ['Anlam modellerini uygula ve yönet', 'Implement and manage semantic models', 20, 25],
+      ['Veriyi keşfet ve analiz et', 'Explore and analyze data', 20, 25],
+    ] }
 };
 /* [id, alan, grup, Türkçe madde, İngilizce madde] */
 const PL = [
@@ -78,42 +83,58 @@ const PL = [
   ['pl-sg3', 'Yönet ve güvenli hâle getir', 'Güvenlik ve yönetişim', 'Satır düzeyi güvenlik rolleri ve grup üyeliği', 'Implement row-level security roles; configure RLS group membership'],
   ['pl-sg4', 'Yönet ve güvenli hâle getir', 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri', 'Apply sensitivity labels']
 ];
+const [MANAGE, PREPARE, MODEL, ANALYZE] = W.PBI_CERT_INFO.dp600.domains.map(d => d[0]);
 const DP = [
-  ['dp-sg1', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Çalışma alanı ve öğe düzeyi erişim', 'Implement workspace-level and item-level access controls'],
-  ['dp-sg2', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Satır, sütun, nesne ve dosya düzeyi erişim', 'Implement row-level, column-level, object-level, and file-level access control'],
-  ['dp-sg3', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri ve onaylama (endorsement)', 'Apply sensitivity labels to items; endorse items'],
-  ['dp-lc1', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Çalışma alanı için sürüm denetimi', 'Configure version control for a workspace'],
-  ['dp-lc2', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Power BI Desktop projesi (.pbip)', 'Create and manage a Power BI Desktop project (.pbip)'],
-  ['dp-lc3', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Dağıtım işlem hatları', 'Create and configure deployment pipelines'],
-  ['dp-lc4', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Aşağı akış bağımlılıkları için etki analizi', 'Perform impact analysis of downstream dependencies'],
-  ['dp-lc5', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'XMLA uç noktasıyla dağıtım ve yönetim', 'Deploy and manage semantic models by using the XMLA endpoint'],
-  ['dp-lc6', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Yeniden kullanılabilir varlıklar: .pbit, .pbids, paylaşılan modeller', 'Create and update reusable assets (.pbit, .pbids, shared semantic models)'],
-  ['dp-gd1', 'Veriyi hazırla', 'Veriyi al', 'Veri bağlantısı oluşturma', 'Create a data connection'],
-  ['dp-gd2', 'Veriyi hazırla', 'Veriyi al', 'OneLake kataloğu ve Real-Time hub ile veri keşfi', 'Discover data by using OneLake catalog and Real-Time hub'],
-  ['dp-gd3', 'Veriyi hazırla', 'Veriyi al', 'Veriyi alma ya da yerinde erişme (kısayollar, yansıtma)', 'Ingest or access data as needed'],
-  ['dp-gd4', 'Veriyi hazırla', 'Veriyi al', 'Veri deposu seçimi: lakehouse, ambar, eventhouse', 'Choose between different data stores'],
-  ['dp-gd5', 'Veriyi hazırla', 'Veriyi al', 'Eventhouse ve anlam modelleri için OneLake tümleştirmesi', 'Implement OneLake integration for Eventhouse and semantic models'],
-  ['dp-tr1', 'Veriyi hazırla', 'Veriyi dönüştür', 'Görünüm, fonksiyon ve saklı yordam', 'Create views, functions, and stored procedures'],
-  ['dp-tr2', 'Veriyi hazırla', 'Veriyi dönüştür', 'Yeni sütun ya da tabloyla zenginleştirme', 'Enrich data by adding new columns or tables'],
-  ['dp-tr3', 'Veriyi hazırla', 'Veriyi dönüştür', 'Lakehouse ya da ambarda yıldız şema', 'Implement a star schema for a lakehouse or warehouse'],
-  ['dp-tr4', 'Veriyi hazırla', 'Veriyi dönüştür', 'Normalleştirmeyi kaldırma ve toplama', 'Denormalize data; aggregate data'],
-  ['dp-tr5', 'Veriyi hazırla', 'Veriyi dönüştür', 'Birleştirme (join/merge)', 'Merge or join data'],
-  ['dp-tr6', 'Veriyi hazırla', 'Veriyi dönüştür', 'Tekrarlanan, eksik ve boş verileri çözme', 'Identify and resolve duplicate data, missing data, or null values'],
-  ['dp-tr7', 'Veriyi hazırla', 'Veriyi dönüştür', 'Veri türü dönüştürme ve filtreleme', 'Convert column data types; filter data'],
-  ['dp-qa1', 'Veriyi hazırla', 'Sorgula ve analiz et', 'Görsel sorgu düzenleyicisi', 'Select, filter, and aggregate data by using the Visual query editor'],
-  ['dp-qa2', 'Veriyi hazırla', 'Sorgula ve analiz et', 'SQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using SQL'],
-  ['dp-qa3', 'Veriyi hazırla', 'Sorgula ve analiz et', 'KQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using KQL'],
-  ['dp-qa4', 'Veriyi hazırla', 'Sorgula ve analiz et', 'DAX ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using DAX'],
-  ['dp-sm1', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Depolama modu seçimi ve bileşik modeller', 'Choose a storage mode; design and build composite models'],
-  ['dp-sm2', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Yıldız şema, köprü tablolar ve çoka çok ilişkiler', 'Implement a star schema; bridge tables and many-to-many relationships'],
-  ['dp-sm3', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'DAX: değişkenler, iteratörler, tablo filtreleme, pencere ve bilgi fonksiyonları', 'Write calculations that use DAX variables and functions'],
-  ['dp-sm4', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri', 'Implement calculation groups, dynamic format strings, and field parameters'],
-  ['dp-sm5', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Büyük anlam modeli depolama biçimi', 'Identify use cases for and configure large semantic model storage format'],
-  ['dp-op1', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Sorgu, görsel ve DAX performansı', 'Implement performance improvements in queries and report visuals; improve DAX performance'],
-  ['dp-op2', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Direct Lake: geri dönüş (fallback) ve yenileme davranışı', 'Configure Direct Lake, including default fallback and refresh behavior'],
-  ['dp-op3', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'OneLake üzerinde ve SQL uç noktası üzerinde Direct Lake', 'Choose between Direct Lake on OneLake and Direct Lake on SQL analytics endpoint'],
-  ['dp-op4', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Artımlı yenileme', 'Implement incremental refresh for semantic models']
+  ['dp-plan1', MANAGE, 'Ortamı planla', 'Gereksinimler, kapasite, yönetim ayarları ve ağ geçidi seçimi', 'Requirements, capacity, admin settings and gateway choice'],
+  ['dp-plan2', MANAGE, 'Ortamı planla', 'Özel Power BI rapor teması', 'Custom report theme'],
+  ['dp-env1', MANAGE, 'Güvenlik ve yönetişim', 'Fabric çalışma alanı ayarları ve kapasite yönetimi', 'Workspace setup and capacity management'],
+  ['dp-env2', MANAGE, 'Güvenlik ve yönetişim', 'Çalışma alanı, ambar ve lakehouse veri paylaşımı', 'Workspace, warehouse and lakehouse sharing'],
+  ['dp-sg1', MANAGE, 'Güvenlik ve yönetişim', 'Çalışma alanı ve öğe düzeyi erişim', 'Implement workspace-level and item-level access controls'],
+  ['dp-sg3', MANAGE, 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri ve onaylama (endorsement)', 'Apply sensitivity labels to items; endorse items'],
+  ['dp-lc1', MANAGE, 'Geliştirme yaşam döngüsü', 'Çalışma alanı için sürüm denetimi', 'Configure version control for a workspace'],
+  ['dp-lc2', MANAGE, 'Geliştirme yaşam döngüsü', 'Power BI Desktop projesi (.pbip)', 'Create and manage a Power BI Desktop project (.pbip)'],
+  ['dp-lc3', MANAGE, 'Geliştirme yaşam döngüsü', 'Dağıtım işlem hatları', 'Create and configure deployment pipelines'],
+  ['dp-lc4', MANAGE, 'Geliştirme yaşam döngüsü', 'Aşağı akış bağımlılıkları için etki analizi', 'Perform impact analysis of downstream dependencies'],
+  ['dp-lc5', MANAGE, 'Geliştirme yaşam döngüsü', 'XMLA uç noktasıyla dağıtım ve yönetim', 'Deploy and manage semantic models by using the XMLA endpoint'],
+  ['dp-lc6', MANAGE, 'Geliştirme yaşam döngüsü', 'Yeniden kullanılabilir varlıklar: .pbit, .pbids, paylaşılan modeller', 'Create and update reusable assets (.pbit, .pbids, shared semantic models)'],
+  ['dp-part1', PREPARE, 'Veriyi al', 'Lakehouse için dosya bölümleme', 'Lakehouse file partitioning'],
+  ['dp-gd1', PREPARE, 'Veriyi al', 'Veri bağlantısı oluşturma', 'Create a data connection'],
+  ['dp-gd2', PREPARE, 'Veriyi al', 'OneLake kataloğu ve Real-Time hub ile veri keşfi', 'Discover data by using OneLake catalog and Real-Time hub'],
+  ['dp-gd3', PREPARE, 'Veriyi al', 'Veriyi alma ya da yerinde erişme (kısayollar, yansıtma)', 'Ingest or access data as needed'],
+  ['dp-gd4', PREPARE, 'Veriyi al', 'Veri deposu seçimi: lakehouse, ambar, eventhouse', 'Choose between different data stores'],
+  ['dp-gd5', PREPARE, 'Veriyi al', 'Eventhouse ve anlam modelleri için OneLake tümleştirmesi', 'Implement OneLake integration for Eventhouse and semantic models'],
+  ['dp-copy1', PREPARE, 'Veriyi kopyala', 'İşlem hattı, veri akışı ve not defteriyle kopyalama ve zamanlama', 'Copy and schedule with pipelines, flows and notebooks'],
+  ['dp-copy2', PREPARE, 'Veriyi kopyala', 'İşlem hattında saklı yordam, not defteri ve veri akışı adımları', 'Orchestrate procedures, notebooks and flows'],
+  ['dp-tr1', PREPARE, 'Veriyi dönüştür', 'Görünüm, fonksiyon ve saklı yordam', 'Create views, functions, and stored procedures'],
+  ['dp-tr2', PREPARE, 'Veriyi dönüştür', 'Yeni sütun ya da tabloyla zenginleştirme', 'Enrich data by adding new columns or tables'],
+  ['dp-tr3', PREPARE, 'Veriyi dönüştür', 'Lakehouse ya da ambarda yıldız şema', 'Implement a star schema for a lakehouse or warehouse'],
+  ['dp-tr4', PREPARE, 'Veriyi dönüştür', 'Normalleştirmeyi kaldırma ve toplama', 'Denormalize data; aggregate data'],
+  ['dp-tr5', PREPARE, 'Veriyi dönüştür', 'Birleştirme (join/merge)', 'Merge or join data'],
+  ['dp-tr6', PREPARE, 'Veriyi dönüştür', 'Tekrarlanan, eksik ve boş verileri çözme', 'Identify and resolve duplicate data, missing data, or null values'],
+  ['dp-tr7', PREPARE, 'Veriyi dönüştür', 'Veri türü dönüştürme ve filtreleme', 'Convert column data types; filter data'],
+  ['dp-load1', PREPARE, 'Yükleme performansı', 'Veri akışı, not defteri ve SQL darboğazları ile Delta dosya boyutu', 'Loading bottlenecks and Delta file sizing'],
+  ['dp-an1', ANALYZE, 'Keşif analizi', 'Betimleyici ve tanısal analiz, veri profilleme', 'Descriptive and diagnostic exploration, data profiling'],
+  ['dp-an2', ANALYZE, 'Keşif analizi', 'Tahmin ve öneri odaklı analizleri rapora taşıma', 'Predictive and prescriptive insights in reports'],
+  ['dp-an3', ANALYZE, 'Sorgula ve analiz et', 'XMLA üzerinden anlam modelini sorgulama', 'Query a semantic model through XMLA'],
+  ['dp-qa1', ANALYZE, 'Sorgula ve analiz et', 'Görsel sorgu düzenleyicisi', 'Select, filter, and aggregate data by using the Visual query editor'],
+  ['dp-qa2', ANALYZE, 'Sorgula ve analiz et', 'SQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using SQL'],
+  ['dp-qa3', ANALYZE, 'Sorgula ve analiz et', 'KQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using KQL'],
+  ['dp-qa4', ANALYZE, 'Sorgula ve analiz et', 'DAX ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using DAX'],
+  ['dp-model1', MODEL, 'Anlam modeli tasarla', 'DAX Studio ve Tabular Editor 2 kullanım senaryoları', 'DAX Studio and Tabular Editor 2 use cases'],
+  ['dp-sg2', MODEL, 'Anlam modeli güvenliği', 'Satır, sütun, nesne ve dosya düzeyi erişim', 'Implement row-level, column-level, object-level, and file-level access control'],
+  ['dp-model2', MODEL, 'Anlam modeli güvenliği', 'Dinamik RLS ile OLS uygulama ve sonuçlarını doğrulama', 'Implement and validate dynamic RLS and OLS'],
+  ['dp-sm1', MODEL, 'Anlam modeli tasarla', 'Depolama modu seçimi ve bileşik modeller', 'Choose a storage mode; design and build composite models'],
+  ['dp-sm2', MODEL, 'Anlam modeli tasarla', 'Yıldız şema, köprü tablolar ve çoka çok ilişkiler', 'Implement a star schema; bridge tables and many-to-many relationships'],
+  ['dp-sm3', MODEL, 'Anlam modeli tasarla', 'DAX: değişkenler, iteratörler, tablo filtreleme, pencere ve bilgi fonksiyonları', 'Write calculations that use DAX variables and functions'],
+  ['dp-sm4', MODEL, 'Anlam modeli tasarla', 'Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri', 'Implement calculation groups, dynamic format strings, and field parameters'],
+  ['dp-sm5', MODEL, 'Anlam modeli tasarla', 'Büyük anlam modeli depolama biçimi', 'Identify use cases for and configure large semantic model storage format'],
+  ['dp-op1', MODEL, 'Kurumsal ölçekte iyileştir', 'Sorgu, görsel ve DAX performansı', 'Implement performance improvements in queries and report visuals; improve DAX performance'],
+  ['dp-op2', MODEL, 'Kurumsal ölçekte iyileştir', 'Direct Lake: geri dönüş (fallback) ve yenileme davranışı', 'Configure Direct Lake, including default fallback and refresh behavior'],
+  ['dp-op3', MODEL, 'Kurumsal ölçekte iyileştir', 'OneLake üzerinde ve SQL uç noktası üzerinde Direct Lake', 'Choose between Direct Lake on OneLake and Direct Lake on SQL analytics endpoint'],
+  ['dp-op4', MODEL, 'Kurumsal ölçekte iyileştir', 'Artımlı yenileme', 'Implement incremental refresh for semantic models']
 ];
-W.PBI_CERT_SKILLS = { pl300: PL.map(([id, d, g, t, en]) => ({ id, d, g, t, en })), dp600: DP.map(([id, d, g, t, en]) => ({ id, d, g, t, en })) };
+// Eski sorular ve ilerleme kimlikleri kalır. Aşağıdaki başlıklar güncel kılavuzu destekleyen ek pratiktir.
+const DP_EXTRA = new Set(['dp-sg2', 'dp-gd2', 'dp-gd4', 'dp-gd5', 'dp-qa3', 'dp-qa4', 'dp-op2', 'dp-op3']);
+W.PBI_CERT_SKILLS = { pl300: PL.map(([id, d, g, t, en]) => ({ id, d, g, t, en })), dp600: DP.map(([id, d, g, t, en]) => ({ id, d, g, t, en, extra: DP_EXTRA.has(id) })) };
 W.PBI_CERTQ = W.PBI_CERTQ || []; W.PBI_CASES = W.PBI_CASES || [];
 })(window);
