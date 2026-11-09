@@ -19,7 +19,8 @@
     "Mobil menüden öğrenme yolu ve bitirme projesine geçiş",
     "Mobil DAX editörü: işaretler, çalıştırma, sonuç ve editöre dönüş",
     "Koyu temada yol rozetleri, tamamlanma işaretleri, kod ve sunum düğmeleri",
-    "Açık tema: profil rozetleri, rapor yer tutucuları ve Power Query uyarıları"
+    "Açık tema: profil rozetleri, rapor yer tutucuları ve Power Query uyarıları",
+    "Klavye odağı: DAX editörü, dar ekran ve rapor ayrıntısı"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -35,7 +36,7 @@
     "app/build/vdpack.js": "0096cf6a54a363e91f8178826b27292fca2434f6f1870883e208b17da3b17303",
     "app/dax.js": "6b044071423b394fb21ce11ed2a62bb7e13d7f72146615976ec700d0335b1e23",
     "app/denetim.js": "67a24b65724a2744523b51aa31fd3f06a1b25c93ef7f94dec7bc36caebb143ea",
-    "app/index.html": "abe1cef4c05c53c637ffe3cf69dcda173c2c92c6086573f70170ba6ceb91e7df",
+    "app/index.html": "b9779c3ee3084d28880294c587a9759eb11cd0205478a9f0d98e01ec0d35fdc2",
     "app/sync.js": "080cda67761e78b364652c589d640ceacaa83ffd02cecbf079ae0a26703c750a",
     "tests/agentval.js": "06d9b04dfd9b7499ffa158bb2589b54aac09af13d1d395d20ce438b4f5b0e1a0",
     "tests/arenaval.js": "084fdc8e846097f583a82342a64c6b315985a9b487a5f055df262c148f6fe6e0",
@@ -60,7 +61,7 @@
     "tests/yolval.js": "f03292f8540a8ee17cabd22b5b93d112ef457f04a1ea1f31044b15b9782612e2",
     "app/roles.js": "b87450c274bfb6f774bb41493c991a57fadfa419a88fb7ea517c13ad3401c60c",
     "app/career.js": "c97c1de5356a2438c1e00eb1c1f448d0d30acc353c3f01ecb845e8d913ac5032",
-    "KALAN-GOREVLER.md": "b27801be20ca3e85f225cdecec9e3ee2313a8e89f75137dc10ea8dac669cb6ed",
+    "KALAN-GOREVLER.md": "7d55bd52e2ba114d1e7a20d41d11b37f3154d79628ff08692e1544741b6d80de",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "app/c24.js": "decf6b224935543ed4c01f291ab823ea744ee1af4bcd664fa47c9345985fb387",
@@ -71,8 +72,9 @@
     "app/yollar.js": "bf4ea76142d087c2844d3ba7660bdee5d6ad4b1d65ccf979e26c1e9357bb0c15",
     "app/build/gh/static/ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
     "app/build/gh/static/ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
-    "app/app.css": "a27b994867b476bd9fed41af5704731d978d7ff426944fff65c05b23d297c525",
-    "app/build/style_old.css": "2c980a5f0d557834cfa757a7590acef5dee36d381cbcbc39ca38c1256ab286f0",
-    "app/practice.js": "6caf7aa2517f59bacc9f4bee902b2332e0acf66e51ce149aaacd944a16ff2712"
+    "app/app.css": "afedbba06c41dc7f54490802e399256220aad8ec44b3cbee374db311cf797051",
+    "app/build/style_old.css": "6b79abb875dd3d224b7fbaff1a1835f2af0c7e5e5c9436f332d826c8eaf458fa",
+    "app/practice.js": "6caf7aa2517f59bacc9f4bee902b2332e0acf66e51ce149aaacd944a16ff2712",
+    "app/pages.js": "cce6aae504a085dc6885b7eaf7115ae9f0d17a4d1359cc8594039a45a879a040"
   }
 }

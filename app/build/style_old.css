@@ -39,7 +39,7 @@ body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-in
 a{color:var(--accent-text)}
 button,select{font:inherit; color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--accent-text); outline-offset:2px}
+:focus-visible{outline:2px solid var(--focus-ring, var(--accent-text)); outline-offset:2px}
 h1,h2,h3{font-family:var(--f-display); line-height:1.15; text-wrap:balance; margin:0; letter-spacing:-.01em}
 h1{font-size:clamp(1.7rem, 4vw, 2.4rem); font-weight:800}
 h2{font-size:1.35rem; font-weight:700}
@@ -309,6 +309,7 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
   .stop:nth-child(n){min-height:0}
 }
 @media (max-width: 760px){
+  html{scroll-padding-block:calc(64px + env(safe-area-inset-top,0px)) calc(72px + env(safe-area-inset-bottom,0px))}
   .app{grid-template-columns:1fr}
   .side{display:none}
   .topbar{display:flex; position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--surface); border-bottom:1px solid var(--line); padding-block:8px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); align-items:center; justify-content:space-between; gap:10px}
@@ -418,7 +419,8 @@ svg.viz{display:block; width:100%; height:auto; overflow:visible}
 .vbase{stroke:var(--axis); stroke-width:1}
 .vcross{stroke:var(--axis); stroke-width:1; stroke-dasharray:3 3; opacity:0}
 .vcol:hover .vcross{opacity:1}
-.vmark{cursor:default; outline:none}
+.vmark{cursor:default}
+.vmark:focus-visible{outline-offset:-2px}
 .dtile[data-cross] .vmark{cursor:pointer}
 g.vmark:hover rect:not([fill="transparent"]), g.vmark:hover path, path.vmark:hover, circle.vmark:hover{filter:brightness(1.08)}
 g.vmark:focus-visible rect:not([fill="transparent"]), path.vmark:focus-visible, circle.vmark:focus-visible{stroke:var(--ink); stroke-width:2}

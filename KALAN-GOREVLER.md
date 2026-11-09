@@ -22,9 +22,9 @@ Teslim: 12 öğrenme yolunun bitirme projesinde role özel iş görevi, farklı 
 
 ## 4. Kullanıcı deneyimi, performans ve bakım
 
-G09, G12–G16, G20, G22–G23, G36: kalan eski yol bağımlılıkları, içerik yükleme bütçesi, klavye odağı, geçmiş rapor durumları ve sayı manifesti. Fiziksel Android ve gözlemli kullanıcı pilotu sonuçları otomatik testten ayrı tutulur.
+G09, G12–G16, G20, G22–G23, G36: kalan eski yol bağımlılıkları, içerik yükleme bütçesi, geçmiş rapor durumları ve sayı manifesti. Fiziksel Android ve gözlemli kullanıcı pilotu sonuçları otomatik testten ayrı tutulur.
 
-Mobil menüde öğrenme yolları ve bitirme projeleri üstte yer alır. Yolun başından projeye geçilebilir. Proje ve işe hazırlık bölümleri paylaşılabilen bağlantılarla açılır. Mobil DAX editöründe işaretler kaydırma gerektirmeden görünür. Açıkça çalıştırılan kodun sonucu ve hata mesajı öne gelir. Sonuçtan editöre dönülebilir. Koyu temada yol rozetlerinin, tamamlanma işaretlerinin, kod açıklamalarının ve sunum düğmelerinin kontrastı iyileştirildi. Açık temada kazanılmamış rozetlerin metni, yüklenen rapor kartlarının başlıkları ve Power Query uyarılarının kontrastı iyileştirildi.
+Mobil menüde öğrenme yolları ve bitirme projeleri üstte yer alır. Yolun başından projeye geçilebilir. Proje ve işe hazırlık bölümleri paylaşılabilen bağlantılarla açılır. Mobil DAX editöründe işaretler kaydırma gerektirmeden görünür. Açıkça çalıştırılan kodun sonucu ve hata mesajı öne gelir. Sonuçtan editöre dönülebilir. Koyu temada yol rozetlerinin, tamamlanma işaretlerinin, kod açıklamalarının ve sunum düğmelerinin kontrastı iyileştirildi. Açık temada kazanılmamış rozetlerin metni, yüklenen rapor kartlarının başlıkları ve Power Query uyarılarının kontrastı iyileştirildi. DAX editöründe ve taşma alanlarındaki kontrollerde klavye odağı görünür. Dar ekranda odak sabit menülerin dışında kalır ve rapor ayrıntısı kapanınca açan düğmeye döner.
 
 ## Sınırlar
 
