@@ -10,7 +10,8 @@
     "443 referans çözüm: iki veri senaryosu",
     "Sahte cevap red, SUMX alternatif kabul",
     "Kaynak hiddenval 337 DAX + 106 query, 0 sorun",
-    "Rol görevleri, çalışma biçimi kaydı ve teslim şablonu"
+    "Rol görevleri, çalışma biçimi kaydı ve teslim şablonu",
+    "Depo sevkiyat vakası: CSV kaynak mutabakatı ve ayrı teslim ilerlemesi"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -49,8 +50,10 @@
     "tests/termval.js": "a5673c3801a4639f6e254720280d64e48ee509998c9893687c2b43659b7e78d1",
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
     "tests/yolval.js": "dcd0e7a709ce12cfd0fe220f9aa521ba4882c9c9b668ba87dc6d4e9798c1a03c",
-    "app/roles.js": "2cfae7284622f89e0a007b5ed47e0f38a2c44abd7a6f5a0e29004376daff6f8c",
-    "app/career.js": "8ad0873502200019cf4768732f9db2a8e3438f687643b3abec1cf97f50cbcd61",
-    "KALAN-GOREVLER.md": "6814a5e53f445ec07609f6c31867adb6b57f870d2bf5b782eb76afec74218a93"
+    "app/roles.js": "705f3d0a8fd170551520fee8f7ed91c67259b50c82a026b3eaeec4138e2c9657",
+    "app/career.js": "b4871d386912d3ad06d7b532a294d7c598edec049ed12cd4dba688532b28804a",
+    "KALAN-GOREVLER.md": "de0118c386d5a16bd6e27c2fb8f0be166799cefce378300792d06a42dfb9b602",
+    "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
+    "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664"
   }
 }

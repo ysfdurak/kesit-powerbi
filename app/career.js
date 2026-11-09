@@ -24,7 +24,8 @@ function milestones(p) {
   return out.filter(m => m.ids.length);
 }
 const capOf = id => (R[id] || {}).cap;
-function capState(id) { const c = capOf(id); if (!c) return { n: 0, d: 0 }; const st = P.cap[id] || {}; const items = c.check || []; return { n: items.length, d: items.filter((x, i) => st[i]).length }; }
+const capKey = id => capOf(id)?.progressKey || id;
+function capState(id) { const c = capOf(id); if (!c) return { n: 0, d: 0 }; const st = P.cap[capKey(id)] || {}; const items = c.check || []; return { n: items.length, d: items.filter((x, i) => st[i]).length }; }
 /* İşe hazırlık maddeleri: otomatik (ders, sınav, proje) ya da elle işaretlenir */
 function readyItems(id) {
   const r = R[id]; if (!r || !r.ready) return [];
@@ -40,7 +41,13 @@ function readyItems(id) {
   });
 }
 function readyPct(id) { const it = readyItems(id); return it.length ? Math.round(it.filter(x => x.ok).length / it.length * 100) : 0; }
-function certReady(id) { const p = PMAP[id]; if (!p) return false; const s = stats(p); const it = readyItems(id); return s.pct === 100 && it.every(x => x.ok); }
+function certReady(id) {
+  const p = PMAP[id];
+  if (!p) return false;
+  // Yeni vaka ayrı izlenir. Önceden düzenlenmiş belge, eski vakanın tamamlanmasını temsil eder.
+  const previousCertificate = capKey(id) !== id && Boolean(P.cert[id]);
+  return stats(p).pct === 100 && readyItems(id).every(x => x.ok || (x.cap && previousCertificate));
+}
 function eta(p) {
   const s = stats(p), wk = (P.goal && P.goal.path === p.id && P.goal.hours) || 5;
   const weeks = Math.max(1, Math.ceil(s.rem / (wk * 60)));
@@ -131,7 +138,7 @@ function prereqBlock(r) {
 }
 const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
 function evidenceMode(id) {
-  const value = (P.cap[id] || {}).workMode;
+  const value = (P.cap[capKey(id)] || {}).workMode;
   return Object.hasOwn(WORK_MODES, value) ? value : '';
 }
 function evidenceBlock(id, evidence) {
@@ -157,6 +164,10 @@ function downloadEvidence(id) {
   if (!evidence) return;
   const lines = [
     '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
+    ...(c.caseGuide ? [
+      '- [Vaka brifi ve UAT kılavuzu](' + new URL(c.caseGuide, C.SITE.pbi).href + ')',
+      '- [Sentetik kaynak veri](' + new URL(c.download, C.SITE.pbi).href + ')', '',
+    ] : []),
     '## Çalışma ortamı', evidence.environment, '',
     '- Kullandığım ortam ve sürüm: …', '- Çalışma biçimim: ' + (WORK_MODES[evidenceMode(id)] || '…'),
     '- Kullandığım ipucu veya destek: …', '- Doğrulama durumu (bekliyor / denendi / geçti / kaldı): …',
@@ -172,12 +183,15 @@ function downloadEvidence(id) {
   return saveFile('kesit-powerbi-teslim-' + id + '.md', lines.join('\n'));
 }
 function capBlock(id) {
-  const c = capOf(id), st = P.cap[id] || {}, cs = capState(id);
+  const c = capOf(id), st = P.cap[capKey(id)] || {}, cs = capState(id);
   let h = '<section class="lvl-block" id="cap"><div class="sec-head"><div><span class="eyebrow">Bitirme projesi · portföyüne koy</span><h2>' + esc(c.title) + '</h2></div><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></div><div class="panel capbox">';
   const dataDownload = c.download
-    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' Lezzet Kurye verisini indir (.zip, CSV)</a>'
+    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' ' + esc(c.downloadLabel) + '</a>'
     : '<button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button>';
-  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + '</div>' : '') + '</div>';
+  const caseGuide = c.caseGuide
+    ? '<a class="btn sm" href="' + esc(c.caseGuide) + '" download>Brif ve UAT kılavuzunu indir (.md)</a>' : '';
+  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + caseGuide + '</div>' : '') + '</div>';
+  if (c.progressKey && P.cap[id]) h += '<p class="muted">Önceki kupon projesinin kayıtları saklanıyor. Depo Sevkiyat Kontrolü ayrı bir teslim listesiyle başlar.</p>';
   if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
   h += '<div><span class="eyebrow">Teslim kontrol listesi</span><ul class="chk">' + (c.check || []).map((x, i) => '<li><label><input type="checkbox" data-capchk="' + id + ':' + i + '"' + (st[i] ? ' checked' : '') + '> <span>' + x + '</span></label></li>').join('') + '</ul></div>';
@@ -276,11 +290,20 @@ document.addEventListener('change', ev => {
   const el = ev.target;
   const id = el.dataset && el.dataset.evidenceMode;
   if (id && capOf(id)?.evidence && (el.value === '' || Object.hasOwn(WORK_MODES, el.value))) {
-    P.cap[id] = P.cap[id] || {};
-    P.cap[id].workMode = el.value;
+    const key = capKey(id);
+    P.cap[key] = P.cap[key] || {};
+    P.cap[key].workMode = el.value;
     C.save();
   }
-  if (el.dataset && el.dataset.capchk) { const [id, i] = el.dataset.capchk.split(':'); P.cap[id] = P.cap[id] || {}; P.cap[id][i] = el.checked; if (el.checked) C.addXP(5); C.save(); rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]'); }
+  if (el.dataset && el.dataset.capchk) {
+    const [id, i] = el.dataset.capchk.split(':');
+    const key = capKey(id);
+    P.cap[key] = P.cap[key] || {};
+    P.cap[key][i] = el.checked;
+    if (el.checked) C.addXP(5);
+    C.save();
+    rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]');
+  }
   if (el.dataset && el.dataset.rdy) { const [id, i] = el.dataset.rdy.split(':'); P.ready[id] = P.ready[id] || {}; P.ready[id][i] = el.checked; C.save(); rerenderKeep('[data-rdy="' + el.dataset.rdy + '"]'); }
 });
 document.addEventListener('input', ev => { if (ev.target.id === 'certName') { P.name = ev.target.value.slice(0, 60); C.save(); const w = document.getElementById('certWho'); if (w) w.textContent = P.name || 'Adın Soyadın'; } });
