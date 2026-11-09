@@ -1,0 +1,61 @@
+name: Build Power BI final four release
+on:
+  push:
+    branches: [codex/powerbi-final-four-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 70f0dcbec01fa87d3768d789495a7f0b92536928
+      - uses: actions/checkout@v4
+        with:
+          ref: cd713c6672e4e6551f8c0f8a48c9e075a227591f
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp config.js "$package/config.js"
+          cp "$package/index.html" "$package/kesit.js" "$package/sw.js" "$package/README.md" "$package/content-manifest.json" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' 3e111f2e57423e81c9946914fbd5600fd099dfd7e880d9283449bad0ab180fe1 kesit.js e384cfc7928500173a5d3eed46f8b441cb4659c668f70abd8ca9eed2a49535cd index.html d7ced37344cedac599697ee524b86b78403af2ef600576223ea3abdeb865cccf sw.js 174c44b9146c1849ebbb99dcc68b1dba5e7c87a1e9f87b4b24ed60a2c93c1d7c README.md e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552 content-manifest.json | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = 'cd713c6672e4e6551f8c0f8a48c9e075a227591f'
+          data['checks'].append('Örnek rapor ayarları, ön koşul sırası, açılış bütçesi ve içerik sayımı')
+          names = dict.fromkeys([*data['files'], 'README.md', 'content-manifest.json'])
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in names}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- index.html kesit.js sw.js release-manifest.json KALAN-GOREVLER.md README.md content-manifest.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: rapor ayarları, öğrenme yolları, yükleme bütçesi ve sayım'
+          git push origin HEAD:refs/heads/codex/powerbi-final-four-verified
