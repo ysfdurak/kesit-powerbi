@@ -32093,10 +32093,27 @@ W.PBI_ROLES = {
     title: 'BT İş Analisti için Power BI', who: 'Rapor talebi toplayan, gereksinim yazan ve raporu kabul eden iş analistleri için. Önce Kesit SQL’deki BT İş Analisti yolunun SQL bölümünü bitirmeni öneririz.', jobs: ['BT iş analisti', 'İş analisti', 'Ürün ve süreç analisti'], level: 'Temel → Orta',
     long: 'Rapor geliştiricisi olmak için değil, geliştiriciyle aynı dili konuşmak için: yıldız şemayı ve ölçüleri okumak, CALCULATE ve zaman zekâsı ifadelerinin ne yaptığını anlamak, talebi rapor brifine ve KPI tanımına çevirmek, raporu mutabakat ve kabul testiyle teslim almak, yayımlamanın ve paylaşmanın kavramlarını bilmek. Bu 18 ders tek başına bir işe hazırlamaz; iş analistliğinin kendisi Kesit SQL’deki yolda anlatılır.',
     outcomes: ['Bir rapor talebini kitle, karar ve KPI listesi olan tek sayfalık brife çeviririm.', 'Her KPI için tanım kartı yazarım: formül, kapsam, kaynak, sahip, hedef.', 'Model görünümünü okur, bir ölçünün hangi ayrıntı düzeyinde çalıştığını sorarım.', 'CALCULATE, VAR ve zaman zekâsı içeren bir ölçünün ne hesapladığını okuyup açıklarım.', 'Raporu kaynakla mutabık kılar, kabul kriterlerine göre test eder ve kaydederim.', 'Çalışma alanı, uygulama, yenileme ve RLS kavramlarını gereksinime yazabilecek kadar bilirim.'],
-    cap: { title: 'Kupon raporu için gereksinim ve kabul paketi', brief: 'Kesit SQL yolundaki geç teslim kuponu canlıya çıktı. Operasyon müdürü haftalık bir izleme raporu istiyor. Raporu sen kurmayacaksın; geliştiriciye verilecek gereksinim paketini hazırlayıp teslimi kabul testiyle alacaksın. Model olarak Veri setlerindeki Lezzet Kurye paketini kullan.', data: 'Lezzet Kurye sentetik verisi. Sipariş ve teslim alanları SLA kontrolünde kullanılabilir. Kupon kimliği ve kupon tutarı ayrı alanlar olarak bulunmadığından bu iki KPI için kaynak gereksinimi yaz.',
-      download: 'veri/lezzet-kurye.zip',
-      steps: ['Rapor brifini yaz: kitle, verilecek karar, yenileme sıklığı, sayfa planı.', 'Beş KPI için tanım kartı yaz: geç teslim oranı, kupon adedi, kupon tutarı, ortalama teslim süresi, ortalama kurye puanı. Her kartta formül, dahil ve hariç olanlar, kaynak tablo, sahip, hedef.', 'Her KPI için Given/When/Then kalıbında bir kabul kriteri yaz.', 'Geliştiricinin yazacağı bir ölçüyü ön gör: geç teslim oranını DAX ile nasıl okursun, hangi filtre bağlamında hangi sayı çıkmalı?', 'Rapor UAT listesi hazırla: mutabakat için SQL ya da kaynak toplamı, filtreyle kontrol, RLS rolüyle görüntüleme, boş veri durumu.', 'Yayım gereksinimini yaz: çalışma alanı, uygulama kitlesi, yenileme saati, sorumlu.'],
-      check: ['Rapor brifi', 'Beş KPI tanım kartı', 'Kabul kriterleri', 'Rapor UAT listesi ve mutabakat sayıları', 'Yayım gereksinimi'], rubric: null, present: null },
+    cap: {
+      title: 'Depo Sevkiyat Kontrolü: gereksinim ve UAT',
+      progressKey: 'is-analisti-wms-sevkiyat',
+      brief: 'Bursa ve Gebze depo ekipleri vardiya devrinde açık geciken sevkiyatları ve istisna nedenlerini tek raporda görmek istiyor. Operasyon müdürü depoları karşılaştıracak, vardiya sorumlusu müdahale sırasını belirleyecek. Geliştiriciye verilecek brifi yaz ve rapor kabulünü planla.',
+      data: '18 sentetik WMS kaydı. Her satır bir sevkiyat. Gözlem anı 17 Ekim 2026, 12.00 Türkiye saati. Depo, kanal ve tarih filtreleri planlanan çıkışa göre uygulanır.',
+      download: 'veri/wms-sevkiyat/sevkiyat.csv',
+      downloadLabel: 'Sentetik sevkiyat verisini indir (.csv)',
+      caseGuide: 'veri/wms-sevkiyat/BRIF-UAT.md',
+      steps: [
+        'Brifi yaz: karar sahibi, vardiya devri, planlanan tarih/depo/kanal filtreleri ve açık geciken sevkiyatların detay listesi.',
+        'Beş KPI kartı oluştur: planlanan sevkiyat, çıkışı yapılan, zamanında çıkış oranı, açık geciken ve istisnalı sevkiyat. Kaynak alanı, pay/payda ve kapsam kurallarını yaz.',
+        'Filtresiz ve Bursa 16 Ekim sonuçlarını CSV’den hesapla. Tam saatinde ve bir saniye geç çıkışı, iptali, boş paydayı ve açık gecikme sınırını test et.',
+        'UAT kaydına beklenen, gerçekleşen, kanıt, durum ve hata notunu ekle. Çalışan rapor veya yetkili ortam yoksa ilgili kontrolü bekliyor olarak bırak.',
+        'Erişim ve yenileme gereksinimini yaz. Kanıta göre kabul, koşullu kabul veya ret kararı ver ve açık bulgu için sorumlu belirle.',
+      ],
+      check: ['Rapor brifi ve filtre eşlemesi', 'Beş KPI tanım kartı', 'Sınır ve veri kalite kabul kriterleri', 'UAT matrisi ve kaynak mutabakatı', 'Yayım gereksinimi ve kabul kararı'],
+      rubric: [
+        ['KPI kapsamı', 'Beş tanım ve kaynak alanı var', 'İptal, gözlem anı ve boş payda kuralları açık', 'Sınır sonuçları satır kimlikleriyle izlenebilir'],
+        ['Kabul testi', 'Filtresiz ve birleşik filtreli beklenenler var', 'Beklenen, gerçekleşen ve kanıt ayrı', 'Kaynak hatası ve erişim testi de ayrı statüde'],
+      ],
+    },
     ready: [L('Modeli ve ölçüleri okumak', ['model-temel', 'dax-giris', 'baglam', 'calculate', 'var-mantik', 'zaman'], ''), L('Gereksinim ve KPI', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi'], ''), L('Kabul ve yayım', ['kalite-test', 'yayinlama', 'paydas-iletisim'], ''), CAP('Gereksinim ve kabul paketinin tüm teslimleri')]
   },
   karar: {
@@ -32210,11 +32227,11 @@ const EVIDENCE = {
     files: ['Power Query adımları ve model şeması', 'Eski/yeni rapor karşılaştırması', 'Yenileme adımları ve fark notu'],
   },
   'is-analisti': {
-    environment: 'Brif ve UAT tasarımı tarayıcıda hazırlanabilir. Referans rapor davranışını denemek için Power BI Desktop gerekir.',
-    task: 'Lezzet Kurye için 35 dakika teslimat SLA’sının KPI kartını ve iki UAT senaryosunu yaz. Filtresiz durum ile bir hafta ve bir ilçe seçildiğindeki beklenen değerleri kaynaktan hesapla.',
-    hint: 'Teslim edilen siparişleri paydaya al. 35:00 sınırını, iptal ve iadeleri, boş filtre sonucunu ayrı kabul koşullarına çevir. Kupon alanları için varsayım ile kaynak kanıtını ayır.',
+    environment: 'Brif ve UAT tasarımı ile kaynak mutabakatı CSV üzerinden yapılabilir. Çalışan raporun filtre ve erişim kabulü için Power BI ortamı gerekir.',
+    task: 'Depo Sevkiyat Kontrolü için beş KPI kartı ve UAT matrisi hazırla. Tüm kayıtlar ile Bursa ve 16 Ekim seçildiğindeki beklenen değerleri CSV’den hesapla.',
+    hint: 'İptalleri çıkar. Zamanında çıkış oranının paydasına yalnızca çıkışı yapılan sevkiyatları al. Tam plan saati ile bir saniye sonrasını ve boş paydayı ayrı test et.',
     transfer: 'Kanat Havayolları’nda 15 dakika uçuş gecikmesi için yeni KPI kartı ve iki UAT senaryosu yaz. Birim, iptal kapsamı ve veri kaynağına ilişkin kararları yeniden belirt.',
-    files: ['Rapor brifi ve KPI kartı', 'Model/alan eşlemesi ve filtre matrisi', 'Beklenen ve gerçekleşen sonuçlu UAT kaydı'],
+    files: ['Rapor brifi ve beş KPI kartı', 'WMS alan/filtre eşlemesi ve yayım gereksinimi', 'Beklenen, gerçekleşen ve kanıt alanları bulunan UAT matrisi'],
   },
   karar: {
     environment: 'Örnek raporlarla karar provası yapılabilir. Gerçek kurum raporu için yetkili erişim gerekir.',
@@ -34737,7 +34754,8 @@ function milestones(p) {
   return out.filter(m => m.ids.length);
 }
 const capOf = id => (R[id] || {}).cap;
-function capState(id) { const c = capOf(id); if (!c) return { n: 0, d: 0 }; const st = P.cap[id] || {}; const items = c.check || []; return { n: items.length, d: items.filter((x, i) => st[i]).length }; }
+const capKey = id => capOf(id)?.progressKey || id;
+function capState(id) { const c = capOf(id); if (!c) return { n: 0, d: 0 }; const st = P.cap[capKey(id)] || {}; const items = c.check || []; return { n: items.length, d: items.filter((x, i) => st[i]).length }; }
 /* İşe hazırlık maddeleri: otomatik (ders, sınav, proje) ya da elle işaretlenir */
 function readyItems(id) {
   const r = R[id]; if (!r || !r.ready) return [];
@@ -34753,7 +34771,13 @@ function readyItems(id) {
   });
 }
 function readyPct(id) { const it = readyItems(id); return it.length ? Math.round(it.filter(x => x.ok).length / it.length * 100) : 0; }
-function certReady(id) { const p = PMAP[id]; if (!p) return false; const s = stats(p); const it = readyItems(id); return s.pct === 100 && it.every(x => x.ok); }
+function certReady(id) {
+  const p = PMAP[id];
+  if (!p) return false;
+  // Yeni vaka ayrı izlenir. Önceden düzenlenmiş belge, eski vakanın tamamlanmasını temsil eder.
+  const previousCertificate = capKey(id) !== id && Boolean(P.cert[id]);
+  return stats(p).pct === 100 && readyItems(id).every(x => x.ok || (x.cap && previousCertificate));
+}
 function eta(p) {
   const s = stats(p), wk = (P.goal && P.goal.path === p.id && P.goal.hours) || 5;
   const weeks = Math.max(1, Math.ceil(s.rem / (wk * 60)));
@@ -34844,7 +34868,7 @@ function prereqBlock(r) {
 }
 const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
 function evidenceMode(id) {
-  const value = (P.cap[id] || {}).workMode;
+  const value = (P.cap[capKey(id)] || {}).workMode;
   return Object.hasOwn(WORK_MODES, value) ? value : '';
 }
 function evidenceBlock(id, evidence) {
@@ -34870,6 +34894,10 @@ function downloadEvidence(id) {
   if (!evidence) return;
   const lines = [
     '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
+    ...(c.caseGuide ? [
+      '- [Vaka brifi ve UAT kılavuzu](' + new URL(c.caseGuide, C.SITE.pbi).href + ')',
+      '- [Sentetik kaynak veri](' + new URL(c.download, C.SITE.pbi).href + ')', '',
+    ] : []),
     '## Çalışma ortamı', evidence.environment, '',
     '- Kullandığım ortam ve sürüm: …', '- Çalışma biçimim: ' + (WORK_MODES[evidenceMode(id)] || '…'),
     '- Kullandığım ipucu veya destek: …', '- Doğrulama durumu (bekliyor / denendi / geçti / kaldı): …',
@@ -34885,12 +34913,15 @@ function downloadEvidence(id) {
   return saveFile('kesit-powerbi-teslim-' + id + '.md', lines.join('\n'));
 }
 function capBlock(id) {
-  const c = capOf(id), st = P.cap[id] || {}, cs = capState(id);
+  const c = capOf(id), st = P.cap[capKey(id)] || {}, cs = capState(id);
   let h = '<section class="lvl-block" id="cap"><div class="sec-head"><div><span class="eyebrow">Bitirme projesi · portföyüne koy</span><h2>' + esc(c.title) + '</h2></div><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></div><div class="panel capbox">';
   const dataDownload = c.download
-    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' Lezzet Kurye verisini indir (.zip, CSV)</a>'
+    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' ' + esc(c.downloadLabel) + '</a>'
     : '<button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button>';
-  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + '</div>' : '') + '</div>';
+  const caseGuide = c.caseGuide
+    ? '<a class="btn sm" href="' + esc(c.caseGuide) + '" download>Brif ve UAT kılavuzunu indir (.md)</a>' : '';
+  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + caseGuide + '</div>' : '') + '</div>';
+  if (c.progressKey && P.cap[id]) h += '<p class="muted">Önceki kupon projesinin kayıtları saklanıyor. Depo Sevkiyat Kontrolü ayrı bir teslim listesiyle başlar.</p>';
   if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
   h += '<div><span class="eyebrow">Teslim kontrol listesi</span><ul class="chk">' + (c.check || []).map((x, i) => '<li><label><input type="checkbox" data-capchk="' + id + ':' + i + '"' + (st[i] ? ' checked' : '') + '> <span>' + x + '</span></label></li>').join('') + '</ul></div>';
@@ -34989,11 +35020,20 @@ document.addEventListener('change', ev => {
   const el = ev.target;
   const id = el.dataset && el.dataset.evidenceMode;
   if (id && capOf(id)?.evidence && (el.value === '' || Object.hasOwn(WORK_MODES, el.value))) {
-    P.cap[id] = P.cap[id] || {};
-    P.cap[id].workMode = el.value;
+    const key = capKey(id);
+    P.cap[key] = P.cap[key] || {};
+    P.cap[key].workMode = el.value;
     C.save();
   }
-  if (el.dataset && el.dataset.capchk) { const [id, i] = el.dataset.capchk.split(':'); P.cap[id] = P.cap[id] || {}; P.cap[id][i] = el.checked; if (el.checked) C.addXP(5); C.save(); rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]'); }
+  if (el.dataset && el.dataset.capchk) {
+    const [id, i] = el.dataset.capchk.split(':');
+    const key = capKey(id);
+    P.cap[key] = P.cap[key] || {};
+    P.cap[key][i] = el.checked;
+    if (el.checked) C.addXP(5);
+    C.save();
+    rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]');
+  }
   if (el.dataset && el.dataset.rdy) { const [id, i] = el.dataset.rdy.split(':'); P.ready[id] = P.ready[id] || {}; P.ready[id][i] = el.checked; C.save(); rerenderKeep('[data-rdy="' + el.dataset.rdy + '"]'); }
 });
 document.addEventListener('input', ev => { if (ev.target.id === 'certName') { P.name = ev.target.value.slice(0, 60); C.save(); const w = document.getElementById('certWho'); if (w) w.textContent = P.name || 'Adın Soyadın'; } });
