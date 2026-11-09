@@ -1,0 +1,53 @@
+name: Rebuild Power BI release candidate
+on:
+  push:
+    branches: [codex/powerbi-stage1-build]
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 7132ce49b77829562bc33525db84e95814b4ee19
+      - uses: actions/checkout@v4
+        with:
+          ref: 9337c9e7a9a57abe03ccc75f32e4c662ded39335
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild and verify against the existing release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          cp "$bundle" kesit.js
+          node --check kesit.js
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          for name, expected in json.loads(Path('release-manifest.json').read_text())['files'].items():
+              actual = hashlib.sha256(Path(name).read_bytes()).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f'{name}: {actual} != {expected}')
+          PY
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          node -e 'const fs=require("node:fs"); const parts=fs.readFileSync("kesit.js","utf8").split(/\/\* ===== ([^\n]+) ===== \*\//); const i=parts.indexOf("recovery.js"); if(i<0)throw Error("recovery missing"); fs.writeFileSync(process.argv[1],parts[i+1].trimStart());' "$TMPDIR/recovery.js"
+          node tests/recovery.cjs "$TMPDIR/recovery.js"
+          node source/tests/artifact.cjs
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- kesit.js
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: Kesit Power BI paket bütünlüğünü onar'
+          git push origin HEAD:refs/heads/codex/powerbi-stage1-verified
