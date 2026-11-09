@@ -1,0 +1,64 @@
+name: Build Power BI DP-600 alignment release
+on:
+  push:
+    branches: [codex/powerbi-dp600-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 2c06040aeca05f1e389c36ca4d0d3ad21c621bfb
+      - uses: actions/checkout@v4
+        with:
+          ref: 024b2aa94d237ad7d186b2d3da92a6e776993471
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp index.html "$package/index.html"
+          cmp config.js "$package/config.js"
+          cp "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          cp "$package/ders/dp600/index.html" ders/dp600/index.html
+          cp "$package/ders/fabric-veri-alma/index.html" ders/fabric-veri-alma/index.html
+          printf '%s  %s\n' c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471 ders/dp600/index.html 89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b ders/fabric-veri-alma/index.html | sha256sum -c -
+          printf '%s  %s\n' 5b9de837b719ca0dc591c65d7746ae7d4ce49e87051a5aba9c1909303f4133be kesit.js f7c02179f7691d91e7801ca2918cb4d0156504f533506a145079e338e6c79dbd sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = '024b2aa94d237ad7d186b2d3da92a6e776993471'
+          data['checks'].append('DP-600 dört alan eşleşmesi ve statik dersler')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in [*data['files'], 'ders/dp600/index.html', 'ders/fabric-veri-alma/index.html']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- kesit.js sw.js release-manifest.json KALAN-GOREVLER.md ders/dp600/index.html ders/fabric-veri-alma/index.html
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: DP-600 kapsamı ve dört sınav alanı'
+          git push origin HEAD:refs/heads/codex/powerbi-dp600-verified
