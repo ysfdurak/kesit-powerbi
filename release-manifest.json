@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-09",
-  "sourceCommit": "fe1e323e63cbe396f634af1e8028b1a7fc97891d",
+  "sourceCommit": "024b2aa94d237ad7d186b2d3da92a6e776993471",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -9,14 +9,17 @@
     "2 eşdeğer çözüm",
     "Rol görevi, çalışma biçimi ve teslim kaydı",
     "BT İş Analisti WMS sevkiyat ve UAT vakası",
-    "İlk uygulama ve bağımsız tekrar için ayrı teslim kayıtları"
+    "İlk uygulama ve bağımsız tekrar için ayrı teslim kayıtları",
+    "DP-600 dört alan eşleşmesi ve statik dersler"
   ],
   "files": {
     "index.html": "0a2df5bb44f66fc05a2318a7301c65381d203c670cdac4261c068acf1eb9b5d8",
-    "kesit.js": "eb19afbdba264bd2a51becb4913f11596da5c09163912967cd49c2387229ca96",
+    "kesit.js": "5b9de837b719ca0dc591c65d7746ae7d4ce49e87051a5aba9c1909303f4133be",
     "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
-    "sw.js": "33793f3ed7309ffd7f611437251f98f537c8bbcfc280455415ae3ebc96ef1681",
+    "sw.js": "f7c02179f7691d91e7801ca2918cb4d0156504f533506a145079e338e6c79dbd",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
-    "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664"
+    "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
+    "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
+    "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b"
   }
 }

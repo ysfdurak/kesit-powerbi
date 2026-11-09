@@ -10393,18 +10393,18 @@ AnadoluMarket.Report/
 {
   id: 'dp600', lv: 'C2', mod: 'Sınav Hazırlığı', min: 16,
   title: 'DP-600 Fabric Analytics Engineer hazırlığı',
-  sum: 'Sınavın üç alanı, Power BI uzmanının bilmesi gereken Fabric kavramları ve bu uygulamadaki karşılıkları.',
+  sum: 'DP-600’ün dört sınav alanı, güncel ağırlıkları ve Kesit Power BI’daki çalışma karşılıkları.',
   body: `
 <h2>Sınav hakkında</h2>
 <p><b>DP-600: Implementing Analytics Solutions Using Microsoft Fabric</b> sınavını geçenler <i>Microsoft Certified: Fabric Analytics Engineer Associate</i> unvanını alır. PL-300'ün bir üst basamağı gibi düşünülebilir: rapor yazmaktan çok veriyi hazırlamak, kurumsal anlam modeli kurmak ve çözümü yönetmek ölçülür. Geçme puanı 1000 üzerinden 700'dür.</p>
-<h2>Ölçülen beceriler (Ekim 2026)</h2>
-<div class="warn"><b>Listeyi kendin kontrol et</b>Sertifika sayfası (Ekim 2026) üç alan gösteriyor ve aşağıdaki tablo ona dayanıyor. Kasım 2026’daki kontrolde çalışma kılavuzunun bazı dil sürümleri eski dört alanlı listeyi gösterdi. Sınava girmeden önce resmî kılavuzda “Skills measured” tarihini kendin oku.</div>
-
+<h2>Ölçülen beceriler</h2>
+<p>Ağırlıklar 9 Kasım 2026’da <a href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600" target="_blank" rel="noopener">Microsoft Learn çalışma kılavuzundan</a> doğrulandı. Kılavuzun son güncellemesi 30 Ekim 2026.</p>
 <div class="tbl-wrap"><table>
 <tr><th>Alan</th><th>Ağırlık</th><th>Başlıca konular</th><th>Bu uygulamada</th></tr>
-<tr><td><b>Analitik çözümü sürdürme</b></td><td>%25–30</td><td>Çalışma alanı, öğe, satır, sütun, nesne ve dosya düzeyinde erişim; duyarlılık etiketleri; onaylama; Git sürüm denetimi; .pbip; dağıtım işlem hatları; etki analizi; XMLA ile dağıtım; .pbit/.pbids ve paylaşılan modeller</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yerel geliştirme, Yaşam döngüsü, Kurumsal model, Kullanım ve izleme</td></tr>
-<tr><td><b>Veriyi hazırlama</b></td><td>%45–50</td><td>Bağlantı oluşturma; OneLake kataloğu ve Real-Time hub; veri depolarını seçme; görünüm, fonksiyon ve saklı yordam; star schema; denormalizasyon; birleştirme; yinelenen/eksik/null veri; veri türleri; görsel sorgu düzenleyici, SQL, KQL ve DAX ile sorgulama</td><td>OneLake, Lakehouse, Data Factory, İşlem hatları, Ağ geçidi, ödevler, Power Query dersleri, DAX sorguları; SQL için <a href="https://ysfdurak.github.io/kesit-sql/" target="_blank" rel="noopener">Kesit SQL</a></td></tr>
-<tr><td><b>Anlam modellerini uygulama ve yönetme</b></td><td>%25–30</td><td>Depolama modu; yıldız şema; köprü tablolar ve çoka-çok; değişkenler, yineleyiciler, tablo filtreleme, pencere ve bilgi fonksiyonları; hesaplama grupları, dinamik biçim dizeleri, alan parametreleri; büyük model biçimi; bileşik modeller; DAX performansı; Direct Lake (geri dönüş, OneLake ve SQL uç noktası farkı); artımlı yenileme</td><td>İleri seviye DAX dersleri, Measure Lab, Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
+<tr><td><b>Analitik çözümü planla, uygula ve yönet</b></td><td>%10–15</td><td>Ortam ve kapasite seçimi, erişim, çalışma alanı, sürüm denetimi ve dağıtım</td><td>Çalışma alanı, Güvenlik, Yönetişim, Yaşam döngüsü</td></tr>
+<tr><td><b>Veriyi hazırla ve sun</b></td><td>%40–45</td><td>Veri alma, kopyalama, zamanlama, dönüşüm ve yükleme performansı</td><td>Lakehouse, Data Factory, İşlem hatları, T-SQL ve PySpark ödevleri</td></tr>
+<tr><td><b>Anlam modellerini uygula ve yönet</b></td><td>%20–25</td><td>Direct Lake, model ilişkileri, DAX, RLS/OLS ve performans</td><td>Kurumsal model, Fabric’te anlam modeli, DAX optimizasyonu</td></tr>
+<tr><td><b>Veriyi keşfet ve analiz et</b></td><td>%20–25</td><td>Profilleme, betimleyici ve tanısal analiz, tahmin ve SQL/XMLA ile sorgulama</td><td>SQL analizi, kapsam haritasındaki keşif dersleri ve ek sorgu pratiği</td></tr>
 </table></div>
 <h2>Fabric'te Power BI uzmanının bilmesi gerekenler</h2>
 <ul>
@@ -18050,7 +18050,7 @@ add('fabric-hazirlama', {
   title: 'Fabric’e veri getirmek: kısayol, işlem hattı, veri akışı, not defteri (ödevli)',
   sum: 'Veriyi kopyalamak mı, yerinde erişmek mi? Kısayol, Dataflow Gen2, işlem hattı ve not defteri arasında seçim; Anadolu Market CSV’lerini bir lakehouse’a yükleme ödevi.',
   body: `
-<p>DP-600’ün en ağır alanı veri hazırlamadır. Çalışma kılavuzunun 19 Ekim 2026 listesinde <b>Prepare data</b> sınavın %45–50’sini oluşturur ve üç başlığa ayrılır: <b>Get data</b>, <b>Transform data</b>, <b>Query and analyze data</b>. Bu ders birincisini, sonraki iki ödev ötekileri işler.</p>
+<p>DP-600 çalışma kılavuzunda veriyi hazırlama ve sunma alanı %40–45 ağırlıktadır. Lakehouse veya ambara veri almayı, kopyalamayı, dönüştürmeyi ve yükleme performansını kapsar. Bu ders veri alma araçlarını karşılaştırır. Ardından T-SQL ve PySpark ödevleriyle dönüşümü uygula.</p>
 <div class="note"><b>Tarayıcı sınırı</b>Bu uygulama T-SQL, PySpark ya da KQL çalıştırmaz. Bu üç derste ödevleri gerçek Fabric’te yaparsın, sonucu aşağıdaki beklenen değerlerle karşılaştırırsın. Alıştırmalar ise kavramı ve DAX karşılığını denetler.</div>
 
 <h2>Deneme kapasitesi</h2>
@@ -24421,9 +24421,9 @@ MEDIANX(
 
 /* ───────────────────────── 6. DP-600 ───────────────────────── */
 ext('dp600', { min: 16, html: `
-<h2>Çerçeveyi doğrula: 19 Ekim 2026 sürümü</h2>
-<p>Microsoft Learn'deki DP-600 çalışma kılavuzunun ölçülen beceriler listesi <b>19 Ekim 2026</b> tarihli. Alan ağırlıkları değişmedi: analitik çözümü sürdürme %25–30, veriyi hazırlama %45–50, anlam modellerini uygulama ve yönetme %25–30. Değişiklik günlüğünde yalnızca “Veriyi sorgulama ve analiz etme” alt başlığında küçük bir değişiklik var. İngilizce sürüm önce güncellenir; yerelleştirilmiş sürüm birkaç hafta geriden gelebilir. Geçme puanı 700.</p>
-<p>Ağırlıkların anlamı açık: sınavın neredeyse yarısı veriyi hazırlamak. Burada T-SQL görünümleri, saklı yordamlar, yıldız şemayı lakehouse ya da ambarda kurmak, yinelenen ve eksik veriyi temizlemek ve veriyi dört araçla sorgulamak var: görsel sorgu düzenleyici, SQL, KQL ve DAX. Power BI geçmişinden gelen biri için en büyük açık genellikle SQL'dir.</p>
+<h2>Çalışma süreni planla</h2>
+<p>Veriyi hazırlama ve sunma en geniş alandır. Yükleme, zamanlama, dönüşüm ve performans için bir Fabric veri akışını uçtan uca kur. Veri keşfi alanında ise kaynakları profille, SQL ile bir bulguyu çıkar ve raporda nasıl sunulacağını açıkla.</p>
+<p>Kapsam haritası mevcut ders ve soru bağlantılarını gösterir. “Ek pratik” etiketli KQL, DAX sorgusu ve Direct Lake ayrıntıları Fabric’i anlamaya yardımcı olur. Fabric ortamına erişimin varsa tasarım notunu gerçek çalıştırma ve mutabakat kanıtıyla tamamla.</p>
 
 <h2>Depo kararı: bir karar ağacı</h2>
 <ol>
@@ -24436,7 +24436,7 @@ ext('dp600', { min: 16, html: `
 <p>Ayrıntılı tasarım Fabric'te yıldız şema ve Fabric'te veriyi hazırlamak derslerinde.</p>
 
 <h2>Direct Lake: OneLake mı, SQL uç noktası mı?</h2>
-<p>Beceri listesinde ayrı bir madde var: “Direct Lake on OneLake ile Direct Lake on SQL analytics endpoint arasında seçim”. Fabric belgelerindeki farklar:</p>
+<p>Direct Lake depolama modu için ek uygulama: OneLake ve SQL uç noktası yaklaşımlarını karşılaştır.</p>
 <div class="tbl-wrap"><table><tr><th>Konu</th><th>Direct Lake on OneLake</th><th>Direct Lake on SQL</th></tr>
 <tr><td>Kaynak</td><td>Bir ya da birden çok Fabric öğesi (kısayollar dahil)</td><td>SQL analiz uç noktası olan tek kaynak</td></tr>
 <tr><td>DirectQuery'ye geri dönüş</td><td>Yok</td><td>Var (açıksa); kapalıysa sorgu hata verir</td></tr>
@@ -27163,15 +27163,20 @@ W.PBI_INTERVIEW = [
 ;
 
 /* ===== certskills.js ===== */
-/* Kesit Power BI — Resmî sınav kapsamı (Microsoft Learn çalışma kılavuzları). PL-300: 20 Nisan 2026; DP-600: 19 Ekim 2026.
+/* Kesit Power BI — Resmî sınav kapsamı (Microsoft Learn çalışma kılavuzları). PL-300: 20 Nisan 2026; DP-600: 30 Ekim 2026 çalışma kılavuzu.
    Her sertifika sorusu bu maddelerden birine (s alanı) etiketlenir; Sınavlar ekranındaki kapsam haritası buradan üretilir. */
 (function (W) {
 'use strict';
 W.PBI_CERT_INFO = {
   pl300: { code: 'PL-300', name: 'Microsoft Power BI Data Analyst', asOf: '20 Nisan 2026', url: 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-300',
     domains: [['Veriyi hazırla', 'Prepare the data', 25, 30], ['Modelle', 'Model the data', 25, 30], ['Görselleştir ve analiz et', 'Visualize and analyze the data', 25, 30], ['Yönet ve güvenli hâle getir', 'Manage and secure Power BI', 15, 20]] },
-  dp600: { code: 'DP-600', name: 'Implementing Analytics Solutions Using Microsoft Fabric', asOf: '19 Ekim 2026', url: 'https://learn.microsoft.com/credentials/certifications/resources/study-guides/dp-600',
-    domains: [['Analitik çözümü yönet', 'Maintain a data analytics solution', 25, 30], ['Veriyi hazırla', 'Prepare data', 45, 50], ['Anlam modelini uygula', 'Implement and manage semantic models', 25, 30]] }
+  dp600: { code: 'DP-600', name: 'Implementing Analytics Solutions Using Microsoft Fabric', asOf: '30 Ekim 2026', url: 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600',
+    domains: [
+      ['Analitik çözümü planla, uygula ve yönet', 'Plan, implement, and manage a solution for data analytics', 10, 15],
+      ['Veriyi hazırla ve sun', 'Prepare and serve data', 40, 45],
+      ['Anlam modellerini uygula ve yönet', 'Implement and manage semantic models', 20, 25],
+      ['Veriyi keşfet ve analiz et', 'Explore and analyze data', 20, 25],
+    ] }
 };
 /* [id, alan, grup, Türkçe madde, İngilizce madde] */
 const PL = [
@@ -27243,43 +27248,59 @@ const PL = [
   ['pl-sg3', 'Yönet ve güvenli hâle getir', 'Güvenlik ve yönetişim', 'Satır düzeyi güvenlik rolleri ve grup üyeliği', 'Implement row-level security roles; configure RLS group membership'],
   ['pl-sg4', 'Yönet ve güvenli hâle getir', 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri', 'Apply sensitivity labels']
 ];
+const [MANAGE, PREPARE, MODEL, ANALYZE] = W.PBI_CERT_INFO.dp600.domains.map(d => d[0]);
 const DP = [
-  ['dp-sg1', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Çalışma alanı ve öğe düzeyi erişim', 'Implement workspace-level and item-level access controls'],
-  ['dp-sg2', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Satır, sütun, nesne ve dosya düzeyi erişim', 'Implement row-level, column-level, object-level, and file-level access control'],
-  ['dp-sg3', 'Analitik çözümü yönet', 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri ve onaylama (endorsement)', 'Apply sensitivity labels to items; endorse items'],
-  ['dp-lc1', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Çalışma alanı için sürüm denetimi', 'Configure version control for a workspace'],
-  ['dp-lc2', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Power BI Desktop projesi (.pbip)', 'Create and manage a Power BI Desktop project (.pbip)'],
-  ['dp-lc3', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Dağıtım işlem hatları', 'Create and configure deployment pipelines'],
-  ['dp-lc4', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Aşağı akış bağımlılıkları için etki analizi', 'Perform impact analysis of downstream dependencies'],
-  ['dp-lc5', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'XMLA uç noktasıyla dağıtım ve yönetim', 'Deploy and manage semantic models by using the XMLA endpoint'],
-  ['dp-lc6', 'Analitik çözümü yönet', 'Geliştirme yaşam döngüsü', 'Yeniden kullanılabilir varlıklar: .pbit, .pbids, paylaşılan modeller', 'Create and update reusable assets (.pbit, .pbids, shared semantic models)'],
-  ['dp-gd1', 'Veriyi hazırla', 'Veriyi al', 'Veri bağlantısı oluşturma', 'Create a data connection'],
-  ['dp-gd2', 'Veriyi hazırla', 'Veriyi al', 'OneLake kataloğu ve Real-Time hub ile veri keşfi', 'Discover data by using OneLake catalog and Real-Time hub'],
-  ['dp-gd3', 'Veriyi hazırla', 'Veriyi al', 'Veriyi alma ya da yerinde erişme (kısayollar, yansıtma)', 'Ingest or access data as needed'],
-  ['dp-gd4', 'Veriyi hazırla', 'Veriyi al', 'Veri deposu seçimi: lakehouse, ambar, eventhouse', 'Choose between different data stores'],
-  ['dp-gd5', 'Veriyi hazırla', 'Veriyi al', 'Eventhouse ve anlam modelleri için OneLake tümleştirmesi', 'Implement OneLake integration for Eventhouse and semantic models'],
-  ['dp-tr1', 'Veriyi hazırla', 'Veriyi dönüştür', 'Görünüm, fonksiyon ve saklı yordam', 'Create views, functions, and stored procedures'],
-  ['dp-tr2', 'Veriyi hazırla', 'Veriyi dönüştür', 'Yeni sütun ya da tabloyla zenginleştirme', 'Enrich data by adding new columns or tables'],
-  ['dp-tr3', 'Veriyi hazırla', 'Veriyi dönüştür', 'Lakehouse ya da ambarda yıldız şema', 'Implement a star schema for a lakehouse or warehouse'],
-  ['dp-tr4', 'Veriyi hazırla', 'Veriyi dönüştür', 'Normalleştirmeyi kaldırma ve toplama', 'Denormalize data; aggregate data'],
-  ['dp-tr5', 'Veriyi hazırla', 'Veriyi dönüştür', 'Birleştirme (join/merge)', 'Merge or join data'],
-  ['dp-tr6', 'Veriyi hazırla', 'Veriyi dönüştür', 'Tekrarlanan, eksik ve boş verileri çözme', 'Identify and resolve duplicate data, missing data, or null values'],
-  ['dp-tr7', 'Veriyi hazırla', 'Veriyi dönüştür', 'Veri türü dönüştürme ve filtreleme', 'Convert column data types; filter data'],
-  ['dp-qa1', 'Veriyi hazırla', 'Sorgula ve analiz et', 'Görsel sorgu düzenleyicisi', 'Select, filter, and aggregate data by using the Visual query editor'],
-  ['dp-qa2', 'Veriyi hazırla', 'Sorgula ve analiz et', 'SQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using SQL'],
-  ['dp-qa3', 'Veriyi hazırla', 'Sorgula ve analiz et', 'KQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using KQL'],
-  ['dp-qa4', 'Veriyi hazırla', 'Sorgula ve analiz et', 'DAX ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using DAX'],
-  ['dp-sm1', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Depolama modu seçimi ve bileşik modeller', 'Choose a storage mode; design and build composite models'],
-  ['dp-sm2', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Yıldız şema, köprü tablolar ve çoka çok ilişkiler', 'Implement a star schema; bridge tables and many-to-many relationships'],
-  ['dp-sm3', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'DAX: değişkenler, iteratörler, tablo filtreleme, pencere ve bilgi fonksiyonları', 'Write calculations that use DAX variables and functions'],
-  ['dp-sm4', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri', 'Implement calculation groups, dynamic format strings, and field parameters'],
-  ['dp-sm5', 'Anlam modelini uygula', 'Anlam modeli tasarla', 'Büyük anlam modeli depolama biçimi', 'Identify use cases for and configure large semantic model storage format'],
-  ['dp-op1', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Sorgu, görsel ve DAX performansı', 'Implement performance improvements in queries and report visuals; improve DAX performance'],
-  ['dp-op2', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Direct Lake: geri dönüş (fallback) ve yenileme davranışı', 'Configure Direct Lake, including default fallback and refresh behavior'],
-  ['dp-op3', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'OneLake üzerinde ve SQL uç noktası üzerinde Direct Lake', 'Choose between Direct Lake on OneLake and Direct Lake on SQL analytics endpoint'],
-  ['dp-op4', 'Anlam modelini uygula', 'Kurumsal ölçekte iyileştir', 'Artımlı yenileme', 'Implement incremental refresh for semantic models']
+  ['dp-plan1', MANAGE, 'Ortamı planla', 'Gereksinimler, kapasite, yönetim ayarları ve ağ geçidi seçimi', 'Requirements, capacity, admin settings and gateway choice'],
+  ['dp-plan2', MANAGE, 'Ortamı planla', 'Özel Power BI rapor teması', 'Custom report theme'],
+  ['dp-env1', MANAGE, 'Güvenlik ve yönetişim', 'Fabric çalışma alanı ayarları ve kapasite yönetimi', 'Workspace setup and capacity management'],
+  ['dp-env2', MANAGE, 'Güvenlik ve yönetişim', 'Çalışma alanı, ambar ve lakehouse veri paylaşımı', 'Workspace, warehouse and lakehouse sharing'],
+  ['dp-sg1', MANAGE, 'Güvenlik ve yönetişim', 'Çalışma alanı ve öğe düzeyi erişim', 'Implement workspace-level and item-level access controls'],
+  ['dp-sg3', MANAGE, 'Güvenlik ve yönetişim', 'Duyarlılık etiketleri ve onaylama (endorsement)', 'Apply sensitivity labels to items; endorse items'],
+  ['dp-lc1', MANAGE, 'Geliştirme yaşam döngüsü', 'Çalışma alanı için sürüm denetimi', 'Configure version control for a workspace'],
+  ['dp-lc2', MANAGE, 'Geliştirme yaşam döngüsü', 'Power BI Desktop projesi (.pbip)', 'Create and manage a Power BI Desktop project (.pbip)'],
+  ['dp-lc3', MANAGE, 'Geliştirme yaşam döngüsü', 'Dağıtım işlem hatları', 'Create and configure deployment pipelines'],
+  ['dp-lc4', MANAGE, 'Geliştirme yaşam döngüsü', 'Aşağı akış bağımlılıkları için etki analizi', 'Perform impact analysis of downstream dependencies'],
+  ['dp-lc5', MANAGE, 'Geliştirme yaşam döngüsü', 'XMLA uç noktasıyla dağıtım ve yönetim', 'Deploy and manage semantic models by using the XMLA endpoint'],
+  ['dp-lc6', MANAGE, 'Geliştirme yaşam döngüsü', 'Yeniden kullanılabilir varlıklar: .pbit, .pbids, paylaşılan modeller', 'Create and update reusable assets (.pbit, .pbids, shared semantic models)'],
+  ['dp-part1', PREPARE, 'Veriyi al', 'Lakehouse için dosya bölümleme', 'Lakehouse file partitioning'],
+  ['dp-gd1', PREPARE, 'Veriyi al', 'Veri bağlantısı oluşturma', 'Create a data connection'],
+  ['dp-gd2', PREPARE, 'Veriyi al', 'OneLake kataloğu ve Real-Time hub ile veri keşfi', 'Discover data by using OneLake catalog and Real-Time hub'],
+  ['dp-gd3', PREPARE, 'Veriyi al', 'Veriyi alma ya da yerinde erişme (kısayollar, yansıtma)', 'Ingest or access data as needed'],
+  ['dp-gd4', PREPARE, 'Veriyi al', 'Veri deposu seçimi: lakehouse, ambar, eventhouse', 'Choose between different data stores'],
+  ['dp-gd5', PREPARE, 'Veriyi al', 'Eventhouse ve anlam modelleri için OneLake tümleştirmesi', 'Implement OneLake integration for Eventhouse and semantic models'],
+  ['dp-copy1', PREPARE, 'Veriyi kopyala', 'İşlem hattı, veri akışı ve not defteriyle kopyalama ve zamanlama', 'Copy and schedule with pipelines, flows and notebooks'],
+  ['dp-copy2', PREPARE, 'Veriyi kopyala', 'İşlem hattında saklı yordam, not defteri ve veri akışı adımları', 'Orchestrate procedures, notebooks and flows'],
+  ['dp-tr1', PREPARE, 'Veriyi dönüştür', 'Görünüm, fonksiyon ve saklı yordam', 'Create views, functions, and stored procedures'],
+  ['dp-tr2', PREPARE, 'Veriyi dönüştür', 'Yeni sütun ya da tabloyla zenginleştirme', 'Enrich data by adding new columns or tables'],
+  ['dp-tr3', PREPARE, 'Veriyi dönüştür', 'Lakehouse ya da ambarda yıldız şema', 'Implement a star schema for a lakehouse or warehouse'],
+  ['dp-tr4', PREPARE, 'Veriyi dönüştür', 'Normalleştirmeyi kaldırma ve toplama', 'Denormalize data; aggregate data'],
+  ['dp-tr5', PREPARE, 'Veriyi dönüştür', 'Birleştirme (join/merge)', 'Merge or join data'],
+  ['dp-tr6', PREPARE, 'Veriyi dönüştür', 'Tekrarlanan, eksik ve boş verileri çözme', 'Identify and resolve duplicate data, missing data, or null values'],
+  ['dp-tr7', PREPARE, 'Veriyi dönüştür', 'Veri türü dönüştürme ve filtreleme', 'Convert column data types; filter data'],
+  ['dp-load1', PREPARE, 'Yükleme performansı', 'Veri akışı, not defteri ve SQL darboğazları ile Delta dosya boyutu', 'Loading bottlenecks and Delta file sizing'],
+  ['dp-an1', ANALYZE, 'Keşif analizi', 'Betimleyici ve tanısal analiz, veri profilleme', 'Descriptive and diagnostic exploration, data profiling'],
+  ['dp-an2', ANALYZE, 'Keşif analizi', 'Tahmin ve öneri odaklı analizleri rapora taşıma', 'Predictive and prescriptive insights in reports'],
+  ['dp-an3', ANALYZE, 'Sorgula ve analiz et', 'XMLA üzerinden anlam modelini sorgulama', 'Query a semantic model through XMLA'],
+  ['dp-qa1', ANALYZE, 'Sorgula ve analiz et', 'Görsel sorgu düzenleyicisi', 'Select, filter, and aggregate data by using the Visual query editor'],
+  ['dp-qa2', ANALYZE, 'Sorgula ve analiz et', 'SQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using SQL'],
+  ['dp-qa3', ANALYZE, 'Sorgula ve analiz et', 'KQL ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using KQL'],
+  ['dp-qa4', ANALYZE, 'Sorgula ve analiz et', 'DAX ile seçme, filtreleme, toplama', 'Select, filter, and aggregate data by using DAX'],
+  ['dp-model1', MODEL, 'Anlam modeli tasarla', 'DAX Studio ve Tabular Editor 2 kullanım senaryoları', 'DAX Studio and Tabular Editor 2 use cases'],
+  ['dp-sg2', MODEL, 'Anlam modeli güvenliği', 'Satır, sütun, nesne ve dosya düzeyi erişim', 'Implement row-level, column-level, object-level, and file-level access control'],
+  ['dp-model2', MODEL, 'Anlam modeli güvenliği', 'Dinamik RLS ile OLS uygulama ve sonuçlarını doğrulama', 'Implement and validate dynamic RLS and OLS'],
+  ['dp-sm1', MODEL, 'Anlam modeli tasarla', 'Depolama modu seçimi ve bileşik modeller', 'Choose a storage mode; design and build composite models'],
+  ['dp-sm2', MODEL, 'Anlam modeli tasarla', 'Yıldız şema, köprü tablolar ve çoka çok ilişkiler', 'Implement a star schema; bridge tables and many-to-many relationships'],
+  ['dp-sm3', MODEL, 'Anlam modeli tasarla', 'DAX: değişkenler, iteratörler, tablo filtreleme, pencere ve bilgi fonksiyonları', 'Write calculations that use DAX variables and functions'],
+  ['dp-sm4', MODEL, 'Anlam modeli tasarla', 'Hesaplama grupları, dinamik biçim dizeleri, alan parametreleri', 'Implement calculation groups, dynamic format strings, and field parameters'],
+  ['dp-sm5', MODEL, 'Anlam modeli tasarla', 'Büyük anlam modeli depolama biçimi', 'Identify use cases for and configure large semantic model storage format'],
+  ['dp-op1', MODEL, 'Kurumsal ölçekte iyileştir', 'Sorgu, görsel ve DAX performansı', 'Implement performance improvements in queries and report visuals; improve DAX performance'],
+  ['dp-op2', MODEL, 'Kurumsal ölçekte iyileştir', 'Direct Lake: geri dönüş (fallback) ve yenileme davranışı', 'Configure Direct Lake, including default fallback and refresh behavior'],
+  ['dp-op3', MODEL, 'Kurumsal ölçekte iyileştir', 'OneLake üzerinde ve SQL uç noktası üzerinde Direct Lake', 'Choose between Direct Lake on OneLake and Direct Lake on SQL analytics endpoint'],
+  ['dp-op4', MODEL, 'Kurumsal ölçekte iyileştir', 'Artımlı yenileme', 'Implement incremental refresh for semantic models']
 ];
-W.PBI_CERT_SKILLS = { pl300: PL.map(([id, d, g, t, en]) => ({ id, d, g, t, en })), dp600: DP.map(([id, d, g, t, en]) => ({ id, d, g, t, en })) };
+// Eski sorular ve ilerleme kimlikleri kalır. Aşağıdaki başlıklar güncel kılavuzu destekleyen ek pratiktir.
+const DP_EXTRA = new Set(['dp-sg2', 'dp-gd2', 'dp-gd4', 'dp-gd5', 'dp-qa3', 'dp-qa4', 'dp-op2', 'dp-op3']);
+W.PBI_CERT_SKILLS = { pl300: PL.map(([id, d, g, t, en]) => ({ id, d, g, t, en })), dp600: DP.map(([id, d, g, t, en]) => ({ id, d, g, t, en, extra: DP_EXTRA.has(id) })) };
 W.PBI_CERTQ = W.PBI_CERTQ || []; W.PBI_CASES = W.PBI_CASES || [];
 })(window);
 
@@ -32022,6 +32043,11 @@ const RUB_BASE = [
   ['İletişim', 'Bulgular yazılı', 'Bulgu → kanıt → öneri sırasıyla anlatılmış', 'Etkisi sayıyla ölçülmüş, sonraki adımlar sahibi ve tarihiyle belirlenmiş']
 ];
 
+const DP_DOMAINS = W.PBI_CERT_INFO.dp600.domains;
+const dpArea = (index, lessons) => {
+  const [title, , lo, hi] = DP_DOMAINS[index];
+  return L(title, lessons, '%' + lo + '–' + hi);
+};
 W.PBI_ROLES = {
   profesyonel: {
     title: 'Tam program', who: 'Hiç Power BI açmamış biri için; Excel bilmen yeterli. Temel’den İleri’ye bütün dersler.', jobs: ['Veri analisti', 'BI uzmanı', 'BI geliştirici'], level: 'Temel → İleri',
@@ -32072,13 +32098,21 @@ W.PBI_ROLES = {
     ready: [L('Bağlamlar ve CALCULATE', ['baglam', 'calculate', 'iteratorler', 'filter-all', 'baglam-gecisi'], ''), L('Tablo, pencere ve zaman', ['tablo-fonk', 'pencere', 'zaman', 'zaman-ileri', 'dax-udf'], ''), L('İş kalıpları', ['musteri-analitigi', 'segmentasyon', 'ileri-kaliplar', 'finans'], ''), L('Optimizasyon ve test', ['dax-opt', 'kalite-test'], ''), EXAM('DAX kodlama sınavı (ileri) en az %75', 'kod-c', 75, '', ['sinav', null, 'Sınavlar']), { t: 'DAX Arena’da 500 puan', arena: 500, d: '', go: ['arena', null, 'Arena'] }, CAP('Kalıp kütüphanesinin tüm teslimleri')]
   },
   dp600: {
-    title: 'Fabric Analitik Mühendisi (DP-600)', who: 'Power BI’ın ötesine geçip Microsoft Fabric’te lakehouse, ambar, gerçek zamanlı analitik ve kurumsal anlam modelleriyle çalışmak isteyenler için; 19 Ekim 2026 beceri listesine göre.', jobs: ['Analitik mühendisi', 'Fabric geliştirici', 'BI mimarı'], level: 'Orta → İleri',
-    long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) dahil: OneLake, lakehouse ve ambar, T-SQL ve not defterleri, işlem hatları ve veri akışları, Eventhouse ve KQL, Direct Lake, kurumsal anlam modeli, güvenlik, Git ve dağıtım işlem hatları.',
+    title: 'Fabric Analitik Mühendisi (DP-600)', who: 'Power BI’ın ötesine geçip Microsoft Fabric’te lakehouse, ambar, gerçek zamanlı analitik ve kurumsal anlam modelleriyle çalışmak isteyenler için.', jobs: ['Analitik mühendisi', 'Fabric geliştirici', 'BI mimarı'], level: 'Orta → İleri',
+    long: 'Fabric hazırlığı dört alanı birleştirir: çözüm yönetimi, veriyi hazırlama ve sunma, anlam modeli, veri keşfi ve analizi. Tarayıcıda kavramları çalış, gerçek Fabric uygulamasını ayrı kanıtla.',
     outcomes: ['Bir ihtiyaç için lakehouse, ambar ya da eventhouse arasında gerekçeli seçim yaparım.', 'T-SQL görünümleri, not defterleri, veri akışları ve işlem hatlarıyla veriyi hazırlarım.', 'Fabric’te yıldız şema, SCD ve köprü tabloları kurarım.', 'Direct Lake modeli tasarlar, geri dönüş (fallback) ve yenileme davranışını yönetirim.', 'KQL ile gerçek zamanlı veriyi sorgular ve panolara bağlarım.', 'Çalışma alanını Git, dağıtım işlem hatları ve etki analiziyle yönetirim.'],
     cap: { title: 'Fabric uçtan uca: lakehouse → ambar → Direct Lake raporu', brief: 'Anadolu Market satış verisini Fabric’e taşı: ham veriyi lakehouse’a al, ambar katmanında yıldız şemayı kur, Direct Lake anlam modeli ve rapor yayımla.', data: DATA + ' Fabric deneme kapasitesi ya da şirketinin geliştirme çalışma alanı gerekir.',
       steps: ['Mimariyi çiz: bronz / gümüş / altın katmanlar ve hangi öğenin nerede durduğu.', 'CSV’leri lakehouse’a yükle; bir not defteriyle temizle (tekrarlar, boşlar, türler).', 'Ambarda boyut ve olgu tablolarını T-SQL ile oluştur; müşteri boyutu için SCD Tip 2.', 'Direct Lake anlam modeli: ilişkiler, ölçüler, hesaplama grubu, RLS.', 'Bir işlem hattıyla yüklemeyi zamanla; hata durumunda uyarı kur.', 'Çalışma alanını Git’e bağla, dağıtım işlem hattı planını yaz.'],
-      check: ['Mimari çizim', 'Lakehouse yükleme ve temizlik not defteri', 'Ambarda yıldız şema ve SCD2', 'Direct Lake modeli ve rapor', 'İşlem hattı ve zamanlama', 'Git + dağıtım planı'], rubric: null, present: PRESENT },
-    ready: [L('Fabric temelleri ve veri hazırlama', ['fabric-giris', 'fabric-hazirlama', 'veri-akislari', 'sql-analist'], '%45–50'), L('Gerçek zamanlı analitik', ['kql-gercek-zaman'], ''), L('Anlam modeli', ['kurumsal-model', 'fabric-yildiz', 'hesaplama-gruplari', 'dax-opt'], '%25–30'), L('Sürdürme ve güvenlik', ['guvenlik', 'yonetisim', 'yasam-dongusu'], '%25–30'), EXAM('DP-600 denemesinde en az 700', 'dp600', 70, '', ['sinav', null, 'Sınavlar']), CAP('Fabric uçtan uca projesinin tüm teslimleri'), SELF('Fabric deneme kapasitesinde bir lakehouse ve ambar oluşturdum', 'Gerçek ortamda en az bir kez.')]
+      check: ['Mimari çizim', 'Lakehouse yükleme ve temizlik not defteri', 'Ambarda yıldız şema ve SCD2', 'Direct Lake modeli ve rapor', 'İşlem hattı tasarımı ve varsa çalıştırma kaydı', 'Git + dağıtım planı'], rubric: null, present: PRESENT },
+    ready: [
+      dpArea(0, ['calisma-alani', 'guvenlik', 'yonetisim', 'yasam-dongusu']),
+      dpArea(1, ['fabric-giris', 'fabric-veri-alma', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
+      dpArea(2, ['kurumsal-model', 'fabric-anlam-modeli', 'hesaplama-gruplari', 'dax-opt']),
+      dpArea(3, ['sql-analist', 'kql-gercek-zaman', 'dax-sorgu']),
+      EXAM('Kesit DP-600 denemesinde en az %70', 'dp600', 70, 'Bu oran uygulama içi hazırlık hedefidir.', ['sinav', null, 'Sınavlar']),
+      CAP('Fabric uçtan uca projesinin tüm teslimleri'),
+      SELF('Fabric ortamında lakehouse ve ambarı kurdum', 'Tasarım notuna ek olarak gerçek çalıştırma kaydını sakla.'),
+    ]
   },
   yonetici: {
     title: 'Excel’den Power BI’a', who: 'Pivot tablo ve formüllerle rapor hazırlayan raporlama, finans ve satış operasyon ekipleri için hızlı geçiş.', jobs: ['Raporlama uzmanı', 'Finansal analist', 'Satış operasyon'], level: 'Temel → Orta',
@@ -32217,7 +32251,7 @@ const EVIDENCE = {
     task: 'Anadolu Market’te ham dosyadan rapora tek akış tasarla. Her katmanın girişini, çıkışını ve yeniden çalıştırma koşulunu belirt.',
     hint: 'Lakehouse, ambar ve anlam modelinin sorumluluklarını bir çizimde ayır. Her geçişe bir satır sayısı kontrolü koy.',
     transfer: 'Kanat Havayolları uçuş verisini aynı akışa uyarla. Gecikme verisi geç geldiğinde hangi tablonun ve kontrolün yeniden çalışacağını göster.',
-    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Çalıştırma ve mutabakat kaydı ya da doğrulama planı'],
+    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Tasarım kanıtı: doğrulama planı ve yeniden çalıştırma koşulu', 'Çalıştırma kanıtı: Fabric çalışma kimliği, sonuç ve mutabakat. Ortam yoksa bekliyor olarak kaydet.'],
   },
   yonetici: {
     environment: 'Kaynak karşılaştırması Excel veya CSV ile yapılabilir. Otomatik yenileme ve rapor için Power BI Desktop.',
@@ -32285,6 +32319,10 @@ const G = (t, d, ids) => ({ t, d, ids });
 const ORDERED = ids => ids.slice().sort((a, b) => W.PBI_ORDER.indexOf(a) - W.PBI_ORDER.indexOf(b));
 const ALLNOOPT = W.PBI_ORDER.filter(id => !W.PBI_OPTIONAL.includes(id));
 const slice = (a, b) => { const i = ALLNOOPT.indexOf(a), j = ALLNOOPT.indexOf(b); return ALLNOOPT.slice(i, j + 1); };
+const dpStage = (index, ids) => {
+  const [title, , lo, hi] = W.PBI_CERT_INFO.dp600.domains[index];
+  return G(title, 'Sınav ağırlığı %' + lo + '–' + hi, ids);
+};
 const STAGES = {
   profesyonel: [
     G('Power BI’ı tanı', 'İlk ölçü, kurulum, ilk rapor', slice('ilk-olcu', 'gorsel-temel')),
@@ -32345,14 +32383,12 @@ const STAGES = {
     G('İş kalıpları', '', ['hesaplama-gruplari', 'ileri-kaliplar', 'uzman-kaliplar', 'hiyerarsi', 'musteri-analitigi', 'segmentasyon', 'finans', 'istatistik-ileri']),
     G('Optimizasyon', '', ['performans', 'dax-opt'])
   ],
-  /* Süre payı sınava uyar: veri hazırlama en büyük aşama */
   dp600: [
-    G('Veriyi hazırla: al', 'Sınavın %45–50’si veri hazırlama', ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'veri-baglantilari', 'gateway', 'veri-akislari', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'pq-orta']),
-    G('Veriyi hazırla: dönüştür', 'T-SQL ve PySpark ödevleri', ['sql-analist', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
-    G('Veriyi hazırla: sorgula', 'SQL, KQL, DAX', ['kql-gercek-zaman', 'dax-sorgu']),
-    G('Anlam modeli', '%25–30', ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model', 'fabric-anlam-modeli']),
-    G('Çözümü yönet', '%25–30', ['calisma-alani', 'guvenlik', 'yonetisim', 'yerel-gelistirme', 'yasam-dongusu', 'kalite-test', 'kullanim-izleme', 'fabric-copilot']),
-    G('Sınav', '', ['dp600'])
+    dpStage(1, ['fabric-giris', 'fabric-onelake', 'fabric-lakehouse', 'veri-baglantilari', 'gateway', 'veri-akislari', 'fabric-veri-alma', 'fabric-data-factory', 'fabric-pipeline', 'pq-orta', 'fabric-hazirlama', 'fabric-tsql-odev', 'fabric-spark-odev', 'fabric-yildiz']),
+    dpStage(3, ['sql-analist', 'kql-gercek-zaman', 'dax-sorgu']),
+    dpStage(2, ['coka-cok', 'pencere', 'hesaplama-gruplari', 'performans', 'dax-opt', 'kurumsal-model', 'buyuk-model', 'fabric-anlam-modeli']),
+    dpStage(0, ['calisma-alani', 'guvenlik', 'yonetisim', 'yerel-gelistirme', 'yasam-dongusu', 'kalite-test', 'kullanim-izleme', 'fabric-copilot']),
+    G('Sınav hazırlığı', '', ['dp600'])
   ],
   yonetici: [
     G('Power BI’ı tanı', '', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'gorsel-temel', 'hizmet-kullanici', 'excel-entegrasyon']),
@@ -32393,9 +32429,9 @@ if (roles.profesyonel && roles.profesyonel.cap) { roles.profesyonel.cap.guide = 
 RO('pl300', { title: 'PL-300 sertifika hazırlığı', long: 'Sınavın dört alanı (veriyi hazırla, modelle, görselleştir ve analiz et, yönet ve güvenli hâle getir) çalışma kılavuzundaki sırayla, ders ders işlenir. Sınavlar sayfasındaki kapsam haritası her resmî maddeyi ilgili derse bağlar. Sınav tarzı sorular, vaka çalışmaları, seri sorular ve arayüz soruları deneme sınavlarında.' });
 T('pl300', { desc: 'Microsoft Power BI Data Analyst sertifikasının dört alanı.', long: 'Sınavın dört alanını resmî çalışma kılavuzundaki sırayla kapsar: veriyi hazırla %25–30, modelle %25–30, görselleştir ve analiz et %25–30, yönet ve güvenli hâle getir %15–20.', skills: ['Veriyi hazırla', 'Modelle', 'Görselleştir ve analiz et', 'Yönet ve güvenli hâle getir'] });
 RO('gelistirici', { prereq: { t: 'Önce analist temeli', d: 'Bu yol kurumsal model ve ileri DAX’a odaklanır; temel rapor derslerinin yalnız bir kısmını içerir. Rapor kurma ve görsel seçme rahat değilse önce şuradan başla:', path: 'analist', lessons: [] } });
-RO('dp600', { long: 'Sınavın en ağır alanı olan veri hazırlama (%45–50) en büyük aşamadır: OneLake, lakehouse, ambar, Data Factory ve işlem hatları, T-SQL ve PySpark ödevleri, kısayollar, KQL ve gerçek zamanlı analitik. Ardından kurumsal anlam modeli ve Direct Lake (%25–30), performans, güvenlik ve yaşam döngüsü (%25–30). T-SQL, PySpark ve KQL tarayıcıda çalışmaz: ödevleri Fabric deneme kapasitesinde yapıp sonucu beklenen değerle karşılaştırırsın.',
+RO('dp600', {
   prereq: { t: 'PL-300 düzeyi varsayılır', d: 'Bu yol filtre bağlamını, CALCULATE’i ve yıldız şemayı bildiğini varsayar; bu dersler yolun içinde değildir ve belge şartına girmez. Rahat değilsen önce şu dersleri bitir ya da PL-300 yolunu izle.', path: 'pl300', lessons: ['model-temel', 'pq-temel', 'dax-giris', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'baglam-gecisi', 'tablo-fonk'] } });
-T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600): veri hazırlama, kurumsal anlam modeli, çözümün yönetimi.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
+T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600) için dört çalışma alanı ve Fabric ödevleri.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
 T('dax', {});
 RO('is-analisti', { prereq: { t: 'Önce SQL', d: 'Bu yol iş analistliğinin kendisini anlatmaz; talep, gereksinim, süreç ve UAT Kesit SQL’deki BT İş Analisti yolundadır. SQL biliyorsan buradan başlayabilirsin, bilmiyorsan önce o yolun SQL bölümünü bitirmeni öneririz.', sqlYol: 'is-analisti', lessons: [] } });
 RO('yonetici', { level: 'Temel → Orta' });
@@ -32422,6 +32458,10 @@ W.PBI_SKILL_LESSON = {
   'pl-pt1': ['analiz-ozellikleri'], 'pl-pt2': ['istatistik'], 'pl-pt3': ['analiz-ozellikleri'], 'pl-pt4': ['analiz-ozellikleri', 'eda'], 'pl-pt5': ['copilot'],
   'pl-ws1': ['calisma-alani', 'yayinlama'], 'pl-ws2': ['power-bi-apps', 'paylasim', 'yayinlama'], 'pl-ws3': ['calisma-alani', 'panolar', 'yayinlama'], 'pl-ws4': ['panolar', 'yayinlama'], 'pl-ws5': ['yonetisim'], 'pl-ws6': ['gateway', 'veri-yenileme', 'veri-baglantilari'],
   'pl-sg1': ['calisma-alani', 'yonetisim'], 'pl-sg2': ['paylasim', 'yonetisim'], 'pl-sg3': ['guvenlik'], 'pl-sg4': ['yonetisim'],
+  'dp-plan1': ['fabric-giris', 'gateway', 'calisma-alani'], 'dp-plan2': ['tema-sayfa'], 'dp-env1': ['fabric-giris', 'calisma-alani'], 'dp-env2': ['fabric-lakehouse', 'yonetisim'],
+  'dp-part1': ['fabric-lakehouse'], 'dp-copy1': ['fabric-veri-alma', 'fabric-pipeline'], 'dp-copy2': ['fabric-pipeline', 'fabric-data-factory'], 'dp-load1': ['fabric-hazirlama', 'fabric-yildiz'],
+  'dp-an1': ['eda', 'analiz-ozellikleri'], 'dp-an2': ['analiz-ozellikleri', 'istatistik-ileri'], 'dp-an3': ['yasam-dongusu', 'dax-sorgu'],
+  'dp-model1': ['performans', 'dax-opt'], 'dp-model2': ['guvenlik', 'fabric-anlam-modeli'],
   'dp-sg1': ['calisma-alani', 'yonetisim'], 'dp-sg2': ['fabric-onelake', 'guvenlik'], 'dp-sg3': ['yonetisim'],
   'dp-lc1': ['yasam-dongusu'], 'dp-lc2': ['yerel-gelistirme', 'yasam-dongusu'], 'dp-lc3': ['yasam-dongusu'], 'dp-lc4': ['yasam-dongusu'], 'dp-lc5': ['yasam-dongusu'], 'dp-lc6': ['yasam-dongusu'],
   'dp-gd1': ['fabric-data-factory', 'gateway', 'fabric-veri-alma', 'veri-baglantilari'], 'dp-gd2': ['fabric-onelake', 'fabric-hazirlama', 'kql-gercek-zaman'], 'dp-gd3': ['fabric-onelake', 'fabric-data-factory', 'fabric-veri-alma'], 'dp-gd4': ['fabric-lakehouse', 'fabric-giris', 'fabric-hazirlama'], 'dp-gd5': ['kql-gercek-zaman'],
@@ -34004,20 +34044,22 @@ const fm = s => esc(String(s == null ? '' : s)).replace(/`([^`]+)`/g, '<code>$1<
 const fmBlock = s => String(s || '').split(/\n/).map(line => /^\s*-\s+/.test(line) ? '<li>' + fm(line.replace(/^\s*-\s+/, '')) + '</li>' : line.trim() ? '<p>' + fm(line) + '</p>' : '').join('').replace(/(<li>.*?<\/li>)+/g, m => '<ul>' + m + '</ul>');
 const INFO = window.PBI_CERT_INFO || {}, SKILLS = window.PBI_CERT_SKILLS || {}, TAGS = window.PBI_CERT_TAGS || {};
 const SKMAP = {}; Object.values(SKILLS).forEach(a => a.forEach(s => SKMAP[s.id] = s));
+const DP_DOMAINS = INFO.dp600.domains.map(d => d[0]);
+const examDomain = (ex, label, skill) => ex === 'dp600' ? SKMAP[skill]?.d || label : label;
 
 /* ---------- Soru havuzları ---------- */
 const lessonMC = lvs => C.LESSONS.filter(l => lvs.includes(l.lvl)).flatMap(l => (l.ex || []).filter(e => e.t === 'mc' && !e.thumbs).map(e => ({ type: 'mc', k: l.mod || l.title, q: e.q, o: e.o, a: e.a, why: e.why || '', src: l.title })));
 const testMC = lvs => (window.PBI_PLACEMENT || []).filter(q => lvs.includes(q.lv)).map(q => ({ type: 'mc', k: 'Seviye testi', q: esc(q.q), o: q.o.map(esc), a: q.a, why: q.why || '' }));
 const DOM = {
   pl300: { 'Başlangıç': 'Görselleştir ve analiz et', 'Veri Hazırlama': 'Veriyi hazırla', 'Veri Modelleme': 'Modelle', 'DAX Temelleri': 'Modelle', 'DAX Bağlamları': 'Modelle', 'Zaman Zekâsı': 'Modelle', 'DAX Kalıpları': 'Modelle', 'İleri DAX': 'Modelle', 'İleri Modelleme': 'Modelle', 'Uzman DAX': 'Modelle', 'Müşteri Analitiği': 'Modelle', 'Görselleştirme': 'Görselleştir ve analiz et', 'Analiz': 'Görselleştir ve analiz et', 'Yönetim ve Güvenlik': 'Yönet ve güvenli hâle getir', 'Sınav Hazırlığı': 'Yönet ve güvenli hâle getir', 'Bitirme': 'Görselleştir ve analiz et', 'Yapay Zekâ': 'Görselleştir ve analiz et', 'Vaka Çalışmaları': 'Görselleştir ve analiz et', 'Fabric': 'Yönet ve güvenli hâle getir' },
-  dp600: { 'Veri Hazırlama': 'Veriyi hazırla', 'Yönetim ve Güvenlik': 'Analitik çözümü yönet', 'Sınav Hazırlığı': 'Analitik çözümü yönet', 'Bitirme': 'Analitik çözümü yönet', 'Fabric': 'Analitik çözümü yönet' }
+  dp600: { 'Veri Hazırlama': DP_DOMAINS[1], 'Yönetim ve Güvenlik': DP_DOMAINS[0], 'Sınav Hazırlığı': DP_DOMAINS[0], 'Bitirme': DP_DOMAINS[0], 'Fabric': DP_DOMAINS[1] }
 };
-const pathMC = pid => { const p = (window.PBI_PATHS || []).find(x => x.id === pid); const dm = DOM[pid] || {}; return p ? C.LESSONS.filter(l => p.lessons.includes(l.id)).flatMap(l => (l.ex || []).filter(e => e.t === 'mc' && !e.thumbs).map(e => ({ type: 'mc', k: dm[l.mod] || (pid === 'dp600' ? 'Anlam modelini uygula' : l.mod || l.title), q: e.q, o: e.o, a: e.a, why: e.why || '', src: l.title, fromLesson: true }))) : []; };
+const pathMC = pid => { const p = (window.PBI_PATHS || []).find(x => x.id === pid); const dm = DOM[pid] || {}; return p ? C.LESSONS.filter(l => p.lessons.includes(l.id)).flatMap(l => (l.ex || []).filter(e => e.t === 'mc' && !e.thumbs).map(e => ({ type: 'mc', k: dm[l.mod] || (pid === 'dp600' ? DP_DOMAINS[2] : l.mod || l.title), q: e.q, o: e.o, a: e.a, why: e.why || '', src: l.title, fromLesson: true }))) : []; };
 /* Sertifika sorularını tek biçime getir */
 /* Sınıf: 'sinav' (gerçek sınava benzer; denemelerde), 'alistirma' (öğretici ama sınav tarzı değil; yalnızca konu alıştırmasında), 'duzelt' (kullanılmaz) */
 const clsOf = key => ((window.PBI_CERT_CLASS || {})[key] || ['sinav'])[0];
 function norm(x, ex, key) {
-  const t = x.type || 'mc', q = { type: t, ex, k: x.k, s: x.s, id: x.id, key: key || x.id, cls: clsOf(key || x.id), q: fm(x.q), why: fm(x.why || '') };
+  const t = x.type || 'mc', q = { type: t, ex, k: examDomain(ex, x.k, x.s), s: x.s, id: x.id, key: key || x.id, cls: clsOf(key || x.id), q: fm(x.q), why: fm(x.why || '') };
   if (t === 'mc' || t === 'multi') { q.o = x.o.map(fm); q.a = x.a; }
   if (t === 'yesno') q.st = x.st.map(s => ({ t: fm(s.t), a: s.a }));
   if (t === 'order') { q.items = x.items.map(fm); q.extra = (x.extra || []).map(fm); }
@@ -34025,10 +34067,10 @@ function norm(x, ex, key) {
   if (t === 'click') { q.ui = x.ui; q.start = x.start; q.a = x.a; }
   return q;
 }
-const legacy = (arr, ex) => (arr || []).map((x, i) => Object.assign(norm(Object.assign({ type: 'mc' }, x), ex, ex + '#' + i), { s: (TAGS[ex] || [])[i] }));
+const legacy = (arr, ex) => (arr || []).map((x, i) => norm(Object.assign({ type: 'mc' }, x, { s: (TAGS[ex] || [])[i] }), ex, ex + '#' + i));
 const certPool = ex => legacy(ex === 'pl300' ? window.PBI_PL300 : window.PBI_DP600, ex).concat((window.PBI_CERTQ || []).filter(x => x.ex === ex).map(x => norm(x, ex)));
 const casesOf = ex => (window.PBI_CASES || []).filter(c => c.ex === ex).map(c => { const all = c.qs.concat((window.PBI_CASE_ADD || {})[c.id] || []); return Object.assign({}, c, { qs: all.map((q, i) => Object.assign(norm(q, ex, c.id + '#' + i), { caseRef: c.id })).filter(q => q.cls !== 'duzelt') }); });
-const seriesOf = ex => (window.PBI_SERIES || []).filter(s => s.ex === ex).map(s => s.sols.map((so, j) => ({ type: 'serq', ex, k: s.k, s: s.s, id: s.id + '#' + j, key: s.id, cls: 'sinav', q: fm(s.q), t: fm(so.t), a: so.a, why: fm(so.why || ''), serRef: s.id, serN: s.sols.length, serI: j })));
+const seriesOf = ex => (window.PBI_SERIES || []).filter(s => s.ex === ex).map(s => s.sols.map((so, j) => ({ type: 'serq', ex, k: examDomain(ex, s.k, s.s), s: s.s, id: s.id + '#' + j, key: s.id, cls: 'sinav', q: fm(s.q), t: fm(so.t), a: so.a, why: fm(so.why || ''), serRef: s.id, serN: s.sols.length, serI: j })));
 const examPool = ex => certPool(ex).filter(q => q.cls === 'sinav');
 const practicePool = (ex, pid) => certPool(ex).filter(q => q.cls !== 'duzelt').concat(pathMC(pid || ex));
 const CP = window.PBI_CODEPOOL || [], IV = window.PBI_INTERVIEW || [];
@@ -34038,7 +34080,7 @@ const EXAMS = [
   { id: 'sv-c', fam: 'seviye', short: 'İleri', name: 'Seviye bitirme sınavı: İleri', desc: 'Bağlam geçişi, tablo ve pencere fonksiyonları, performans, güvenlik, kurumsal model.', qs: lessonMC(['ileri']).concat(testMC(['ileri'])), n: 20, min: 30, pass: 70 },
   { id: 'pl300', fam: 'sertifika', cert: 'pl300', short: 'PL-300', name: 'PL-300 tam deneme', desc: 'Sınava girenlerin anlattığı düzende 50 soru, 100 dakika: ana bölüm, “aynı senaryo, farklı çözüm” evet/hayır serisi ve sonda vaka çalışması. Bölüm bitince geri dönülmez. Yalnızca sınav tarzındaki sorular.', qs: examPool('pl300'), n: 50, min: 100, pass: 70, layout: ['main', 'series', 'case'], path: 'pl300' },
   { id: 'pl300k', fam: 'sertifika', cert: 'pl300', short: 'PL-300', name: 'PL-300 kısa deneme', desc: 'Sınav tarzındaki sorulardan 20 soru, 40 dakika; vaka ve seri yok. Hızlı durum tespiti.', qs: examPool('pl300'), n: 20, min: 40, pass: 70, path: 'pl300' },
-  { id: 'dp600', fam: 'sertifika', cert: 'dp600', short: 'DP-600', name: 'DP-600 tam deneme', desc: 'Sınava girenlerin anlattığı düzende: başta geri dönülemeyen vaka, ana bölüm (T-SQL ağırlıklı, KQL ve DAX okuma), sonda evet/hayır serisi. 50 soru, 100 dakika.', qs: examPool('dp600'), n: 50, min: 100, pass: 70, layout: ['case', 'main', 'series'], path: 'dp600' },
+  { id: 'dp600', fam: 'sertifika', cert: 'dp600', short: 'DP-600', name: 'DP-600 tam deneme', desc: 'Sınava girenlerin anlattığı düzende: başta geri dönülemeyen vaka, ana bölüm (T-SQL ağırlıklı, KQL ve DAX okuma), sonda evet/hayır serisi. 50 soru, 100 dakika. Alan dağılımı soru havuzuna göre yaklaşık uygulanır.', qs: examPool('dp600'), n: 50, min: 100, pass: 70, layout: ['case', 'main', 'series'], path: 'dp600' },
   { id: 'dp600k', fam: 'sertifika', cert: 'dp600', short: 'DP-600', name: 'DP-600 kısa deneme', desc: 'Sınav tarzındaki sorulardan 20 soru, 40 dakika; vaka ve seri yok.', qs: examPool('dp600'), n: 20, min: 40, pass: 70, path: 'dp600' },
   { id: 'pl300a', fam: 'certprac', cert: 'pl300', practice: true, short: 'PL-300', name: 'PL-300 konu alıştırması', desc: 'Süresiz; her sorudan sonra doğru cevap ve açıklama. Sınav tarzında olmayan ama öğretici sertifika soruları ve PL-300 yolundaki ders soruları da burada.', qs: practicePool('pl300'), n: 20, min: 0, pass: 70 },
   { id: 'dp600a', fam: 'certprac', cert: 'dp600', practice: true, short: 'DP-600', name: 'DP-600 konu alıştırması', desc: 'Süresiz; her sorudan sonra açıklama. Sınav tarzında olmayan sertifika soruları ve DP-600 yolundaki ders soruları dahil.', qs: practicePool('dp600'), n: 20, min: 0, pass: 70 },
@@ -34141,16 +34183,17 @@ function coverage() {
   const pool = certPool(ex).filter(q => q.cls !== 'duzelt').concat(casesOf(ex).flatMap(c => c.qs), seriesOf(ex).flat());
   const cnt = {}, cntS = {}, types = {}; pool.forEach(q => { if (!q.s) return; cnt[q.s] = (cnt[q.s] || 0) + 1; if (q.cls === 'sinav') cntS[q.s] = (cntS[q.s] || 0) + 1; types[q.type] = (types[q.type] || 0) + 1; });
   const nS = pool.filter(q => q.cls === 'sinav').length;
+  const core = sk.filter(s => !s.extra);
   const TN = { mc: 'tek seçim', multi: 'çoklu seçim', yesno: 'evet/hayır', order: 'sıralama', hot: 'kodda boşluk', serq: 'seri sorusu', click: 'arayüz tıklama' };
-  let h = '<section class="lvl-block" id="kapsam"><div class="sec-head"><div><span class="eyebrow">Kapsam haritası</span><h2>Resmî sınav maddeleri, dersler ve soru havuzu</h2><span class="muted" style="font-size:.86rem">Microsoft Learn çalışma kılavuzu, ' + esc(info.asOf) + ' sürümü. Her soru bir maddeye bağlı. Denemelerde yalnızca sınav tarzındaki sorular çıkar; diğerleri “Çalış” ile açılan konu alıştırmasındadır.</span></div><div class="filters">' + ['pl300', 'dp600'].map(x => '<button data-covx="' + x + '" aria-pressed="' + (x === ex) + '">' + INFO[x].code + '</button>').join('') + '</div></div>';
-  h += '<div class="panel cov-sum"><span><b>' + pool.length + '</b> soru (' + nS + ' sınav tarzı, ' + (pool.length - nS) + ' alıştırma)</span>' + Object.entries(types).map(([t, n]) => '<span>' + n + ' ' + TN[t] + '</span>').join('') + '<span>' + casesOf(ex).length + ' vaka</span><span><b>' + sk.filter(s => cnt[s.id]).length + '/' + sk.length + '</b> madde kapsanıyor</span><a href="' + info.url + '" target="_blank" rel="noopener">Resmî kılavuz ↗</a></div>';
+  let h = '<section class="lvl-block" id="kapsam"><div class="sec-head"><div><span class="eyebrow">Kapsam haritası</span><h2>Resmî sınav maddeleri, dersler ve soru havuzu</h2><span class="muted" style="font-size:.86rem">Microsoft Learn çalışma kılavuzu, ' + esc(info.asOf) + ' sürümü. ' + (ex === 'dp600' ? 'Ek pratik başlıkları ayrı işaretlenir. Kapsama sayısı çalışma başlıklarına bağlanan soruları gösterir. ' : 'Her soru bir maddeye bağlı. ') + ' Denemelerde yalnızca sınav tarzındaki sorular çıkar; diğerleri “Çalış” ile açılan konu alıştırmasındadır.</span></div><div class="filters">' + ['pl300', 'dp600'].map(x => '<button data-covx="' + x + '" aria-pressed="' + (x === ex) + '">' + INFO[x].code + '</button>').join('') + '</div></div>';
+  h += '<div class="panel cov-sum"><span><b>' + pool.length + '</b> soru (' + nS + ' sınav tarzı, ' + (pool.length - nS) + ' alıştırma)</span>' + Object.entries(types).map(([t, n]) => '<span>' + n + ' ' + TN[t] + '</span>').join('') + '<span>' + casesOf(ex).length + ' vaka</span><span><b>' + core.filter(s => cnt[s.id]).length + '/' + core.length + '</b> ' + (ex === 'dp600' ? 'ana başlıkta soru var' : 'madde kapsanıyor') + '</span><a href="' + info.url + '" target="_blank" rel="noopener">Resmî kılavuz ↗</a></div>';
   info.domains.forEach(([d, en, lo, hi]) => {
     const items = sk.filter(s => s.d === d); const dq = items.reduce((a, s) => a + (cnt[s.id] || 0), 0);
     h += '<div class="panel cov-dom"><div class="cov-head"><div><b>' + esc(d) + '</b><small>' + esc(en) + '</small></div><span class="chip">Sınavda %' + lo + '–' + hi + '</span><span class="chip">Havuzda %' + Math.round(dq / pool.length * 100) + '</span></div><table class="cov-t"><tbody>';
     let g0 = '';
     items.forEach(s => { const st = P.skillStat[s.id]; const pc = st && st.n ? Math.round(st.p / st.n * 100) : null;
       if (s.g !== g0) { g0 = s.g; h += '<tr class="cov-g"><td colspan="4">' + esc(s.g) + '</td></tr>'; }
-      const les = (window.PBI_SKILL_LESSON || {})[s.id] || []; h += '<tr><td><span>' + esc(s.t) + '</span><small>' + esc(s.en) + '</small>' + (les.length ? '<span class="cov-les">' + les.filter(id => C.LMAP[id]).map(id => '<button class="lnk" data-lesson="' + id + '" data-ctx="' + ex + '">' + esc(C.LMAP[id].title) + (P.done[id] ? ' ✓' : '') + '</button>').join(' · ') + '</span>' : '') + '</td><td class="nc">' + (cnt[s.id] || 0) + ' soru' + (cnt[s.id] && cntS[s.id] !== cnt[s.id] ? '<small class="muted"> · ' + (cntS[s.id] || 0) + ' sınavda</small>' : '') + '</td><td class="nc">' + (pc === null ? '<span class="muted">—</span>' : '<span class="pill ' + (pc >= 70 ? 'p-ok' : 'p-bad') + '">%' + pc + '</span>') + '</td><td class="nc">' + (cnt[s.id] ? '<button class="btn sm ghost" data-exstart="mad:' + s.id + '">Çalış</button>' : '') + '</td></tr>'; });
+      const les = (window.PBI_SKILL_LESSON || {})[s.id] || []; h += '<tr><td><span>' + esc(s.t) + (s.extra ? ' <span class="chip">Ek pratik</span>' : '') + '</span><small>' + esc(s.en) + '</small>' + (les.length ? '<span class="cov-les">' + les.filter(id => C.LMAP[id]).map(id => '<button class="lnk" data-lesson="' + id + '" data-ctx="' + ex + '">' + esc(C.LMAP[id].title) + (P.done[id] ? ' ✓' : '') + '</button>').join(' · ') + '</span>' : '') + '</td><td class="nc">' + (cnt[s.id] || 0) + ' soru' + (cnt[s.id] && cntS[s.id] !== cnt[s.id] ? '<small class="muted"> · ' + (cntS[s.id] || 0) + ' sınavda</small>' : '') + '</td><td class="nc">' + (pc === null ? '<span class="muted">—</span>' : '<span class="pill ' + (pc >= 70 ? 'p-ok' : 'p-bad') + '">%' + pc + '</span>') + '</td><td class="nc">' + (cnt[s.id] ? '<button class="btn sm ghost" data-exstart="mad:' + s.id + '">Çalış</button>' : '') + '</td></tr>'; });
     h += '</tbody></table></div>';
   });
   return h + '</section>';
@@ -34838,7 +34881,7 @@ function viewPath(id) {
   const p = PMAP[id]; if (!p) return '<div class="wrap"><div class="panel empty">Öğrenme yolu bulunamadı.</div></div>';
   const r = R[id] || {}, s = stats(p), e = eta(p), nx = nextIn(p), mine = P.goal && P.goal.path === id;
   let h = '<div class="wrap"><div class="crumbs"><button data-go="paths">Öğrenme yolları</button><span>/</span><span>' + esc(p.name) + '</span></div>';
-  const GUNCEL = { pl300: ['Microsoft çalışma kılavuzu 3 Kasım 2026\'da kontrol edildi. Beceri listesi 20 Nisan 2026 tarihli, emeklilik duyurusu yok.', 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-300'], dp600: ['Microsoft çalışma kılavuzu 3 Kasım 2026\'da kontrol edildi. Sayfa 30 Ekim 2026\'da güncellenmiş, emeklilik duyurusu yok. Microsoft sayfaları sınav alanlarını farklı gösterebiliyor, sınavdan önce kendin bak.', 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600'] }[id];
+  const GUNCEL = { pl300: ['Microsoft çalışma kılavuzu 3 Kasım 2026\'da kontrol edildi. Beceri listesi 20 Nisan 2026 tarihli, emeklilik duyurusu yok.', 'https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-300'], dp600: ['DP-600 alanları 9 Kasım 2026’da Microsoft Learn çalışma kılavuzundan doğrulandı. Kılavuzun son güncellemesi ' + window.PBI_CERT_INFO.dp600.asOf + '.', window.PBI_CERT_INFO.dp600.url] }[id];
   if (GUNCEL) h += '<div class="note"><b>Güncellik</b>' + GUNCEL[0] + ' Bu hazırlık resmî değildir ve kapsamın tamamını karşıladığını garanti etmez. <a href="' + GUNCEL[1] + '" target="_blank" rel="noopener">Resmî sayfa</a></div>';
   h += '<section class="panel pathhero" style="--pc:' + p.color + '"><div class="ph-main"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="ic" style="background:' + p.color + ';height:46px;min-width:46px">' + p.short + '</span><div class="grow"><span class="eyebrow">' + (mine ? 'Hedefin' : 'Öğrenme yolu') + (r.jobs ? ' · ' + esc(r.jobs.join(' · ')) : '') + '</span><h1>' + esc(r.title || p.name) + '</h1></div></div><p>' + esc(r.long || p.long || p.desc) + '</p>';
   h += '<div class="ph-facts"><span><b>' + s.n + '</b> ders</span><span><b>' + s.totS + '</b> tahmini çalışma</span><span><b>' + milestones(p).length + '</b> aşama</span><span><b>' + (r.cap ? 1 : 0) + '</b> bitirme projesi</span>' + (r.level ? '<span><b>' + esc(r.level) + '</b></span>' : '') + '</div>';
