@@ -34867,14 +34867,47 @@ function prereqBlock(r) {
   return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + (q.sqlYol ? ' <a class="lnk" href="' + esc(((window.KESIT_CONFIG || window.PBI_CONFIG || {}).sqlUrl || 'https://ysfdurak.github.io/kesit-sql/') + '#patika-' + q.sqlYol) + '">Kesit SQL: BT İş Analisti yolu</a>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
 }
 const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
-function evidenceMode(id) {
-  const value = (P.cap[capKey(id)] || {}).workMode;
-  return Object.hasOwn(WORK_MODES, value) ? value : '';
+const REVIEW_STATES = { pending: 'Bekliyor', tried: 'Denendi', passed: 'Geçti', failed: 'Kaldı' };
+const EVIDENCE_RUNS = { firstRun: 'İlk uygulama', transferRun: 'Bağımsız tekrar' };
+const MODE_FIELD = { key: 'mode', label: 'Çalışma biçimi', options: WORK_MODES };
+const EVIDENCE_FIELDS = [
+  { key: 'source', label: 'Veri kaynağı ve filtreler', limit: 240 },
+  { key: 'environment', label: 'Çalışma ortamı ve sürüm', limit: 160 },
+  MODE_FIELD,
+  { key: 'help', label: 'Kullanılan yardım veya ipucu', limit: 300 },
+  { key: 'expected', label: 'Beklenen sonuç', limit: 1000, multiline: true },
+  { key: 'actual', label: 'Gerçekleşen sonuç', limit: 1000, multiline: true },
+  { key: 'status', label: 'Doğrulama durumu', options: REVIEW_STATES },
+];
+function evidenceValue(field, value) {
+  if (typeof value !== 'string') return '';
+  return field.options ? (Object.hasOwn(field.options, value) ? value : '') : value.trim().slice(0, field.limit);
+}
+function evidenceField(field, record) {
+  const value = evidenceValue(field, record[field.key]);
+  const attrs = ' class="input" name="' + field.key + '" style="width:100%"';
+  let control;
+  if (field.options) {
+    const options = Object.entries(field.options).map(([key, label]) =>
+      '<option value="' + key + '"' + (value === key ? ' selected' : '') + '>' + label + '</option>').join('');
+    control = '<select' + attrs + '><option value="">Seçilmedi</option>' + options + '</select>';
+  } else if (field.multiline) {
+    control = '<textarea' + attrs + ' rows="2" maxlength="' + field.limit + '">' + esc(value) + '</textarea>';
+  } else {
+    control = '<input type="text"' + attrs + ' maxlength="' + field.limit + '" value="' + esc(value) + '">';
+  }
+  return '<label style="display:block">' + field.label + control + '</label>';
+}
+function evidenceForm(id, run, record) {
+  return '<details class="note" data-evidence-run="' + run + '"><summary>' + EVIDENCE_RUNS[run] +
+    ' <span class="muted" data-evidence-saved>' + (record ? '· Kaydedildi' : '') + '</span></summary>' +
+    '<form data-evidence-form="' + run + '" data-id="' + id + '" style="display:grid;gap:8px;margin-top:10px">' +
+    EVIDENCE_FIELDS.map(field => evidenceField(field, record || {})).join('') +
+    '<div><button type="submit" class="btn sm pri">Kaydet</button></div></form></details>';
 }
 function evidenceBlock(id, evidence) {
-  const current = evidenceMode(id);
-  const options = Object.entries(WORK_MODES).map(([value, label]) =>
-    '<option value="' + value + '"' + (current === value ? ' selected' : '') + '>' + label + '</option>').join('');
+  const progress = P.cap[capKey(id)] || {};
+  const legacyMode = evidenceValue(MODE_FIELD, progress.workMode);
   return '<div id="role-evidence" class="cap-brief">' +
     '<span class="eyebrow">Rol görevi · portföy kanıtı</span><h3>' + esc(R[id].title) + '</h3>' +
     '<p><b>İş görevi</b> · ' + esc(evidence.task) + '</p>' +
@@ -34884,31 +34917,41 @@ function evidenceBlock(id, evidence) {
     '<p><button class="lnk" data-go="veriler">Uygulama veri setlerini aç</button></p>' +
     '<p><b>Teslim dosyaları</b></p><ul class="capsteps">' + evidence.files.map(item => '<li>' + esc(item) + '</li>').join('') +
     '<li>Bir sayfalık karar notu: bulgu, dayandığı sayı, öneri, sınır ve sonraki adım.</li></ul>' +
-    '<div class="row"><label>Çalışma biçimini kaydet <select class="input" data-evidence-mode="' + id + '">' +
-    '<option value="">Seçilmedi</option>' + options + '</select></label>' +
-    '<button class="btn sm" data-act="evidence-dl" data-id="' + id + '">Teslim şablonunu indir (.md)</button></div>' +
-    '<p class="muted">Çalışma biçimi kendi beyanındır. Tarayıcı provası ve Desktop/Service/Fabric’te yapılan kontrolleri teslim notunda ayrı yaz.</p></div>';
+    '<p class="muted">İki çalışmayı ayrı kaydet. Çalışma biçimi ve doğrulama durumu kendi beyanındır.</p>' +
+    (legacyMode ? '<p class="muted">Önceki beyan · ' + WORK_MODES[legacyMode] + ' (çalışma belirtilmemiş)</p>' : '') +
+    Object.keys(EVIDENCE_RUNS).map(run => evidenceForm(id, run, progress[run])).join('') +
+    '<div class="row"><button class="btn sm" data-act="evidence-dl" data-id="' + id + '">Teslim şablonunu indir (.md)</button>' +
+    '<span class="muted">Şablona kaydettiğin iki çalışma eklenir.</span></div></div>';
 }
 function downloadEvidence(id) {
   const c = capOf(id), evidence = c && c.evidence;
   if (!evidence) return;
+  const progress = P.cap[capKey(id)] || {};
+  const legacyMode = evidenceValue(MODE_FIELD, progress.workMode);
   const lines = [
     '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
     ...(c.caseGuide ? [
       '- [Vaka brifi ve UAT kılavuzu](' + new URL(c.caseGuide, C.SITE.pbi).href + ')',
       '- [Sentetik kaynak veri](' + new URL(c.download, C.SITE.pbi).href + ')', '',
     ] : []),
-    '## Çalışma ortamı', evidence.environment, '',
-    '- Kullandığım ortam ve sürüm: …', '- Çalışma biçimim: ' + (WORK_MODES[evidenceMode(id)] || '…'),
-    '- Kullandığım ipucu veya destek: …', '- Doğrulama durumu (bekliyor / denendi / geçti / kaldı): …',
-    '', '## Teslim dosyaları',
+    '## Önerilen çalışma ortamı', evidence.environment, '',
+    ...(legacyMode ? ['Önceki beyan · ' + WORK_MODES[legacyMode] + ' (çalışma belirtilmemiş)', ''] : []),
+    ...Object.entries(EVIDENCE_RUNS).flatMap(([run, title]) => [
+      '## ' + title, ...(run === 'transferRun' ? [evidence.transfer, ''] : []),
+      ...EVIDENCE_FIELDS.map(field => {
+        const value = evidenceValue(field, (progress[run] || {})[field.key]);
+        const text = field.options ? (field.options[value] || '') : esc(value);
+        return '- **' + field.label + '** · ' + (text.replace(/\r?\n/g, '\n  ') || '…');
+      }),
+      '',
+    ]),
+    '## Teslim dosyaları',
     ...evidence.files.map(item => '- [ ] ' + item + ' · dosya adı veya bağlantı: …'),
     '', '## Mutabakat ve kabul',
     '| Senaryo ve filtre | Veri kaynağı | Beklenen | Gerçekleşen | Durum |',
     '|---|---|---:|---:|---|', '| Filtresiz | … | … | … | … |', '| Filtreli | … | … | … | … |',
     '', '## Karar notu', '- Bulgu ve kanıt: …', '- Öneri ve sorumlu: …',
-    '- Veri sınırı ve sonraki adım: …', '', '## Farklı veride bağımsız tekrar',
-    evidence.transfer, '- Kullanılan veri, sonuç ve değişen varsayım: …', '',
+    '- Veri sınırı ve sonraki adım: …', '',
   ];
   return saveFile('kesit-powerbi-teslim-' + id + '.md', lines.join('\n'));
 }
@@ -35016,15 +35059,28 @@ document.addEventListener('click', ev => {
   if (t.dataset.scroll) { const sc = t.dataset.scroll; setTimeout(() => { const el = document.getElementById(sc); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
 });
 function rerenderKeep(sel) { const y = window.scrollY; C.render(); window.scrollTo(0, y); const n = document.querySelector(sel); if (n) n.focus({ preventScroll: true }); }
+document.addEventListener('submit', ev => {
+  const form = ev.target;
+  const run = form.dataset.evidenceForm;
+  const id = form.dataset.id;
+  if (!Object.hasOwn(EVIDENCE_RUNS, run) || !capOf(id)?.evidence) return;
+  ev.preventDefault();
+  if (window.KESIT_STORAGE.isBlocked()) {
+    C.toast('Bu çalışmayı kaydetmek için önce ilerleme kaydını kurtar.');
+    return;
+  }
+  const fields = new FormData(form);
+  const key = capKey(id);
+  P.cap[key] = P.cap[key] || {};
+  // Ayrı proje alanları, mevcut yedek birleştirmesinde iki çalışmayı da taşır.
+  P.cap[key][run] = Object.fromEntries(EVIDENCE_FIELDS.map(field =>
+    [field.key, evidenceValue(field, fields.get(field.key))]));
+  C.save();
+  form.closest('details').querySelector('[data-evidence-saved]').textContent = '· Kaydedildi';
+  C.toast(EVIDENCE_RUNS[run] + ' kaydı güncellendi.');
+});
 document.addEventListener('change', ev => {
   const el = ev.target;
-  const id = el.dataset && el.dataset.evidenceMode;
-  if (id && capOf(id)?.evidence && (el.value === '' || Object.hasOwn(WORK_MODES, el.value))) {
-    const key = capKey(id);
-    P.cap[key] = P.cap[key] || {};
-    P.cap[key].workMode = el.value;
-    C.save();
-  }
   if (el.dataset && el.dataset.capchk) {
     const [id, i] = el.dataset.capchk.split(':');
     const key = capKey(id);
