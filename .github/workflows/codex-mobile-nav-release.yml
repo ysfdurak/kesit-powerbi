@@ -1,0 +1,60 @@
+name: Build Power BI mobile navigation release
+on:
+  push:
+    branches: [codex/powerbi-mobile-nav-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 09b31f41c0450596eac3c5d4ba7296fee1b03bd3
+      - uses: actions/checkout@v4
+        with:
+          ref: 427743221c212ce9dd84a834d99bbbd27ec421de
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp config.js "$package/config.js"
+          cp "$package/index.html" "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' 068f210c6b4e825d4c874a5c413e576a8c2ef4395cdb4a68ebd9346df523f5b3 kesit.js df51ed05c78d7c0071b9ceed40b5e7329a0f9c52b29eb0cb3ec2414b562ae8bf index.html 382668e2ff7db63b0f20a3e1b848d9454cff50ddebebcbcaa4bf606a41128f79 sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = '427743221c212ce9dd84a834d99bbbd27ec421de'
+          data['checks'].append('Mobil menüden öğrenme yolu ve bitirme projesine geçiş')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in data['files']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- index.html kesit.js sw.js release-manifest.json KALAN-GOREVLER.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: mobil menü ve bitirme projesi bağlantıları'
+          git push origin HEAD:refs/heads/codex/powerbi-mobile-nav-verified
