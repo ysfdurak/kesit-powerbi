@@ -36940,7 +36940,15 @@ function openDrawer(tid, scope) {
   dr.innerHTML = '<div class="dr-head"><div><span class="eyebrow">' + esc(t.type) + '</span><h2>' + esc(t.title) + '</h2></div><button class="btn sm ghost" data-drclose aria-label="Kapat">✕</button></div><div class="dr-body">' + (t.why ? '<div class="tip"><b>Neden bu görsel?</b>' + esc(t.why) + '</div>' : '') + '<h3>Power BI’da nasıl yapılır?</h3><ol class="drsteps">' + steps.map(s => '<li>' + s + '</li>').join('') + '</ol><h3>Alan kutuları</h3><div class="wells">' + Object.keys(t.wells || {}).map(k => '<div class="well"><span>' + esc(k) + '</span><code>' + esc(t.wells[k]) + '</code></div>').join('') + '</div>' + ((t.format || []).length ? '<h3>Biçim ayarları</h3><ul class="fmtlist">' + t.format.map(f => '<li>' + esc(f) + '</li>').join('') + '</ul>' : '') + C.daxBlock(t.measures || [], 'Bu görselin DAX ölçüleri', true) + '<button class="btn sm" data-go="visuals">Bu tür görselin biçim seçeneklerini dene</button></div>';
   dr.hidden = false; C.enhance(dr); document.body.classList.add('drawer-open'); const cl = dr.querySelector('[data-drclose]'); if (cl) cl.focus({ preventScroll: true });
 }
-function closeDrawer() { const dr = $('#drawer'); if (dr) dr.hidden = true; DB.insp = null; document.body.classList.remove('drawer-open'); document.querySelectorAll('.dtile.insp').forEach(e => e.classList.remove('insp')); }
+function closeDrawer(restoreFocus = false) {
+  const dr = $('#drawer');
+  const trigger = restoreFocus && $('.dtile.insp [data-insp]');
+  if (dr) dr.hidden = true;
+  DB.insp = null;
+  document.body.classList.remove('drawer-open');
+  document.querySelectorAll('.dtile.insp').forEach(e => e.classList.remove('insp'));
+  if (restoreFocus) (trigger || $('#main')).focus({ preventScroll: !trigger });
+}
 C.view('dash', { render: viewDash, mount: mountDash, resize: () => { if (DB.tab === 'rapor') repaint('dash'); }, hash: 'dashboard' });
 
 /* ======================================================================
@@ -37132,7 +37140,7 @@ document.addEventListener('click', ev => {
   if (d.dback !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd); st.page = (st.thru && st.thru.from) || DC.pagesOf(dd)[0].id; st.thru = null; reframe(d.scope); return; }
   if (d.dmob !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd); st.mobile = !st.mobile; reframe(d.scope); return; }
   if (d.insp) { openDrawer(d.insp, d.scope); return; }
-  if (d.drclose !== undefined) { closeDrawer(); return; }
+  if (d.drclose !== undefined) { closeDrawer(true); return; }
   if (d.drill) { const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  d.tile); const st = stOf(dd); DC.drill(st, tl, d.drill); if (d.drill === 'mode') { t.setAttribute('aria-pressed', !!st.drill[tl.id].mode); return; } if (st.cross && tl.drill.some(c => { const p = pc(c); return p.t === st.cross.t && p.c === st.cross.c; })) st.cross = null; repaint(scope); return; }
   if (d.i !== undefined && t.closest('.dtile[data-cross]')) {
     const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  tileEl.dataset.tile); const st = stOf(dd); const cs = DB.cats[scope + ':' + tl.id]; if (!cs) return; const v = cs[+d.i]; if (v === undefined) return;
@@ -37183,7 +37191,7 @@ document.addEventListener('contextmenu', ev => {
   ev.preventDefault(); const st = stOf(dd); st.thru = { field: tl.cross, v, from: st.page }; st.page = tl.thru; st.cross = null; st.drill = {}; closeDrawer(); reframe(scope);
 });
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape' && DB.insp) { closeDrawer(); return; }
+  if (ev.key === 'Escape' && DB.insp) { closeDrawer(true); return; }
   if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches('.dtile [data-i]:not(button), .dnode, [data-trdrill] [data-i], [data-trthru] [data-i]')) { ev.preventDefault(); ev.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
 });
 
