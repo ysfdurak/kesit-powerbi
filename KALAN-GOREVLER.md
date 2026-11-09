@@ -18,7 +18,7 @@ G04: Tek bir vaka için açık üretim adımları, model/ilişki şeması, ölç
 
 G07, G17–G19, G21: rol beklentilerini gerçek görev/çıktıya bağlama; benzetim ve gerçek uygulama ayrımı; yardımlı/bağımsız çözüm ayrımı; bitirme projesinde dosya/model/karar notu kanıtı; farklı veride transfer görevi. Uzman incelemesi G08 ayrıca kaydedilir.
 
-Teslim: 12 öğrenme yolunun bitirme projesinde role özel iş görevi, farklı veride bağımsız tekrar, çalışma ortamı ve indirilebilir teslim kaydı yer alır. Çalışma biçimi kullanıcı beyanıdır. G08 incelemesi kaydedildi. İlk düzeltmede BT İş Analisti yolu ayrı sentetik WMS sevkiyat vakasına bağlandı. Ortak teslim kaydı ayrımı ve DP-600 kapsam eşlemesi sonraki işler.
+Teslim: 12 öğrenme yolunun bitirme projesinde role özel iş görevi, farklı veride bağımsız tekrar, çalışma ortamı ve indirilebilir teslim kaydı yer alır. Çalışma biçimi kullanıcı beyanıdır. G08 incelemesi kaydedildi. İlk düzeltmede BT İş Analisti yolu ayrı sentetik WMS sevkiyat vakasına bağlandı. İlk uygulama ile bağımsız tekrar ayrı kayıtlar ve ayrı dışa aktarma bölümleri olarak tamamlandı. DP-600 kapsam eşlemesi sıradaki iş.
 
 ## 4. Kullanıcı deneyimi, performans ve bakım
 
