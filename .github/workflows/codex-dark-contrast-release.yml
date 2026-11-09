@@ -1,0 +1,60 @@
+name: Build Power BI dark contrast release
+on:
+  push:
+    branches: [codex/powerbi-dark-contrast-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b6ac3fb194696026d73ff54a0a8975d9428324fa
+      - uses: actions/checkout@v4
+        with:
+          ref: a26c2223455773833e77f897ca8ecff2a85b597d
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp config.js "$package/config.js"
+          cp "$package/index.html" "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' 405bf219c6f8f041155da1397768b424dce480335756afa40cea2403e5486814 kesit.js 8b9dfe406952297c8a2f8803c156ff8cf1031797db46499d6c2d6129709c5105 index.html c2b480bb49ff4072e9c1ff83cc1c0a42c7577ebc475c7ab3f4862e47dc7392a4 sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = 'a26c2223455773833e77f897ca8ecff2a85b597d'
+          data['checks'].append('Koyu tema, yol rozetleri, durum işaretleri ve kod kontrastı')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in data['files']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- index.html kesit.js sw.js release-manifest.json KALAN-GOREVLER.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: koyu temada okunabilirlik ve kontrast'
+          git push origin HEAD:refs/heads/codex/powerbi-dark-contrast-verified
