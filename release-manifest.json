@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "baseCommit": "561b9187e4facf2e818f0018e50c4613468c958d",
   "scope": "Bu iyileştirme paketinde değişen dosyalar; tüm ürün için uzman onayı değildir.",
   "checks": [
@@ -9,7 +9,8 @@
     "Chromium ilk görev / ilk ekran axe kontrolü",
     "443 referans çözüm: iki veri senaryosu",
     "Sahte cevap red, SUMX alternatif kabul",
-    "Kaynak hiddenval 337 DAX + 106 query, 0 sorun"
+    "Kaynak hiddenval 337 DAX + 106 query, 0 sorun",
+    "Rol görevleri, çalışma biçimi kaydı ve teslim şablonu"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -47,6 +48,9 @@
     "tests/snip.js": "9ded7e59deaceb137e028cc75ce72f4855ec98515d5ea226a9d846bc7f480843",
     "tests/termval.js": "a5673c3801a4639f6e254720280d64e48ee509998c9893687c2b43659b7e78d1",
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
-    "tests/yolval.js": "dcd0e7a709ce12cfd0fe220f9aa521ba4882c9c9b668ba87dc6d4e9798c1a03c"
+    "tests/yolval.js": "dcd0e7a709ce12cfd0fe220f9aa521ba4882c9c9b668ba87dc6d4e9798c1a03c",
+    "app/roles.js": "2cfae7284622f89e0a007b5ed47e0f38a2c44abd7a6f5a0e29004376daff6f8c",
+    "app/career.js": "8ad0873502200019cf4768732f9db2a8e3438f687643b3abec1cf97f50cbcd61",
+    "KALAN-GOREVLER.md": "6814a5e53f445ec07609f6c31867adb6b57f870d2bf5b782eb76afec74218a93"
   }
 }

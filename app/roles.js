@@ -88,7 +88,8 @@ W.PBI_ROLES = {
     title: 'BT İş Analisti için Power BI', who: 'Rapor talebi toplayan, gereksinim yazan ve raporu kabul eden iş analistleri için. Önce Kesit SQL’deki BT İş Analisti yolunun SQL bölümünü bitirmeni öneririz.', jobs: ['BT iş analisti', 'İş analisti', 'Ürün ve süreç analisti'], level: 'Temel → Orta',
     long: 'Rapor geliştiricisi olmak için değil, geliştiriciyle aynı dili konuşmak için: yıldız şemayı ve ölçüleri okumak, CALCULATE ve zaman zekâsı ifadelerinin ne yaptığını anlamak, talebi rapor brifine ve KPI tanımına çevirmek, raporu mutabakat ve kabul testiyle teslim almak, yayımlamanın ve paylaşmanın kavramlarını bilmek. Bu 18 ders tek başına bir işe hazırlamaz; iş analistliğinin kendisi Kesit SQL’deki yolda anlatılır.',
     outcomes: ['Bir rapor talebini kitle, karar ve KPI listesi olan tek sayfalık brife çeviririm.', 'Her KPI için tanım kartı yazarım: formül, kapsam, kaynak, sahip, hedef.', 'Model görünümünü okur, bir ölçünün hangi ayrıntı düzeyinde çalıştığını sorarım.', 'CALCULATE, VAR ve zaman zekâsı içeren bir ölçünün ne hesapladığını okuyup açıklarım.', 'Raporu kaynakla mutabık kılar, kabul kriterlerine göre test eder ve kaydederim.', 'Çalışma alanı, uygulama, yenileme ve RLS kavramlarını gereksinime yazabilecek kadar bilirim.'],
-    cap: { title: 'Kupon raporu için gereksinim ve kabul paketi', brief: 'Kesit SQL yolundaki geç teslim kuponu canlıya çıktı. Operasyon müdürü haftalık bir izleme raporu istiyor. Raporu sen kurmayacaksın; geliştiriciye verilecek gereksinim paketini hazırlayıp teslimi kabul testiyle alacaksın. Model olarak Veri setlerindeki Lezzet Kurye paketini kullan.', data: 'Veri setleri sayfasındaki Lezzet Kurye paketi (hayali veri). Uygulamadaki Anadolu Market modeliyle ölçü okuma alıştırması yapabilirsin.',
+    cap: { title: 'Kupon raporu için gereksinim ve kabul paketi', brief: 'Kesit SQL yolundaki geç teslim kuponu canlıya çıktı. Operasyon müdürü haftalık bir izleme raporu istiyor. Raporu sen kurmayacaksın; geliştiriciye verilecek gereksinim paketini hazırlayıp teslimi kabul testiyle alacaksın. Model olarak Veri setlerindeki Lezzet Kurye paketini kullan.', data: 'Lezzet Kurye sentetik verisi. Sipariş ve teslim alanları SLA kontrolünde kullanılabilir. Kupon kimliği ve kupon tutarı ayrı alanlar olarak bulunmadığından bu iki KPI için kaynak gereksinimi yaz.',
+      download: 'veri/lezzet-kurye.zip',
       steps: ['Rapor brifini yaz: kitle, verilecek karar, yenileme sıklığı, sayfa planı.', 'Beş KPI için tanım kartı yaz: geç teslim oranı, kupon adedi, kupon tutarı, ortalama teslim süresi, ortalama kurye puanı. Her kartta formül, dahil ve hariç olanlar, kaynak tablo, sahip, hedef.', 'Her KPI için Given/When/Then kalıbında bir kabul kriteri yaz.', 'Geliştiricinin yazacağı bir ölçüyü ön gör: geç teslim oranını DAX ile nasıl okursun, hangi filtre bağlamında hangi sayı çıkmalı?', 'Rapor UAT listesi hazırla: mutabakat için SQL ya da kaynak toplamı, filtreyle kontrol, RLS rolüyle görüntüleme, boş veri durumu.', 'Yayım gereksinimini yaz: çalışma alanı, uygulama kitlesi, yenileme saati, sorumlu.'],
       check: ['Rapor brifi', 'Beş KPI tanım kartı', 'Kabul kriterleri', 'Rapor UAT listesi ve mutabakat sayıları', 'Yayım gereksinimi'], rubric: null, present: null },
     ready: [L('Modeli ve ölçüleri okumak', ['model-temel', 'dax-giris', 'baglam', 'calculate', 'var-mantik', 'zaman'], ''), L('Gereksinim ve KPI', ['rapor-brifi', 'dashboard-kavramlar', 'veri-okuryazarligi'], ''), L('Kabul ve yayım', ['kalite-test', 'yayinlama', 'paydas-iletisim'], ''), CAP('Gereksinim ve kabul paketinin tüm teslimleri')]
@@ -152,4 +153,92 @@ const hz = (W.PBI_PATHS || []).find(p => p.id === 'hizli'); if (hz) W.PBI_ROLES.
 const INS = { gelistirici: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['model-ileri', 'coka-cok'], ['zaman-ileri', 'ozel-takvim'], ['kurumsal-model', 'buyuk-model']], dax: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['zaman-ileri', 'ozel-takvim']], dp600: [['kurumsal-model', 'buyuk-model']], pl300: [['model-ileri', 'coka-cok']] };
 (W.PBI_PATHS || []).forEach(p => (INS[p.id] || []).forEach(([after, id]) => { if (!(W.PBI_LESSONS || []).some(l => l.id === id) || p.lessons.includes(id)) return; const i = p.lessons.indexOf(after); p.lessons.splice(i < 0 ? p.lessons.length : i + 1, 0, id); }));
 (W.PBI_PATHS || []).forEach(p => { const r = W.PBI_ROLES[p.id]; if (r && r.title) { p.short0 = p.name; p.name = r.title; } });
+/* Öğrenme yollarındaki portföy görevleri; proje kontrol listesindeki eski sıra korunur. */
+const EVIDENCE = {
+  profesyonel: {
+    environment: 'Power BI Desktop. Service yenileme ve yetki denetimi için ayrıca erişim gerekir.',
+    task: 'Anadolu Market yönetim kokpitinde satış ve kârlılığı tek karar sorusuna bağla. Aynı aya ait kaynak toplamı ile rapor toplamını ve kategori filtresi altındaki sonucu karşılaştır.',
+    hint: 'Sipariş satırı tane düzeyini yaz, tarih ve ürün boyutlarının ilişki yönünü kontrol et, ardından toplamı kaynakta ayrı hesapla.',
+    transfer: 'Lezzet Kurye sipariş verisinde aynı model ve mutabakat akışını uygula. Net satış yerine 35 dakika teslimat SLA’sını tanımla; iade ve iptal kayıtlarının etkisini göster.',
+    files: ['Rapor dosyası (.pbix veya .pbip proje klasörü)', 'Model şeması ve ölçü listesi', 'Filtreli ve filtresiz mutabakat tablosu'],
+  },
+  analist: {
+    environment: 'Power BI Desktop ve ayrı bir CSV, SQL veya Excel kontrol hesabı.',
+    task: 'Anadolu Market’te düşük marjı hangi ürün kategorilerinin sürüklediğini incele. İki bulgu için dönem, filtre, örneklem ve karşılaştırma değerini yaz.',
+    hint: 'Marj yüzdesini satır oranlarının ortalaması yerine toplam kâr / toplam satış olarak yeniden hesapla.',
+    transfer: 'Lezzet Kurye’de aynı analiz akışını ilçe bazında SLA uyumuna taşı. Az siparişli ilçeyi göster ve bu grupta önerinin ne kadar güvenilir olduğunu açıkla.',
+    files: ['Rapor dosyası ve model şeması', 'Kaynak hesapları ile rapor sonuçlarının karşılaştırması', 'İki bulgu ve öneri'],
+  },
+  pl300: {
+    environment: 'Power BI Desktop. Service çalışma alanı ve rol davranışı için ayrıca erişim gerekir.',
+    task: 'Anadolu Market için CSV’yi temizle, yıldız şema ve ölçülerle bir rapor kur. Bir filtreli toplamı ve bir RLS rolünün görünür satırlarını kontrol et.',
+    hint: 'Dört işi ayrı kaydet: hazırlama, modelleme, görselleştirme ve erişim. Rol testinde görünmemesi gereken bir örnek satır seç.',
+    transfer: 'Pusula İK verisinde aynı akışı bölüm bazında uygula. Bölüm rolüyle başka bölümün kaydının görünmediğini test et.',
+    files: ['Rapor dosyası ve Power Query adımları', 'Model şeması ve ölçüler', 'RLS rol ve beklenen/gerçek sonuç tablosu'],
+  },
+  gelistirici: {
+    environment: 'Power BI Desktop ve Performans Çözümleyicisi. Dağıtım ve yetki testleri için erişilebilir bir geliştirme ortamı.',
+    task: 'Anadolu Market modelinde yavaş bir görseli seç. Tek bir değişiklik yap, aynı filtreyle önce/sonra sürelerini ve ölçü sonucunu karşılaştır.',
+    hint: 'Önce aynı filtreyi ve aynı ölçüyü sabitle. Bir kez ölçmek yerine birkaç tekrar kaydet ve önbellek koşulunu belirt.',
+    transfer: 'Ilgaz Bank işlem verisinde aynı performans ölçüm planını çalıştır. Veri hacmi ve tane düzeyi değişince hangi model kararını değiştirdiğini açıkla.',
+    files: ['Model ve ölçü değişiklikleri', 'Önce/sonra süre ve doğruluk ölçümleri', 'Dağıtım ve geri dönüş notu'],
+  },
+  dax: {
+    environment: 'Tarayıcıda DAX alıştırması, gerçek model davranışı için Power BI Desktop.',
+    task: 'Anadolu Market’te kategori payı ölçüsünü yaz. Genel toplam, seçili kategoriler ve tek kategori bağlamlarında paydanın nasıl değiştiğini göster.',
+    hint: 'Ölçüyü yazmadan önce üç filtre bağlamı için elle beklenen pay ve paydayı yaz. ALL ile ALLSELECTED arasındaki farkı bu sonuçlardan incele.',
+    transfer: 'Lezzet Kurye’de ilçe payını teslim edilen siparişlerle yeniden kur. İlçe filtresi varken tarih filtresinin paydada korunmasını test et.',
+    files: ['DAX ölçüsü ve alternatif ifade', 'Üç bağlam için beklenen ve gerçekleşen sonuç', 'Payda davranışını açıklayan model notu'],
+  },
+  dp600: {
+    environment: 'Tasarım tarayıcıda yapılabilir. Çalışan işlem hattı ve Direct Lake için Fabric çalışma alanı gerekir.',
+    task: 'Anadolu Market’te ham dosyadan rapora tek akış tasarla. Her katmanın girişini, çıkışını ve yeniden çalıştırma koşulunu belirt.',
+    hint: 'Lakehouse, ambar ve anlam modelinin sorumluluklarını bir çizimde ayır. Her geçişe bir satır sayısı kontrolü koy.',
+    transfer: 'Kanat Havayolları uçuş verisini aynı akışa uyarla. Gecikme verisi geç geldiğinde hangi tablonun ve kontrolün yeniden çalışacağını göster.',
+    files: ['Katman ve tablo şeması', 'Dönüşüm sorgusu veya not defteri', 'Çalıştırma ve mutabakat kaydı ya da doğrulama planı'],
+  },
+  yonetici: {
+    environment: 'Kaynak karşılaştırması Excel veya CSV ile yapılabilir. Otomatik yenileme ve rapor için Power BI Desktop.',
+    task: 'Anadolu Market aylık Excel özetindeki satış ve sipariş adedini Power BI raporuyla karşılaştır. Bir ay ve kategori filtresi altında fark varsa kaynağını bul.',
+    hint: 'Excel ve Power BI’da aynı tarih aralığını, boş satır kuralını ve sipariş sayım yöntemini kullan.',
+    transfer: 'Lezzet Kurye’de aynı kontrolü sipariş haftası ve restoran ilçesi için yap. Tüm siparişler ile yalnızca teslim edilen siparişleri ayrı say.',
+    files: ['Power Query adımları ve model şeması', 'Eski/yeni rapor karşılaştırması', 'Yenileme adımları ve fark notu'],
+  },
+  'is-analisti': {
+    environment: 'Brif ve UAT tasarımı tarayıcıda hazırlanabilir. Referans rapor davranışını denemek için Power BI Desktop gerekir.',
+    task: 'Lezzet Kurye için 35 dakika teslimat SLA’sının KPI kartını ve iki UAT senaryosunu yaz. Filtresiz durum ile bir hafta ve bir ilçe seçildiğindeki beklenen değerleri kaynaktan hesapla.',
+    hint: 'Teslim edilen siparişleri paydaya al. 35:00 sınırını, iptal ve iadeleri, boş filtre sonucunu ayrı kabul koşullarına çevir. Kupon alanları için varsayım ile kaynak kanıtını ayır.',
+    transfer: 'Kanat Havayolları’nda 15 dakika uçuş gecikmesi için yeni KPI kartı ve iki UAT senaryosu yaz. Birim, iptal kapsamı ve veri kaynağına ilişkin kararları yeniden belirt.',
+    files: ['Rapor brifi ve KPI kartı', 'Model/alan eşlemesi ve filtre matrisi', 'Beklenen ve gerçekleşen sonuçlu UAT kaydı'],
+  },
+  karar: {
+    environment: 'Örnek raporlarla karar provası yapılabilir. Gerçek kurum raporu için yetkili erişim gerekir.',
+    task: 'Satış hedefi sapmasında bir bölgeyi seç. Dönemi ve karşılaştırma tabanını yazarak karar önerisi, sorumlu ve yeniden ölçüm tarihini belirle.',
+    hint: 'Yüzde ile yüzde puanı ayır. Tek bir kırmızı göstergeye bakmadan hacmi ve önceki dönemi birlikte kontrol et.',
+    transfer: 'Lezzet Kurye’de düşük SLA uyumlu bir ilçe için aynı karar notunu yaz. Sipariş hacmini dikkate al ve nedeni doğrulamak için hangi ek veriyi isteyeceğini belirt.',
+    files: ['Filtreler görünen rapor görüntüsü veya tablo', 'İki dönemin sayısal karşılaştırması', 'Sorumlusu ve kontrol tarihi olan karar notu'],
+  },
+  hizli: {
+    environment: 'Tarayıcıda ilk prova, çalışır rapor dosyası için Power BI Desktop.',
+    task: 'Anadolu Market için ay ve kategoriye göre satışları gösteren tek sayfa hazırla. Bir ay filtresi seç ve satış toplamını kaynakla karşılaştır.',
+    hint: 'Bir tarih ve bir ürün boyutu kullan. Önce tek toplam kartı kur, sonra ay grafiğini ve kategori dilimleyicisini ekle.',
+    transfer: 'Lezzet Kurye’de tek sayfayı sipariş adedi ve haftalık filtreyle yeniden kur. Filtresiz ve tek hafta sayısını kontrol et.',
+    files: ['Tek sayfalık rapor dosyası', 'İlişki şeması ve ölçüler', 'İki satırlık mutabakat tablosu'],
+  },
+  mulakat: {
+    environment: 'Tarayıcıda prova. Dosya teslimi istenen vakada Power BI Desktop.',
+    task: 'Süre tutarak bir satış KPI’ını modelle ve iki filtre altında doğrula. Üç dakikada problemi, kendi katkını, kontrol sonucunu ve bir sınırı anlat.',
+    hint: 'Durum, görev, eylem ve sonuç için birer cümle yaz. Sonuç cümlesine rapor ekranından bağımsız bir kontrol sayısı koy.',
+    transfer: 'Aynı sunumu Kanat Havayolları gecikme metriğiyle, önceki dosyayı açmadan yap. Değişen kapsam kuralını mülakatçıya açıklamayı ekle.',
+    files: ['Süreli vaka teslim dosyası', 'Filtreli iki kontrol örneği', 'Üç dakikalık mülakat notu'],
+  },
+  vaka: {
+    environment: 'Örnek veriyle tarayıcıda analiz provası. Teslim raporu için Power BI Desktop veya belgelenmiş başka bir analiz ortamı.',
+    task: 'Pedal İzmir vakasında istasyon doluluğu veya dengeleme için bir karar sorusu seç. Analiz tane düzeyini ve bir kontrol senaryosunu belirt.',
+    hint: 'Önce karar sahibini ve gerekli zaman aralığını yaz. İstasyon ile yolculuk verisinin aynı tane düzeyinde olmadığını kontrol et.',
+    transfer: 'Pusula İK’da aynı analiz planını bölüm bazlı devamsızlık sorusuna taşı. Payda ve kapsam kuralını yeni iş problemine göre yeniden yaz.',
+    files: ['Vaka brifi ve model şeması', 'Sorgu/ölçüler ve kontrol sonuçları', 'Karar sayfası ve veri sınırlamaları'],
+  },
+};
+Object.entries(EVIDENCE).forEach(([id, evidence]) => { W.PBI_ROLES[id].cap.evidence = evidence; });
 })(window);

@@ -10,11 +10,15 @@ Kabul: 443 referans çözüm geçer; sabit cevap reddedilir; iki eşdeğer çöz
 
 ## 2. Gerçek Power BI Desktop referans raporu
 
+G04 durumu: Lezzet Kurye proje paketi yayında. Windows Power BI Desktop açılış, yenileme ve görsel inceleme kaydı bekliyor.
+
 G04: Tek bir vaka için açık üretim adımları, model/ilişki şeması, ölçüler, filtreli ve filtresiz kontrol sayıları, rapor sayfaları ve inceleme kaydı. Desktop'ta açılıp doğrulanmayan dosya doğrulanmış PBIX diye sunulmaz. İnsan/Desktop doğrulaması ayrı durum taşır.
 
 ## 3. Rol bazlı yeterlik ve teslim kanıtları
 
 G07, G17–G19, G21: rol beklentilerini gerçek görev/çıktıya bağlama; benzetim ve gerçek uygulama ayrımı; yardımlı/bağımsız çözüm ayrımı; bitirme projesinde dosya/model/karar notu kanıtı; farklı veride transfer görevi. Uzman incelemesi G08 ayrıca kaydedilir.
+
+Teslim: 12 öğrenme yolunun bitirme projesinde role özel iş görevi, farklı veride bağımsız tekrar, çalışma ortamı ve indirilebilir teslim kaydı yer alır. Çalışma biçimi kullanıcı beyanıdır. G08 uzman incelemesi açık.
 
 ## 4. Kullanıcı deneyimi, performans ve bakım
 

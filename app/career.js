@@ -129,10 +129,56 @@ function prereqBlock(r) {
   const ids = (q.lessons || []).filter(id => C.LMAP[id]); const d = ids.filter(id => P.done[id]).length;
   return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + (q.sqlYol ? ' <a class="lnk" href="' + esc(((window.KESIT_CONFIG || window.PBI_CONFIG || {}).sqlUrl || 'https://ysfdurak.github.io/kesit-sql/') + '#patika-' + q.sqlYol) + '">Kesit SQL: BT İş Analisti yolu</a>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
 }
+const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
+function evidenceMode(id) {
+  const value = (P.cap[id] || {}).workMode;
+  return Object.hasOwn(WORK_MODES, value) ? value : '';
+}
+function evidenceBlock(id, evidence) {
+  const current = evidenceMode(id);
+  const options = Object.entries(WORK_MODES).map(([value, label]) =>
+    '<option value="' + value + '"' + (current === value ? ' selected' : '') + '>' + label + '</option>').join('');
+  return '<div id="role-evidence" class="cap-brief">' +
+    '<span class="eyebrow">Rol görevi · portföy kanıtı</span><h3>' + esc(R[id].title) + '</h3>' +
+    '<p><b>İş görevi</b> · ' + esc(evidence.task) + '</p>' +
+    '<p class="muted"><b>Çalışma ortamı</b> · ' + esc(evidence.environment) + '</p>' +
+    '<details class="note"><summary>Yardımlı çalışma ipucunu aç</summary><p>' + esc(evidence.hint) + '</p></details>' +
+    '<p><b>Bağımsız tekrar</b> · Önceki çözümü ve ipucunu açmadan, farklı veride şu görevi çöz. ' + esc(evidence.transfer) + '</p>' +
+    '<p><button class="lnk" data-go="veriler">Uygulama veri setlerini aç</button></p>' +
+    '<p><b>Teslim dosyaları</b></p><ul class="capsteps">' + evidence.files.map(item => '<li>' + esc(item) + '</li>').join('') +
+    '<li>Bir sayfalık karar notu: bulgu, dayandığı sayı, öneri, sınır ve sonraki adım.</li></ul>' +
+    '<div class="row"><label>Çalışma biçimini kaydet <select class="input" data-evidence-mode="' + id + '">' +
+    '<option value="">Seçilmedi</option>' + options + '</select></label>' +
+    '<button class="btn sm" data-act="evidence-dl" data-id="' + id + '">Teslim şablonunu indir (.md)</button></div>' +
+    '<p class="muted">Çalışma biçimi kendi beyanındır. Tarayıcı provası ve Desktop/Service/Fabric’te yapılan kontrolleri teslim notunda ayrı yaz.</p></div>';
+}
+function downloadEvidence(id) {
+  const c = capOf(id), evidence = c && c.evidence;
+  if (!evidence) return;
+  const lines = [
+    '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
+    '## Çalışma ortamı', evidence.environment, '',
+    '- Kullandığım ortam ve sürüm: …', '- Çalışma biçimim: ' + (WORK_MODES[evidenceMode(id)] || '…'),
+    '- Kullandığım ipucu veya destek: …', '- Doğrulama durumu (bekliyor / denendi / geçti / kaldı): …',
+    '', '## Teslim dosyaları',
+    ...evidence.files.map(item => '- [ ] ' + item + ' · dosya adı veya bağlantı: …'),
+    '', '## Mutabakat ve kabul',
+    '| Senaryo ve filtre | Veri kaynağı | Beklenen | Gerçekleşen | Durum |',
+    '|---|---|---:|---:|---|', '| Filtresiz | … | … | … | … |', '| Filtreli | … | … | … | … |',
+    '', '## Karar notu', '- Bulgu ve kanıt: …', '- Öneri ve sorumlu: …',
+    '- Veri sınırı ve sonraki adım: …', '', '## Farklı veride bağımsız tekrar',
+    evidence.transfer, '- Kullanılan veri, sonuç ve değişen varsayım: …', '',
+  ];
+  return saveFile('kesit-powerbi-teslim-' + id + '.md', lines.join('\n'));
+}
 function capBlock(id) {
   const c = capOf(id), st = P.cap[id] || {}, cs = capState(id);
   let h = '<section class="lvl-block" id="cap"><div class="sec-head"><div><span class="eyebrow">Bitirme projesi · portföyüne koy</span><h2>' + esc(c.title) + '</h2></div><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></div><div class="panel capbox">';
-  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px"><button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button></div>' : '') + '</div>';
+  const dataDownload = c.download
+    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' Lezzet Kurye verisini indir (.zip, CSV)</a>'
+    : '<button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button>';
+  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + '</div>' : '') + '</div>';
+  if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
   h += '<div><span class="eyebrow">Teslim kontrol listesi</span><ul class="chk">' + (c.check || []).map((x, i) => '<li><label><input type="checkbox" data-capchk="' + id + ':' + i + '"' + (st[i] ? ' checked' : '') + '> <span>' + x + '</span></label></li>').join('') + '</ul></div>';
   if (c.rubric) h += '<div><span class="eyebrow">Değerlendirme ölçütü (kendini puanla)</span><div class="tbl-wrap"><table class="rubric"><tr><th>Ölçüt</th><th>Yeterli</th><th>İyi</th><th>Çok iyi</th></tr>' + c.rubric.map(rw => '<tr><td><b>' + esc(rw[0]) + '</b></td><td>' + esc(rw[1]) + '</td><td>' + esc(rw[2]) + '</td><td>' + esc(rw[3]) + '</td></tr>').join('') + '</table></div></div>';
@@ -222,11 +268,18 @@ document.addEventListener('click', ev => {
   if (t.dataset.act === 'cert-print') { try { window.print(); } catch (e) { C.toast('Yazdırma bu görünümde kapalı; “Belgeyi indir”i kullan.'); } return; }
   if (t.dataset.act === 'cert-dl') { const h = certHtml(); if (h) saveFile('kesit-powerbi-belge-' + (t.dataset.id || '') + '.html', h); return; }
   if (t.dataset.act === 'data-zip') { downloadData(); return; }
+  if (t.dataset.act === 'evidence-dl') { downloadEvidence(t.dataset.id); return; }
   if (t.dataset.scroll) { const sc = t.dataset.scroll; setTimeout(() => { const el = document.getElementById(sc); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
 });
 function rerenderKeep(sel) { const y = window.scrollY; C.render(); window.scrollTo(0, y); const n = document.querySelector(sel); if (n) n.focus({ preventScroll: true }); }
 document.addEventListener('change', ev => {
   const el = ev.target;
+  const id = el.dataset && el.dataset.evidenceMode;
+  if (id && capOf(id)?.evidence && (el.value === '' || Object.hasOwn(WORK_MODES, el.value))) {
+    P.cap[id] = P.cap[id] || {};
+    P.cap[id].workMode = el.value;
+    C.save();
+  }
   if (el.dataset && el.dataset.capchk) { const [id, i] = el.dataset.capchk.split(':'); P.cap[id] = P.cap[id] || {}; P.cap[id][i] = el.checked; if (el.checked) C.addXP(5); C.save(); rerenderKeep('[data-capchk="' + el.dataset.capchk + '"]'); }
   if (el.dataset && el.dataset.rdy) { const [id, i] = el.dataset.rdy.split(':'); P.ready[id] = P.ready[id] || {}; P.ready[id][i] = el.checked; C.save(); rerenderKeep('[data-rdy="' + el.dataset.rdy + '"]'); }
 });
