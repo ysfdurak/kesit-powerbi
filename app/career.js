@@ -136,6 +136,8 @@ function prereqBlock(r) {
   const ids = (q.lessons || []).filter(id => C.LMAP[id]); const d = ids.filter(id => P.done[id]).length;
   return '<section class="lvl-block" id="onkosul"><div class="sec-head"><div><span class="eyebrow">Ön koşul</span><h2>' + esc(q.t) + '</h2></div>' + (ids.length ? '<span class="chip">' + d + '/' + ids.length + ' ders</span>' : '') + '</div><p class="muted" style="margin:0 0 8px;max-width:72ch">' + esc(q.d) + (q.path && PMAP[q.path] ? ' <button class="lnk" data-go="path" data-id="' + q.path + '">' + esc((R[q.path] || {}).title || PMAP[q.path].name) + ' yolu</button>' : '') + (q.sqlYol ? ' <a class="lnk" href="' + esc(((window.KESIT_CONFIG || window.PBI_CONFIG || {}).sqlUrl || 'https://ysfdurak.github.io/kesit-sql/') + '#patika-' + q.sqlYol) + '">Kesit SQL: BT İş Analisti yolu</a>' : '') + '</p>' + (ids.length ? '<div class="panel lessons">' + ids.map(x => C.lessonRow(C.LMAP[x])).join('') + '</div>' : '') + '</section>';
 }
+const RUBRIC_HEADERS = ['Ölçüt', 'Yeterli', 'İyi', 'Çok iyi'];
+const RUBRIC_NOTE = 'Teslim işaretleri kendi beyanına dayanır. Her kontrol için kullanılan ortamı ve kanıtı yaz. Ortama erişim bekliyorsa kontrolü Bekliyor olarak kaydet.';
 const WORK_MODES = { assisted: 'Yardımlı', independent: 'Bağımsız' };
 const REVIEW_STATES = { pending: 'Bekliyor', tried: 'Denendi', passed: 'Geçti', failed: 'Kaldı' };
 const EVIDENCE_RUNS = { firstRun: 'İlk uygulama', transferRun: 'Bağımsız tekrar' };
@@ -217,9 +219,15 @@ function downloadEvidence(id) {
     ]),
     '## Teslim dosyaları',
     ...evidence.files.map(item => '- [ ] ' + item + ' · dosya adı veya bağlantı: …'),
+    ...(c.rubric ? [
+      '', '## Role özel kabul ölçütleri', RUBRIC_NOTE, '',
+      '| ' + RUBRIC_HEADERS.join(' | ') + ' |', '|---|---|---|---|',
+      ...c.rubric.map(row => '| ' + row.map(cell => cell.replace(/\|/g, '\\|')).join(' | ') + ' |'),
+    ] : []),
     '', '## Mutabakat ve kabul',
-    '| Senaryo ve filtre | Veri kaynağı | Beklenen | Gerçekleşen | Durum |',
-    '|---|---|---:|---:|---|', '| Filtresiz | … | … | … | … |', '| Filtreli | … | … | … | … |',
+    '| Senaryo ve filtre | Veri kaynağı | Beklenen | Gerçekleşen | Ortam ve kanıt | Durum |',
+    '|---|---|---|---|---|---|', '| Filtresiz | … | … | … | … | … |', '| Filtreli | … | … | … | … | … |',
+    '| Role özel olumsuz senaryo | … | … | … | … | … |',
     '', '## Karar notu', '- Bulgu ve kanıt: …', '- Öneri ve sorumlu: …',
     '- Veri sınırı ve sonraki adım: …', '',
   ];
@@ -238,7 +246,12 @@ function capBlock(id) {
   if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
   h += '<div><span class="eyebrow">Teslim kontrol listesi</span><ul class="chk">' + (c.check || []).map((x, i) => '<li><label><input type="checkbox" data-capchk="' + id + ':' + i + '"' + (st[i] ? ' checked' : '') + '> <span>' + x + '</span></label></li>').join('') + '</ul></div>';
-  if (c.rubric) h += '<div><span class="eyebrow">Değerlendirme ölçütü (kendini puanla)</span><div class="tbl-wrap"><table class="rubric"><tr><th>Ölçüt</th><th>Yeterli</th><th>İyi</th><th>Çok iyi</th></tr>' + c.rubric.map(rw => '<tr><td><b>' + esc(rw[0]) + '</b></td><td>' + esc(rw[1]) + '</td><td>' + esc(rw[2]) + '</td><td>' + esc(rw[3]) + '</td></tr>').join('') + '</table></div></div>';
+  if (c.rubric) h += '<div><span class="eyebrow">Role özel kabul ölçütleri</span><p class="muted">' + RUBRIC_NOTE +
+    '</p><div class="tbl-wrap"><table class="rubric"><thead><tr>' +
+    RUBRIC_HEADERS.map(label => '<th scope="col">' + label + '</th>').join('') + '</tr></thead><tbody>' +
+    c.rubric.map(row => '<tr><th scope="row">' + esc(row[0]) + '</th>' +
+      row.slice(1).map(value => '<td>' + esc(value) + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table></div></div>';
   if (c.present) h += '<div class="note"><b>Mülakatta nasıl anlatılır?</b>' + c.present + '</div>';
   return h + '</div></section>';
 }
