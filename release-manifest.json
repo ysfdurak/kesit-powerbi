@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-09",
-  "sourceCommit": "1c035ddfc06bc00a9f36afc8c5e8d87b2447988d",
+  "sourceCommit": "427743221c212ce9dd84a834d99bbbd27ec421de",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -12,13 +12,14 @@
     "İlk uygulama ve bağımsız tekrar için ayrı teslim kayıtları",
     "DP-600 dört alan eşleşmesi ve statik dersler",
     "12 öğrenme yolunda role özel kabul ölçütleri",
-    "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları"
+    "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları",
+    "Mobil menüden öğrenme yolu ve bitirme projesine geçiş"
   ],
   "files": {
-    "index.html": "0a2df5bb44f66fc05a2318a7301c65381d203c670cdac4261c068acf1eb9b5d8",
-    "kesit.js": "28347589b179c4ed1be1aa6a8c337cbc331ec2d73facd35c41f13a5013bba658",
+    "index.html": "df51ed05c78d7c0071b9ceed40b5e7329a0f9c52b29eb0cb3ec2414b562ae8bf",
+    "kesit.js": "068f210c6b4e825d4c874a5c413e576a8c2ef4395cdb4a68ebd9346df523f5b3",
     "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
-    "sw.js": "70524402bdea7da0ab54ef6657d1245c7a52bdb48c78a1647662778cdd78b1ce",
+    "sw.js": "382668e2ff7db63b0f20a3e1b848d9454cff50ddebebcbcaa4bf606a41128f79",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",

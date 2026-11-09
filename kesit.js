@@ -32959,11 +32959,12 @@ function familyLinks() {
   return '<div class="fam"><span class="eyebrow">Kesit</span>' + items.map(([t, u]) => '<a href="' + esc(u) + '">' + t + '</a>').join('') + '</div>';
 }
 function renderNav() {
-  const cur = parentOf(S.view);
+  const cur = S.section === 'cap' ? 'projeler' : parentOf(S.view);
   P.navc = P.navc || {};
   const btn = ([v, t, i]) => '<button data-go="' + v + '" aria-current="' + (cur === v) + '">' + ic(i) + t + '</button>';
   $('#nav').innerHTML = NAV.map(([g, items]) => { const shut = P.navc[g] && !items.some(x => x[0] === cur); return '<button class="navgrp" data-navg="' + g + '" aria-expanded="' + !shut + '">' + g + ic('chev', 2.4) + '</button>' + (shut ? '' : items.map(btn).join('')); }).join('') + '<div class="navfoot">' + NAVFOOT.map(btn).join('') + '</div>' + familyLinks();
-  const goalP = goalPath(); const onMine = cur === 'paths' && (S.view === 'path' ? S.id === goalP : !goalP) || (S.view === 'paths' && !goalP);
+  const goalP = goalPath();
+  const onMine = cur === 'paths' && (!goalP || (S.view === 'path' && S.id === goalP));
   const inTab = TABNAV.some(n => n[0] === cur) || onMine;
   $('#tabbar').innerHTML = TABNAV.map(([v, t, i]) => v === 'mypath' ? '<button data-go="' + (goalP ? 'path' : 'paths') + '"' + (goalP ? ' data-id="' + goalP + '"' : '') + ' aria-current="' + onMine + '">' + ic(i) + '<span>' + t + '</span></button>' : '<button data-go="' + v + '" aria-current="' + (cur === v || (v === 'more' && !inTab)) + '">' + ic(i) + '<span>' + t + '</span></button>').join('');
 }
@@ -32973,16 +32974,40 @@ function renderStats() {
   const ms = $('#miniStats'); if (ms) ms.innerHTML = '<b>' + P.xp + '</b>&nbsp;XP · <b>' + st + '</b>&nbsp;gün';
 }
 let lastHash = location.hash;
-function hashFor(v, id, ctx, step) { const d = VIEWS[v]; if (!d || v === 'home') return ''; let h = (d.hash || v) + (id ? '-' + id : ''); if (v === 'lesson') h += (ctx ? '@' + ctx : '') + (step ? '/' + step : ''); return h; }
+function hashFor(v, id, ctx, step, section) {
+  const d = VIEWS[v];
+  if (!d || v === 'home') return '';
+  let h = (d.hash || v) + (id ? '-' + id : '');
+  if (v === 'lesson') h += (ctx ? '@' + ctx : '') + (step ? '/' + step : '');
+  if (section) h += '/' + section;
+  return h;
+}
 function writeHash(hash, replace) { try { const url = hash ? ('#' + hash) : location.pathname + location.search; if (replace || ('#' + hash) === location.hash || (!hash && !location.hash)) history.replaceState(null, '', url); else history.pushState(null, '', url); lastHash = location.hash; } catch (e) {} }
+function revealPathSection() {
+  const section = S.section && document.getElementById(S.section);
+  if (!section) return false;
+  const topbar = $('.topbar');
+  const headerSpace = topbar.offsetHeight ? topbar.offsetHeight + (parseFloat(getComputedStyle(topbar).top) || 0) : 0;
+  window.scrollTo(0, window.scrollY + section.getBoundingClientRect().top - headerSpace - 12);
+  const heading = section.querySelector('h2');
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  return true;
+}
 function go(v, id, opts) {
   opts = opts || {};
   if (v === 'path' && !id) v = 'paths';
   S = { view: v, id: id || null, step: opts.step || 0, ctx: opts.ctx !== undefined ? opts.ctx : (v === 'lesson' ? S.ctx : null) };
-  if (v === 'path') S.ctx = id;
+  if (v === 'path') {
+    S.ctx = id;
+    if (PMAP[id] && (opts.section === 'cap' || opts.section === 'ready')) S.section = opts.section;
+  }
   if (v === 'lesson') S.ctx = lessonCtx(id, S.ctx);
-  writeHash(hashFor(v, id, S.ctx, S.step), opts.replace);
-  render(); if (!opts.keepScroll) window.scrollTo(0, 0); const m = $('#main'); if (m) m.focus({ preventScroll: true });
+  writeHash(hashFor(v, id, S.ctx, S.step, S.section), opts.replace);
+  render();
+  if (revealPathSection()) return;
+  if (!opts.keepScroll) window.scrollTo(0, 0);
+  $('#main').focus({ preventScroll: true });
 }
 /* Alıştırma adımı tarayıcı geçmişine yazılır: geri tuşu önceki adıma döner */
 function setStep(n) { S.step = n; writeHash(hashFor('lesson', S.id, S.ctx, n)); render(); window.scrollTo(0, 0); }
@@ -33063,7 +33088,7 @@ function bindMarks() { if (!tipsBound) { V.bindTips(document.body); tipsBound = 
 /* ---------- Ana sayfa ---------- */
 function lessonRow(l, ctx) {
   const st = lessonState(l), n = (l.ex || []).length; const nd = (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, npq = (l.ex || []).filter(e => e.t === 'pq' || e.t === 'mcode').length;
-  return '<button class="litem" data-lesson="' + l.id + '"' + (ctx ? ' data-ctx="' + ctx + '"' : '') + '><span class="check ' + (st === 'done' ? 'done' : st === 'part' ? 'part' : '') + '">' + (st === 'done' ? ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(l.title) + '</b><small>' + esc(l.sum || '') + '</small></span><span class="row" style="gap:6px;flex-wrap:nowrap">' + (nd ? '<span class="chip dx">' + nd + ' DAX</span>' : '') + (npq ? '<span class="chip pqc">' + npq + ' PQ</span>' : '') + '<span class="chip">' + (n ? n + ' alıştırma' : 'okuma') + '</span>' + (isSkipped(l) ? '<span class="chip skipc" title="Seviye testinde geçtin. Sıradaki dersten atlanır, ilerlemeye sayılmaz.">Atlandı</span>' : '') + lvBadge(l.lvl) + '</span></button>';
+  return '<button class="litem" data-lesson="' + l.id + '"' + (ctx ? ' data-ctx="' + ctx + '"' : '') + '><span class="check ' + (st === 'done' ? 'done' : st === 'part' ? 'part' : '') + '">' + (st === 'done' ? ic('tick', 3.2) : '') + '</span><span style="min-width:0"><b>' + esc(l.title) + '</b><small>' + esc(l.sum || '') + '</small></span><span class="row" style="gap:6px">' + (nd ? '<span class="chip dx">' + nd + ' DAX</span>' : '') + (npq ? '<span class="chip pqc">' + npq + ' PQ</span>' : '') + '<span class="chip">' + (n ? n + ' alıştırma' : 'okuma') + '</span>' + (isSkipped(l) ? '<span class="chip skipc" title="Seviye testinde geçtin. Sıradaki dersten atlanır, ilerlemeye sayılmaz.">Atlandı</span>' : '') + lvBadge(l.lvl) + '</span></button>';
 }
 function counts() {
   const ex = LESSONS.reduce((a, l) => a + (l.ex || []).length, 0), dx = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'dax' || e.t === 'query').length, 0), pq = LESSONS.reduce((a, l) => a + (l.ex || []).filter(e => e.t === 'pq' || e.t === 'mcode').length, 0);
@@ -33122,7 +33147,11 @@ function viewPath(id) {
 }
 function viewMore() {
   const tool = ([v, t, i]) => '<button class="tool" data-go="' + v + '"><span class="tic">' + ic(i) + '</span><b>' + t + '</b><small>' + esc(NAVSUB[v] || '') + '</small></button>';
-  return '<div class="wrap"><div class="phead"><h1>Menü</h1></div>' + NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools morelist">' + items.map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a></div></section></div>';
+  const shortcuts = ['paths', 'projeler'];
+  return '<div class="wrap"><div class="phead"><h1>Menü</h1></div>' +
+    '<div class="tools morelist">' + shortcuts.map(v => tool(NAVFLAT.find(item => item[0] === v))).join('') + '</div>' +
+    NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools morelist">' +
+      items.filter(([v]) => !shortcuts.includes(v)).map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a></div></section></div>';
 }
 
 /* ---------- Müfredat ---------- */
@@ -33545,7 +33574,7 @@ document.addEventListener('click', ev => {
   const t = ev.target.closest('button, [data-tbl], a'); if (!t) return;
   const d = t.dataset;
   if (d.navg) { P.navc = P.navc || {}; P.navc[d.navg] = !P.navc[d.navg]; save(); renderNav(); return; }
-  if (d.go) { ev.preventDefault(); if (d.lv) currFilter.lv = d.lv; return go(d.go, d.id); }
+  if (d.go) { ev.preventDefault(); if (d.lv) currFilter.lv = d.lv; return go(d.go, d.id, { section: d.scroll }); }
   if (d.lesson) return go('lesson', d.lesson, { ctx: d.ctx || (S.view === 'path' ? S.id : S.view === 'lesson' ? S.ctx : null) });
   if (d.step !== undefined) { setStep(+d.step); return; }
   if (d.lvf) { currFilter.lv = d.lvf; document.querySelectorAll('[data-lvf]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lvf === d.lvf)); $('#currList').innerHTML = currList(); return; }
@@ -33615,14 +33644,30 @@ function fromHash() {
   const v = Object.keys(VIEWS).find(k => k !== 'home' && (VIEWS[k].hash || k) === pre);
   if (!v) { S = { view: 'home', id: null, step: 0, ctx: null }; if (h && h !== 'home') setTimeout(() => toast('Bu sayfa bulunamadı; ana sayfa açıldı.'), 300); return; }
     if (v === 'lesson') { const m = String(id).match(/^(.+?)(?:@([\w-]+))?(?:\/(\d+))?$/) || [], lid = m[1] || id; if (!LMAP[lid]) { S = { view: 'curr', id: null, step: 0, ctx: null }; setTimeout(() => toast('Bu ders bulunamadı; dersler açıldı.'), 300); return; } const n = (LMAP[lid].ex || []).length, st = Math.min(n, +m[3] || 0); S = { view: v, id: lid, step: st, ctx: lessonCtx(lid, m[2] || null) }; return; }
+  if (v === 'path') {
+    const [path, section] = (id || '').split('/');
+    if (PMAP[path] && (section === 'cap' || section === 'ready') && id === path + '/' + section) {
+      S = { view: v, id: path, step: 0, ctx: path, section };
+      return;
+    }
+  }
   S = { view: v, id, step: 0, ctx: v === 'path' ? id : null };
+}
+function followHash() {
+  if (location.hash === lastHash) return;
+  lastHash = location.hash;
+  fromHash();
+  render();
+  if (revealPathSection()) return;
+  window.scrollTo(0, 0);
+  $('#main').focus({ preventScroll: true });
 }
 function start() {
   try { document.documentElement.lang = 'tr'; } catch (e) {}
-  window.addEventListener('popstate', () => { if (location.hash === lastHash) return; lastHash = location.hash; fromHash(); render(); window.scrollTo(0, 0); const m = $('#main'); if (m) m.focus({ preventScroll: true }); });
-  window.addEventListener('hashchange', () => { if (location.hash === lastHash) return; lastHash = location.hash; fromHash(); render(); window.scrollTo(0, 0); });
+  window.addEventListener('popstate', followHash);
+  window.addEventListener('hashchange', followHash);
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const d = VIEWS[S.view]; if (d && d.resize) d.resize(); }, 250); });
-  fromHash(); writeOzet(); render();
+  fromHash(); writeOzet(); render(); revealPathSection();
 }
 window.PBI_CORE = { copyText, mergePilot, pilotSummary, hasProgress, startedIn, tipsTabs, nextOpen: firstOpen, isSkipped, skippedLv, goalPath, SITE, REPO_URL, sureDk, dkAralik, saatAralik, setStep, views: VIEWS, daxErrHTML, sanitize, replaceProgress, KEY, storeOk: () => STORE_OK, lessonRow, PMAP, PATHS, noteWrong, trackRv, RV_GAPS, addDaysYmd, solvedLesson: solved, nextBtn, FRESH, exView, exMount, curX, optOrder, hintsOf, exKey, streak, today, ymd, renderStats, lessonState, pct, myLevel, X, V, MODEL, $, esc, hl, enhance, go, render, view, P, save, toast, addXP, measureSet, fmtOf, guessFmt, LIB, LIBMAP, LEVELS, LVI, lvBadge, lvName, LESSONS, LMAP, ic, head, guide, spanW, mainW, bindMarks, openInStudio, daxBlock, daxDeps, resultTable, parseCol, fmtVal, start, state: () => S };
 })();
@@ -34936,7 +34981,8 @@ function viewPath(id) {
   if (GUNCEL) h += '<div class="note"><b>Güncellik</b>' + GUNCEL[0] + ' Bu hazırlık resmî değildir ve kapsamın tamamını karşıladığını garanti etmez. <a href="' + GUNCEL[1] + '" target="_blank" rel="noopener">Resmî sayfa</a></div>';
   h += '<section class="panel pathhero" style="--pc:' + p.color + '"><div class="ph-main"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="ic" style="background:' + p.color + ';height:46px;min-width:46px">' + p.short + '</span><div class="grow"><span class="eyebrow">' + (mine ? 'Hedefin' : 'Öğrenme yolu') + (r.jobs ? ' · ' + esc(r.jobs.join(' · ')) : '') + '</span><h1>' + esc(r.title || p.name) + '</h1></div></div><p>' + esc(r.long || p.long || p.desc) + '</p>';
   h += '<div class="ph-facts"><span><b>' + s.n + '</b> ders</span><span><b>' + s.totS + '</b> tahmini çalışma</span><span><b>' + milestones(p).length + '</b> aşama</span><span><b>' + (r.cap ? 1 : 0) + '</b> bitirme projesi</span>' + (r.level ? '<span><b>' + esc(r.level) + '</b></span>' : '') + '</div>';
-  h += '<div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + id + '">' + (s.done || P.placement || C.startedIn(p.lessons) ? 'Devam et' : 'Yola başla') + ': ' + esc(nx.title) + '</button>' : '<span class="chip">Tüm dersler tamamlandı</span>') + (mine ? '' : '<button class="btn" data-setgoal="' + id + '">Hedefim yap</button>') + '</div></div>';
+  h += '<div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + id + '">' + (s.done || P.placement || C.startedIn(p.lessons) ? 'Devam et' : 'Yola başla') + ': ' + esc(nx.title) + '</button>' : '<span class="chip">Tüm dersler tamamlandı</span>') + (mine ? '' : '<button class="btn" data-setgoal="' + id + '">Hedefim yap</button>') +
+    (r.cap ? '<button class="btn" data-go="path" data-id="' + id + '" data-scroll="cap">Bitirme projesini aç</button>' : '') + '</div></div>';
   h += '<div class="ph-side">' + ring(s.pct, 112, 'Öğrenme yolu ilerlemesi') + '<small class="muted">' + s.done + '/' + s.n + ' ders</small><small class="muted">Kalan ' + s.remS + (mine ? '<br>Tahmini bitiş ' + e.date : '') + '</small></div></section>';
   if (r.outcomes) h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Sonunda</span><h2>Bu yolu bitirdiğinde bir şirkette…</h2></div></div><div class="panel cando outcomes"><ul>' + r.outcomes.map(o => '<li>' + esc(o) + '</li>').join('') + '</ul></div></section>';
   h += stateBlock(p, mine) + prereqBlock(r);
@@ -35166,7 +35212,6 @@ document.addEventListener('click', ev => {
   if (t.dataset.act === 'cert-dl') { const h = certHtml(); if (h) saveFile('kesit-powerbi-belge-' + (t.dataset.id || '') + '.html', h); return; }
   if (t.dataset.act === 'data-zip') { downloadData(); return; }
   if (t.dataset.act === 'evidence-dl') { downloadEvidence(t.dataset.id); return; }
-  if (t.dataset.scroll) { const sc = t.dataset.scroll; setTimeout(() => { const el = document.getElementById(sc); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
 });
 function rerenderKeep(sel) { const y = window.scrollY; C.render(); window.scrollTo(0, y); const n = document.querySelector(sel); if (n) n.focus({ preventScroll: true }); }
 document.addEventListener('submit', ev => {

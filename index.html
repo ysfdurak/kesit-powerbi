@@ -1628,6 +1628,13 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 .lhead .row{flex-wrap:wrap}
 .lfb{order:3; flex:1 1 100%; margin:0}
 
+/* Dar ekranda öğrenme yolu rozetleri ders adının altına iner. */
+.litem[data-lesson]>.row{flex-wrap:nowrap}
+@media (max-width:560px){
+  :is(.msblock,#onkosul) .litem{grid-template-columns:28px minmax(0,1fr)}
+  :is(.msblock,#onkosul) .litem[data-lesson]>.row{grid-column:2; flex-wrap:wrap}
+}
+
 /* Pratik listesi telefonda: rozetler başlığın altına iner, başlık sütunu daralmaz */
 @media (max-width:560px){ #prList .litem{grid-template-columns:28px minmax(0,1fr)} #prList .litem>.row{grid-column:2; flex-wrap:wrap} }
 
