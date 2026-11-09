@@ -1,0 +1,60 @@
+name: Build Power BI role evidence release
+on:
+  push:
+    branches: [codex/powerbi-stage3-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ebe9e03389a360d2b723de8000765eda1240b12b
+      - uses: actions/checkout@v4
+        with:
+          ref: 6eb435abc8904ac957edc29ede63c1c4dd71fffe
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp index.html "$package/index.html"
+          cmp config.js "$package/config.js"
+          cp "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' bb3e0589ce729ed0eb2cddd484c3cb57314fd8962910471f72e2ca2991da65f9 kesit.js 236612d522ad76d4ee4b46c623b5e760398ae69b61a4ae85c47eaed7a6da81e5 sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = '6eb435abc8904ac957edc29ede63c1c4dd71fffe'
+          data['checks'].append('Rol görevi, çalışma biçimi ve teslim kaydı')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in data['files']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- kesit.js sw.js release-manifest.json KALAN-GOREVLER.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: rol bazlı öğrenme ve portföy teslimleri'
+          git push origin HEAD:refs/heads/codex/powerbi-stage3-verified
