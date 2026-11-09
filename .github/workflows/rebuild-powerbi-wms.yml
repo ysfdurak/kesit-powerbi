@@ -1,0 +1,62 @@
+name: Build Power BI WMS case release
+on:
+  push:
+    branches: [codex/powerbi-wms-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: d70b6c24438daac76cf8495341c744d90c073796
+      - uses: actions/checkout@v4
+        with:
+          ref: 1a0cd72d0210528b8ecac885f908a948444e28fa
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp index.html "$package/index.html"
+          cmp config.js "$package/config.js"
+          cp "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          cp -r "$package/veri/wms-sevkiyat" veri/
+          printf '%s  %s\n' 1d63c5a24cb172e117ca69d03644f6d81c5c47b61010e15130fe16dd1cfc3de2 kesit.js cad3ced24d1392daa5eeaedca594ec97fa2bd654d87b70b36eeb78e081dd51e9 sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = '1a0cd72d0210528b8ecac885f908a948444e28fa'
+          data['checks'].append('BT İş Analisti WMS sevkiyat ve UAT vakası')
+          files = [*data['files'], 'veri/wms-sevkiyat/sevkiyat.csv', 'veri/wms-sevkiyat/BRIF-UAT.md']
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in files}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- kesit.js sw.js release-manifest.json KALAN-GOREVLER.md veri/wms-sevkiyat
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: BT İş Analisti için Depo Sevkiyat Kontrolü'
+          git push origin HEAD:refs/heads/codex/powerbi-wms-verified
