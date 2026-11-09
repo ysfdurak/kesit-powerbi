@@ -3,7 +3,7 @@
 :root{
   --bg:#F1F0EC; --surface:#FFFFFF; --surface-2:#F7F6F2; --ink:#1B1A16; --muted:#625F55; --line:#DEDBD2;
   --accent:#E9B10C; --accent-text:#8A6200; --accent-soft:#FBF1D2; --accent-ink:#1B1505;
-  --ok:#17855A; --ok-ink:#fff; --ok-soft:#E1F3EA; --warn:#A86A12; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
+  --ok:#17855A; --ok-ink:#fff; --ok-soft:#E1F3EA; --warn:#89530C; --warn-soft:#FBF0DD; --err:#C0392B; --err-soft:#FBE6E3;
   --code-bg:#17150F; --code-ink:#E8E4D8; --code-kw:#F2C14E; --code-fn:#8FC8FF; --code-str:#B8E07A; --code-num:#F5A86B; --code-com:#B7B2A2; --code-var:#E2A8FF; --code-line:#2A271E; --code-tab:#201D16;
   --ic-color-share:62%; --l1:#1F7F47; --l3:#3866D1; --l5:#B8418F; --l6:#C2410C;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
