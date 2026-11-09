@@ -177,16 +177,24 @@ function evidenceForm(id, run, record) {
     EVIDENCE_FIELDS.map(field => evidenceField(field, record || {})).join('') +
     '<div><button type="submit" class="btn sm pri">Kaydet</button></div></form></details>';
 }
+function evidenceSources(evidence, run) {
+  return '<div class="row" data-evidence-sources="' + run + '">' +
+    evidence.sources[run].map(source => source.action
+      ? '<button class="btn sm" data-act="' + esc(source.action) + '">' + esc(source.label) + '</button>'
+      : '<a class="btn sm" href="' + esc(source.href) + '"' + (source.download ? ' download' : '') + '>' +
+        esc(source.label) + '</a>').join('') + '</div>';
+}
 function evidenceBlock(id, evidence) {
   const progress = P.cap[capKey(id)] || {};
   const legacyMode = evidenceValue(MODE_FIELD, progress.workMode);
   return '<div id="role-evidence" class="cap-brief">' +
     '<span class="eyebrow">Rol görevi · portföy kanıtı</span><h3>' + esc(R[id].title) + '</h3>' +
-    '<p><b>İş görevi</b> · ' + esc(evidence.task) + '</p>' +
+    '<p><b>İlk uygulama</b> · ' + esc(evidence.task) + '</p>' +
+    evidenceSources(evidence, 'firstRun') +
     '<p class="muted"><b>Çalışma ortamı</b> · ' + esc(evidence.environment) + '</p>' +
     '<details class="note"><summary>Yardımlı çalışma ipucunu aç</summary><p>' + esc(evidence.hint) + '</p></details>' +
     '<p><b>Bağımsız tekrar</b> · Önceki çözümü ve ipucunu açmadan, farklı veride şu görevi çöz. ' + esc(evidence.transfer) + '</p>' +
-    '<p><button class="lnk" data-go="veriler">Uygulama veri setlerini aç</button></p>' +
+    evidenceSources(evidence, 'transferRun') +
     '<p><b>Teslim dosyaları</b></p><ul class="capsteps">' + evidence.files.map(item => '<li>' + esc(item) + '</li>').join('') +
     '<li>Bir sayfalık karar notu: bulgu, dayandığı sayı, öneri, sınır ve sonraki adım.</li></ul>' +
     '<p class="muted">İki çalışmayı ayrı kaydet. Çalışma biçimi ve doğrulama durumu kendi beyanındır.</p>' +
@@ -202,14 +210,13 @@ function downloadEvidence(id) {
   const legacyMode = evidenceValue(MODE_FIELD, progress.workMode);
   const lines = [
     '# ' + R[id].title + ' · Teslim kaydı', '', '## İş görevi', evidence.task, '',
-    ...(c.caseGuide ? [
-      '- [Vaka brifi ve UAT kılavuzu](' + new URL(c.caseGuide, C.SITE.pbi).href + ')',
-      '- [Sentetik kaynak veri](' + new URL(c.download, C.SITE.pbi).href + ')', '',
-    ] : []),
     '## Önerilen çalışma ortamı', evidence.environment, '',
     ...(legacyMode ? ['Önceki beyan · ' + WORK_MODES[legacyMode] + ' (çalışma belirtilmemiş)', ''] : []),
     ...Object.entries(EVIDENCE_RUNS).flatMap(([run, title]) => [
       '## ' + title, ...(run === 'transferRun' ? [evidence.transfer, ''] : []),
+      ...evidence.sources[run].map(source =>
+        '- [' + (source.markdownLabel || source.label) + '](' + new URL(source.href, C.SITE.pbi).href + ')'),
+      '',
       ...EVIDENCE_FIELDS.map(field => {
         const value = evidenceValue(field, (progress[run] || {})[field.key]);
         const text = field.options ? (field.options[value] || '') : esc(value);
@@ -236,12 +243,8 @@ function downloadEvidence(id) {
 function capBlock(id) {
   const c = capOf(id), st = P.cap[capKey(id)] || {}, cs = capState(id);
   let h = '<section class="lvl-block" id="cap"><div class="sec-head"><div><span class="eyebrow">Bitirme projesi · portföyüne koy</span><h2>' + esc(c.title) + '</h2></div><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></div><div class="panel capbox">';
-  const dataDownload = c.download
-    ? '<a class="btn sm" href="' + esc(c.download) + '" download>' + ic('dl') + ' ' + esc(c.downloadLabel) + '</a>'
-    : '<button class="btn sm" data-act="data-zip">' + ic('dl') + ' Veri setini indir (.zip, CSV)</button>';
-  const caseGuide = c.caseGuide
-    ? '<a class="btn sm" href="' + esc(c.caseGuide) + '" download>Brif ve UAT kılavuzunu indir (.md)</a>' : '';
-  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' + (c.data ? '<p class="muted"><b>Veri:</b> ' + c.data + '</p><div class="row" style="margin-top:8px">' + dataDownload + caseGuide + '</div>' : '') + '</div>';
+  h += '<div class="cap-brief"><span class="eyebrow">Brif</span><p>' + c.brief + '</p>' +
+    (c.data ? '<p class="muted"><b>Veri</b> · ' + c.data + '</p>' : '') + '</div>';
   if (c.progressKey && P.cap[id]) h += '<p class="muted">Önceki kupon projesinin kayıtları saklanıyor. Depo Sevkiyat Kontrolü ayrı bir teslim listesiyle başlar.</p>';
   if (c.evidence) h += evidenceBlock(id, c.evidence);
   if (c.steps) h += '<div>' + (c.guide ? '<div class="row" style="margin-bottom:8px"><button class="btn sm pri" data-go="final">' + esc(c.guide) + '</button></div>' : '') + '<span class="eyebrow">Adımlar</span><ol class="capsteps">' + c.steps.map(x => '<li>' + x + '</li>').join('') + '</ol></div>';
@@ -280,7 +283,7 @@ function viewCert(id) {
 /* ---------- Bitirme projeleri listesi ---------- */
 function viewProjects() {
   const ids = PATHS.filter(p => capOf(p.id)).map(p => p.id);
-  return '<div class="wrap">' + C.head('Kariyer', 'Bitirme projeleri', 'Her öğrenme yolu, iş görüşmesinde gösterebileceğin bir portföy projesiyle biter. Brif, adımlar, teslim listesi ve değerlendirme ölçütü projenin sayfasında. Tam program projesinin 10 aşamalı uygulama kılavuzu da burada.', 'projeler') + '<div class="row"><button class="btn" data-go="final">Tam program uygulama kılavuzu: 10 aşama</button><button class="btn ghost" data-act="data-zip">Veri setini indir (.zip, CSV)</button></div><div class="paths">' + ids.map(id => { const p = PMAP[id], c = capOf(id), cs = capState(id); return '<button class="pcard" data-go="path" data-id="' + id + '" data-scroll="cap"><span class="row" style="justify-content:space-between"><span class="ic" style="background:' + p.color + '">' + p.short + '</span><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></span><h3>' + esc(c.title) + '</h3><p>' + esc((R[id].title || p.name)) + ' yolu</p><span class="bar"><i style="width:' + (cs.n ? cs.d / cs.n * 100 : 0) + '%;background:' + p.color + '"></i></span></button>'; }).join('') + '</div></div>';
+  return '<div class="wrap">' + C.head('Kariyer', 'Bitirme projeleri', 'Her öğrenme yolu, iş görüşmesinde gösterebileceğin bir portföy projesiyle biter. Brif, adımlar, teslim listesi ve değerlendirme ölçütü projenin sayfasında. Tam program projesinin 10 aşamalı uygulama kılavuzu da burada.', 'projeler') + '<div class="row"><button class="btn" data-go="final">Tam program uygulama kılavuzu: 10 aşama</button><button class="btn ghost" data-act="data-zip">Anadolu Market CSV paketini indir (.zip)</button></div><div class="paths">' + ids.map(id => { const p = PMAP[id], c = capOf(id), cs = capState(id); return '<button class="pcard" data-go="path" data-id="' + id + '" data-scroll="cap"><span class="row" style="justify-content:space-between"><span class="ic" style="background:' + p.color + '">' + p.short + '</span><span class="chip">' + cs.d + '/' + cs.n + ' teslim</span></span><h3>' + esc(c.title) + '</h3><p>' + esc((R[id].title || p.name)) + ' yolu</p><span class="bar"><i style="width:' + (cs.n ? cs.d / cs.n * 100 : 0) + '%;background:' + p.color + '"></i></span></button>'; }).join('') + '</div></div>';
 }
 
 /* ---------- Öğrenme yolu kartı (liste) ---------- */

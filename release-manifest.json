@@ -14,7 +14,8 @@
     "Depo sevkiyat vakası: CSV kaynak mutabakatı ve ayrı teslim ilerlemesi",
     "İlk uygulama ve bağımsız tekrar: ayrı kayıt, yedek birleştirme ve Markdown",
     "DP-600: dört alan, yol aşaması, hazırlık listesi ve kapsam haritası eşleşmesi",
-    "12 rol yolu: kabul ölçütü tablosu ve Markdown teslim çıktısı"
+    "12 rol yolu: kabul ölçütü tablosu ve Markdown teslim çıktısı",
+    "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -52,10 +53,10 @@
     "tests/snip.js": "9ded7e59deaceb137e028cc75ce72f4855ec98515d5ea226a9d846bc7f480843",
     "tests/termval.js": "a5673c3801a4639f6e254720280d64e48ee509998c9893687c2b43659b7e78d1",
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
-    "tests/yolval.js": "955c0b8462bbc65109fa6236a4ff40aa46439a4dfb52c818fc0e15a7c4e84081",
-    "app/roles.js": "c249325bb2c95f33e56c4a23b8a14662f7928bf13dcd61ad049e316886cbae9f",
-    "app/career.js": "5ecac978aa928b0853ff4758a06da4c66001b1e78223cfbeb71463086d94d585",
-    "KALAN-GOREVLER.md": "bd608b397739a96f44072263d2abfefce8c960084d9e6b622c0e938ff236d445",
+    "tests/yolval.js": "f03292f8540a8ee17cabd22b5b93d112ef457f04a1ea1f31044b15b9782612e2",
+    "app/roles.js": "b87450c274bfb6f774bb41493c991a57fadfa419a88fb7ea517c13ad3401c60c",
+    "app/career.js": "b3517c4a0a87a17193ca9bad01b0ae0033438f10074d2f05e399b22420be1115",
+    "KALAN-GOREVLER.md": "61f7e3f64c4939b0be8b25fc3f3305804a1f968af65ec7b0ac4d02213d6787c3",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "app/c24.js": "decf6b224935543ed4c01f291ab823ea744ee1af4bcd664fa47c9345985fb387",

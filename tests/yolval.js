@@ -10,6 +10,13 @@ const before = (p, a, b) => { const i = p.lessons.indexOf(a), j = p.lessons.inde
 for (const p of PBI_PATHS) {
   const r = PBI_ROLES[p.id] || {}; const seen = new Set();
   if (r.cap?.evidence && (!r.cap.rubric?.length || r.cap.rubric.some(row => row.length !== 4 || row.some(cell => !cell.trim())))) fail(p.id + ' teslim ölçütü eksik');
+  const sources = r.cap?.evidence?.sources;
+  for (const run of ['firstRun', 'transferRun']) {
+    if (!sources?.[run]?.length || sources[run].some(source =>
+      !source.label || !source.href || (source.download && !fs.existsSync(P + source.href) && !fs.existsSync(P + 'build/gh/static/' + source.href)))) {
+      fail(p.id + ' ' + run + ' veri bağlantısı eksik');
+    }
+  }
   p.lessons.forEach(id => { if (!L[id]) fail(p.id + ' bilinmeyen ' + id); if (seen.has(id)) fail(p.id + ' tekrar ' + id); seen.add(id); if ((PBI_OPTIONAL || []).includes(id)) fail(p.id + ' isteğe bağlı ders zorunlu ' + id); });
   (r.ms || []).forEach(m => { if (!p.lessons.includes(m.to)) fail(p.id + ' aşama sonu yolda yok: ' + m.t + ' ' + m.to); });
   (r.ready || []).forEach(x => (x.lessons || []).forEach(id => { if (!p.lessons.includes(id)) fail(p.id + ' hazırlık maddesi yolda olmayan ders: ' + id); }));
