@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-09",
-  "sourceCommit": "427743221c212ce9dd84a834d99bbbd27ec421de",
+  "sourceCommit": "52452681c0485bca0a9d3f7a3cde54bae8cc5da0",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -13,13 +13,14 @@
     "DP-600 dört alan eşleşmesi ve statik dersler",
     "12 öğrenme yolunda role özel kabul ölçütleri",
     "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları",
-    "Mobil menüden öğrenme yolu ve bitirme projesine geçiş"
+    "Mobil menüden öğrenme yolu ve bitirme projesine geçiş",
+    "Mobil DAX editörü, çalıştırma ve sonuç akışı"
   ],
   "files": {
-    "index.html": "df51ed05c78d7c0071b9ceed40b5e7329a0f9c52b29eb0cb3ec2414b562ae8bf",
-    "kesit.js": "068f210c6b4e825d4c874a5c413e576a8c2ef4395cdb4a68ebd9346df523f5b3",
+    "index.html": "e7e34e18134fcc1ea85c98dfc86e0a106296cfeba057ecba9758d8174752c449",
+    "kesit.js": "bf814a1ff7c1c4a2cc85e7221d99740b28c6a2a9575b4137bcdd3358e62f6021",
     "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
-    "sw.js": "382668e2ff7db63b0f20a3e1b848d9454cff50ddebebcbcaa4bf606a41128f79",
+    "sw.js": "be6c0e72ce7815683fd5cd1621a43a06a78887d74aa6b96b26b6b7ef7f8a4403",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
