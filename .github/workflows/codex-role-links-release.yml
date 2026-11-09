@@ -1,0 +1,61 @@
+name: Build Power BI role data links release
+on:
+  push:
+    branches: [codex/powerbi-links-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: f6c4cd0e34fb956585b62b6a55494e807928f2b9
+      - uses: actions/checkout@v4
+        with:
+          ref: 1c035ddfc06bc00a9f36afc8c5e8d87b2447988d
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp index.html "$package/index.html"
+          cmp config.js "$package/config.js"
+          cp "$package/kesit.js" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' 28347589b179c4ed1be1aa6a8c337cbc331ec2d73facd35c41f13a5013bba658 kesit.js 70524402bdea7da0ab54ef6657d1245c7a52bdb48c78a1647662778cdd78b1ce sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = '1c035ddfc06bc00a9f36afc8c5e8d87b2447988d'
+          data['checks'].append('12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in data['files']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- kesit.js sw.js release-manifest.json KALAN-GOREVLER.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: rol projelerinde veri ve rapor bağlantıları'
+          git push origin HEAD:refs/heads/codex/powerbi-links-verified
