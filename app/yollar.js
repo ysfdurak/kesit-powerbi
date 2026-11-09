@@ -52,15 +52,15 @@ const STAGES = {
   /* Sıra, resmî çalışma kılavuzundaki alan sırasıdır */
   pl300: [
     G('Başlangıç', '', ['ilk-olcu', 'kurulum', 'ilk-rapor', 'arayuz', 'aile', 'menuler-turu']),
-    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'pq-orta', 'coklu-kaynak', 'pq-ileri', 'pq-model', 'm-yaz', 'm-hata']),
+    G('Veriyi hazırla', '%25–30', ['veri-alma', 'veri-baglantilari', 'veri-akislari', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'pq-orta', 'coklu-kaynak', 'pq-ileri', 'pq-model', 'm-dili', 'm-yaz', 'm-hata']),
     G('Modelle', '%25–30', ['model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'dax-tarih-metin', 'hesap-tablolar', 'rol-oynayan', 'model-ileri', 'coka-cok', 'baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'gorsel-hesaplama', 'dax-metin-pratik', 'siralama', 'istatistik', 'hizli-olcu', 'yari-toplanabilir', 'hedef', 'hesaplama-gruplari', 'performans']),
     G('Görselleştir ve analiz et', '%25–30', ['gorsel-temel', 'gorsel-secimi', 'bicim-temel', 'tema-sayfa', 'filtreler', 'kosullu-bicim', 'gorsel-ilkeler', 'gorsel-algi', 'ozel-gorseller', 'pencere', 'etkilesim', 'hikaye', 'kademeli-tasarim', 'mobil-erisilebilirlik', 'eda', 'analiz-ozellikleri', 'ayristirma-etkileyen', 'copilot']),
     G('Yönet ve güvenli hâle getir', '%15–20', ['hizmet-kullanici', 'excel-entegrasyon', 'calisma-alani', 'panolar', 'paylasim', 'power-bi-apps', 'veri-yenileme', 'gateway', 'yayinlama', 'sayfalandirilmis', 'guvenlik', 'yonetisim']),
     G('Sınav', '', ['pl300'])
   ],
   gelistirici: [
-    G('Model ve DAX temeli', '', ['veri-alma', 'pq-temel', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'hesap-tablolar']),
-    G('Rapor kurmak', 'Geliştirici de rapor teslim eder', ['bicim-temel', 'kosullu-bicim', 'etkilesim', 'hikaye']),
+    G('Model ve DAX temeli', '', ['veri-alma', 'pq-temel', 'pq-donusum', 'pq-menu', 'pq-menu-2', 'pq-pivot-devrik', 'pq-uygulama', 'model-temel', 'dax-giris', 'tarih-tablosu', 'toplama', 'hesap-tablolar']),
+    G('Rapor kurmak', 'Geliştirici de rapor teslim eder', ['gorsel-secimi', 'bicim-temel', 'filtreler', 'kosullu-bicim', 'etkilesim', 'hikaye']),
     G('Bağlam ve CALCULATE', '', ['baglam', 'calculate', 'filter-all', 'iteratorler', 'var-mantik', 'blank-hata', 'zaman', 'zaman-donem', 'siralama']),
     G('Veri katmanı', '', ['pq-model', 'pq-orta', 'coklu-kaynak', 'veri-baglantilari', 'sql-analist', 'veri-akislari']),
     G('İleri model kalıpları', '', ['rol-oynayan', 'yari-toplanabilir', 'model-ileri', 'kalite-test']),
@@ -128,7 +128,7 @@ RO('gelistirici', { prereq: { t: 'Önce analist temeli', d: 'Bu yol kurumsal mod
 RO('dp600', {
   prereq: { t: 'PL-300 düzeyi varsayılır', d: 'Bu yol filtre bağlamını, CALCULATE’i ve yıldız şemayı bildiğini varsayar; bu dersler yolun içinde değildir ve belge şartına girmez. Rahat değilsen önce şu dersleri bitir ya da PL-300 yolunu izle.', path: 'pl300', lessons: ['model-temel', 'pq-temel', 'dax-giris', 'baglam', 'calculate', 'iteratorler', 'filter-all', 'zaman', 'baglam-gecisi', 'tablo-fonk'] } });
 T('dp600', { desc: 'Fabric Analytics Engineer: veri hazırlama ödevleri, kurumsal anlam modelleri ve Direct Lake.', long: 'Microsoft Fabric Analytics Engineer Associate (DP-600) için dört çalışma alanı ve Fabric ödevleri.', skills: ['OneLake', 'Lakehouse ve ambar', 'Data Factory ve işlem hatları', 'T-SQL ve PySpark', 'KQL', 'Direct Lake', 'Dağıtım işlem hattı'] });
-T('dax', {});
+RO('dax', { prereq: { t: 'Önce yıldız şema', d: 'Tablo ilişkileri ve tarih tablosu ölçülerin davranışını belirler. Bu kavramları bilmiyorsan önce aşağıdaki derslere göz at.', lessons: ['model-temel', 'tarih-tablosu'] } });
 RO('is-analisti', { prereq: { t: 'Önce SQL', d: 'Bu yol iş analistliğinin kendisini anlatmaz; talep, gereksinim, süreç ve UAT Kesit SQL’deki BT İş Analisti yolundadır. SQL biliyorsan buradan başlayabilirsin, bilmiyorsan önce o yolun SQL bölümünü bitirmeni öneririz.', sqlYol: 'is-analisti', lessons: [] } });
 RO('yonetici', { level: 'Temel → Orta' });
 T('yonetici', { desc: 'Pivot tablo bilen raporlama ve finans ekipleri için hızlı geçiş.', long: 'Excel’de pivot tablo ve grafiklerle rapor hazırlayanlar için. Excel alışkanlıklarını Power BI’ın model, ölçü ve rapor mantığına çevirir.', skills: ['Power Query', 'Model', 'Filtre bağlamı', 'Ölçüler', 'Biçim bölmesi', 'Rapor'] });

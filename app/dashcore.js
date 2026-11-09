@@ -36,6 +36,28 @@ function initState(dash) {
   const ps = pagesOf(dash);
   return { id: dash.id, sl, cross: null, drill: {}, page: (ps.find(p => !p.hidden) || ps[0]).id, pr, vis: Object.assign({}, dash.vis || {}), thru: null, mobile: false, bm: null };
 }
+/* Kayıtlı görünümü güncel rapor tanımlarıyla eşleştir. */
+function restoreView(dash, saved) {
+  const st = initState(dash);
+  if (!saved || typeof saved !== 'object') return st;
+  if (pagesOf(dash).some(page => !page.hidden && page.id === saved.page)) st.page = saved.page;
+  for (const key of Object.keys(st.sl)) {
+    const slicer = SL[key], values = saved.sl?.[key];
+    if (!slicer || !Array.isArray(values)) continue;
+    const valid = slicer.vals.filter(value => values.includes(value));
+    if (valid.length || (!slicer.req && values.length === 0)) st.sl[key] = slicer.single ? valid.slice(0, 1) : valid;
+  }
+  for (const [key, param] of Object.entries(dash.params || {})) {
+    if (param.opts.some(([value]) => value === saved.pr?.[key])) st.pr[key] = saved.pr[key];
+  }
+  for (const key of Object.keys(st.vis)) {
+    const value = saved.vis?.[key];
+    if (typeof value === 'string' && (value === st.vis[key] || allTiles(dash).some(tile => tile.vis === key + ':' + value))) st.vis[key] = value;
+  }
+  st.mobile = saved.mobile === true;
+  if ((dash.bookmarks || []).some(bm => bm.id === saved.bm)) st.bm = saved.bm;
+  return st;
+}
 /* Yer işareti uygula: sayfa, dilimleyiciler, parametreler, görünürlük ve çapraz filtre */
 function applyBookmark(dash, st, bm) {
   if (!bm) { const f = initState(dash); Object.assign(st, f, { mobile: st.mobile }); return; }
@@ -117,5 +139,5 @@ function drill(st, tile, op, v) {
   // tüm düzeyi genişletirken üst düzeyin filtresi yok: path, lv'den kısa olabilir
   return d;
 }
-W.PBI_DASHCORE = { SL, pagesOf, pageOf, allTiles, tilesOf, visOk, applyBookmark, initState, toggleSlicer, api, renderTile, drill, pc, wrapV };
+W.PBI_DASHCORE = { SL, pagesOf, pageOf, allTiles, tilesOf, visOk, applyBookmark, initState, restoreView, toggleSlicer, api, renderTile, drill, pc, wrapV };
 })(typeof window !== 'undefined' ? window : globalThis);

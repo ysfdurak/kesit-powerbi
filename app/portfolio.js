@@ -83,12 +83,15 @@ if (VIEWS.lesson) {
 
 /* ---------- Hakkında ---------- */
 function viewAbout() {
-  const c = CFG(), A = c.author || {}; const ex = C.LESSONS.reduce((a, l) => a + (l.ex || []).length, 0);
+  const c = CFG(), A = c.author || {}; const inv = window.PBI_INVENTORY;
   const link = (u, t) => u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener">' + t + '</a>' : '';
-  const nDash = (window.PBI_DASHES || []).length, nData = (window.PBI_DATASETS || []).length + 1, nPr = (window.PBI_PRACTICE || []).length;
   let h = '<div class="wrap" style="max-width:880px;gap:18px"><div><h1>Hakkında</h1><p class="muted" style="max-width:68ch;margin:6px 0 0">Kesit Power BI, sıfırdan işe hazır seviyeye Türkçe Power BI, DAX ve Fabric eğitimi. Kurulum yok, hesap yok: tarayıcında çalışan, DAX’ı benzeten bir motorla ölçü yazarsın, her alıştırma anında denetlenir.</p></div>';
   h += '<p class="muted" style="max-width:68ch;margin:0;font-size:.88rem">Süreler tahmindir: okuma, kod görevi başına 2-3 dakika ve çoktan seçmeli soru başına 0,5-1 dakikadan hesaplanır. Ölçülmüş değildir; hızın farklı olabilir.</p>';
-  h += '<div class="kpis about-kpis"><div class="kpi"><b>' + C.LESSONS.length + '</b><span>ders</span></div><div class="kpi"><b>' + ex + '</b><span>alıştırma</span></div><div class="kpi"><b>' + nPr + '</b><span>pratik görevi</span></div><div class="kpi"><b>' + nDash + '</b><span>örnek rapor</span></div><div class="kpi"><b>' + nData + '</b><span>veri seti</span></div></div>';
+  h += '<div class="kpis about-kpis">' + [[inv.lessons, 'ders'], [inv.lessonExercises, 'ders içi alıştırma'],
+    [inv.practiceTasks, 'pratik görevi'], [inv.reports, 'örnek rapor'], [inv.caseDatasets + 1, 'veri seti'],
+    [inv.placementQuestions, 'seviye testi sorusu'], [inv.certificationBankQuestions, 'sertifika konu bankası sorusu']]
+    .map(([count, label]) => '<div class="kpi"><b>' + count + '</b><span>' + label + '</span></div>').join('') +
+    '</div><a href="content-manifest.json">İçerik sayımını görüntüle</a>';
   if (A.name) h += '<section class="panel about-card"><div class="sec-head"><h3>Yapan</h3></div><p style="margin:0"><b style="font-size:1.1rem">' + esc(A.name) + '</b>' + (A.title ? '<br><span class="muted">' + esc(A.title) + '</span>' : '') + '</p>' + (A.bio ? '<p style="margin:0">' + esc(A.bio) + '</p>' : '') + '<div class="row" style="gap:8px">' + link(A.linkedin, 'LinkedIn') + link(A.github, 'GitHub') + link(A.repo ? A.repo + '/tree/kaynak' : '', 'Kaynak kod') + fbBtn('Hakkında / iletişim', 'Bana yaz', 'sm') + '</div></section>';
   if (c.story) h += '<section class="panel about-card"><div class="sec-head"><h3>Nasıl yapıldı</h3></div><p style="margin:0">' + esc(c.story) + '</p><p style="margin:10px 0 0"><a href="/vaka/">Vaka notunu oku: kararlar, ölçümler ve yanlış gidenler</a></p><p style="margin:10px 0 0"><a href="ders/">Ders metinlerinin tamamı</a></p></section>';
   h += '<section class="panel about-card"><div class="sec-head"><h3>Görüşün önemli</h3></div><p style="margin:0">Bu ücretsiz bir paylaşım ve portföy projesi. Bir hata gördüysen, anlatımı eksik bulduğun bir ders varsa ya da bir fikrin varsa yaz. Geri bildirim, GitHub’da bir kayıt (Issue) olarak açılır.</p><div class="row" style="gap:8px">' + fbBtn('Genel', 'Geri bildirim gönder', 'pri sm') + (giscusOn() ? '<a class="btn sm" href="https://github.com/' + esc(c.giscus.repo) + '/discussions" target="_blank" rel="noopener">GitHub tartışmaları</a>' : '') + '</div><p class="muted" style="margin:0;font-size:.85rem">Her dersin başlığının altında “Bu ders hakkında geri bildirim” bağlantısı' + (giscusOn() ? ', konu anlatımının altında yorum alanı' : '') + ' var.</p></section>';

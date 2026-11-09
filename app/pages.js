@@ -148,7 +148,20 @@ C.view('visuals', { render: viewVisuals, mount: () => paintVS(true), resize: () 
 const DASHES = window.PBI_DASHES || [];
 const DMAP = {}; DASHES.forEach(d => DMAP[d.id] = d);
 const DB = { id: 'ozet', tab: 'rapor', states: {}, cats: {}, insp: null };
-const stOf = d => DB.states[d.id] || (DB.states[d.id] = DC.initState(d));
+const finalStates = {};
+function stOf(d, scope) {
+  if (scope === 'final') return finalStates[d.id] || (finalStates[d.id] = DC.initState(d));
+  if (DB.savedViews !== C.P.dashboardViews) {
+    DB.savedViews = C.P.dashboardViews;
+    DB.states = {};
+  }
+  return DB.states[d.id] || (DB.states[d.id] = DC.restoreView(d, DB.savedViews[d.id]));
+}
+function rememberView(d, st) {
+  const page = st.thru?.from || st.page;
+  C.P.dashboardViews[d.id] = JSON.parse(JSON.stringify({ page, sl: st.sl, pr: st.pr, vis: st.vis, mobile: st.mobile, bm: st.bm }));
+  C.save();
+}
 function slicerHTML(d, st, scope) {
   return '<div class="dash-sl">' + (d.slicers || []).map(k => { const s = DC.SL[k]; if (!s) return ''; const sel = st.sl[k] || [];
     if (s.style === 'dropdown') return '<div class="slicer"><span class="eyebrow">' + esc(s.label) + '</span><select class="sl-dd" data-dsl="' + k + '" data-scope="' + scope + '" aria-label="' + esc(s.label) + '">' + (s.req ? '' : '<option value="">' + (s.rls ? 'Yönetici (rol yok)' : 'Tümü') + '</option>') + s.vals.map(v => '<option value="' + esc(JSON.stringify(v)) + '"' + (sel.length === 1 && X.keyOf(sel[0]) === X.keyOf(v) ? ' selected' : '') + '>' + esc(s.fmtv ? s.fmtv(v) : V.fmt(v)) + '</option>').join('') + '</select></div>';
@@ -183,7 +196,7 @@ function paintGrid(host, d, st, scope) {
   });
 }
 function bmBar(d, st, scope) {
-  const bms = d.bookmarks || []; if (!bms.length) return '';
+  const bms = d.bookmarks || []; if (!bms.length) return '<div class="row"><button class="btn sm ghost" data-dbm="__reset" data-scope="' + scope + '">Varsayılan filtrelere dön</button></div>';
   const story = bms.some(b => b.story); const cur = bms.find(b => b.id === st.bm); const i = cur ? bms.indexOf(cur) : -1;
   return '<div class="bmbar' + (story ? ' story' : '') + '"><span class="eyebrow">' + (story ? 'Sunum (yer işaretleri)' : 'Yer işaretleri') + '</span><div class="bm-list">' + bms.map(b => '<button data-dbm="' + b.id + '" data-scope="' + scope + '" aria-pressed="' + (st.bm === b.id) + '" title="' + esc(b.desc || '') + '">' + esc(b.name) + '</button>').join('') + '<button class="ghost" data-dbm="__reset" data-scope="' + scope + '" title="Varsayılan görünüme dön">↺ Sıfırla</button></div>' + (story ? '<div class="bm-story"><button class="btn sm" data-dbmstep="-1" data-scope="' + scope + '"' + (i <= 0 ? ' disabled' : '') + '>‹</button><p>' + (cur && cur.story ? cur.story : 'Sunumu başlatmak için ilk yer işaretine bas ya da ›’e tıkla.') + '</p><button class="btn sm" data-dbmstep="1" data-scope="' + scope + '"' + (i >= bms.length - 1 ? ' disabled' : '') + '>›</button></div>' : '') + '</div>';
 }
@@ -195,10 +208,11 @@ function pageTabs(d, st, scope) {
   return '<nav class="ptabs" aria-label="Rapor sayfaları"><div role="tablist" class="ptabs-in">' + ps.map(p => '<button role="tab" data-dpage="' + p.id + '" data-scope="' + scope + '" aria-selected="' + (st.page === p.id) + '">' + (p.icon ? '<span class="pti">' + p.icon + '</span>' : '') + esc(p.name) + '</button>').join('') + '</div></nav>';
 }
 function dashFrame(d, scope) {
-  const st = stOf(d), pg = DC.pageOf(d, st), th = d.theme || {}, ts = DC.tilesOf(d, st);
+  const st = stOf(d, scope), pg = DC.pageOf(d, st), th = d.theme || {}, ts = DC.tilesOf(d, st);
   let h = '<div class="dash-frame' + (th.id ? ' th-' + th.id : '') + (st.mobile ? ' mob' : '') + (th.nav === 'left' && !st.mobile ? ' navleft' : '') + '" data-scope="' + scope + '" data-dash="' + d.id + '">';
   if (th.header) h += '<header class="dhero"><span class="dlogo" aria-hidden="true">' + esc(th.logo || d.icon) + '</span><div class="grow"><b>' + esc(th.header) + '</b><small>' + esc(pg.name) + (th.sub ? ' · ' + esc(th.sub) : '') + '</small></div><span class="dh-r">Anadolu Market · veri: 31.12.2024</span></header>';
   h += bmBar(d, st, scope);
+  if (scope === 'dash') h += '<p class="muted" style="margin:0 0 8px">Sayfa, dilimleyiciler, görünüm ve telefon düzeni bu tarayıcıda saklanır. Grafik içi seçimler oturuma özeldir.</p>';
   if (th.nav === 'left' && !st.mobile) h += '<div class="dbody"><aside class="lnav" aria-label="Rapor sayfaları"><div role="tablist" class="lnav-in" aria-orientation="vertical">' + DC.pagesOf(d).filter(p => !p.hidden).map(p => '<button role="tab" data-dpage="' + p.id + '" data-scope="' + scope + '" aria-selected="' + (st.page === p.id) + '">' + (p.icon ? '<span class="pti">' + p.icon + '</span>' : '') + '<span>' + esc(p.name) + '</span></button>').join('') + '</div></aside><div class="dmain">';
   h += '<div class="dash-sl-wrap">' + slicerHTML(d, st, scope).replace('<div class="dash-sl">', '<div class="dash-sl">' + paramHTML(d, st, scope)) + '</div>';
   if (pg.thru) { const tv = st.thru && st.thru.field === pg.thru.field ? st.thru.v : pg.thru.def; h += '<div class="thrubar">' + (st.thru ? '<button class="btn sm" data-dback data-scope="' + scope + '">← Geri</button>' : '') + '<span>Detay sayfası · <b>' + esc(pg.thru.label || pc(pg.thru.field).c) + ': ' + esc(V.fmt(tv)) + '</b></span>' + (pg.note ? '<small class="muted">' + esc(pg.note) + '</small>' : '') + '</div>'; }
@@ -242,10 +256,14 @@ function viewDash(id) {
   h += '</section></div><aside class="drawer" id="drawer" aria-label="Görsel ayrıntısı" hidden></aside>';
   return h;
 }
-function mountDash() { if (DB.tab === 'rapor') { const d = DMAP[DB.id]; paintGrid(document.querySelector('.dash-frame[data-scope="dash"]'), d, stOf(d), 'dash'); } if (DB.insp) openDrawer(DB.insp, 'dash'); }
+function mountDash() { if (DB.tab === 'rapor') { const d = DMAP[DB.id]; paintGrid(document.querySelector('.dash-frame[data-scope="dash"]'), d, stOf(d, 'dash'), 'dash'); } if (DB.insp) openDrawer(DB.insp, 'dash'); }
 function scopeDash(scope) { return scope === 'final' ? DMAP[FIN.page] : DMAP[DB.id]; }
-function repaint(scope) { const d = scopeDash(scope); paintGrid(document.querySelector('.dash-frame[data-scope="' + scope + '"]'), d, stOf(d), scope); }
-function reframe(scope) { document.querySelectorAll('.vtip').forEach(e => { e.hidden = true; }); const d = scopeDash(scope); const host = document.querySelector('.dash-frame[data-scope="' + scope + '"]'); if (!host) return; const tmp = document.createElement('div'); tmp.innerHTML = dashFrame(d, scope); const nf = tmp.firstElementChild; host.replaceWith(nf); paintGrid(nf, d, stOf(d), scope); }
+function repaint(scope, remember = false) {
+  const d = scopeDash(scope), st = stOf(d, scope);
+  if (remember && scope === 'dash') rememberView(d, st);
+  paintGrid(document.querySelector('.dash-frame[data-scope="' + scope + '"]'), d, st, scope);
+}
+function reframe(scope) { document.querySelectorAll('.vtip').forEach(e => { e.hidden = true; }); const d = scopeDash(scope); const host = document.querySelector('.dash-frame[data-scope="' + scope + '"]'); if (!host) return; const tmp = document.createElement('div'); tmp.innerHTML = dashFrame(d, scope); const nf = tmp.firstElementChild; host.replaceWith(nf); repaint(scope, true); }
 function openDrawer(tid, scope) {
   const d = scopeDash(scope); const t = tileById(d, tid); const dr = $('#drawer'); if (!t || !dr) return;
   DB.insp = tid; document.querySelectorAll('.dtile.insp').forEach(e => e.classList.remove('insp')); const te = document.querySelector('.dtile[data-tile="' + tid + '"][data-scope="' + scope + '"]'); if (te) te.classList.add('insp');
@@ -449,21 +467,21 @@ document.addEventListener('click', ev => {
   // Dashboard
   if (d.dash) { DB.id = d.dash; DB.pk = false; closeDrawer(); C.go('dash', d.dash, { keepScroll: true }); requestAnimationFrame(() => { const c = document.querySelector('.dash-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); return; }
   if (d.dtab) { DB.tab = d.dtab; closeDrawer(); C.render(); return; }
-  if (d.dslb) { const scope = d.scope, dd = scopeDash(scope), st = stOf(dd); DC.toggleSlicer(st, d.dslb, JSON.parse(d.v), ev.ctrlKey || ev.metaKey); document.querySelectorAll('[data-dslb="' + d.dslb + '"][data-scope="' + scope + '"]').forEach(b => b.setAttribute('aria-pressed', (st.sl[d.dslb] || []).some(x => X.keyOf(x) === X.keyOf(JSON.parse(b.dataset.v))))); repaint(scope); return; }
-  if (d.xclear !== undefined) { const st = stOf(scopeDash(d.scope)); st.cross = null; repaint(d.scope); return; }
-  if (d.dpage) { const dd = scopeDash(d.scope), st = stOf(dd); st.page = d.dpage; st.cross = null; st.thru = null; st.drill = {}; st.bm = null; closeDrawer(); reframe(d.scope); return; }
-  if (d.dbm) { const dd = scopeDash(d.scope), st = stOf(dd); DC.applyBookmark(dd, st, d.dbm === '__reset' ? null : (dd.bookmarks || []).find(b => b.id === d.dbm)); closeDrawer(); reframe(d.scope); return; }
-  if (d.dbmstep) { const dd = scopeDash(d.scope), st = stOf(dd), bms = dd.bookmarks || []; const i = Math.max(0, Math.min(bms.length - 1, bms.findIndex(b => b.id === st.bm) + +d.dbmstep)); DC.applyBookmark(dd, st, bms[i]); reframe(d.scope); return; }
-  if (d.dvis) { const dd = scopeDash(d.scope), st = stOf(dd); const [k, v] = d.dvis.split(':'); st.vis[k] = v; st.bm = null; reframe(d.scope); return; }
-  if (d.dprm) { const dd = scopeDash(d.scope), st = stOf(dd); st.pr[d.dprm] = JSON.parse(d.v); st.bm = null; reframe(d.scope); return; }
-  if (d.dthru) { const dd = scopeDash(d.scope), st = stOf(dd), tl = tileById(dd, d.dthru); if (tl && st.cross) { st.thru = { field: tl.cross, v: st.cross.v, from: st.page }; st.page = tl.thru; st.cross = null; st.drill = {}; closeDrawer(); reframe(d.scope); window.scrollTo({ top: document.querySelector('.dash-frame[data-scope="' + d.scope + '"]').getBoundingClientRect().top + window.scrollY - 70 }); } return; }
-  if (d.dback !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd); st.page = (st.thru && st.thru.from) || DC.pagesOf(dd)[0].id; st.thru = null; reframe(d.scope); return; }
-  if (d.dmob !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd); st.mobile = !st.mobile; reframe(d.scope); return; }
+  if (d.dslb) { const scope = d.scope, dd = scopeDash(scope), st = stOf(dd, scope); DC.toggleSlicer(st, d.dslb, JSON.parse(d.v), ev.ctrlKey || ev.metaKey); document.querySelectorAll('[data-dslb="' + d.dslb + '"][data-scope="' + scope + '"]').forEach(b => b.setAttribute('aria-pressed', (st.sl[d.dslb] || []).some(x => X.keyOf(x) === X.keyOf(JSON.parse(b.dataset.v))))); repaint(scope, true); return; }
+  if (d.xclear !== undefined) { const st = stOf(scopeDash(d.scope), d.scope); st.cross = null; repaint(d.scope); return; }
+  if (d.dpage) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); st.page = d.dpage; st.cross = null; st.thru = null; st.drill = {}; st.bm = null; closeDrawer(); reframe(d.scope); return; }
+  if (d.dbm) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); DC.applyBookmark(dd, st, d.dbm === '__reset' ? null : (dd.bookmarks || []).find(b => b.id === d.dbm)); closeDrawer(); reframe(d.scope); return; }
+  if (d.dbmstep) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope), bms = dd.bookmarks || []; const i = Math.max(0, Math.min(bms.length - 1, bms.findIndex(b => b.id === st.bm) + +d.dbmstep)); DC.applyBookmark(dd, st, bms[i]); reframe(d.scope); return; }
+  if (d.dvis) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); const [k, v] = d.dvis.split(':'); st.vis[k] = v; st.bm = null; reframe(d.scope); return; }
+  if (d.dprm) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); st.pr[d.dprm] = JSON.parse(d.v); st.bm = null; reframe(d.scope); return; }
+  if (d.dthru) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope), tl = tileById(dd, d.dthru); if (tl && st.cross) { st.thru = { field: tl.cross, v: st.cross.v, from: st.page }; st.page = tl.thru; st.cross = null; st.drill = {}; closeDrawer(); reframe(d.scope); window.scrollTo({ top: document.querySelector('.dash-frame[data-scope="' + d.scope + '"]').getBoundingClientRect().top + window.scrollY - 70 }); } return; }
+  if (d.dback !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); st.page = (st.thru && st.thru.from) || DC.pagesOf(dd)[0].id; st.thru = null; reframe(d.scope); return; }
+  if (d.dmob !== undefined) { const dd = scopeDash(d.scope), st = stOf(dd, d.scope); st.mobile = !st.mobile; reframe(d.scope); return; }
   if (d.insp) { openDrawer(d.insp, d.scope); return; }
   if (d.drclose !== undefined) { closeDrawer(true); return; }
-  if (d.drill) { const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  d.tile); const st = stOf(dd); DC.drill(st, tl, d.drill); if (d.drill === 'mode') { t.setAttribute('aria-pressed', !!st.drill[tl.id].mode); return; } if (st.cross && tl.drill.some(c => { const p = pc(c); return p.t === st.cross.t && p.c === st.cross.c; })) st.cross = null; repaint(scope); return; }
+  if (d.drill) { const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  d.tile); const st = stOf(dd, scope); DC.drill(st, tl, d.drill); if (d.drill === 'mode') { t.setAttribute('aria-pressed', !!st.drill[tl.id].mode); return; } if (st.cross && tl.drill.some(c => { const p = pc(c); return p.t === st.cross.t && p.c === st.cross.c; })) st.cross = null; repaint(scope); return; }
   if (d.i !== undefined && t.closest('.dtile[data-cross]')) {
-    const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  tileEl.dataset.tile); const st = stOf(dd); const cs = DB.cats[scope + ':' + tl.id]; if (!cs) return; const v = cs[+d.i]; if (v === undefined) return;
+    const tileEl = t.closest('.dtile'); const scope = tileEl.dataset.scope; const dd = scopeDash(scope); const tl = tileById(dd,  tileEl.dataset.tile); const st = stOf(dd, scope); const cs = DB.cats[scope + ':' + tl.id]; if (!cs) return; const v = cs[+d.i]; if (v === undefined) return;
     const dr = st.drill[tl.id];
     if (tl.drill && dr && dr.mode) { if (dr.lv < tl.drill.length - 1) { DC.drill(st, tl, 'into', v); if (st.cross) { const p0 = pc(tl.drill[dr.lv - 1] || ''); if (p0 && st.cross.t === p0.t && st.cross.c === p0.c) st.cross = null; } repaint(scope); } return; }
     if (!tl.cross || (dr && dr.lv > 0)) return; // çapraz filtre yalnızca görselin ilk düzeyinden
@@ -496,7 +514,7 @@ document.addEventListener('change', ev => {
   if (d.vsa !== undefined) { vsSet('a', d.vsa, e.value); return; }
   if (d.vsg !== undefined) { vsSet('g', d.vsg, e.value); return; }
   if (d.slicerDd === 'vs') { VS.sl = e.value ? [JSON.parse(e.value)] : []; paintVS(); return; }
-  if (d.dsl) { const scope = d.scope, st = stOf(scopeDash(scope)); st.sl[d.dsl] = e.value ? [JSON.parse(e.value)] : []; repaint(scope); return; }
+  if (d.dsl) { const scope = d.scope, st = stOf(scopeDash(scope), scope); st.sl[d.dsl] = e.value ? [JSON.parse(e.value)] : []; repaint(scope, true); return; }
   if (d.fin) { C.P.final[d.fin] = e.checked; if (e.checked) C.addXP(2); C.save(); const det = e.closest('details.stage'); if (det) { const n = +det.dataset.stage; const s = FIN_DEF.stages[n - 1]; const done = s.tasks.filter((x, i) => C.P.final[finKey(n, i)]).length; det.querySelector('summary small').textContent = done + '/' + s.tasks.length + ' görev · ' + stageCmds(n).length + ' menü komutu'; } const pr = finProgress(); const bar = document.querySelector('.hero-main .bar i'); if (bar) bar.style.width = (pr.d / pr.t * 100) + '%'; const sp = document.querySelector('.hero-main .num'); if (sp) sp.textContent = pr.d + '/' + pr.t + ' görev tamamlandı'; return; }
   if (e.id === 'labSel') { showLab(e.value); return; }
   if (e.type === 'checkbox' && d.slicer === 'vs') { const v = JSON.parse(d.v); VS.sl = e.checked ? (VS.f.single ? [v] : VS.sl.concat([v])) : VS.sl.filter(x => X.keyOf(x) !== X.keyOf(v)); paintVS(); return; }
@@ -508,7 +526,7 @@ document.addEventListener('contextmenu', ev => {
   const m = ev.target.closest && ev.target.closest('.dtile[data-cross] [data-i]'); if (!m) return;
   const tileEl = m.closest('.dtile'), scope = tileEl.dataset.scope, dd = scopeDash(scope); if (!dd) return; const tl = tileById(dd, tileEl.dataset.tile); if (!tl || !tl.thru || !tl.cross) return;
   const cs = DB.cats[scope + ':' + tl.id]; const v = cs && cs[+m.dataset.i]; if (v === undefined) return;
-  ev.preventDefault(); const st = stOf(dd); st.thru = { field: tl.cross, v, from: st.page }; st.page = tl.thru; st.cross = null; st.drill = {}; closeDrawer(); reframe(scope);
+  ev.preventDefault(); const st = stOf(dd, scope); st.thru = { field: tl.cross, v, from: st.page }; st.page = tl.thru; st.cross = null; st.drill = {}; closeDrawer(); reframe(scope);
 });
 document.addEventListener('keydown', ev => {
   if (ev.key === 'Escape' && DB.insp) { closeDrawer(true); return; }

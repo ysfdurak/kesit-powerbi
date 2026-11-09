@@ -205,9 +205,6 @@ const T = W.PBI_TIER || (x => x);
 const tierIds = t => (W.PBI_LESSONS || []).filter(l => T((W.PBI_LEVEL_OF || {})[l.id] || l.lv) === t).map(l => l.id);
 const P0 = W.PBI_ROLES.profesyonel.ready; P0[0].lessons = tierIds('temel'); P0[1].lessons = tierIds('orta'); P0[2].lessons = tierIds('ileri');
 const hz = (W.PBI_PATHS || []).find(p => p.id === 'hizli'); if (hz) W.PBI_ROLES.hizli.ready[0].lessons = hz.lessons.slice();
-/* Üçüncü tur uzman dersleri ilgili patikalara, bağlı oldukları dersin arkasına eklenir */
-const INS = { gelistirici: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['model-ileri', 'coka-cok'], ['zaman-ileri', 'ozel-takvim'], ['kurumsal-model', 'buyuk-model']], dax: [['baglam-gecisi', 'genisletilmis-tablolar'], ['ileri-kaliplar', 'uzman-kaliplar'], ['zaman-ileri', 'ozel-takvim']], dp600: [['kurumsal-model', 'buyuk-model']], pl300: [['model-ileri', 'coka-cok']] };
-(W.PBI_PATHS || []).forEach(p => (INS[p.id] || []).forEach(([after, id]) => { if (!(W.PBI_LESSONS || []).some(l => l.id === id) || p.lessons.includes(id)) return; const i = p.lessons.indexOf(after); p.lessons.splice(i < 0 ? p.lessons.length : i + 1, 0, id); }));
 (W.PBI_PATHS || []).forEach(p => { const r = W.PBI_ROLES[p.id]; if (r && r.title) { p.short0 = p.name; p.name = r.title; } });
 /* Öğrenme yollarındaki portföy görevleri; proje kontrol listesindeki eski sıra korunur. */
 const caseZip = (name, slug) => ({ label: name + ' veri paketini indir (.zip)', href: 'veri/' + slug + '.zip', download: true });

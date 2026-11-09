@@ -24,6 +24,29 @@ for (const p of PBI_PATHS) {
   if (/\b(dashboard|patika)\b/i.test(JSON.stringify([p.name, p.desc, p.long, r.title, r.who, r.long]))) fail(p.id + ' metninde eski terim');
 }
 const gp = id => PBI_PATHS.find(p => p.id === id);
+for (const [pathId, pairs] of Object.entries({
+  pl300: [['m-dili', 'm-yaz']],
+  gelistirici: [['pq-donusum', 'pq-menu'], ['gorsel-secimi', 'etkilesim'], ['filtreler', 'etkilesim']],
+})) {
+  for (const [first, next] of pairs) {
+    const path = gp(pathId);
+    if (!path.lessons.includes(first) || !path.lessons.includes(next)) fail(pathId + ' ön koşulu eksik: ' + first + ' → ' + next);
+    else before(path, first, next);
+  }
+}
+for (const path of PBI_PATHS) {
+  const prereq = PBI_ROLES[path.id]?.prereq;
+  if (prereq?.path && (!gp(prereq.path) || prereq.path === path.id)) fail(path.id + ' ön koşul yolu');
+  for (const id of prereq?.lessons || []) {
+    if (!L[id] || path.lessons.includes(id)) fail(path.id + ' ayrı ön koşul dersi: ' + id);
+  }
+}
+for (const lesson of PBI_LESSONS) {
+  for (const [, id] of String(lesson.body || '').matchAll(/(?:data-lesson="|href="#ders-)([\w-]+)/g)) {
+    if (!L[id]) fail(lesson.id + ' bozuk ders bağlantısı: ' + id);
+  }
+}
+
 ['yari-toplanabilir', 'hizli-olcu', 'hesaplama-gruplari', 'istatistik', 'eda', 'tema-sayfa', 'sayfalandirilmis', 'pencere'].forEach(id => { if (!gp('pl300').lessons.includes(id)) fail('PL-300 eksik ' + id); });
 ['yayinlama', 'guvenlik', 'baglam-gecisi'].forEach(id => { if (!gp('analist').lessons.includes(id)) fail('analist eksik ' + id); });
 ['bicim-temel', 'etkilesim', 'hikaye', 'sayfalandirilmis'].forEach(id => { if (!gp('gelistirici').lessons.includes(id)) fail('geliştirici eksik ' + id); });

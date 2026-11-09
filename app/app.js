@@ -30,7 +30,7 @@ const colKey = o => o.t + '[' + o.c + ']';
 /* ---------- Depolama ---------- */
 const KEY = 'pbipatika.v1';
 function load() { try { return JSON.parse(KESIT_STORAGE.getItem(KEY)) || {}; } catch (e) { return {}; } }
-const FRESH = () => ({ weak: {}, skillStat: {}, rv: {}, rvc: 0, reports: [], exams: {}, arena: null, theme: 'auto', welcomed: false, bkDone: 0, vd: {}, done: {}, ex: {}, xp: 0, days: {}, placement: null, drafts: {}, last: null, seen: {}, mine: [], studio: null, gclosed: {}, final: {}, labSeen: {}, trickSeen: {}, goal: null, cap: {}, ready: {}, cert: {}, name: '', navc: {}, ivr: {}, testDone: null, pilot: { tests: [], aktifDk: 0, dersBaslangic: {}, dersBitis: {} }, _v: 2, _ts: 0 });
+const FRESH = () => ({ weak: {}, skillStat: {}, rv: {}, rvc: 0, reports: [], exams: {}, arena: null, theme: 'auto', welcomed: false, bkDone: 0, vd: {}, done: {}, ex: {}, xp: 0, days: {}, placement: null, drafts: {}, last: null, seen: {}, dashboardViews: {}, mine: [], studio: null, gclosed: {}, final: {}, labSeen: {}, trickSeen: {}, goal: null, cap: {}, ready: {}, cert: {}, name: '', navc: {}, ivr: {}, testDone: null, pilot: { tests: [], aktifDk: 0, dersBaslangic: {}, dersBitis: {} }, _v: 2, _ts: 0 });
 /* Kayıtlı ilerlemeyi şemaya göre temizle: bozuk ya da eski biçimli alanlar varsayılana döner, uygulama asla beyaz ekranda kalmaz */
 const kindOf = v => v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v;
 function sanitize(o) {
