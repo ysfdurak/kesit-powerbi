@@ -1,0 +1,61 @@
+name: Build Power BI light contrast release
+on:
+  push:
+    branches: [codex/powerbi-light-contrast-build]
+permissions:
+  contents: write
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 19fbf146073067f042e2b3645fc37ed7d6d7bde8
+      - uses: actions/checkout@v4
+        with:
+          ref: c76f61765c430717160765e037bb3ad3bb222a93
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify the publication files
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TMPDIR="$(mktemp -d)"
+          sh source/app/build/ghpack.sh
+          bundle="$(find "$TMPDIR" -path '*/kesit-powerbi/kesit.js' -print -quit)"
+          test -n "$bundle"
+          package="${bundle%/kesit.js}"
+          cmp config.js "$package/config.js"
+          cmp kesit.js "$package/kesit.js"
+          cp "$package/index.html" "$package/sw.js" .
+          cp source/KALAN-GOREVLER.md .
+          printf '%s  %s\n' 405bf219c6f8f041155da1397768b424dce480335756afa40cea2403e5486814 kesit.js 1a08990fb09b9dbb1ffad527f27f39d37d7b20bbf9d34ab40a5574f28a58a5c3 index.html d167a2b944fd00100aea2aef87334be4169b750bc03f8a0af3f8a6da2fe6b934 sw.js | sha256sum -c -
+          node --check kesit.js
+          node source/tests/artifact.cjs
+          node source/tests/yolval.js
+          node tests/recovery.cjs source/app/recovery.js
+          result="$(node tests/newdata.cjs)"
+          echo "$result"
+          test "$result" = '{"referenceSolutions":443,"fakeRejected":true,"alternativesAccepted":2}'
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          manifest = Path('release-manifest.json')
+          data = json.loads(manifest.read_text(encoding='utf-8'))
+          data['date'] = '2026-11-09'
+          data['sourceCommit'] = 'c76f61765c430717160765e037bb3ad3bb222a93'
+          data['checks'].append('Açık tema, profil rozetleri, rapor yükleme ve Power Query uyarıları')
+          data['files'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in data['files']}
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Store the verified candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- index.html sw.js release-manifest.json KALAN-GOREVLER.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Yayın: açık temada okunabilirlik ve kontrast'
+          git push origin HEAD:refs/heads/codex/powerbi-light-contrast-verified
