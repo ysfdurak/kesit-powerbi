@@ -112,7 +112,8 @@ function viewPath(id) {
   if (GUNCEL) h += '<div class="note"><b>Güncellik</b>' + GUNCEL[0] + ' Bu hazırlık resmî değildir ve kapsamın tamamını karşıladığını garanti etmez. <a href="' + GUNCEL[1] + '" target="_blank" rel="noopener">Resmî sayfa</a></div>';
   h += '<section class="panel pathhero" style="--pc:' + p.color + '"><div class="ph-main"><div class="row" style="gap:12px;flex-wrap:nowrap"><span class="ic" style="background:' + p.color + ';height:46px;min-width:46px">' + p.short + '</span><div class="grow"><span class="eyebrow">' + (mine ? 'Hedefin' : 'Öğrenme yolu') + (r.jobs ? ' · ' + esc(r.jobs.join(' · ')) : '') + '</span><h1>' + esc(r.title || p.name) + '</h1></div></div><p>' + esc(r.long || p.long || p.desc) + '</p>';
   h += '<div class="ph-facts"><span><b>' + s.n + '</b> ders</span><span><b>' + s.totS + '</b> tahmini çalışma</span><span><b>' + milestones(p).length + '</b> aşama</span><span><b>' + (r.cap ? 1 : 0) + '</b> bitirme projesi</span>' + (r.level ? '<span><b>' + esc(r.level) + '</b></span>' : '') + '</div>';
-  h += '<div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + id + '">' + (s.done || P.placement || C.startedIn(p.lessons) ? 'Devam et' : 'Yola başla') + ': ' + esc(nx.title) + '</button>' : '<span class="chip">Tüm dersler tamamlandı</span>') + (mine ? '' : '<button class="btn" data-setgoal="' + id + '">Hedefim yap</button>') + '</div></div>';
+  h += '<div class="row">' + (nx ? '<button class="btn pri" data-lesson="' + nx.id + '" data-ctx="' + id + '">' + (s.done || P.placement || C.startedIn(p.lessons) ? 'Devam et' : 'Yola başla') + ': ' + esc(nx.title) + '</button>' : '<span class="chip">Tüm dersler tamamlandı</span>') + (mine ? '' : '<button class="btn" data-setgoal="' + id + '">Hedefim yap</button>') +
+    (r.cap ? '<button class="btn" data-go="path" data-id="' + id + '" data-scroll="cap">Bitirme projesini aç</button>' : '') + '</div></div>';
   h += '<div class="ph-side">' + ring(s.pct, 112, 'Öğrenme yolu ilerlemesi') + '<small class="muted">' + s.done + '/' + s.n + ' ders</small><small class="muted">Kalan ' + s.remS + (mine ? '<br>Tahmini bitiş ' + e.date : '') + '</small></div></section>';
   if (r.outcomes) h += '<section class="lvl-block"><div class="sec-head"><div><span class="eyebrow">Sonunda</span><h2>Bu yolu bitirdiğinde bir şirkette…</h2></div></div><div class="panel cando outcomes"><ul>' + r.outcomes.map(o => '<li>' + esc(o) + '</li>').join('') + '</ul></div></section>';
   h += stateBlock(p, mine) + prereqBlock(r);
@@ -342,7 +343,6 @@ document.addEventListener('click', ev => {
   if (t.dataset.act === 'cert-dl') { const h = certHtml(); if (h) saveFile('kesit-powerbi-belge-' + (t.dataset.id || '') + '.html', h); return; }
   if (t.dataset.act === 'data-zip') { downloadData(); return; }
   if (t.dataset.act === 'evidence-dl') { downloadEvidence(t.dataset.id); return; }
-  if (t.dataset.scroll) { const sc = t.dataset.scroll; setTimeout(() => { const el = document.getElementById(sc); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60); }
 });
 function rerenderKeep(sel) { const y = window.scrollY; C.render(); window.scrollTo(0, y); const n = document.querySelector(sel); if (n) n.focus({ preventScroll: true }); }
 document.addEventListener('submit', ev => {

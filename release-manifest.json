@@ -15,7 +15,8 @@
     "İlk uygulama ve bağımsız tekrar: ayrı kayıt, yedek birleştirme ve Markdown",
     "DP-600: dört alan, yol aşaması, hazırlık listesi ve kapsam haritası eşleşmesi",
     "12 rol yolu: kabul ölçütü tablosu ve Markdown teslim çıktısı",
-    "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları"
+    "12 öğrenme yolunda ilk uygulama ve bağımsız tekrar kaynakları",
+    "Mobil menüden öğrenme yolu ve bitirme projesine geçiş"
   ],
   "files": {
     ".github/workflows/progress-quality.yml": "bf017fe3ff02e8275a89adcd72acb56842f89ea463a828eed3bf9b38b2699a9c",
@@ -24,14 +25,14 @@
     "tests/newdata.cjs": "3f1b393338743edbf2c8f64a7ded24a0c15673ce9cbcf85028e2e72732fb1aef",
     "tests/recovery.cjs": "9990ef25ded436773fef0d4659d287bdbb3a3caa94817eb768a0b4ac129a31f8",
     "NASIL.md": "fb8afc2001ff48feffc84054e54766063260478b295994b93619e4a2fe40a02e",
-    "app/app.js": "7b8ecbf0d71faff87913dcf4414834656a4cad6ec816ee149b62ae87aa13cd6c",
+    "app/app.js": "efeba8020c77a0c00708164c31d550a3520d6e3f0daca9d85d5f7adefcf2bbb6",
     "app/build/build.sh": "f2be37e7fa7f22d3b2126241d5d6040b3a7984a0f9512be0c694f67164d8c5e4",
     "app/build/ghpack.sh": "6c0488b24c0b596eebfbb046f16d8833bd8a6d2e5c2508ceb91d57caa0559243",
     "app/build/readme.js": "cab07a4165e1d07d1f76c5e95413d72eb600ec481ef7eefa363d7178ff55eb16",
     "app/build/vdpack.js": "0096cf6a54a363e91f8178826b27292fca2434f6f1870883e208b17da3b17303",
     "app/dax.js": "6b044071423b394fb21ce11ed2a62bb7e13d7f72146615976ec700d0335b1e23",
     "app/denetim.js": "67a24b65724a2744523b51aa31fd3f06a1b25c93ef7f94dec7bc36caebb143ea",
-    "app/index.html": "b48945c45a12eaa2110e89a19591c7a1f6cfcffee936d9927dce613173fad219",
+    "app/index.html": "71271cb62cf50374daaf5b79be6f22a624f6d83eea011935d5b35a675b64ca41",
     "app/sync.js": "080cda67761e78b364652c589d640ceacaa83ffd02cecbf079ae0a26703c750a",
     "tests/agentval.js": "06d9b04dfd9b7499ffa158bb2589b54aac09af13d1d395d20ce438b4f5b0e1a0",
     "tests/arenaval.js": "084fdc8e846097f583a82342a64c6b315985a9b487a5f055df262c148f6fe6e0",
@@ -55,8 +56,8 @@
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
     "tests/yolval.js": "f03292f8540a8ee17cabd22b5b93d112ef457f04a1ea1f31044b15b9782612e2",
     "app/roles.js": "b87450c274bfb6f774bb41493c991a57fadfa419a88fb7ea517c13ad3401c60c",
-    "app/career.js": "b3517c4a0a87a17193ca9bad01b0ae0033438f10074d2f05e399b22420be1115",
-    "KALAN-GOREVLER.md": "61f7e3f64c4939b0be8b25fc3f3305804a1f968af65ec7b0ac4d02213d6787c3",
+    "app/career.js": "22b4bdf67247cf39b254f3b657405a6774a7162e1808463a7a8066fe0a788414",
+    "KALAN-GOREVLER.md": "e4804cb65703a78f7413fcffc15f854b7f161e087f95be7e93416c3181a00997",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "app/c24.js": "decf6b224935543ed4c01f291ab823ea744ee1af4bcd664fa47c9345985fb387",
@@ -66,6 +67,7 @@
     "app/x_ileri3.js": "256185c1d62ecbc59eafed856c93cb45e32fdc8c3bb88c8903330e9f62216963",
     "app/yollar.js": "bf4ea76142d087c2844d3ba7660bdee5d6ad4b1d65ccf979e26c1e9357bb0c15",
     "app/build/gh/static/ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
-    "app/build/gh/static/ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b"
+    "app/build/gh/static/ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
+    "app/app.css": "e74364a5a8917086fc3923fa0300dd9f4f8e4039e4ff4cacf10162b1274b18c7"
   }
 }
