@@ -30,10 +30,10 @@
     "tests/newdata.cjs": "3f1b393338743edbf2c8f64a7ded24a0c15673ce9cbcf85028e2e72732fb1aef",
     "tests/recovery.cjs": "9990ef25ded436773fef0d4659d287bdbb3a3caa94817eb768a0b4ac129a31f8",
     "NASIL.md": "fb8afc2001ff48feffc84054e54766063260478b295994b93619e4a2fe40a02e",
-    "app/app.js": "0f805dced1347bae7eeffbdbeed42397c837744d946a1c833b40d3cc30cad374",
+    "app/app.js": "5ce4952aa1df1f097ed568f0d9196b7509720b686121e5debfa7f6b679e559bb",
     "app/build/build.sh": "4e065d1fc5f2325493a739f3970dfc11c28cfa6f4818d07e219cf9dc3d9c07a2",
     "app/build/ghpack.sh": "e0f00e895c3393e0cafe6f0ef7f82d64381d45b69dcec24c4bb9a07b1949e6af",
-    "app/build/readme.js": "215260d772982961ff3a792cd724a0f9dbaa88966e71649369a819cf0c71b3c4",
+    "app/build/readme.js": "b26e647e9dcc2f9feff6be653de3821f4596876a10743ba9ce1bd52fcb83fc61",
     "app/build/vdpack.js": "0096cf6a54a363e91f8178826b27292fca2434f6f1870883e208b17da3b17303",
     "app/dax.js": "6b044071423b394fb21ce11ed2a62bb7e13d7f72146615976ec700d0335b1e23",
     "app/denetim.js": "67a24b65724a2744523b51aa31fd3f06a1b25c93ef7f94dec7bc36caebb143ea",
@@ -79,9 +79,20 @@
     "app/pages.js": "fb74402bad7e4f12f85b783f765167982e4c848c665b5c3feb717ac49dcb3354",
     "app/dashcore.js": "c0ca140a9bbd4f6f22cdb68b85aa2b111a3552fbddca9bf7289e5ddf396149e5",
     "app/inventory.js": "f8007dd4c4a639e4c3ef14c7d26905df7cbca1a97f3f8106ac15b991b442b4b0",
-    "app/portfolio.js": "5040dcbc6552afd2df18dcbebdd41afca634fdcd46f79b5db44ca36a7fb398b7",
+    "app/portfolio.js": "17f2ba616350ab76372bb619886c8feed66a3e4db704f953fe3c5fe0df0a2376",
     "app/build/budget.cjs": "57c25ef0e9c20d71d2ab7c79bb80af47924c9c3c62730ada15021e0ad545d3fc",
     "app/build/ghhead.py": "98be4d19ba1b6b98412aa641bb88f408921ed03348e304c4713e1cc30dfc7a85",
     "app/build/gh/static/sw.js": "460a56e5cef52d1e6ef5a5607970b4ad44aa560aeb46559f1bbc6098170b42b2"
-  }
+  },
+  "patches": [
+    {
+      "date": "2026-11-10",
+      "files": [
+        "app/app.js",
+        "app/build/readme.js",
+        "app/portfolio.js"
+      ],
+      "note": "Kesit İstatistik Kesit ailesi bağlantılarına eklendi; dosya özetleri güncellendi."
+    }
+  ]
 }
