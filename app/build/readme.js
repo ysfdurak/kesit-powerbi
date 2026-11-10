@@ -47,7 +47,7 @@ const t = `# Kesit Power BI
 - **Açık kaynak bileşenler:** Bricolage Grotesque, IBM Plex Sans ve JetBrains Mono yazı tipleri (SIL Open Font License, lisans dosyaları \`vendor/fonts\` içinde). Başka üçüncü taraf kütüphane kullanılmıyor.
 
 ## Kardeş projeler
-Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak.github.io/kesit-sql/)** ve **[Kesit Python](https://ysfdurak.github.io/kesit-python/)**. Beş vaka veri seti üç uygulamada satır satır aynıdır. Anadolu Market, Kesit SQL ile aynı şirket ve siparişleri kullanır; Power BI modeli zenginleştirildi.
+Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak.github.io/kesit-sql/)**, **[Kesit Python](https://ysfdurak.github.io/kesit-python/)** ve **[Kesit İstatistik](https://ysfdurak.github.io/kesit-istatistik/)**. Beş vaka veri seti üç uygulamada satır satır aynıdır. Anadolu Market, Kesit SQL ile aynı şirket ve siparişleri kullanır; Power BI modeli zenginleştirildi.
 
 ## Geri bildirim
 Hata ve önerileri bu deponun [Issues](https://github.com/ysfdurak/kesit-powerbi/issues) sayfasına yazabilirsin. Uygulamadaki “Sorun bildir” ve “Bu ders hakkında geri bildirim” düğmeleri ders adı dolu bir kayıt açar.

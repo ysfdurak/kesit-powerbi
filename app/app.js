@@ -7,7 +7,7 @@ const X = window.PBI_DAX, V = window.PBIViz, MODEL = window.PBI_MODEL, CHK = win
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const CFG0 = window.KESIT_CONFIG || {};
-const SITE = { home: CFG0.homeUrl || 'https://ysfdurak.github.io/', sql: CFG0.sqlUrl || 'https://ysfdurak.github.io/kesit-sql/', pbi: CFG0.pbiUrl || 'https://ysfdurak.github.io/kesit-powerbi/', python: CFG0.pythonUrl || 'https://ysfdurak.github.io/kesit-python/' };
+const SITE = { home: CFG0.homeUrl || 'https://ysfdurak.github.io/', sql: CFG0.sqlUrl || 'https://ysfdurak.github.io/kesit-sql/', pbi: CFG0.pbiUrl || 'https://ysfdurak.github.io/kesit-powerbi/', python: CFG0.pythonUrl || 'https://ysfdurak.github.io/kesit-python/', stat: CFG0.statUrl || 'https://ysfdurak.github.io/kesit-istatistik/' };
 const REPO_URL = (CFG0.author && CFG0.author.repo) || 'https://github.com/ysfdurak/kesit-powerbi';
 const SQL_URL = SITE.sql;
 
@@ -224,7 +224,7 @@ function view(name, def) { VIEWS[name] = def; }
 let S = { view: 'home', id: null, step: 0, ctx: null };
 const parentOf = v => ({ lesson: 'curr', path: 'paths', hedef: 'paths', final: 'projeler', karis: 'hatalar', tricks: 'hatalar', pratikSoru: 'pratik' })[v] || v;
 function familyLinks() {
-  const items = [['Ana sayfa', SITE.home], ['Kesit SQL', SITE.sql], ['Kesit Python', SITE.python]];
+  const items = [['Ana sayfa', SITE.home], ['Kesit SQL', SITE.sql], ['Kesit Python', SITE.python], ['Kesit İstatistik', SITE.stat]];
   return '<div class="fam"><span class="eyebrow">Kesit</span>' + items.map(([t, u]) => '<a href="' + esc(u) + '">' + t + '</a>').join('') + '</div>';
 }
 function renderNav() {
@@ -423,7 +423,7 @@ function viewMore() {
   return '<div class="wrap"><div class="phead"><h1>Menü</h1></div>' +
     '<div class="tools morelist">' + shortcuts.map(v => tool(NAVFLAT.find(item => item[0] === v))).join('') + '</div>' +
     NAV.map(([g, items]) => '<section class="lvl-block"><span class="eyebrow">' + g + '</span><div class="tools morelist">' +
-      items.filter(([v]) => !shortcuts.includes(v)).map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a></div></section></div>';
+      items.filter(([v]) => !shortcuts.includes(v)).map(tool).join('') + '</div></section>').join('') + '<section class="lvl-block"><div class="tools morelist">' + NAVFOOT.map(tool).join('') + '</div></section><section class="lvl-block"><span class="eyebrow">Kesit</span><div class="tools morelist"><a class="tool" href="' + esc(SITE.home) + '"><span class="tic">' + ic('home') + '</span><b>Ana sayfa</b><small>Kesit ailesinin ortak sayfası</small></a><a class="tool" href="' + esc(SITE.sql) + '"><span class="tic">' + ic('term') + '</span><b>Kesit SQL</b><small>Aynı şirketin verisiyle SQL öğren</small></a><a class="tool" href="' + esc(SITE.python) + '"><span class="tic">' + ic('term') + '</span><b>Kesit Python</b><small>Veri analizi için Python öğren</small></a><a class="tool" href="' + esc(SITE.stat) + '"><span class="tic">' + ic('term') + '</span><b>Kesit İstatistik</b><small>Aynı verilerle istatistik ve karar</small></a></div></section></div>';
 }
 
 /* ---------- Müfredat ---------- */
