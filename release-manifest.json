@@ -22,14 +22,25 @@
   ],
   "files": {
     "index.html": "e384cfc7928500173a5d3eed46f8b441cb4659c668f70abd8ca9eed2a49535cd",
-    "kesit.js": "3e111f2e57423e81c9946914fbd5600fd099dfd7e880d9283449bad0ab180fe1",
-    "config.js": "1e0a875073a2e9b80599f93d6391589a3a95973c6865e40abd404c5562f65f39",
+    "kesit.js": "b7f2a9bddf315b9324f21c2171721f1d473c6a64ca0caf56bf65f02183e57b79",
+    "config.js": "05a400ea9a5650640890e5cf8ef0f33b5f09a2e2d58cf2a1d5a6e2c350b972f3",
     "sw.js": "d7ced37344cedac599697ee524b86b78403af2ef600576223ea3abdeb865cccf",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
     "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
-    "README.md": "174c44b9146c1849ebbb99dcc68b1dba5e7c87a1e9f87b4b24ed60a2c93c1d7c",
+    "README.md": "191937d88a1f330d933d6197872d53886653db0beeb355449654a09798b0a4e7",
     "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552"
-  }
+  },
+  "patches": [
+    {
+      "date": "2026-11-10",
+      "files": [
+        "kesit.js",
+        "config.js",
+        "README.md"
+      ],
+      "note": "Kesit İstatistik Kesit ailesi bağlantılarına eklendi (config statUrl, menü ve Hakkında bağlantıları, README). Değişiklik kaynak dalında da uygulandı; kurtarma ve sözdizimi kontrolleri yeniden çalıştırıldı."
+    }
+  ]
 }

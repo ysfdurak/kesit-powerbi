@@ -21,6 +21,7 @@ window.KESIT_CONFIG = {
   sqlUrl: 'https://ysfdurak.github.io/kesit-sql/',
   pbiUrl: 'https://ysfdurak.github.io/kesit-powerbi/',
   pythonUrl: 'https://ysfdurak.github.io/kesit-python/',
+  statUrl: 'https://ysfdurak.github.io/kesit-istatistik/',
 
   /* Boşsa geri bildirim GitHub Issues'a gider. Form kullanılacaksa adresi buraya yaz: {ders} yazan yere ders adı gelir (kaynak dalında YAYIN.md, adım 4). */
   feedbackFormUrl: '',
