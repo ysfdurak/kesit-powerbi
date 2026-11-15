@@ -21,16 +21,17 @@
     "Örnek rapor ayarları, ön koşul sırası, açılış bütçesi ve içerik sayımı"
   ],
   "files": {
-    "index.html": "e384cfc7928500173a5d3eed46f8b441cb4659c668f70abd8ca9eed2a49535cd",
+    "index.html": "cea2dc8893dacdc7d105bcce6c250475ed6ef8a59149bf2c7c97a8fea6f55af4",
     "kesit.js": "b7f2a9bddf315b9324f21c2171721f1d473c6a64ca0caf56bf65f02183e57b79",
     "config.js": "05a400ea9a5650640890e5cf8ef0f33b5f09a2e2d58cf2a1d5a6e2c350b972f3",
-    "sw.js": "d7ced37344cedac599697ee524b86b78403af2ef600576223ea3abdeb865cccf",
+    "sw.js": "0f16d3925b6bf5c79d33896ed2f5dbf5cd06d5584cedead91588178a81677e4d",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
     "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
     "README.md": "191937d88a1f330d933d6197872d53886653db0beeb355449654a09798b0a4e7",
-    "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552"
+    "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552",
+    "en-tour.js": "ce0b3b90f271b9851fc4200f9141228c4f1a7df71c1e85d0fa31d9364ca679a6"
   },
   "patches": [
     {

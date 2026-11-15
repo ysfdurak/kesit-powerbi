@@ -27,6 +27,9 @@
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
 - Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
 
+
+## İngilizce tanıtım turu
+Arayüz Türkçe kalır. İngilizce okuyan ziyaretçi için adresin sonuna `?lang=en` eklenir ([https://ysfdurak.github.io/kesit-powerbi/?lang=en](https://ysfdurak.github.io/kesit-powerbi/?lang=en)): her ekranı anlatan bir rehber paneli ve menü/başlıklarda İngilizce karşılıklar açılır; `?lang=tr` kapatır. Ayrıntı: [INGILIZCE-TUR.md](INGILIZCE-TUR.md).
 ## Kaynak kod ve yapım
 - Bu dal (`main`) yayınlanan derlenmiş sitedir. Düzenlenebilir kaynak, derleme betikleri ve doğrulayıcılar [`kaynak` dalında](https://github.com/ysfdurak/kesit-powerbi/tree/kaynak); başlangıç noktası `NASIL.md`.
 - **Yapay zekâ kullanımı:** Ürün kararlarını, hedef kitleyi ve kurguyu Yusuf Durak verdi; kod, DAX motoru ve içerik yapay zekâ (Claude) ile geliştirildi ve otomatik denetimlerden geçirildi. Bağımsız kullanıcı testi yapılmadı.
