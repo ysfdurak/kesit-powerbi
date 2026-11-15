@@ -25,7 +25,7 @@ fi
 } > "$O/kesit-powerbi/kesit.js"
 node build/budget.cjs "$O/kesit-powerbi/kesit.js"
 cp build/gh/config.js $O/kesit-powerbi/
-{ printf '<!doctype html>\n<html lang="tr">\n'; sed '/<script charset="utf-8" src="/d' index.html; printf '<script charset="utf-8" src="config.js"></script>\n<script charset="utf-8" src="kesit.js"></script>\n'; } > $O/kesit-powerbi/index.html
+{ printf '<!doctype html>\n<html lang="tr">\n'; sed '/<script charset="utf-8" src="/d' index.html; printf '<script charset="utf-8" src="config.js"></script>\n<script charset="utf-8" src="kesit.js"></script>\n<script charset="utf-8" src="en-tour.js" defer></script>\n'; } > $O/kesit-powerbi/index.html
 cp veri/*.zip $O/kesit-powerbi/veri/
 cp build/gh/LICENSE build/gh/LICENSE-ICERIK.md $O/kesit-powerbi/
 [ -d build/gh/ekran ] && cp build/gh/ekran/*.png $O/kesit-powerbi/ekran/ || true
@@ -33,7 +33,7 @@ touch $O/kesit-powerbi/.nojekyll
 cp -r build/gh/static/. $O/kesit-powerbi/
 node build/readme.js --manifest > "$O/kesit-powerbi/content-manifest.json"
 python3 build/ghhead.py "$O/kesit-powerbi/index.html" "$O/kesit-powerbi/content-manifest.json"
-V=$(cat $O/kesit-powerbi/index.html $O/kesit-powerbi/kesit.js $O/kesit-powerbi/config.js $O/kesit-powerbi/content-manifest.json | sha1sum | cut -c1-10)
+V=$(cat $O/kesit-powerbi/index.html $O/kesit-powerbi/kesit.js $O/kesit-powerbi/config.js $O/kesit-powerbi/content-manifest.json $O/kesit-powerbi/en-tour.js | sha1sum | cut -c1-10)
 sed -i "s/__SURUM__/$V/" $O/kesit-powerbi/sw.js
 node build/readme.js > $O/kesit-powerbi/README.md
 cd $O && rm -f kesit-powerbi.zip && python3 -c "import shutil; shutil.make_archive('kesit-powerbi','zip','.','kesit-powerbi')"
