@@ -24,14 +24,14 @@
     "index.html": "cea2dc8893dacdc7d105bcce6c250475ed6ef8a59149bf2c7c97a8fea6f55af4",
     "kesit.js": "b7f2a9bddf315b9324f21c2171721f1d473c6a64ca0caf56bf65f02183e57b79",
     "config.js": "05a400ea9a5650640890e5cf8ef0f33b5f09a2e2d58cf2a1d5a6e2c350b972f3",
-    "sw.js": "0f16d3925b6bf5c79d33896ed2f5dbf5cd06d5584cedead91588178a81677e4d",
+    "sw.js": "a67b3ccf3e8325196b96204f0d8b7d9162401b777404f798179ecf095160a094",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
     "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
     "README.md": "ebdd91a721bda417d91920016b42e71d637cf92ed594c3e1b4582283ad3145ee",
     "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552",
-    "en-tour.js": "ce0b3b90f271b9851fc4200f9141228c4f1a7df71c1e85d0fa31d9364ca679a6"
+    "en-tour.js": "95144c7147b9b49f455752b93c616bb4a395f6bc61a39b0c2f17c902478e217a"
   },
   "patches": [
     {
