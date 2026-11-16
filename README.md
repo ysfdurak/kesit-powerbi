@@ -41,6 +41,20 @@ Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak
 ## Geri bildirim
 Hata ve önerileri bu deponun [Issues](https://github.com/ysfdurak/kesit-powerbi/issues) sayfasına yazabilirsin. Uygulamadaki “Sorun bildir” ve “Bu ders hakkında geri bildirim” düğmeleri ders adı dolu bir kayıt açar.
 
+## English
+
+**Kesit Power BI** teaches Power BI, DAX and Fabric from scratch to job-ready level, in Turkish, in the browser: no install, no account. A DAX-emulating engine evaluates your measures and every exercise is checked instantly.
+
+- 150 lessons, 1,250 in-lesson exercises and 117 practice tasks across beginner, intermediate and advanced levels.
+- 12 learning paths (data analyst, BI developer, PL-300, DP-600 / Fabric and more), a placement test, and 24 sample reports (104 pages) explained step by step.
+- Six fictional datasets, including five case packs with CSVs, a model plan and expected results for working in Power BI Desktop.
+- 262 PL-300 and DP-600 question-bank items, 185 interview questions, DAX Playground, Power Query Lab, Measure Lab and DAX Arena.
+- Progress stays in the browser and can be backed up to a file.
+
+The interface and lessons are in Turkish. Add `?lang=en` to the address ([ysfdurak.github.io/kesit-powerbi/?lang=en](https://ysfdurak.github.io/kesit-powerbi/?lang=en)) for an English guide that explains each screen.
+
+Try it: https://ysfdurak.github.io/kesit-powerbi/ · Sister apps: [SQL](https://github.com/ysfdurak/kesit-sql), [Python](https://github.com/ysfdurak/kesit-python), [Statistics](https://github.com/ysfdurak/kesit-istatistik).
+
 ## Sorumluluk notu
 Ücretsiz, ticari olmayan bir eğitim ve portföy projesidir; içerik “olduğu gibi” sunulur. Veri setlerindeki tüm şirketler, kişiler ve kayıtlar hayalidir. Microsoft ile bağlantılı değildir; Microsoft, Power BI, Fabric ve sınav adları Microsoft Corporation'ın markalarıdır. Sınav denemeleri özgün olarak yazılmıştır, gerçek sınav soruları değildir. Uygulamanın verdiği belgeler kendi beyana dayalıdır, Microsoft sertifikası değildir.
 
