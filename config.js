@@ -14,7 +14,7 @@ window.KESIT_CONFIG = {
   },
   /* Hakkında → "Nasıl yapıldı". */
   story: 'Operasyon geliştirme işinde kararların çoğu bir rapora bakılarak veriliyor; ama raporu kuran kişiyle soruyu soran kişi çoğu zaman farklı, aradaki bekleyiş de en büyük israflardan biri. Power BI bu mesafeyi kısaltan en güçlü araçlardan biri; Türkçe, kurulum gerektirmeyen ve yaparak öğreten, iş hayatına hazırlayan bir kaynak ise yok denecek kadar az. Kesit Power BI\'ı bu boşluğu doldurmak için tasarladım. Ürün sahibi gibi çalıştım: hedef kitleyi, Temel–Orta–İleri seviye yapısını, rol odaklı öğrenme yollarını, örnek raporları ve banka, havayolu, yemek teslimatı, İK ve bisiklet paylaşımı vaka veri setlerini ben kurguladım; kodu, tarayıcıda çalışan DAX motorunu ve içeriği yapay zekâ (Claude) ile geliştirdim. Kaliteyi otomatik denetimlerle sağlamaya çalıştım: her alıştırma motorda çözülüyor, vaka görevlerinin beklenen sonuçları ayrıca SQL ile bağımsız olarak doğrulanıyor; bulunan hatalar düzeltilip her sürüm yeniden denetlendi. Kardeş projeleri Kesit SQL ve Kesit Python ile aynı ürün mantığını paylaşıyor.',
-  license: '',           // boşsa: içerik CC BY-NC 4.0, kod PolyForm Shield 1.0.0
+  license: '',           // boşsa: kod ve içerik PolyForm Shield 1.0.0
 
   /* Kesit ailesi (menünün altındaki bağlantılar). */
   homeUrl: 'https://ysfdurak.github.io/',
