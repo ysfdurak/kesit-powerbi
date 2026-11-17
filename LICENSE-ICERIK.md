@@ -10,5 +10,5 @@ Kesit Power BI'ın ders anlatımları, alıştırmaları, sınav, mülakat ve oy
 
 Bu bir özettir; bağlayıcı metin: https://creativecommons.org/licenses/by-nc/4.0/legalcode.tr
 
-Uygulama kodu (HTML ve JavaScript dosyaları) ayrıca [MIT lisansıyla](LICENSE) sunulur.
+Uygulama kodu (HTML ve JavaScript dosyaları) ayrıca [PolyForm Shield 1.0.0 lisansıyla](LICENSE.md) sunulur.
 Microsoft, Power BI, Fabric, Excel ve sınav adları Microsoft Corporation’ın markalarıdır; bu proje Microsoft ile bağlantılı değildir.
