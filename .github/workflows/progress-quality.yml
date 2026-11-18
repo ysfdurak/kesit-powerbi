@@ -12,4 +12,5 @@ jobs:
           node-version: '22'
       - run: node tests/recovery.cjs app/recovery.js
       - run: node tests/newdata.cjs
+      - run: node tests/vaka-depo-kaynak.cjs
       - run: node tests/artifact.cjs

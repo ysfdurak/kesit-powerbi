@@ -46,6 +46,12 @@ const t = `# Kesit Power BI
 - **Yapay zekâ kullanımı:** Ürün kararlarını, hedef kitleyi ve kurguyu Yusuf Durak verdi; kod, DAX motoru ve içerik yapay zekâ (Claude) ile geliştirildi ve otomatik denetimlerden geçirildi. Bağımsız kullanıcı testi yapılmadı.
 - **Açık kaynak bileşenler:** Bricolage Grotesque, IBM Plex Sans ve JetBrains Mono yazı tipleri (SIL Open Font License, lisans dosyaları \`vendor/fonts\` içinde). Başka üçüncü taraf kütüphane kullanılmıyor.
 
+## Uçtan uca vaka: depo toplama süresi
+Dört Kesit uygulaması tek bir iş sorusunda birleşir: Anadolu Market Gebze deposunda raf düzeni değişti; toplama süresi kısaldı mı, kısaldıysa yaymaya yeter mi? SQL → Python → Power BI → İstatistik. Her adım öncekinin beklenen çıktısıyla başlar ve sonrakini açar; ilerleme tarayıcıda \`kesit.vaka.depo\` anahtarında ortaktır.
+
+- Bu uygulamadaki adım: [/kesit-powerbi/vaka/depo/](https://ysfdurak.github.io/kesit-powerbi/vaka/depo/). 3. adım: DAX ölçüleriyle kazancı panoda göster. Sayfa \`vaka/depo/dax.js\` ile çalışır; bu dosya \`kesit.js\` içindeki DAX motorunun birebir kopyasıdır. \`tests/vaka-depo.cjs\` hem kopyanın aynılığını hem ölçü sonuçlarını CI'da denetler (\`--yaz\` kopyayı yeniden üretir).
+- Veri ve sayfa üreteci: [ysfdurak.github.io › vaka/depo-kaynak](https://github.com/ysfdurak/ysfdurak.github.io/tree/main/vaka/depo-kaynak). Sayfayı elle düzenleme; üreteçte değiştirip dört depoya yeniden yaz.
+
 ## Kardeş projeler
 Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak.github.io/kesit-sql/)**, **[Kesit Python](https://ysfdurak.github.io/kesit-python/)** ve **[Kesit İstatistik](https://ysfdurak.github.io/kesit-istatistik/)**. Beş vaka veri seti üç uygulamada satır satır aynıdır. Anadolu Market, Kesit SQL ile aynı şirket ve siparişleri kullanır; Power BI modeli zenginleştirildi.
 

@@ -136,3 +136,6 @@ GitHub paketi testi: `scratchpad/gh/kesit-powerbi` klasörünü 8793 portunda su
 Bu durumlar derslerde `data-notry` ile gösterilir ve alıştırmalarda kullanılmaz:
 çoka çok ilişki kurma ve çift yönlü model ilişkisi (ölçü içinde CROSSFILTER/TREATAS çalışır), takvim tabanlı zaman zekâsı (önizleme özelliği), pencere fonksiyonlarının toplam satırı (motor boş döndürür), SUMMARIZECOLUMNS'ta IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL.
 Motorun ağır kaldığı yerler: büyük tabloda (Pedal İzmir ~116 bin satır) satır satır bağlam geçişi saniyeler sürer.
+
+## Uçtan uca depo vakası (vaka/depo/)
+Sayfa ve beklenen sonuçlar `app/build/gh/static/vaka/depo/` içindedir (üreteç: `ysfdurak.github.io` › `vaka/depo-kaynak/`). `ghpack.sh` her derlemede DAX motorunun paketteki küçültülmüş kopyasını yeni `kesit.js`'ten `vaka/depo/dax.js` olarak üretir ve `tests/vaka-depo.cjs` ile denetler; derleme denetim geçmezse durur. Kaynak dalında `node tests/vaka-depo-kaynak.cjs` aynı ölçüleri `app/dax.js` ile çalıştırır (CI).
