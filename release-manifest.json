@@ -29,9 +29,15 @@
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "c2b148317cf49e94220db3783a634d8933f17f3a6b3d2637aa6e3201a0fb6471",
     "ders/fabric-veri-alma/index.html": "89211787e1e07a330349daadd9037e9ec8d9216731c7716f5a100ab0729ba53b",
-    "README.md": "896e7bbac970eb11676afef9b7e4ca09d04478924a84acab545d85e4717e61d7",
+    "README.md": "5d4199d96c36592ee94e75efd5f0dd51b87bc89d4c0c0475ccd6b9c00d7b72cc",
     "content-manifest.json": "e3060b53eee4bdf91963347a6c5e78f0bb49b15ab858656106475ba605a6f552",
-    "en-tour.js": "95144c7147b9b49f455752b93c616bb4a395f6bc61a39b0c2f17c902478e217a"
+    "en-tour.js": "95144c7147b9b49f455752b93c616bb4a395f6bc61a39b0c2f17c902478e217a",
+    "vaka/depo/index.html": "a6125471d98ba7a4c593adefb4b4554c34a605b2a8e48f14dc180d279f03312e",
+    "vaka/depo/beklenen.json": "491c33107a7dc22aaa897c1b219a012510b2e224e889e257b2be7a6342a426f3",
+    "vaka/depo/dax.js": "aae598b4deb8f1a54dea3e1529b1d731dd7f9483a60505dcfe503e669f492d8b",
+    "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
+    "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
+    ".github/workflows/release-quality.yml": "beca40f8f1a85056c2a3b86c85b97638791009556179c788b6bb8728b4e68f10"
   },
   "patches": [
     {
@@ -49,6 +55,19 @@
         "index.html"
       ],
       "note": "En küçük yazı .75rem (12 px). Chrome 390/1366 px: ana sayfa ve ilk ders, axe hata yok."
+    },
+    {
+      "date": "2026-11-19",
+      "files": [
+        "README.md",
+        "vaka/depo/index.html",
+        "vaka/depo/beklenen.json",
+        "vaka/depo/dax.js",
+        "tests/vaka-depo.cjs",
+        "sitemap.xml",
+        ".github/workflows/release-quality.yml"
+      ],
+      "note": "Uçtan uca depo vakası 3. adım (vaka/depo/): DAX ölçüleriyle kazanç panosu. vaka/depo/dax.js kesit.js'teki dax.js bölümünün birebir kopyası; tests/vaka-depo.cjs aynılığı ve ölçü sonuçlarını denetliyor (CI'a eklendi). Chrome 390/1366 px, axe hata yok. Kaynak dalına da uygulanmalı."
     }
   ]
 }
