@@ -21,7 +21,7 @@
     "Örnek rapor ayarları, ön koşul sırası, açılış bütçesi ve içerik sayımı"
   ],
   "files": {
-    "index.html": "cea2dc8893dacdc7d105bcce6c250475ed6ef8a59149bf2c7c97a8fea6f55af4",
+    "index.html": "31ecd437cecd4a7a1ee99c7296c6695bb05c301e7671ee44098c513176aea423",
     "kesit.js": "7d07c0896e34771504378fc6af97ee31224d770b1a4b6b151467ba97c5aa958a",
     "config.js": "fcf99a47bac4ff8ab2d2d0ab79d66bbec3fb192875c49ef6b8f29fe4071a2c03",
     "sw.js": "a67b3ccf3e8325196b96204f0d8b7d9162401b777404f798179ecf095160a094",
@@ -42,6 +42,13 @@
         "README.md"
       ],
       "note": "Kesit İstatistik Kesit ailesi bağlantılarına eklendi (config statUrl, menü ve Hakkında bağlantıları, README). Değişiklik kaynak dalında da uygulandı; kurtarma ve sözdizimi kontrolleri yeniden çalıştırıldı."
+    },
+    {
+      "date": "2026-11-18",
+      "files": [
+        "index.html"
+      ],
+      "note": "En küçük yazı .75rem (12 px). Chrome 390/1366 px: ana sayfa ve ilk ders, axe hata yok."
     }
   ]
 }
