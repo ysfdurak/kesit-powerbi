@@ -83,7 +83,7 @@
     "app/build/budget.cjs": "57c25ef0e9c20d71d2ab7c79bb80af47924c9c3c62730ada15021e0ad545d3fc",
     "app/build/ghhead.py": "98be4d19ba1b6b98412aa641bb88f408921ed03348e304c4713e1cc30dfc7a85",
     "app/build/gh/static/sw.js": "5a07df2b7b32cbc0a305ce9f471aa446afc95c577462b13771881c91dcaaef64",
-    "app/build/gh/static/vaka/depo/index.html": "e64d4c854d4ac827426475ff78a263ce18c35dfcb347153579e95539bed1e88c",
+    "app/build/gh/static/vaka/depo/index.html": "935944b43520827d3e77140a96cc50654bb4dd120afc8f96f86be4ee8637527d",
     "app/build/gh/static/vaka/depo/beklenen.json": "491c33107a7dc22aaa897c1b219a012510b2e224e889e257b2be7a6342a426f3",
     "app/build/gh/static/tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
     "tests/vaka-depo-kaynak.cjs": "8d23e50973e4ae4ff5d10963881d484dab225e6679e94d7378ab0130ac30f02f"
