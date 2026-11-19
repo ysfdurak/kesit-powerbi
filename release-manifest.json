@@ -37,7 +37,7 @@
     "vaka/depo/dax.js": "aae598b4deb8f1a54dea3e1529b1d731dd7f9483a60505dcfe503e669f492d8b",
     "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
     "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
-    ".github/workflows/release-quality.yml": "beca40f8f1a85056c2a3b86c85b97638791009556179c788b6bb8728b4e68f10"
+    ".github/workflows/release-quality.yml": "1a583510f26b8f01b0621b6d182d52062db7d9862fd31e118cfe2dec476c8ddb"
   },
   "patches": [
     {
