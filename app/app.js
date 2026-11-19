@@ -231,7 +231,7 @@ function renderNav() {
   const cur = S.section === 'cap' ? 'projeler' : parentOf(S.view);
   P.navc = P.navc || {};
   const btn = ([v, t, i]) => '<button data-go="' + v + '" aria-current="' + (cur === v) + '">' + ic(i) + t + '</button>';
-  $('#nav').innerHTML = NAV.map(([g, items]) => { const shut = P.navc[g] && !items.some(x => x[0] === cur); return '<button class="navgrp" data-navg="' + g + '" aria-expanded="' + !shut + '">' + g + ic('chev', 2.4) + '</button>' + (shut ? '' : items.map(btn).join('')); }).join('') + '<div class="navfoot">' + NAVFOOT.map(btn).join('') + '</div>' + familyLinks();
+  $('#nav').innerHTML = NAV.map(([g, items]) => { const shut = !items.some(x => x[0] === cur) && (g in P.navc ? P.navc[g] : true); // bulunduğun grup açık, diğerleri sen açana kadar kapalı return '<button class="navgrp" data-navg="' + g + '" aria-expanded="' + !shut + '">' + g + ic('chev', 2.4) + '</button>' + (shut ? '' : items.map(btn).join('')); }).join('') + '<div class="navfoot">' + NAVFOOT.map(btn).join('') + '</div>' + familyLinks();
   const goalP = goalPath();
   const onMine = cur === 'paths' && (!goalP || (S.view === 'path' && S.id === goalP));
   const inTab = TABNAV.some(n => n[0] === cur) || onMine;
@@ -868,7 +868,7 @@ view('more', { render: viewMore, hash: 'menu' });
 document.addEventListener('click', ev => {
   const t = ev.target.closest('button, [data-tbl], a'); if (!t) return;
   const d = t.dataset;
-  if (d.navg) { P.navc = P.navc || {}; P.navc[d.navg] = !P.navc[d.navg]; save(); renderNav(); return; }
+  if (d.navg) { P.navc = P.navc || {}; P.navc[d.navg] = !(d.navg in P.navc ? P.navc[d.navg] : true); save(); renderNav(); return; }
   if (d.go) { ev.preventDefault(); if (d.lv) currFilter.lv = d.lv; return go(d.go, d.id, { section: d.scroll }); }
   if (d.lesson) return go('lesson', d.lesson, { ctx: d.ctx || (S.view === 'path' ? S.id : S.view === 'lesson' ? S.ctx : null) });
   if (d.step !== undefined) { setStep(+d.step); return; }
