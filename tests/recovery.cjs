@@ -1,6 +1,8 @@
 /* Node 20+, dış bağımlılık yok. Kurtarma katmanının veri koruma sözleşmesi. */
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
-const file=process.argv[2]||'recovery.js',src=fs.readFileSync(path.resolve(file),'utf8');
+// Argüman yoksa yayımlanan paketteki (kesit.js) recovery.js bölümü sınanır; CI ile aynı.
+function bundled(){const parts=fs.readFileSync(path.resolve(__dirname,'..','kesit.js'),'utf8').split(/\/\* ===== ([^\n]+) ===== \*\//),i=parts.indexOf('recovery.js');if(i<0)throw Error('kesit.js içinde recovery.js bölümü yok');return parts[i+1].trimStart();}
+const src=process.argv[2]?fs.readFileSync(path.resolve(process.argv[2]),'utf8'):bundled();
 const cfg=JSON.parse(src.split('\n')[0].replace(/^window.KESIT_RECOVERY_KEYS=/,'').replace(/;$/,''));
 let tests=0;
 for(const [key,spec] of Object.entries(cfg)){
