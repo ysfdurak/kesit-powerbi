@@ -22,9 +22,9 @@
   ],
   "files": {
     "index.html": "77bb2adf57c618e47949527ef595fe889c827704500bc17b5f5cca23aca11a1f",
-    "kesit.js": "7f64b9de2b5f95c1dfc02a53b69c0b385571b1c82fb441c9acd2764b4865ec75",
+    "kesit.js": "46cf04d89e74d096b48f7be6974893ee59aaf51ef5e4bce8ec9047939358556f",
     "config.js": "fcf99a47bac4ff8ab2d2d0ab79d66bbec3fb192875c49ef6b8f29fe4071a2c03",
-    "sw.js": "0369409587464a82550ab97fd24fb7bc4d10bb004e0c8b958d1ec5dcf1f67ffc",
+    "sw.js": "c33c1f2b25963cc1efe38c036fa86e67b889185f17081cdae9d72cabfaf602d8",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "33aa8390208989343ca52948b92e43bfc532b77aed72081b552154f6832cafc3",
@@ -34,7 +34,7 @@
     "en-tour.js": "95144c7147b9b49f455752b93c616bb4a395f6bc61a39b0c2f17c902478e217a",
     "vaka/depo/index.html": "2cbd55965d681b63b8a86745ba7ae0a28c05f9b774deda30d74a79f5680c343c",
     "vaka/depo/beklenen.json": "491c33107a7dc22aaa897c1b219a012510b2e224e889e257b2be7a6342a426f3",
-    "vaka/depo/dax.js": "83ab458d0722ed8bdfa7e4d554c8e34b7ccabdf8e2814b1aa181a65dbfbbd99c",
+    "vaka/depo/dax.js": "14e88bc465ded8b548224cc3b539eb24ad3175b0c1cfbb4edca638f16982a483",
     "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
     "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
     ".github/workflows/release-quality.yml": "3972cc9f5a930252649fa226020cd8fc3cdb690b7803a29bac52d08d541801ac"
