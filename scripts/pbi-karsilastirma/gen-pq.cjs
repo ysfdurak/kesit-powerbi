@@ -54,7 +54,7 @@ function canon(v, err) {
   if (err) { names = ['HATA']; rows = [[err]]; types = ['text']; }
   else if (M.isTable(v)) { names = v.cols.map(c => c.name); rows = v.rows; types = v.cols.map(c => c.type); }
   else if (Array.isArray(v)) { names = ['Value']; rows = v.map(x => [x]); types = ['any']; }
-  else if (v instanceof M.MRecord) { names = ['Name', 'Value']; rows = v.names.map(n => [n, M.recGet(v, n)]); types = ['text', 'any']; }
+  else if (v instanceof M.MRecord) { names = ['Name', 'Value']; rows = v.names.map(n => { try { return [n, M.recGet(v, n)]; } catch (e) { if (e && e.rec) return [n, { pqErr: 'alan hatası' }]; throw e; } }); types = ['text', 'any']; } /* kayıt alanları tembeldir: hatalı alan hücrede kalır */
   else { names = ['Value']; rows = [[v]]; types = ['any']; }
   const out = names.map((n, j) => [0, j, n]);
   rows.forEach((r, i) => r.forEach((c, j) => out.push([i + 1, j, typeof c === 'string' && err ? 't:' + c : tag(c, types[j])])));

@@ -29,7 +29,7 @@
     "tests/artifact.cjs": "1ab82740817f37d2934e90f25997c4a6e7d07d50138d538c70de82f27fa0ddfc",
     "tests/newdata.cjs": "3f1b393338743edbf2c8f64a7ded24a0c15673ce9cbcf85028e2e72732fb1aef",
     "tests/recovery.cjs": "8a0d3edc552859a896ed179194caec3cb96218113bc4baf05daa93cf42c683d0",
-    "NASIL.md": "302db92b16682fb99f283265808744bd70ae7360381eb2824de142f4cae8839e",
+    "NASIL.md": "8be79f6c91a8810d041cea4089307038efee939e4afb05925760d62e633ecf77",
     "app/app.js": "357701782580fb919d7963ebc559be77d350bbb5af59e30fea91dfe6ee69588b",
     "app/build/build.sh": "4e065d1fc5f2325493a739f3970dfc11c28cfa6f4818d07e219cf9dc3d9c07a2",
     "app/build/ghpack.sh": "b3852e575817c12c4a28cedb58bff84f0f428e9c8ce486c0c60d9aeac9809305",

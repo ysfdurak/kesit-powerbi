@@ -138,8 +138,7 @@ const ERRS = [
   ['(x as number) => x', null, null],
   ['((x as number) => x)("a")', 'runtime', 'Number'],
   ['"5" as number', 'runtime', 'Number'],
-  ['Date.FromText("05.01.2024")', 'unsupported', 'Kültür'],
-  ['try Date.FromText("05.01.2024") otherwise 0', 'unsupported', 'Kültür'],
+  ['Date.FromText("05.01.2024")', null, ''], /* kültürsüz: Türkçe Desktop gibi tr-TR (5. tur) */
   ['try {1.5..3} otherwise 0', 'unsupported', 'aralığı'], ['try {"ab".."c"} otherwise 0', 'unsupported', 'aralığı'],
   ['try Text.Upper("a", "ja-JP") otherwise 0', 'unsupported', 'kültürü'], ['Date.MonthName(#date(2024, 1, 1), "fr-FR")', 'unsupported', 'kültüründe'],
   ['Value.Type(#table({"a"}, {})) = type table', 'unsupported', 'belirtimi'], ['(type [a = text]) = (type [a = text])', 'unsupported', 'belirtimi'], ['Int64.Type = type number', 'unsupported', 'belirtimi'],
@@ -165,6 +164,12 @@ for (const [code, kind, txt] of ERRS) {
 { const r = M.run('Table.Pivot(Table.FromRecords({[k = 1, a = "x", v = 1], [k = 1, a = "x", v = 2]}), {"x"}, "a", "v")'); say(r.ok && M.isErrCell(r.value.rows[0][1]), 'pivot çok değer hatası'); }
 /* Power BI ile doğrulandı: tamponsuz Table.Profile süzülemez, Table.Buffer ile süzülür */
 { const t = '#table({"a", "b"}, {{1, null}, {2, 3}})'; const r1 = M.run('Table.SelectRows(Table.Profile(' + t + '), each [NullCount] > 0)'); say(!r1.ok && M.errorText(r1).includes('NullCount'), 'profil tamponsuz süzme hatası'); const r2 = M.run('Table.SelectRows(Table.Buffer(Table.Profile(' + t + ')), each [NullCount] > 0)[Column]'); say(r2.ok && r2.value.length === 1 && r2.value[0] === 'b', 'profil tamponlu süzme', r2.ok ? M.fmt(r2.value) : M.errorText(r2)); }
+/* 5. tur (öğrenci varyasyonları, gerçek Power BI ile) */
+{ const r = M.run('Text.Proper("ali şahin")'); say(r.ok && r.value === 'Ali Şahin', 'kültürsüz Text.Proper Türkçe'); }
+{ const r = M.run('Date.MonthName(#date(2024, 1, 5))'); say(r.ok && r.value === 'Ocak', 'kültürsüz Date.MonthName Türkçe'); }
+{ const r = M.run('Number.FromText("1250.5")'); say(r.ok && r.value === 12505, 'tr-TR nokta binlik'); }
+{ const r = M.run('Table.Join(#table({"k", "a"}, {{1, 2}}), {"k"}, #table({"k", "b"}, {{1, 3}}), {"k"}, JoinKind.LeftOuter)'); say(!r.ok || (() => { try { M.fmt(r.value); return false; } catch (e) { return true; } })(), 'Table.Join sol dış aynı ad hatası'); }
+{ const r = M.run('Table.RowCount(Table.NestedJoin(#table({"k"}, {{1}}), {"k"}, #table({"k"}, {{2}, {3}}), {"k"}, "N", JoinKind.RightAnti))'); say(r.ok && r.value === 1, 'NestedJoin eşleşmeyen sağ satırlar tek satır'); }
 console.log('Resmî örnek ve davranış: ' + nOfficial + ', hata davranışı: ' + ERRS.length);
 if (fs.existsSync(APP + 'mval_ext.js')) require(APP + 'mval_ext.js');
 module.exports = { say, M };

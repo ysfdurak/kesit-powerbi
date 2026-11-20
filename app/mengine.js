@@ -611,7 +611,8 @@ function sortCompare(a, b) {
 function keyList(v) { return Array.isArray(v) ? v.map(liftCell) : [v]; }
 function truth(v, fname) { if (v === true) return true; if (v === false || v === null) return false; throw convErr(v, 'Logical'); }
 const CULTURES = /^(tr|tr-TR|en-US|fr-FR|de-DE)$/i;
-const CULT = c => { if (c === null || c === undefined) return null; const v = c instanceof MRecord ? recGet(c, 'Culture') : need(c, 'text'); if (v !== null && !CULTURES.test(v)) throw unsup('“' + v + '” kültürü', 'tr-TR, en-US, fr-FR ve de-DE çalışır; sonuç tahmin edilmez'); return v; };
+/* Kültür yazılmazsa Power BI Desktop'ın kültürü (Kesit: Türkçe Desktop, tr-TR) kullanılır: Text.Proper("istanbul") İstanbul, Date.MonthName Ocak, "1.250,50" sayı */
+const CULT = c => { if (c === null || c === undefined) return 'tr-TR'; const v = c instanceof MRecord ? recGet(c, 'Culture') : need(c, 'text'); if (v !== null && !CULTURES.test(v)) throw unsup('“' + v + '” kültürü', 'tr-TR, en-US, fr-FR ve de-DE çalışır; sonuç tahmin edilmez'); return v; };
 function isTr(c) { return c && /^tr/i.test(c); }
 const commaDec = c => c && /^(tr|fr|de)/i.test(c);
 const up = (s, c) => s.toLocaleUpperCase(isTr(c) ? 'tr-TR' : 'en-US'), lo = (s, c) => s.toLocaleLowerCase(isTr(c) ? 'tr-TR' : 'en-US');
@@ -632,7 +633,7 @@ function textToNum(s, c) {
   const raw = String(s), t = raw.trim(); const bad = () => err('DataFormat.Error', 'We couldn\'t convert to Number.', raw);
   if (t === '') throw bad();
   if (c && /^fr/i.test(c)) { if (!/^[-+]?\d+(,\d+)?$/.test(t)) throw bad(); return +t.replace(',', '.'); }
-  if (c && /^(tr|de)/i.test(c)) { if (!/^[-+]?(\d{1,3}(\.\d{3})+|\d+)(,\d+)?$/.test(t)) throw bad(); return +t.replace(/\./g, '').replace(',', '.'); }
+  if (c && /^(tr|de)/i.test(c)) { /* Power BI noktayı binlik ayırıcı sayar ve yerine bakmaz: tr-TR'de \"1250.5\" → 12505 */ if (!/^[-+]?\d+(\.\d+)*(,\d+)?$/.test(t)) throw bad(); return +t.replace(/\./g, '').replace(',', '.'); }
   if (!/^[-+]?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?([eE][-+]?\d+)?$/.test(t)) throw bad();
   return +t.replace(/,/g, '');
 }
@@ -862,7 +863,7 @@ def('Logical.ToText', 1, 1, v => (v === null ? null : (need(v, 'logical') ? 'tru
 /* --- Date, DateTime, Duration --- */
 const dfn = (name, min, max, fn) => def(name, min, max, nn((d, ...r) => { if (!(d instanceof Date)) throw convErr(d, 'Date'); return fn(d, ...r); }));
 def('Date.From', 1, 2, (v, c) => { if (v === null) return null; if (v instanceof Date) return convertTo(v, new MType('date')); if (typeof v === 'string') return textToDate(v, CULT(c)); if (typeof v === 'number') throw unsup('Date.From(number)', 'seri tarih sayısı alt küme dışında'); throw convErr(v, 'Date'); });
-def('Date.FromText', 1, 2, (v, o) => { if (v === null) return null; need(v, 'text'); const { f, c } = parseFormatOpt(o); if (f) throw unsup('Date.FromText Format seçeneği', 'Culture verilebilir'); return textToDate(v, c || (typeof o === 'string' ? o : null)); });
+def('Date.FromText', 1, 2, (v, o) => { if (v === null) return null; need(v, 'text'); const { f, c } = parseFormatOpt(o); if (f) throw unsup('Date.FromText Format seçeneği', 'Culture verilebilir'); return textToDate(v, c || (typeof o === 'string' ? o : null) || 'tr-TR'); });
 dfn('Date.ToText', 1, 3, (d, o, c0) => { const { f, c } = parseFormatOpt(o); const cu = c || CULT(c0); return f ? fmtDatePat(d, f, cu) : toText(convertTo(d, new MType('date')), cu); });
 dfn('Date.Year', 1, 1, d => d.getUTCFullYear()); dfn('Date.Month', 1, 1, d => d.getUTCMonth() + 1); dfn('Date.Day', 1, 1, d => d.getUTCDate());
 dfn('Date.AddDays', 2, 2, (d, n) => sameDK(d, d.getTime() + n * dayMs)); dfn('Date.AddWeeks', 2, 2, (d, n) => sameDK(d, d.getTime() + 7 * n * dayMs));
@@ -1030,7 +1031,8 @@ function joinRows(a, ka, b, kb, kind, fn) {
 def('Table.Join', 4, 8, (a, ka, b, kb, kind, algo, keyEq) => {
   need(a, 'table'); need(b, 'table'); if (algo !== null || keyEq !== null) throw unsup('Table.Join joinAlgorithm/keyEqualityComparers');
   const k = kind === null ? 0 : kind; const la = listOf(ka), lb = listOf(kb);
-  const same = b.cols.map(c => { const i = lb.indexOf(c.name); return i >= 0 && la[i] === c.name; }); // aynı adlı anahtar tek sütun kalır
+  /* Aynı adlı anahtar yalnız iç birleşimde tek sütuna iner; diğer türlerde Power BI "duplicate column names" hatası verir (gerçek Power BI ile doğrulandı) */
+  const same = b.cols.map(c => { const i = lb.indexOf(c.name); return k === 0 && i >= 0 && la[i] === c.name; });
   a.cols.forEach(c => { const j = b.cols.findIndex(x => x.name === c.name); if (j >= 0 && !same[j]) throw exprErr('A join operation cannot result in a table with duplicate column names ("' + c.name + '").', c.name); });
   const keepB = b.cols.map((c, i) => i).filter(i => !same[i]);
   return joinRows(a, ka, b, kb, k, (ia, ib, match) => {
@@ -1046,7 +1048,8 @@ def('Table.NestedJoin', 5, 8, (a, ka, b, kb, n, kind, keyEq) => {
   return joinRows(a, ka, b, kb, k, (ia, ib, match) => {
     const rows = []; const used = new Set();
     a.rows.forEach(ra => { const hits = b.rows.filter(rb => match(ra, rb)); hits.forEach(h => used.add(h)); const sub = withRows(b, hits); if (k === 0) { if (hits.length) rows.push(ra.concat([sub])); } else if (k === 4) { if (!hits.length) rows.push(ra.concat([sub])); } else if (k !== 5) rows.push(ra.concat([sub])); });
-    if (k === 2 || k === 3 || k === 5) b.rows.forEach(rb => { if (!used.has(rb)) rows.push(a.cols.map(() => null).concat([withRows(b, [rb])])); });
+    /* Eşleşmeyen sağ satırlar tek satırda toplanır: sol sütunlar null, iç içe tabloda hepsi (gerçek Power BI ile doğrulandı) */
+    if (k === 2 || k === 3 || k === 5) { const un = b.rows.filter(rb => !used.has(rb)); if (un.length) rows.push(a.cols.map(() => null).concat([withRows(b, un)])); }
     if (k === 2) return { cols: a.cols.map(c => Object.assign({}, c)).concat([{ name: n, type: 'table' }]), rows: rows.filter(r => r[r.length - 1].rows.length) };
     return { cols: a.cols.map(c => Object.assign({}, c)).concat([{ name: n, type: 'table' }]), rows };
   });
