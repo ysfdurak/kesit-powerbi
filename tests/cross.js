@@ -78,4 +78,8 @@ chk('Boş yılda teslim', E('CALCULATE([Net Satış], Tarih[Yil] = BLANK(), USER
 chk('FILTER(VALUES(Yil)) > 2022', E('COUNTROWS(FILTER(VALUES(Tarih[Yil]), Tarih[Yil] > 2022))', []), 2);
 { const r = X.runQuery(ms, 'EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "n", 1)'); chk('SUMMARIZECOLUMNS sabit ölçü boş yıl', r.rows.length, 4); }
 { const r = X.runQuery(ms, 'EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "n", COUNTROWS(Satislar))'); chk('SUMMARIZECOLUMNS satış yılları', r.rows.length, 3); }
+chk('DISTINCTCOUNT boş satırı saymaz', E('DISTINCTCOUNT(Tarih[YilAy])', []), 36);
+chk('BLANK / sayı = boş', E('BLANK() / 1000', []), null);
+chk('CEILING(boş) = boş', E('CEILING(BLANK(), 1000)', []), null);
+chk('VALUE("") = boş', E('VALUE(LEFT(BLANK(), 4))', []), null);
 console.log('kontrol', n, 'fark', bad);

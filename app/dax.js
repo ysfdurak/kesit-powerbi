@@ -432,7 +432,7 @@
         return n.op === '+' ? num(sa) + num(sb) : num(sa) - num(sb);
       }
       case '*': if (isBlank(sa) || isBlank(sb)) return null; return num(sa) * num(sb);
-      case '/': { if (isBlank(sa) && isBlank(sb)) return null; const d = num(sb); const x = num(sa); if (d === 0) return x === 0 ? NaN : x > 0 ? Infinity : -Infinity; return x / d; }
+      case '/': { if (isBlank(sa)) return null; const d = num(sb); const x = num(sa); if (d === 0) return x === 0 ? NaN : x > 0 ? Infinity : -Infinity; return x / d; }
       case '^': if (isBlank(sa)) return null; return Math.pow(num(sa), num(sb));
       case '&': return str(sa) + str(sb);
       case '=': return cmpVals(sa, sb) === 0;
@@ -642,7 +642,7 @@
   FN.COUNTA = (eng, a, st) => { const v = colVals(eng, a[0], st, 'COUNTA').filter(x => !isBlank(x) && x !== ''); return v.length || null; };
   FN.COUNTBLANK = (eng, a, st) => { const v = colVals(eng, a[0], st, 'COUNTBLANK').filter(x => isBlank(x) || x === ''); return v.length || null; };
   FN.COUNTROWS = (eng, a, st) => { const tb = a.length ? evT(eng, a[0], st, 'COUNTROWS') : err('COUNTROWS bir tablo ister: COUNTROWS(Satislar)'); return tLen(tb) || null; };
-  FN.DISTINCTCOUNT = (eng, a, st) => { const { t, c } = colArg(a[0], 'DISTINCTCOUNT'); return distinctCol(visible(st.ctx, t), t, c).length || null; };
+  FN.DISTINCTCOUNT = (eng, a, st) => { const { t, c } = colArg(a[0], 'DISTINCTCOUNT'); return distinctCol(noBlank(t, visible(st.ctx, t)), t, c).length || null; };
   FN.DISTINCTCOUNTNOBLANK = (eng, a, st) => { const { t, c } = colArg(a[0], 'DISTINCTCOUNTNOBLANK'); return distinctCol(visible(st.ctx, t), t, c).filter(v => !isBlank(v)).length || null; };
   const iterAgg = (kind, fn) => (eng, a, st) => { need(a, 2, fn, fn + '(Tablo, İfade)'); const tb = evT(eng, a[0], st, fn); const vals = iterate(eng, tb, st, s => evS(eng, a[1], s)); if (kind === 'count') return vals.filter(v => !isBlank(v)).length || null; if (kind === 'max' || kind === 'min') return minmaxRaw(vals, kind === 'max'); return agg(kind, vals); };
   FN.SUMX = iterAgg('sum', 'SUMX'); FN.AVERAGEX = iterAgg('avg', 'AVERAGEX'); FN.MINX = iterAgg('min', 'MINX'); FN.MAXX = iterAgg('max', 'MAXX'); FN.COUNTX = iterAgg('count', 'COUNTX');
@@ -866,7 +866,7 @@
   FN.MOD = (eng, a, st) => { const x = num(evS(eng, a[0], st)), y = num(evS(eng, a[1], st)); if (y === 0) err('MOD: bölen sıfır olamaz.'); return x - y * Math.floor(x / y); };
   FN.POWER = (eng, a, st) => Math.pow(num(evS(eng, a[0], st)), num(evS(eng, a[1], st)));
   FN.QUOTIENT = (eng, a, st) => Math.trunc(num(evS(eng, a[0], st)) / num(evS(eng, a[1], st)));
-  FN.VALUE = (eng, a, st) => num(evS(eng, a[0], st));
+  FN.VALUE = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) || v === '' ? null : num(v); };
   // metin
   FN.FORMAT = (eng, a, st) => format(evS(eng, a[0], st), str(evS(eng, a[1], st)), a[2] ? str(evS(eng, a[2], st)) : null);
   FN.CONCATENATE = (eng, a, st) => str(evS(eng, a[0], st)) + str(evS(eng, a[1], st));
@@ -1053,9 +1053,9 @@
   FN.CURRENCY = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) ? null : cur4(num(v)); };
   FN.CONVERT = (eng, a, st) => { const v = evS(eng, a[0], st); const ty = E(eng, a[1], st); const t = ty && ty.kind === 'kw' ? ty.v : ''; if (t === 'STRING') return str(v); if (t === 'INTEGER') return Math.round(num(v)); if (t === 'DOUBLE') return num(v); if (t === 'CURRENCY') return isBlank(v) ? null : cur4(num(v)); if (t === 'BOOLEAN') return truthy(v); return v; };
   FN.EVEN = m1(v => { const r = Math.ceil(Math.abs(v)); return Math.sign(v) * (r % 2 ? r + 1 : r); }); FN.ODD = m1(v => { const r = Math.ceil(Math.abs(v)); return Math.sign(v || 1) * (r % 2 ? r : r + 1); });
-  FN.CEILING = (eng, a, st) => { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.ceil(v / s0) * s0; };
-  FN.FLOOR = (eng, a, st) => { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.floor(v / s0) * s0; };
-  FN.MROUND = (eng, a, st) => { const v = num(evS(eng, a[0], st)), s0 = num(evS(eng, a[1], st)); return Math.round(v / s0) * s0; };
+  FN.CEILING = (eng, a, st) => { const v0 = evS(eng, a[0], st); if (isBlank(v0)) return null; const v = num(v0), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.ceil(v / s0) * s0; };
+  FN.FLOOR = (eng, a, st) => { const v0 = evS(eng, a[0], st); if (isBlank(v0)) return null; const v = num(v0), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.floor(v / s0) * s0; };
+  FN.MROUND = (eng, a, st) => { const v0 = evS(eng, a[0], st); if (isBlank(v0)) return null; const v = num(v0), s0 = num(evS(eng, a[1], st)); return Math.round(v / s0) * s0; };
   FN.LOG = (eng, a, st) => Math.log(num(evS(eng, a[0], st))) / Math.log(a[1] ? num(evS(eng, a[1], st)) : 10);
   FN.PI = () => Math.PI; FN.RAND = () => 0.5;
   FN.ALLCROSSFILTERED = FN.ALL;
