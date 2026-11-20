@@ -22,7 +22,7 @@
 [İçerik sayımı](content-manifest.json)
 
 ## Nasıl çalışıyor?
-- Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (206 fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
+- Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (207 fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
 - İlerleme yalnızca kullanıcının tarayıcısında saklanıyor; Profil sayfasından dosyaya kaydedilip başka cihazda yüklenebiliyor, mevcut ilerlemeyle birleştiriliyor. Hesap yok, kişisel veri toplanmıyor. Yazı tipleri siteyle birlikte sunuluyor, üçüncü taraf sunucuya istek gitmiyor.
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
 - Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
