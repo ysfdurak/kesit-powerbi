@@ -82,4 +82,14 @@ chk('DISTINCTCOUNT boş satırı saymaz', E('DISTINCTCOUNT(Tarih[YilAy])', []), 
 chk('BLANK / sayı = boş', E('BLANK() / 1000', []), null);
 chk('CEILING(boş) = boş', E('CEILING(BLANK(), 1000)', []), null);
 chk('VALUE("") = boş', E('VALUE(LEFT(BLANK(), 4))', []), null);
+// 2. tur (ders örnekleri, Pratik, Arena, kalıplar; Power BI Desktop, Kasım 2026)
+chk('OFFSET toplamda her ay için birleşir', E('CALCULATE([Net Satış], OFFSET(-1, ALLSELECTED(Tarih[YilAy]), ORDERBY(Tarih[YilAy], ASC)))', []), 1156771.5);
+chk('RANK birden çok geçerli satırda boş', E('RANK(ALLSELECTED(Urunler[Kategori], Urunler[Urun]), ORDERBY([Net Satış], DESC), PARTITIONBY(Urunler[Kategori]))', [F('Kategoriler', 'Kategori', 'Hediye')]), null);
+chk('CROSSFILTER BOTH boyutun kendi filtresini geri döndürmez', E('CALCULATE(COUNTROWS(Urunler), CROSSFILTER(Satislar[UrunNo], Urunler[UrunNo], BOTH))', [F('Kategoriler', 'Kategori', 'Hediye')]), 2);
+chk('SAMEPERIODLASTYEAR olgu tarihi toplamda aralık', E('CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))', []), 503706.75);
+chk('DIVIDE(boş, boş, 0) = boş', E('DIVIDE(BLANK(), BLANK(), 0)', []), null);
+chk('LEN(boş) = boş', E('LEN(BLANK())', []), null);
+chk('POWER(boş, 2) = boş', E('POWER(BLANK(), 2)', []), null);
+chk('Türkçe sıralama', E('IF("Şampuan" < "Yün Atkı", 1, 0)', []), 1);
+chk('Sıfıra yuvarlanan negatif', E('FORMAT(-0.3, "+#,0;-#,0;0")', []), '0');
 console.log('kontrol', n, 'fark', bad);

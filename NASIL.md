@@ -142,6 +142,13 @@ Gerçek Power BI Desktop ile karşılaştırma (Kasım 2026; araç `pbitest/gen.
 - **Kültür:** motor Türkçe biçimler (Türkçe Desktop gibi); İngilizce Desktop'ta FORMAT `January`, `1,234.5`, UPPER("bisiklet") `BISIKLET` verir. FORMAT'ın üçüncü bağımsız değişkeni (`"en-US"`, `"tr-TR"`) desteklenir. `kontrol.py` bu farkları “biçim dili” diye ayrı sayar.
 - **Para birimi:** CURRENCY(), CONVERT(…, CURRENCY) ve DATATABLE CURRENCY sütunu 4 ondalığa yuvarlanır; ama hesap sonuçlarının türü izlenmez (Power BI Currency × sayı sonucunu da 4 ondalığa yuvarlar), bu yüzden kredi vakasında 4. ondalıkta fark kalır.
 - USERPRINCIPALNAME Desktop'ta gerçek hesabı döndürür; motor öğretim kullanıcısını kullanır.
+- **2. tur (ders örnekleri, püf noktaları, hazır ölçüler, Pratik, Arena, mülakat, kalıplar, karıştırılanlar, hata kataloğu: 1.112 ölçü + 237 sorgu):**
+  - Pencere fonksiyonları: geçerli satır, ilişki sütunlarının bağlamda görünen değerleriyle eşleşen satırlardır. Birden çoksa OFFSET/WINDOW/INDEX sonuçları birleştirir (toplam satırında OFFSET(-1) son ay hariç her şeyi verir), RANK/ROWNUMBER boş döner. ORDERBY eşitliğini ilişki sütunları (artan) bozar; RANK eşitlere aynı sırayı verir (SKIP/DENSE).
+  - Çift yönlü ilişki (CROSSFILTER BOTH): olgu tablosu boyutu yalnız başka yollardan gelen filtrelerle süzer.
+  - Kesintisiz olmayan tarih sütununda (Satislar[Tarih]) zaman zekâsı seçimi aralık olarak kaydırır; seçim bölünürse hata verir.
+  - DIVIDE, LEN, POWER boş girdide boş; STDEV.S tek değerde NaN; metinler Türkçe harf sırasıyla, büyük/küçük harfe duyarsız karşılaştırılır; toplamlar 15 anlamlı basamağa yuvarlanır (eşit toplamlar eşit kalsın); sıfıra yuvarlanan negatif sayı FORMAT'ta sıfır bölümüyle yazılır.
+  - TODAY/NOW ve USERPRINCIPALNAME kullanan ölçüler ortam farkı sayılır.
+- Karşılaştırma düzeneği: `pbitest/gen.cjs <paket klasörü>` → `out/model.tmdl`, `out/beklenen.json`; PC'de `kesit-pbi-test` klasöründe `calistir.bat` (shiftflow ortamının Python'u) `kontrol.py`'yi çalıştırır, `sonuc.txt` yazar.
 
 Motorun ağır kaldığı yerler: büyük tabloda (Pedal İzmir ~116 bin satır) satır satır bağlam geçişi saniyeler sürer.
 

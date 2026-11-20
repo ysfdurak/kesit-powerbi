@@ -18,12 +18,12 @@ function mcCheck(q, w) {
   if (L[q.a] === mx && L.filter(x => x === mx).length === 1) lenStats.longest++;
   if (L[q.a] === mn && L.filter(x => x === mn).length === 1) lenStats.shortest++;
 }
-function runDax(expr, grid, noTotal, w) {
+function runDax(expr, grid, noTotal, w, okErr) {
   try { const e0 = X.check(expr); if (e0) throw new Error(e0);
     const out = []; if (!noTotal) out.push(X.evalMeasure(Object.assign({}, base), expr, []));
     (grid || [{ t: 'Kategoriler', c: 'Kategori' }, { t: 'Tarih', c: 'Yil' }]).forEach(g => X.query({ rows: [g], measures: Object.assign({}, base), values: [expr], totals: false, keepBlank: true }).rows.forEach(r => out.push(r.vals[0])));
     return JSON.stringify(out.map(v => typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v));
-  } catch (e) { err(w, 'DAX hata:', e.message.slice(0, 120), '|', expr.slice(0, 80)); return null; }
+  } catch (e) { if (okErr && e.dax) return 'HATA'; err(w, 'DAX hata:', e.message.slice(0, 120), '|', expr.slice(0, 80)); return null; }
 }
 /* Sertifika soruları */
 const SK = {}; Object.entries(PBI_CERT_SKILLS).forEach(([ex, a]) => a.forEach(s => SK[s.id] = Object.assign({ ex }, s)));
@@ -54,7 +54,7 @@ if (global.PBI_CONFUSED) { PBI_CONFUSED.forEach(c => { const w = 'CONF ' + c.id;
   if (!Array.isArray(c.quiz) || c.quiz.length < 2) err(w, 'quiz en az 2'); else c.quiz.forEach((q, i) => { str(q.q, w + ' quiz q'); str(q.why, w + ' quiz why'); mcCheck(q, w + ' quiz' + i); }); });
   console.log('CONFUSED', PBI_CONFUSED.length, 'demo', PBI_CONFUSED.filter(c => c.demo).length); }
 if (global.PBI_MISTAKES) { const ids = new Set(); PBI_MISTAKES.forEach(m => { const w = 'MIST ' + m.id; if (ids.has(m.id)) err(w, 'tekrar id'); ids.add(m.id); str(m.sym, w + ' sym', 10); str(m.cause, w + ' cause', 20); str(m.fix, w + ' fix', 20); if (!['DAX', 'Model', 'Power Query', 'Rapor', 'Service'].includes(m.area)) err(w, 'area'); if (m.lesson && !LIDS.has(m.lesson)) err(w, 'lesson yok', m.lesson);
-  if (m.task) { const t = m.task; str(t.name, w + ' task name', 2); str(t.q, w + ' task q', 20); const a = runDax(t.sol, t.grid, t.noTotal, w + ' sol'); let b = null; try { if (!X.check(t.start)) b = runDax(t.start, t.grid, t.noTotal, w + ' start(bozuk)'); } catch (e) {} if (a && b && a === b) err(w, 'bozuk ölçü (start) çözümle aynı sonucu veriyor'); } });
+  if (m.task) { const t = m.task; str(t.name, w + ' task name', 2); str(t.q, w + ' task q', 20); const a = runDax(t.sol, t.grid, t.noTotal, w + ' sol'); let b = null; try { if (!X.check(t.start)) b = runDax(t.start, t.grid, t.noTotal, w + ' start(bozuk)', true); /* bozuk ölçünün DAX hatası vermesi de bir belirtidir */ } catch (e) {} if (a && b && a === b) err(w, 'bozuk ölçü (start) çözümle aynı sonucu veriyor'); } });
   console.log('MISTAKES', PBI_MISTAKES.length, 'görevli', PBI_MISTAKES.filter(m => m.task).length); }
 /* Mülakat */
 if (global.PBI_IV_BANK) { const by = {}; PBI_IV_BANK.forEach(q => { const w = 'IV ' + q.id; ['q', 'weak', 'strong', 'why', 'follow'].forEach(f => str(q[f], w + ' ' + f, 10)); if (!['analist', 'gelistirici', 'fabric', 'hepsi'].includes(q.role)) err(w, 'role'); str(q.cat, w + ' cat'); by[q.role] = (by[q.role] || 0) + 1; if (q.weak && q.strong && q.strong.length < q.weak.length) err(w, 'güçlü cevap zayıftan kısa olmamalı'); }); console.log('IV_BANK', PBI_IV_BANK.length, JSON.stringify(by)); }

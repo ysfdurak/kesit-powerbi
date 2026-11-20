@@ -81,7 +81,7 @@
     if (en && typeof v === 'number') return format(v, f).replace(/\d[\d.,]*/, x => x.replace(/[.,]/g, c => (c === '.' ? ',' : '.')));
     if (isDate(v)) { const named = { 'Short Date': 'dd.MM.yyyy', 'Long Date': 'd MMMM yyyy' }; let g = named[f] || f || 'dd.MM.yyyy'; g = g.replace(/YYYY/g, 'yyyy').replace(/YY/g, 'yy').replace(/DD/g, 'dd'); if (!/[hHs]/.test(g)) g = g.replace(/mmmm/g, 'MMMM').replace(/mmm/g, 'MMM').replace(/mm/g, 'MM').replace(/(^|[^M])m(?!M)/g, '$1M'); g = g.replace(/[Qq]/g, 'q'); return fmtDate(v, g, loc === '#en'); }
     if (typeof v !== 'number') return String(v);
-    if (f && f.includes(';')) { const sec = f.split(';'); if (v < 0 && sec[1] !== undefined) return format(-v, sec[1]); if (v === 0 && sec[2] !== undefined) return format(v, sec[2]); f = sec[0]; }
+    if (f && f.includes(';')) { const sec = f.split(';'); if (v < 0 && sec[1] !== undefined) { const dm = sec[1].match(/\.(0+)/), pc = sec[1].includes('%'); const dd = dm ? dm[1].length : 0; if (Math.round(-v * (pc ? 100 : 1) * Math.pow(10, dd)) === 0) return format(0, sec[2] !== undefined ? sec[2] : sec[0]); /* sıfıra yuvarlanan negatif sayı sıfır bölümüyle yazılır */ return format(-v, sec[1]); } if (v === 0 && sec[2] !== undefined) return format(v, sec[2]); f = sec[0]; }
     const named = { 'Percent': '0.00%', 'Fixed': '0.00', 'Standard': '#,0.00', 'General Number': 'G', 'Currency': '#,0.00 ₺' };
     f = named[f] || f;
     if (f === 'G') return str(v);
@@ -239,7 +239,7 @@
   function rels(ctx, t) {
     if (!ctx.relOn.length && !ctx.relOff.length) return relsFrom[t];
     let out = relsFrom[t].filter(r => !ctx.relOff.includes(r) && !ctx.relOn.some(o => o.from === r.from && o.to === r.to && o !== r));
-    ctx.relOn.forEach(o => { if (o.from === t && !out.includes(o)) out = out.concat([o]); });
+    ctx.relOn.forEach(o => { if (o.from === t && !out.includes(o) && !ctx.relOff.includes(o)) out = out.concat([o]); });
     return out;
   }
   function tableFiltered(ctx, t, depth) {
@@ -249,7 +249,9 @@
     for (const b of ctx.bidir) if (b.to === t && tableFiltered(ctxWithout(ctx, b), b.from, depth + 1)) return true;
     return false;
   }
-  function ctxWithout(ctx, b) { if (!ctx._wo) ctx._wo = new Map(); if (!ctx._wo.has(b)) { const c = mkCtx(ctx.filters, ctx); c.bidir = ctx.bidir.filter(x => x !== b); ctx._wo.set(b, c); } return ctx._wo.get(b); }
+  /* Çift yönlü ilişkide olgu tablosu boyutu yalnız başka yollardan gelen filtrelerle süzer: boyutun kendi filtresi aynı ilişkiden geri dönmez
+     (gerçek Power BI: kategori filtresinde CROSSFILTER BOTH ile COUNTROWS(Urunler) satılmamış ürünleri de sayar). */
+  function ctxWithout(ctx, b) { if (!ctx._wo) ctx._wo = new Map(); if (!ctx._wo.has(b)) { const c = mkCtx(ctx.filters, ctx); c.bidir = ctx.bidir.filter(x => x !== b); c.relOff = ctx.relOff.concat([b]); ctx._wo.set(b, c); } return ctx._wo.get(b); }
   function visible(ctx, t) {
     if (ctx._vis.has(t)) return ctx._vis.get(t);
     let ck = null; if (CACHE) { ck = 'V' + csig(ctx) + '@' + t; const hit = CACHE.get(ck); if (hit) { ctx._vis.set(t, hit); return hit; } }
@@ -413,9 +415,11 @@
     }
     return mkCtx(filters, st.ctx);
   }
+  /* Metin karşılaştırması büyük/küçük harfe duyarsız, Türkçe harf sırasıyla (Ş, S'den sonra; Y'den önce) */
+  const COLL = new Intl.Collator('tr', { sensitivity: 'accent' });
   function cmpVals(a, b) { // -1/0/1, DAX gibi: boş = 0 ya da ""
     if (isBlank(a) && isBlank(b)) return 0;
-    if (typeof a === 'string' || typeof b === 'string') { if (isDate(a) || isDate(b) || typeof a === 'number' || typeof b === 'number') { if (isBlank(a) || isBlank(b)) { a = isBlank(a) ? '' : a; b = isBlank(b) ? '' : b; } else err('Metin ile sayı/tarih karşılaştırılamaz: ' + JSON.stringify(str(a)) + ' ve ' + JSON.stringify(str(b)) + '.'); } const x = str(a).toLocaleLowerCase('tr'), y = str(b).toLocaleLowerCase('tr'); return x < y ? -1 : x > y ? 1 : 0; }
+    if (typeof a === 'string' || typeof b === 'string') { if (isDate(a) || isDate(b) || typeof a === 'number' || typeof b === 'number') { if (isBlank(a) || isBlank(b)) { a = isBlank(a) ? '' : a; b = isBlank(b) ? '' : b; } else err('Metin ile sayı/tarih karşılaştırılamaz: ' + JSON.stringify(str(a)) + ' ve ' + JSON.stringify(str(b)) + '.'); } return Math.sign(COLL.compare(str(a), str(b))); }
     const x = num(a), y = num(b); return x < y ? -1 : x > y ? 1 : 0;
   }
   function binop(eng, n, st) {
@@ -460,12 +464,12 @@
     const a = nums(arr);
     if (!a.length) return kind === 'count' ? null : null;
     switch (kind) {
-      case 'sum': return a.reduce((x, y) => x + y, 0);
+      case 'sum': { const t = a.reduce((x, y) => x + y, 0); return Number.isFinite(t) && t !== 0 ? +t.toPrecision(15) : t; } // toplama sırasından gelen kayan nokta kırıntısını at (eşit toplamlar eşit kalsın)
       case 'avg': return a.reduce((x, y) => x + y, 0) / a.length;
       case 'min': return Math.min(...a);
       case 'max': return Math.max(...a);
       case 'median': { a.sort((x, y) => x - y); const h = a.length >> 1; return a.length % 2 ? a[h] : (a[h - 1] + a[h]) / 2; }
-      case 'stdevs': { if (a.length < 2) return null; const m = agg('avg', a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); }
+      case 'stdevs': { if (a.length < 2) return NaN; /* Power BI: tek değerin örneklem sapması NaN */ const m = agg('avg', a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); }
       case 'stdevp': { const m = agg('avg', a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length); }
     }
   }
@@ -603,8 +607,20 @@
   }
   const unitArg = (eng, a, st) => { const v = E(eng, a, st); const u = v && v.kind === 'kw' ? v.v : String(v).toUpperCase(); if (!TIME_UNITS.includes(u)) err('Zaman birimi YEAR, QUARTER, MONTH ya da DAY olmalı.'); return u; };
   const monthEnd = d => dUTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0);
+  const contigCache = {};
+  function dayContiguous(t, c) { const k = t + '|' + c; if (!(k in contigCache)) { const v = distinctCol(allIdx[t], t, c); const d = v.filter(isDate).map(x => x.getTime()).sort((x, y) => x - y); contigCache[k] = d.length === v.filter(x => !isBlank(x)).length && d.every((x, i) => i === 0 || x - d[i - 1] === 864e5); } return contigCache[k]; }
   function shiftDates(t, c, ds, n, unit) {
     if (!ds.length) return dtab(t, c, []);
+    /* Sütun gün gün kesintisiz değilse (ör. olgu tablosunun tarihi) Power BI seçimi bir aralık olarak kaydırır:
+       seçim, sütundaki ardışık değerlerden oluşmalıdır; değilse hata verir (gerçek Power BI ile karşılaştırıldı). */
+    if (!dayContiguous(t, c)) {
+      const all = distinctCol(allIdx[t], t, c).filter(isDate).sort((x, y) => x - y).map(d => d.getTime());
+      const lo = ds[0].getTime(), hi = ds[ds.length - 1].getTime(); const inRange = all.filter(x => x >= lo && x <= hi);
+      if (inRange.length !== new Set(ds.map(d => d.getTime())).size) err('Zaman zekâsı fonksiyonu, tarih sütunu benzersiz olmadığında, boşluklar olduğunda ya da saat bölümünü içerdiğinde bitişik bir seçim ister. ' + t + '[' + c + '] kesintisiz bir tarih tablosu sütunu değil; Tarih[Tarih] kullan.');
+      const s0 = addUnit(ds[0], n, unit); let e0 = addUnit(ds[ds.length - 1], n, unit);
+      if (unit !== 'DAY' && unit !== 'WEEK' && ds[ds.length - 1].getTime() === monthEnd(ds[ds.length - 1]).getTime()) e0 = monthEnd(e0);
+      return dtab(t, c, all.filter(x => x >= s0.getTime() && x <= e0.getTime()).map(x => new Date(x)));
+    }
     const set = new Set(ds.map(d => d.getTime()));
     const out = new Set();
     if (unit !== 'DAY' && unit !== 'WEEK') {
@@ -846,7 +862,7 @@
   FN.USERPRINCIPALNAME = (eng, a, st) => (st.ctx.user || 'ayse.kaya@anadolumarket.com');
   FN.USERNAME = FN.USERPRINCIPALNAME;
   // matematik
-  FN.DIVIDE = (eng, a, st) => { need(a, 2, 'DIVIDE', 'DIVIDE(Pay, Payda, [AlternatifSonuç])'); const x = evS(eng, a[0], st), y = evS(eng, a[1], st); if (isBlank(y) || num(y) === 0) return a[2] ? evS(eng, a[2], st) : null; if (isBlank(x)) return null; return num(x) / num(y); };
+  FN.DIVIDE = (eng, a, st) => { need(a, 2, 'DIVIDE', 'DIVIDE(Pay, Payda, [AlternatifSonuç])'); const x = evS(eng, a[0], st), y = evS(eng, a[1], st); if (isBlank(x)) return null; if (isBlank(y) || num(y) === 0) return a[2] ? evS(eng, a[2], st) : null; return num(x) / num(y); };
   const m1 = f => (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) ? null : f(num(v), a[1] ? num(evS(eng, a[1], st)) : 0); };
   const rnd = (v, d) => { const p = Math.pow(10, d); return Math.sign(v) * Math.round(Math.abs(v) * p + 1e-9) / p; };
   FN.ROUND = m1(rnd);
@@ -864,7 +880,7 @@
   FN.INT = m1(v => Math.floor(v)); FN.ABS = m1(v => Math.abs(v)); FN.SQRT = m1(v => Math.sqrt(v)); FN.EXP = m1(v => Math.exp(v)); FN.LN = m1(v => Math.log(v));
   FN.SIGN = m1(v => Math.sign(v));
   FN.MOD = (eng, a, st) => { const x = num(evS(eng, a[0], st)), y = num(evS(eng, a[1], st)); if (y === 0) err('MOD: bölen sıfır olamaz.'); return x - y * Math.floor(x / y); };
-  FN.POWER = (eng, a, st) => Math.pow(num(evS(eng, a[0], st)), num(evS(eng, a[1], st)));
+  FN.POWER = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) ? null : Math.pow(num(v), num(evS(eng, a[1], st))); };
   FN.QUOTIENT = (eng, a, st) => Math.trunc(num(evS(eng, a[0], st)) / num(evS(eng, a[1], st)));
   FN.VALUE = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) || v === '' ? null : num(v); };
   // metin
@@ -873,7 +889,7 @@
   FN.LEFT = (eng, a, st) => str(evS(eng, a[0], st)).slice(0, a[1] ? num(evS(eng, a[1], st)) : 1);
   FN.RIGHT = (eng, a, st) => { const s = str(evS(eng, a[0], st)); const n = a[1] ? num(evS(eng, a[1], st)) : 1; return n ? s.slice(-n) : ''; };
   FN.MID = (eng, a, st) => { const s = str(evS(eng, a[0], st)); const i = num(evS(eng, a[1], st)); return s.substr(i - 1, num(evS(eng, a[2], st))); };
-  FN.LEN = (eng, a, st) => str(evS(eng, a[0], st)).length;
+  FN.LEN = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) ? null : str(v).length; };
   FN.UPPER = (eng, a, st) => str(evS(eng, a[0], st)).toLocaleUpperCase('tr');
   FN.LOWER = (eng, a, st) => str(evS(eng, a[0], st)).toLocaleLowerCase('tr');
   FN.TRIM = (eng, a, st) => str(evS(eng, a[0], st)).trim().replace(/\s+/g, ' ');
@@ -1008,36 +1024,51 @@
   // pencere fonksiyonları (tek ilişki tablosu, sıralı)
   FN.ORDERBY = (eng, a) => ({ kind: 'orderby', items: (() => { const out = []; for (let i = 0; i < a.length; i++) { let desc = false; if (a[i + 1] && a[i + 1].type === 'id' && ['ASC', 'DESC'].includes(a[i + 1].name.toUpperCase())) { desc = a[i + 1].name.toUpperCase() === 'DESC'; out.push({ e: a[i], desc }); i++; } else out.push({ e: a[i], desc }); } return out; })() });
   FN.PARTITIONBY = (eng, a) => ({ kind: 'partitionby', cols: a.map(x => colArg(x, 'PARTITIONBY')) });
+  /* Pencere fonksiyonları (Power BI'ın "apply semantics" kuralı, gerçek Power BI ile karşılaştırıldı):
+     geçerli satır, ilişkideki sütunların bağlamda görünen değerleriyle eşleşen satırlardır. Tek satır değilse
+     OFFSET/WINDOW/INDEX her geçerli satır için sonucu hesaplayıp birleştirir; RANK ve ROWNUMBER boş döner.
+     ORDERBY eşitliklerini ilişkinin sütunları (artan) bozar. */
   function winSetup(eng, args, st, fn) {
     let rel = null, ob = null, pb = null;
     args.forEach(x => { if (x.type === 'call' && x.fn === 'ORDERBY') ob = E(eng, x, st); else if (x.type === 'call' && x.fn === 'PARTITIONBY') pb = E(eng, x, st); else if (x.type !== 'empty' && !(x.type === 'id' && ['KEEP', 'PARTIAL'].includes(x.name.toUpperCase()))) { const v = E(eng, x, st); if (isTable(v)) rel = v; } });
     if (!rel) err(fn + ' bir ilişki tablosu ister (ör. ALLSELECTED(Tarih[YilAy])).');
-    const cs = tCols(rel); let rows = tableRows(rel).map((r, i) => ({ r, f: tFrame(rel, i) }));
+    const cs = tCols(rel); const rows = tableRows(rel).map((r, i) => ({ r, f: tFrame(rel, i), i }));
     if (!ob) ob = { items: cs.map(c => ({ e: { type: 'col', t: c.lin ? c.lin.t : '', c: c.lin ? c.lin.c : c.short }, desc: false })) };
     const keyed = rows.map(x => ({ x, k: ob.items.map(o => evS(eng, o.e, Object.assign({}, st, { frames: st.frames.concat([x.f]) }))) }));
-    keyed.sort((p, q) => { for (let i = 0; i < ob.items.length; i++) { const c = rankCompare(p.k[i], q.k[i]); if (c) return ob.items[i].desc ? -c : c; } return 0; });
-    // geçerli satır
-    const curVals = cs.map(c => { if (!c.lin) return undefined; const h = lookupFrame(st.frames, c.lin.t, c.lin.c); if (h) return h.v; const d = distinctCol(visible(st.ctx, c.lin.t), c.lin.t, c.lin.c); return d.length === 1 ? d[0] : undefined; });
-    let part = keyed;
-    if (pb) { const pIdx = pb.cols.map(pc => cs.findIndex(c => c.lin && c.lin.t === pc.t && c.lin.c === pc.c)); part = keyed.filter(k => pIdx.every((j, n) => j >= 0 && curVals[j] !== undefined && keyOf(k.x.r[j]) === keyOf(curVals[j]))); }
-    const known = curVals.map((v, j) => [v, j]).filter(x => x[0] !== undefined);
-    const cur = known.length ? part.findIndex(k => known.every(([v, j]) => keyOf(k.x.r[j]) === keyOf(v))) : -1;
-    return { rel, cs, part, cur };
+    const byOrder = (p, q) => { for (let i = 0; i < ob.items.length; i++) { const c = rankCompare(p.k[i], q.k[i]); if (c) return ob.items[i].desc ? -c : c; } return 0; };
+    const byCols = (p, q) => { for (let j = 0; j < cs.length; j++) { const c = rankCompare(p.x.r[j], q.x.r[j]); if (c) return c; } return 0; };
+    keyed.sort((p, q) => byOrder(p, q) || byCols(p, q));
+    // bölümler
+    const pIdx = pb ? pb.cols.map(pc => cs.findIndex(c => c.lin && c.lin.t === pc.t && c.lin.c === pc.c)) : [];
+    const pkey = k => pIdx.map(j => (j >= 0 ? keyOf(k.x.r[j]) : '')).join('\u0001');
+    const parts = new Map(); keyed.forEach(k => { const key = pkey(k); if (!parts.has(key)) parts.set(key, []); parts.get(key).push(k); });
+    // geçerli satırlar: her bağlı sütunun değeri bağlamda görünür olmalı
+    const allow = cs.map(c => { if (!c.lin) return null; const h = lookupFrame(st.frames, c.lin.t, c.lin.c); if (h) return new Set([keyOf(h.v)]); return new Set(distinctCol(visible(st.ctx, c.lin.t), c.lin.t, c.lin.c).map(keyOf)); });
+    const linked = allow.some(a => a);
+    const cur = !linked ? [] : keyed.filter(k => allow.every((a, j) => !a || a.has(keyOf(k.x.r[j])))).map(k => { const part = parts.get(pkey(k)); return { k, part, idx: part.indexOf(k) }; });
+    return { rel, cs, keyed, parts, cur, ob, byOrder };
   }
-  const winOut = (w, list) => w.rel.base ? baseTable(w.rel.base, list.map(k => k.x.f.i)) : { kind: 'table', cols: w.cs, rows: list.map(k => k.x.r) };
-  FN.OFFSET = (eng, a, st) => { const d = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'OFFSET'); if (w.cur < 0) return winOut(w, []); const k = w.part[w.cur + d]; return winOut(w, k ? [k] : []); };
-  FN.INDEX = (eng, a, st) => { const n = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'INDEX'); const k = n > 0 ? w.part[n - 1] : w.part[w.part.length + n]; return winOut(w, k ? [k] : []); };
+  const winOut = (w, list) => { const want = new Set(list); const uniq = w.keyed.filter(k => want.has(k)); return w.rel.base ? baseTable(w.rel.base, uniq.map(k => k.x.f.i)) : { kind: 'table', cols: w.cs, rows: uniq.map(k => k.x.r) }; };
+  const curParts = w => (w.cur.length ? [...new Set(w.cur.map(c => c.part))] : [...w.parts.values()]);
+  FN.OFFSET = (eng, a, st) => { const d = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'OFFSET'); return winOut(w, w.cur.map(c => c.part[c.idx + d]).filter(Boolean)); };
+  FN.INDEX = (eng, a, st) => { const n = num(evS(eng, a[0], st)); const w = winSetup(eng, a.slice(1), st, 'INDEX'); return winOut(w, curParts(w).map(p => (n > 0 ? p[n - 1] : p[p.length + n])).filter(Boolean)); };
   FN.WINDOW = (eng, a, st) => {
     need(a, 5, 'WINDOW', 'WINDOW(Başlangıç, REL|ABS, Bitiş, REL|ABS, İlişki, ORDERBY(...))');
     const from = num(evS(eng, a[0], st)), fT = E(eng, a[1], st), to = num(evS(eng, a[2], st)), tT = E(eng, a[3], st);
-    const w = winSetup(eng, a.slice(4), st, 'WINDOW'); const n = w.part.length;
-    const pos = (v, ty) => (ty && ty.v === 'ABS') ? (v > 0 ? v - 1 : n + v) : w.cur + v;
-    if (((!fT || fT.v !== 'ABS') || (!tT || tT.v !== 'ABS')) && w.cur < 0) return winOut(w, []);
-    const s0 = Math.max(0, pos(from, fT)), e0 = Math.min(n - 1, pos(to, tT));
-    return winOut(w, s0 <= e0 ? w.part.slice(s0, e0 + 1) : []);
+    const w = winSetup(eng, a.slice(4), st, 'WINDOW');
+    const abs = ty => ty && ty.v === 'ABS';
+    const slice = (p, idx) => { const n = p.length; const pos = (v, ty) => (abs(ty) ? (v > 0 ? v - 1 : n + v) : idx + v); const s0 = Math.max(0, pos(from, fT)), e0 = Math.min(n - 1, pos(to, tT)); return s0 <= e0 ? p.slice(s0, e0 + 1) : []; };
+    if (abs(fT) && abs(tT)) return winOut(w, curParts(w).flatMap(p => slice(p, 0)));
+    return winOut(w, w.cur.flatMap(c => slice(c.part, c.idx)));
   };
-  FN.RANK = (eng, a, st) => { const w = winSetup(eng, a.filter(x => !(x.type === 'id' && ['DENSE', 'SKIP'].includes(x.name.toUpperCase()))), st, 'RANK'); return w.cur < 0 ? null : w.cur + 1; };
-  FN.ROWNUMBER = (eng, a, st) => { const w = winSetup(eng, a, st, 'ROWNUMBER'); return w.cur < 0 ? null : w.cur + 1; };
+  FN.RANK = (eng, a, st) => {
+    const dense = a.some(x => x.type === 'id' && x.name.toUpperCase() === 'DENSE');
+    const w = winSetup(eng, a.filter(x => !(x.type === 'id' && ['DENSE', 'SKIP'].includes(x.name.toUpperCase()))), st, 'RANK');
+    if (w.cur.length !== 1) return null; const { k, part } = w.cur[0];
+    const before = part.filter(q => w.byOrder(q, k) < 0);
+    return 1 + (dense ? new Set(before.map(q => q.k.map(keyOf).join('\u0001'))).size : before.length);
+  };
+  FN.ROWNUMBER = (eng, a, st) => { const w = winSetup(eng, a, st, 'ROWNUMBER'); return w.cur.length === 1 ? w.cur[0].idx + 1 : null; };
   // tarih ekleri
   FN.WEEKNUM = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'WEEKNUM'); if (!d) return null; const ty = a[1] ? num(evS(eng, a[1], st)) : 1; if (ty === 21) { const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 86400000 + 1) / 7); } const y0 = dUTC(d.getUTCFullYear(), 0, 1); const off = ty === 2 ? (y0.getUTCDay() + 6) % 7 : y0.getUTCDay(); return Math.floor((Math.round((d - y0) / 86400000) + off) / 7) + 1; };
   FN.STARTOFQUARTER = (eng, a, st) => { const { t, c, dates } = datesArg(eng, a[0], st, 'STARTOFQUARTER'); return dtab(t, c, dates.length ? [qStart(dates[0])] : []); };

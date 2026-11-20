@@ -148,7 +148,7 @@ SUMX(
 
 <h2>5 · Zaman zekâsında olgu tablosunun tarihi</h2>
 <pre class="dax">Satış GY (önerilen) = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))</pre>
-<p>Yıl dilimleyicisi <code>Tarih</code> tablosundan gelir. Kod, olgu tablosundaki tarihleri bir yıl geri kaydırır ama <code>Tarih[Yil]</code> filtresi yerinde kalır: 2024 satırında “2024’te olup 2023 tarihli satışlar” istenir ve sonuç <b>boş</b> çıkar. Zaman zekâsı fonksiyonlarına her zaman işaretli tarih tablosunun sütununu ver: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
+<p>Yıl dilimleyicisi <code>Tarih</code> tablosundan gelir. Kod, olgu tablosundaki tarihleri bir yıl geri kaydırır ama <code>Tarih[Yil]</code> filtresi yerinde kalır: 2024 satırında “2024’te olup 2023 tarihli satışlar” istenir ve sonuç <b>boş</b> çıkar. Kategoriye göre kırınca da “bitişik bir seçim gerekir” hatası alırsın: satış olan günler kesintisiz bir takvim değildir. Zaman zekâsı fonksiyonlarına her zaman işaretli tarih tablosunun sütununu ver: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
 
 <h2>6 · ALL ile dilimleyiciyi silmek</h2>
 <pre class="dax">Seçili Dönem Toplamı (önerilen) = CALCULATE([Net Satış], ALL(Tarih))</pre>

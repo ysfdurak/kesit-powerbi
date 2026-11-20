@@ -586,8 +586,8 @@ W.PBI_MISTAKES.push(
 },
 {
   id: 'sply-olgu-tarihi', area: 'DAX', lesson: 'zaman',
-  sym: 'Geçen yıl ölçüsü yıl satırlarında boş, kategori satırlarında da olması gerekenden düşük',
-  cause: 'Zaman zekâsı fonksiyonuna Tarih tablosunun değil, olgu tablosunun tarih sütunu verilmiş: `SAMEPERIODLASTYEAR(Satislar[Tarih])`. Kaydırılan tarihler Satislar[Tarih] sütununa filtre olur, ama Tarih[Yil] filtresi yerinde kalır; iki filtre kesişmez.',
+  sym: 'Geçen yıl ölçüsü yıl satırlarında boş, kategori satırlarında “bitişik bir seçim gerekir” hatası veriyor',
+  cause: 'Zaman zekâsı fonksiyonuna Tarih tablosunun değil, olgu tablosunun tarih sütunu verilmiş: `SAMEPERIODLASTYEAR(Satislar[Tarih])`. Kaydırılan tarihler Satislar[Tarih] sütununa filtre olur, ama Tarih[Yil] filtresi yerinde kalır; iki filtre kesişmez. Satislar[Tarih] yalnız satış olan günleri içerdiği için kesintisiz değildir; kategori filtresi seçimi bölünce Power BI hata verir.',
   fix: 'Zaman zekâsını her zaman işaretli Tarih tablosunun tarih sütunuyla yaz: `SAMEPERIODLASTYEAR(Tarih[Tarih])`.',
   tags: ['geçen yıl', 'sameperiodlastyear', 'olgu tablosu tarihi', 'yıl satırı boş', 'zaman zekâsı'],
   task: { name: 'GY Satış (Takvimden)', q: 'Ölçü her yıl ve kategoride geçen yılın aynı dönemindeki net satışı vermeli. Bozuk ölçüyü düzelt.', start: 'CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))', sol: 'CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))', hint: 'Fonksiyona olgu tablosunun değil, takvim tablosunun tarih sütununu ver.' }
