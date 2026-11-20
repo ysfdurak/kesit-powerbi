@@ -58,5 +58,24 @@ chk('ALL(Durum) tablo filtresinden yalnızca Durum’u çıkarır', E('CALCULATE
   chk('ALLEXCEPT kategori max', E('COUNTROWS(FILTER(Urunler, Urunler[Fiyat] = CALCULATE(MAX(Urunler[Fiyat]), ALLEXCEPT(Urunler, Urunler[Kategori]))))', []), Object.keys(c).length); }
 { const r = X.runQuery(ms, 'EVALUATE SUMMARIZE(Satislar, Satislar[Kanal], "n", COUNTROWS(Satislar))'); r.rows.forEach(x => chk('SUMMARIZE genişletme ' + x[0], x[1], S.filter(z => z.Kanal === x[0]).length)); }
 { const r = X.runQuery(ms, 'EVALUATE GROUPBY(Satislar, Satislar[Kanal], "t", SUMX(CURRENTGROUP(), Satislar[Tutar]))'); r.rows.forEach(x => chk('GROUPBY ' + x[0], x[1], sum(S.filter(z => z.Kanal === x[0]), z => z.Tutar))); }
-chk('DATEDIFF boş başlangıç', E('DATEDIFF(BLANK(), DATE(2024, 12, 31), DAY)', []), 45657);
+// Aşağıdaki üçü gerçek Power BI Desktop karşılaştırmasıyla (Kasım 2026) belirlendi.
+chk('DATEDIFF boş başlangıç → boş', E('DATEDIFF(BLANK(), DATE(2024, 12, 31), DAY)', []), null);
+chk('DATESINPERIOD ay sonu hizası', E('COUNTROWS(DATESINPERIOD(Tarih[Tarih], DATE(2023, 2, 28), -3, MONTH))', []), 90);
+chk('MEDIANX boşu en küçük sayar', E('MEDIANX({1, 2, BLANK()}, [Value])', []), 1);
+chk('MEDIANX ortası boşsa boş', E('MEDIANX({BLANK(), BLANK(), 5}, [Value])', []), null);
+// Boş satır: TeslimTarihi boş olan siparişler Tarih tablosuna sanal bir boş satır ekletir (Power BI yoklaması, Kasım 2026)
+chk('COUNTROWS(Tarih) boş satırsız', E('COUNTROWS(Tarih)', []), 1096);
+chk('ALL(Tarih) boş satırlı', E('COUNTROWS(ALL(Tarih))', []), 1097);
+chk('VALUES(Tarih) boş satırlı', E('COUNTROWS(VALUES(Tarih))', []), 1097);
+chk('FILTER(Tarih) boş satırsız', E('COUNTROWS(FILTER(Tarih, TRUE()))', []), 1096);
+chk('ALLNOBLANKROW', E('COUNTROWS(ALLNOBLANKROW(Tarih))', []), 1096);
+chk('VALUES(Yil)', E('COUNTROWS(VALUES(Tarih[Yil]))', []), 4);
+chk('DISTINCT(Yil)', E('COUNTROWS(DISTINCT(Tarih[Yil]))', []), 3);
+chk('ALL(Yil)', E('COUNTROWS(ALL(Tarih[Yil]))', []), 4);
+chk('SUMX(Tarih, 1)', E('SUMX(Tarih, 1)', []), 1096);
+chk('Boş yılda net satış', E('CALCULATE([Net Satış], Tarih[Yil] = BLANK())', []), null);
+chk('Boş yılda teslim', E('CALCULATE([Net Satış], Tarih[Yil] = BLANK(), USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))', []), 11063.05);
+chk('FILTER(VALUES(Yil)) > 2022', E('COUNTROWS(FILTER(VALUES(Tarih[Yil]), Tarih[Yil] > 2022))', []), 2);
+{ const r = X.runQuery(ms, 'EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "n", 1)'); chk('SUMMARIZECOLUMNS sabit ölçü boş yıl', r.rows.length, 4); }
+{ const r = X.runQuery(ms, 'EVALUATE SUMMARIZECOLUMNS(Tarih[Yil], "n", COUNTROWS(Satislar))'); chk('SUMMARIZECOLUMNS satış yılları', r.rows.length, 3); }
 console.log('kontrol', n, 'fark', bad);

@@ -75,7 +75,7 @@ cd /home/claude/pbi && python3 -m http.server 8765
 
 ```sh
 cd /home/claude/recover
-node cross.js                 # 70 ölçünün motor sonucu ↔ bağımsız hesap
+node cross.js                 # 87 denetim: ölçülerin motor sonucu ↔ bağımsız hesap
 node exval.js                 # tüm ders DAX/sorgu alıştırmaları çözülebiliyor mu
 node snip.js                  # derslerdeki ve püf noktalarındaki çalıştırılabilir DAX blokları
 node bankval.js               # Pratik: DAX, sorgu, Power Query ve Senaryo (mc) görevleri
@@ -135,6 +135,14 @@ GitHub paketi testi: `scratchpad/gh/kesit-powerbi` klasörünü 8793 portunda su
 
 Bu durumlar derslerde `data-notry` ile gösterilir ve alıştırmalarda kullanılmaz:
 çoka çok ilişki kurma ve çift yönlü model ilişkisi (ölçü içinde CROSSFILTER/TREATAS çalışır), takvim tabanlı zaman zekâsı (önizleme özelliği), pencere fonksiyonlarının toplam satırı (motor boş döndürür), SUMMARIZECOLUMNS'ta IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL.
+Gerçek Power BI Desktop ile karşılaştırma (Kasım 2026; araç `pbitest/gen.cjs` + PC'de `kontrol.py`, `yoklama.py`). Motor şu kurallara göre ayarlandı:
+- **Boş satır:** olgu tarafında boş ya da eşleşmeyen anahtar varsa (pasif ilişkide de) boyuta sanal boş satır eklenir. VALUES, ALL ve SUMMARIZECOLUMNS/görsel grupları içerir; tablo başvurusu, FILTER(tablo), DISTINCT, ALLNOBLANKROW, SUMMARIZE(tablo, …) içermez. Görselde ölçüsü boşsa gizlenir. Anadolu Market'te Satislar[TeslimTarihi] yüzünden Tarih'te var (Tarih 1.096 + 1).
+- **Boşlar:** DATEDIFF boşla boş döner; tarih çıkarmada boş 30.12.1899 sayılır. MEDIANX/PERCENTILEX boşları en küçük sayar, seçilen sıra boşsa sonuç boş. EDATE/EOMONTH boşla boş.
+- **DATESINPERIOD:** bitiş ay sonuysa ay/çeyrek/yıl adımında başlangıç ay başına hizalanır.
+- **Kültür:** motor Türkçe biçimler (Türkçe Desktop gibi); İngilizce Desktop'ta FORMAT `January`, `1,234.5`, UPPER("bisiklet") `BISIKLET` verir. FORMAT'ın üçüncü bağımsız değişkeni (`"en-US"`, `"tr-TR"`) desteklenir. `kontrol.py` bu farkları “biçim dili” diye ayrı sayar.
+- **Para birimi:** CURRENCY(), CONVERT(…, CURRENCY) ve DATATABLE CURRENCY sütunu 4 ondalığa yuvarlanır; ama hesap sonuçlarının türü izlenmez (Power BI Currency × sayı sonucunu da 4 ondalığa yuvarlar), bu yüzden kredi vakasında 4. ondalıkta fark kalır.
+- USERPRINCIPALNAME Desktop'ta gerçek hesabı döndürür; motor öğretim kullanıcısını kullanır.
+
 Motorun ağır kaldığı yerler: büyük tabloda (Pedal İzmir ~116 bin satır) satır satır bağlam geçişi saniyeler sürer.
 
 ## Uçtan uca depo vakası (vaka/depo/)

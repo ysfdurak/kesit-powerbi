@@ -46,10 +46,10 @@ AVERAGEX(
     FILTER(Satislar, NOT ISBLANK(Satislar[TeslimTarihi])),
     DATEDIFF(Satislar[Tarih], Satislar[TeslimTarihi], DAY)
 )</pre>
-<p>Sonuç 3,12 gündür; modeldeki hazır <code>[Ortalama Kargo Günü]</code> ölçüsüyle aynı. Peki <code>FILTER</code>'ı atlarsan ne olur?</p>
+<p>Sonuç 3,12 gündür; modeldeki hazır <code>[Ortalama Kargo Günü]</code> ölçüsüyle aynı. Peki <code>FILTER</code>'ı atlarsan ne olur? <code>DATEDIFF</code>'te tarihlerden biri boşsa sonuç boştur ve <code>AVERAGEX</code> boşları atlar; filtresiz <code>DATEDIFF</code> de 3,12 verir. Asıl tuzak tarihleri doğrudan çıkardığında ortaya çıkar:</p>
 <pre class="dax">Teslim Süresi (hatalı) =
-AVERAGEX(Satislar, DATEDIFF(Satislar[Tarih], Satislar[TeslimTarihi], DAY))</pre>
-<div class="warn"><b>Boş tarih sıfır değildir</b>Tarih hesaplarında boş bir tarih, DAX'ın tarih başlangıcı olan 30 Aralık 1899 gibi işlenebilir. NETWORKDAYS'in belgesi bunu açıkça söyler: tarihlerden yalnızca biri boşsa 30.12.1899 kabul edilir. Bu uygulamanın motorunda yukarıdaki hatalı ölçü −1.596,7 gün döndürür. Teslim tarihi boş satırları her zaman önce ayıkla.</div>
+AVERAGEX(Satislar, Satislar[TeslimTarihi] - Satislar[Tarih])</pre>
+<div class="warn"><b>Boş tarih sıfır değildir</b>Tarih çıkarırken boş bir tarih, DAX'ın tarih başlangıcı olan 30 Aralık 1899 (sayı olarak 0) gibi işlenir; teslim edilmemiş her sipariş yaklaşık −45.000 gün sayılır. NETWORKDAYS'in belgesi de aynı kuralı söyler: tarihlerden yalnızca biri boşsa 30.12.1899 kabul edilir. Yukarıdaki hatalı ölçü −3.664,3 gün döndürür. Teslim tarihi boş satırları her zaman önce ayıkla.</div>
 <p><code>NETWORKDAYS(başlangıç, bitiş, [hafta sonu], [tatiller])</code> iş günlerini sayar. Varsayılan hafta sonu Cumartesi–Pazar'dır (kod 1); tatilleri <code>{ DATE(2024, 4, 10), DATE(2024, 4, 11) }</code> gibi tek sütunlu bir tabloyla verirsin. Başlangıç ve bitiş <b>dahildir</b>: aynı gün teslim edilen bir sipariş 1 iş günü sayılır. Teslimatlarda ortalama NETWORKDAYS 2,97 çıkar; “kaç iş günü sürdü?” sorusu için 1 çıkarırsın.</p>
 
 <h2>TODAY ve FORMAT: iki tuzak</h2>
@@ -62,6 +62,7 @@ AVERAGEX(Satislar, DATEDIFF(Satislar[Tarih], Satislar[TeslimTarihi], DAY))</pre>
 <tr><td><code>FORMAT(DATE(2024, 3, 5), "dddd")</code></td><td>Salı</td></tr>
 <tr><td><code>FORMAT(1234.5, "#,0.00")</code></td><td>1.234,50</td></tr>
 </table></div>
+<p class="note"><b>Kültüre dikkat</b>Bu sonuçlar Türkçe kültür içindir. Power BI Desktop arayüzü İngilizceyse FORMAT varsayılan olarak İngilizce biçimler: <code>January 2024</code>, <code>1,234.50</code>. Sonucun her bilgisayarda aynı çıkmasını istiyorsan üçüncü bağımsız değişkeni yaz: <code>FORMAT(DATE(2024, 3, 5), "MMMM yyyy", "tr-TR")</code>.</p>
 <pre class="dax">Seçili Ay Metni =
 IF(
     HASONEVALUE(Tarih[YilAy]),

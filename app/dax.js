@@ -3,7 +3,21 @@
 (function createDax(root) {
   'use strict';
   const M = root.PBI_MODEL;
-  const T = M.tables;
+  /* Boş satır: bir ilişkinin olgu tarafında boş ya da boyutta karşılığı olmayan anahtar varsa (etkin ya da pasif ilişki fark etmez)
+     Power BI boyut tablosuna sanal bir boş satır ekler. Motor bu satırı tablonun sonuna ekler; model nesnesine dokunmaz.
+     VALUES, ALL ve görsel/SUMMARIZECOLUMNS grupları bu satırı içerir; tablo başvurusu (Tarih, FILTER(Tarih, ...)), DISTINCT ve ALLNOBLANKROW içermez. */
+  const T = {}; const BLANKI = {};
+  Object.keys(M.tables).forEach(t => { T[t] = M.tables[t]; });
+  (M.rels || []).forEach(r => {
+    const dim = M.tables[r.to], fact = M.tables[r.from]; if (!dim || !fact || r.to in BLANKI) return;
+    const k0 = v => (v instanceof Date ? 'd' + v.getTime() : typeof v + ':' + v);
+    const keys = new Set(dim.rows.map(x => k0(x[r.toCol])));
+    if (fact.rows.some(x => x[r.fromCol] === null || x[r.fromCol] === undefined || !keys.has(k0(x[r.fromCol])))) {
+      const blank = {}; dim.cols.forEach(c => { blank[c] = null; });
+      T[r.to] = Object.assign({}, dim, { rows: dim.rows.concat([blank]) }); BLANKI[r.to] = dim.rows.length;
+    }
+  });
+  const noBlank = (t, idx) => (t in BLANKI && idx.length && idx[idx.length - 1] === BLANKI[t] ? idx.slice(0, -1) : idx);
   const TNAMES = Object.keys(T);
   const TLOW = {}; TNAMES.forEach(n => TLOW[n.toLowerCase()] = n);
   const hasCol = (t, c) => T[t] && T[t].cols.includes(c);
@@ -24,7 +38,7 @@
     TOPN: [2, INF], RANKX: [2, 5], ADDCOLUMNS: [3, INF], SELECTCOLUMNS: [1, INF], GROUPBY: [1, INF], CURRENTGROUP: [0, 0], SUMMARIZE: [1, INF], SUMMARIZECOLUMNS: [1, INF], ROW: [2, INF], GENERATESERIES: [2, 3], CALENDAR: [2, 2], CALENDARAUTO: [0, 1], UNION: [2, INF], CROSSJOIN: [2, INF], EXCEPT: [2, 2], INTERSECT: [2, 2], GENERATE: [2, 2], NATURALINNERJOIN: [2, 2], TREATAS: [2, INF], CONTAINS: [3, INF], ISEMPTY: [1, 1], DATATABLE: [3, INF],
     IF: [2, 3], 'IF.EAGER': [2, 3], SWITCH: [3, INF], AND: [2, 2], OR: [2, 2], NOT: [1, 1], TRUE: [0, 0], FALSE: [0, 0], BLANK: [0, 0], ISBLANK: [1, 1], ISNUMBER: [1, 1], ISTEXT: [1, 1], ISERROR: [1, 1], ERROR: [1, 1], IFERROR: [2, 2], COALESCE: [2, INF], CONTAINSSTRING: [2, 2], USERPRINCIPALNAME: [0, 0], USERNAME: [0, 0],
     DIVIDE: [2, 3], ROUND: [2, 2], ROUNDUP: [2, 2], ROUNDDOWN: [2, 2], TRUNC: [1, 2], INT: [1, 1], ABS: [1, 1], SQRT: [1, 1], EXP: [1, 1], LN: [1, 1], LOG: [1, 2], SIGN: [1, 1], MOD: [2, 2], POWER: [2, 2], QUOTIENT: [2, 2], EVEN: [1, 1], ODD: [1, 1], CEILING: [2, 2], FLOOR: [2, 2], MROUND: [2, 2], PI: [0, 0], RAND: [0, 0], FV: [3, 5], PV: [3, 5], PMT: [3, 5], XNPV: [4, 4], XIRR: [3, 5],
-    VALUE: [1, 1], FORMAT: [2, 3], CONCATENATE: [2, 2], LEFT: [1, 2], RIGHT: [1, 2], MID: [3, 3], LEN: [1, 1], UPPER: [1, 1], LOWER: [1, 1], TRIM: [1, 1], SUBSTITUTE: [3, 4], SEARCH: [2, 4], FIND: [2, 4], REPLACE: [4, 4], UNICHAR: [1, 1], REPT: [2, 2], COMBINEVALUES: [2, INF], CONVERT: [2, 2],
+    VALUE: [1, 1], CURRENCY: [1, 1], FORMAT: [2, 3], CONCATENATE: [2, 2], LEFT: [1, 2], RIGHT: [1, 2], MID: [3, 3], LEN: [1, 1], UPPER: [1, 1], LOWER: [1, 1], TRIM: [1, 1], SUBSTITUTE: [3, 4], SEARCH: [2, 4], FIND: [2, 4], REPLACE: [4, 4], UNICHAR: [1, 1], REPT: [2, 2], COMBINEVALUES: [2, INF], CONVERT: [2, 2],
     DATE: [3, 3], TODAY: [0, 0], NOW: [0, 0], YEAR: [1, 1], MONTH: [1, 1], DAY: [1, 1], QUARTER: [1, 1], WEEKDAY: [1, 2], WEEKNUM: [1, 2], EOMONTH: [2, 2], EDATE: [2, 2], HOUR: [1, 1], MINUTE: [1, 1], SECOND: [1, 1], DATEDIFF: [3, 3], DATEVALUE: [1, 1], NETWORKDAYS: [2, 4],
     DATESYTD: [1, 2], DATESQTD: [1, 1], DATESMTD: [1, 1], TOTALYTD: [2, 4], TOTALQTD: [2, 3], TOTALMTD: [2, 3], DATEADD: [3, 5], SAMEPERIODLASTYEAR: [1, 1], PARALLELPERIOD: [3, 3], PREVIOUSMONTH: [1, 1], PREVIOUSQUARTER: [1, 1], PREVIOUSYEAR: [1, 2], PREVIOUSDAY: [1, 1], NEXTMONTH: [1, 1], NEXTQUARTER: [1, 1], NEXTYEAR: [1, 2], NEXTDAY: [1, 1], DATESINPERIOD: [4, 4], DATESBETWEEN: [3, 3], FIRSTDATE: [1, 1], LASTDATE: [1, 1], STARTOFMONTH: [1, 1], ENDOFMONTH: [1, 1], STARTOFQUARTER: [1, 1], ENDOFQUARTER: [1, 1], STARTOFYEAR: [1, 2], ENDOFYEAR: [1, 2], CLOSINGBALANCEMONTH: [2, 3], CLOSINGBALANCEQUARTER: [2, 3], CLOSINGBALANCEYEAR: [2, 4], OPENINGBALANCEYEAR: [2, 4],
     LASTNONBLANK: [2, 2], FIRSTNONBLANK: [2, 2], LASTNONBLANKVALUE: [2, 2], FIRSTNONBLANKVALUE: [2, 2], PATH: [2, 2], PATHLENGTH: [1, 1], PATHITEM: [2, 3], PATHITEMREVERSE: [2, 3], PATHCONTAINS: [2, 2],
@@ -51,15 +65,21 @@
   const AYU = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
   const GUN = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
   const p2 = n => String(n).padStart(2, '0');
-  function fmtDate(d, f) {
-    const y = d.getUTCFullYear(), m = d.getUTCMonth(), day = d.getUTCDate();
-    return f.replace(/yyyy|yy|MMMM|MMM|MM|M|dddd|ddd|dd|d|q/g, t => ({ yyyy: y, yy: String(y).slice(2), MMMM: AYU[m], MMM: AYK[m], MM: p2(m + 1), M: m + 1, dddd: GUN[d.getUTCDay()], ddd: GUN[d.getUTCDay()].slice(0, 3), dd: p2(day), d: day, q: Math.floor(m / 3) + 1 }[t]));
+  const MEN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const DEN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  function fmtDate(d, f, en) {
+    const y = d.getUTCFullYear(), m = d.getUTCMonth(), day = d.getUTCDate(), wd = (en ? DEN : GUN)[d.getUTCDay()];
+    return f.replace(/yyyy|yy|MMMM|MMM|MM|M|dddd|ddd|dd|d|q/g, t => ({ yyyy: y, yy: String(y).slice(2), MMMM: en ? MEN[m] : AYU[m], MMM: en ? MEN[m].slice(0, 3) : AYK[m], MM: p2(m + 1), M: m + 1, dddd: wd, ddd: wd.slice(0, 3), dd: p2(day), d: day, q: Math.floor(m / 3) + 1 }[t]));
   }
   function groupTR(intStr) { return intStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
   function fmtNum(v, dec, group) { const neg = v < 0; const s = Math.abs(v).toFixed(dec); let [i, f] = s.split('.'); if (group) i = groupTR(i); return (neg ? '-' : '') + i + (f ? ',' + f : ''); }
-  function format(v, f) {
+  /* Varsayılan kültür Türkçedir (Türkçe Power BI Desktop). Üçüncü bağımsız değişken "en-..." ise İngilizce ay/gün adı ve ayraç kullanılır. */
+  function format(v, f, loc) {
     if (isBlank(v)) return '';
-    if (isDate(v)) { const named = { 'Short Date': 'dd.MM.yyyy', 'Long Date': 'd MMMM yyyy' }; let g = named[f] || f || 'dd.MM.yyyy'; g = g.replace(/YYYY/g, 'yyyy').replace(/YY/g, 'yy').replace(/DD/g, 'dd'); if (!/[hHs]/.test(g)) g = g.replace(/mmmm/g, 'MMMM').replace(/mmm/g, 'MMM').replace(/mm/g, 'MM').replace(/(^|[^M])m(?!M)/g, '$1M'); g = g.replace(/[Qq]/g, 'q'); return fmtDate(v, g); }
+    const en = /^en/i.test(loc || '');
+    if (en) { if (isDate(v)) return format(v, f === 'Short Date' ? 'M/d/yyyy' : f === 'Long Date' ? 'dddd, MMMM d, yyyy' : f || 'M/d/yyyy', '#en'); }
+    if (en && typeof v === 'number') return format(v, f).replace(/\d[\d.,]*/, x => x.replace(/[.,]/g, c => (c === '.' ? ',' : '.')));
+    if (isDate(v)) { const named = { 'Short Date': 'dd.MM.yyyy', 'Long Date': 'd MMMM yyyy' }; let g = named[f] || f || 'dd.MM.yyyy'; g = g.replace(/YYYY/g, 'yyyy').replace(/YY/g, 'yy').replace(/DD/g, 'dd'); if (!/[hHs]/.test(g)) g = g.replace(/mmmm/g, 'MMMM').replace(/mmm/g, 'MMM').replace(/mm/g, 'MM').replace(/(^|[^M])m(?!M)/g, '$1M'); g = g.replace(/[Qq]/g, 'q'); return fmtDate(v, g, loc === '#en'); }
     if (typeof v !== 'number') return String(v);
     if (f && f.includes(';')) { const sec = f.split(';'); if (v < 0 && sec[1] !== undefined) return format(-v, sec[1]); if (v === 0 && sec[2] !== undefined) return format(v, sec[2]); f = sec[0]; }
     const named = { 'Percent': '0.00%', 'Fixed': '0.00', 'Standard': '#,0.00', 'General Number': 'G', 'Currency': '#,0.00 ₺' };
@@ -238,8 +258,11 @@
     for (const f of own) { if (f.c === '*') idx = idx.filter(i => f.rows.has(i)); else { const ks = colKeys(t, f.c); idx = idx.filter(i => f.keys.has(ks[i])); } }
     for (const r of rels(ctx, t)) {
       if (!tableFiltered(ctx, r.to)) continue;
-      const tk = colKeys(r.to, r.toCol); const ks = new Set(visible(ctx, r.to).map(i => tk[i]));
-      const fk = colKeys(t, r.fromCol); idx = idx.filter(i => ks.has(fk[i]));
+      const tk = colKeys(r.to, r.toCol); const vis = visible(ctx, r.to); const ks = new Set(vis.map(i => tk[i]));
+      const fk = colKeys(t, r.fromCol);
+      /* boş satır görünürse boyutta karşılığı olmayan (yetim) anahtarlı olgu satırları da ona bağlanır */
+      if (r.to in BLANKI && vis.length && vis[vis.length - 1] === BLANKI[r.to]) { const all = keyIndex(r.to, r.toCol); idx = idx.filter(i => ks.has(fk[i]) || !all.has(fk[i])); }
+      else idx = idx.filter(i => ks.has(fk[i]));
     }
     for (const b of ctx.bidir) {
       if (b.to !== t) continue; const c2 = ctxWithout(ctx, b);
@@ -320,7 +343,7 @@
         const nm = node.name;
         if (!node.quoted && st.vars) { const v = st.vars[nm.toLowerCase()]; if (v) return v.v; }
         const tn = T[nm] ? nm : TLOW[nm.toLowerCase()];
-        if (tn) return baseTable(tn, visible(st.ctx, tn));
+        if (tn) return baseTable(tn, noBlank(tn, visible(st.ctx, tn)));
         const up = nm.toUpperCase();
         if (up === 'TRUE') return true; if (up === 'FALSE') return false;
         if (KW.has(up)) return { kind: 'kw', v: up };
@@ -622,7 +645,18 @@
   FN.DISTINCTCOUNT = (eng, a, st) => { const { t, c } = colArg(a[0], 'DISTINCTCOUNT'); return distinctCol(visible(st.ctx, t), t, c).length || null; };
   FN.DISTINCTCOUNTNOBLANK = (eng, a, st) => { const { t, c } = colArg(a[0], 'DISTINCTCOUNTNOBLANK'); return distinctCol(visible(st.ctx, t), t, c).filter(v => !isBlank(v)).length || null; };
   const iterAgg = (kind, fn) => (eng, a, st) => { need(a, 2, fn, fn + '(Tablo, İfade)'); const tb = evT(eng, a[0], st, fn); const vals = iterate(eng, tb, st, s => evS(eng, a[1], s)); if (kind === 'count') return vals.filter(v => !isBlank(v)).length || null; if (kind === 'max' || kind === 'min') return minmaxRaw(vals, kind === 'max'); return agg(kind, vals); };
-  FN.SUMX = iterAgg('sum', 'SUMX'); FN.AVERAGEX = iterAgg('avg', 'AVERAGEX'); FN.MINX = iterAgg('min', 'MINX'); FN.MAXX = iterAgg('max', 'MAXX'); FN.COUNTX = iterAgg('count', 'COUNTX'); FN.MEDIANX = iterAgg('median', 'MEDIANX');
+  FN.SUMX = iterAgg('sum', 'SUMX'); FN.AVERAGEX = iterAgg('avg', 'AVERAGEX'); FN.MINX = iterAgg('min', 'MINX'); FN.MAXX = iterAgg('max', 'MAXX'); FN.COUNTX = iterAgg('count', 'COUNTX');
+  // MEDIANX ve PERCENTILEX'te boş sonuçlar sıralamada en küçük değer olarak yer alır (gerçek Power BI ile karşılaştırıldı):
+  // satışı olmayan müşteriler medyanı düşürür; seçilen sıra(lar) yalnız boşlara denk gelirse sonuç boştur.
+  function rankPick(vals, k) {
+    const v = vals.filter(x => isBlank(x) || typeof x === 'number').map(x => (isBlank(x) ? { b: true, n: 0 } : { b: false, n: x }));
+    if (!v.length || v.every(x => x.b)) return null;
+    v.sort((x, y) => (x.b === y.b ? x.n - y.n : x.b ? -1 : 1));
+    const h = (v.length - 1) * k, lo = Math.floor(h), hi = Math.min(lo + 1, v.length - 1), f = h - lo;
+    if (v[lo].b && (f === 0 || v[hi].b)) return null;
+    return v[lo].n + f * (v[hi].n - v[lo].n);
+  }
+  FN.MEDIANX = (eng, a, st) => { need(a, 2, 'MEDIANX', 'MEDIANX(Tablo, İfade)'); const tb = evT(eng, a[0], st, 'MEDIANX'); return rankPick(iterate(eng, tb, st, s => evS(eng, a[1], s)), 0.5); };
   FN.PRODUCTX = (eng, a, st) => { const tb = evT(eng, a[0], st, 'PRODUCTX'); const v = nums(iterate(eng, tb, st, s => evS(eng, a[1], s))); return v.length ? v.reduce((x, y) => x * y, 1) : null; };
   FN.CONCATENATEX = (eng, a, st) => {
     need(a, 2, 'CONCATENATEX', 'CONCATENATEX(Tablo, İfade, [Ayraç])'); const tb = evT(eng, a[0], st, 'CONCATENATEX');
@@ -639,18 +673,19 @@
     if (tb.base) return baseTable(tb.base, tb.idx.filter((x, i) => keep[i]));
     return { kind: 'table', cols: tb.cols, rows: tb.rows.filter((x, i) => keep[i]) };
   };
-  function allTable(eng, a, st, ctxFor) {
+  function allTable(eng, a, st, ctxFor, nb) {
     if (!a.length) err('ALL içine bir tablo ya da sütun yazılmalı.');
-    if (a[0].type === 'id') { const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()]; if (!tn) err('“' + a[0].name + '” tablosu yok.'); return baseTable(tn, ctxFor ? visible(ctxFor, tn) : allIdx[tn]); }
+    const nbf = (t, idx) => (nb ? noBlank(t, idx) : idx);
+    if (a[0].type === 'id') { const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()]; if (!tn) err('“' + a[0].name + '” tablosu yok.'); return baseTable(tn, nbf(tn, ctxFor ? visible(ctxFor, tn) : allIdx[tn])); }
     const lins = a.map(x => colArg(x, 'ALL'));
     const t = lins[0].t; if (lins.some(l => l.t !== t)) err('ALL içindeki sütunlar aynı tablodan olmalı.');
-    const idx = ctxFor ? visible(ctxFor, t) : allIdx[t];
+    const idx = nbf(t, ctxFor ? visible(ctxFor, t) : allIdx[t]);
     const seen = new Map(); idx.forEach(i => { const r = T[t].rows[i]; const vals = lins.map(l => r[l.c]); const k = vals.map(keyOf).join('|'); if (!seen.has(k)) seen.set(k, vals); });
     return colTable(lins, [...seen.values()]);
   }
   FN.ALL = (eng, a, st) => allTable(eng, a, st, null);
   FN.REMOVEFILTERS = () => err('REMOVEFILTERS yalnızca CALCULATE içinde filtre kaldırmak için kullanılır.');
-  FN.ALLNOBLANKROW = FN.ALL;
+  FN.ALLNOBLANKROW = (eng, a, st) => allTable(eng, a, st, null, true);
   FN.ALLSELECTED = (eng, a, st) => { if (!a.length) err('ALLSELECTED tablo ifadesi olarak kullanılırken bir tablo ya da sütun ister.'); return allTable(eng, a, st, mkCtx(st.ctx.shadow || [], st.ctx)); };
   FN.ALLEXCEPT = (eng, a, st) => { const ctx = applyMod(eng, { mod: 'ALLEXCEPT', args: a }, st.ctx, st); const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()]; return baseTable(tn, visible(ctx, tn)); };
   FN.KEEPFILTERS = (eng, a, st) => { const v = E(eng, a[0], st); if (isTable(v)) return v; err('KEEPFILTERS yalnızca CALCULATE / CALCULATETABLE filtre bağımsız değişkeni ya da bir yineleyicinin tablo bağımsız değişkeni olarak kullanılır.'); };
@@ -658,10 +693,11 @@
   FN.CROSSFILTER = () => err('CROSSFILTER yalnızca CALCULATE / CALCULATETABLE içinde kullanılır.');
   FN.VALUES = (eng, a, st) => {
     need(a, 1, 'VALUES', 'VALUES(Tablo[Sütun])');
+    if (a[0].type === 'id' && !(st.vars && !a[0].quoted && st.vars[a[0].name.toLowerCase()])) { const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()]; if (tn) return baseTable(tn, visible(st.ctx, tn)); }
     if (a[0].type === 'id') { const tb = E(eng, a[0], st); return tb; }
     const { t, c } = colArg(a[0], 'VALUES'); return colTable([{ t, c }], distinctCol(visible(st.ctx, t), t, c).map(v => [v]));
   };
-  FN.DISTINCT = (eng, a, st) => { if (a[0].type === 'col') return FN.VALUES(eng, a, st); const tb = evT(eng, a[0], st, 'DISTINCT'); const seen = new Map(); for (let i = 0; i < tLen(tb); i++) { const r = tRow(tb, i); const k = r.map(keyOf).join('|'); if (!seen.has(k)) seen.set(k, r); } return { kind: 'table', cols: tCols(tb), rows: [...seen.values()] }; };
+  FN.DISTINCT = (eng, a, st) => { if (a[0].type === 'col') { const { t, c } = colArg(a[0], 'DISTINCT'); return colTable([{ t, c }], distinctCol(noBlank(t, visible(st.ctx, t)), t, c).map(v => [v])); } const tb = evT(eng, a[0], st, 'DISTINCT'); const seen = new Map(); for (let i = 0; i < tLen(tb); i++) { const r = tRow(tb, i); const k = r.map(keyOf).join('|'); if (!seen.has(k)) seen.set(k, r); } return { kind: 'table', cols: tCols(tb), rows: [...seen.values()] }; };
   FN.SELECTEDVALUE = (eng, a, st) => { const { t, c } = colArg(a[0], 'SELECTEDVALUE'); const hit = lookupFrame(st.frames, t, c); if (hit) return hit.v; const v = distinctCol(visible(st.ctx, t), t, c); return v.length === 1 ? v[0] : (a[1] ? evS(eng, a[1], st) : null); };
   FN.HASONEVALUE = (eng, a, st) => { const { t, c } = colArg(a[0], 'HASONEVALUE'); return distinctCol(visible(st.ctx, t), t, c).length === 1; };
   FN.ISFILTERED = (eng, a, st) => { if (a[0].type === 'id') { const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()]; return st.ctx.filters.some(f => f.t === tn); } const { t, c } = colArg(a[0], 'ISFILTERED'); return st.ctx.filters.some(f => affects(f, t, c)); };
@@ -728,8 +764,10 @@
     const rows = iterate(eng, tb, st, s => pairs.map(([n, e]) => evS(eng, e, s)));
     return { kind: 'table', cols, rows };
   };
-  function groupBy(eng, st, srcT, g) {
-    const idx = visible(st.ctx, srcT); const seen = new Map();
+  const vnCache = {};
+  function virtualNull(t, c) { const k = t + '|' + c; if (!(k in vnCache)) vnCache[k] = t in BLANKI && !M.tables[t].rows.some(r => r[c] === null || r[c] === undefined); return vnCache[k]; }
+  function groupBy(eng, st, srcT, g, nb) {
+    const idx = nb ? noBlank(srcT, visible(st.ctx, srcT)) : visible(st.ctx, srcT); const seen = new Map();
     for (const i of idx) {
       let row = T[srcT].rows[i]; const vals = g.map(gc => { if (gc.t === srcT) return row[gc.c]; const path = relPath(srcT, gc.t); if (!path) err(gc.t + '[' + gc.c + '] sütunu ' + srcT + ' tablosuna ilişkiyle bağlı değil.'); let r = row; for (const rel of path) { const j = keyIndex(rel.to, rel.toCol).get(keyOf(r[rel.fromCol])); if (j === undefined) return null; r = T[rel.to].rows[j]; } return r[gc.c]; });
       const k = vals.map(keyOf).join('|'); if (!seen.has(k)) seen.set(k, vals);
@@ -754,7 +792,7 @@
     if (a[0].type !== 'id' || !(T[a[0].name] || TLOW[a[0].name.toLowerCase()])) return groupVirtual(eng, a, st, 'SUMMARIZE');
     const tn = T[a[0].name] ? a[0].name : TLOW[a[0].name.toLowerCase()];
     const [g, k] = groupCols(eng, a.slice(1), st, 'SUMMARIZE');
-    const tb = colTable(g, groupBy(eng, st, tn, g));
+    const tb = colTable(g, groupBy(eng, st, tn, g, true));
     const rest = a.slice(1 + k); if (!rest.length) return tb;
     /* Genişletme sütunları grubun filtre bağlamında hesaplanır (örtük bağlam geçişi) */
     const pairsC = namePairs(eng, rest, st, 'SUMMARIZE').map(([n, e]) => [n, e && e.type === 'call' && e.fn === 'CALCULATE' && e.args.length === 1 ? e : { type: 'call', fn: 'CALCULATE', args: [e] }]);
@@ -830,7 +868,7 @@
   FN.QUOTIENT = (eng, a, st) => Math.trunc(num(evS(eng, a[0], st)) / num(evS(eng, a[1], st)));
   FN.VALUE = (eng, a, st) => num(evS(eng, a[0], st));
   // metin
-  FN.FORMAT = (eng, a, st) => format(evS(eng, a[0], st), str(evS(eng, a[1], st)));
+  FN.FORMAT = (eng, a, st) => format(evS(eng, a[0], st), str(evS(eng, a[1], st)), a[2] ? str(evS(eng, a[2], st)) : null);
   FN.CONCATENATE = (eng, a, st) => str(evS(eng, a[0], st)) + str(evS(eng, a[1], st));
   FN.LEFT = (eng, a, st) => str(evS(eng, a[0], st)).slice(0, a[1] ? num(evS(eng, a[1], st)) : 1);
   FN.RIGHT = (eng, a, st) => { const s = str(evS(eng, a[0], st)); const n = a[1] ? num(evS(eng, a[1], st)) : 1; return n ? s.slice(-n) : ''; };
@@ -852,12 +890,13 @@
   FN.DAY = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'DAY'); return d ? d.getUTCDate() : null; };
   FN.QUARTER = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'QUARTER'); return d ? Math.floor(d.getUTCMonth() / 3) + 1 : null; };
   FN.WEEKDAY = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'WEEKDAY'); if (!d) return null; const t = a[1] ? num(evS(eng, a[1], st)) : 1; const w = d.getUTCDay(); return t === 2 ? (w === 0 ? 7 : w) : t === 3 ? (w + 6) % 7 : w + 1; };
-  FN.EOMONTH = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'EOMONTH'); const n = a[1] ? num(evS(eng, a[1], st)) : 0; return dUTC(d.getUTCFullYear(), d.getUTCMonth() + n + 1, 0); };
-  FN.EDATE = (eng, a, st) => addUnit(dateArg(eng, a[0], st, 'EDATE'), num(evS(eng, a[1], st)), 'MONTH');
+  FN.EOMONTH = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'EOMONTH'); if (!d) return null; const n = a[1] ? num(evS(eng, a[1], st)) : 0; return dUTC(d.getUTCFullYear(), d.getUTCMonth() + n + 1, 0); };
+  FN.EDATE = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'EDATE'); return d ? addUnit(d, num(evS(eng, a[1], st)), 'MONTH') : null; };
   FN.HOUR = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'HOUR'); return d ? d.getUTCHours() : null; };
   FN.MINUTE = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'MINUTE'); return d ? d.getUTCMinutes() : null; };
   FN.SECOND = (eng, a, st) => { const d = dateArg(eng, a[0], st, 'SECOND'); return d ? d.getUTCSeconds() : null; };
-  FN.DATEDIFF = (eng, a, st) => { const z = dUTC(1899, 11, 30); const x = dateArg(eng, a[0], st, 'DATEDIFF') || z, y = dateArg(eng, a[1], st, 'DATEDIFF') || z; const uv = E(eng, a[2], st); const uu = uv && uv.kind === 'kw' ? uv.v : String(uv).toUpperCase(); if (DIFF_UNITS.includes(uu)) { const k = uu === 'HOUR' ? 3600000 : uu === 'MINUTE' ? 60000 : 1000; return Math.floor(y.getTime() / k) - Math.floor(x.getTime() / k); } const u = unitArg(eng, a[2], st); if (u === 'DAY') return Math.round((y - x) / 86400000); if (u === 'WEEK') return Math.floor(Math.round((y - x) / 86400000) / 7); const mm = (y.getUTCFullYear() - x.getUTCFullYear()) * 12 + y.getUTCMonth() - x.getUTCMonth(); return u === 'MONTH' ? mm : u === 'QUARTER' ? Math.floor((y.getUTCFullYear() * 4 + Math.floor(y.getUTCMonth() / 3)) - (x.getUTCFullYear() * 4 + Math.floor(x.getUTCMonth() / 3))) : y.getUTCFullYear() - x.getUTCFullYear(); };
+  // Power BI: tarihlerden biri boşsa DATEDIFF boş döner (gerçek Power BI ile karşılaştırıldı; tarih çıkarma işlemi ise boşu 30.12.1899 sayar).
+  FN.DATEDIFF = (eng, a, st) => { const x = dateArg(eng, a[0], st, 'DATEDIFF'), y = dateArg(eng, a[1], st, 'DATEDIFF'); if (!x || !y) return null; const uv = E(eng, a[2], st); const uu = uv && uv.kind === 'kw' ? uv.v : String(uv).toUpperCase(); if (DIFF_UNITS.includes(uu)) { const k = uu === 'HOUR' ? 3600000 : uu === 'MINUTE' ? 60000 : 1000; return Math.floor(y.getTime() / k) - Math.floor(x.getTime() / k); } const u = unitArg(eng, a[2], st); if (u === 'DAY') return Math.round((y - x) / 86400000); if (u === 'WEEK') return Math.floor(Math.round((y - x) / 86400000) / 7); const mm = (y.getUTCFullYear() - x.getUTCFullYear()) * 12 + y.getUTCMonth() - x.getUTCMonth(); return u === 'MONTH' ? mm : u === 'QUARTER' ? Math.floor((y.getUTCFullYear() * 4 + Math.floor(y.getUTCMonth() / 3)) - (x.getUTCFullYear() * 4 + Math.floor(x.getUTCMonth() / 3))) : y.getUTCFullYear() - x.getUTCFullYear(); };
   FN.DATEVALUE = (eng, a, st) => { const s = str(evS(eng, a[0], st)); const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/) || s.match(/^(\d{2})\.(\d{2})\.(\d{4})$/); if (!m) err('DATEVALUE: tarih metni anlaşılamadı (ör. "2024-03-15").'); return m[1].length === 4 ? dUTC(+m[1], +m[2] - 1, +m[3]) : dUTC(+m[3], +m[2] - 1, +m[1]); };
   // zaman zekâsı
   FN.DATESYTD = (eng, a, st) => periodToDate(eng, a, st, 'DATESYTD', yStart);
@@ -887,6 +926,13 @@
   FN.DATESINPERIOD = (eng, a, st) => {
     need(a, 4, 'DATESINPERIOD', 'DATESINPERIOD(Tarih[Tarih], BaşlangıçTarihi, Sayı, Birim)');
     const { t, c } = colArg(a[0], 'DATESINPERIOD'); const s = dateArg(eng, a[1], st, 'DATESINPERIOD'); if (!s) return dtab(t, c, []); const n = num(evS(eng, a[2], st)); const u = unitArg(eng, a[3], st);
+    // Power BI: geriye doğru ay/çeyrek/yıl aralığı ayın son gününde bitiyorsa başlangıç ayın 1'ine hizalanır
+    // (DATESINPERIOD(…, 28.02.2023, -3, MONTH) = 01.12.2022–28.02.2023). Gerçek Power BI ile karşılaştırıldı.
+    const mult = u === 'MONTH' ? 1 : u === 'QUARTER' ? 3 : u === 'YEAR' ? 12 : 0;
+    if (n < 0 && mult && s.getTime() === monthEnd(s).getTime()) {
+      const st0 = dUTC(s.getUTCFullYear(), s.getUTCMonth() + n * mult + 1, 1);
+      return dtab(t, c, existingDates(t, c, d => d >= st0 && d <= s));
+    }
     const o = addUnit(s, n, u);
     return dtab(t, c, existingDates(t, c, d => n < 0 ? (d > o && d <= s) : (d >= s && d < o)));
   };
@@ -923,7 +969,7 @@
   FN.HASONEFILTER = (eng, a, st) => { const { t, c } = colArg(a[0], 'HASONEFILTER'); return st.ctx.filters.some(f => affects(f, t, c)) && distinctCol(visible(st.ctx, t), t, c).length === 1; };
   function pctl(arr, k) { const v = nums(arr).sort((x, y) => x - y); if (!v.length) return null; if (k < 0 || k > 1) err('Yüzdebirlik değeri 0 ile 1 arasında olmalı.'); const h = (v.length - 1) * k; const lo = Math.floor(h); return v[lo] + (h - lo) * ((v[lo + 1] !== undefined ? v[lo + 1] : v[lo]) - v[lo]); }
   FN['PERCENTILE.INC'] = (eng, a, st) => pctl(colVals(eng, a[0], st, 'PERCENTILE.INC'), num(evS(eng, a[1], st)));
-  FN['PERCENTILEX.INC'] = (eng, a, st) => { const tb = evT(eng, a[0], st, 'PERCENTILEX.INC'); return pctl(iterate(eng, tb, st, s => evS(eng, a[1], s)), num(evS(eng, a[2], st))); };
+  FN['PERCENTILEX.INC'] = (eng, a, st) => { const tb = evT(eng, a[0], st, 'PERCENTILEX.INC'); const k = num(evS(eng, a[2], st)); if (k < 0 || k > 1) err('Yüzdebirlik değeri 0 ile 1 arasında olmalı.'); return rankPick(iterate(eng, tb, st, s => evS(eng, a[1], s)), k); };
   const varOf = (arr, samp) => { const v = nums(arr); if (v.length < (samp ? 2 : 1)) return null; const m = v.reduce((x, y) => x + y, 0) / v.length; return v.reduce((x, y) => x + (y - m) ** 2, 0) / (v.length - (samp ? 1 : 0)); };
   FN['VAR.S'] = (eng, a, st) => varOf(colVals(eng, a[0], st, 'VAR.S'), true); FN['VAR.P'] = (eng, a, st) => varOf(colVals(eng, a[0], st, 'VAR.P'), false);
   FN['VARX.S'] = (eng, a, st) => varOf(iterate(eng, evT(eng, a[0], st), st, s => evS(eng, a[1], s)), true); FN['VARX.P'] = (eng, a, st) => varOf(iterate(eng, evT(eng, a[0], st), st, s => evS(eng, a[1], s)), false);
@@ -955,7 +1001,7 @@
   FN.DATATABLE = (eng, a, st) => {
     const lst = a[a.length - 1]; if (!lst || lst.type !== 'list') err('DATATABLE son bağımsız değişken olarak {{…}, {…}} satır listesi ister.');
     const cols = [], typs = []; for (let i = 0; i + 1 < a.length - 1; i += 2) { if (a[i].type !== 'lit') err('DATATABLE: sütun adı tırnak içinde olmalı.'); cols.push({ name: '[' + a[i].v + ']', short: a[i].v, lin: null }); typs.push(a[i + 1].type === 'id' ? a[i + 1].name.toUpperCase() : ''); }
-    const conv = (v, ty) => { if (isBlank(v)) return null; if (ty === 'DATETIME' && typeof v === 'string') { const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return dUTC(+m[1], +m[2] - 1, +m[3]); } if (['INTEGER', 'DOUBLE', 'CURRENCY'].includes(ty) && typeof v === 'string' && v.trim() !== '' && !isNaN(+v)) return +v; if (ty === 'STRING' && typeof v === 'number') return String(v); return v; };
+    const conv = (v, ty) => { if (isBlank(v)) return null; if (ty === 'DATETIME' && typeof v === 'string') { const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return dUTC(+m[1], +m[2] - 1, +m[3]); } if (['INTEGER', 'DOUBLE', 'CURRENCY'].includes(ty) && typeof v === 'string' && v.trim() !== '' && !isNaN(+v)) v = +v; if (ty === 'CURRENCY' && typeof v === 'number') return cur4(v); if (ty === 'STRING' && typeof v === 'number') return String(v); return v; };
     const rows = lst.items.map(tp => { if (tp.length === 1 && tp[0].type === 'list') { const it = tp[0].items; tp = it.every(x => x.length === 1) ? it.map(x => x[0]) : it[0]; } return tp.map(e => evS(eng, e, st)); });
     return { kind: 'table', cols, rows: rows.map(r => r.slice(0, cols.length).map((v, i) => conv(v, typs[i]))) };
   };
@@ -1002,7 +1048,10 @@
   FN.FIND = (eng, a, st) => { const i = str(evS(eng, a[1], st)).indexOf(str(evS(eng, a[0], st)), a[2] ? num(evS(eng, a[2], st)) - 1 : 0); if (i < 0) { if (a[3]) return evS(eng, a[3], st); err('FIND aranan metni bulamadı.'); } return i + 1; };
   FN.REPLACE = (eng, a, st) => { const s0 = str(evS(eng, a[0], st)); const i = num(evS(eng, a[1], st)) - 1, n = num(evS(eng, a[2], st)); return s0.slice(0, i) + str(evS(eng, a[3], st)) + s0.slice(i + n); };
   FN.COMBINEVALUES = (eng, a, st) => a.slice(1).map(x => str(evS(eng, x, st))).join(str(evS(eng, a[0], st)));
-  FN.CONVERT = (eng, a, st) => { const v = evS(eng, a[0], st); const ty = E(eng, a[1], st); const t = ty && ty.kind === 'kw' ? ty.v : ''; if (t === 'STRING') return str(v); if (t === 'INTEGER') return Math.round(num(v)); if (t === 'DOUBLE' || t === 'CURRENCY') return num(v); if (t === 'BOOLEAN') return truthy(v); return v; };
+  /* Para birimi (Currency) türü 4 ondalığa yuvarlanır (gerçek Power BI ile karşılaştırıldı). Hesap sonuçlarının türü izlenmez; bkz. bilinen sınırlar. */
+  const cur4 = x => Math.round(x * 1e4) / 1e4;
+  FN.CURRENCY = (eng, a, st) => { const v = evS(eng, a[0], st); return isBlank(v) ? null : cur4(num(v)); };
+  FN.CONVERT = (eng, a, st) => { const v = evS(eng, a[0], st); const ty = E(eng, a[1], st); const t = ty && ty.kind === 'kw' ? ty.v : ''; if (t === 'STRING') return str(v); if (t === 'INTEGER') return Math.round(num(v)); if (t === 'DOUBLE') return num(v); if (t === 'CURRENCY') return isBlank(v) ? null : cur4(num(v)); if (t === 'BOOLEAN') return truthy(v); return v; };
   FN.EVEN = m1(v => { const r = Math.ceil(Math.abs(v)); return Math.sign(v) * (r % 2 ? r + 1 : r); }); FN.ODD = m1(v => { const r = Math.ceil(Math.abs(v)); return Math.sign(v || 1) * (r % 2 ? r : r + 1); });
   FN.CEILING = (eng, a, st) => { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.ceil(v / s0) * s0; };
   FN.FLOOR = (eng, a, st) => { const v = num(evS(eng, a[0], st)), s0 = a[1] ? num(evS(eng, a[1], st)) : 1; return Math.floor(v / s0) * s0; };
@@ -1060,7 +1109,9 @@
       const sameAxis = sl.concat(opts.extra || []).filter(s => rows.some(r => r.t === s.t && r.c === s.c));
       if (sameAxis.length && sameAxis.some(s => { const i = rows.findIndex(r => r.t === s.t && r.c === s.c); return !s.values.some(v => keyOf(v) === keyOf(cb[i])); })) return;
       const vals = asts.map(a => evalMeasure(ms, a, spec, { shadow: sl, scope: rows }));
-      if (opts.keepBlank || vals.some(v => !isBlank(v))) out.push({ keys: cb, vals });
+      /* keepBlank boş ölçülü üyeleri tutar; ama ilişkiden doğan sanal boş satır, ölçüsü boşsa Power BI'daki gibi gizlenir */
+      const virt = cb.some((k, i) => k === null && virtualNull(rows[i].t, rows[i].c));
+      if (vals.some(v => !isBlank(v)) || (opts.keepBlank && !virt)) out.push({ keys: cb, vals });
     });
     let total = null;
     if (opts.totals !== false) total = asts.map(a => evalMeasure(ms, a, sl.concat(opts.extra || []), { shadow: sl, scope: [] }));
@@ -1087,5 +1138,5 @@
   function check(src, isQuery) { try { const t = stripDef(src); if (isQuery) parse(src).query(); else parse(t.expr).expr(); return null; } catch (e) { return e.message; } }
 
   root.PBI_CREATE_DAX = model => { const isolated = { PBI_MODEL: model }; createDax(isolated); return isolated.PBI_DAX; };
-  root.PBI_DAX = { batch: withCache, parse, tokenize, evalMeasure, query, runQuery, format, fmtNum, str, isBlank, isDate, keyOf, fmtDate, stripDef, check, FN, T, TNAMES, DaxError, sortCompare };
+  root.PBI_DAX = { batch: withCache, parse, tokenize, evalMeasure, query, runQuery, format, fmtNum, str, isBlank, isDate, keyOf, fmtDate, stripDef, check, FN, T: M.tables, TNAMES, DaxError, sortCompare };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -540,7 +540,7 @@ RETURN
         [Net Satış],
         SUMX(
             VALUES(Tarih[YilAy]),
-            VAR AyBasi = DATEVALUE(Tarih[YilAy] & "-01")
+            VAR AyBasi = CALCULATE(MIN(Tarih[Tarih]))
             VAR Kur =
                 LOOKUPVALUE(
                     DovizKurlari[Kur],

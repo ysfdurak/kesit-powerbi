@@ -79,7 +79,7 @@ W.PBI_CONFUSED = [
     { n: 'ALL', d: 'Filtreleri yok sayarak sütunun tüm farklı değerlerini döndürür (eşleşmeyen satır varsa boş satır dahil).' }
   ],
   rule: 'Çoğu durumda VALUES yeterlidir ve “şu anda görünen değerler” demektir. Boş satırın sayıma girmesini istemiyorsan DISTINCT kullan; filtreden bağımsız tam liste istiyorsan ALL.',
-  body: 'Boş satır nereden gelir? Olgu tablosunda boyut tablosunda karşılığı olmayan bir anahtar varsa (ör. Urunler’de bulunmayan bir UrunNo), Power BI ilişkinin bir tarafına sanal bir boş satır ekler. Görselde “(Boş)” etiketi olarak görünür. Bu modelde eşleşmeyen anahtar yoktur; demoda VALUES ile ALL arasındaki bağlam farkını görürsün.',
+  body: 'Boş satır nereden gelir? Olgu tablosunda boyut tablosunda karşılığı olmayan bir anahtar varsa (ör. Urunler’de bulunmayan bir UrunNo), Power BI ilişkinin bir tarafına sanal bir boş satır ekler. Görselde “(Boş)” etiketi olarak görünür. Bu modelde ürün ve müşteri anahtarlarının hepsi eşleşir; ama teslim edilmemiş siparişlerin <b>TeslimTarihi</b> boştur, bu yüzden Tarih tablosunda boş satır vardır (ilişki pasif olsa da): <code>COUNTROWS(VALUES(Tarih[Yil]))</code> 4, <code>COUNTROWS(DISTINCT(Tarih[Yil]))</code> 3 verir. Ay ortalaması alırken bu satır paydaya girer. Demoda VALUES ile ALL arasındaki bağlam farkını görürsün.',
   demo: { grid: { t: 'Urunler', c: 'Kategori' }, rows: [
     ['COUNTROWS(VALUES(Kategori))', 'COUNTROWS(VALUES(Urunler[Kategori]))'],
     ['COUNTROWS(ALL(Kategori))', 'COUNTROWS(ALL(Urunler[Kategori]))']
