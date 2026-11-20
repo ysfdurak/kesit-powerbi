@@ -19,6 +19,9 @@ meta=f'''<meta http-equiv="Content-Security-Policy" content="default-src 'self';
 <meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/">
 <meta name="twitter:card" content="summary_large_image">
 '''
+csp, meta = meta.split('\n', 1)
+# CSP, tarayıcı başka bir şey okumadan önce uygulansın diye charset'in hemen ardına yazılır
+s=s.replace('<meta charset="utf-8">', '<meta charset="utf-8">'+csp, 1)
 s=s.replace('<title>Kesit Power BI</title>','<title>Kesit Power BI</title>\n'+meta,1)
 s=s.replace('<script charset="utf-8" src="kesit.js"></script>','<script charset="utf-8" src="kesit.js"></script>\n<script>if(\'serviceWorker\' in navigator && /^https:|^http:\\/\\/localhost/.test(location.href) && !/claude|claudeusercontent/.test(location.host)) window.addEventListener(\'load\',()=>navigator.serviceWorker.register(\'sw.js\').catch(()=>{}),{once:true});</script>',1)
 assert 'vendor/fonts.css' in s and 'og:image' in s and 'serviceWorker' in s
