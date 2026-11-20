@@ -91,7 +91,8 @@ for (const l of PBI_LESSONS) for (const [i, e] of (l.ex || []).entries())
 t += ind(1, "table '_Test'") + '\n';
 let n = 0;
 const daxEx = [];
-for (const x of exercises.filter(x => x.e.t === 'dax')) {
+const MUT = process.env.MUT ? require('./mutasyon.cjs') : null;
+for (const x of exercises.filter(x => x.e.t === 'dax' && !MUT)) {
   n++;
   const code = 'X' + String(n).padStart(3, '0');
   const expr = PBI_DAX.stripDef(x.e.sol).expr;
@@ -128,7 +129,7 @@ for (const x of daxEx) {
 }
 const queries = [];
 let qn = 0;
-for (const x of exercises.filter(x => x.e.t === 'query')) {
+for (const x of exercises.filter(x => x.e.t === 'query' && !MUT)) {
   qn++;
   const code = 'Q' + String(qn).padStart(3, '0');
   const ms = { ...baseAll };
@@ -144,7 +145,26 @@ const parseCol = s => { if (typeof s !== 'string') return s; const m = s.match(/
 const toSl = arr => (arr || []).map(x => Array.isArray(x) ? { t: x[0], c: x[1], values: x[2] } : x);
 const slOut = sl => sl.map(x => ({ t: x.t, c: x.c, values: x.values.map(norm) }));
 const extra = [], counters = {};
+// 5. tur (MUT=1): her çözümün yerine öğrenci hatası/farklı yazım varyantları (en çok MUTN tanesi, kurallar dengeli dağıtılır)
+const MUTN = +(process.env.MUTN || 3), used = {};
+function pickVariants(expr) {
+  const CAP = +(process.env.MUTCAP || 120); const vs = MUT.variants(expr).filter(([lab]) => (used[lab] || 0) < (lab === 'parantez eksik' ? 25 : CAP));
+  vs.sort((x, y) => (used[x[0]] || 0) - (used[y[0]] || 0));
+  const out = vs.slice(0, MUTN); out.forEach(([lab]) => { used[lab] = (used[lab] || 0) + 1; }); return out;
+}
 function addM(prefix, origin, defs, expr, grids, noTotal, sl, exclude, inModel) {
+  if (MUT && !addM.inner) {
+    addM.inner = true;
+    try {
+      const named = expr.match(/^\[([^\]]+)\]$/); const host = named && defs.find(d => d.name === named[1]);
+      const base = host ? host.expr : expr;
+      for (const [lab, v] of pickVariants(base)) {
+        if (host) addM(prefix, origin + ' ~ ' + lab, defs.map(d => (d === host ? { name: d.name, expr: v } : d)), expr, grids, noTotal, sl, exclude, false);
+        else addM(prefix, origin + ' ~ ' + lab, inModel ? [] : defs, v, grids, noTotal, sl, exclude, false);
+      }
+    } finally { addM.inner = false; }
+    return;
+  }
   counters[prefix] = (counters[prefix] || 0) + 1;
   const code = prefix + String(counters[prefix]).padStart(3, '0');
   const ms = { ...baseAll }; if (exclude) delete ms[exclude];
@@ -164,6 +184,7 @@ function addM(prefix, origin, defs, expr, grids, noTotal, sl, exclude, inModel) 
 }
 const extraQ = [];
 function addQ(prefix, origin, sol) {
+  if (MUT && !addQ.inner) { addQ.inner = true; try { for (const [lab, v] of pickVariants(sol)) addQ(prefix, origin + ' ~ ' + lab, v); } finally { addQ.inner = false; } return; }
   counters[prefix] = (counters[prefix] || 0) + 1;
   const code = prefix + String(counters[prefix]).padStart(3, '0');
   const item = { code, lesson: origin, idx: '', sol };
@@ -199,6 +220,7 @@ const task = (prefix, origin, e) => {
   if (e.t && e.t !== 'dax') return;
   addM(prefix, origin, [], PBI_DAX.stripDef(e.sol).expr, e.grid || DEFAULT_GRID, e.noTotal, e.slicers || [], e.name);
 };
+if (MUT) for (const x of exercises) { if (x.e.t === 'query') addQ('XQ', 'ders ' + x.lesson + '#' + x.idx, x.e.sol); else addM('X', 'ders ' + x.lesson + '#' + x.idx, [], PBI_DAX.stripDef(x.e.sol).expr, x.e.grid || DEFAULT_GRID, x.e.noTotal, x.e.slicers || [], x.e.name); }
 PBI_PRACTICE.forEach(e => task('P', 'pratik ' + e.id, e));
 PBI_CODEPOOL.concat(PBI_INTERVIEW).forEach(e => task('M', 'mülakat ' + e.id, e));
 // Arena: meydan okumalar (görünen + gizli ızgaralar), bulmaca, tahmin, dedektif
@@ -212,6 +234,7 @@ PBI_CONFUSED.filter(c => c.demo).forEach(c => c.demo.rows.forEach(([lab, ex], i)
 PBI_MISTAKES.filter(m => m.task).forEach(m => addM('H', 'hata ' + m.id, [], PBI_DAX.stripDef(m.task.sol).expr, m.task.grid || DEFAULT_GRID, m.task.noTotal, [], m.task.name));
 expected.push(...extra); queries.push(...extraQ);
 fs.writeFileSync(path.join(OUT, 'beklenen.json'), JSON.stringify({ measures: expected, queries }, null, 0));
+if (MUT) console.error(JSON.stringify(used));
 console.log(JSON.stringify({
   tables: tableNames.length, rels: M.rels.length, baseMeasures: PBI_MEASURES.length,
   daxExercises: daxEx.length, queries: queries.length, extra: counters,

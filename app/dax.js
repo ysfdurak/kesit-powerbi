@@ -55,7 +55,7 @@
   const isBlank = v => v === null || v === undefined;
   const isTable = v => v && typeof v === 'object' && v.kind === 'table';
   const isDate = v => v instanceof Date;
-  const keyOf = v => v === null || v === undefined ? '∅' : v instanceof Date ? 'd' + v.getTime() : typeof v === 'number' ? 'n' + v : typeof v === 'boolean' ? 'b' + v : 's' + v;
+  const keyOf = v => v === null || v === undefined ? '∅' : v instanceof Date ? 'd' + v.getTime() : typeof v === 'number' ? 'n' + v : typeof v === 'boolean' ? 'b' + v : 's' + String(v).toLowerCase(); /* Power BI metin değerlerini büyük/küçük harfe duyarsız eşler (TREATAS({"kitap"}) Kitap'ı bulur); İ/ı Türkçe değil, Unicode kuralıyla küçülür: "iptal" ≠ "İptal" */
   const num = v => { if (isBlank(v)) return 0; if (typeof v === 'number') return v; if (typeof v === 'boolean') return v ? 1 : 0; if (isDate(v)) return v.getTime() / 86400000 + 25569; const n = Number(String(v).replace(',', '.')); if (isNaN(n)) err('“' + v + '” metni sayıya çevrilemedi.'); return n; };
   const fromSerial = n => new Date(Math.round((n - 25569) * 86400000));
   const str = v => isBlank(v) ? '' : isDate(v) ? fmtDate(v, 'dd.MM.yyyy') : typeof v === 'boolean' ? (v ? 'TRUE' : 'FALSE') : typeof v === 'number' ? String(Math.round(v * 1e10) / 1e10).replace('.', ',') : String(v);
@@ -84,7 +84,7 @@
     if (f && f.includes(';')) { const sec = f.split(';'); if (v < 0 && sec[1] !== undefined) { const dm = sec[1].match(/\.(0+)/), pc = sec[1].includes('%'); const dd = dm ? dm[1].length : 0; if (Math.round(-v * (pc ? 100 : 1) * Math.pow(10, dd)) === 0) return format(0, sec[2] !== undefined ? sec[2] : sec[0]); /* sıfıra yuvarlanan negatif sayı sıfır bölümüyle yazılır */ return format(-v, sec[1]); } if (v === 0 && sec[2] !== undefined) return format(v, sec[2]); f = sec[0]; }
     const named = { 'Percent': '0.00%', 'Fixed': '0.00', 'Standard': '#,0.00', 'General Number': 'G', 'Currency': '#,0.00 ₺' };
     f = named[f] || f;
-    if (f === 'G') return str(v);
+    if (f === 'G' || f === '' || f === null || f === undefined) return str(v); /* boş biçim dizesi: Genel sayı (Power BI FORMAT(x, "")) */
     const m = f.match(/^([^0#]*)([#,]*0*)(?:\.(0+))?(%?)(.*)$/);
     if (!m) return str(v);
     const pct = m[4] === '%'; const dec = m[3] ? m[3].length : 0; const group = m[2].includes(',');
@@ -327,19 +327,51 @@
     const k = Object.keys(this.measures).find(x => x.toLowerCase() === name.toLowerCase());
     return k ? this.measures[k] : null;
   };
-  Engine.prototype.ast = function (m) { if (!m._ast) { try { m._ast = parse(m.expr).expr(); } catch (e) { m._err = e.message; throw new DaxError('[' + m.name + '] ölçüsünde hata: ' + e.message); } } return m._ast; };
+  /* Tablo adı yazılmamış sütun: gerçek Power BI ölçüde [Tutar] gibi bir başvuruyu, aynı adlı ölçü yoksa ölçünün ana tablosunun
+     (burada Satislar) sütunu sayar; SUMMARIZE(Satislar, [Kanal]) de ilk tablonun sütunudur. Sütun bekleyen yerlerde başvuru çevrilir. */
+  const HOME = 'Satislar';
+  const COLFN = new Set(['SUM', 'AVERAGE', 'MIN', 'MAX', 'COUNT', 'COUNTA', 'COUNTBLANK', 'DISTINCTCOUNT', 'DISTINCTCOUNTNOBLANK', 'MEDIAN', 'PERCENTILE.INC', 'PERCENTILE.EXC', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PRODUCT']); /* yalnız toplama işlevleri: VALUES([Kanal]), ALL([Kanal]) ve CALCULATE([Durum] = …) Power BI'da da hatadır */
+  function bareCols(node, eng, home) {
+    const conv = (n, t) => { if (n && n.type === 'mref' && !eng.resolveMeasure(n.name) && t && colOf(t, n.name)) return { type: 'col', t, c: colOf(t, n.name) }; return n; };
+    (function walk(n, inFilter) {
+      if (!n || typeof n !== 'object') return;
+      if (Array.isArray(n)) { n.forEach(x => walk(x, inFilter)); return; }
+      if (n.type === 'call') {
+        if (COLFN.has(n.fn)) n.args = n.args.map(a => conv(a, home));
+        if (n.fn === 'SUMMARIZE' && n.args[0] && n.args[0].type === 'id') { const tn = T[n.args[0].name] ? n.args[0].name : TLOW[n.args[0].name.toLowerCase()]; n.args = n.args.map((a, i) => (i ? conv(a, tn) : a)); }
+      }
+      for (const k in n) if (k !== 'type') walk(n[k], inFilter);
+    })(node, false);
+    return node;
+  }
+  Engine.prototype.ast = function (m) { if (!m._ast) { try { m._ast = bareCols(parse(m.expr).expr(), this, HOME); } catch (e) { m._err = e.message; throw new DaxError('[' + m.name + '] ölçüsünde hata: ' + e.message); } } return m._ast; };
 
+  /* Tablo oluşturucu ve DATATABLE sütunları Power BI'daki gibi tek türe ve tek yazıma iner:
+     büyük/küçük harfçe aynı metinler ilk görülen yazımı alır. (Tarih ve metin karışık sütunda değerler kendi türünde kalır:
+     Power BI "2022-01-01" metnini tarihle karşılaştırırken hata verir.) */
+  function unifyCols(rows) {
+    const w = rows.reduce((m, r) => Math.max(m, r.length), 0);
+    for (let j = 0; j < w; j++) {
+      const seen = new Map();
+      rows.forEach(r => {
+        let v = r[j];
+        if (typeof v === 'string') { const k = v.toLowerCase(); if (seen.has(k)) r[j] = seen.get(k); else seen.set(k, v); }
+      });
+    }
+    return rows;
+  }
   function E(eng, node, st) {
     switch (node.type) {
       case 'lit': return node.v;
       case 'empty': return null;
       case 'neg': { const v = E(eng, node.e, st); return isBlank(v) ? null : -num(v); }
-      case 'let': { let vars = st.vars; for (const [n, e] of node.vars) { const v = E(eng, e, Object.assign({}, st, { vars })); vars = Object.assign(Object.create(vars), { [n.toLowerCase()]: { v } }); } return E(eng, node.body, Object.assign({}, st, { vars })); }
+      case 'let': { /* DAX değişkenleri tembel değerlendirilir: kullanılmayan VAR hiç hesaplanmaz (hata verse bile) */
+        let vars = st.vars; for (const [n, e] of node.vars) { const sv = Object.assign({}, st, { vars }); let done = false, val, er = null; const cell = { get v() { if (!done) { done = true; try { val = E(eng, e, sv); } catch (x) { er = x; } } if (er) throw er; return val; } }; vars = Object.assign(Object.create(vars), { [n.toLowerCase()]: cell }); } return E(eng, node.body, Object.assign({}, st, { vars })); }
       case 'bin': return binop(eng, node, st);
       case 'list': {
         const w = node.items[0] ? node.items[0].length : 1;
         const cols = []; for (let i = 0; i < w; i++) cols.push({ name: w === 1 ? '[Value]' : '[Value' + (i + 1) + ']', short: w === 1 ? 'Value' : 'Value' + (i + 1), lin: null });
-        return { kind: 'table', cols, rows: node.items.map(tp => tp.map(e => E(eng, e, st))) };
+        return { kind: 'table', cols, rows: unifyCols(node.items.map(tp => tp.map(e => E(eng, e, st)))) };
       }
       case 'id': {
         const nm = node.name;
@@ -406,11 +438,34 @@
     for (let i = st.frames.length - 1; i >= 0; i--) { const f = st.frames[i]; if (f.base) { const c = colOf(f.base, nm); if (c) return T[f.base].rows[f.i][c]; } }
     err('[' + nm + '] adında bir ölçü yok. Sütun kastediyorsan tablo adıyla yaz: Satislar[' + nm + '].');
   }
+  /* Bir tablo satırından ilişkiler boyunca (çoktan bire, etkin) ulaşılan satırlar: Map(tablo → satır no) */
+  const relRowCache = {};
+  function relRows(t, i) {
+    const k = t + '|' + i; if (relRowCache[k]) return relRowCache[k];
+    const out = new Map(); const st = [[t, i]];
+    while (st.length) {
+      const [x, xi] = st.pop(); const row = T[x].rows[xi]; if (!row) continue;
+      for (const r of relsFrom[x]) {
+        if (out.has(r.to)) continue;
+        const v = row[r.fromCol]; let ui = v === null || v === undefined ? undefined : keyIndex(r.to, r.toCol).get(keyOf(v));
+        if (ui === undefined) ui = BLANKI[r.to]; if (ui === undefined) continue;
+        out.set(r.to, ui); st.push([r.to, ui]);
+      }
+    }
+    return (relRowCache[k] = out);
+  }
   function transition(st) {
     if (!st.frames.length) return st.ctx;
     let filters = st.ctx.filters;
     for (const f of st.frames) {
-      if (f.base) { const ex = f.base; filters = removeFilters(filters, x => x.t === ex); filters = filters.concat([{ t: f.base, c: '*', rows: new Set([f.i]) }]); }
+      if (f.base) {
+        /* Genişletilmiş tablo: tablo satırının bağlam geçişi, ilişkili (bir tarafı) tabloların satırlarını da filtreler ve
+           bu tablolardaki dış filtrelerin yerine geçer (gerçek Power BI: FILTER(ALL(Urunler), [Ölçü] > x) kategori filtresinden etkilenmez). */
+        const ex = f.base; const rel = relRows(ex, f.i);
+        filters = removeFilters(filters, x => x.t === ex || rel.has(x.t));
+        filters = filters.concat([{ t: f.base, c: '*', rows: new Set([f.i]) }]);
+        rel.forEach((ri, u) => { filters = filters.concat([{ t: u, c: '*', rows: new Set([ri]) }]); });
+      }
       else {
         /* İşaretli tarih tablosunun tarih sütunu bağlam geçişiyle filtrelenince tablonun diğer filtreleri de kalkar (gerçek Power BI: AVERAGEX(DATESINPERIOD(...)) ay satırında da aynı sonucu verir) */
         const lc = f.cols.map((col, j) => [col, j]).filter(([col]) => col.lin);
@@ -424,7 +479,7 @@
   const COLL = new Intl.Collator('tr', { sensitivity: 'accent' });
   function cmpVals(a, b) { // -1/0/1, DAX gibi: boş = 0 ya da ""
     if (isBlank(a) && isBlank(b)) return 0;
-    if (typeof a === 'string' || typeof b === 'string') { if (isDate(a) || isDate(b) || typeof a === 'number' || typeof b === 'number') { if (isBlank(a) || isBlank(b)) { a = isBlank(a) ? '' : a; b = isBlank(b) ? '' : b; } else err('Metin ile sayı/tarih karşılaştırılamaz: ' + JSON.stringify(str(a)) + ' ve ' + JSON.stringify(str(b)) + '.'); } return Math.sign(COLL.compare(str(a), str(b))); }
+    if (typeof a === 'string' || typeof b === 'string') { if (isDate(a) || isDate(b) || typeof a === 'number' || typeof b === 'number') { if (isBlank(a) || isBlank(b)) { a = isBlank(a) ? '' : a; b = isBlank(b) ? '' : b; } else err('Metin ile sayı/tarih karşılaştırılamaz: ' + JSON.stringify(str(a)) + ' ve ' + JSON.stringify(str(b)) + '.'); } const sa = str(a), sb = str(b), r = Math.sign(COLL.compare(sa, sb)); if (r === 0) { const la = sa.toLowerCase(), lb = sb.toLowerCase(); if (la !== lb) return la < lb ? -1 : 1; } return r; }
     const x = num(a), y = num(b); return x < y ? -1 : x > y ? 1 : 0;
   }
   function binop(eng, n, st) {
@@ -488,6 +543,7 @@
     }
     if (a.type === 'call' && a.fn === 'KEEPFILTERS') { const inner = filterArg(eng, a.args[0], st, fname); inner.keep = true; return inner; }
     if (a.type === 'bin' && ['=', '==', '<>', '<', '>', '<=', '>=', 'IN', '&&', '||'].includes(a.op) || (a.type === 'call' && ['NOT', 'AND', 'OR', 'ISBLANK', 'CONTAINSSTRING', 'SEARCH'].includes(a.fn))) {
+      (function noTab(n) { if (!n || typeof n !== 'object') return; if (n.type === 'call' && /^(FIRSTDATE|LASTDATE|STARTOF(MONTH|QUARTER|YEAR)|ENDOF(MONTH|QUARTER|YEAR)|FIRSTNONBLANK|LASTNONBLANK)$/.test(n.fn)) err(fname + ' filtresinde ' + n.fn + ' kullanılamaz: Power BI doğru/yanlış filtre ifadesinde tablo döndüren işleve izin vermez. Yerine MAX(...) ya da MIN(...) yaz.'); for (const k in n) if (k !== 'type') { const v = n[k]; if (Array.isArray(v)) v.forEach(noTab); else if (v && typeof v === 'object') noTab(v); } })(a);
       const cols = []; (function walk(n) { if (!n || typeof n !== 'object') return; if (n.type === 'col') { const rc = resolveCol(n); if (!cols.some(x => x.t === rc.t && x.c === rc.c)) cols.push(rc); return; } if (n.type === 'mref' && eng.resolveMeasure(n.name)) err(fname + ' içinde ölçü ([' + n.name + ']) doğrudan bir filtre koşulunda kullanılamaz. FILTER(ALL(...), [ölçü] > x) ya da önce VAR ile hesaplayıp karşılaştır.'); for (const k in n) if (k !== 'type') { const v = n[k]; if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === 'object') walk(v); } })(a);
       if (!cols.length) err(fname + ' filtre koşulunda bir sütun olmalı (ör. Satislar[Kanal] = "Web").');
       const tset = [...new Set(cols.map(x => x.t))];
@@ -588,6 +644,9 @@
       let f = ctx.filters;
       fls.forEach(fl => { if (!fl.keep) fl.over.forEach(o => { f = o.c ? dropCol(f, o.t, o.c) : removeFilters(f, y => y.t === o.t); }); });
       ctx = mkCtx(f.concat(...fls.map(fl => fl.filters)), ctx);
+      /* KEEPFILTERS olmadan aynı sütuna verilen filtre, gruplama (kapsam) filtresinin yerine geçer: ISINSCOPE artık yanlış döner */
+      const over = []; fls.forEach(fl => { if (!fl.keep) fl.over.forEach(o => over.push(o)); });
+      if (over.length && ctx.scope.length) ctx.scope = ctx.scope.filter(sc => !over.some(o => o.t === sc.t && (!o.c || o.c === sc.c)));
     }
     return ctx;
   }
@@ -836,7 +895,7 @@
   };
   FN.ROW = (eng, a, st) => { const pairs = namePairs(eng, a, st, 'ROW'); return { kind: 'table', cols: pairs.map(([n]) => ({ name: '[' + n + ']', short: n, lin: null })), rows: [pairs.map(([n, e]) => evS(eng, e, st))] }; };
   FN.GENERATESERIES = (eng, a, st) => { const s = num(evS(eng, a[0], st)), e = num(evS(eng, a[1], st)), step = a[2] ? num(evS(eng, a[2], st)) : 1; if (step <= 0) err('GENERATESERIES adımı pozitif olmalı.'); const rows = []; for (let x = s; x <= e + 1e-9 && rows.length < 10000; x += step) rows.push([Math.round(x * 1e9) / 1e9]); return { kind: 'table', cols: [{ name: '[Value]', short: 'Value', lin: null }], rows }; };
-  FN.CALENDAR = (eng, a, st) => { const s = evS(eng, a[0], st), e = evS(eng, a[1], st); if (!isDate(s) || !isDate(e)) err('CALENDAR iki tarih ister: CALENDAR(DATE(2022,1,1), DATE(2024,12,31))'); const rows = []; for (let d = s; d <= e && rows.length < 40000; d = dUTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1)) rows.push([d]); return { kind: 'table', cols: [{ name: '[Date]', short: 'Date', lin: null }], rows }; };
+  FN.CALENDAR = (eng, a, st) => { const tod = v => (typeof v === 'string' && /^\d{4}-\d{1,2}-\d{1,2}$/.test(v.trim()) ? (([y, m, d]) => dUTC(+y, +m - 1, +d))(v.trim().split('-')) : v); const s = tod(evS(eng, a[0], st)), e = tod(evS(eng, a[1], st)); if (!isDate(s) || !isDate(e)) err('CALENDAR iki tarih ister: CALENDAR(DATE(2022,1,1), DATE(2024,12,31))'); const rows = []; for (let d = s; d <= e && rows.length < 40000; d = dUTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1)) rows.push([d]); return { kind: 'table', cols: [{ name: '[Date]', short: 'Date', lin: null }], rows }; };
   FN.CALENDARAUTO = (eng, a, st) => {
     /* Modeldeki tüm tarih sütunlarının en küçük ve en büyük tarihini bulur; mali yıl sonu ayına (varsayılan 12) göre tam yıllara genişletir */
     const fe = a[0] && a[0].type !== 'empty' ? Math.round(num(evS(eng, a[0], st))) : 12; if (!(fe >= 1 && fe <= 12)) err('CALENDARAUTO: mali yıl sonu ayı 1 ile 12 arasında olmalı.');
@@ -878,7 +937,7 @@
   FN.PMT = (eng, a, st) => { need(a, 3, 'PMT', 'PMT(Oran, DönemSayısı, BugünküDeğer, [GelecekDeğer], [Tür])'); const [r, n, pv, fv, t] = finArgs(eng, a, st, 5); if (r === 0) return -(pv + fv) / n; const f = Math.pow(1 + r, n); return -(r * (pv * f + fv)) / ((1 + r * t) * (f - 1)); };
   const cashflows = (eng, a, st, fn) => { const tb = evT(eng, a[0], st, fn); const v = iterate(eng, tb, st, s => evS(eng, a[1], s)), d = iterate(eng, tb, st, s => evS(eng, a[2], s)); const cf = []; v.forEach((x, i) => { if (!isBlank(x) && isDate(d[i])) cf.push([num(x), d[i].getTime()]); }); if (!cf.length) err(fn + ': nakit akışı yok.'); const t0 = Math.min(...cf.map(c => c[1])); return cf.map(([x, t]) => [x, (t - t0) / 86400000 / 365]); };
   FN.XNPV = (eng, a, st) => { need(a, 4, 'XNPV', 'XNPV(Tablo, Değerler, Tarihler, Oran)'); const r = num(evS(eng, a[3], st)); const cf = cashflows(eng, a, st, 'XNPV'); return cf.reduce((s, [x, y]) => s + x / Math.pow(1 + r, y), 0); };
-  FN.XIRR = (eng, a, st) => { need(a, 3, 'XIRR', 'XIRR(Tablo, Değerler, Tarihler, [Tahmin])'); const cf = cashflows(eng, a, st, 'XIRR'); let r = a[3] ? num(evS(eng, a[3], st)) : 0.1; for (let k = 0; k < 100; k++) { let f = 0, df = 0; cf.forEach(([x, y]) => { f += x / Math.pow(1 + r, y); df -= y * x / Math.pow(1 + r, y + 1); }); if (!df) break; const nr = r - f / df; if (!isFinite(nr)) break; if (Math.abs(nr - r) < 1e-10) { r = nr; break; } r = Math.max(nr, -0.9999); } return r; };
+  FN.XIRR = (eng, a, st) => { need(a, 3, 'XIRR', 'XIRR(Tablo, Değerler, Tarihler, [Tahmin])'); const cf = cashflows(eng, a, st, 'XIRR'); if (!cf.some(([x]) => x > 0) || !cf.some(([x]) => x < 0)) err('XIRR bir çözüm bulamadı: nakit akışlarında en az bir pozitif ve bir negatif değer olmalı.'); let r = a[3] ? num(evS(eng, a[3], st)) : 0.1; for (let k = 0; k < 100; k++) { let f = 0, df = 0; cf.forEach(([x, y]) => { f += x / Math.pow(1 + r, y); df -= y * x / Math.pow(1 + r, y + 1); }); if (!df) break; const nr = r - f / df; if (!isFinite(nr)) break; if (Math.abs(nr - r) < 1e-10) { r = nr; let f2 = 0; cf.forEach(([x, y]) => { f2 += x / Math.pow(1 + r, y); }); if (Math.abs(f2) > 1e-6 * cf.reduce((s2, [x]) => s2 + Math.abs(x), 0)) err('XIRR bir çözüm bulamadı.'); return r; } r = Math.max(nr, -0.9999); } err('XIRR bir çözüm bulamadı.'); };
   FN.ROUNDUP = m1((v, d) => { const p = Math.pow(10, d); return Math.sign(v) * Math.ceil(Math.abs(v) * p - 1e-9) / p; });
   FN.ROUNDDOWN = m1((v, d) => { const p = Math.pow(10, d); return Math.sign(v) * Math.floor(Math.abs(v) * p + 1e-9) / p; });
   FN.TRUNC = FN.ROUNDDOWN;
@@ -1024,7 +1083,7 @@
     const cols = [], typs = []; for (let i = 0; i + 1 < a.length - 1; i += 2) { if (a[i].type !== 'lit') err('DATATABLE: sütun adı tırnak içinde olmalı.'); cols.push({ name: '[' + a[i].v + ']', short: a[i].v, lin: null }); typs.push(a[i + 1].type === 'id' ? a[i + 1].name.toUpperCase() : ''); }
     const conv = (v, ty) => { if (isBlank(v)) return null; if (ty === 'DATETIME' && typeof v === 'string') { const m = v.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return dUTC(+m[1], +m[2] - 1, +m[3]); } if (['INTEGER', 'DOUBLE', 'CURRENCY'].includes(ty) && typeof v === 'string' && v.trim() !== '' && !isNaN(+v)) v = +v; if (ty === 'CURRENCY' && typeof v === 'number') return cur4(v); if (ty === 'STRING' && typeof v === 'number') return String(v); return v; };
     const rows = lst.items.map(tp => { if (tp.length === 1 && tp[0].type === 'list') { const it = tp[0].items; tp = it.every(x => x.length === 1) ? it.map(x => x[0]) : it[0]; } return tp.map(e => evS(eng, e, st)); });
-    return { kind: 'table', cols, rows: rows.map(r => r.slice(0, cols.length).map((v, i) => conv(v, typs[i]))) };
+    return { kind: 'table', cols, rows: unifyCols(rows.map(r => r.slice(0, cols.length).map((v, i) => conv(v, typs[i])))) };
   };
   // pencere fonksiyonları (tek ilişki tablosu, sıralı)
   FN.ORDERBY = (eng, a) => ({ kind: 'orderby', items: (() => { const out = []; for (let i = 0; i < a.length; i++) { let desc = false; if (a[i + 1] && a[i + 1].type === 'id' && ['ASC', 'DESC'].includes(a[i + 1].name.toUpperCase())) { desc = a[i + 1].name.toUpperCase() === 'DESC'; out.push({ e: a[i], desc }); i++; } else out.push({ e: a[i], desc }); } return out; })() });
@@ -1108,7 +1167,7 @@
   function evalMeasure(measures, exprSrc, filterSpec, opts) { return withCache(() => evalMeasure0(measures, exprSrc, filterSpec, opts)); }
   function evalMeasure0(measures, exprSrc, filterSpec, opts) {
     const eng = new Engine(measures);
-    const ast = typeof exprSrc === 'string' ? parse(stripDef(exprSrc).expr).expr() : exprSrc;
+    const ast = typeof exprSrc === 'string' ? bareCols(parse(stripDef(exprSrc).expr).expr(), eng, HOME) : bareCols(exprSrc, eng, HOME);
     const f = buildFilters(filterSpec); const base = mkCtx(f); base.shadow = opts && opts.shadow ? buildFilters(opts.shadow) : f; base.scope = (opts && opts.scope) || []; base.user = opts && opts.user;
     const v = E(eng, ast, { ctx: base, frames: [], vars: null });
     return isTable(v) ? tScalar(v) : v;
@@ -1139,7 +1198,7 @@
     const ms = opts.measures; const rows = opts.rows || []; const sl = opts.slicers || [];
     const combos = axisValues(rows, sl.concat(opts.extra || []), ms);
     const out = [];
-    const asts = opts.values.map(v => { const m = Object.keys(ms).find(k => k === v); return m ? { type: 'mref', name: m } : parse(stripDef(v).expr).expr(); });
+    const asts = opts.values.map(v => { const m = Object.keys(ms).find(k => k === v); return m ? { type: 'mref', name: m } : bareCols(parse(stripDef(v).expr).expr(), new Engine(ms), HOME); });
     combos.forEach(cb => {
       const spec = sl.concat(opts.extra || []).filter(s => !rows.some(r => r.t === s.t && r.c === s.c)).concat(rows.map((r, i) => ({ t: r.t, c: r.c, values: [cb[i]] })));
       const sameAxis = sl.concat(opts.extra || []).filter(s => rows.some(r => r.t === s.t && r.c === s.c));
@@ -1160,6 +1219,7 @@
     let vars = null;
     q.defs.forEach(d => { if (d.kind === 'm') ms[d.name] = { name: d.name, expr: '', _ast: d.e }; });
     const eng = new Engine(ms); const ctx = mkCtx([]);
+    q.defs.forEach(d => { if (d.kind === 'm') bareCols(d.e, eng, HOME); else bareCols(d.e, eng, null); }); bareCols(q.e, eng, null);
     q.defs.filter(d => d.kind === 'v').forEach(d => { const v = E(eng, d.e, { ctx, frames: [], vars }); vars = Object.assign(Object.create(vars), { [d.name.toLowerCase()]: { v } }); });
     let tb = E(eng, q.e, { ctx, frames: [], vars });
     if (!isTable(tb)) err('EVALUATE bir tablo döndürmeli. Tek bir değeri görmek için { [Ölçü] } ya da ROW("Sonuç", [Ölçü]) yaz.');

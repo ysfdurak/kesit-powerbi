@@ -261,6 +261,24 @@ def main():
     for i, m in enumerate(exp["measures"], 1):
         rec = {"code": m["code"], "lesson": m["lesson"], "idx": m["idx"], "name": m["name"], "expr": m["expr"], "diffs": [], "error": None}
         st = states.get(m["code"])
+        if m.get("engineError"):
+            # Motor hata verdi: Power BI de hata vermeli (5. tur, öğrenci hataları)
+            pre, ref = mdef(m)
+            perr = None
+            probes = ['EVALUATE ROW("v", %s)' % ref] + ['EVALUATE ADDCOLUMNS(VALUES(%s), "v", %s)' % (c, ref) for c in ("'Kategoriler'[Kategori]", "'Tarih'[Yil]")]
+            for pq in probes:
+                try:
+                    db.run(pre + pq)
+                except Exception as e:
+                    perr = str(e).splitlines()[0][:300]
+                    break
+            if perr:
+                rec["both_error"] = True
+                rec["pbi_msg"] = perr
+            else:
+                rec["diffs"].append({"kesit": "hata", "motor": "HATA: " + m["engineError"][:200], "powerbi": "hata yok"})
+            results["measures"].append(rec)
+            continue
         if st and st[1]:
             rec["error"] = "Ölçü tanımı hatalı: " + str(st[1])
         else:
@@ -299,6 +317,15 @@ def main():
     # 3) sorgu alıştırmaları
     for i, qx in enumerate(exp["queries"], 1):
         rec = {"code": qx["code"], "lesson": qx["lesson"], "idx": qx["idx"], "sol": qx["sol"], "diff": None, "error": None}
+        if qx.get("engineError"):
+            try:
+                db.run(qx["sol"])
+                rec["diff"] = "motor hata verdi, Power BI vermedi: " + qx["engineError"][:200]
+            except Exception as e:
+                rec["both_error"] = True
+                rec["pbi_msg"] = str(e).splitlines()[0][:300]
+            results["queries"].append(rec)
+            continue
         try:
             cols, rows = db.run(qx["sol"])
             want = qx.get("rows") or []
@@ -336,6 +363,9 @@ def main():
     lines.append("Sorgu alıştırması: %d | birebir aynı: %d | farklı: %d | Power BI hatası: %d" % (
         len(qs), sum(1 for r in qs if not r["diff"] and not r["error"]), sum(1 for r in qs if r["diff"]), sum(1 for r in qs if r["error"])))
     lines.append("Hazır ölçülerde hata: %d" % len(results["baseMeasureErrors"]))
+    nb = sum(1 for r in ms + qs if r.get("both_error"))
+    if nb:
+        lines.append("İkisi de hata verdi (aynı sayılır): %d" % nb)
     real_m = [r for r in ms if r["diffs"] and not r.get("kind")]
     real_q = [r for r in qs if r["diff"] and not r.get("kind")]
     lines.append("Gerçek fark: ölçü %d, sorgu %d | biçim dili (Desktop arayüz dili): %d | 4 ondalık para yuvarlaması: %d | ortam: %d" % (

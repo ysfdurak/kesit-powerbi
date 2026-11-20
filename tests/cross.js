@@ -94,4 +94,14 @@ chk('Türkçe sıralama', E('IF("Şampuan" < "Yün Atkı", 1, 0)', []), 1);
 chk('Sıfıra yuvarlanan negatif', E('FORMAT(-0.3, "+#,0;-#,0;0")', []), '0');
 chk('DATESINPERIOD boş başlangıç = en erken tarih', E('COUNTROWS(DATESINPERIOD(Tarih[Tarih], BLANK(), -3, MONTH))', []), 1);
 chk('Tarih sütunu bağlam geçişi tablo filtrelerini kaldırır', E('AVERAGEX(DATESINPERIOD(Tarih[Tarih], DATE(2024, 11, 30), -7, DAY), [Net Satış])', [F('Tarih', 'YilAy', '2023-03')]), E('AVERAGEX(DATESINPERIOD(Tarih[Tarih], DATE(2024, 11, 30), -7, DAY), [Net Satış])', []));
+/* 5. tur (öğrenci varyasyonları, gerçek Power BI ile) */
+const errs = e => { try { E(e); return 0; } catch (x) { return 1; } };
+chk('"iptal" ≠ "İptal" (Türkçe olmayan harf eşleme)', E('CALCULATE(COUNTROWS(Satislar), Satislar[Durum] = "iptal")'), 0);
+chk('TREATAS harfe duyarsız', E('CALCULATE([Net Satış], TREATAS({"kitap"}, Kategoriler[Kategori]))'), E('CALCULATE([Net Satış], Kategoriler[Kategori] = "Kitap")'));
+chk('toplamada tablo adsız sütun', E('DISTINCTCOUNT([MusteriNo])'), E('DISTINCTCOUNT(Satislar[MusteriNo])'));
+chk('VALUES([Kanal]) hata', errs('COUNTROWS(VALUES([Kanal]))'), 1);
+chk('FILTER(ALL(Urunler)) kategori filtresinden bağımsız', E('COUNTROWS(FILTER(ALL(Urunler), [Toplam Satış] > 50000))', [F('Kategoriler', 'Kategori', 'Kitap')]), E('COUNTROWS(FILTER(ALL(Urunler), [Toplam Satış] > 50000))'));
+chk('kullanılmayan VAR hesaplanmaz', E('VAR A = VALUES(Urunler[Urun]) + 1 RETURN 5'), 5);
+chk('LASTDATE doğru/yanlış filtrede hata', errs('CALCULATE([Net Satış], Satislar[Tarih] = LASTDATE(Satislar[Tarih]))'), 1);
+chk('KEEPFILTERS yoksa ISINSCOPE yanlış', X.query({ rows: [{ t: 'Urunler', c: 'Kategori' }], measures: ms, values: ['IF(CALCULATE(ISINSCOPE(Urunler[Kategori]), Urunler[Kategori] IN {"Kitap", "Spor"}), 1, 0)'], slicers: [], totals: false, keepBlank: true }).rows.reduce((a, r) => a + r.vals[0], 0), 0);
 console.log('kontrol', n, 'fark', bad);

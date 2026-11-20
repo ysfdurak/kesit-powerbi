@@ -61,7 +61,11 @@ def main():
                     rs = sorted(tuple(v for _, v in sorted(r)) for r in body.values())
                     return hdr + [(i + 1, j, v) for i, r in enumerate(rs) for j, v in enumerate(r)]
                 got, want = sorted(rowsort(got)), sorted(rowsort(want))
-            if len(got) != len(want) or any(g[:2] != w[:2] or not same(g[2], w[2]) for g, w in zip(got, want)):
+            if (0, 0, "HATA") in got and (0, 0, "HATA") in want:
+                rec["both_error"] = True  # ikisi de hata verdi; hata nedeni (Reason) farklı olabilir
+                if got != want:
+                    rec["neden"] = "motor %s / Power BI %s" % ([w[2] for w in want if w[0] == 1][:1], [g[2] for g in got if g[0] == 1][:1])
+            elif len(got) != len(want) or any(g[:2] != w[:2] or not same(g[2], w[2]) for g, w in zip(got, want)):
                 gd, wd = dict(((g[0], g[1]), g[2]) for g in got), dict(((w[0], w[1]), w[2]) for w in want)
                 keys = sorted(set(gd) | set(wd))
                 bad = [(k, wd.get(k), gd.get(k)) for k in keys if not same(gd.get(k), wd.get(k))]
@@ -73,16 +77,23 @@ def main():
         if i % 50 == 0:
             print("pq", i, "/", len(exp))
     od = os.path.dirname(bek)
-    json.dump(res, open(os.path.join(od, "sonuc.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    stem = os.path.splitext(os.path.basename(bek))[0].replace("beklenen", "")
+    json.dump(res, open(os.path.join(od, "sonuc%s.json" % stem), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     lines.append("ÖZET")
     lines.append("M sorgusu: %d | aynı: %d | farklı: %d | okunamadı: %d" % (len(res), sum(1 for r in res if not r["diff"] and not r["error"]), sum(1 for r in res if r["diff"]), sum(1 for r in res if r["error"])))
+    nb = sum(1 for r in res if r.get("both_error"))
+    if nb:
+        lines.append("İkisi de hata verdi (aynı sayılır): %d | hata nedeni farklı: %d" % (nb, sum(1 for r in res if r.get("neden"))))
     lines.append("")
+    for r in res:
+        if r.get("neden"):
+            lines.append("NEDEN  %s  %s :: %s%s" % (r["code"], r["lesson"], r["neden"], (" | " + r["pbi_mesaj"]) if r.get("pbi_mesaj") else ""))
     for r in res:
         if r["error"]:
             lines.append("HATA  %s  %s :: %s" % (r["code"], r["lesson"], r["error"]))
         elif r["diff"]:
             lines.append("FARK  %s  %s :: %s%s" % (r["code"], r["lesson"], r["diff"], (" | Power BI hatası: " + r["pbi_mesaj"]) if r.get("pbi_mesaj") else ""))
-    open(os.path.join(od, "sonuc.txt"), "w", encoding="utf-8").write("\n".join(lines))
+    open(os.path.join(od, "sonuc%s.txt" % stem), "w", encoding="utf-8").write("\n".join(lines))
     print("\n".join(lines[:3]))
     print("Ayrıntı: sonuc.txt")
 

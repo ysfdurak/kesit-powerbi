@@ -78,8 +78,18 @@ in
 const items = []; let n = 0;
 /* Benzetim yolu (C:\Veri\) PC'deki gerçek klasör yoluyla değiştirilir; Folder Path gibi metin hücreleri de aynı yolu taşısın */
 const pathRows = rows => rows.map(r => (typeof r[2] === 'string' && r[2].startsWith('t:') ? [r[0], r[1], 't:' + fixPath(r[2].slice(2))] : r));
-function add(origin, code, expected, err) { const id = 'PQ' + String(++n).padStart(3, '0'); items.push({ code: id, lesson: origin, m: code, rows: pathRows(canon(expected, err)), unordered: /Join\(/.test(code) || undefined, envDates: /Folder\.Files/.test(code) || undefined }); }
+const safeCanon = (v, err) => { try { return canon(v, err); } catch (e) { const rs = e && e.rec && M.recGet ? M.recGet(e.rec, 'Reason') : null; if (!rs) throw e; return canon(null, rs); } };
+function add(origin, code, expected, err) { const id = 'PQ' + String(++n).padStart(3, '0'); items.push({ code: id, lesson: origin, m: code, rows: pathRows(safeCanon(expected, err)), unordered: /Join\(/.test(code) || undefined, envDates: /Folder\.Files/.test(code) || undefined }); }
+const MUTM = process.env.MUT ? require('./mutasyon-m.cjs') : null, mused = {};
+// 5. tur (MUT=1): her M ifadesinin yerine öğrenci hatası varyantları; beklenen motorun M.run sonucudur
+function mutAdd(origin, code) {
+  if (/Folder\.Files|File\.Contents/.test(code)) return;
+  const CAP = +(process.env.MUTCAP || 40), N = +(process.env.MUTN || 3);
+  const vs = MUTM.variants(code).filter(([l]) => (mused[l] || 0) < CAP).sort((x, y) => (mused[x[0]] || 0) - (mused[y[0]] || 0)).slice(0, N);
+  for (const [lab, v] of vs) { const r = M.run(v); if (!r.ok && r.kind !== 'runtime') continue; mused[lab] = (mused[lab] || 0) + 1; add(origin + ' ~ ' + lab, v, r.ok ? r.value : null, r.ok ? null : r.reason); }
+}
 function addM(origin, code) {
+  if (MUTM) return mutAdd(origin, code);
   const r = M.run(code);
   if (!r.ok && r.kind !== 'runtime') return; // desteklenmeyen/sözdizimi: karşılaştırılmaz
   add(origin, fixPath(code), r.ok ? r.value : null, r.ok ? null : r.reason);
@@ -92,10 +102,11 @@ PBI_LESSONS.forEach(l => (l.ex || []).forEach((e, i) => allEx.push(['ders ' + l.
 (window.PBI_AR_CH || []).forEach(e => allEx.push(['arena ' + e.id, e]));
 allEx.forEach(([w, e]) => {
   if (e.t === 'mcode' && e.sol) addM(w, e.sol);
-  if (e.t === 'pq') { const src = Q.SOURCES[e.src], qn = src.qn || M.QN[e.src]; const r = Q.run(src, (e.pre || []).concat(e.sol)); if (r.error) return; add(w + ' (Lab)', Q.mCode({ m: qn }, r.states), r.table); }
+  if (e.t === 'pq') { const src = Q.SOURCES[e.src], qn = src.qn || M.QN[e.src]; const r = Q.run(src, (e.pre || []).concat(e.sol)); if (r.error) return; if (MUTM) return mutAdd(w + ' (Lab)', Q.mCode({ m: qn }, r.states)); add(w + ' (Lab)', Q.mCode({ m: qn }, r.states), r.table); }
 });
-SC.forEach(([id, steps], i) => { const src = Q.SOURCES[id], qn = src.qn || M.QN[id]; const r = Q.run(src, steps); if (r.error) return; add('Lab senaryo ' + i + ' ' + id + ': ' + steps.map(s => s.op).join(','), Q.mCode({ m: qn }, r.states), r.table); });
+SC.forEach(([id, steps], i) => { const src = Q.SOURCES[id], qn = src.qn || M.QN[id]; const r = Q.run(src, steps); if (r.error) return; const o = 'Lab senaryo ' + i + ' ' + id + ': ' + steps.map(s => s.op).join(','); if (MUTM) return mutAdd(o, Q.mCode({ m: qn }, r.states)); add(o, Q.mCode({ m: qn }, r.states), r.table); });
 PBI_LESSONS.forEach(l => { for (const m of String(l.body || '').matchAll(/<pre class="m"( data-notry)?( data-run)?[^>]*>([\s\S]*?)<\/pre>/g)) if (m[2]) addM('ders bloğu ' + l.id, dec(m[3])); });
+if (MUTM) console.error(JSON.stringify(mused));
 // --- yalnız seçilen maddeler (ör. ONLY=PQ001,PQ008): hafif yeniden deneme için
 if (process.env.ONLY) { const keep = new Set(process.env.ONLY.split(',')); items.splice(0, items.length, ...items.filter(i => keep.has(i.code))); }
 // --- TMDL
