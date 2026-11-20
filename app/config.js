@@ -11,7 +11,7 @@ window.KESIT_CONFIG = {
   },
   /* Hakkında → "Nasıl yapıldı". Boş bırakırsan bölüm görünmez. */
   story: '',
-  license: '',           // boşsa: içerik CC BY-NC 4.0, kod MIT
+  license: '',           // boşsa: kod ve içerik PolyForm Shield 1.0.0
 
   /* Kesit ailesi (menünün altındaki bağlantılar). Boşsa yayındaki adresler kullanılır. */
   homeUrl: '',

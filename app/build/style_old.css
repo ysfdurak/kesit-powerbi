@@ -47,7 +47,7 @@ h3{font-size:1.08rem; font-weight:700}
 code,kbd{font-family:var(--f-mono); font-size:.88em}
 p code, li code, td code, .q code{background:var(--surface-2); border:1px solid var(--line); padding:.05em .35em; border-radius:5px}
 .muted{color:var(--muted)}
-.eyebrow{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted)}
+.eyebrow{font-size:.75rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted)}
 .num{font-variant-numeric:tabular-nums}
 
 /* Kabuk */
@@ -61,7 +61,7 @@ p code, li code, td code, .q code{background:var(--surface-2); border:1px solid 
 .marker i:nth-child(1),.marker i:nth-child(3){background:var(--accent)}
 .marker i:nth-child(2){background:#fff}
 .dsel{display:flex; flex-direction:column; gap:4px; padding:10px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface-2)}
-.dsel label{font-size:.7rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted)}
+.dsel label{font-size:.75rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted)}
 .dsel select{border:1px solid var(--line); background:var(--surface); border-radius:7px; padding:7px 8px; font-weight:600}
 .nav{display:flex; flex-direction:column; gap:2px}
 .nav button{display:flex; align-items:center; gap:10px; padding:9px 10px; border:0; background:none; border-radius:8px; text-align:left; color:var(--muted); font-weight:500}
@@ -93,7 +93,7 @@ main{min-width:0; padding-block:28px 64px; padding-left:max(16px, env(safe-area-
 .chip{display:inline-flex; align-items:center; gap:6px; font-size:.75rem; font-weight:600; padding:3px 9px; border-radius:99px; background:var(--surface-2); border:1px solid var(--line); color:var(--muted); white-space:nowrap}
 button.chip{cursor:pointer} button.chip:hover{border-color:var(--muted); color:var(--ink)}
 button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--bg)}
-.lv{display:inline-grid; place-items:center; min-width:48px; height:22px; padding:0 8px; border-radius:5px; font-weight:600; font-size:.72rem; color:#fff; letter-spacing:.02em; white-space:nowrap}
+.lv{display:inline-grid; place-items:center; min-width:48px; height:22px; padding:0 8px; border-radius:5px; font-weight:600; font-size:.75rem; color:#fff; letter-spacing:.02em; white-space:nowrap}
 .lv-temel{background:var(--l1)} .lv-orta{background:var(--l3)} .lv-ileri{background:var(--l6)}
 .bar{height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden; border:1px solid var(--line)}
 .bar i{display:block; height:100%; background:var(--accent); border-radius:99px}
@@ -147,7 +147,7 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .check svg{width:13px; height:13px}
 .lvl-block{display:flex; flex-direction:column; gap:10px}
 .lvl-head{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
-.mod-head{padding:10px 14px 6px; font-size:.74rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted); border-top:1px solid var(--line); background:var(--surface-2)}
+.mod-head{padding:10px 14px 6px; font-size:.75rem; text-transform:uppercase; letter-spacing:.09em; font-weight:600; color:var(--muted); border-top:1px solid var(--line); background:var(--surface-2)}
 .mod-head:first-child{border-top:0; border-radius:var(--r) var(--r) 0 0}
 .filters{display:flex; gap:8px; flex-wrap:wrap}
 .filters button{border:1px solid var(--line); background:var(--surface); padding:6px 12px; border-radius:99px; font-size:.84rem; font-weight:500; color:var(--muted)}
@@ -191,13 +191,13 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .codebox{margin:14px 0; border-radius:8px; overflow:hidden; background:var(--code-bg); border:1px solid var(--code-line); max-width:100% !important}
 .codebox pre{margin:0; padding:14px 16px; overflow-x:auto; color:var(--code-ink); font-family:var(--f-mono); font-size:.85rem; line-height:1.6}
 .dtabs{display:flex; gap:2px; padding:6px 6px 0; background:var(--code-tab); overflow-x:auto; border-bottom:1px solid var(--code-line)}
-.dtabs button{flex:none; border:0; background:transparent; color:var(--code-com); font-size:.74rem; font-weight:600; padding:6px 10px; border-radius:6px 6px 0 0; letter-spacing:.01em}
+.dtabs button{flex:none; border:0; background:transparent; color:var(--code-com); font-size:.75rem; font-weight:600; padding:6px 10px; border-radius:6px 6px 0 0; letter-spacing:.01em}
 .dtabs button:hover:not(:disabled){color:var(--code-ink)}
 .dtabs button[aria-pressed="true"]{background:var(--code-bg); color:#fff; box-shadow:inset 0 2px 0 var(--accent)}
 .dtabs button:disabled{opacity:.35; cursor:not-allowed}
 .dtabs .def{font-weight:400; opacity:.7; margin-left:4px}
 .codebox .tools{display:flex; gap:6px; padding:6px 8px; border-top:1px solid var(--code-line); justify-content:flex-end; flex-wrap:wrap; align-items:center}
-.codebox .tools .lbl{margin-right:auto; color:var(--code-com); font-size:.72rem; font-family:var(--f-mono)}
+.codebox .tools .lbl{margin-right:auto; color:var(--code-com); font-size:.75rem; font-family:var(--f-mono)}
 .codebox .tools button{background:transparent; border:1px solid var(--code-line); color:var(--code-ink); font-size:.76rem; padding:4px 10px; border-radius:6px; font-weight:600}
 .codebox .tools button:hover{border-color:var(--code-com)}
 .codebox .out{background:var(--surface); color:var(--ink); border-top:1px solid var(--code-line)}
@@ -229,9 +229,9 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .rtable td.numc{text-align:right}
 .rset + .rset{border-top:3px solid var(--surface-2)}
 .msgs{padding:10px 12px; font-family:var(--f-mono); font-size:.8rem; border-top:1px solid var(--line); background:var(--surface-2); white-space:pre-wrap}
-.msgs b{font-family:var(--f-body); display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px}
-.emu{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:7px 12px; font-size:.74rem; color:var(--muted); border-top:1px solid var(--line)}
-.emu button{border:0; background:none; padding:0; color:var(--muted); text-decoration:underline; text-underline-offset:3px; font-size:.74rem}
+.msgs b{font-family:var(--f-body); display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px}
+.emu{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:7px 12px; font-size:.75rem; color:var(--muted); border-top:1px solid var(--line)}
+.emu button{border:0; background:none; padding:0; color:var(--muted); text-decoration:underline; text-underline-offset:3px; font-size:.75rem}
 .emu pre{width:100%; margin:4px 0 0; padding:8px 10px; background:var(--code-bg); color:var(--code-ink); border-radius:6px; overflow-x:auto; font-family:var(--f-mono); font-size:.76rem}
 .empty{padding:22px; color:var(--muted); font-size:.9rem; text-align:center}
 .msg{padding:12px 14px; border-radius:8px; font-size:.92rem; border:1px solid}
@@ -259,18 +259,18 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .schema li{display:flex; justify-content:space-between; gap:8px; padding:2px 0}
 .schema li i{color:var(--muted); font-style:normal}
 .schema p{margin:0 12px 8px; color:var(--muted); font-size:.8rem}
-.pk{color:var(--accent-text); font-weight:600; font-size:.7rem}
-.fk{color:var(--l3); font-weight:600; font-size:.7rem}
+.pk{color:var(--accent-text); font-weight:600; font-size:.75rem}
+.fk{color:var(--l3); font-weight:600; font-size:.75rem}
 
 /* Veri seti */
 .er{overflow-x:auto; padding:8px}
 .er svg{display:block; width:100%; min-width:760px; height:auto}
 .er .tbox rect{fill:var(--surface); stroke:var(--line); stroke-width:1.2}
 .er .tbox .hd{fill:var(--surface-2)}
-.er .tbox text{fill:var(--ink); font-family:var(--f-mono); font-size:11px}
+.er .tbox text{fill:var(--ink); font-family:var(--f-mono); font-size:12px}
 .er .tbox text.t{font-weight:600; font-size:12px}
-.er .tbox text.k{fill:var(--accent-text); font-size:9.5px; font-weight:600}
-.er .tbox text.fk{fill:var(--l3); font-size:9.5px; font-weight:600}
+.er .tbox text.k{fill:var(--accent-text); font-size:12px; font-weight:600}
+.er .tbox text.fk{fill:var(--l3); font-size:12px; font-weight:600}
 .er .tbox{cursor:pointer}
 .er .tbox.sel rect{stroke:var(--accent); stroke-width:2}
 .er path{fill:none; stroke:var(--muted); stroke-width:1.3}
@@ -318,7 +318,7 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
   .topbar select{border:1px solid var(--line); background:var(--surface-2); border-radius:7px; padding:5px 6px; font-size:.8rem; font-weight:600; max-width:120px}
   main{padding-block:18px calc(90px + env(safe-area-inset-bottom,0px))}
   .tabbar{display:grid; grid-template-columns:repeat(5,1fr); position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--surface); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom,0px); padding-left:env(safe-area-inset-left,0px); padding-right:env(safe-area-inset-right,0px)}
-  .tabbar button{border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 2px 9px; font-size:.68rem; color:var(--muted); font-weight:500}
+  .tabbar button{border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 2px 9px; font-size:.75rem; color:var(--muted); font-weight:500}
   .tabbar button[aria-current="true"]{color:var(--accent-text)}
   .tabbar svg{width:21px; height:21px}
   .ed-keys{display:flex}
@@ -359,7 +359,7 @@ button.chip[aria-pressed="true"]{background:var(--ink); border-color:var(--ink);
 .codebox{position:relative; margin:12px 0; max-width:100%}
 .codebox pre, pre.m{margin:0; padding:14px 16px; background:var(--code-bg); color:var(--code-ink); border-radius:8px; font-family:var(--f-mono); font-size:.84rem; line-height:1.6; overflow-x:auto; border:1px solid var(--code-line)}
 pre.m{margin:12px 0}
-.codebox .try{position:absolute; right:8px; top:8px; border:1px solid var(--code-line); background:#26231B; color:var(--code-ink); border-radius:6px; padding:3px 9px; font-size:.74rem; font-weight:600}
+.codebox .try{position:absolute; right:8px; top:8px; border:1px solid var(--code-line); background:#26231B; color:var(--code-ink); border-radius:6px; padding:3px 9px; font-size:.75rem; font-weight:600}
 .codebox .try:hover{border-color:var(--accent); color:var(--accent)}
 .theory > .codebox{max-width:76ch}
 .ed-top select{background:#26231B}
@@ -390,7 +390,7 @@ pre.m{margin:12px 0}
 .fields li button:hover{background:var(--surface-2)}
 .fields li .x{flex:none; color:var(--muted); font-family:var(--f-body); padding:4px 6px}
 .vset{display:flex; flex-wrap:wrap; gap:10px 16px; padding:12px 14px; align-items:end}
-.vset label{display:flex; flex-direction:column; gap:4px; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:600; color:var(--muted)}
+.vset label{display:flex; flex-direction:column; gap:4px; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; font-weight:600; color:var(--muted)}
 .vset select{border:1px solid var(--line); background:var(--surface); border-radius:7px; padding:6px 8px; font-size:.86rem; text-transform:none; letter-spacing:0; color:var(--ink); max-width:200px}
 .slrow{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .slrow .eyebrow{margin-right:4px}
@@ -408,13 +408,13 @@ pre.m{margin:12px 0}
 
 /* Grafikler */
 svg.viz{display:block; width:100%; height:auto; overflow:visible}
-.vt{fill:var(--muted); font-family:var(--f-body); font-size:11px}
-.vax{font-size:10.5px; font-variant-numeric:tabular-nums}
-.vcat{fill:var(--ink); font-size:11px}
-.vlab{fill:var(--ink); font-size:10.5px; font-weight:600; font-variant-numeric:tabular-nums}
+.vt{fill:var(--muted); font-family:var(--f-body); font-size:12px}
+.vax{font-size:12px; font-variant-numeric:tabular-nums}
+.vcat{fill:var(--ink); font-size:12px}
+.vlab{fill:var(--ink); font-size:12px; font-weight:600; font-variant-numeric:tabular-nums}
 .vbig{fill:var(--ink); font-family:var(--f-display); font-size:22px; font-weight:800}
-.vtm{fill:#fff; font-size:11.5px; font-weight:600}
-.vtm2{fill:#fff; font-size:10.5px; opacity:.9}
+.vtm{fill:#fff; font-size:12px; font-weight:600}
+.vtm2{fill:#fff; font-size:12px; opacity:.9}
 .vgrid{stroke:var(--grid); stroke-width:1}
 .vbase{stroke:var(--axis); stroke-width:1}
 .vcross{stroke:var(--axis); stroke-width:1; stroke-dasharray:3 3; opacity:0}
@@ -442,14 +442,14 @@ tr.vmark.sel td{background:var(--accent-soft)}
 .pill.p-ok{background:var(--ok-soft); color:var(--ok)} .pill.p-warn{background:var(--warn-soft); color:var(--warn)} .pill.p-bad{background:var(--err-soft); color:var(--err)}
 .vtable{overflow-x:auto}
 .vtable table{border-collapse:collapse; width:100%; font-size:.84rem}
-.vtable th{text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap}
+.vtable th{text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap}
 .vtable td{padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap}
 .vtable .nc{text-align:right; font-variant-numeric:tabular-nums}
 .vtable tr.tot td{font-weight:700; border-top:2px solid var(--ink); border-bottom:0}
 .dtile[data-cross] tr.vmark{cursor:pointer}
 .cfbar{display:inline-block; width:56px; height:8px; background:var(--surface-2); border-radius:2px; margin-right:8px; vertical-align:middle; overflow:hidden}
 .cfbar i{display:block; height:100%; background:var(--s1); border-radius:0 2px 2px 0}
-.cfi{font-size:.7rem; margin-right:6px} .cfi.ok{color:var(--ok)} .cfi.bad{color:var(--err)}
+.cfi{font-size:.75rem; margin-right:6px} .cfi.ok{color:var(--ok)} .cfi.bad{color:var(--err)}
 .slicer{display:flex; flex-direction:column; gap:5px}
 .sl-opts{display:flex; flex-wrap:wrap; gap:4px}
 .sl-opts button{border:1px solid var(--line); background:var(--surface); border-radius:6px; padding:4px 10px; font-size:.82rem; color:var(--ink)}
@@ -459,7 +459,7 @@ tr.vmark.sel td{background:var(--accent-soft)}
 .vis-layout{display:grid; grid-template-columns:300px minmax(0,1fr); gap:16px; align-items:start}
 .vgal{display:flex; flex-direction:column; gap:6px; position:sticky; top:16px}
 .vgal-row{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:6px}
-.vgal button{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border:1px solid var(--line); border-radius:8px; background:var(--surface); font-size:.72rem; color:var(--ink); line-height:1.2}
+.vgal button{display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 4px; border:1px solid var(--line); border-radius:8px; background:var(--surface); font-size:.75rem; color:var(--ink); line-height:1.2}
 .vgal button .vthumb{width:100%; max-width:64px}
 .vgal button[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 -3px 0 var(--accent)}
 .vdetail{padding:20px; display:flex; flex-direction:column; gap:12px; min-width:0}

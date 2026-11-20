@@ -10,6 +10,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Kaynak betiklerin sözdizimi (derleme kesit.js'i bunlardan üretir)
+        run: for f in app/*.js app/build/*.js; do node --check "$f" || exit 1; done
       - run: node tests/recovery.cjs app/recovery.js
       - run: node tests/newdata.cjs
       - run: node tests/vaka-depo-kaynak.cjs

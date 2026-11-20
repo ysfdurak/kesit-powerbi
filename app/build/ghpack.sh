@@ -27,7 +27,7 @@ node build/budget.cjs "$O/kesit-powerbi/kesit.js"
 cp build/gh/config.js $O/kesit-powerbi/
 { printf '<!doctype html>\n<html lang="tr">\n'; sed '/<script charset="utf-8" src="/d' index.html; printf '<script charset="utf-8" src="config.js"></script>\n<script charset="utf-8" src="kesit.js"></script>\n<script charset="utf-8" src="en-tour.js" defer></script>\n'; } > $O/kesit-powerbi/index.html
 cp veri/*.zip $O/kesit-powerbi/veri/
-cp build/gh/LICENSE build/gh/LICENSE-ICERIK.md $O/kesit-powerbi/
+cp build/gh/LICENSE.md build/gh/LICENSE-ICERIK.md $O/kesit-powerbi/
 [ -d build/gh/ekran ] && cp build/gh/ekran/*.png $O/kesit-powerbi/ekran/ || true
 touch $O/kesit-powerbi/.nojekyll
 cp -r build/gh/static/. $O/kesit-powerbi/

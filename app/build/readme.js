@@ -41,6 +41,9 @@ const t = `# Kesit Power BI
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
 - Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
 
+
+## İngilizce tanıtım turu
+Arayüz Türkçe kalır. İngilizce okuyan ziyaretçi için adresin sonuna \`?lang=en\` eklenir ([https://ysfdurak.github.io/kesit-powerbi/?lang=en](https://ysfdurak.github.io/kesit-powerbi/?lang=en)): her ekranı anlatan bir rehber paneli ve menü/başlıklarda İngilizce karşılıklar açılır; \`?lang=tr\` kapatır. Ayrıntı: [INGILIZCE-TUR.md](INGILIZCE-TUR.md).
 ## Kaynak kod ve yapım
 - Bu dal (\`main\`) yayınlanan derlenmiş sitedir. Düzenlenebilir kaynak, derleme betikleri ve doğrulayıcılar [\`kaynak\` dalında](https://github.com/ysfdurak/kesit-powerbi/tree/kaynak); başlangıç noktası \`NASIL.md\`.
 - **Yapay zekâ kullanımı:** Ürün kararlarını, hedef kitleyi ve kurguyu Yusuf Durak verdi; kod, DAX motoru ve içerik yapay zekâ (Claude) ile geliştirildi ve otomatik denetimlerden geçirildi. Bağımsız kullanıcı testi yapılmadı.
@@ -58,11 +61,29 @@ Aynı mantıkla hazırlanmış diğer eğitimler: **[Kesit SQL](https://ysfdurak
 ## Geri bildirim
 Hata ve önerileri bu deponun [Issues](https://github.com/ysfdurak/kesit-powerbi/issues) sayfasına yazabilirsin. Uygulamadaki “Sorun bildir” ve “Bu ders hakkında geri bildirim” düğmeleri ders adı dolu bir kayıt açar.
 
+## English
+
+**Kesit Power BI** teaches Power BI, DAX and Fabric from scratch to job-ready level, in Turkish, in the browser: no install, no account. A DAX-emulating engine evaluates your measures and every exercise is checked instantly.
+
+- ${Number(inv.lessons).toLocaleString('en-US')} lessons, ${Number(inv.lessonExercises).toLocaleString('en-US')} in-lesson exercises and ${Number(inv.practiceTasks).toLocaleString('en-US')} practice tasks across beginner, intermediate and advanced levels.
+- ${Number(inv.learningPaths).toLocaleString('en-US')} learning paths (data analyst, BI developer, PL-300, DP-600 / Fabric and more), a placement test, and ${Number(inv.reports).toLocaleString('en-US')} sample reports (${Number(inv.reportPages).toLocaleString('en-US')} pages) explained step by step.
+- Six fictional datasets, including five case packs with CSVs, a model plan and expected results for working in Power BI Desktop.
+- ${Number(inv.certificationBankQuestions).toLocaleString('en-US')} PL-300 and DP-600 question-bank items, ${Number(inv.interviewQuestions).toLocaleString('en-US')} interview questions, DAX Playground, Power Query Lab, Measure Lab and DAX Arena.
+- Progress stays in the browser and can be backed up to a file.
+
+The interface and lessons are in Turkish. Add \`?lang=en\` to the address ([ysfdurak.github.io/kesit-powerbi/?lang=en](https://ysfdurak.github.io/kesit-powerbi/?lang=en)) for an English guide that explains each screen.
+
+Try it: https://ysfdurak.github.io/kesit-powerbi/ · Sister apps: [SQL](https://github.com/ysfdurak/kesit-sql), [Python](https://github.com/ysfdurak/kesit-python), [Statistics](https://github.com/ysfdurak/kesit-istatistik).
+
 ## Sorumluluk notu
 Ücretsiz, ticari olmayan bir eğitim ve portföy projesidir; içerik “olduğu gibi” sunulur. Veri setlerindeki tüm şirketler, kişiler ve kayıtlar hayalidir. Microsoft ile bağlantılı değildir; Microsoft, Power BI, Fabric ve sınav adları Microsoft Corporation'ın markalarıdır. Sınav denemeleri özgün olarak yazılmıştır, gerçek sınav soruları değildir. Uygulamanın verdiği belgeler kendi beyana dayalıdır, Microsoft sertifikası değildir.
 
 ## Lisans
-- Uygulama kodu: [MIT](LICENSE)
-- Ders içerikleri, veri setleri ve vaka paketleri: [CC BY-NC 4.0](LICENSE-ICERIK.md)
+- Uygulama kodu: [PolyForm Shield 1.0.0](LICENSE.md). Kişiler, okullar ve şirketler kendi işlerinde ücretsiz kullanabilir; satmak ya da rakip ürün yapmak yazılı izin gerektirir.
+- Ders içerikleri, veri setleri ve vaka paketleri: kodla aynı lisans, [PolyForm Shield 1.0.0](LICENSE.md) (özet: [LICENSE-ICERIK.md](LICENSE-ICERIK.md))
+
+Kurumunuzda kullanıyorsanız haber verirseniz sevinirim: kurulumda yardımcı olabilir, kurumunuza özel ihtiyaçları birlikte değerlendirebiliriz. İletişim: iletisim@ysfdurak.com
+
+**English:** the app code is released under [PolyForm Shield 1.0.0](LICENSE.md): individuals, schools and companies may use, change and self-host the app and its content for free; selling them or offering a competing product needs written permission. Lesson content and datasets are under the same licence. Contact: contact@ysfdurak.com
 `;
 process.stdout.write(t);
