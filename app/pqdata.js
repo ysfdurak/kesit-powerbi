@@ -152,10 +152,10 @@ const OPS = {
   split: { name: 'Sütunu böl', group: 'Dönüştür', step: 'Sınırlayıcıya Göre Bölünen Sütun', sel: 1, single: true,
     form: [{ k: 'd', label: 'Sınırlayıcı', type: 'text', d: ' ' }, { k: 'mode', label: 'Nerede bölünsün?', type: 'sel', o: [['first', 'En soldaki sınırlayıcıda'], ['each', 'Her sınırlayıcıda']], d: 'first' }],
     run: (t, s) => { const i = idx(t, s.cols[0]); const d = s.d === '' || s.d == null ? ' ' : s.d; const parts = t.rows.map(r => { const v = r[i]; if (v === null || isErr(v)) return [v]; const str = String(v); if (s.mode === 'each') return str.split(d); const k = str.indexOf(d); return k < 0 ? [str] : [str.slice(0, k), str.slice(k + d.length)]; });
-      const n = s.mode === 'each' ? Math.max(1, ...parts.map(p => p.length)) : 2; const name = t.cols[i].name;
+      const n = s.mode === 'each' ? Math.max(1, ...parts.map(p => p.length)) : 2; const name = t.cols[i].name; s._n = n; /* M kodu sütun adlarını açıkça yazar (Power Query arayüzü de böyle yapar) */
       const newCols = Array.from({ length: n }, (_, j) => ({ name: name + '.' + (j + 1), type: 'text' }));
       return { cols: t.cols.slice(0, i).concat(newCols, t.cols.slice(i + 1)).map(c => Object.assign({}, c)), rows: t.rows.map((r, ri) => r.slice(0, i).concat(Array.from({ length: n }, (_, j) => parts[ri][j] === undefined ? null : parts[ri][j]), r.slice(i + 1))) }; },
-    m: (p, s) => { const d = s.d === '' || s.d == null ? ' ' : s.d; return s.mode === 'each' ? 'Table.SplitColumn(' + p + ', ' + mStr(s.cols[0]) + ', Splitter.SplitTextByDelimiter(' + mStr(d) + ', QuoteStyle.Csv))' : 'Table.SplitColumn(' + p + ', ' + mStr(s.cols[0]) + ', Splitter.SplitTextByEachDelimiter({' + mStr(d) + '}, QuoteStyle.Csv, false), {' + mStr(s.cols[0] + '.1') + ', ' + mStr(s.cols[0] + '.2') + '})'; },
+    m: (p, s) => { const d = s.d === '' || s.d == null ? ' ' : s.d; return s.mode === 'each' ? 'Table.SplitColumn(' + p + ', ' + mStr(s.cols[0]) + ', Splitter.SplitTextByDelimiter(' + mStr(d) + ', QuoteStyle.Csv)' + (s._n ? ', {' + Array.from({ length: s._n }, (_, j) => mStr(s.cols[0] + '.' + (j + 1))).join(', ') + '}' : '') + ')' : 'Table.SplitColumn(' + p + ', ' + mStr(s.cols[0]) + ', Splitter.SplitTextByEachDelimiter({' + mStr(d) + '}, QuoteStyle.Csv, false), {' + mStr(s.cols[0] + '.1') + ', ' + mStr(s.cols[0] + '.2') + '})'; },
     what: '“K01 Suç ve Ceza” gibi birleşik bir alanı parçalara ayırır. “En soldaki” seçeneği yalnızca ilk boşlukta böler; ürün adındaki boşluklar korunur.' },
   rename: { name: 'Yeniden adlandır', group: 'Dönüştür', step: 'Yeniden Adlandırılan Sütunlar', sel: 1, single: true,
     form: [{ k: 'to', label: 'Yeni ad', type: 'text', d: '' }],
@@ -186,9 +186,9 @@ function run(src, steps, upto) {
   for (let i = 0; i < end; i++) {
     const s = steps[i], op = OPS[s.op]; const prevName = states[states.length - 1].ref || 'Kaynak';
     const name = stepName(s.op, used); const ref = '#"' + name + '"';
-    let m = ''; try { m = op.m(prevName, s, t); } catch (e) { m = '…'; }
-    try { if (op.sel && (!s.cols || !s.cols.length)) need(s); t = op.run(t, s); states.push({ name, ref, table: t, m }); }
-    catch (e) { if (!isErr(e)) throw e; error = { i, msg: e.pqErr }; states.push({ name, ref, table: null, m, error: e.pqErr }); break; }
+    let m = '';
+    try { if (op.sel && (!s.cols || !s.cols.length)) need(s); const t0 = t; t = op.run(t, s); try { m = op.m(prevName, s, t0); } catch (e) { m = '…'; } states.push({ name, ref, table: t, m }); }
+    catch (e) { if (!isErr(e)) throw e; if (!m) { try { m = op.m(prevName, s, states[states.length - 1].table); } catch (e2) { m = '…'; } } error = { i, msg: e.pqErr }; states.push({ name, ref, table: null, m, error: e.pqErr }); break; }
   }
   return { table: error ? null : t, states, error };
 }

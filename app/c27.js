@@ -187,7 +187,7 @@ in
 <p><code>x is number</code> sınar, <code>x as number</code> doğrular ve uymazsa hata verir. Fonksiyon parametresinde de aynı denetim çalışır. Sütun türü ayrı bir bilgidir: <code>Table.TransformColumnTypes</code> değerleri çevirir, <code>Table.AddColumn(..., type number)</code> ise yalnız etiket koyar, değeri çevirmez.</p>
 <pre class="m" data-run>let
     Sinama = [Sayi = 5 is number, Metin = "5" is number, BosMetin = null is nullable text],
-    Cevirme = Number.FromText("12.5") + 1
+    Cevirme = Number.FromText("12.5", "en-US") + 1
 in
     [Sinama = Sinama, Cevirme = Cevirme]</pre>
 <h2>Türleri karşılaştırmak</h2><p>Değerin türünü sınamak için <code>x is number</code> ya da <code>Value.Is(x, type number)</code> yaz. Türü bir değer olarak sınamak için <code>Type.Is(Value.Type(x), type number)</code>. <code>Value.Type(1) = type number</code> yazma: M belirtimi tür eşitliğini uygulamaya bırakır, yalın türlerde true dönebileceğini söyler ama <code>(type [a = text]) = (type [a = text])</code> için dönmeyebilir. Bu alt küme yalın türde true verir, kayıt ve tablo türünde tahmin etmez, durur.</p>
@@ -462,9 +462,10 @@ add('m-fonksiyon', {
     Okunan = Table.AddColumn(Csvler, "Veri", each Oku([Content])),
     Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),
     Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"}),
-    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}})
+    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}}, "en-US")
 in
     Tipli</pre>
+<p><b>Kültürü yaz.</b> Bu CSV’lerde ondalık ayırıcı noktadır (<code>1250.5</code>). <code>TransformColumnTypes</code>’a <code>"en-US"</code> vermezsen dosyanın bölge ayarı kullanılır; Türkçe ayarlı bir Power BI’da nokta binlik ayırıcı sayılır ve tutar <code>12505</code> olur. Hata vermez, sessizce on kat büyür.</p>
 <p><code>Name</code> sütununu tutmak iyi alışkanlıktır: Combine Files bunun için <code>Source.Name</code> sütununu üretir, hatalı satırın hangi dosyadan geldiğini gösterir.</p>
 <h2>Tipik tuzaklar</h2>
 <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead><tbody>
@@ -480,7 +481,7 @@ in
   ex: [
     { t: 'mcode', q: '<b>Dosyaları listele.</b> <code>Folder.Files("C:\\Veri\\Satis")</code> sonucundan yalnız <code>.csv</code> dosyalarının <code>Name</code> listesini döndür.', start: 'Folder.Files("C:\\Veri\\Satis")', sol: 'Table.SelectRows(Folder.Files("C:\\Veri\\Satis"), each [Extension] = ".csv")[Name]', must: ['Folder.Files', '[Extension]'], ordered: true, hint: 'Süz, sonra [Name] ile sütunu liste al.' },
     { t: 'mcode', q: '<b>Tek dosya oku.</b> <code>File.Contents("C:\\Veri\\Satis\\satis_2024_01.csv")</code> dosyasını <code>;</code> ile ayrılmış CSV olarak oku, ilk satırı başlık yap.', sol: 'Table.PromoteHeaders(Csv.Document(File.Contents("C:\\Veri\\Satis\\satis_2024_01.csv"), [Delimiter = ";"]))', must: ['Csv.Document', 'Table.PromoteHeaders'], start: 'File.Contents("C:\\Veri\\Satis\\satis_2024_01.csv")', hint: 'Csv.Document(ikili, [Delimiter = ";"])' },
-    { t: 'mcode', q: '<b>Birleştir.</b> Klasördeki CSV’leri tek tabloda topla. Sütunlar: <code>Name</code>, <code>Tarih</code>, <code>Bayi</code>, <code>Tutar</code>. <code>Tarih</code> ve <code>Tutar</code> doğru türde olsun.', sol: 'let\n    Dosyalar = Table.SelectRows(Folder.Files("C:\\Veri\\Satis"), each [Extension] = ".csv"),\n    Oku = (b as binary) as table => Table.PromoteHeaders(Csv.Document(b, [Delimiter = ";"])),\n    Okunan = Table.AddColumn(Dosyalar, "Veri", each Oku([Content])),\n    Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),\n    Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"}),\n    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}})\nin\n    Tipli', must: ['Folder.Files', 'Table.ExpandTableColumn', 'Table.TransformColumnTypes'], types: true, start: 'let\n    Dosyalar = Folder.Files("C:\\Veri\\Satis")\nin\n    Dosyalar', hint: 'Süz, oku, çağır, seç, genişlet, tür ver. Ondalık nokta olduğu için kültür gerekmez.' },
+    { t: 'mcode', q: '<b>Birleştir.</b> Klasördeki CSV’leri tek tabloda topla. Sütunlar: <code>Name</code>, <code>Tarih</code>, <code>Bayi</code>, <code>Tutar</code>. <code>Tarih</code> ve <code>Tutar</code> doğru türde olsun.', sol: 'let\n    Dosyalar = Table.SelectRows(Folder.Files("C:\\Veri\\Satis"), each [Extension] = ".csv"),\n    Oku = (b as binary) as table => Table.PromoteHeaders(Csv.Document(b, [Delimiter = ";"])),\n    Okunan = Table.AddColumn(Dosyalar, "Veri", each Oku([Content])),\n    Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),\n    Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"}),\n    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}}, "en-US")\nin\n    Tipli', must: ['Folder.Files', 'Table.ExpandTableColumn', 'Table.TransformColumnTypes'], types: true, start: 'let\n    Dosyalar = Folder.Files("C:\\Veri\\Satis")\nin\n    Dosyalar', hint: 'Süz, oku, çağır, seç, genişlet, tür ver. Ondalık nokta olduğu için kültür gerekmez.' },
     { t: 'mcode', q: '<b>Hatayı bul.</b> Çıktıda fazladan satır ve null değerler var. Yabancı dosyayı kod içinde süzerek düzelt, sonuçta yalnız satış satırları kalsın.', start: 'let\n    Dosyalar = Folder.Files("C:\\Veri\\Satis"),\n    Okunan = Table.AddColumn(Dosyalar, "Veri", each Table.PromoteHeaders(Csv.Document([Content], [Delimiter = ";"]))),\n    Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),\n    Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"})\nin\n    Acik', sol: 'let\n    Dosyalar = Table.SelectRows(Folder.Files("C:\\Veri\\Satis"), each [Extension] = ".csv"),\n    Okunan = Table.AddColumn(Dosyalar, "Veri", each Table.PromoteHeaders(Csv.Document([Content], [Delimiter = ";"]))),\n    Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),\n    Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"})\nin\n    Acik', must: ['[Extension]'], hint: 'okubeni.txt de okunuyor. Süzgeç en başa.' },
     { t: 'mcode', q: '<b>Dosya başına özet.</b> Her dosya için <code>Name</code> ve <code>Satır</code> (satır sayısı). Yalnız CSV’ler.', sol: 'let\n    Dosyalar = Table.SelectRows(Folder.Files("C:\\Veri\\Satis"), each [Extension] = ".csv"),\n    Sayi = Table.AddColumn(Dosyalar, "Satır", each Table.RowCount(Table.PromoteHeaders(Csv.Document([Content], [Delimiter = ";"]))), Int64.Type)\nin\n    Table.SelectColumns(Sayi, {"Name", "Satır"})', must: ['Table.RowCount'], start: 'Folder.Files("C:\\Veri\\Satis")', hint: 'Kontrol sorgusu: satır sayıları dosya büyüklüğüyle tutuyor mu?' },
     { t: 'mc', q: 'Folder.Files’ın <code>Content</code> sütununda ne vardır?', o: ['Dosyanın metni', 'Binary: yorumlanmamış içerik', 'Dosyanın tam yolu', 'Boyut bilgisi'], a: 1, why: 'Binary, yorumlanmamış içeriktir. Hangi biçim olduğunu okuyucu işlev belirler.' },
@@ -528,7 +529,7 @@ in
 <p><code>Table.SelectRowsWithErrors</code> yalnız hatalı satırları, <code>Table.RemoveRowsWithErrors</code> geri kalanını verir. Uygun desen: asıl sorgu temiz satırları yükler, ikinci sorgu hatalı satırları bir denetim sayfasına yükler. Hataları silmek toplamı sessizce küçültür; hangi satırların gittiğini izle.</p>
 <pre class="m" data-run>let
     Ham = #table({"Kod", "Tutar"}, {{"A", "120"}, {"B", "yok"}}),
-    Tipli = Table.TransformColumnTypes(Ham, {{"Tutar", type number}})
+    Tipli = Table.TransformColumnTypes(Ham, {{"Tutar", type number}}, "en-US")
 in
     [Temiz = Table.RowCount(Table.RemoveRowsWithErrors(Tipli)), Hatali = Table.RowCount(Table.SelectRowsWithErrors(Tipli))]</pre>
 <h2>Ertelenmiş hata tuzağı</h2>

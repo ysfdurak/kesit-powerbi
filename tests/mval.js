@@ -163,6 +163,8 @@ for (const [code, kind, txt] of ERRS) {
 { const r = M.run('Table.RemoveRowsWithErrors(Table.TransformColumnTypes(#table({"a"}, {{"1"}, {"x"}}), {{"a", type number}}))'); say(r.ok && r.value.rows.length === 1, 'tür dönüşümü hatalı satır'); }
 { const r = M.run('Table.TransformColumnTypes(#table({"a"}, {{"05.01.2024"}}), {{"a", type date}}, "tr-TR")'); say(r.ok && r.value.rows[0][0].getUTCMonth() === 0, 'tr-TR tarih'); }
 { const r = M.run('Table.Pivot(Table.FromRecords({[k = 1, a = "x", v = 1], [k = 1, a = "x", v = 2]}), {"x"}, "a", "v")'); say(r.ok && M.isErrCell(r.value.rows[0][1]), 'pivot çok değer hatası'); }
+/* Power BI ile doğrulandı: tamponsuz Table.Profile süzülemez, Table.Buffer ile süzülür */
+{ const t = '#table({"a", "b"}, {{1, null}, {2, 3}})'; const r1 = M.run('Table.SelectRows(Table.Profile(' + t + '), each [NullCount] > 0)'); say(!r1.ok && M.errorText(r1).includes('NullCount'), 'profil tamponsuz süzme hatası'); const r2 = M.run('Table.SelectRows(Table.Buffer(Table.Profile(' + t + ')), each [NullCount] > 0)[Column]'); say(r2.ok && r2.value.length === 1 && r2.value[0] === 'b', 'profil tamponlu süzme', r2.ok ? M.fmt(r2.value) : M.errorText(r2)); }
 console.log('Resmî örnek ve davranış: ' + nOfficial + ', hata davranışı: ' + ERRS.length);
 if (fs.existsSync(APP + 'mval_ext.js')) require(APP + 'mval_ext.js');
 module.exports = { say, M };

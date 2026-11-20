@@ -960,7 +960,7 @@ def('Table.HasColumns', 2, 2, (t, n) => { need(t, 'table'); return listOf(n).eve
 def('Table.First', 1, 2, (t, d) => { need(t, 'table'); return t.rows.length ? rowRecord(t, t.rows[0]) : d; });
 def('Table.Last', 1, 2, (t, d) => { need(t, 'table'); return t.rows.length ? rowRecord(t, t.rows[t.rows.length - 1]) : d; });
 def('Table.FirstValue', 1, 2, (t, d) => { need(t, 'table'); return t.rows.length && t.cols.length ? liftCell(t.rows[0][0]) : d; });
-def('Table.SelectRows', 2, 2, (t, f) => { need(t, 'table'); need(f, 'function'); return { cols: t.cols.map(c => Object.assign({}, c)), rows: t.rows.filter(r => truth(call(f, rowRecord(t, r)))) }; });
+def('Table.SelectRows', 2, 2, (t, f) => { need(t, 'table'); need(f, 'function'); if (t.lazyProfile) throw exprErr('Table.Profile sonucu doğrudan süzülemez; Power BI satır kaydında profil alanlarını bulamaz ("The field \'NullCount\' of the record wasn\'t found."). Önce Table.Buffer(Table.Profile(...)) ile sabitleyin.'); return { cols: t.cols.map(c => Object.assign({}, c)), rows: t.rows.filter(r => truth(call(f, rowRecord(t, r)))) }; });
 def('Table.SelectColumns', 2, 3, (t, n, m) => { need(t, 'table'); const mode = missing(m); return selectCols(t, listOf(n), mode === 'err' ? 'err' : mode === 'null' ? 'null' : 'ign'); });
 def('Table.RemoveColumns', 2, 3, (t, n, m) => { need(t, 'table'); const del = listOf(n); if (missing(m) === 'err') del.forEach(x => colI(t, x)); const keep = t.cols.map((c, i) => i).filter(i => !del.includes(t.cols[i].name)); return { cols: keep.map(i => Object.assign({}, t.cols[i])), rows: t.rows.map(r => keep.map(i => r[i])) }; });
 def('Table.RenameColumns', 2, 3, (t, ren, m) => { need(t, 'table'); const pairs = Array.isArray(ren[0]) ? ren : [ren]; const out = cloneT(t); const mode = missing(m); pairs.forEach(p => { const i = t.cols.findIndex(c => c.name === p[0]); if (i < 0) { if (mode === 'err') throw exprErr('The column \'' + p[0] + '\' of the table wasn\'t found.', p[0]); return; } out.cols[i].name = p[1]; }); out.cols.forEach((c, i) => { if (out.cols.findIndex(x => x.name === c.name) !== i) throw exprErr('The field \'' + c.name + '\' already exists in the record.', c.name); }); return out; });
@@ -973,7 +973,7 @@ def('Table.CombineColumns', 4, 4, (t, cs, f, n) => { need(t, 'table'); const lis
 def('Table.SplitColumn', 3, 6, (t, c, f, names, dflt, extra) => {
   need(t, 'table'); need(f, 'function'); if (dflt !== null || extra !== null) throw unsup('Table.SplitColumn default/extraValues');
   const i = colI(t, c); const parts = t.rows.map(r => { const v = r[i]; if (v === null) return [null]; if (isErrCell(v)) return [v]; const o = call(f, v); return Array.isArray(o) ? o : [o]; });
-  let nm; if (names === null) { const w = parts.reduce((m, p) => Math.max(m, p.length), 1); nm = Array.from({ length: w }, (_, j) => c + '.' + (j + 1)); } else if (typeof names === 'number') nm = Array.from({ length: names }, (_, j) => c + '.' + (j + 1)); else nm = listOf(names);
+  let nm; if (names === null) { /* Power Query: sütun sayısı yalnız İLK satırın bölünmesinden belirlenir (gerçek Power BI ile karşılaştırıldı) */ const w = parts.length ? Math.max(1, parts[0].length) : 1; nm = Array.from({ length: w }, (_, j) => c + '.' + (j + 1)); } else if (typeof names === 'number') nm = Array.from({ length: names }, (_, j) => c + '.' + (j + 1)); else nm = listOf(names);
   return { cols: t.cols.slice(0, i).concat(nm.map(x => ({ name: x, type: 'any' })), t.cols.slice(i + 1)).map(x => Object.assign({}, x)), rows: t.rows.map((r, ri) => r.slice(0, i).concat(nm.map((_, j) => (j < parts[ri].length ? parts[ri][j] : null)), r.slice(i + 1))) };
 });
 function opsList(x) { need(x, 'list'); return x.length && !Array.isArray(x[0]) ? [x] : x; }
@@ -1019,7 +1019,7 @@ def('Table.Contains', 2, 3, (t, row, c) => { if (c !== null) throw unsup('Table.
 def('Table.MatchesAllRows', 2, 2, (t, f) => t.rows.every(r => truth(call(f, rowRecord(t, r)))));
 def('Table.MatchesAnyRows', 2, 2, (t, f) => t.rows.some(r => truth(call(f, rowRecord(t, r)))));
 def('Table.Combine', 1, 2, (ts, c) => { if (c !== null) throw unsup('Table.Combine columns'); return combine(items(ts)); });
-def('Table.Buffer', 1, 2, t => need(t, 'table'));
+def('Table.Buffer', 1, 2, t => { need(t, 'table'); if (!t.lazyProfile) return t; const c = Object.assign({}, t); delete c.lazyProfile; return c; });
 def('Table.StopFolding', 1, 1, t => need(t, 'table'));
 function joinRows(a, ka, b, kb, kind, fn) {
   const ia = listOf(ka).map(x => colI(a, x)), ib = listOf(kb).map(x => colI(b, x));
@@ -1067,6 +1067,8 @@ def('Table.Pivot', 4, 5, (t, vals, attr, val, agg) => {
   const kept = t.cols.map((c, i) => i).filter(i => i !== ia && i !== iv); const groups = [];
   t.rows.forEach(r => { const k = kept.map(i => r[i]); let g = groups.find(x => x.k.every((v, j) => valEq(v, k[j]))); if (!g) { g = { k, m: new Map() }; groups.push(g); } const a = r[ia]; if (a === null) throw new MUnsup('Pivot öznitelik sütununda null var: gerçek davranış belgede yazmıyor, burada durduruldu. Önce null satırları süz.'); if (!g.m.has(a)) g.m.set(a, []); g.m.get(a).push(r[iv]); });
   if (agg !== null) need(agg, 'function');
+  /* Power Query satırları gruplama anahtarlarına göre (sıralı karşılaştırma) dizer */
+  groups.sort((x, y) => { for (let j = 0; j < x.k.length; j++) { const a = x.k[j], b = y.k[j]; if (a === null && b === null) continue; if (a === null) return -1; if (b === null) return 1; const c = compareVals(a, b); if (c) return c; } return 0; });
   const rows = groups.map(g => g.k.concat(pv.map(p => {
     const a = g.m.get(p); if (agg !== null) return protect(() => call(agg, a || []));
     if (!a) return null; if (a.length > 1) return { pqErr: 'Expression.Error: There were too many elements in the enumeration to complete the operation.', merr: exprErr('There were too many elements in the enumeration to complete the operation.') }; return a[0];
@@ -1093,12 +1095,17 @@ def('Table.FillDown', 2, 2, (t, c) => fill(t, c, false));
 def('Table.FillUp', 2, 2, (t, c) => fill(t, c, true));
 def('Table.Profile', 1, 2, (t, o) => {
   need(t, 'table'); if (o !== null) throw unsup('Table.Profile additionalAggregates');
-  return mkTable(['Column', 'Min', 'Max', 'Average', 'StandardDeviation', 'Count', 'NullCount', 'DistinctCount'], t.cols.map((c, i) => {
+  /* Power Query: satırlar sütun adına göre sıralıdır; tarih sütununun ortalaması da hesaplanır */
+  const order = t.cols.map((c, i) => i).sort((a, b) => compareVals(t.cols[a].name, t.cols[b].name));
+  /* Power BI'da Table.Profile sonucu Table.Buffer olmadan Table.SelectRows ile süzülünce hata verir (gerçek Power BI ile doğrulandı) */
+  const out = mkTable(['Column', 'Min', 'Max', 'Average', 'StandardDeviation', 'Count', 'NullCount', 'DistinctCount'], order.map(i => { const c = t.cols[i];
     const vals = t.rows.map(r => r[i]).filter(v => !isErrCell(v)); const nz = vals.filter(v => v !== null); const num = nz.filter(v => typeof v === 'number');
     const sorted = nz.slice().sort((a, b) => (typeName(a) === typeName(b) ? compareVals(a, b) : 0)); const seen = []; vals.forEach(v => { if (!seen.some(x => valEq(x, v))) seen.push(v); });
     const m = num.length ? num.reduce((s, x) => s + x, 0) / num.length : null;
-    return [c.name, sorted.length ? sorted[0] : null, sorted.length ? sorted[sorted.length - 1] : null, num.length === nz.length && nz.length ? m : null, num.length > 1 && num.length === nz.length ? Math.sqrt(num.reduce((s, x) => s + (x - m) * (x - m), 0) / (num.length - 1)) : null, t.rows.length, vals.filter(v => v === null).length, seen.length];
+    const dts = nz.filter(v => v instanceof Date); const dAvg = dts.length && dts.length === nz.length ? (() => { const x = new Date(Math.round(dts.reduce((s2, d) => s2 + d.getTime(), 0) / dts.length)); if (isDT(dts[0])) x.mk = 'datetime'; else x.setUTCHours(0, 0, 0, 0); return x; })() : null;
+    return [c.name, sorted.length ? sorted[0] : null, sorted.length ? sorted[sorted.length - 1] : null, num.length === nz.length && nz.length ? m : dAvg, num.length > 1 && num.length === nz.length ? Math.sqrt(num.reduce((s, x) => s + (x - m) * (x - m), 0) / (num.length - 1)) : null, t.rows.length, vals.filter(v => v === null).length, seen.length];
   }));
+  out.lazyProfile = true; return out;
 });
 
 /* --- Benzetimli dosya sistemi: Folder.Files, File.Contents, Csv.Document, Binary --- */
@@ -1109,7 +1116,7 @@ const FILES = [
   { path: 'C:\\Veri\\Satis\\', name: 'okubeni.txt', ext: '.txt', mod: Date.UTC(2024, 0, 2, 9, 0, 0), text: 'Bu klasöre yalnız aylık satış dosyalarını bırakın.' }
 ];
 function normPath(p) { return String(p).replace(/\//g, '\\').replace(/\\?$/, '\\'); }
-def('Folder.Files', 1, 2, (p, o) => { need(p, 'text'); if (o !== null) throw unsup('Folder.Files options'); const np = normPath(p); const hit = FILES.filter(f => f.path.toLowerCase().startsWith(np.toLowerCase())); if (!hit.length) throw err('DataSource.NotFound', 'Could not find a part of the path \'' + p + '\'. Bu benzetimde yalnız C:\\Veri\\Satis klasörü var.', p); return mkTable(['Content', 'Name', 'Extension', 'Date modified', 'Folder Path'], hit.map(f => [new MBinary(f.text), f.name, f.ext, mkDT(f.mod), f.path]), ['binary', 'text', 'text', 'datetime', 'text']); });
+def('Folder.Files', 1, 2, (p, o) => { need(p, 'text'); if (o !== null) throw unsup('Folder.Files options'); const np = normPath(p); const hit = FILES.filter(f => f.path.toLowerCase().startsWith(np.toLowerCase())); if (!hit.length) throw err('DataSource.NotFound', 'Could not find a part of the path \'' + p + '\'. Bu benzetimde yalnız C:\\Veri\\Satis klasörü var.', p); /* Gerçek Folder.Files sütunları ve ada göre sıra */ const sorted = hit.slice().sort((a, b) => compareVals(a.name, b.name)); return mkTable(['Content', 'Name', 'Extension', 'Date accessed', 'Date modified', 'Date created', 'Attributes', 'Folder Path'], sorted.map(f => { const at = new MRecord(); [['Content Type', f.ext === '.csv' ? 'text/csv' : 'text/plain'], ['Kind', f.ext === '.csv' ? 'CSV File' : 'Text Document'], ['Size', f.text.length], ['ReadOnly', false], ['Hidden', false], ['System', false], ['Directory', false], ['Archive', true]].forEach(([k, v]) => { at.names.push(k); at.f.set(k, v); }); return [new MBinary(f.text), f.name, f.ext, mkDT(f.mod), mkDT(f.mod), mkDT(f.mod), at, f.path]; }), ['binary', 'text', 'text', 'datetime', 'datetime', 'datetime', 'record', 'text']); });
 LIB.set('Folder.Contents', new MFunc(() => { throw unsup('Folder.Contents', 'benzetimde Folder.Files var'); }, 'Folder.Contents', 0, 9));
 def('File.Contents', 1, 2, (p, o) => { need(p, 'text'); if (o !== null) throw unsup('File.Contents options'); const f = FILES.find(x => (x.path + x.name).toLowerCase() === String(p).replace(/\//g, '\\').toLowerCase()); if (!f) throw err('DataSource.NotFound', 'Could not find file \'' + p + '\'. Bu benzetimde yalnız C:\\Veri\\Satis klasöründeki dosyalar var.', p); return new MBinary(f.text); });
 def('Text.FromBinary', 1, 2, (b, e) => (b === null ? null : need(b, 'binary').text));

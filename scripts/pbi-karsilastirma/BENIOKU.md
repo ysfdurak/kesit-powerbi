@@ -19,3 +19,10 @@ mülakat (M), Arena (A, D), kalıplar (K), karıştırılanlar (C), hata katalo�
 CSV kökünde `csv/<src>/<tablo>.csv` olmalı (paketin zip'indeki `veri/` klasörü). Çıktı: `csv/` (türetilmiş sütunlar ve
 Takvim dahil), `model.tmdl` (CSV'leri PC'deki klasörden okur) ve `beklenen.json`. PC'de klasörü `vaka\<ad>\` altına koy,
 temiz bir Power BI penceresinde TMDL'yi uygula, Yenile, sonra `python kontrol.py vaka\<ad>\beklenen.json`.
+
+## Power Query (M)
+`node scripts/pbi-karsilastirma/gen-pq.cjs <çıktı> "<PC'deki klasör>"` → `model.tmdl`, `beklenen.json` ve `Veri/Satis/` (Folder.Files benzetiminin dosyaları).
+Kaynak sorgular TMDL'de `expression` (#table değişmezi) olur, her M ifadesi `PQxxx` tablosuna (Satir, Sutun, Deger) uzun biçimde yüklenir.
+`ONLY=PQ001,PQ008 node …` yalnız seçilen maddeleri üretir; 200 tablo birden Desktop'ın belleğini aşabildiği için 50–100'lük gruplarla çalış.
+PC'de klasörü `<PC'deki klasör>` olarak koy, temiz Power BI'da TMDL'yi uygula, Yenile, sonra `python kontrol_pq.py pq\beklenen.json`.
+Join içeren sorgular sırasız, Folder.Files tarihleri ortam farkı olarak karşılaştırılır.
