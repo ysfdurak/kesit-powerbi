@@ -92,4 +92,6 @@ chk('LEN(boş) = boş', E('LEN(BLANK())', []), null);
 chk('POWER(boş, 2) = boş', E('POWER(BLANK(), 2)', []), null);
 chk('Türkçe sıralama', E('IF("Şampuan" < "Yün Atkı", 1, 0)', []), 1);
 chk('Sıfıra yuvarlanan negatif', E('FORMAT(-0.3, "+#,0;-#,0;0")', []), '0');
+chk('DATESINPERIOD boş başlangıç = en erken tarih', E('COUNTROWS(DATESINPERIOD(Tarih[Tarih], BLANK(), -3, MONTH))', []), 1);
+chk('Tarih sütunu bağlam geçişi tablo filtrelerini kaldırır', E('AVERAGEX(DATESINPERIOD(Tarih[Tarih], DATE(2024, 11, 30), -7, DAY), [Net Satış])', [F('Tarih', 'YilAy', '2023-03')]), E('AVERAGEX(DATESINPERIOD(Tarih[Tarih], DATE(2024, 11, 30), -7, DAY), [Net Satış])', []));
 console.log('kontrol', n, 'fark', bad);

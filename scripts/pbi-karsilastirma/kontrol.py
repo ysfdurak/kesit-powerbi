@@ -178,8 +178,9 @@ def mdef(m):
         return "", m["expr"]
     if "defs" in m:
         esc = lambda n: n.replace("]", "]]")
-        lines = ["MEASURE 'Satislar'[%s] = %s" % (esc(d["name"]), d["expr"]) for d in m["defs"]]
-        lines.append("MEASURE 'Satislar'[%s] = %s" % (m["code"], m["expr"]))
+        home = m.get("home", "Satislar").replace("'", "''")
+        lines = ["MEASURE '%s'[%s] = %s" % (home, esc(d["name"]), d["expr"]) for d in m["defs"]]
+        lines.append("MEASURE '%s'[%s] = %s" % (home, m["code"], m["expr"]))
         return "DEFINE\n" + "\n".join(lines) + "\n", "[%s]" % m["code"]
     return "", "[%s]" % m["code"]
 
@@ -239,7 +240,9 @@ def main():
     print("ADOMD:", dll)
     print("Port:", port)
     db = Conn(dll, port)
-    exp = json.load(open(os.path.join(HERE, "beklenen.json"), encoding="utf-8"))
+    BEK = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(HERE, "beklenen.json")
+    OUTD = os.path.dirname(BEK)
+    exp = json.load(open(BEK, encoding="utf-8"))
 
     # 1) ölçü durumları
     states = {}
@@ -306,6 +309,9 @@ def main():
                 a, b = sorted(map(repr, a)), sorted(map(repr, b))
             if len(rows) != len(want):
                 rec["diff"] = "satır sayısı: motor %d, Power BI %d" % (len(want), len(rows))
+            elif a != b and ordered and sorted(map(repr, a)) == sorted(map(repr, b)):
+                rec["kind"] = "sıra"  # ORDER BY eşit değerlerin sırasını belirlemiyor; satırlar aynı
+                rec["diff"] = "yalnız eşit değerli satırların sırası farklı"
             elif a != b and query_kind(want, rows, ordered):
                 rec["kind"] = query_kind(want, rows, ordered)
                 first = next(((x, y) for x, y in zip(b, a) if x != y), None)
@@ -321,7 +327,7 @@ def main():
         if i % 25 == 0:
             print("sorgu", i, "/", len(exp["queries"]))
 
-    json.dump(results, open(os.path.join(HERE, "sonuc.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump(results, open(os.path.join(OUTD, "sonuc.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     ms = results["measures"]; qs = results["queries"]
     lines = []
     lines.append("ÖZET")
@@ -333,7 +339,7 @@ def main():
     real_m = [r for r in ms if r["diffs"] and not r.get("kind")]
     real_q = [r for r in qs if r["diff"] and not r.get("kind")]
     lines.append("Gerçek fark: ölçü %d, sorgu %d | biçim dili (Desktop arayüz dili): %d | 4 ondalık para yuvarlaması: %d | ortam: %d" % (
-        len(real_m), len(real_q), sum(1 for r in ms + qs if r.get("kind") == "dil"), sum(1 for r in ms + qs if r.get("kind") == "para"), sum(1 for r in ms if r.get("kind") == "ortam")))
+        len(real_m), len(real_q), sum(1 for r in ms + qs if r.get("kind") == "dil"), sum(1 for r in ms + qs if r.get("kind") == "para"), sum(1 for r in ms if r.get("kind") == "ortam")) + (" | eşitlerin sırası: %d" % sum(1 for r in qs if r.get("kind") == "sıra") if any(r.get("kind") == "sıra" for r in qs) else ""))
     lines.append("")
     for r in results["baseMeasureErrors"]:
         lines.append("HAZIR ÖLÇÜ HATASI  %s: %s" % (r["name"], r["error"]))
@@ -350,7 +356,7 @@ def main():
             lines.append("SORGU HATA  %s  %s%s :: %s" % (r["code"], r["lesson"], ("#%s" % r["idx"]) if r["idx"] != "" else "", r["error"]))
         elif r["diff"]:
             lines.append(("SORGU FARK  " if not r.get("kind") else "(sorgu %s)  " % r["kind"]) + "%s  %s%s :: %s" % (r["code"], r["lesson"], ("#%s" % r["idx"]) if r["idx"] != "" else "", r["diff"]))
-    open(os.path.join(HERE, "sonuc.txt"), "w", encoding="utf-8").write("\n".join(lines))
+    open(os.path.join(OUTD, "sonuc.txt"), "w", encoding="utf-8").write("\n".join(lines))
     print("\n".join(lines[:7]))
     print("Ayrıntı: sonuc.txt ve sonuc.json")
 

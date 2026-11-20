@@ -148,6 +148,7 @@ Gerçek Power BI Desktop ile karşılaştırma (Kasım 2026; araç `pbitest/gen.
   - Kesintisiz olmayan tarih sütununda (Satislar[Tarih]) zaman zekâsı seçimi aralık olarak kaydırır; seçim bölünürse hata verir.
   - DIVIDE, LEN, POWER boş girdide boş; STDEV.S tek değerde NaN; metinler Türkçe harf sırasıyla, büyük/küçük harfe duyarsız karşılaştırılır; toplamlar 15 anlamlı basamağa yuvarlanır (eşit toplamlar eşit kalsın); sıfıra yuvarlanan negatif sayı FORMAT'ta sıfır bölümüyle yazılır.
   - TODAY/NOW ve USERPRINCIPALNAME kullanan ölçüler ortam farkı sayılır.
+- **3. tur (beş vaka paketi, Desktop'ta CSV'den kurulan modellerle; 187 ölçü + 6 sorgu):** işaretli tarih tablosunun tarih sütunu bağlam geçişiyle filtrelenince tablonun diğer filtreleri kalkar (AVERAGEX(DATESINPERIOD(...)) ay satırında da aynı sonuç); DATESINPERIOD'da boş başlangıç tarihi sütunun en erken tarihidir. Düzenek: `scripts/pbi-karsilastirma/gen-vd.cjs <ilgaz|kanat|lezzet|pusula|pedal> <csv kökü> <çıktı> <PC yolu>`; TMDL CSV'leri PC'deki klasörden okur. Her paket için temiz bir Power BI penceresi kullan (ölçü adları paketler arasında çakışır).
 - Karşılaştırma düzeneği: `pbitest/gen.cjs <paket klasörü>` → `out/model.tmdl`, `out/beklenen.json`; PC'de `kesit-pbi-test` klasöründe `calistir.bat` (shiftflow ortamının Python'u) `kontrol.py`'yi çalıştırır, `sonuc.txt` yazar.
 
 Motorun ağır kaldığı yerler: büyük tabloda (Pedal İzmir ~116 bin satır) satır satır bağlam geçişi saniyeler sürer.

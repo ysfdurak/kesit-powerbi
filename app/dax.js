@@ -411,7 +411,12 @@
     let filters = st.ctx.filters;
     for (const f of st.frames) {
       if (f.base) { const ex = f.base; filters = removeFilters(filters, x => x.t === ex); filters = filters.concat([{ t: f.base, c: '*', rows: new Set([f.i]) }]); }
-      else f.cols.forEach((col, j) => { if (!col.lin) return; const { t, c } = col.lin; filters = removeFilters(filters, x => x.t === t && x.c === c); filters = filters.concat([{ t, c, keys: new Set([keyOf(f.vals[j])]) }]); });
+      else {
+        /* İşaretli tarih tablosunun tarih sütunu bağlam geçişiyle filtrelenince tablonun diğer filtreleri de kalkar (gerçek Power BI: AVERAGEX(DATESINPERIOD(...)) ay satırında da aynı sonucu verir) */
+        const lc = f.cols.map((col, j) => [col, j]).filter(([col]) => col.lin);
+        lc.forEach(([col]) => { const { t, c } = col.lin; filters = removeFilters(filters, x => x.t === t && (x.c === c || T[t].dateTable === c)); });
+        lc.forEach(([col, j]) => { const { t, c } = col.lin; filters = filters.concat([{ t, c, keys: new Set([keyOf(f.vals[j])]) }]); });
+      }
     }
     return mkCtx(filters, st.ctx);
   }
@@ -941,7 +946,7 @@
   FN.NEXTMONTH = prevNext('MONTH', 1); FN.NEXTQUARTER = prevNext('QUARTER', 1); FN.NEXTYEAR = prevNext('YEAR', 1); FN.NEXTDAY = prevNext('DAY', 1);
   FN.DATESINPERIOD = (eng, a, st) => {
     need(a, 4, 'DATESINPERIOD', 'DATESINPERIOD(Tarih[Tarih], BaşlangıçTarihi, Sayı, Birim)');
-    const { t, c } = colArg(a[0], 'DATESINPERIOD'); const s = dateArg(eng, a[1], st, 'DATESINPERIOD'); if (!s) return dtab(t, c, []); const n = num(evS(eng, a[2], st)); const u = unitArg(eng, a[3], st);
+    const { t, c } = colArg(a[0], 'DATESINPERIOD'); let s = dateArg(eng, a[1], st, 'DATESINPERIOD'); if (!s) { /* Power BI: boş başlangıç tarihi sütunun en erken tarihi sayılır */ const all = existingDates(t, c, () => true).sort((x, y) => x - y); if (!all.length) return dtab(t, c, []); s = all[0]; } const n = num(evS(eng, a[2], st)); const u = unitArg(eng, a[3], st);
     // Power BI: geriye doğru ay/çeyrek/yıl aralığı ayın son gününde bitiyorsa başlangıç ayın 1'ine hizalanır
     // (DATESINPERIOD(…, 28.02.2023, -3, MONTH) = 01.12.2022–28.02.2023). Gerçek Power BI ile karşılaştırıldı.
     const mult = u === 'MONTH' ? 1 : u === 'QUARTER' ? 3 : u === 'YEAR' ? 12 : 0;
