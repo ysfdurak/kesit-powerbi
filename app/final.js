@@ -25,7 +25,7 @@ const S = [
       'Dönüştür → İstatistikler / Standart / Yuvarlama ile tutarları 2 haneye yuvarla; R/Python betiği seçeneğinin ne zaman uygun olduğunu not et.',
       'Giriş → Gelişmiş Düzenleyici ile M kodunu oku; adımları anlamlı adlarla yeniden adlandır. Görünüm → Formül çubuğu ve Sorgu bağımlılıkları.',
       'Araçlar: Sorgu tanılaması ile yavaş adımı bul; adıma sağ tık → Yerel sorguyu görüntüle (sorgu katlama); ara sorgularda Yüklemeyi etkinleştir’i kapat; Başvuru ve Çoğalt farkını uygula; sorguları gruplara ayır.',
-      'Giriş → Yapay zekâ içgörüleri: neden bu projede kullanılmadığını (lisans, gerek) yaz; Önizlemeyi yenile; Kapat ve uygula.'
+      'Önizlemeyi yenile; Kapat ve uygula. (Eski “Yapay zekâ içgörüleri” düğmeleri Eylül 2025’te kaldırıldı; metin analizi gerekirse Fabric’in yapay zekâ fonksiyonlarına bakılır.)'
     ], measures: [], deliver: 'Hatasız yüklenen, türleri doğru, ara sorguları gizli bir sorgu seti.' },
   { n: 3, lv: 'A2', title: 'Yıldız şema ve tarih tablosu', goal: 'Olgu ve boyutları ayır, ilişkileri doğru kardinalite ve yönle kur, tarih tablosunu işaretle.',
     tasks: [

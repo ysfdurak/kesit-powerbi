@@ -387,11 +387,11 @@ W.PBI_CONFUSED.push(
     { n: 'Gen1 (Power BI veri akışı)', d: 'Power BI çalışma alanında yaşar; sonuç veri akışının kendi depolamasında (ya da bağlanan Azure Data Lake hesabında) tutulur. Raporlar ve modeller veri akışı bağlayıcısıyla okur.' },
     { n: 'Gen2 (Fabric veri akışı)', d: 'Fabric kapasitesinde çalışır; sonucu bir hedefe (lakehouse, ambar, SQL veritabanı…) yazar. İşlem hattına eklenebilir, hazırlama (staging) ile büyük veride ölçeklenir.' }
   ],
-  rule: 'Fabric kullanıyorsan yeni işler için Gen2: veri bir lakehouse ya da ambara yazılır ve başka araçlar (SQL, not defteri, Direct Lake) da kullanabilir. Fabric yoksa ya da yalnızca Power BI modellerini besleyeceksen Gen1 hâlâ iş görür.',
+  rule: 'Fabric kullanıyorsan yeni işler için Gen2: veri bir lakehouse ya da ambara yazılır ve başka araçlar (SQL, not defteri, Direct Lake) da kullanabilir. Fabric yoksa ya da yalnızca Power BI modellerini besleyeceksen Gen1 hâlâ iş görür, ama eski (legacy) durumda; yeni özellik gelmiyor.',
   body: 'İkisi de aynı Power Query arayüzünü kullanır; fark, sonucun nereye gittiği ve kimin kullanabildiğidir. Gen1’in çıktısı esasen Power BI içindir. Gen2’nin çıktısı OneLake’te standart Delta tablosudur: Direct Lake modeli doğrudan okuyabilir, veri mühendisi SQL ile sorgulayabilir. Gen1’den Gen2’ye taşırken sorgular dışa aktarılıp (şablon) yeni veri akışına alınabilir.',
   quiz: [
     { q: 'Temizlenen satış verisi hem Direct Lake modeline hem de veri bilimcinin not defterine gidecek. Hangisi?', o: ['Gen1 ve yerleşik depolaması', 'Desktop’ta Power Query', 'DAX hesaplanmış tablo', 'Gen2 ve lakehouse hedefi'], a: 3, why: 'Gen2 sonucu lakehouse’a Delta tablosu olarak yazar; Direct Lake ve not defterleri aynı tabloyu okur. Gen1 çıktısı esasen Power BI içindir.' },
-    { q: 'Şirkette Fabric kapasitesi yok; üç Power BI modeli aynı müşteri temizliğini paylaşmak istiyor. Ne önerirsin?', o: ['Veri akışı Gen1', 'Veri akışı Gen2', 'Her modelde kopya sorgu', 'Eventhouse'], a: 0, why: 'Gen2 Fabric kapasitesi ister. Gen1, Pro çalışma alanında da temizliği bir kez yapıp birden çok modele sunar; kopya sorgulardan çok daha bakımlıdır.' }
+    { q: 'Şirkette Fabric kapasitesi yok; üç Power BI modeli aynı müşteri temizliğini paylaşmak istiyor. Ne önerirsin?', o: ['Veri akışı Gen1', 'Veri akışı Gen2', 'Her modelde kopya sorgu', 'Eventhouse'], a: 0, why: 'Gen2 Fabric kapasitesi ister. Gen1, Pro çalışma alanında da temizliği bir kez yapıp birden çok modele sunar; kopya sorgulardan çok daha bakımlıdır. Gen1 Nisan 2026’dan beri eski (legacy) durumda; Fabric’e geçince Gen2’ye taşımayı planla.' }
   ]
 },
 

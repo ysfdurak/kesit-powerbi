@@ -19,7 +19,7 @@ add('analiz-ozellikleri', {
 <tr><td>Anlatı görseli (Narrative)</td><td>Sayfadaki görselleri metinle özetler; filtre değişince metin de güncellenir.</td><td>Genel kullanım</td></tr>
 <tr><td>DAX sorgu görünümü (DAX query view)</td><td><code>Ctrl+I</code> ile Copilot: doğal dilden DAX sorgusu yazar, “Bu sorguyu açıkla” ile kodu anlatır, “Bir DAX konusunu açıkla” ile fonksiyon anlatır.</td><td>Desktop’ta Önizleme özellikleri altından açılır</td></tr>
 <tr><td>Ölçü açıklamaları</td><td>Bir ölçünün DAX’ını okuyup açıklama (description) önerir.</td><td>Model yazarı için</td></tr>
-<tr><td>Bağımsız Copilot (standalone)</td><td>Service’te sol gezinti çubuğundaki simge: tüm raporlar ve modeller arasında arar, soruyu doğru öğeye yönlendirir.</td><td><b>Önizleme</b></td></tr>
+<tr><td>Bağımsız Copilot (standalone)</td><td>Service’te sol gezinti çubuğundaki simge: tüm raporlar ve modeller arasında arar, soruyu doğru öğeye yönlendirir. Microsoft bu önizlemeyi Ocak 2027’de kaldırıyor (Giriş sayfası, mobil, Teams ve uygulama içi Copilot dahil). Yerine Power BI ve Fabric’teki Microsoft 365 Copilot (önizleme) geliyor; 8 Aralık 2026’dan itibaren varsayılan olarak açık.</td><td><b>Önizleme, kalkıyor</b></td></tr>
 <tr><td>Web modellemede Copilot</td><td>Service’te modeli inceler; ölçü, tablo, sütun ve ilişki düzenler.</td><td><b>Önizleme</b></td></tr>
 </table></div>
 <p>Rapor bölmesinde bir <b>yetenek seçici</b> (skill picker) vardır: “Veriyle ilgili soruları yanıtla”, “Rapor görsellerini analiz et” ve “Yeni rapor sayfası oluştur”. Test ederken hangi yeteneği kullandığını bilerek seç; çünkü aşağıda göreceğin ayarların bir kısmı yalnızca veri sorularını etkiler.</p>
@@ -28,7 +28,7 @@ add('analiz-ozellikleri', {
 <ul>
 <li><b>Kapasite:</b> Çalışma alanı ücretli bir Fabric kapasitesinde (F2 ve üstü) ya da Power BI Premium’da (P1 ve üstü) olmalı. Deneme kapasiteleri desteklenmez. Alternatif olarak yönetici bir <b>Fabric Copilot kapasitesi</b> atayabilir; o zaman yapay zekâ tüketimi oraya faturalanır.</li>
 <li><b>Lisans:</b> Yalnızca Pro ya da Kullanıcı Başına Premium (PPU) lisansı Copilot için yetmez; kuruluşun kapasitesi gerekir.</li>
-<li><b>Kiracı ayarı:</b> Yönetim portalında “Users can use Copilot and other features powered by Azure OpenAI” açık olmalı. Bağımsız Copilot için ayrıca kendi ayarı vardır ve kiracı düzeyinde açılmalıdır.</li>
+<li><b>Kiracı ayarı:</b> Yönetim portalında “Users can use Copilot and other features powered by Azure OpenAI” açık olmalı. Bağımsız Copilot’un ayrı bir ayarı vardı; bu deneyim Ocak 2027’de kalkınca o ayar da kaldırılıyor.</li>
 <li><b>Bölge:</b> Azure OpenAI’ın bulunmadığı bölgelerde verinin bölge dışında işlenmesine izin veren ayar gerekir. ABD ve AB veri sınırı dışında bu ayar kapalı geldiği için Copilot da kapalı başlar.</li>
 <li><b>Desktop:</b> İlk kullanımda Copilot uyumlu bir çalışma alanı seçersin; bu alanda en az Katkıda bulunan (Contributor) rolün olmalı.</li>
 <li><b>Dil:</b> Learn, İngilizce dışındaki dillerin resmî olarak desteklenmediğini söylüyor. Türkçe sorular çoğu zaman anlaşılır, ama kritik sorularda İngilizce sormak ve cevabı mutlaka doğrulamak daha güvenli.</li>
@@ -40,8 +40,8 @@ add('analiz-ozellikleri', {
 <div class="tbl-wrap"><table>
 <tr><th>Soru-Cevap nerede kullanılıyordu?</th><th>Yerine</th></tr>
 <tr><td>Rapordaki Soru-Cevap görseli</td><td>Rapor Copilot bölmesi</td></tr>
-<tr><td>Panodaki soru kutusu</td><td>Bağımsız Copilot (önizleme)</td></tr>
-<tr><td>Mobil uygulama</td><td>Power BI Mobile’da Copilot</td></tr>
+<tr><td>Panodaki soru kutusu</td><td>Microsoft’un ilk önerisi bağımsız Copilot’tu; o da Ocak 2027’de kalkıyor. Bugünkü yol: Power BI ve Fabric’teki Microsoft 365 Copilot (önizleme)</td></tr>
+<tr><td>Mobil uygulama</td><td>Power BI Mobile’da rapor içindeki Copilot (mobildeki bağımsız Copilot da Ocak 2027’de kalkıyor)</td></tr>
 <tr><td>Q&amp;A kurulumu (eş anlamlılar, ifadeler, öğretme)</td><td>Yapay zekâ için verileri hazırla</td></tr>
 </table></div>
 <p>Bir ayrıntı: “Yapay zekâ için verileri hazırla” bugün hâlâ modelde Soru-Cevap’ın <b>açık</b> olmasını ister; çünkü Copilot, metin sütunlarındaki değerleri (ör. “Ege”, “Premium”) bu dizinle tanır. Soru-Cevap görselini kaldırırken model ayarını kapatma.</p>
@@ -67,7 +67,7 @@ Terimler
 
 Belirsizlik
 - "Performans" sorusunda hangi ölçünün kastedildiği belli değilse kullanıcıya sor.</pre>
-<p>Model hazır olunca Service’te modelin ayarlarından <b>Copilot için onaylı</b> (Approved for Copilot) kutusunu işaretleyebilirsin. Yönetici, bağımsız Copilot’un yalnızca onaylı içerikte arama yapmasını isteyebilir; onaysız modeller o zaman hiç görünmez.</p>
+<p>Model hazır olunca Service’te modelin ayarlarından <b>Copilot için onaylı</b> (Approved for Copilot) kutusunu işaretleyebilirsin. Yönetici, Copilot aramalarının yalnızca onaylı içerikte yapılmasını isteyebilir; onaysız modeller o zaman arama sonuçlarında görünmez.</p>
 
 <h2>Modeli okunur kılmak</h2>
 <ul>
@@ -99,7 +99,7 @@ Belirsizlik
 `,
   ex: [
     { t: 'mc', q: 'Pro lisanslı bir kullanıcı, paylaşılan kapasitedeki (Pro) çalışma alanında Copilot düğmesini göremiyor. En olası neden?', o: ['Rapor sayfasına henüz anlatı görseli eklenmediği için düğme gizli', 'Kullanıcının Desktop sürümü eski', 'Çalışma alanı Copilot’u destekleyen ücretli bir kapasitede değil', 'Modelde tarih tablosu işaretlenmemiş'], a: 2, why: 'Copilot ücretli Fabric (F2+) ya da Premium (P1+) kapasite ister; deneme kapasitesi ve tek başına Pro/PPU lisansı yetmez. Yönetici bir Fabric Copilot kapasitesi de atayabilir.' },
-    { t: 'mc', q: 'Bir panodaki Soru-Cevap kutusunu kullanan yöneticiler için Soru-Cevap kalktıktan sonra önerilen yol hangisi?', o: ['Bağımsız Copilot', 'Panoya sayfalandırılmış rapor eklemek', 'Q&amp;A görselini rapora taşımak', 'Anahtar etkileyiciler görseli'], a: 0, why: 'Microsoft panolardaki Soru-Cevap için bağımsız (standalone) Copilot deneyimini öneriyor; o deneyim şu an önizlemede. Rapordaki Soru-Cevap görselinin yerini rapor Copilot bölmesi alır.' },
+    { t: 'mc', q: 'Bir panodaki Soru-Cevap kutusunu kullanan yöneticiler için Soru-Cevap kalktıktan sonra önerilen yol hangisi?', o: ['Power BI’daki Microsoft 365 Copilot', 'Panoya sayfalandırılmış rapor eklemek', 'Q&amp;A görselini rapora taşımak', 'Anahtar etkileyiciler görseli'], a: 0, why: 'Microsoft panolardaki Soru-Cevap için önce bağımsız (standalone) Copilot’u önermişti. Kasım 2026 duyurusuna göre bağımsız Copilot da Ocak 2027’de kalkıyor; yerine Power BI ve Fabric’teki Microsoft 365 Copilot (önizleme) geçiyor. Rapordaki Soru-Cevap görselinin yerini rapor Copilot bölmesi alır.' },
     { t: 'mc', q: '“Yapay zekâ için verileri hazırla” ile yazdığın yapay zekâ talimatları nereye kaydedilir?', o: ['Yalnızca açık olan rapor dosyasına', 'Kullanıcının kişisel Copilot ayarlarına', 'Kiracı yönetim portalındaki Copilot ayarına', 'Anlam modeline'], a: 3, why: 'Veri şeması, onaylı cevaplar ve talimatlar anlam modeline kaydedilir; o modeli kullanan bütün raporlar ve Copilot deneyimleri yararlanır.' },
     { t: 'mc', q: 'Kullanıcılar “ciro” diye sorunca Copilot iptalleri de içeren [Toplam Satış]’ı kullanıyor. En kalıcı çözüm?', o: ['Her kullanıcıya soruyu İngilizce sormasını söylemek', 'Talimata “ciro = [Net Satış]” yazmak, Toplam Satış’ı gizlemek', '[Toplam Satış] ölçüsünü silip raporu yeniden yayımlamak', 'Rapor sayfasına “Ciro = Net Satış” yazan bir metin kutusu koymak'], a: 1, why: 'Terim eşlemesi yapay zekâ talimatlarının işidir; kullanılmaması gereken ara ölçüyü gizlemek (ya da şemadan çıkarmak) yanlış seçim ihtimalini azaltır. Silmek başka raporları bozabilir; metin kutusu Copilot’u etkilemez.' },
     { t: 'mc', q: 'Yapay zekâ veri şemasından çıkardığın bir alan hangi Copilot işinde yine de kullanılabilir?', o: ['Veriyle ilgili soruları yanıtlarken', 'Hiçbirinde: alan Copilot’tan tamamen gizlenir', 'Yalnızca onaylı cevaplarda', 'DAX sorgu görünümünde sorgu üretirken'], a: 3, why: 'Learn’e göre veri şeması yalnızca veri sorularını yanıtlayan yetenekleri etkiler; rapor sayfası oluşturma ve DAX sorgu üretimi tüm modeli kullanır. Gerçekten saklamak istediğin alanı modelde gizle ya da güvenlikle koru.' },

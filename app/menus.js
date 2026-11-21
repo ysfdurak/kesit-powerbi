@@ -154,7 +154,7 @@ W.PBI_MENUS = [
       ['Veri türü / İlk satırı başlık olarak kullan / Değerleri değiştir (Data type / Use first row as headers / Replace values)', 'Temel dönüşümler.', 'Her sorguda.', 'pq-temel'],
       ['Sorguları birleştir / Sorguları ekle (Merge queries / Append queries)', 'Merge (join) ve Append (union).', 'Tablo birleştirme.', 'pq-orta'],
       ['Dosyaları birleştir (Combine files)', 'Klasördeki dosyaları tek tabloda birleştirir.', 'Aylık dosyalar.', 'pq-orta'],
-      ['Yapay zekâ içgörüleri (AI insights)', 'Metin analizi, görüntü işleme, Azure ML (kapasite gerekir).', 'Duygu analizi, anahtar ifade.', 'pq-orta']
+      ['Yapay zekâ içgörüleri (AI insights) · kaldırıldı', 'Metin analizi, görüntü işleme ve Azure ML düğmeleri 15 Eylül 2025’te emekliye ayrıldı; artık şeritte yok. Yerine Fabric’teki yapay zekâ hizmetleri ve fonksiyonları kullanılır.', 'Eski raporlardaki bu adımlar yenilenmez.', 'pq-orta']
     ] },
     { id: 'pq-donustur', name: 'Dönüştür', desc: 'Seçili sütunu yerinde değiştirir.', cmds: [
       ['Grupla / İlk satırı başlık yap / Devrik (Group by / Use first row as headers / Transpose)', 'Tablo şekli.', 'Ters dönmüş Excel tabloları için devrik.', 'pq-pivot-devrik'],

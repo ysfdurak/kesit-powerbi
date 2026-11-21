@@ -24,7 +24,7 @@ add('pq-orta', {
 <tr><td>Zamanlanmış ve artımlı yenileme, dağıtım işlem hatları</td><td>Var</td><td>Var</td></tr>
 <tr><td>Durum</td><td>Önerilen yol; Nisan 2026’dan beri yeni öğeler Git ve CI/CD desteğiyle oluşturuluyor</td><td>Eski (legacy) durumda: çalışmaya devam ediyor, yeni özellik gelmiyor</td></tr>
 </table></div>
-<div class="note"><b>Gen1 kapanıyor mu?</b>Microsoft Learn’e göre şu an Gen1’i kaldırma planı yok. Fabric erişimi olan kapasitelerde Gen2 öneriliyor. Pro ve PPU kullanıcıları için Gen1 desteklenmeye devam ediyor. Gen1 öğelerini kimliğini, adını ve zamanlamasını koruyarak yükselten bir sihirbaz var, ama <b>önizleme</b> aşamasında. Geçişten önce Learn’deki geçiş sayfasını kontrol et.</div>
+<div class="note"><b>Gen1 kapanıyor mu?</b>Henüz tarih yok, ama yön belli. Microsoft Nisan 2026’da Gen1’i <b>eski (legacy)</b> duruma aldı: mevcut Gen1 akışları çalışmaya devam ediyor, yeni özellik gelmiyor, destek yalnız ciddi sorunlarla sınırlı. Bu Pro, PPU ve Premium için geçerli. Emeklilik tarihleri belirleniyor; Premium kapasite müşterilerine en az 12 ay önceden haber verilecek. Yeni işlerde Gen2 öneriliyor. Tek bir akışı “Dataflow Gen2 olarak kaydet” ile, toplu geçişi Save As API’siyle yaparsın. Geçişten önce Learn’deki geçiş sayfasını kontrol et.</div>
 <p>Gen2 yayımlandığında çalışma alanında <code>DataflowsStagingLakehouse</code> ve <code>DataflowsStagingWarehouse</code> gibi sistem öğeleri görebilirsin. Bunlar ara (staging) depolardır, dokunman gerekmez.</p>
 
 <h2>Çıkış hedefleri: veriyi nereye bırakacaksın?</h2>
