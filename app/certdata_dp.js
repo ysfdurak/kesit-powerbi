@@ -167,7 +167,7 @@ df_temiz.write.format("delta").mode("overwrite").saveAsTable("silver_satislar")`
   why:'`dropDuplicates` verilen sütunlara göre tekrarları atar (`distinct` sütun almaz), `fillna` boş değerleri doldurur, `dropna(subset=...)` belirtilen sütunu boş satırları siler. `replace` var olan bir değeri başka bir değerle değiştirir, null’ları doldurmaz.' },
 { ex:'dp600', id:'dp-n30', k:VH, s:'dp-tr6', type:'mc',
   q:'Ambardaki `StgMusteri` tablosunda aynı `MusteriNo` için birden çok satır var. Her müşteri için yalnızca `GuncellemeTarihi` en yeni olan satırı, tüm sütunlarıyla tutmak istiyorsun. Hangi yaklaşımı kullanırsın?',
-  o:['`SELECT DISTINCT *` ile tekrarları atmak', '`ROW_NUMBER() OVER (PARTITION BY MusteriNo ORDER BY GuncellemeTarihi DESC)` değeri 1 olan satırları seçmek', '`GROUP BY MusteriNo` ile `MAX(GuncellemeTarihi)` almak', '`COUNT(*) > 1` olan müşterileri silmek'], a:1,
+  o:['`SELECT DISTINCT *` ile tamamen aynı tekrar satırlarını atmak', '`ROW_NUMBER() OVER (PARTITION BY MusteriNo ORDER BY GuncellemeTarihi DESC)` değeri 1 olan satırları seçmek', '`GROUP BY MusteriNo` ile `MAX(GuncellemeTarihi)` alıp yalnız bu iki sütunu tutmak', '`HAVING COUNT(*) > 1` olan müşterilerin bütün satırlarını silmek'], a:1,
   why:'`ROW_NUMBER` her müşterinin satırlarını tarihe göre numaralar; 1 numaralı satır en yenisidir ve tüm sütunlar korunur. Tarihler farklı olduğu için `DISTINCT *` tekrarı atmaz; `GROUP BY` diğer sütunları kaybeder.' },
 { ex:'dp600', id:'dp-n31', k:VH, s:'dp-tr4', type:'order',
   q:'Kar tanesi biçimindeki Ürün → Alt kategori → Kategori tablolarını veri akışı Gen2’de tek bir `DimUrun` boyutuna dönüştürüp (normalleştirmeyi kaldırma) lakehouse’a yazmak için adımları sırala.',

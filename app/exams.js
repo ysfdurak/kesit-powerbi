@@ -104,7 +104,7 @@ const PLF = {
   21: ['Sütunu gizlemek', 'Sütunu kaldırmak (ya da hiç yüklememek)', 'Sütunu metinden tam sayıya çevirmek', 'Sütunu bir hiyerarşiye eklemek'],
   22: ['CALCULATE(SUM(Stok[Adet]), FILTER(ALL(Tarih[Tarih]), Tarih[Tarih] <= MAX(Tarih[Tarih])))', 'CALCULATE(SUM(Stok[Adet]), LASTNONBLANK(Tarih[Tarih], CALCULATE(COUNTROWS(Stok))))', 'AVERAGEX(VALUES(Tarih[YilAy]), SUM(Stok[Adet]))', 'CALCULATE(SUM(Stok[Adet]), DATESYTD(Tarih[Tarih]))'],
   23: ['Tek tarih tablosuyla model küçük kalır', 'Dilimleyicide iki tarih aynı anda seçilebilir', 'RLS kuralları daha hızlı değerlendirilir', 'Hesaplanmış sütunlara hiç gerek kalmaz'],
-  24: ['Pasta grafik (hedef ayrı dilim)', 'Kümelenmiş çubuk grafik; hedef ayrı seri ya da işaretçi olarak', 'Fiyat ile satış dağılım grafiği', 'Kategori ağaç haritası'],
+  24: ['Pasta grafik (hedef ayrı dilim)', 'Kümelenmiş çubuk grafik; hedef ayrı seri ya da işaretçi olarak', 'Fiyat ile satışın dağılım (scatter) grafiği', 'Kategori ağaç haritası, hedef araç ipucunda'],
   25: ['Ayrı bir sıra sütunu ve ölçüyle “Diğer”i sona almak', 'Ekseni kategori adına göre alfabetik sıralamak', '“Diğer” kategorisini görsel filtresiyle gizlemek', 'Görseli tablo görseline çevirip elle sıralamak'],
   26: ['Dilimleyiciyi kilitlemek', 'Etkileşimleri düzenle → “Yok”', 'Grafiğe ayrı bir görsel filtresi eklemek', 'Dilimleyiciyi başka sayfalarla eşitlemek'],
   27: ['Görselleri kişiselleştir', 'Web’de yayımla', 'Yer işareti grubu oluşturmak', 'Sayfaları gizleyip göstermek'],

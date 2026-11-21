@@ -4,7 +4,7 @@ const files = fs.readFileSync(P + 'index.html', 'utf8').match(/src="[^"]+"/g).ma
 const UI = /^(app|pq|practice|examui|arena|guides|career|sync|portfolio|vdata|pages)\.js$/;
 for (const f of files) { if (UI.test(f)) continue; require(P + f); }
 const BAN = [[/patika/gi, 'patika'], [/St[üu]dyo(?!\b.*DAX)/g, 'Stüdyo'], [/At[öo]lyesi/g, 'Atölye'], [/Laboratuvar/g, 'Laboratuvar'], [/\b[Yy]er [iİ]m(?=[ile])/g, 'yer imi'], [/Final [Pp]rojesi/g, 'Final Projesi'], [/A→C/g, 'A→C'], [/Dashboardlar/g, 'Dashboardlar'], [/Önemli [Ee]tkileyen/g, 'Önemli etkileyen'], [/Performans Analizcisi/g, 'Performans Analizcisi'], [/Sıfırdan (Uzmana|Profesyonele)/g, 'Sıfırdan Uzmana'], [/Seviye tespit/gi, 'Seviye tespit'], [/gerçek bir DAX motoru/gi, 'gerçek DAX motoru'], [/Yakında eklen/gi, 'yakında eklenecek'], [/\bORTA · ORTA\b/g, 'ORTA · ORTA'], [/DP-700/g, 'DP-700']];
-const OK_DASH = /^.{0,5}Dashboard$|[Pp]ano|Real-Time|create dash|[iİ]ş dilinde|d\.dashboard|dashboard:|hash: 'dashboard|\/\/ Dashboard/;
+const OK_DASH = /^.{0,5}Dashboard$|[Pp]ano|Real-Time|create dash|[iİ]ş dilinde|d\.dashboard|dashboard:|hash: 'dashboard|\/\/ Dashboard|dashboardViews|#dashboard-[a-z]/;
 let bad = 0; const fail = s => { bad++; console.log('SORUN ' + s); };
 const seen = new WeakSet(); let nstr = 0;
 function walk(o, path) { if (typeof o === 'string') { nstr++; check(o, path); return; } if (!o || typeof o !== 'object' || seen.has(o)) return; seen.add(o); if (o instanceof Date) return; if (Array.isArray(o)) { o.forEach((x, i) => walk(x, path + '[' + i + ']')); return; } for (const k of Object.keys(o)) { if (path === 'PBI_MODEL.tables') continue; walk(o[k], path + '.' + k); } }
