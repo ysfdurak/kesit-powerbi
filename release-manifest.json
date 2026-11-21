@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-21",
-  "sourceCommit": "0c9841958e4d126fad5360288b73e9b9d4f7e1b9",
+  "sourceCommit": "3fa70be33cbee70116f7a35e546f1b937e4b40d4",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -22,9 +22,9 @@
   ],
   "files": {
     "index.html": "77bb2adf57c618e47949527ef595fe889c827704500bc17b5f5cca23aca11a1f",
-    "kesit.js": "b6c81256e720ef0f9e9801d729dbfb02d79e513a35fabc0d901855502bd3e3ce",
+    "kesit.js": "96e00b2a4ecf2c4c12b2480895d65c80a97056d900e5d475c991539fa89c3663",
     "config.js": "fcf99a47bac4ff8ab2d2d0ab79d66bbec3fb192875c49ef6b8f29fe4071a2c03",
-    "sw.js": "1f09871e03002a5425466ebeefe2cf5be1aa323b359e3106b9bbdc77871335c4",
+    "sw.js": "569cea6ff80171055f13b682aea8bd2750bc533da2742e2e419c6210e1d522f9",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "33aa8390208989343ca52948b92e43bfc532b77aed72081b552154f6832cafc3",
