@@ -62,7 +62,7 @@
     "tests/yolval.js": "254620351e4da48d5fd0b2a275b557b44297c867138c4ae7c5f793aa87c884d9",
     "app/roles.js": "a6f3f7c2adfbfacbe7ba974379653922fa25ffa5d3fb0348d907853d8ff27c34",
     "app/career.js": "ae2e0ccd3caf45d2d13ac2b652fb83212b460903732ddbd953814527b6a88bf2",
-    "KALAN-GOREVLER.md": "1ceb0e65f3e501599a3a80ee694a593206ae583ffdcc0be6d262b29de84e3bad",
+    "KALAN-GOREVLER.md": "1e7a93a83bc729a1407068b19b0ede2576380099abd9687aa7ddf1ba856a5b83",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "app/c24.js": "46255c011f1be4621329480e8c036a849f712decbba3e12dbaa0c5b04724c0ec",
@@ -120,9 +120,10 @@
         "tests/termval.js",
         "app/c24.js",
         "app/c7.js",
-        "app/yollar.js"
+        "app/yollar.js",
+        "KALAN-GOREVLER.md"
       ],
-      "note": "Motorda çalışmayan ders blokları gerçek Power BI'da denendi (NASIL.md › 6. tur); 3fa70be'de değişip özeti güncellenmeyen dosyaların özetleri de güncellendi."
+      "note": "Motorda çalışmayan ders blokları gerçek Power BI'da denendi (NASIL.md › 6. tur); 3fa70be'de değişip özeti güncellenmeyen dosyaların özetleri de güncellendi. G04: Lezzet Kurye Desktop referans raporu gerçek Desktop'ta doğrulandı (KALAN-GOREVLER.md)."
     }
   ]
 }
