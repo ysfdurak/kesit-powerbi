@@ -10,7 +10,7 @@ Kabul: 443 referans çözüm geçer; sabit cevap reddedilir; iki eşdeğer çöz
 
 ## 2. Gerçek Power BI Desktop referans raporu
 
-G04 durumu: Lezzet Kurye proje paketi yayında. Windows Power BI Desktop açılış, yenileme ve görsel inceleme kaydı bekliyor.
+G04 durumu: Lezzet Kurye proje paketi yayında. 22 Kasım 2026'da Windows Power BI Desktop'ta (2.159.1231.0) açıldı ve yenilendi. Beş kontrol senaryosu birebir tuttu ve iki sayfa incelendi. İlçe tablosunda bulunan PBIR hatası (`active` işareti) düzeltildi. Kayıt paketteki DOGRULAMA.md dosyasında.
 
 G04: Tek bir vaka için açık üretim adımları, model/ilişki şeması, ölçüler, filtreli ve filtresiz kontrol sayıları, rapor sayfaları ve inceleme kaydı. Desktop'ta açılıp doğrulanmayan dosya doğrulanmış PBIX diye sunulmaz. İnsan/Desktop doğrulaması ayrı durum taşır.
 
@@ -29,7 +29,7 @@ G09, G12–G16, G20, G22–G23 ve G36 için bu planda izlenen dört geliştirme 
 - Açılışta kullanılan JS paketi küçültülür. Derleme ham boyutu ve gzip boyutunu bütçeyle karşılaştırır. Çevrimdışı hazırlık sayfanın yüklenmesinden sonra başlar.
 - Hakkında ekranı, README, paylaşım açıklaması ve içerik manifesti sayıları aynı kaynaklardan üretir.
 
-Açık doğrulamalar Windows Power BI Desktop, fiziksel Android ve gözlemli kullanıcı pilotudur.
+Açık doğrulamalar fiziksel Android ve gözlemli kullanıcı pilotudur. Windows Power BI Desktop doğrulaması G04 kapsamında yapıldı.
 
 Mobil menüde öğrenme yolları ve bitirme projeleri üstte yer alır. Yolun başından projeye geçilebilir. Proje ve işe hazırlık bölümleri paylaşılabilen bağlantılarla açılır. Mobil DAX editöründe işaretler kaydırma gerektirmeden görünür. Açıkça çalıştırılan kodun sonucu ve hata mesajı öne gelir. Sonuçtan editöre dönülebilir. Koyu temada yol rozetlerinin, tamamlanma işaretlerinin, kod açıklamalarının ve sunum düğmelerinin kontrastı iyileştirildi. Açık temada kazanılmamış rozetlerin metni, yüklenen rapor kartlarının başlıkları ve Power Query uyarılarının kontrastı iyileştirildi. DAX editöründe ve taşma alanlarındaki kontrollerde klavye odağı görünür. Dar ekranda odak sabit menülerin dışında kalır ve rapor ayrıntısı kapanınca açan düğmeye döner.
 

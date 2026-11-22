@@ -36,7 +36,7 @@ SUMMARIZECOLUMNS(
 <li><code>CALENDARAUTO()</code> modeldeki tarih sütunlarına bakar, en küçük ve en büyük tarihi tam yıllara yuvarlar. İsteğe bağlı argüman mali yılın bittiği aydır: <code>CALENDARAUTO(6)</code> Temmuz–Haziran yılları üretir.</li>
 </ul>
 <pre class="dax" data-notry>Takvim = CALENDARAUTO()</pre>
-<div class="warn"><b>CALENDARAUTO beklenmedik bir sütunu da görür</b>Bu modelde <code>Calisanlar[IseGiris]</code> 2015’ten başlıyor. Power BI’da CALENDARAUTO bu sütunu da hesaba katar ve takvim 2015-01-01’den başlar: 1.096 yerine 3.653 gün. Doğum tarihi, sözleşme bitiş tarihi gibi sütunlar takvimi on yıllarca uzatabilir. Aralığı bilerek seçmek için CALENDAR kullan.</div>
+<div class="warn"><b>CALENDARAUTO beklenmedik bir sütunu da görür</b>Bu modelde <code>Calisanlar[IseGiris]</code> 2015’ten başlıyor. Power BI’da CALENDARAUTO bu sütunu da hesaba katar ve takvim 2015-01-01’den başlar; <code>Projeler[BitisPlan]</code> 2025’e uzandığı için 2025-12-31’de biter: 1.096 yerine 4.018 gün. Doğum tarihi, sözleşme bitiş tarihi gibi sütunlar takvimi on yıllarca uzatabilir. Aralığı bilerek seçmek için CALENDAR kullan.</div>
 
 <h2>GENERATESERIES: parametre ve eşik tabloları</h2>
 <p><code>GENERATESERIES(başlangıç, bitiş, adım)</code> tek sütunlu (<code>Value</code>) bir sayı dizisi üretir. Bu tablo bir dilimleyiciye konur, ölçü de seçilen değeri okur. Örnek soru: “Kargo hedefimiz kaç gün olmalı?” Mevcut <code>[Zamanında Teslim %]</code> ölçüsü eşiği 3 güne sabitlemiş. Eşiği kullanıcıya bırakalım:</p>
