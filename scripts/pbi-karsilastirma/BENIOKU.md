@@ -26,3 +26,8 @@ Kaynak sorgular TMDL'de `expression` (#table değişmezi) olur, her M ifadesi `P
 `ONLY=PQ001,PQ008 node …` yalnız seçilen maddeleri üretir; 200 tablo birden Desktop'ın belleğini aşabildiği için 50–100'lük gruplarla çalış.
 PC'de klasörü `<PC'deki klasör>` olarak koy, temiz Power BI'da TMDL'yi uygula, Yenile, sonra `python kontrol_pq.py pq\beklenen.json`.
 Join içeren sorgular sırasız, Folder.Files tarihleri ortam farkı olarak karşılaştırılır.
+
+## Motorda çalışmayan ders blokları (data-notry)
+`notry.json`, derslerde `data-notry` ile işaretli bloklardan Power BI'da sorgu olarak çalıştırılabilenleri içerir (ölçüler DEFINE MEASURE, hesaplanmış sütun/tablolar ADDCOLUMNS ya da DEFINE TABLE ile). Model, TMDL ya da M blokları, şablon metinler ve sözdizimi kalıpları dışarıda kalır.
+PC'de: `python notry.py notry.json` → `notry_sonuc.txt` (çalıştı / eksik nesne / hata). Beklenen sonuç değeri yoktur; dersteki iddia ile elle karşılaştırılır.
+Kasım 2026 sonucu: 31 bloktan 18'i çalıştı. 4 blok modelde olmayan tabloya başvurur (ders başka bir model anlatıyor). 3 blok bilerek hatalı yazılmış örnektir; Power BI da hata verir, yani ders doğru söylüyor. Diğer blokların ders anlatımı Power BI'ın sonucuyla tutar. Yalnız CALENDARAUTO'nun gün sayısı yanlıştı: `Projeler[BitisPlan]` 2025'e uzandığı için 3.653 değil 4.018 gün. Ders metni düzeltildi.

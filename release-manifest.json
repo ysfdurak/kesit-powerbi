@@ -29,7 +29,7 @@
     "tests/artifact.cjs": "1ab82740817f37d2934e90f25997c4a6e7d07d50138d538c70de82f27fa0ddfc",
     "tests/newdata.cjs": "3f1b393338743edbf2c8f64a7ded24a0c15673ce9cbcf85028e2e72732fb1aef",
     "tests/recovery.cjs": "8a0d3edc552859a896ed179194caec3cb96218113bc4baf05daa93cf42c683d0",
-    "NASIL.md": "8be79f6c91a8810d041cea4089307038efee939e4afb05925760d62e633ecf77",
+    "NASIL.md": "2557cb0110e7fed5bae39f0e5e06f112ccf792a33def2250b54db059ca39ed27",
     "app/app.js": "357701782580fb919d7963ebc559be77d350bbb5af59e30fea91dfe6ee69588b",
     "app/build/build.sh": "4e065d1fc5f2325493a739f3970dfc11c28cfa6f4818d07e219cf9dc3d9c07a2",
     "app/build/ghpack.sh": "b3852e575817c12c4a28cedb58bff84f0f428e9c8ce486c0c60d9aeac9809305",
@@ -53,11 +53,11 @@
     "tests/dups.js": "a776537b4234ce2b5134d3263222361043c18514fc161a0434d0c2fa4bacb6db",
     "tests/extval.js": "48d70cc3100177d17359f16648909f0b4ba686a94c1be3d74236d9b5c4fa9d1e",
     "tests/exval.js": "20df1850cf3c58ed19570e1f2efc5ff296cbb9708bdcc62abad0e67e08b3bc0e",
-    "tests/hiddenval.js": "22298bf189d2ea583366a895e8312ac042ee66420709ab077106f93847c1dce0",
+    "tests/hiddenval.js": "edc7e8c75f8ece824e020677b61fe89b6611d29f1a96b2b5a9559f3cbd2e033f",
     "tests/lessonval.js": "f76fb185c41831a8b5c73595e4065e6d603a180c5325dff425ba692c3dbd59a7",
     "tests/longest.js": "5f7ef77ef7aa4cc982d4bfaee1d1ea95daed8dbd5bac25f0083a217c20987a64",
     "tests/snip.js": "9ded7e59deaceb137e028cc75ce72f4855ec98515d5ea226a9d846bc7f480843",
-    "tests/termval.js": "a5673c3801a4639f6e254720280d64e48ee509998c9893687c2b43659b7e78d1",
+    "tests/termval.js": "28bb13587df4ff1ddfbd863ce7884127d863df6742b351cd922bda7e0f185737",
     "tests/weak.js": "21e0be13fe14b69fcbde5f076701bfbf712828e12842e5519289ce5bc9c2d768",
     "tests/yolval.js": "254620351e4da48d5fd0b2a275b557b44297c867138c4ae7c5f793aa87c884d9",
     "app/roles.js": "a6f3f7c2adfbfacbe7ba974379653922fa25ffa5d3fb0348d907853d8ff27c34",
@@ -65,12 +65,12 @@
     "KALAN-GOREVLER.md": "1ceb0e65f3e501599a3a80ee694a593206ae583ffdcc0be6d262b29de84e3bad",
     "app/build/gh/static/veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "app/build/gh/static/veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
-    "app/c24.js": "decf6b224935543ed4c01f291ab823ea744ee1af4bcd664fa47c9345985fb387",
-    "app/c7.js": "c80f760a7113866e4f2cb971940e5fb441a0d68a54ab67f26843be8ec960a81b",
+    "app/c24.js": "46255c011f1be4621329480e8c036a849f712decbba3e12dbaa0c5b04724c0ec",
+    "app/c7.js": "7c79b1ce6247e33544118549ee29e234241da385e4b02c4e34f947229557b9a8",
     "app/certskills.js": "c83e7c1a2af081e5bb65cf7fc9c9f3b5e0cbed9eb6b565969d07c49f787b6ed5",
     "app/examui.js": "1211cb1cc701abe12242bbecebc9dd1d14fcab6bd659e1b2b7c47957be8f9e16",
     "app/x_ileri3.js": "256185c1d62ecbc59eafed856c93cb45e32fdc8c3bb88c8903330e9f62216963",
-    "app/yollar.js": "32323eb84130a1bf41b890da0402f810c42ada8a10918a552270b3c59a3ffad6",
+    "app/yollar.js": "dcc7c6b96773caed12ab478fd24518233e8c35ff91d42cfd0129d39116939a98",
     "app/build/gh/static/ders/dp600/index.html": "33aa8390208989343ca52948b92e43bfc532b77aed72081b552154f6832cafc3",
     "app/build/gh/static/ders/fabric-veri-alma/index.html": "d66587ad734b9fff7203b28b9c0fd9e51b8582e7f4a77b4beb3082bb3efc5556",
     "app/app.css": "cd2d52a8a7e68d8ceed889c6eea8573232f6425667be5e30066a9e1825990068",
@@ -111,6 +111,18 @@
         "tests/vaka-depo-kaynak.cjs"
       ],
       "note": "Uçtan uca depo vakası kaynak dalına eklendi (main'de 19 Kasım 2026'da yayımlandı). Ayrıntı NASIL.md › Uçtan uca depo vakası."
+    },
+    {
+      "date": "2026-11-22",
+      "files": [
+        "NASIL.md",
+        "tests/hiddenval.js",
+        "tests/termval.js",
+        "app/c24.js",
+        "app/c7.js",
+        "app/yollar.js"
+      ],
+      "note": "Motorda çalışmayan ders blokları gerçek Power BI'da denendi (NASIL.md › 6. tur); 3fa70be'de değişip özeti güncellenmeyen dosyaların özetleri de güncellendi."
     }
   ]
 }

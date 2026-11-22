@@ -1,0 +1,281 @@
+[
+ {
+  "id": "N03",
+  "n": 3,
+  "f": "c1.js",
+  "ders": "tarih",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Net Satış] = CALCULATE(SUM(Satislar[Tutar]), Satislar[Durum] <> \"İptal\")\nMEASURE Satislar[Satış GY] = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Net Satış\", [Net Satış], \"Satış GY\", [Satış GY])",
+  "not_": ""
+ },
+ {
+  "id": "N10",
+  "n": 10,
+  "f": "c13.js",
+  "ders": "vaka-kayip",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Ayrılan Çalışan] = CALCULATE(\n    COUNTROWS(Calisanlar),\n    USERELATIONSHIP(Calisanlar[AyrilisTarihi], Tarih[Tarih])\n)\nMEASURE Satislar[Devir Oranı %] = DIVIDE([Ayrılan Çalışan], [Ortalama Kadro])\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Ayrılan Çalışan\", [Ayrılan Çalışan], \"Devir Oranı %\", [Devir Oranı %])",
+  "not_": ""
+ },
+ {
+  "id": "N12",
+  "n": 12,
+  "f": "c14.js",
+  "ders": "hesap-tablolar",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Eşik İçinde Teslim %] = VAR Esik = SELECTEDVALUE('Teslim Eşiği'[Value], 3)\nRETURN\nDIVIDE(\n    CALCULATE(COUNTROWS(Satislar), Satislar[KargoGun] <= Esik, NOT ISBLANK(Satislar[KargoGun])),\n    CALCULATE(COUNTROWS(Satislar), NOT ISBLANK(Satislar[KargoGun]))\n)\nEVALUATE ROW(\"Eşik İçinde Teslim %\", [Eşik İçinde Teslim %])",
+  "not_": ""
+ },
+ {
+  "id": "N19",
+  "n": 19,
+  "f": "c16.js",
+  "ders": "vaka-kiyaslama",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Kalan Bakiye] = VAR Rapor = MAX(Tarih[Tarih])\nRETURN\n    SUMX(\n        VALUES(Krediler[KrediNo]),\n        VAR Son = CALCULATE(MIN('Ödeme Planı'[Kalan]), REMOVEFILTERS(Tarih), 'Ödeme Planı'[OdemeTarihi] <= Rapor)\n        RETURN IF(ISBLANK(Son), CALCULATE(SUM(Krediler[Tutar])), Son)\n    )\nMEASURE Satislar[Gecikme 30+ %] = \nMEASURE Satislar[DIVIDE(CALCULATE([Kalan Bakiye], Krediler[GecikmeGun] >] = 30), [Kalan Bakiye])\nMEASURE Satislar[Kredi Başlığı] = VAR No = SELECTEDVALUE(Krediler[KrediNo])\nVAR Gun = SELECTEDVALUE(Krediler[GecikmeGun])\nVAR Durum = SWITCH(TRUE(), Gun >= 90, \"Takipte\", Gun >= 30, \"Gecikmede\", \"Düzenli\")\nRETURN\n    IF(\n        ISBLANK(No), \"Bir kredi seçin\",\n        No & \" · \" & SELECTEDVALUE(Krediler[Segment]) & \" · \" & FORMAT(SELECTEDVALUE(Krediler[Tutar]), \"#,##0\") & \" ₺ · yıllık %\"\n            & FORMAT(SELECTEDVALUE(Krediler[YillikFaiz]) * 100, \"0\") & \" · \" & Durum & IF(Gun > 0, \" (\" & Gun & \" gün)\")\n    )\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Kalan Bakiye\", [Kalan Bakiye], \"Gecikme 30+ %\", [Gecikme 30+ %], \"DIVIDE(CALCULATE([Kalan Bakiye], Krediler[GecikmeGun] >\", [DIVIDE(CALCULATE([Kalan Bakiye], Krediler[GecikmeGun] >], \"Kredi Başlığı\", [Kredi Başlığı])",
+  "not_": ""
+ },
+ {
+  "id": "N24",
+  "n": 24,
+  "f": "c21.js",
+  "ders": "genisletilmis-tablolar",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[2024 Satışı] = CALCULATE([Net Satış], Tarih[Yil] = 2024)\nMEASURE Satislar[2024 Satışı (Kesişim)] = CALCULATE([Net Satış], KEEPFILTERS(Tarih[Yil] = 2024))\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"2024 Satışı\", [2024 Satışı], \"2024 Satışı (Kesişim)\", [2024 Satışı (Kesişim)])",
+  "not_": ""
+ },
+ {
+  "id": "N29",
+  "n": 29,
+  "f": "c22.js",
+  "ders": "ozel-takvim",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Önceki Hafta (sütunla)] = VAR s = MAX(Tarih[HaftaSira])\nRETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[HaftaSira] = s - 1)\nMEASURE Satislar[Perakende YTD (sütunla)] = VAR y = MAX(Tarih[ISOYil])\nVAR son = MAX(Tarih[Tarih])\nRETURN CALCULATE([Net Satış], REMOVEFILTERS(Tarih), Tarih[ISOYil] = y, Tarih[Tarih] <= son)\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Önceki Hafta (sütunla)\", [Önceki Hafta (sütunla)], \"Perakende YTD (sütunla)\", [Perakende YTD (sütunla)])",
+  "not_": ""
+ },
+ {
+  "id": "N46",
+  "n": 46,
+  "f": "c6.js",
+  "ders": "tablo-fonk",
+  "tur": "tablo",
+  "q": "DEFINE TABLE FS = GENERATESERIES(-0.2, 0.2, 0.05)\nEVALUATE FS",
+  "not_": ""
+ },
+ {
+  "id": "N48",
+  "n": 48,
+  "f": "c7.js",
+  "ders": "ileri-kaliplar",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Satış (Hiyerarşi)] = VAR Derinlik = MAX(Calisanlar[Seviye])\nVAR GosterilenDuzey =\n    ISINSCOPE(Calisanlar[Seviye1])\n        + ISINSCOPE(Calisanlar[Seviye2])\n        + ISINSCOPE(Calisanlar[Seviye3])\nRETURN\n    IF(GosterilenDuzey <= Derinlik, [Ekip Satışı])\nEVALUATE ROW(\"Satış (Hiyerarşi)\", [Satış (Hiyerarşi)])",
+  "not_": ""
+ },
+ {
+  "id": "N59",
+  "n": 59,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Kümülatif Satış (Eşitliksiz)] = SUMX(\n    WINDOW(\n        1, ABS, 0, REL,\n        ALLSELECTED(Urunler[Urun]),\n        ORDERBY([Net Satış], DESC, Urunler[Urun], ASC)\n    ),\n    [Net Satış]\n)\nEVALUATE SUMMARIZECOLUMNS(Urunler[Urun], \"Kümülatif Satış (Eşitliksiz)\", [Kümülatif Satış (Eşitliksiz)])",
+  "not_": ""
+ },
+ {
+  "id": "N60",
+  "n": 60,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Müşteri Köprüsü] = VAR Durum = SELECTEDVALUE(MusteriDurumu[Durum])\nVAR Simdi = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> \"İptal\")\nVAR Onceki = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> \"İptal\", DATEADD(Tarih[Tarih], -1, YEAR))\nVAR Eski = CALCULATETABLE(VALUES(Satislar[MusteriNo]), Satislar[Durum] <> \"İptal\", Tarih[Tarih] < MIN(Tarih[Tarih]))\nRETURN\n    IF(HASONEVALUE(Tarih[Yil]),\n        SWITCH(Durum,\n            \"Kayıp\", - COUNTROWS(EXCEPT(Onceki, Simdi)),\n            \"Sadık\", COUNTROWS(INTERSECT(Simdi, Onceki)),\n            \"Yeni\", COUNTROWS(EXCEPT(EXCEPT(Simdi, Onceki), Eski)),\n            \"Geri kazanılan\", COUNTROWS(INTERSECT(EXCEPT(Simdi, Onceki), Eski))\n        )\n    )\nEVALUATE ROW(\"Müşteri Köprüsü\", [Müşteri Köprüsü])",
+  "not_": ""
+ },
+ {
+  "id": "N62",
+  "n": 62,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Karşılaştırma Dönemi Satışı] = VAR Bas = MIN(KarsilastirmaTarih[Tarih])\nVAR Bit = MAX(KarsilastirmaTarih[Tarih])\nRETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], Bas, Bit))\nEVALUATE ROW(\"Karşılaştırma Dönemi Satışı\", [Karşılaştırma Dönemi Satışı])",
+  "not_": ""
+ },
+ {
+  "id": "N72",
+  "n": 72,
+  "f": "x_orta1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Ürün Cirosu] = SUM(Satislar[Tutar])\nEVALUATE SUMMARIZECOLUMNS(Urunler[Kategori], \"Ürün Cirosu\", [Ürün Cirosu])",
+  "not_": ""
+ },
+ {
+  "id": "N76",
+  "n": 76,
+  "f": "x_orta1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Tutar ortalaması Kategori başına] = AVERAGEX(\n    KEEPFILTERS(VALUES(Urunler[Kategori])),\n    CALCULATE(SUM(Satislar[Tutar]))\n)\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Tutar ortalaması Kategori başına\", [Tutar ortalaması Kategori başına])",
+  "not_": ""
+ },
+ {
+  "id": "N73",
+  "n": 73,
+  "f": "x_orta1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Hatalı] = CALCULATE([Net Satış], [Net Satış] > 1000)\nEVALUATE ROW(\"Hatalı\", [Hatalı])",
+  "not_": ""
+ },
+ {
+  "id": "N78",
+  "n": 78,
+  "f": "x_temel.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Satır Tutarı] = Satislar[Tutar]\nEVALUATE ROW(\"Satır Tutarı\", [Satır Tutarı])",
+  "not_": ""
+ },
+ {
+  "id": "N09",
+  "n": 9,
+  "f": "c12.js",
+  "ders": "copilot",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Ciro (önerilen)] = SUM(Satislar[Ciro])\nEVALUATE ROW(\"Ciro (önerilen)\", [Ciro (önerilen)])",
+  "not_": ""
+ },
+ {
+  "id": "N57",
+  "n": 57,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Geçen Yıl (Hatalı)] = CALCULATE([Net Satış], SELECTCOLUMNS(VALUES(Tarih[Yil]), \"Y\", Tarih[Yil] - 1))\nEVALUATE SUMMARIZECOLUMNS(Tarih[Yil], \"Geçen Yıl (Hatalı)\", [Geçen Yıl (Hatalı)])",
+  "not_": ""
+ },
+ {
+  "id": "N25",
+  "n": 25,
+  "f": "c21.js",
+  "ders": "genisletilmis-tablolar",
+  "tur": "ölçü",
+  "q": "DEFINE\nMEASURE Satislar[Ortalama Seçim Payı] = AVERAGEX(VALUES(Urunler[Urun]), [Seçime Göre Pay %])\nEVALUATE ROW(\"Ortalama Seçim Payı\", [Ortalama Seçim Payı])",
+  "not_": ""
+ },
+ {
+  "id": "N13",
+  "n": 13,
+  "f": "c15.js",
+  "ders": "excel-entegrasyon",
+  "tur": "sorgu",
+  "q": "DEFINE\n    /// Payı paydaya güvenli böler; payda 0 ya da boşsa BLANK döner.\n    FUNCTION Pbi.Pay = ( pay : NUMERIC, payda : NUMERIC ) =>\n        DIVIDE ( pay, payda )\n\nEVALUATE\n{ Pbi.Pay ( 10, 4 ), Pbi.Pay ( 10, 0 ) }\n// 2,5 ve boş",
+  "not_": ""
+ },
+ {
+  "id": "N14",
+  "n": 14,
+  "f": "c15.js",
+  "ders": "excel-entegrasyon",
+  "tur": "sorgu",
+  "q": "DEFINE\n    FUNCTION Pbi.Yoy = ( olcu : SCALAR EXPR ) =>\n        VAR Simdi = olcu\n        VAR Once = CALCULATE ( olcu, SAMEPERIODLASTYEAR ( Tarih[Tarih] ) )\n        RETURN DIVIDE ( Simdi - Once, Once )\n\n    FUNCTION Pbi.YoyHatali = ( olcu : SCALAR VAL ) =>\n        VAR Simdi = olcu\n        VAR Once = CALCULATE ( olcu, SAMEPERIODLASTYEAR ( Tarih[Tarih] ) )\n        RETURN DIVIDE ( Simdi - Once, Once )\n\nEVALUATE\nSUMMARIZECOLUMNS ( Tarih[Yil],\n    \"expr\", Pbi.Yoy ( [Net Satış] ),\n    \"val\", Pbi.YoyHatali ( [Net Satış] ) )",
+  "not_": ""
+ },
+ {
+  "id": "N20",
+  "n": 20,
+  "f": "c17.js",
+  "ders": "paydas-iletisim",
+  "tur": "sorgu",
+  "q": "EVALUATE\nSELECTCOLUMNS(\n    INFO.VIEW.MEASURES(),\n    \"Ölçü\", [Name],\n    \"Açıklama\", [Description],\n    \"Biçim\", [FormatString],\n    \"İfade\", [Expression]\n)",
+  "not_": ""
+ },
+ {
+  "id": "N56",
+  "n": 56,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "sorgu",
+  "q": "EVALUATE\nSUMMARIZECOLUMNS(\n    Urunler[Urun], Tarih[Yil],\n    \"S\", [Net Satış],\n    \"K\", IGNORE([Kayıtlı Müşteri])\n)",
+  "not_": ""
+ },
+ {
+  "id": "N58",
+  "n": 58,
+  "f": "x_ileri1.js",
+  "ders": "",
+  "tur": "sorgu",
+  "q": "EVALUATE\nSUMMARIZECOLUMNS(Urunler[Urun], \"Satış\", [Net Satış])\nORDER BY Urunler[Urun] ASC\nSTART AT \"M\"",
+  "not_": ""
+ },
+ {
+  "id": "N68",
+  "n": 68,
+  "f": "x_ileri2.js",
+  "ders": "",
+  "tur": "sorgu",
+  "q": "\n\nEVALUATE\nSUMMARIZECOLUMNS(\n    Kategoriler[Kategori],\n    FILTER(VALUES(Kategoriler[Kategori]), PATHCONTAINS(@Kategoriler, Kategoriler[Kategori])),\n    \"Net Satış\", [Net Satış]\n)",
+  "not_": ""
+ },
+ {
+  "id": "N11",
+  "n": 11,
+  "f": "c14.js",
+  "ders": "hesap-tablolar",
+  "tur": "tablo",
+  "q": "EVALUATE ROW(\"satir\", COUNTROWS(CALENDARAUTO()), \"ilk\", MINX(CALENDARAUTO(),[Date]), \"son\", MAXX(CALENDARAUTO(),[Date]))",
+  "not_": ""
+ },
+ {
+  "id": "N04",
+  "n": 4,
+  "f": "c10.js",
+  "ders": "pq-donusum",
+  "tur": "sütun",
+  "q": "EVALUATE TOPN(3, ADDCOLUMNS(Satislar, \"Ay Adı\", FORMAT(Satislar[Tarih], \"MMMM\")))",
+  "not_": ""
+ },
+ {
+  "id": "N06",
+  "n": 6,
+  "f": "c10.js",
+  "ders": "pq-donusum",
+  "tur": "sütun",
+  "q": "EVALUATE TOPN(3, ADDCOLUMNS(Bayiler, \"BayiAnahtar\", COMBINEVALUES(\"|\", Bayiler[BolgeKodu], Bayiler[BayiKodu])))",
+  "not_": ""
+ },
+ {
+  "id": "N17",
+  "n": 17,
+  "f": "c16.js",
+  "ders": "vaka-kiyaslama",
+  "tur": "tablo",
+  "q": "DEFINE TABLE 'Yıllık Adet' = GENERATESERIES(0, 800, 25)\nEVALUATE ROW(\"n\", COUNTROWS('Yıllık Adet'))",
+  "not_": ""
+ },
+ {
+  "id": "N42",
+  "n": 42,
+  "f": "c4.js",
+  "ders": "menuler-turu",
+  "tur": "sütun",
+  "q": "EVALUATE TOPN(3, ADDCOLUMNS(Calisanlar, \"Maaş Kutusu\", FLOOR(Calisanlar[Maas], 10000)))",
+  "not_": ""
+ },
+ {
+  "id": "N47",
+  "n": 47,
+  "f": "c7.js",
+  "ders": "ileri-kaliplar",
+  "tur": "sütun",
+  "q": "EVALUATE TOPN(5, ADDCOLUMNS(Calisanlar, \"Yol\", PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo]), \"Seviye\", PATHLENGTH(PATH(Calisanlar[CalisanNo], Calisanlar[YoneticiNo]))))",
+  "not_": ""
+ },
+ {
+  "id": "N64",
+  "n": 64,
+  "f": "x_ileri2.js",
+  "ders": "",
+  "tur": "sütun",
+  "q": "EVALUATE TOPN(3, ADDCOLUMNS(Satislar, \"HaftaSonuMu\", RELATED(Tarih[HaftaSonu])))",
+  "not_": ""
+ }
+]
