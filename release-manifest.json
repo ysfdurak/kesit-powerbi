@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "date": "2026-11-21",
-  "sourceCommit": "3fa70be33cbee70116f7a35e546f1b937e4b40d4",
+  "date": "2026-11-22",
+  "sourceCommit": "c9ee8e67eef43203119ac9a99e97ee22b924bdbb",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -22,9 +22,9 @@
   ],
   "files": {
     "index.html": "77bb2adf57c618e47949527ef595fe889c827704500bc17b5f5cca23aca11a1f",
-    "kesit.js": "96e00b2a4ecf2c4c12b2480895d65c80a97056d900e5d475c991539fa89c3663",
+    "kesit.js": "53681f40c58042822fea19043dca8be68abf58a64b5ddd75865cb66b008baff5",
     "config.js": "fcf99a47bac4ff8ab2d2d0ab79d66bbec3fb192875c49ef6b8f29fe4071a2c03",
-    "sw.js": "569cea6ff80171055f13b682aea8bd2750bc533da2742e2e419c6210e1d522f9",
+    "sw.js": "d8237bfda18751f5781ef93ae4fc82082851199fe751745da5a7be5e18b41e09",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "33aa8390208989343ca52948b92e43bfc532b77aed72081b552154f6832cafc3",
@@ -37,7 +37,8 @@
     "vaka/depo/dax.js": "14e88bc465ded8b548224cc3b539eb24ad3175b0c1cfbb4edca638f16982a483",
     "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
     "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
-    ".github/workflows/release-quality.yml": "3972cc9f5a930252649fa226020cd8fc3cdb690b7803a29bac52d08d541801ac"
+    ".github/workflows/release-quality.yml": "3972cc9f5a930252649fa226020cd8fc3cdb690b7803a29bac52d08d541801ac",
+    "ders/hesap-tablolar/index.html": "b21d5676ede86eb17961203242ab4e2248701dd507364f25953e30dc3c633248"
   },
   "patches": [
     {
@@ -68,6 +69,15 @@
         ".github/workflows/release-quality.yml"
       ],
       "note": "Uçtan uca depo vakası 3. adım (vaka/depo/): DAX ölçüleriyle kazanç panosu. vaka/depo/dax.js kesit.js'teki dax.js bölümünün birebir kopyası; tests/vaka-depo.cjs aynılığı ve ölçü sonuçlarını denetliyor (CI'a eklendi). Chrome 390/1366 px, axe hata yok. Kaynak dalına da uygulanmalı."
+    },
+    {
+      "date": "2026-11-22",
+      "files": [
+        "kesit.js",
+        "sw.js",
+        "ders/hesap-tablolar/index.html"
+      ],
+      "note": "Hesaplanmış tablolar dersinde CALENDARAUTO gün sayısı düzeltildi: Projeler[BitisPlan] 2025'e uzandığı için 4.018 gün. Gerçek Power BI Desktop ve motor aynı sonucu veriyor."
     }
   ]
 }
