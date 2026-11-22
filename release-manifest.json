@@ -38,7 +38,10 @@
     "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
     "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
     ".github/workflows/release-quality.yml": "3972cc9f5a930252649fa226020cd8fc3cdb690b7803a29bac52d08d541801ac",
-    "ders/hesap-tablolar/index.html": "b21d5676ede86eb17961203242ab4e2248701dd507364f25953e30dc3c633248"
+    "ders/hesap-tablolar/index.html": "b21d5676ede86eb17961203242ab4e2248701dd507364f25953e30dc3c633248",
+    "KALAN-GOREVLER.md": "1e7a93a83bc729a1407068b19b0ede2576380099abd9687aa7ddf1ba856a5b83",
+    "referans-rapor/README.md": "e1d4b0c47333ff3e605194b2c38ab0d6f64d81d78e9fe4abbccc6f89f60aa866",
+    "veri/lezzet-kurye-desktop-referans.zip": "3fd0839afb0b90588b3dc0562d081be9313bf6111b538ae696e9f058d59f0423"
   },
   "patches": [
     {
@@ -78,6 +81,15 @@
         "ders/hesap-tablolar/index.html"
       ],
       "note": "Hesaplanmış tablolar dersinde CALENDARAUTO gün sayısı düzeltildi: Projeler[BitisPlan] 2025'e uzandığı için 4.018 gün. Gerçek Power BI Desktop ve motor aynı sonucu veriyor."
+    },
+    {
+      "date": "2026-11-22",
+      "files": [
+        "KALAN-GOREVLER.md",
+        "referans-rapor/README.md",
+        "veri/lezzet-kurye-desktop-referans.zip"
+      ],
+      "note": "Lezzet Kurye Desktop referans raporu gerçek Power BI Desktop'ta (2.159.1231.0) açıldı, yenilendi ve incelendi. Beş kontrol senaryosu tuttu. İlçe tablosundaki PBIR 'active' hatası düzeltildi; kayıt paketin DOGRULAMA.md dosyasında."
     }
   ]
 }

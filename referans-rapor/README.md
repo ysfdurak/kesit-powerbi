@@ -6,4 +6,4 @@
 
 ZIP’in tamamını çıkarıp Power BI Desktop’ta `Lezzet-Kurye.pbip` dosyasını aç. Yenilemeden sonra `DOGRULAMA.md` tablosunu ve `Kontrol-Sorgusu.dax` sorgusunu kullan.
 
-Durum: JSON şema ve veri mutabakatı kontrolleri geçti. Windows Power BI Desktop açılış, yenileme ve görsel inceleme kaydı bekliyor.
+Durum: JSON şema ve veri mutabakatı kontrolleri geçti. 22 Kasım 2026'da Windows Power BI Desktop'ta (2.159.1231.0) açıldı ve yenilendi. Beş kontrol senaryosu birebir tuttu, iki rapor sayfası incelendi. İlçe tablosunun yalnız İlçe sütununu göstermesine yol açan PBIR hatası düzeltildi. Kayıt paketteki `DOGRULAMA.md` dosyasında.
