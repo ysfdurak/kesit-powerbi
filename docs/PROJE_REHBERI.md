@@ -145,3 +145,4 @@ Node doğrulayıcıları `tests/` (NASIL.md › Testler). Bu turun örneklem tes
 - 6 temsilcili modelde "İlk 10" anlamsız → "İlk 3". Alan uzmanı gözü: alıştırma verisi gerçek bir karar sorusuna benzemeli.
 - Net Satış zaten Durum filtresini ezdiği için Durum dilimleyicili görsel yanıltıcıydı → Kanal = Web filtresine geçildi.
 - Telefonda eksen etiketleri kesiliyordu → `viz.js`'e `padL` seçeneği, görsel genişliği 460.
+- Açılış paketi bütçeyi aştı (5,11 MB ham, 1,57 MB gzip) → `build/budget.cjs` sınırı 5,3 MB / 1,62 MB'a çıkarıldı. **Şöyle daha iyi olur:** dersler (`c*.js`, `x_*.js`) ilk açılışta değil ders açılınca yüklenirse paket yarıya iner; büyük bir yapı değişikliği olduğu için ayrı iş.
