@@ -20,9 +20,10 @@
     Okunan = Table.AddColumn(Csvler, "Veri", each Oku([Content])),
     Sade = Table.SelectColumns(Okunan, {"Name", "Veri"}),
     Acik = Table.ExpandTableColumn(Sade, "Veri", {"Tarih", "Bayi", "Tutar"}),
-    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}})
+    Tipli = Table.TransformColumnTypes(Acik, {{"Tarih", type date}, {"Tutar", type number}}, "en-US")
 in
     Tipli</pre>
+<p><b>Kültürü yaz.</b> Bu CSV’lerde ondalık ayırıcı noktadır (<code>1250.5</code>). <code>TransformColumnTypes</code>’a <code>"en-US"</code> vermezsen dosyanın bölge ayarı kullanılır; Türkçe ayarlı bir Power BI’da nokta binlik ayırıcı sayılır ve tutar <code>12505</code> olur. Hata vermez, sessizce on kat büyür.</p>
 <p><code>Name</code> sütununu tutmak iyi alışkanlıktır: Combine Files bunun için <code>Source.Name</code> sütununu üretir, hatalı satırın hangi dosyadan geldiğini gösterir.</p>
 <h2>Tipik tuzaklar</h2>
 <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead><tbody>

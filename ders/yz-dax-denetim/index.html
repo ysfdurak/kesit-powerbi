@@ -42,7 +42,7 @@ SUMX(
 
 <h2>5 · Zaman zekâsında olgu tablosunun tarihi</h2>
 <pre class="dax">Satış GY (önerilen) = CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))</pre>
-<p>Yıl dilimleyicisi <code>Tarih</code> tablosundan gelir. Kod, olgu tablosundaki tarihleri bir yıl geri kaydırır ama <code>Tarih[Yil]</code> filtresi yerinde kalır: 2024 satırında “2024’te olup 2023 tarihli satışlar” istenir ve sonuç <b>boş</b> çıkar. Zaman zekâsı fonksiyonlarına her zaman işaretli tarih tablosunun sütununu ver: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
+<p>Yıl dilimleyicisi <code>Tarih</code> tablosundan gelir. Kod, olgu tablosundaki tarihleri bir yıl geri kaydırır ama <code>Tarih[Yil]</code> filtresi yerinde kalır: 2024 satırında “2024’te olup 2023 tarihli satışlar” istenir ve sonuç <b>boş</b> çıkar. Kategoriye göre kırınca da “bitişik bir seçim gerekir” hatası alırsın: satış olan günler kesintisiz bir takvim değildir. Zaman zekâsı fonksiyonlarına her zaman işaretli tarih tablosunun sütununu ver: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
 
 <h2>6 · ALL ile dilimleyiciyi silmek</h2>
 <pre class="dax">Seçili Dönem Toplamı (önerilen) = CALCULATE([Net Satış], ALL(Tarih))</pre>
@@ -89,5 +89,5 @@ SUMMARIZECOLUMNS(
 <div class="tip"><b>Asistana daha iyi soru</b>“Satislar[Tutar], Satislar[Durum], Tarih[Tarih] (işaretli tarih tablosu) ve [Net Satış] ölçüsü var. İptaller hariç geçen yılın aynı dönemine göre büyüme yüzdesini yaz; ilk yılda boş dönsün; yalnızca bu adları kullan.” Bağlam verdikçe hata azalır, ama denetim yine sende.</div>
 </article>
 <div class="st-c"><a class="st-p" href="../../#ders-yz-dax-denetim/1">Alıştırmalara geç (7)</a></div>
-<nav class="st-n" aria-label="Ders sırası"><a href="../copilot/">← Copilot ile çalışmak ve modeli yapay zekâya hazırlamak</a><a href="../python-r/">Power BI’da Python ve R →</a></nav></main>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-sorgu/">← DAX sorguları ve tablo fonksiyonları</a><a href="../dax-udf/">DAX kullanıcı tanımlı fonksiyonları (UDF): tekrar eden mantığı tek yerde toplamak →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

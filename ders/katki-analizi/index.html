@@ -1,0 +1,32 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sıralama ve katkı: eşitlikli sıra, TOPN payı, Pareto ve ABC | Kesit Power BI</title><meta name="description" content="RANKX ile eşitlik ve seçime göre sıra, TOPN ile en iyi ürünlerin payı, birikimli pay ile Pareto ve eşiklerle ABC sınıfı."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/katki-analizi/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Sıralama ve katkı: eşitlikli sıra, TOPN payı, Pareto ve ABC"><meta property="og:description" content="RANKX ile eşitlik ve seçime göre sıra, TOPN ile en iyi ürünlerin payı, birikimli pay ile Pareto ve eşiklerle ABC sınıfı."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/katki-analizi/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Sıralama ve katkı: eşitlikli sıra, TOPN payı, Pareto ve ABC","description":"RANKX ile eşitlik ve seçime göre sıra, TOPN ile en iyi ürünlerin payı, birikimli pay ile Pareto ve eşiklerle ABC sınıfı.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/katki-analizi/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Kalıpları</span><h1>Sıralama ve katkı: eşitlikli sıra, TOPN payı, Pareto ve ABC</h1><p class="st-l">RANKX ile eşitlik ve seçime göre sıra, TOPN ile en iyi ürünlerin payı, birikimli pay ile Pareto ve eşiklerle ABC sınıfı.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-katki-analizi">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>RANKX ve eşitlik</h2>
+<p><code>RANKX(ALL(Urunler[Urun]), [Net Satış])</code> her ürünün tüm ürünler içindeki sırasını verir. Eşit değerler aynı sırayı alır; sonraki sıra atlanır (1, 2, 2, 4). Atlamasız sıra için beşinci bağımsız değişken <code>DENSE</code> yazılır. <code>ALL</code> yerine <code>ALLSELECTED</code> kullanırsanız sıra yalnız dilimleyicide seçilen ürünler arasında yapılır.</p>
+<pre class="dax">Ürün Sırası (Seçili) =
+RANKX(ALLSELECTED(Urunler[Urun]), [Net Satış])</pre>
+
+<h2>TOPN ve katkı</h2>
+<p><code>TOPN(5, ALL(Urunler[Urun]), [Net Satış])</code> en çok satan 5 ürünün tablosunu döndürür. Bu tabloyu CALCULATE'e filtre olarak verirseniz “ilk 5 ürünün satışı”, bunu toplama bölerseniz “ilk 5'in payı” çıkar.</p>
+<pre class="dax">İlk 5 Ürün Payı =
+DIVIDE(CALCULATE([Net Satış], TOPN(5, ALL(Urunler[Urun]), [Net Satış])), CALCULATE([Net Satış], ALL(Urunler)))</pre>
+
+<h2>Pareto ve ABC</h2>
+<p>Pareto: ürünleri büyükten küçüğe sıraladığınızda, bu ürüne kadar olanların toplam içindeki birikimli payı. Bir ürünün birikimli satışı = satışı kendisininkinden büyük ya da eşit olan ürünlerin satışı. ABC sınıfı bu paya göre verilir: ilk %80 A, sonraki %15 B, kalan C. Kategorinin kendi satışına göre değil, birikimli paya göre sınıflandırmak gerekir.</p>
+<pre class="dax">Birikimli Pay =
+VAR s = [Net Satış]
+RETURN DIVIDE(
+  SUMX(FILTER(ALL(Urunler[Urun]), [Net Satış] >= s), [Net Satış]),
+  CALCULATE([Net Satış], ALL(Urunler)))</pre>
+<h2>Hangisini ne zaman?</h2><p>Sıra numarası bir listeyi okumayı kolaylaştırır ama tek başına karar vermez: 1. ile 2. arasında büyük fark olabilir. Katkı payı ve birikimli pay ise “ilk 5 ürün satışın ne kadarını yapıyor?”, “stokta hangi ürünlere öncelik vermeliyim?” gibi soruları cevaplar. ABC sınıfını stok ve tedarik kararlarında, Pareto'yu sorunların önceliklendirilmesinde kullanın.</p>
+<div class="tip"><b>Görsel hesaplama ile</b>Aynı Pareto'yu bir tablo görselinde <code>RUNNINGSUM</code> ile de kurabilirsiniz (Görsel hesaplamalar dersi). Model ölçüsü ise her görselde ve dışa aktarmada çalışır.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-katki-analizi/1">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../siralama/">← Sıralama ve ilk N: RANKX ve TOPN</a><a href="../secime-gore/">Seçime göre çalışan hesaplar: SELECTEDVALUE, ISINSCOPE, ölçü seçici ve dinamik metin →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

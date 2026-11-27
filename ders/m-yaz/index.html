@@ -43,12 +43,12 @@ in
 <p><code>x is number</code> sınar, <code>x as number</code> doğrular ve uymazsa hata verir. Fonksiyon parametresinde de aynı denetim çalışır. Sütun türü ayrı bir bilgidir: <code>Table.TransformColumnTypes</code> değerleri çevirir, <code>Table.AddColumn(..., type number)</code> ise yalnız etiket koyar, değeri çevirmez.</p>
 <pre class="m" data-run>let
     Sinama = [Sayi = 5 is number, Metin = "5" is number, BosMetin = null is nullable text],
-    Cevirme = Number.FromText("12.5") + 1
+    Cevirme = Number.FromText("12.5", "en-US") + 1
 in
     [Sinama = Sinama, Cevirme = Cevirme]</pre>
 <h2>Türleri karşılaştırmak</h2><p>Değerin türünü sınamak için <code>x is number</code> ya da <code>Value.Is(x, type number)</code> yaz. Türü bir değer olarak sınamak için <code>Type.Is(Value.Type(x), type number)</code>. <code>Value.Type(1) = type number</code> yazma: M belirtimi tür eşitliğini uygulamaya bırakır, yalın türlerde true dönebileceğini söyler ama <code>(type [a = text]) = (type [a = text])</code> için dönmeyebilir. Bu alt küme yalın türde true verir, kayıt ve tablo türünde tahmin etmez, durur.</p>
 <pre class="m" data-run>[Bir = Type.Is(type text, type nullable text), Iki = Type.Is(type nullable text, type text), Uc = Type.Is(Value.Type(5), type number)]</pre>
-<div class="warn"><b>Kültür</b>Metin sayıya ya da tarihe çevrilirken kültür belirleyicidir: <code>Table.TransformColumnTypes(t, {{"Tarih", type date}}, "tr-TR")</code>. Kültür vermezsen bilgisayarın bölge ayarı kullanılır, aynı kod başka makinede başka sonuç verebilir. Lab kültürsüz durumda tarihi kabul etmez, kültür ister.</div></article>
+<div class="warn"><b>Kültür</b>Metin sayıya ya da tarihe çevrilirken kültür belirleyicidir: <code>Table.TransformColumnTypes(t, {{"Tarih", type date}}, "tr-TR")</code>. Kültür vermezsen dosyanın/bilgisayarın bölge ayarı kullanılır, aynı kod başka makinede başka sonuç verebilir. Kesit kültürsüz durumda Türkçe Desktop gibi davranır (tr-TR: "05.01.2024" 5 Ocak, "1.250,50" 1250,5; "1250.5" ise 12505 olur, çünkü nokta binlik ayırıcıdır). Kodunu paylaşacaksan kültürü yine de yaz.</div></article>
 <div class="st-c"><a class="st-p" href="../../#ders-m-yaz/1">Alıştırmalara geç (12)</a></div>
-<nav class="st-n" aria-label="Ders sırası"><a href="../pq-menu-2/">← Power Query menü haritası 2: Dönüştür ve Sütun ekle</a><a href="../m-yapi/">M’de kayıt, liste, tablo: yapıları kurmak ve gezmek →</a></nav></main>
+<nav class="st-n" aria-label="Ders sırası"><a href="../pq-ileri/">← Power Query: join türleri, dizin sütunu ve gruplu sıra</a><a href="../m-yapi/">M’de kayıt, liste, tablo: yapıları kurmak ve gezmek →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

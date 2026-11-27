@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-27",
-  "sourceCommit": "30bea1348b5bc8891854af260df69f411d95ae6c",
+  "sourceCommit": "17b968ede2cb56c97c24514341cf987c6199dee8",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -20,32 +20,35 @@
     "Klavye odağı, DAX editörü, mobil gezinme ve rapor ayrıntısı",
     "Örnek rapor ayarları, ön koşul sırası, açılış bütçesi ve içerik sayımı",
     "Görsel ve model kurma: 46 alıştırma, bozulmuş çözümler reddediliyor (gvval)",
-    "513 referans çözüm (newdata)",
-    "158 dersin görev kâğıdı hatasız üretiliyor"
+    "158 dersin görev kâğıdı hatasız üretiliyor",
+    "Açılış paketi 4,62 MB (gzip 1,42 MB); mülakat ve sık hatalar kesit-ek.js ile sonradan",
+    "158 statik ders sayfası ve site haritası",
+    "553 referans çözüm (newdata)"
   ],
   "files": {
-    "index.html": "271b420a84d17c3bad07a5f2bd76c72a8f166fbe49ba5a420a8809fa0a1addc1",
-    "kesit.js": "e9b77b751aec38de65e842d5c0ce9faf904887215dbbf7733acac4e69b7a887b",
+    "index.html": "6e4634e15ee88aa0e67e768f4703bf0a2db15d16ed34a2a1e98428b6edfbb88c",
+    "kesit.js": "8834946bd814220c96057ee39874610010ce71ff53ab976cd20071d15da9062e",
     "config.js": "5462cd70d50ac5ddb43b91b99ab64795b2d7b9bece75888f323602f734e83f8b",
-    "sw.js": "a34d6e1f3ff1ae12594809198ca905f63a67724fb017bbe2175bdd6f6ac14182",
+    "sw.js": "6093bcc98d3caf0feeb6c707e6688f29219a8cd49a5ad9f5bdf44ccc256a5437",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
-    "ders/dp600/index.html": "33aa8390208989343ca52948b92e43bfc532b77aed72081b552154f6832cafc3",
-    "ders/fabric-veri-alma/index.html": "d66587ad734b9fff7203b28b9c0fd9e51b8582e7f4a77b4beb3082bb3efc5556",
-    "README.md": "176ac0d68845277a8fe301491f88c3b07975031c3550d254369dc90a5777f8f6",
-    "content-manifest.json": "5e000e4d841b94274cfe3d25fd4adf8145402d300725c95fd86545624e82f7b3",
+    "ders/dp600/index.html": "5e7d4e1b80090fd2856c22a5f14b7ece98f688d972b2493472fecdfce99a05ef",
+    "ders/fabric-veri-alma/index.html": "0260e2efdc38b42380171e97997ec655f7f098e26c643caa060c87a639598015",
+    "README.md": "2694c92c273cf2176539668b6b396f6a1748460a368b82ca4cf0e097e0188136",
+    "content-manifest.json": "6fbc5e794689418cca51f12a2c3a4f528c5f7bbf459901b9289eadc7f28e9b25",
     "en-tour.js": "0fe4d704a8e82bc7f240c8d25feff30fc9e2ec5b46a68b2abf945e6e55a622c7",
     "vaka/depo/index.html": "2cbd55965d681b63b8a86745ba7ae0a28c05f9b774deda30d74a79f5680c343c",
     "vaka/depo/beklenen.json": "491c33107a7dc22aaa897c1b219a012510b2e224e889e257b2be7a6342a426f3",
     "vaka/depo/dax.js": "6d48ab071e7238b5f55d478430a20a639efbabc6f28c6b2dd2c3492bc47422ef",
     "tests/vaka-depo.cjs": "70b57822b845fc2b8583f3c5dd7213b1f1b1eeaaad33590e34a6ed6d309838c1",
-    "sitemap.xml": "0d294a0afe6abd75c73c37a0e2a2a37a7be3f566f27e8e1852be6ef31b7608db",
+    "sitemap.xml": "1bd1356ff11f546d3da4f45c7147db8c4f5bdad2755b71153dd1e2d4bc83ef15",
     ".github/workflows/release-quality.yml": "3972cc9f5a930252649fa226020cd8fc3cdb690b7803a29bac52d08d541801ac",
-    "ders/hesap-tablolar/index.html": "b21d5676ede86eb17961203242ab4e2248701dd507364f25953e30dc3c633248",
+    "ders/hesap-tablolar/index.html": "db77c21e01a545cf32c06a161b044d655881ec9dd190054338790e0835f0d6e1",
     "KALAN-GOREVLER.md": "1e7a93a83bc729a1407068b19b0ede2576380099abd9687aa7ddf1ba856a5b83",
     "referans-rapor/README.md": "e1d4b0c47333ff3e605194b2c38ab0d6f64d81d78e9fe4abbccc6f89f60aa866",
     "veri/lezzet-kurye-desktop-referans.zip": "3fd0839afb0b90588b3dc0562d081be9313bf6111b538ae696e9f058d59f0423",
-    "veri/anadolu-market-calisma.zip": "553d233a33a95f57072ace70b1160c7949b79eb739a6bdfee65bad4e12800516"
+    "veri/anadolu-market-calisma.zip": "553d233a33a95f57072ace70b1160c7949b79eb739a6bdfee65bad4e12800516",
+    "kesit-ek.js": "ee6b7cf289631a4ff8f8fd36496d281d98e044ea56988adb59f57ab0056dcdee"
   },
   "patches": [
     {

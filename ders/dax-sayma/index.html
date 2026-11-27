@@ -1,0 +1,34 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saymanın yolları: COUNTROWS, DISTINCTCOUNT, COUNTBLANK ve boş sonuç | Kesit Power BI</title><meta name="description" content="Satır mı, sipariş mi, müşteri mi sayıyorsun? Doğru sayma işlevini seçmek, boşları ayırt etmek ve sıfır yerine boş dönen ölçüleri düzeltmek."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-sayma/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Saymanın yolları: COUNTROWS, DISTINCTCOUNT, COUNTBLANK ve boş sonuç"><meta property="og:description" content="Satır mı, sipariş mi, müşteri mi sayıyorsun? Doğru sayma işlevini seçmek, boşları ayırt etmek ve sıfır yerine boş dönen ölçüleri düzeltmek."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-sayma/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Saymanın yolları: COUNTROWS, DISTINCTCOUNT, COUNTBLANK ve boş sonuç","description":"Satır mı, sipariş mi, müşteri mi sayıyorsun? Doğru sayma işlevini seçmek, boşları ayırt etmek ve sıfır yerine boş dönen ölçüleri düzeltmek.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-sayma/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>Saymanın yolları: COUNTROWS, DISTINCTCOUNT, COUNTBLANK ve boş sonuç</h1><p class="st-l">Satır mı, sipariş mi, müşteri mi sayıyorsun? Doğru sayma işlevini seçmek, boşları ayırt etmek ve sıfır yerine boş dönen ölçüleri düzeltmek.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-sayma">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>Ne sayıyorsun?</h2>
+<p>“Kaç satış yaptık?” sorusunun üç doğru cevabı olabilir: <b>satır</b> sayısı (sipariş kalemi), <b>sipariş</b> sayısı (bir siparişte birden çok ürün olabilir) ve <b>müşteri</b> sayısı. Anadolu Market modelinde Satislar tablosunun her satırı bir sipariş kalemidir. Bu yüzden satır sayısı sipariş sayısından büyüktür.</p>
+<div class="tbl-wrap"><table><tr><th>Soru</th><th>İşlev</th><th>Ne sayar?</th></tr>
+<tr><td>Kaç satır var?</td><td><code>COUNTROWS(Satislar)</code></td><td>Tablodaki satırları (filtre bağlamında)</td></tr>
+<tr><td>Kaç farklı sipariş?</td><td><code>DISTINCTCOUNT(Satislar[SiparisNo])</code></td><td>Sütundaki benzersiz değerleri (boş da bir değer sayılır)</td></tr>
+<tr><td>Kaç dolu hücre?</td><td><code>COUNT</code> / <code>COUNTA</code></td><td>Boş olmayan değerleri</td></tr>
+<tr><td>Kaç boş hücre?</td><td><code>COUNTBLANK(Musteriler[Sehir])</code></td><td>Boş (BLANK) değerleri</td></tr></table></div>
+<pre class="dax">Satır Sayısı =
+COUNTROWS(Satislar)</pre>
+<p>COUNTROWS bir tablo alır, sütun değil. Excel'den gelenler COUNT(Satislar[SatirNo]) yazmaya alışkındır; sonuç çoğu zaman aynıdır ama niyeti COUNTROWS daha açık söyler ve boş hücreden etkilenmez.</p>
+
+<h2>Benzersiz saymak</h2>
+<p>Bir müşterinin üç siparişi varsa “müşteri sayısı” onu bir kez saymalıdır. <code>DISTINCTCOUNT</code> bunu yapar. Bir görselde kategori satırları ile toplam satırını karşılaştırın: kategori satırlarındaki müşteri sayılarını toplarsanız genel toplamdan büyük çıkar, çünkü aynı müşteri birçok kategoriden almıştır. Bu bir hata değildir; benzersiz sayımlar <b>toplanmaz</b>.</p>
+<pre class="dax">Alışveriş Yapan Müşteri =
+DISTINCTCOUNT(Satislar[MusteriNo])</pre>
+
+<h2>Boş, sıfır ve COALESCE</h2>
+<p>Bir kategori bir yıl hiç satılmadıysa ölçü <b>BLANK</b> döner ve görsel o satırı gizler. Bu genellikle istenen davranıştır. Ama bir tabloda “0” görmek istiyorsanız <code>COALESCE([Ölçü], 0)</code> kullanırsınız: ilk boş olmayan değeri döndürür. Dikkat: her satıra 0 yazdırmak, hiç ilişkisi olmayan kombinasyonları da (ör. hiç satılmamış ürün × her gün) görünür yapar ve görseli şişirir.</p>
+<pre class="dax">İade Satırı (0'lı) =
+COALESCE(CALCULATE(COUNTROWS(Satislar), Satislar[Durum] = "İade"), 0)</pre>
+<div class="tip"><b>Ortalama ve DIVIDE</b>Ortalama sepet = net satış / sipariş sayısı. Bölmeyi her zaman <code>DIVIDE</code> ile yapın: sipariş yoksa hata yerine boş döner.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-sayma/1">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../toplama/">← Toplama fonksiyonları ve DIVIDE</a><a href="../dax-kosul/">Koşullar: IF, AND/OR, SWITCH ve SWITCH(TRUE()) ile sınıflar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>
