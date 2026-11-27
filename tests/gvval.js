@@ -7,7 +7,7 @@ const X = window.PBI_DAX, LIB = window.PBI_MEASURES;
 window.PBI_CORE = { X, V: window.PBIViz, MODEL: window.PBI_MODEL, esc: s => String(s), P: { ex: {} }, $: () => null, LIB, measureSet: () => { const o = {}; LIB.forEach(m => o[m.name] = { name: m.name, expr: m.expr }); return o; }, fmtOf: () => null, save() {}, noteWrong() {}, curX() {} };
 eval(fs.readFileSync(A + 'gv.js', 'utf8'));
 for (const f of fs.readdirSync(A).filter(x => /^c\d+\.js$/.test(x))) eval(fs.readFileSync(A + f, 'utf8'));
-eval(fs.readFileSync(A + 'x_gorsel.js', 'utf8'));
+for (const f of ['x_gorsel', 'x_uygulama']) eval(fs.readFileSync(A + f + '.js', 'utf8'));
 const G = window.PBI_GV; let n = 0, sorun = 0;
 const hata = (id, m) => { sorun++; console.log('SORUN', id, m); };
 for (const l of window.PBI_LESSONS) (l.ex || []).forEach((e, i) => {
