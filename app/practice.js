@@ -6,7 +6,7 @@ const PR = window.PBI_PRACTICE || [], PRT = window.PBI_PR_TOPICS || {}, PRMAP = 
 const prKey = p => 'pr:' + p.id;
 const prDone = p => !!P.ex[prKey(p)];
 const plain = s => String(s || '').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mcode: 'M kodu', mc: 'Senaryo' };
+const TYPEN = { dax: 'DAX ölçüsü', query: 'DAX sorgusu', pq: 'Power Query', mcode: 'M kodu', mc: 'Senaryo', gorsel: 'Görsel kurma', model: 'Model kurma' };
 P.rv = P.rv || {}; P.reports = P.reports || []; P.exams = P.exams || {};
 
 /* ---------- Tema (Otomatik / Açık / Koyu) ---------- */

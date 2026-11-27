@@ -11,7 +11,10 @@ window.KESIT_SINIRLAR = {
    "Kesit SQL ile Kesit Power BI aynı şirketi ve aynı siparişleri kullanır: sipariş, müşteri, ürün, adet ve tarih aynı, ciro iki tarafta da 1.346.189,85. Power BI modeli hedef, gider, talep, tedarik ve proje tablolarıyla zenginleştirildi. Kesit Python ikisini de ayrı veri seti olarak verir: Anadolu Market ve Anadolu Market (Power BI modeli).",
    "İki model birebir aynı değildir. Ürün stoğu 40 üründe de farklıdır (toplam 5.682 ve 311). web_events (2.819 satır) ile WebOlaylari (2.019 satır) ayrı verilerdir. 28-31 Aralık 2024'teki 8 satış satırının durumu farklıdır (delivered 1.269, shipped 120; Teslim Edildi 1.261, Kargoda 128). Departman sayısı 7 ve 8'dir.",
    "order_id kronolojik değildir: siparişler müşteriye göre yazıldığı için ardışık 909 geçişin 120'sinde tarih geri gider. Son siparişi en büyük numaradan değil, tarihten bul.",
-   "web_events'te tekrar ziyaret ve tekrar olay vardır (2.819 satır, 600 kullanıcı), oturum numarası yoktur. Huni tekil kullanıcıyla sayılır: 600, 453, 183, 109, 67. Bu tablo orders ile bağlı değildir: kullanıcı numaraları müşteri numaralarıyla eşleşmez."
+   "web_events'te tekrar ziyaret ve tekrar olay vardır (2.819 satır, 600 kullanıcı), oturum numarası yoktur. Huni tekil kullanıcıyla sayılır: 600, 453, 183, 109, 67. Bu tablo orders ile bağlı değildir: kullanıcı numaraları müşteri numaralarıyla eşleşmez.",
+   "Desktop çalışma paketi (anadolu-market-calisma.zip) tarayıcı motoruyla üretildi; Power BI Desktop'ta henüz açılıp yenilenmedi. Kontrol değerleri DOGRULAMA.md içindedir; Lezzet Kurye referans paketiyle aynı PBIP yapısını kullanır. Ham tablolar (raw_signups, WebOlaylari, Gider ve proje tabloları) pakette yoktur; 10 çekirdek tablo ve onlara dayanan 80 hazır ölçü vardır.",
+   "Görsel kurma alıştırmasındaki görsel hesaplama dili alt kümedir: RUNNINGSUM, MOVINGAVERAGE, PREVIOUS, NEXT, FIRST, LAST, COLLAPSE, EXPAND ve birkaç yardımcı işlev. Görsel hesaplamada sıfırlama (reset) ve eksen seçimi bağımsız değişkenleri yoktur.",
+   "INFO.VIEW.* işlevleri modelin yalnız temel sütunlarını döndürür (ad, tablo, ifade, ilişki uçları); Desktop daha çok sütun verir. EVALUATEANDLOG değeri döndürür ama günlüğe bir şey yazmaz."
   ]
  },
  "ilgaz-bank": {

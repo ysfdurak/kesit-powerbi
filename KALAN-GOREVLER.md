@@ -36,3 +36,8 @@ Mobil menüde öğrenme yolları ve bitirme projeleri üstte yer alır. Yolun ba
 ## Sınırlar
 
 Teslimat vakasının portföy deposundaki G05/G24–G27 işleri ayrı proje kapsamındadır. Önceden yapılmış düzeltmeler yeniden açık iş sayılmaz; eksik doğrulama açık kalır. Bu plan bütün içerik için uzman onayı vermez.
+
+## G40 · Anadolu Market çalışma paketi Desktop doğrulaması (açık)
+
+`veri/anadolu-market-calisma.zip` (PBIP, 10 tablo, 11 ilişki, 80 ölçü) Windows Power BI Desktop'ta açılıp yenilenecek; `DOGRULAMA.md` içindeki 15 kontrol değeri bir tabloyla karşılaştırılacak. Aynı turda yeni DAX işlevlerinden örneklem: PPMT, NPER, LINESTX, CONFIDENCE.T, OPENINGBALANCEMONTH, INFO.VIEW.MEASURES. Kabul: kontrol değerleri birebir, ölçü hatası yok; fark varsa motor ya da ölçü düzeltilir ve NASIL.md › Bilinen motor sınırları'na yazılır.
+

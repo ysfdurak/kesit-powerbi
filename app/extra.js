@@ -339,4 +339,31 @@ W.PBI_VISUALS = [
   { id: 'bullet', name: 'Madde grafiği (bullet)', cat: 'Tek sayı', when: 'Birden çok kalemin hedefe göre durumunu az yerde, kolay karşılaştırılır biçimde göstermek.', avoid: 'Hedefi olmayan ölçüler.', fields: 'Kategori: Kategoriler[Kategori] · Değer: [Net Satış] · Hedef: [Hedef]' },
   { id: 'pareto', name: 'Pareto (sütun + birikimli çizgi)', cat: 'Sıralama', when: 'Sonucun büyük kısmının hangi az sayıda kalemden geldiğini göstermek (80/20).', avoid: 'Az sayıda kategori; sıralaması anlamsız kategoriler.', fields: 'X: Urunler[Urun] (azalan) · Sütun: [Net Satış] · Çizgi: [Kümülatif Pay %]' },
 ];
+
+/* Kasım 2026: motora eklenen işlevler */
+W.PBI_CATALOG.push(
+  ['IPMT / PPMT', 'Finans', 'IPMT(Oran, Dönem, DönemSayısı, BugünküDeğer) · PPMT(…)', 'Bir taksitin faiz (IPMT) ve anapara (PPMT) kısmı. İkisinin toplamı PMT taksitine eşittir.', 'PPMT(0.03, 1, 12, -100000)'],
+  ['NPER', 'Finans', 'NPER(Oran, Ödeme, BugünküDeğer, [GelecekDeğer], [Tür])', 'Belli bir taksitle borç kaç dönemde biter?', 'NPER(0.02, -5000, 50000)'],
+  ['RATE', 'Finans', 'RATE(DönemSayısı, Ödeme, BugünküDeğer, [GelecekDeğer], [Tür], [Tahmin])', 'Taksit ve tutardan dönem faizini bulur (yinelemeli çözüm).', 'RATE(12, -9000, 100000)'],
+  ['SLN / DDB / SYD', 'Finans', 'SLN(Maliyet, Hurda, Ömür) · DDB(Maliyet, Hurda, Ömür, Dönem) · SYD(…)', 'Amortisman: doğrusal, azalan bakiyeler ve yılların toplamı yöntemleri.', 'DDB(100000, 10000, 5, 2)'],
+  ['EFFECT / NOMINAL', 'Finans', 'EFFECT(NominalOran, YıllıkDönem) · NOMINAL(EtkinOran, YıllıkDönem)', 'Yıllık nominal faiz ile bileşik etkin faiz arasında dönüşüm.', 'EFFECT(0.36, 12)'],
+  ['RRI', 'Finans', 'RRI(DönemSayısı, Başlangıç, Bitiş)', 'Bileşik büyüme oranı (CAGR).', 'RRI(2, CALCULATE([Net Satış], Tarih[Yil] = 2022), CALCULATE([Net Satış], Tarih[Yil] = 2024))'],
+  ['CUMIPMT / CUMPRINC', 'Finans', 'CUMIPMT(Oran, DönemSayısı, BugünküDeğer, İlk, Son, Tür)', 'Bir dönem aralığında ödenen toplam faiz (CUMIPMT) ya da anapara (CUMPRINC).', 'CUMIPMT(0.03, 12, 100000, 1, 6, 0)'],
+  ['NORM.DIST / NORM.INV', 'İstatistik', 'NORM.DIST(x, Ortalama, StdSapma, Birikimli) · NORM.INV(Olasılık, Ortalama, StdSapma)', 'Normal dağılım: bir değerin altında kalma olasılığı ve tersi.', 'NORM.DIST(500, 400, 100, TRUE)'],
+  ['NORM.S.DIST / NORM.S.INV', 'İstatistik', 'NORM.S.DIST(z, Birikimli) · NORM.S.INV(Olasılık)', 'Standart normal dağılım (ortalama 0, sapma 1). %95 güven için z = 1,96.', 'NORM.S.INV(0.975)'],
+  ['T.DIST / T.INV', 'İstatistik', 'T.DIST(x, sd, Birikimli) · T.DIST.2T(x, sd) · T.DIST.RT(x, sd) · T.INV(p, sd) · T.INV.2T(p, sd)', 'Student t dağılımı: küçük örneklemde güven aralığı ve t testi.', 'T.INV.2T(0.05, 20)'],
+  ['CONFIDENCE.NORM / CONFIDENCE.T', 'İstatistik', 'CONFIDENCE.T(Alfa, StdSapma, Örneklem)', 'Ortalamanın güven aralığının yarı genişliği (± payı).', 'CONFIDENCE.T(0.05, 120, 30)'],
+  ['POISSON.DIST / EXPON.DIST', 'İstatistik', 'POISSON.DIST(x, Ortalama, Birikimli) · EXPON.DIST(x, Lambda, Birikimli)', 'Olay sayısı (Poisson) ve olaylar arası süre (üstel) olasılıkları.', 'POISSON.DIST(2, 3, FALSE)'],
+  ['COMBIN / PERMUT / FACT', 'Matematik', 'COMBIN(n, k) · PERMUT(n, k) · FACT(n)', 'Kombinasyon, permütasyon ve faktöriyel.', 'COMBIN(7, 2)'],
+  ['GCD / LCM', 'Matematik', 'GCD(a, b, …) · LCM(a, b, …)', 'En büyük ortak bölen ve en küçük ortak kat.', 'LCM(4, 6)'],
+  ['LINESTX / LINEST', 'İstatistik', 'LINESTX(Tablo, Y ifadesi, X1 ifadesi, …) · LINEST(Y sütunu, X sütunu, …)', 'En küçük kareler doğrusal regresyon. Tek satırlık tablo: Slope1, Intercept, CoefficientOfDetermination (R²), StandardError… Örnek: ürün maliyeti fiyatın yaklaşık yüzde kaçı?', 'SELECTCOLUMNS(LINESTX(Urunler, Urunler[BirimMaliyet], Urunler[Fiyat]), "Eğim", [Slope1], "R2", [CoefficientOfDetermination])'],
+  ['OPENINGBALANCEMONTH / QUARTER / YEAR', 'Zaman Zekâsı', 'OPENINGBALANCEMONTH(İfade, Tarih[Tarih])', 'Dönem başı bakiye: bir önceki dönemin son günündeki değer (stok, bakiye).', 'OPENINGBALANCEMONTH([Stok Adedi], Tarih[Tarih])'],
+  ['EVALUATEANDLOG', 'Bilgi', 'EVALUATEANDLOG(İfade, [Etiket], [EnÇokSatır])', 'Değeri değiştirmeden döndürür; Desktop\'ta ara sonucu günlüğe yazar (DAX Debug Output). Hata ayıklama içindir, rapora bırakılmaz.', 'EVALUATEANDLOG([Net Satış], "kontrol")'],
+  ['TOCSV / TOJSON', 'Bilgi', 'TOCSV(Tablo, [EnÇokSatır], [Ayırıcı], [Başlık]) · TOJSON(Tablo, [EnÇokSatır])', 'Bir tabloyu metne çevirir: ara tabloyu bir kartta ya da sorguda görmek için.', 'TOCSV(TOPN(3, VALUES(Urunler[Kategori]), [Net Satış]))'],
+  ['INFO.VIEW.TABLES / COLUMNS / MEASURES / RELATIONSHIPS', 'Bilgi', 'EVALUATE INFO.VIEW.RELATIONSHIPS()', 'Modelin kendisini sorgular: tablolar, sütunlar, ölçüler, ilişkiler. Belgeleme ve model denetimi için. (Kesit yalnız temel sütunları döndürür.)', 'COUNTROWS(INFO.VIEW.RELATIONSHIPS())'],
+  ['EXACT', 'Metin', 'EXACT(Metin1, Metin2)', 'Büyük/küçük harfe duyarlı karşılaştırma ("a" = "A" DAX\'ta DOĞRU\'dur, EXACT ise YANLIŞ).', 'EXACT("Kitap", "kitap")'],
+  ['TIME / TIMEVALUE', 'Tarih', 'TIME(Saat, Dakika, Saniye) · TIMEVALUE("14:30")', 'Saat değeri üretir ya da metinden saate çevirir.', 'TIME(14, 30, 0)'],
+  ['YEARFRAC', 'Tarih', 'YEARFRAC(Başlangıç, Bitiş, [Esas])', 'İki tarih arası yıl kesri (kıdem, faiz günü). Esas: 0 (30/360), 1 (gerçek), 3 (365).', 'YEARFRAC(DATE(2024, 1, 1), DATE(2024, 7, 1), 1)'],
+  ['ISEVEN / ISODD / ISLOGICAL / ISNONTEXT', 'Bilgi', 'ISEVEN(Sayı) · ISODD(Sayı) · ISLOGICAL(Değer) · ISNONTEXT(Değer)', 'Değerin türünü ya da tek/çift olduğunu sınar.', 'ISEVEN(MAX(Tarih[AyNo]))']
+);
 })(window);
