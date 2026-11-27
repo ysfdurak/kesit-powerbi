@@ -39,6 +39,7 @@ cd /home/claude/pbi
 sh build/build.sh            # index.html: build/head.html + stiller + build/body.html + script etiketleri (sıra build.sh içinde)
 node build/vdpack.js         # veri/<paket>.zip: vd_*.js + scratchpad/ds/csv → CSV + BENIOKU.md + olcular.dax + gorevler.md + cozumler.md
 for z in veri/*.zip; do base64 -w0 $z > ${z%.zip}.b64.txt; done   # claude.ai yayını zip sunmadığı için base64 kopyası (vdata.js önce .zip, olmazsa .b64.txt dener)
+node build/calisma.js        # veri/anadolu-market-calisma.zip: derslerin modeli PBIP olarak (veri M içine gömülü) + CSV + Olculer.dax + DOGRULAMA.md
 sh build/ghpack.sh           # GitHub Pages paketi → scratchpad/gh/kesit-powerbi/ ve kesit-powerbi.zip
 ```
 
@@ -85,6 +86,7 @@ node agentval.js /home/claude/pbi/confused.js /home/claude/pbi/confused2.js /hom
 node dashval.js               # 24 rapor, tüm sayfalar, yer imleri, parametreler, mobil
 node lessonval.js /home/claude/pbi/c21.js /home/claude/pbi/c22.js /home/claude/pbi/c23.js /home/claude/pbi/c24.js /home/claude/pbi/c25.js /home/claude/pbi/c26.js   # yeni ders dosyası (şablon B)
 node argval.js                # DAX motoru: bağımsız değişken sayısı, tür hataları, ham JS hatası yok
+node gvval.js                 # görsel kurma ve model kurma alıştırmaları: çözüm doğru sayılıyor mu, bozulmuş çözüm (tür, kategori, ilişki yönü, kardinalite) yakalanıyor mu, görsel hesaplama birim vakaları
 node hiddenval.js             # gizli dilimleyici testleri, teknik şartı, sorgu karşılaştırması, ipucu temizliği, ALL↔ALLSELECTED mutasyonları
 node yolval.js                # öğrenme yolları: sıra, aşama, belge şartı, PL-300 dersleri, DP-600 payı, kapsam haritası
 node termval.js               # ürün dili: eski adlar (patika, Stüdyo, yer imi…) görünür metinde kalmadı
@@ -134,7 +136,7 @@ GitHub paketi testi: `scratchpad/gh/kesit-powerbi` klasörünü 8793 portunda su
 ## Bilinen motor sınırları (tarayıcı DAX motoru)
 
 Bu durumlar derslerde `data-notry` ile gösterilir ve alıştırmalarda kullanılmaz:
-çoka çok ilişki kurma ve çift yönlü model ilişkisi (ölçü içinde CROSSFILTER/TREATAS çalışır), takvim tabanlı zaman zekâsı (önizleme özelliği), pencere fonksiyonlarının toplam satırı (motor boş döndürür), SUMMARIZECOLUMNS'ta IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL.
+çoka çok ilişki kurma (model alıştırmasında `*:*` yalnız seçenek olarak vardır; ölçü içinde CROSSFILTER/TREATAS çalışır; çift yönlü model ilişkisi Aralık 2026'dan beri `rels[].both` ile desteklenir ve model kurma alıştırmasının önizlemesinde kullanılır), takvim tabanlı zaman zekâsı (önizleme özelliği), pencere fonksiyonlarının toplam satırı (motor boş döndürür), SUMMARIZECOLUMNS'ta IGNORE, sorguda START AT ve birden çok EVALUATE, GENERATEALL.
 Gerçek Power BI Desktop ile karşılaştırma (Kasım 2026; araç `pbitest/gen.cjs` + PC'de `kontrol.py`, `yoklama.py`). Motor şu kurallara göre ayarlandı:
 - **Boş satır:** olgu tarafında boş ya da eşleşmeyen anahtar varsa (pasif ilişkide de) boyuta sanal boş satır eklenir. VALUES, ALL ve SUMMARIZECOLUMNS/görsel grupları içerir; tablo başvurusu, FILTER(tablo), DISTINCT, ALLNOBLANKROW, SUMMARIZE(tablo, …) içermez. Görselde ölçüsü boşsa gizlenir. Anadolu Market'te Satislar[TeslimTarihi] yüzünden Tarih'te var (Tarih 1.096 + 1).
 - **Boşlar:** DATEDIFF boşla boş döner; tarih çıkarmada boş 30.12.1899 sayılır. MEDIANX/PERCENTILEX boşları en küçük sayar, seçilen sıra boşsa sonuç boş. EDATE/EOMONTH boşla boş.
@@ -158,3 +160,14 @@ Motorun ağır kaldığı yerler: büyük tabloda (Pedal İzmir ~116 bin satır)
 
 ## Uçtan uca depo vakası (vaka/depo/)
 Sayfa ve beklenen sonuçlar `app/build/gh/static/vaka/depo/` içindedir (üreteç: `ysfdurak.github.io` › `vaka/depo-kaynak/`). `ghpack.sh` her derlemede DAX motorunun paketteki küçültülmüş kopyasını yeni `kesit.js`'ten `vaka/depo/dax.js` olarak üretir ve `tests/vaka-depo.cjs` ile denetler; derleme denetim geçmezse durur. Kaynak dalında `node tests/vaka-depo-kaynak.cjs` aynı ölçüleri `app/dax.js` ile çalıştırır (CI).
+
+## Görsel kurma, model kurma ve Desktop çalışma paketi (Kasım 2026, 4 aşama)
+
+Kesit Power BI'ı Kesit Excel'in uygulamalı düzeyine çıkarma turu. Ayrıntı ve gerekçe `docs/PROJE_REHBERI.md` › 13.
+
+- **`gv.js`** iki yeni alıştırma türü: `t: 'gorsel'` (görsel türü, eksen, gösterge, değerler, görsel filtresi, sıralama, İlk N, görsel hesaplama) ve `t: 'model'` (ilişki uçları, kardinalite, yön, etkin/pasif). Çözüm `sol`, denetim kuralı `kural` alanındadır; veri `X.query` ile aynı motordan gelir. Görsel hesaplama mini dili `vcParse`/`vcEval`.
+- **`x_gorsel.js`** var olan derslere görsel/model alıştırmaları ekler (`ext(id, ex)`), **`c29.js`** sekiz yeni uygulamalı DAX dersi (`add(after, ders)` ile PBI_ORDER'a girer; `yollar.js` grupları da güncellenmeli), **`x_ek.js`** finans, istatistik, yarı toplanabilir, DAX sorgusu, artımlı yenileme alıştırmaları.
+- **`dax.js`** ~53 yeni işlev (finans, dağılımlar, LINESTX, OPENINGBALANCE*, INFO.VIEW alt kümesi, TOCSV/TOJSON…). Excel'in bilinen sonuçlarıyla denetlendi; Desktop karşılaştırması henüz yapılmadı.
+- **`gorevkagidi.js`** her dersin sayfasına "Desktop'ta çalış" bölümü koyar: çalışma paketi bağlantısı ve tarayıcıda üretilen görev kâğıdı (.md; beklenen sonuç tabloları ve ayrı çözüm bölümü).
+- **`build/calisma.js`** çalışma paketini üretir. Yapı, Desktop'ta doğrulanan Lezzet Kurye paketiyle aynıdır; bu paket Desktop'ta henüz açılmadı (KALAN-GOREVLER.md › G40).
+

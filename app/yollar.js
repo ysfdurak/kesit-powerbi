@@ -24,7 +24,7 @@ const STAGES = {
     G('Power BI’ı tanı', 'İlk ölçü, kurulum, ilk rapor', slice('ilk-olcu', 'gorsel-temel')),
     G('Veriyi hazırla ve modelle', 'Power Query, yıldız şema, DAX’a giriş', slice('veri-alma', 'hesap-tablolar')),
     G('İlk rapor ve iş dili', 'Görsel, biçim, filtre, brif', slice('gorsel-secimi', 'excel-entegrasyon')),
-    G('DAX’ın kalbi', 'Bağlam, CALCULATE, ALL ailesi, zaman, sıralama', slice('baglam', 'siralama')),
+    G('DAX’ın kalbi', 'Bağlam, CALCULATE, ALL ailesi, zaman, sıralama, katkı', slice('baglam', 'secime-gore')),
     G('Analiz ve biçim', 'Hızlı ölçü, istatistik, koşullu biçim, tema', slice('hizli-olcu', 'tema-sayfa')),
     G('Veri tarafında derinleş', 'Birleştirme, SQL, veri akışları', slice('pq-model', 'pq-ileri')),
     G('İş kalıpları', 'Rol oynayan tarih, stok, hedef, model', slice('rol-oynayan', 'model-ileri')),
