@@ -110,6 +110,7 @@ function vcEval(ast, tablo, i) {
 /* ---------------------------------------------------------------- görsel verisi */
 // sp: { tur, eksen, gosterge, degerler:[ölçü], filtre:{alan, degerler}, sirala:'etiket'|'azalan'|'artan', topn, hesap:[{ad, ifade}] }
 function gorselVerisi(sp) {
+  if (!sp.tur) throw new Error('Görsel türü seç: soruya hangi görselin cevap verdiğine karar ver.');
   const ms = C.measureSet();
   const degerler = (sp.degerler || []).filter(Boolean);
   if (!degerler.length) throw new Error('Değerler kutusu boş: en az bir ölçü ekle.');
@@ -190,6 +191,7 @@ function gorselDenetle(e, sp) {
   try { o = gorselVerisi(sp); } catch (err) { return { ok: false, msg: err.message }; }
   c = gorselVerisi(e.sol);
   const turler = (e.kural && e.kural.turler) || [e.sol.tur];
+  if (!sp.tur) return { ok: false, msg: 'Önce görsel türünü seç.' };
   if (!turler.includes(sp.tur)) return { ok: false, msg: (e.kural && e.kural.turNeden) || ('Bu soru için ' + TURLER[sp.tur] + ' uygun değil; ' + turler.map(t => TURLER[t]).join(' ya da ') + ' dene.') };
   if (c.kart) return o.kart && esit(o.deger, c.deger) ? { ok: true } : { ok: false, msg: o.kart ? 'Kartın değeri beklenenden farklı: ölçüyü ve filtreyi kontrol et.' : 'Tek bir sayı isteniyor: Kart görseli.' };
   if (o.cats.length !== c.cats.length) return { ok: false, msg: 'Görselde ' + o.cats.length + ' kategori var, ' + c.cats.length + ' bekleniyor. ' + (sp.eksen !== e.sol.eksen ? 'Eksendeki alanı kontrol et.' : (e.sol.topn ? 'İlk N filtresini kontrol et.' : 'Görsel düzeyindeki filtreyi kontrol et.')) };
@@ -210,7 +212,7 @@ function gorselDenetle(e, sp) {
 
 /* ---------------------------------------------------------------- görsel arayüzü */
 const ST = {};
-function bos() { return { tur: 'sutun', eksen: null, gosterge: null, degerler: [], filtre: { alan: null, degerler: [] }, sirala: 'etiket', topn: 0, hesap: [] }; }
+function bos() { return { tur: '', eksen: null, gosterge: null, degerler: [], filtre: { alan: null, degerler: [] }, sirala: 'etiket', topn: 0, hesap: [] }; }
 function gorselView(e, k) {
   const solved = P.ex[k];
   return '<div class="panel brief"><div class="row" style="justify-content:space-between"><span class="eyebrow">Görsel kurma' + (e.sol.hesap && e.sol.hesap.length ? ' · görsel hesaplama' : '') + (solved ? ' · çözüldü' : '') + '</span><span class="chip">Anadolu Market</span></div><div class="q">' + e.q + '</div>'
@@ -230,7 +232,7 @@ function gorselPaint(k) {
   const A = alanlar().map(a => [a, a]), O = OLCULER().map(m => [m, m]);
   const tabloMu = sp.tur === 'tablo' || sp.tur === 'matris';
   let h = '<div class="gvgrid"><div class="gvpane">';
-  h += secim('tur', 'Görsel türü', sp.tur, Object.entries(TURLER));
+  h += secim('tur', 'Görsel türü', sp.tur, Object.entries(TURLER), '— tür seç —');
   h += '<p class="muted gvne">' + esc(TUR_NE[sp.tur]) + '</p>';
   if (sp.tur !== 'kart') h += secim('eksen', tabloMu ? 'Satırlar' : 'Eksen (X)', sp.eksen, A, '— alan seç —');
   if (['sutun', 'cubuk', 'yigin', 'cizgi', 'alan', 'matris'].includes(sp.tur)) h += secim('gosterge', sp.tur === 'matris' ? 'Sütunlar' : 'Gösterge', sp.gosterge, A, '— yok —');
@@ -320,7 +322,9 @@ function modelOnizle(e, rels) {
     const D = window.PBI_CREATE_DAX(model); const ms = C.measureSet();
     const q = D.query({ rows: [pc(e.kontrol.satir)], measures: ms, values: [e.kontrol.olcu], slicers: [], totals: true });
     const rows = q.rows.slice(0, 8).map(r => [kat(r.keys[0]), r.vals[0]]);
-    return '<div class="gvprev"><b>Bu modelle: ' + esc(e.kontrol.olcu) + ' / ' + esc(ad(e.kontrol.satir)) + '</b>' + V.table([pc(e.kontrol.satir).c, e.kontrol.olcu], rows.concat([['Toplam', q.total ? q.total[0] : null]]), { fmts: [null, C.fmtOf(e.kontrol.olcu)] }) + (q.rows.length > 8 ? '<small class="muted">İlk 8 satır</small>' : '') + '</div>';
+    const ayni = q.rows.length > 1 && q.rows.every(r => r.vals[0] === q.rows[0].vals[0]);
+    const not = ayni ? '<div class="msg info"><b>Her satırda aynı değer</b>' + esc(ad(e.kontrol.satir)) + ' filtresi ölçünün tablosuna ulaşmıyor: ilişki yok, ters ya da pasif. Doğru kurulduğunda her satır kendi değerini gösterir.</div>' : '';
+    return '<div class="gvprev">' + not + '<b>Bu modelle: ' + esc(e.kontrol.olcu) + ' / ' + esc(ad(e.kontrol.satir)) + '</b>' + V.table([pc(e.kontrol.satir).c, e.kontrol.olcu], rows.concat([['Toplam', q.total ? q.total[0] : null]]), { fmts: [null, C.fmtOf(e.kontrol.olcu)] }) + (q.rows.length > 8 ? '<small class="muted">İlk 8 satır</small>' : '') + '</div>';
   } catch (err) { return '<p class="muted">Önizleme hesaplanamadı: ' + esc(err.message) + '</p>'; }
 }
 const MS = {};

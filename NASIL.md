@@ -170,4 +170,7 @@ Kesit Power BI'ı Kesit Excel'in uygulamalı düzeyine çıkarma turu. Ayrıntı
 - **`dax.js`** ~53 yeni işlev (finans, dağılımlar, LINESTX, OPENINGBALANCE*, INFO.VIEW alt kümesi, TOCSV/TOJSON…). Excel'in bilinen sonuçlarıyla denetlendi; Desktop karşılaştırması henüz yapılmadı.
 - **`gorevkagidi.js`** her dersin sayfasına "Desktop'ta çalış" bölümü koyar: çalışma paketi bağlantısı ve tarayıcıda üretilen görev kâğıdı (.md; beklenen sonuç tabloları ve ayrı çözüm bölümü).
 - **`build/calisma.js`** çalışma paketini üretir. Yapı, Desktop'ta doğrulanan Lezzet Kurye paketiyle aynıdır; bu paket Desktop'ta henüz açılmadı (KALAN-GOREVLER.md › G40).
+- **`build/statik.js`** (ghpack.sh çağırır): 158 statik ders sayfası, ders dizini ve `sitemap.xml` ders adresleri. `ders/statik.css` ve `sitemap.xml` `build/gh/static/` içinde.
+- **Ertelenmiş paket:** ghpack.sh `EK=` satırındaki dosyalar (`confused, confused2, interview, interview2, guides`) `kesit-ek.js`'e gider. Bu listeye dosya eklersen: o dosyanın verisini açılışta okuyan başka modül olmamalı; görünüm adresini `app.js` › `EK_HASH`'e yaz.
+- **`x_uygulama.js`**: Service, Fabric, kariyer ve başlangıç derslerine uygulamalı görevler; `tests/gvval.js` görsel/model görevlerini de denetler.
 
