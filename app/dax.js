@@ -178,6 +178,8 @@
   /* ---------- Model yardımcıları ---------- */
   const relsFrom = {}; TNAMES.forEach(t => relsFrom[t] = M.rels.filter(r => r.from === t && !r.inactive));
   const ALLRELS = M.rels;
+  // Modelde çift yönlü işaretli (both) etkin ilişkiler her bağlamda başlangıçta çift yönlüdür (model kurma alıştırmasının önizlemesi için)
+  const MODEL_BIDIR = M.rels.filter(r => r.both && !r.inactive);
   const idxCache = {};
   function keyIndex(t, c) { const k = t + '|' + c; if (!idxCache[k]) { const m = new Map(); T[t].rows.forEach((r, i) => { const kk = keyOf(r[c]); if (!m.has(kk)) m.set(kk, i); }); idxCache[k] = m; } return idxCache[k]; }
   function expanded(t) { const out = new Set([t]); const st = [t]; while (st.length) { const x = st.pop(); relsFrom[x].forEach(r => { if (!out.has(r.to)) { out.add(r.to); st.push(r.to); } }); } return out; }
@@ -233,7 +235,7 @@
     return fs + '¦' + sh + '¦' + rel + '¦' + sc + '¦' + (ctx.user || '');
   }
   function withCache(fn) { if (CACHE) return fn(); CACHE = new Map(); try { return fn(); } finally { CACHE = null; } }
-  function mkCtx(filters, base) { return { filters, shadow: base ? base.shadow : filters, scope: base ? base.scope : [], user: base ? base.user : null, relOn: base ? base.relOn : [], relOff: base ? base.relOff : [], bidir: base ? base.bidir : [], _vis: new Map() }; }
+  function mkCtx(filters, base) { return { filters, shadow: base ? base.shadow : filters, scope: base ? base.scope : [], user: base ? base.user : null, relOn: base ? base.relOn : [], relOff: base ? base.relOff : [], bidir: base ? base.bidir : MODEL_BIDIR, _vis: new Map() }; }
   const affects = (f, t, c) => (f.t === t && (c === undefined || f.c === c || (f.c === '*' && !f.xcols && (!f.cols || f.cols.includes(c))))) || (c !== undefined && !!f.xcols && f.xcols.includes(t + '|' + c));
   // bağlamdaki etkin ilişkiler (USERELATIONSHIP / CROSSFILTER NONE ile değişebilir)
   function rels(ctx, t) {

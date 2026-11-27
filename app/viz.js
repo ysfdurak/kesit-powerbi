@@ -67,7 +67,7 @@
   /* ---------- Sütun (dikey) — kümelenmiş / yığılmış / %100; çizgi serileri (kombo) ---------- */
   function column(d, o) {
     o = Object.assign({ grid: true, legend: 'auto' }, o || {}); o.fmt = d.fmt;
-    const W = o.W || 420, H = o.H || 250, padL = o.noAxis ? 6 : 52, padR = 12, padT = (o.labels ? 20 : 14), padB = 38;
+    const W = o.W || 420, H = o.H || 250, padL = o.padL || (o.noAxis ? 6 : 52), padR = 12, padT = (o.labels ? 20 : 14), padB = 38;
     const cats = d.cats; const bars = d.series.filter(s => s.type !== 'line'); const lines = d.series.filter(s => s.type === 'line');
     const stacked = o.stacked || o.pct; let vals = [];
     const totals = cats.map((c, i) => bars.reduce((a, s) => a + (isNum(s.vals[i]) && s.vals[i] > 0 ? s.vals[i] : 0), 0));
@@ -133,7 +133,7 @@
   /* ---------- Çizgi / alan (+ tahmin, eğilim, referans çizgileri) ---------- */
   function line(d, o) {
     o = Object.assign({ grid: true, legend: 'auto', yMin: 'zero', width: 2, interp: 'linear' }, o || {}); o.fmt = d.fmt;
-    const fc = o.forecast || 0; const W = o.W || 420, H = o.H || 240, padL = 54, padR = 16, padT = 14, padB = 34;
+    const fc = o.forecast || 0; const W = o.W || 420, H = o.H || 240, padL = o.padL || 54, padR = 16, padT = 14, padB = 34;
     const cats = d.cats.concat(Array.from({ length: fc }, (_, k) => '+' + (k + 1)));
     const all = d.series.flatMap(s => s.vals.filter(isNum)); const s0 = d.series[0] ? d.series[0].vals : [];
     const fit = (fc || hasTrend(o)) ? linfit(s0) : null; const rl = refLines(o, s0);
@@ -349,7 +349,7 @@
   /* ---------- Yığılmış alan ---------- */
   function area(d, o) {
     o = Object.assign({ grid: true, legend: 'top' }, o || {}); o.fmt = d.fmt;
-    const W = o.W || 420, H = o.H || 240, padL = 54, padR = 14, padT = 14, padB = 34; const cats = d.cats, n = cats.length;
+    const W = o.W || 420, H = o.H || 240, padL = o.padL || 54, padR = 14, padT = 14, padB = 34; const cats = d.cats, n = cats.length;
     const cum = []; let acc = cats.map(() => 0); d.series.forEach(s => { const lo = acc.slice(); acc = acc.map((a, i) => a + (isNum(s.vals[i]) ? s.vals[i] : 0)); cum.push([lo, acc.slice()]); });
     if (o.pct) { const tot = acc.slice(); cum.forEach(c => { c[0] = c[0].map((v, i) => tot[i] ? v / tot[i] : 0); c[1] = c[1].map((v, i) => tot[i] ? v / tot[i] : 0); }); }
     const mx0 = o.pct ? 1 : Math.max(...acc, 1); const ticks = niceTicks(0, mx0, 4); const mx = ticks[ticks.length - 1];

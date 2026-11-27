@@ -1150,3 +1150,29 @@ main p code, main li code, main td code{overflow-wrap:anywhere}
 @media (max-width:640px){.pqprof{grid-template-columns:1fr}}
 .mrunb{margin:-4px 0 8px}
 .mrunout:not(:empty){margin:0 0 12px}
+/* Görsel ve model kurma alıştırmaları (gv.js) */
+.dxdot.gv{background:var(--s3)}
+.gvwrap{display:flex; flex-direction:column; gap:12px}
+.gvgrid{display:grid; grid-template-columns:minmax(220px,280px) 1fr; gap:16px; align-items:start}
+@media (max-width:720px){.gvgrid{grid-template-columns:1fr}}
+.gvpane{display:flex; flex-direction:column; gap:8px}
+.gvf{display:flex; flex-direction:column; gap:3px; font-size:.84rem; font-weight:600}
+.gvf.cb{flex-direction:row; align-items:center; gap:6px; font-weight:400}
+.gvf select,.gvf .input{padding:7px 8px; font-size:.88rem; font-weight:400; color:var(--ink); border:1px solid var(--line); border-radius:7px; background:var(--surface); min-height:36px}
+.gvne{margin:-4px 0 2px; font-size:.8rem}
+.gvmore summary{cursor:pointer; font-size:.85rem; font-weight:600; padding:4px 0}
+.gvmore[open]{display:flex; flex-direction:column; gap:8px}
+.gvchips{display:flex; flex-wrap:wrap; gap:6px}
+.gvchips .chip{cursor:pointer; min-height:32px}
+.gvchips .chip.on{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.gvcanvas{min-height:220px; overflow-x:auto}
+.gvrow{display:flex; flex-wrap:wrap; gap:8px}.gvrow .gvf{flex:1 1 150px}
+.mdtables{display:flex; flex-wrap:wrap; gap:10px}
+.mdtable{border:1px solid var(--line); border-radius:10px; padding:8px 10px; min-width:150px; background:var(--surface)}
+.mdtable b{display:block}.mdtable small{color:var(--muted)}
+.mdtable ul{margin:6px 0 0; padding-left:16px; font-size:.82rem}
+.mdh{margin:6px 0 0}
+.mdrels{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; font-size:.86rem}
+.mdform{display:flex; flex-direction:column; gap:8px; border-top:1px solid var(--line); padding-top:10px}
+.gvprev{display:flex; flex-direction:column; gap:6px}
+.gvcanvas svg.viz{max-width:100%; height:auto}
