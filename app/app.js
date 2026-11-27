@@ -221,6 +221,8 @@ function checkLessonDone(l) { const ex = l.ex || []; if (ex.length && ex.every((
 /* ---------- Kabuk ---------- */
 const VIEWS = {};
 function view(name, def) { VIEWS[name] = def; }
+/* Yayın paketinde mülakat ve sık hatalar bölümleri açılıştan sonra yüklenir (kesit-ek.js); o sırada bu adres istenirse kısa bir bekleme ekranı. */
+view('ekbekle', { render: () => '<div class="wrap"><div class="panel empty" role="status" style="padding:24px"><p class="muted" style="margin:0">Bölüm yükleniyor…</p></div></div>', hash: 'ekbekle' });
 let S = { view: 'home', id: null, step: 0, ctx: null };
 const parentOf = v => ({ lesson: 'curr', path: 'paths', hedef: 'paths', final: 'projeler', karis: 'hatalar', tricks: 'hatalar', pratikSoru: 'pratik' })[v] || v;
 function familyLinks() {
@@ -243,8 +245,10 @@ function renderStats() {
   const ms = $('#miniStats'); if (ms) ms.innerHTML = '<b>' + P.xp + '</b>&nbsp;XP · <b>' + st + '</b>&nbsp;gün';
 }
 let lastHash = location.hash;
+/* kesit-ek.js ile gelen bölümlerin adresleri (yüklenmeden önce de doğru adres yazılsın) */
+const EK_HASH = { karis: 'karistirilanlar', hatalar: 'hatalar', iv: 'kariyer' };
 function hashFor(v, id, ctx, step, section) {
-  const d = VIEWS[v];
+  const d = VIEWS[v] || (EK_HASH[v] ? { hash: EK_HASH[v] } : null);
   if (!d || v === 'home') return '';
   let h = (d.hash || v) + (id ? '-' + id : '');
   if (v === 'lesson') h += (ctx ? '@' + ctx : '') + (step ? '/' + step : '');
@@ -305,7 +309,9 @@ function render() {
   CUR = null; const main = $('#main');
   try {
     renderNav(); renderStats();
-    const d = VIEWS[S.view] || VIEWS.home;
+    let d = VIEWS[S.view];
+    if (!d && window.PBI_EK && !window.PBI_EK.hazir) { d = VIEWS.ekbekle; const want = S.view; window.PBI_EK.then(() => { if (S.view === want) render(); }, () => {}); }
+    d = d || VIEWS.home;
     main.innerHTML = d.render(S.id);
     enhance(main);
     if (d.mount) d.mount(S.id);
@@ -945,7 +951,8 @@ function fromHash() {
   const h = decodeURIComponent((location.hash || '').slice(1));
   const i = h.indexOf('-'); const pre = i < 0 ? h : h.slice(0, i); const id = i < 0 ? null : h.slice(i + 1);
   const v = Object.keys(VIEWS).find(k => k !== 'home' && (VIEWS[k].hash || k) === pre);
-  if (!v) { S = { view: 'home', id: null, step: 0, ctx: null }; if (h && h !== 'home') setTimeout(() => toast('Bu sayfa bulunamadı; ana sayfa açıldı.'), 300); return; }
+  if (!v && h && h !== 'home' && window.PBI_EK && !window.PBI_EK.hazir) { S = { view: 'ekbekle', id: null, step: 0, ctx: null }; window.PBI_EK.then(() => { lastHash = null; followHash(); }, () => { lastHash = null; followHash(); }); return; }
+  if (!v) { S = { view: 'home', id: null, step: 0, ctx: null }; if (h && h !== 'home') setTimeout(() => toast(window.PBI_EK && window.PBI_EK.hata ? 'Bu bölüm yüklenemedi; bağlantını kontrol edip sayfayı yenile.' : 'Bu sayfa bulunamadı; ana sayfa açıldı.'), 300); return; }
     if (v === 'lesson') { const m = String(id).match(/^(.+?)(?:@([\w-]+))?(?:\/(\d+))?$/) || [], lid = m[1] || id; if (!LMAP[lid]) { S = { view: 'curr', id: null, step: 0, ctx: null }; setTimeout(() => toast('Bu ders bulunamadı; dersler açıldı.'), 300); return; } const n = (LMAP[lid].ex || []).length, st = Math.min(n, +m[3] || 0); S = { view: v, id: lid, step: st, ctx: lessonCtx(lid, m[2] || null) }; return; }
   if (v === 'path') {
     const [path, section] = (id || '').split('/');
