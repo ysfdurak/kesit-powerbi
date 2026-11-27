@@ -7,7 +7,7 @@ const X = window.PBI_DAX, V = window.PBIViz, MODEL = window.PBI_MODEL, CHK = win
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const CFG0 = window.KESIT_CONFIG || {};
-const SITE = { home: CFG0.homeUrl || 'https://ysfdurak.github.io/', sql: CFG0.sqlUrl || 'https://ysfdurak.github.io/kesit-sql/', pbi: CFG0.pbiUrl || 'https://ysfdurak.github.io/kesit-powerbi/', python: CFG0.pythonUrl || 'https://ysfdurak.github.io/kesit-python/', stat: CFG0.statUrl || 'https://ysfdurak.github.io/kesit-istatistik/' };
+const SITE = { home: CFG0.homeUrl || 'https://ysfdurak.github.io/', sql: CFG0.sqlUrl || 'https://ysfdurak.github.io/kesit-sql/', pbi: CFG0.pbiUrl || 'https://ysfdurak.github.io/kesit-powerbi/', python: CFG0.pythonUrl || 'https://ysfdurak.github.io/kesit-python/', stat: CFG0.statUrl || 'https://ysfdurak.github.io/kesit-istatistik/', excel: CFG0.excelUrl || 'https://ysfdurak.github.io/kesit-excel/' };
 const REPO_URL = (CFG0.author && CFG0.author.repo) || 'https://github.com/ysfdurak/kesit-powerbi';
 const SQL_URL = SITE.sql;
 
@@ -224,7 +224,7 @@ function view(name, def) { VIEWS[name] = def; }
 let S = { view: 'home', id: null, step: 0, ctx: null };
 const parentOf = v => ({ lesson: 'curr', path: 'paths', hedef: 'paths', final: 'projeler', karis: 'hatalar', tricks: 'hatalar', pratikSoru: 'pratik' })[v] || v;
 function familyLinks() {
-  const items = [['Ana sayfa', SITE.home], ['Kesit SQL', SITE.sql], ['Kesit Python', SITE.python], ['Kesit İstatistik', SITE.stat]];
+  const items = [['Ana sayfa', SITE.home], ['Kesit SQL', SITE.sql], ['Kesit Python', SITE.python], ['Kesit İstatistik', SITE.stat], ['Kesit Excel', SITE.excel]];
   return '<div class="fam"><span class="eyebrow">Kesit</span>' + items.map(([t, u]) => '<a href="' + esc(u) + '">' + t + '</a>').join('') + '</div>';
 }
 function renderNav() {
