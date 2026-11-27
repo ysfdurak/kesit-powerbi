@@ -10,7 +10,7 @@ Yaşayan hâkimiyet dokümanı. Amaç: kodu Claude yazmış olsa da projeyi aç�
 | Kimin için | Power BI'a yeni başlayan analistten PL-300 / DP-600 hazırlığı yapana kadar. Power BI Desktop olmayan (Mac, telefon) öğrenci de dersleri çözebilir. |
 | Canlı | https://ysfdurak.github.io/kesit-powerbi/ |
 | Depo | `ysfdurak/kesit-powerbi`. `kaynak` dalı = kaynak kod ve testler, `main` dalı = derlenmiş site (elle düzenlenmez). |
-| Sayılar (Kasım 2026 sonu) | 158 ders, 1.381 alıştırma (710 çoktan seçmeli, 404 DAX ölçüsü, 109 DAX sorgusu, 38 görsel kurma, 8 model kurma, 74 M kodu, 38 Power Query Lab), DAX motorunda 260 işlev |
+| Sayılar (Kasım 2026 sonu) | 158 ders, 1.438 alıştırma (710 çoktan seçmeli, 411 DAX ölçüsü, 142 DAX sorgusu, 50 görsel kurma, 9 model kurma, 78 M kodu, 38 Power Query Lab), DAX motorunda 260 işlev |
 | Sunucu | Yok. GitHub Pages'te statik site; ilerleme tarayıcıda (`localStorage`, anahtar `pbipatika.v1`). Kalıcı hesap ya da sınıf takibi istenirse VPS gerekir. |
 | Lisans | Kod PolyForm Shield 1.0.0, içerik ve veri CC BY-NC 4.0 |
 
@@ -86,7 +86,7 @@ Node doğrulayıcıları `tests/` (NASIL.md › Testler). Bu turun örneklem tes
 
 - Görsel hesaplama dili alt kümedir (reset/axis yok); INFO.VIEW yalnız temel sütunlar; EVALUATEANDLOG günlük yazmaz.
 - Görsel alıştırması grafik biçimlendirmesini (renk, başlık, eksen) denetlemez; yalnız görselin taşıdığı veriyi denetler.
-- Fabric, yönetişim ve kariyer dersleri hâlâ çoğunlukla çoktan seçmelidir (50 derste 3'ten az uygulamalı görev).
+- 17 derste 3'ten az uygulamalı görev kaldı: tarayıcıda gerçeği yapılamayan Service konuları (çalışma alanı, paylaşım, yorum, kullanım izleme) ve iki görevli Fabric dersleri. Bunlara arayüz taklidi eklenmedi.
 - Çalışma paketinde ham tablolar yok; Power Query temizliği için vaka paketleri kullanılır.
 - **Şöyle daha iyi olur:** görev kâğıdı .md yerine doğrudan PBIP içine bir "Görevler" sayfası (metin kutularıyla) olarak da gömülebilir; Desktop'ta tek dosyadan çalışılır. Önce G40 doğrulaması.
 
@@ -128,6 +128,7 @@ Node doğrulayıcıları `tests/` (NASIL.md › Testler). Bu turun örneklem tes
 | 2026-11-08 | Dört etap planı (KALAN-GOREVLER.md), yayın bütünlüğü ve release-manifest |
 | 2026-11-22 | Lezzet Kurye PBIP referans paketi Desktop'ta doğrulandı (G04); 6. tur Desktop karşılaştırması |
 | 2026-11-27 | Kesit ailesine Kesit Excel bağlantısı |
+| 2026-11-27 | Kalan işler turu (14. bölüm): statik ders sayfaları üreteci, kullanıcı gözüyle inceleme, ertelenmiş paket (kesit-ek.js), 41 derse 57 uygulamalı görev. 1.381 → 1.438 alıştırma |
 | 2026-11-27 | Excel düzeyine çıkarma turu (aşağıda): görsel ve model kurma, 8 uygulamalı DAX dersi, 53 yeni DAX işlevi, Desktop çalışma paketi ve görev kâğıtları. 150 → 158 ders, 1.250 → 1.381 alıştırma, 207 → 260 işlev |
 
 ## 13. Kesit Excel düzeyine çıkarma turu (Kasım 2026)
@@ -145,4 +146,40 @@ Node doğrulayıcıları `tests/` (NASIL.md › Testler). Bu turun örneklem tes
 - 6 temsilcili modelde "İlk 10" anlamsız → "İlk 3". Alan uzmanı gözü: alıştırma verisi gerçek bir karar sorusuna benzemeli.
 - Net Satış zaten Durum filtresini ezdiği için Durum dilimleyicili görsel yanıltıcıydı → Kanal = Web filtresine geçildi.
 - Telefonda eksen etiketleri kesiliyordu → `viz.js`'e `padL` seçeneği, görsel genişliği 460.
-- Açılış paketi bütçeyi aştı (5,11 MB ham, 1,57 MB gzip) → `build/budget.cjs` sınırı 5,3 MB / 1,62 MB'a çıkarıldı. **Şöyle daha iyi olur:** dersler (`c*.js`, `x_*.js`) ilk açılışta değil ders açılınca yüklenirse paket yarıya iner; büyük bir yapı değişikliği olduğu için ayrı iş.
+- Açılış paketi bütçeyi aştı (5,11 MB ham, 1,57 MB gzip). Geçici olarak sınır yükseltildi, sonra 14. bölümdeki ertelenmiş paketle eski sınırın altına inildi.
+
+## 14. Kalan işler turu (Kasım 2026)
+
+Kullanıcı "hepsini sırayla yap" dedi; dört iş bu sırayla yapıldı.
+
+### 14.1 Statik ders sayfaları (`app/build/statik.js`)
+`main` dalındaki `ders/<id>/index.html` sayfaları (arama motoru ve JavaScript'siz okuyucu için dersin okuma sürümü) bir zamanlar elle üretilmişti ve üreteci depoda yoktu; yeni dersler sayfasız kalıyordu. Üreteç yeniden yazıldı ve `ghpack.sh` her derlemede çalıştırıyor.
+- **Nasıl doğrulandı:** 150 eski sayfayla karşılaştırıldı. Başlık, açıklama kısaltması (155 karakterde kelime sınırı + "…"), JSON-LD ve gövde birebir; fark yalnız güncel alıştırma sayısı, ders sırası (artık öğrenme yoluyla aynı: seviye → modül → sıra) ve sonradan değişen içerik.
+- Uygulama içi düğmeler (`button.lnk data-lesson/data-go/data-act`) statik sayfada bağlantıya çevrilir.
+- `sitemap.xml` ve `ders/statik.css` artık kaynak dalında; site haritasındaki ders adresleri her derlemede yeniden yazılır.
+
+### 14.2 Kullanıcı gözüyle inceleme (görsel ve model kurma)
+| Rol | Bulgu | Karar |
+|---|---|---|
+| Öğrenci (ilk kez) | Görsel türü "Kümelenmiş sütun" seçili geliyordu: sorunun cevabını veriyordu | Boş gelir; ilk uyarı "Görsel türü seç" |
+| Tasarımcı | Telefonda form alanları panel kenarına yapışık | Panele iç boşluk |
+| Öğretmen / alan uzmanı | Model önizlemesinde her satır aynı toplam ama nedeni yazmıyor | "Her satırda aynı değer: filtre ölçünün tablosuna ulaşmıyor (ilişki yok, ters ya da pasif)" açıklaması |
+
+Ders: bunları teknik testler değil, görevle gezinti buldu (gvval ve tarayıcı testleri yeşildi).
+
+### 14.3 Ertelenmiş paket (`kesit-ek.js`)
+**Neden yarım değil:** Ders gövdeleri birçok dosyada ekleniyor (`l.body +=`), bu yüzden "dersleri açılınca yükle" ancak içerik mimarisi değişirse mümkün (seviye seviye içerik dosyası). Onun yerine bağımsız bölümler ayrıldı: sık karıştırılanlar, sık hatalar ve mülakat (`confused*.js`, `interview*.js`, `guides.js`).
+- `ghpack.sh` bu beş dosyayı `kesit-ek.js`'e koyar; `kesit.js` başındaki yükleyici sayfa yüklendikten sonra onu çeker (`window.PBI_EK` sözü).
+- Bu bölümlere doğrudan adresle (`#hatalar`, `#kariyer`) ya da menüden gelinirse "Bölüm yükleniyor…" görünür, yüklenince sayfa açılır; yüklenemezse "bağlantını kontrol et" uyarısı.
+- `inventory.js` sayımları getter'a çevrildi: sonradan gelen içerik de sayılır.
+- Sonuç: `kesit.js` 5,11 → 4,60 MB (gzip 1,57 → 1,41 MB); bütçe eski 5,1 / 1,56 MB değerine döndü.
+- **Şöyle daha iyi olur:** örnek raporlar (`dash_*.js`, ~650 KB) da ertelenebilir ama `pages.js` açılışta rapor haritası (DMAP) kuruyor ve bitirme projesi sayfası onlara bağlı; önce o haritayı tembel yapmak gerekir.
+- **Burada bir test daha yapalım:** Gerçek Android telefonda yavaş bağlantıda (3G) `#kariyer` adresini doğrudan aç; bekleme ekranı birkaç saniyeden uzun sürmemeli.
+
+### 14.4 Az uygulamalı derslere görev (`app/x_uygulama.js`)
+46 dersin 41'ine 57 görev. İlke: arayüz taklidi yok; her görev tarayıcıda gerçekten yapılan ve denetlenen bir iş:
+- Service ve yönetim dersleri: yayın öncesi mutabakat, model envanteri (INFO.VIEW), `DEFINE MEASURE` ile yerel deneme, REST `executeQueries` sorgusu.
+- Fabric: yük sonrası mutabakat, artımlı yük filigranı, gümüş katman kalite kuralı, PySpark/T-SQL sonucunu anlam modelinde doğrulama, gider tablolarını yıldız şemaya bağlama.
+- Kariyer: Projeler (geciken proje, bütçe kullanımı) ve Talepler (ilk yanıt süresi) üzerinde ölçü.
+- İlk taslakta sonucu 0 ya da boş çıkan üç görev (eşleşmeyen satır, tekrar eden anahtar, tekrar eden olay) değiştirildi: sabit cevabı tahmin edilebilen görev öğretmez. Teslim tarihi kuralında boş tarihin karşılaştırmada en küçük sayılması tuzağı görev metnine yazıldı.
+
