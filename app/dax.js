@@ -42,7 +42,14 @@
     DATE: [3, 3], TODAY: [0, 0], NOW: [0, 0], YEAR: [1, 1], MONTH: [1, 1], DAY: [1, 1], QUARTER: [1, 1], WEEKDAY: [1, 2], WEEKNUM: [1, 2], EOMONTH: [2, 2], EDATE: [2, 2], HOUR: [1, 1], MINUTE: [1, 1], SECOND: [1, 1], DATEDIFF: [3, 3], DATEVALUE: [1, 1], NETWORKDAYS: [2, 4],
     DATESYTD: [1, 2], DATESQTD: [1, 1], DATESMTD: [1, 1], TOTALYTD: [2, 4], TOTALQTD: [2, 3], TOTALMTD: [2, 3], DATEADD: [3, 5], SAMEPERIODLASTYEAR: [1, 1], PARALLELPERIOD: [3, 3], PREVIOUSMONTH: [1, 1], PREVIOUSQUARTER: [1, 1], PREVIOUSYEAR: [1, 2], PREVIOUSDAY: [1, 1], NEXTMONTH: [1, 1], NEXTQUARTER: [1, 1], NEXTYEAR: [1, 2], NEXTDAY: [1, 1], DATESINPERIOD: [4, 4], DATESBETWEEN: [3, 3], FIRSTDATE: [1, 1], LASTDATE: [1, 1], STARTOFMONTH: [1, 1], ENDOFMONTH: [1, 1], STARTOFQUARTER: [1, 1], ENDOFQUARTER: [1, 1], STARTOFYEAR: [1, 2], ENDOFYEAR: [1, 2], CLOSINGBALANCEMONTH: [2, 3], CLOSINGBALANCEQUARTER: [2, 3], CLOSINGBALANCEYEAR: [2, 4], OPENINGBALANCEYEAR: [2, 4],
     LASTNONBLANK: [2, 2], FIRSTNONBLANK: [2, 2], LASTNONBLANKVALUE: [2, 2], FIRSTNONBLANKVALUE: [2, 2], PATH: [2, 2], PATHLENGTH: [1, 1], PATHITEM: [2, 3], PATHITEMREVERSE: [2, 3], PATHCONTAINS: [2, 2],
-    ORDERBY: [0, INF], PARTITIONBY: [0, INF], OFFSET: [1, INF], INDEX: [1, INF], WINDOW: [4, INF], RANK: [0, INF], ROWNUMBER: [0, INF], SELECTEDMEASURE: [0, 0]
+    ORDERBY: [0, INF], PARTITIONBY: [0, INF], OFFSET: [1, INF], INDEX: [1, INF], WINDOW: [4, INF], RANK: [0, INF], ROWNUMBER: [0, INF], SELECTEDMEASURE: [0, 0],
+    /* Kasım 2026 eklemeleri: finans, istatistik dağılımları, regresyon, dönem bakiyesi, hata ayıklama, model sorgulama */
+    IPMT: [4, 6], PPMT: [4, 6], NPER: [3, 5], RATE: [3, 6], SLN: [3, 3], DDB: [4, 5], SYD: [4, 4], EFFECT: [2, 2], NOMINAL: [2, 2], RRI: [3, 3], PDURATION: [3, 3], CUMIPMT: [6, 6], CUMPRINC: [6, 6],
+    'NORM.DIST': [4, 4], 'NORM.INV': [3, 3], 'NORM.S.DIST': [2, 2], 'NORM.S.INV': [1, 1], 'T.DIST': [3, 3], 'T.DIST.2T': [2, 2], 'T.DIST.RT': [2, 2], 'T.INV': [2, 2], 'T.INV.2T': [2, 2],
+    'CONFIDENCE.NORM': [3, 3], 'CONFIDENCE.T': [3, 3], 'POISSON.DIST': [3, 3], 'EXPON.DIST': [3, 3], COMBIN: [2, 2], PERMUT: [2, 2], FACT: [1, 1], GCD: [2, INF], LCM: [2, INF], LOG10: [1, 1], RANDBETWEEN: [2, 2],
+    LINEST: [2, INF], LINESTX: [3, INF], OPENINGBALANCEMONTH: [2, 3], OPENINGBALANCEQUARTER: [2, 3], OPENINGBALANCEYEAR: [2, 4],
+    EVALUATEANDLOG: [1, 3], TOCSV: [1, 4], TOJSON: [1, 2], EXACT: [2, 2], TIME: [3, 3], TIMEVALUE: [1, 1], YEARFRAC: [2, 3], UNICODE: [1, 1], ISEVEN: [1, 1], ISODD: [1, 1], ISLOGICAL: [1, 1], ISNONTEXT: [1, 1],
+    'INFO.VIEW.TABLES': [0, 0], 'INFO.VIEW.MEASURES': [0, 0], 'INFO.VIEW.RELATIONSHIPS': [0, 0], 'INFO.VIEW.COLUMNS': [0, 0]
   };
   const EXCEL_TIP = { AND: ' Üç ya da daha fazla koşul için && kullan (a && b && c).', OR: ' Üç ya da daha fazla koşul için || kullan (a || b || c).', CONCATENATE: ' Daha fazla parça için & kullan ("a" & "b" & "c").', SUM: ' İki sütunu toplamak için SUM(A[x]) + SUM(A[y]) ya da SUMX kullan.', MAX: ' Üç değerin büyüğü için MAX(MAX(a, b), c) yaz.', MIN: ' Üç değerin küçüğü için MIN(MIN(a, b), c) yaz.' };
   function checkArity(fn, n) {
@@ -1157,6 +1164,112 @@
   FN.PI = () => Math.PI; FN.RAND = () => 0.5;
   FN.ALLCROSSFILTERED = FN.ALL;
   FN.SELECTEDMEASURE = () => err('SELECTEDMEASURE yalnızca hesaplama grubu öğelerinde kullanılır; bu oyun alanında hesaplama grubu tanımlanamaz.');
+
+  /* ---- Kasım 2026: finans ---- */
+  const fpmt = (r, n, pv, fv, t) => { if (r === 0) return -(pv + fv) / n; const f = Math.pow(1 + r, n); return -(r * (pv * f + fv)) / ((1 + r * t) * (f - 1)); };
+  const ffv = (r, n, pmt, pv, t) => { if (r === 0) return -(pv + pmt * n); const f = Math.pow(1 + r, n); return -(pv * f + pmt * (1 + r * t) * (f - 1) / r); };
+  const fipmt = (r, per, n, pv, fv, t) => { const pmt = fpmt(r, n, pv, fv, t); if (t === 1 && per === 1) return 0; const bal = ffv(r, per - 1, pmt, pv, t); return t === 1 ? (bal - pmt) * r : bal * r; };
+  FN.IPMT = (eng, a, st) => { const [r, per, n, pv, fv, t] = finArgs(eng, a, st, 6); if (per < 1 || per > n) err('IPMT: dönem 1 ile dönem sayısı arasında olmalı.'); return fipmt(r, per, n, pv, fv, t); };
+  FN.PPMT = (eng, a, st) => { const [r, per, n, pv, fv, t] = finArgs(eng, a, st, 6); if (per < 1 || per > n) err('PPMT: dönem 1 ile dönem sayısı arasında olmalı.'); return fpmt(r, n, pv, fv, t) - fipmt(r, per, n, pv, fv, t); };
+  FN.NPER = (eng, a, st) => { const [r, pmt, pv, fv, t] = finArgs(eng, a, st, 5); if (r === 0) return -(pv + fv) / pmt; const z = pmt * (1 + r * t) / r; const v = Math.log((z - fv) / (pv + z)) / Math.log(1 + r); if (!isFinite(v)) err('NPER: bu ödemeyle borç kapanmaz (ödeme faizi karşılamıyor).'); return v; };
+  FN.RATE = (eng, a, st) => { const [n, pmt, pv, fv, t, g] = finArgs(eng, a, st, 6); let r = g || 0.1; for (let k = 0; k < 100; k++) { const f = rr => ffv(rr, n, pmt, pv, t) - fv; const y = f(r), d = (f(r + 1e-7) - y) / 1e-7; if (!d) break; const r2 = r - y / d; if (Math.abs(r2 - r) < 1e-12) return r2; r = r2; } return Math.abs(ffv(r, n, pmt, pv, t) - fv) < 1e-6 ? r : err('RATE çözüme ulaşmadı; tahmin değeri verin.'); };
+  FN.SLN = (eng, a, st) => { const [c, s, l] = finArgs(eng, a, st, 3); if (!l) err('SLN: ömür 0 olamaz.'); return (c - s) / l; };
+  FN.SYD = (eng, a, st) => { const [c, s, l, per] = finArgs(eng, a, st, 4); return (c - s) * (l - per + 1) * 2 / (l * (l + 1)); };
+  FN.DDB = (eng, a, st) => { const [c, s, l, per, f0] = finArgs(eng, a, st, 5); const f = f0 || 2; let book = c, dep = 0; for (let k = 1; k <= per; k++) { dep = Math.min(book * f / l, Math.max(0, book - s)); book -= dep; } return dep; };
+  FN.EFFECT = (eng, a, st) => { const [r, n0] = finArgs(eng, a, st, 2); const n = Math.trunc(n0); if (r <= 0 || n < 1) err('EFFECT: oran > 0, dönem ≥ 1 olmalı.'); return Math.pow(1 + r / n, n) - 1; };
+  FN.NOMINAL = (eng, a, st) => { const [r, n0] = finArgs(eng, a, st, 2); const n = Math.trunc(n0); if (r <= 0 || n < 1) err('NOMINAL: oran > 0, dönem ≥ 1 olmalı.'); return n * (Math.pow(1 + r, 1 / n) - 1); };
+  FN.RRI = (eng, a, st) => { const [n, pv, fv] = finArgs(eng, a, st, 3); return Math.pow(fv / pv, 1 / n) - 1; };
+  FN.PDURATION = (eng, a, st) => { const [r, pv, fv] = finArgs(eng, a, st, 3); return (Math.log(fv) - Math.log(pv)) / Math.log(1 + r); };
+  const cum = kind => (eng, a, st) => { const [r, n, pv, s, e, t] = finArgs(eng, a, st, 6); let tot = 0; for (let p = s; p <= e; p++) { const ip = fipmt(r, p, n, pv, 0, t); tot += kind === 'i' ? ip : fpmt(r, n, pv, 0, t) - ip; } return tot; };
+  FN.CUMIPMT = cum('i'); FN.CUMPRINC = cum('p');
+
+  /* ---- istatistik dağılımları ---- */
+  const erf = x => { const t = 1 / (1 + 0.5 * Math.abs(x)); const y = 1 - t * Math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277))))))))); return x >= 0 ? y : -y; };
+  const phi = z => 0.5 * (1 + erf(z / Math.SQRT2));
+  const phiInv = p => { if (p <= 0 || p >= 1) err('Olasılık 0 ile 1 arasında olmalı.'); const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239], b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572], c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783], d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416]; const pl = 0.02425; let q, r; if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); } if (p > 1 - pl) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); } q = p - 0.5; r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); };
+  const lgamma = x => { const g = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5]; let y = x, t = x + 5.5; t -= (x + 0.5) * Math.log(t); let ser = 1.000000000190015; for (const c of g) ser += c / ++y; return -t + Math.log(2.5066282746310005 * ser / x); };
+  const betacf = (a, b, x) => { let qab = a + b, qap = a + 1, qam = a - 1, c = 1, d = 1 - qab * x / qap; if (Math.abs(d) < 1e-30) d = 1e-30; d = 1 / d; let h = d; for (let m = 1; m <= 200; m++) { const m2 = 2 * m; let aa = m * (b - m) * x / ((qam + m2) * (a + m2)); d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; h *= d * c; aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2)); d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30; c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30; d = 1 / d; const del = d * c; h *= del; if (Math.abs(del - 1) < 3e-14) break; } return h; };
+  const ibeta = (x, a, b) => { if (x <= 0) return 0; if (x >= 1) return 1; const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x)); return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b; };
+  const tcdf = (t, df) => { const x = df / (df + t * t); const p = 0.5 * ibeta(x, df / 2, 0.5); return t >= 0 ? 1 - p : p; };
+  const tpdf = (t, df) => Math.exp(lgamma((df + 1) / 2) - lgamma(df / 2)) / Math.sqrt(df * Math.PI) * Math.pow(1 + t * t / df, -(df + 1) / 2);
+  const tinv = (p, df) => { let lo = -1e3, hi = 1e3; for (let k = 0; k < 200; k++) { const m = (lo + hi) / 2; if (tcdf(m, df) < p) lo = m; else hi = m; } return (lo + hi) / 2; };
+  const nums3 = (eng, a, st, n) => Array.from({ length: n }, (_, i) => a[i] ? num(evS(eng, a[i], st)) : 0);
+  const bool = (eng, x, st) => { const v = evS(eng, x, st); return typeof v === 'boolean' ? v : !!num(v); };
+  FN['NORM.S.DIST'] = (eng, a, st) => { const z = num(evS(eng, a[0], st)); return bool(eng, a[1], st) ? phi(z) : Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI); };
+  FN['NORM.DIST'] = (eng, a, st) => { const [x, m, s] = nums3(eng, a, st, 3); if (s <= 0) err('NORM.DIST: standart sapma > 0 olmalı.'); const z = (x - m) / s; return bool(eng, a[3], st) ? phi(z) : Math.exp(-z * z / 2) / (s * Math.sqrt(2 * Math.PI)); };
+  FN['NORM.S.INV'] = (eng, a, st) => phiInv(num(evS(eng, a[0], st)));
+  FN['NORM.INV'] = (eng, a, st) => { const [p, m, s] = nums3(eng, a, st, 3); if (s <= 0) err('NORM.INV: standart sapma > 0 olmalı.'); return m + s * phiInv(p); };
+  FN['T.DIST'] = (eng, a, st) => { const [x, df] = nums3(eng, a, st, 2); if (df < 1) err('T.DIST: serbestlik derecesi ≥ 1.'); return bool(eng, a[2], st) ? tcdf(x, Math.trunc(df)) : tpdf(x, Math.trunc(df)); };
+  FN['T.DIST.RT'] = (eng, a, st) => { const [x, df] = nums3(eng, a, st, 2); return 1 - tcdf(x, Math.trunc(df)); };
+  FN['T.DIST.2T'] = (eng, a, st) => { const [x, df] = nums3(eng, a, st, 2); if (x < 0) err('T.DIST.2T: x negatif olamaz.'); return 2 * (1 - tcdf(x, Math.trunc(df))); };
+  FN['T.INV'] = (eng, a, st) => { const [p, df] = nums3(eng, a, st, 2); if (p <= 0 || p >= 1) err('T.INV: olasılık 0 ile 1 arasında.'); return tinv(p, Math.trunc(df)); };
+  FN['T.INV.2T'] = (eng, a, st) => { const [p, df] = nums3(eng, a, st, 2); if (p <= 0 || p > 1) err('T.INV.2T: olasılık 0 ile 1 arasında.'); return tinv(1 - p / 2, Math.trunc(df)); };
+  FN['CONFIDENCE.NORM'] = (eng, a, st) => { const [al, s, n] = nums3(eng, a, st, 3); return phiInv(1 - al / 2) * s / Math.sqrt(n); };
+  FN['CONFIDENCE.T'] = (eng, a, st) => { const [al, s, n] = nums3(eng, a, st, 3); if (n < 2) err('CONFIDENCE.T: örneklem ≥ 2.'); return tinv(1 - al / 2, n - 1) * s / Math.sqrt(n); };
+  const fact = n => { let r = 1; for (let k = 2; k <= n; k++) r *= k; return r; };
+  FN.FACT = (eng, a, st) => { const n = Math.trunc(num(evS(eng, a[0], st))); if (n < 0) err('FACT: negatif sayı.'); return fact(n); };
+  FN.COMBIN = (eng, a, st) => { const [n, k] = nums3(eng, a, st, 2).map(Math.trunc); if (k > n || k < 0) err('COMBIN: 0 ≤ k ≤ n olmalı.'); return Math.round(fact(n) / (fact(k) * fact(n - k))); };
+  FN.PERMUT = (eng, a, st) => { const [n, k] = nums3(eng, a, st, 2).map(Math.trunc); if (k > n || k < 0) err('PERMUT: 0 ≤ k ≤ n olmalı.'); return Math.round(fact(n) / fact(n - k)); };
+  FN['POISSON.DIST'] = (eng, a, st) => { const [x0, l] = nums3(eng, a, st, 2); const x = Math.trunc(x0); const pmf = k => Math.exp(-l + k * Math.log(l) - lgamma(k + 1)); if (!bool(eng, a[2], st)) return pmf(x); let t = 0; for (let k = 0; k <= x; k++) t += pmf(k); return t; };
+  FN['EXPON.DIST'] = (eng, a, st) => { const [x, l] = nums3(eng, a, st, 2); return bool(eng, a[2], st) ? 1 - Math.exp(-l * x) : l * Math.exp(-l * x); };
+  const gcd2 = (x, y) => { x = Math.abs(Math.trunc(x)); y = Math.abs(Math.trunc(y)); while (y) [x, y] = [y, x % y]; return x; };
+  FN.GCD = (eng, a, st) => a.map(x => num(evS(eng, x, st))).reduce(gcd2);
+  FN.LCM = (eng, a, st) => a.map(x => Math.trunc(num(evS(eng, x, st)))).reduce((x, y) => x && y ? Math.abs(x * y) / gcd2(x, y) : 0);
+  FN.LOG10 = (eng, a, st) => Math.log10(num(evS(eng, a[0], st)));
+  FN.RANDBETWEEN = (eng, a, st) => { const [lo, hi] = nums3(eng, a, st, 2); return Math.floor(lo + Math.random() * (Math.floor(hi) - Math.ceil(lo) + 1)); };
+
+  /* ---- regresyon: LINESTX(Tablo, Y, X1, …) ve LINEST(Y sütunu, X sütunu, …) tek satırlık tablo döndürür ---- */
+  function regres(ys, xs) {
+    const n = ys.length, k = xs.length ? xs[0].length : 0;
+    const bosSonuc = kk => { const cols = []; for (let j = 0; j < kk; j++) cols.push('Slope' + (j + 1)); cols.push('Intercept'); for (let j = 0; j < kk; j++) cols.push('StandardErrorSlope' + (j + 1)); cols.push('StandardErrorIntercept', 'CoefficientOfDetermination', 'StandardError', 'FStatistic', 'DegreesOfFreedom', 'RegressionSumOfSquares', 'ResidualSumOfSquares'); return { kind: 'table', cols: cols.map(c => ({ name: '[' + c + ']', short: c, lin: null })), rows: [cols.map(() => null)] }; };
+    // Gözlem azsa ya da değişkenler doğrusal bağımlıysa sonuçlar boş döner (görsel kırılmaz; Power BI'da bu hücreler hata/boş gösterir)
+    if (!k || n <= k + 1) return bosSonuc(k || 1);
+    const A = ys.map((_, i) => [...xs[i], 1]), m = k + 1;
+    const AtA = Array.from({ length: m }, (_, r) => Array.from({ length: m }, (_, c) => A.reduce((t, row) => t + row[r] * row[c], 0)));
+    const Aty = Array.from({ length: m }, (_, r) => A.reduce((t, row, i) => t + row[r] * ys[i], 0));
+    const inv = (M) => { const N = M.length, X = M.map((r, i) => [...r, ...Array.from({ length: N }, (_, j) => (i === j ? 1 : 0))]); for (let c = 0; c < N; c++) { let p = c; for (let r = c + 1; r < N; r++) if (Math.abs(X[r][c]) > Math.abs(X[p][c])) p = r; [X[c], X[p]] = [X[p], X[c]]; if (Math.abs(X[c][c]) < 1e-12) return null; const d = X[c][c]; for (let j = 0; j < 2 * N; j++) X[c][j] /= d; for (let r = 0; r < N; r++) if (r !== c) { const f = X[r][c]; for (let j = 0; j < 2 * N; j++) X[r][j] -= f * X[c][j]; } } return X.map(r => r.slice(N)); };
+    const I = inv(AtA); if (!I) return bosSonuc(k);
+    const b = I.map(r => r.reduce((t, v, j) => t + v * Aty[j], 0));
+    const fit = A.map(r => r.reduce((t, v, j) => t + v * b[j], 0)), ym = ys.reduce((t, v) => t + v, 0) / n;
+    const ssr = ys.reduce((t, y, i) => t + (y - fit[i]) ** 2, 0), sst = ys.reduce((t, y) => t + (y - ym) ** 2, 0), df = n - m;
+    const se = Math.sqrt(ssr / df), seb = I.map((r, i) => Math.sqrt(r[i] * ssr / df));
+    const cols = [], row = [];
+    for (let j = 0; j < k; j++) { cols.push('Slope' + (j + 1)); row.push(b[j]); }
+    cols.push('Intercept'); row.push(b[k]);
+    for (let j = 0; j < k; j++) { cols.push('StandardErrorSlope' + (j + 1)); row.push(seb[j]); }
+    cols.push('StandardErrorIntercept', 'CoefficientOfDetermination', 'StandardError', 'FStatistic', 'DegreesOfFreedom', 'RegressionSumOfSquares', 'ResidualSumOfSquares');
+    row.push(seb[k], sst ? 1 - ssr / sst : null, se, ((sst - ssr) / k) / (ssr / df), df, sst - ssr, ssr);
+    return { kind: 'table', cols: cols.map(c => ({ name: '[' + c + ']', short: c, lin: null })), rows: [row] };
+  }
+  FN.LINESTX = (eng, a, st) => { const tb = evT(eng, a[0], st, 'LINESTX'); const pts = iterate(eng, tb, st, s => [evS(eng, a[1], s), ...a.slice(2).map(x => evS(eng, x, s))]).filter(r => r.every(v => !isBlank(v))); return regres(pts.map(r => num(r[0])), pts.map(r => r.slice(1).map(num))); };
+  FN.LINEST = (eng, a, st) => { const { t } = colArg(a[0], 'LINEST'); const ix = visible(st.ctx, t); const get = x => { const { c } = colArg(x, 'LINEST'); return ix.map(i => T[t].rows[i][c]); }; const y = get(a[0]), xs = a.slice(1).map(get); const keep = y.map((v, i) => !isBlank(v) && xs.every(c => !isBlank(c[i]))); return regres(y.filter((_, i) => keep[i]).map(num), y.map((_, i) => xs.map(c => num(c[i]))).filter((_, i) => keep[i])); };
+
+  /* ---- dönem başı bakiye: bir önceki dönemin son günü ---- */
+  const opening = (unit, fn) => (eng, a, st) => FN.CALCULATE(eng, [a[0], { type: 'call', fn: 'PREVIOUSDAY', args: [{ type: 'call', fn: 'STARTOF' + unit, args: [a[1]] }] }].concat(a[2] ? [a[2]] : []), st);
+  FN.OPENINGBALANCEMONTH = opening('MONTH'); FN.OPENINGBALANCEQUARTER = opening('QUARTER'); FN.OPENINGBALANCEYEAR = (eng, a, st) => opening('YEAR')(eng, [a[0], a[1]].concat(a[2] && a[2].type !== 'str' ? [a[2]] : []), st);
+
+  /* ---- hata ayıklama ve metin ---- */
+  FN.EVALUATEANDLOG = (eng, a, st) => { const v = evS(eng, a[0], st); if (typeof console !== 'undefined' && root.PBI_DAX_LOG) root.PBI_DAX_LOG.push({ label: a[1] ? String(evS(eng, a[1], st)) : '', value: v }); return v; };
+  const tableArg = (eng, a, st, fn) => { const tb = evT(eng, a, st, fn); return { cols: tCols(tb).map(c => c.short || c.name), rows: Array.from({ length: tLen(tb) }, (_, i) => tRow(tb, i)) }; };
+  const cell = v => isBlank(v) ? '' : isDate(v) ? fmtDate(v, 'yyyy-MM-dd') : String(v);
+  FN.TOCSV = (eng, a, st) => { const t = tableArg(eng, a[0], st, 'TOCSV'); const max = a[1] && a[1].type !== 'empty' ? num(evS(eng, a[1], st)) : 10; const del = a[2] && a[2].type !== 'empty' ? String(evS(eng, a[2], st)) : ','; const head = a[3] ? bool(eng, a[3], st) : true; const q = x => /[",\n]/.test(x) || x.includes(del) ? '"' + x.replace(/"/g, '""') + '"' : x; return (head ? [t.cols.map(q).join(del)] : []).concat(t.rows.slice(0, max).map(r => r.map(v => q(cell(v))).join(del))).join('\n'); };
+  FN.TOJSON = (eng, a, st) => { const t = tableArg(eng, a[0], st, 'TOJSON'); const max = a[1] ? num(evS(eng, a[1], st)) : 10; return JSON.stringify({ header: t.cols, rowCount: t.rows.length, data: t.rows.slice(0, max).map(r => r.map(v => isBlank(v) ? null : isDate(v) ? fmtDate(v, 'yyyy-MM-dd') : v)) }); };
+  FN.EXACT = (eng, a, st) => String(evS(eng, a[0], st) ?? '') === String(evS(eng, a[1], st) ?? '');
+  FN.UNICODE = (eng, a, st) => { const s = String(evS(eng, a[0], st) ?? ''); if (!s) err('UNICODE: boş metin.'); return s.codePointAt(0); };
+  FN.TIME = (eng, a, st) => { const [h, m, s] = nums3(eng, a, st, 3); const f = ((h * 3600 + m * 60 + s) % 86400) / 86400; return new Date(Date.UTC(1899, 11, 30) + Math.round(f * 86400000)); };
+  FN.TIMEVALUE = (eng, a, st) => { const v = String(evS(eng, a[0], st) ?? '').trim(); const m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM|ÖÖ|ÖS)?$/i.exec(v) || /(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(v); if (!m) err('TIMEVALUE: saat metni tanınmadı.'); let h = +m[1]; const ap = (m[4] || '').toUpperCase(); if ((ap === 'PM' || ap === 'ÖS') && h < 12) h += 12; if ((ap === 'AM' || ap === 'ÖÖ') && h === 12) h = 0; return new Date(Date.UTC(1899, 11, 30, h, +m[2], +(m[3] || 0))); };
+  FN.YEARFRAC = (eng, a, st) => { let d1 = dateArg(eng, a[0], st, 'YEARFRAC'), d2 = dateArg(eng, a[1], st, 'YEARFRAC'); if (!d1 || !d2) return null; if (d1 > d2) [d1, d2] = [d2, d1]; const b = a[2] ? num(evS(eng, a[2], st)) : 0; const days = (d2 - d1) / 86400000; if (b === 1) { const y1 = d1.getUTCFullYear(), y2 = d2.getUTCFullYear(); const leap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; const avg = y1 === y2 ? (leap(y1) ? 366 : 365) : Array.from({ length: y2 - y1 + 1 }, (_, i) => (leap(y1 + i) ? 366 : 365)).reduce((x, y) => x + y, 0) / (y2 - y1 + 1); return days / avg; } if (b === 2) return days / 360; if (b === 3) return days / 365; let D1 = d1.getUTCDate(), D2 = d2.getUTCDate(); const M1 = d1.getUTCMonth(), M2 = d2.getUTCMonth(), Y1 = d1.getUTCFullYear(), Y2 = d2.getUTCFullYear(); if (b === 4) { D1 = Math.min(D1, 30); D2 = Math.min(D2, 30); } else { if (D1 === 31) D1 = 30; if (D2 === 31 && D1 === 30) D2 = 30; } return ((Y2 - Y1) * 360 + (M2 - M1) * 30 + (D2 - D1)) / 360; };
+  FN.ISEVEN = (eng, a, st) => Math.trunc(num(evS(eng, a[0], st))) % 2 === 0;
+  FN.ISODD = (eng, a, st) => Math.abs(Math.trunc(num(evS(eng, a[0], st))) % 2) === 1;
+  FN.ISLOGICAL = (eng, a, st) => typeof evS(eng, a[0], st) === 'boolean';
+  FN.ISNONTEXT = (eng, a, st) => typeof evS(eng, a[0], st) !== 'string';
+
+  /* ---- model sorgulama: INFO.VIEW.* (Microsoft'un sütunlarının bir alt kümesi) ---- */
+  const infoTab = (cols, rows) => ({ kind: 'table', cols: cols.map(c => ({ name: '[' + c + ']', short: c, lin: null })), rows });
+  FN['INFO.VIEW.TABLES'] = () => infoTab(['Name', 'DataCategory', 'IsHidden', 'RowCount'], TNAMES.map(t => [t, M.tables[t].dateTable ? 'Time' : null, false, T[t].rows.length]));
+  FN['INFO.VIEW.COLUMNS'] = () => infoTab(['Table', 'Name', 'DataType', 'SortByColumn'], TNAMES.flatMap(t => T[t].cols.map(c => { const v = (T[t].rows.find(r => !isBlank(r[c])) || {})[c]; return [t, c, isDate(v) ? 'DateTime' : typeof v === 'number' ? (Number.isInteger(v) ? 'Int64' : 'Double') : typeof v === 'boolean' ? 'Boolean' : 'String', (M.tables[t].sortBy || {})[c] || null]; })));
+  FN['INFO.VIEW.RELATIONSHIPS'] = () => infoTab(['Relationship', 'FromTable', 'FromColumn', 'FromCardinality', 'ToTable', 'ToColumn', 'ToCardinality', 'IsActive', 'CrossFilteringBehavior'], M.rels.map(r => ["'" + r.from + "'[" + r.fromCol + '] *-1 \'' + r.to + "'[" + r.toCol + ']', r.from, r.fromCol, 'Many', r.to, r.toCol, 'One', !r.inactive, r.both ? 'BothDirections' : 'OneDirection']));
+  FN['INFO.VIEW.MEASURES'] = (eng) => infoTab(['Name', 'Table', 'Expression', 'FormatString'], Object.keys(eng.measures || {}).filter(n => eng.measures[n].expr).map(n => [n, 'Ölçüler', eng.measures[n].expr, null]));
   /* ---------- Genel arayüz ---------- */
   function stripDef(src) {
     const m = src.match(/^\s*([^\n=()\[\]"'{},]+?(?:\s\([^\n()=\[\]]*\))?)\s*:?=(?!=)/);

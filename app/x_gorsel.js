@@ -85,4 +85,35 @@ ext('pl300', [
   G('PL-300 tarzı görev: <b>Elektronik</b> kategorisinde yıllara göre net satışı ve bir önceki yıla göre farkı (<code>Fark</code> görsel hesaplaması) tablo olarak göster.', { tur: 'tablo', eksen: 'Tarih[Yil]', degerler: ['Net Satış'], filtre: { alan: 'Urunler[Kategori]', degerler: ['Elektronik'] }, hesap: [{ ad: 'Fark', ifade: '[Net Satış] - PREVIOUS([Net Satış])' }] }, { kural: { turler: ['tablo', 'sutun', 'cizgi'] } }),
   Mo('PL-300 tarzı görev: talepler müşteri ve tarihe göre analiz edilecek. <b>Talepler</b> tablosunu <b>Musteriler</b> ve <b>Tarih</b> ile ilişkilendir.', ['Talepler', 'Musteriler', 'Tarih'], [R('Talepler', 'MusteriNo', 'Musteriler', 'MusteriNo'), R('Talepler', 'Tarih', 'Tarih', 'Tarih')], { kontrol: { satir: 'Musteriler[Bolge]', olcu: 'Talep Sayısı' } }),
 ]);
+
+/* ---------------------------------------------------------------- başlangıç dersleri: ilk uygulamalar */
+ext('arayuz', [
+  G('Rapor görünümündeki ilk görselin: <b>Kart</b>. Değerler kutusuna <code>Toplam Satış</code> ölçüsünü koy.', { tur: 'kart', degerler: ['Toplam Satış'] }, { hint: 'Görsel türü Kart, Değerler: Toplam Satış.' }),
+  G('Alan kutularını tanı: <b>Tablo</b> görselinde Satırlar kutusuna <code>Musteriler[Bolge]</code>, Değerler kutusuna <code>Toplam Satış</code> koy.', { tur: 'tablo', eksen: 'Musteriler[Bolge]', degerler: ['Toplam Satış'] }, { kural: { turler: ['tablo', 'matris'] } }),
+]);
+ext('menuler-turu', [
+  G('Ekle menüsünden bir sütun grafik eklediğini düşün: eksene <code>Tarih[Yil]</code>, değere <code>Toplam Satış</code> koy.', { tur: 'sutun', eksen: 'Tarih[Yil]', degerler: ['Toplam Satış'] }, { kural: { turler: ['sutun', 'cizgi'] } }),
+]);
+ext('hizmet-kullanici', [
+  G('Service\'te rapor okuyan biri gibi: yalnız <b>Ege</b> bölgesindeki müşterilerin satışını kategoriye göre göster (filtre bölmesi).', { tur: 'cubuk', eksen: 'Urunler[Kategori]', degerler: ['Net Satış'], filtre: { alan: 'Musteriler[Bolge]', degerler: ['Ege'] } }, { kural: { turler: ['cubuk', 'sutun'] } }),
+  G('Yöneticinin istediği tek sayı: <b>2023</b> yılının sipariş sayısı.', { tur: 'kart', degerler: ['Sipariş Sayısı'], filtre: { alan: 'Tarih[Yil]', degerler: [2023] } }, { kural: { turler: ['kart'] } }),
+]);
+ext('bicim-temel', [
+  G('Biçimlendirmeden önce düzen: kategorileri <b>net satışa göre büyükten küçüğe</b> sıralı bir çubuk grafikte göster.', { tur: 'cubuk', eksen: 'Urunler[Kategori]', degerler: ['Net Satış'], sirala: 'azalan' }, { kural: { turler: ['cubuk'] } }),
+]);
+ext('tema-sayfa', [
+  G('Sayfanın ana görseli: segment başına net satış ve brüt kârı yan yana gösteren kümelenmiş sütun.', { tur: 'sutun', eksen: 'Musteriler[Segment]', degerler: ['Net Satış', 'Brüt Kâr'] }, { kural: { turler: ['sutun', 'cubuk'] } }),
+]);
+ext('analiz-ozellikleri', [
+  G('Analiz için başlangıç tablosu: <b>yaş grubu × yıl</b> net satış matrisi.', { tur: 'matris', eksen: 'Musteriler[YasGrubu]', gosterge: 'Tarih[Yil]', degerler: ['Net Satış'] }, { kural: { turler: ['matris'] } }),
+]);
+
+ext('veri-alma', [
+  { t: 'dax', name: 'Yüklenen Satır', q: '<b>Yüklenen Satır</b>: veriyi aldıktan sonra ilk kontrol: Satislar tablosuna kaç satır yüklendi?', sol: 'COUNTROWS(Satislar)', hint: 'COUNTROWS(Satislar)' },
+  { t: 'dax', name: 'Ürün Kataloğu Satırı', q: '<b>Ürün Kataloğu Satırı</b>: Urunler tablosunda kaç ürün var? (Kategoriye göre kontrol edilir.)', sol: 'COUNTROWS(Urunler)', grid: [{ t: 'Urunler', c: 'Kategori' }], hint: 'COUNTROWS(Urunler)' },
+]);
+ext('veri-baglantilari', [
+  { t: 'dax', name: 'Kaynak Mutabakatı', q: '<b>Kaynak Mutabakatı</b>: kaynak sistemdeki rapor 1.620 satır diyor. Satislar tablosundaki satır sayısı ile 1620 arasındaki farkı döndür (0 ise eksiksiz yüklenmiş).', sol: 'COUNTROWS(Satislar) - 1620', grid: [{ t: 'Tarih', c: 'Yil' }], hint: 'COUNTROWS(Satislar) - 1620; toplamda 0 olmalı.' },
+  { t: 'dax', name: 'Tutar Toplamı (Kontrol)', q: '<b>Tutar Toplamı (Kontrol)</b>: kaynakla karşılaştırmak için Satislar[Tutar] sütununun ham toplamı (iptaller dahil).', sol: 'SUM(Satislar[Tutar])', hint: 'SUM(Satislar[Tutar])' },
+]);
 })(typeof window !== 'undefined' ? window : globalThis);
