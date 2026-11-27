@@ -31,6 +31,8 @@ cp build/gh/LICENSE.md build/gh/LICENSE-ICERIK.md $O/kesit-powerbi/
 [ -d build/gh/ekran ] && cp build/gh/ekran/*.png $O/kesit-powerbi/ekran/ || true
 touch $O/kesit-powerbi/.nojekyll
 cp -r build/gh/static/. $O/kesit-powerbi/
+# Statik ders sayfaları (arama motoru ve JavaScript'siz okuma) ve site haritasındaki ders adresleri her derlemede yeniden üretilir.
+node build/statik.js "$O/kesit-powerbi"
 # Depo vakası (vaka/depo/) DAX motorunun paketteki kopyasını kullanır; her derlemede yeni kesit.js'ten üretilir.
 (cd $O/kesit-powerbi && node tests/vaka-depo.cjs --yaz && node tests/vaka-depo.cjs)
 node build/readme.js --manifest > "$O/kesit-powerbi/content-manifest.json"
