@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-27",
-  "sourceCommit": "fd989b7618a078cfac381611045ec2dec06bb2ba",
+  "sourceCommit": "30bea1348b5bc8891854af260df69f411d95ae6c",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
