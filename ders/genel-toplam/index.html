@@ -1,0 +1,28 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genel toplam neden farklı? Satır toplamı, oran ve toplam satırı | Kesit Power BI</title><meta name="description" content="Toplam satırı satırların toplamı değil, aynı ölçünün filtresiz hesabıdır. Oranlarda, ortalamalarda ve eşik ölçülerinde toplamın neden “yanlış” göründüğünü…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/genel-toplam/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Genel toplam neden farklı? Satır toplamı, oran ve toplam satırı"><meta property="og:description" content="Toplam satırı satırların toplamı değil, aynı ölçünün filtresiz hesabıdır. Oranlarda, ortalamalarda ve eşik ölçülerinde toplamın neden “yanlış” göründüğünü…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/genel-toplam/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Genel toplam neden farklı? Satır toplamı, oran ve toplam satırı","description":"Toplam satırı satırların toplamı değil, aynı ölçünün filtresiz hesabıdır. Oranlarda, ortalamalarda ve eşik ölçülerinde toplamın neden “yanlış” göründüğünü…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/genel-toplam/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>Genel toplam neden farklı? Satır toplamı, oran ve toplam satırı</h1><p class="st-l">Toplam satırı satırların toplamı değil, aynı ölçünün filtresiz hesabıdır. Oranlarda, ortalamalarda ve eşik ölçülerinde toplamın neden “yanlış” göründüğünü ve nasıl düzeltildiğini öğren.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-genel-toplam">Uygulamada aç, 6 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>Toplam satırı yeniden hesaplanır</h2>
+<p>Power BI tablosundaki toplam satırı, yukarıdaki sayıların toplamı <b>değildir</b>. Ölçü, toplam satırının bağlamında (satır filtresi olmadan) bir kez daha hesaplanır. Toplanabilir ölçülerde (SUM, COUNTROWS) iki sonuç aynı çıkar. Oranlarda, ortalamalarda, benzersiz sayımlarda ve eşikli ölçülerde farklı çıkar.</p>
+<pre class="dax">Marj (Satır Ortalaması) =
+AVERAGEX(VALUES(Urunler[Kategori]), [Kâr Marjı %])</pre>
+<p>[Kâr Marjı %] toplamda “toplam kâr / toplam satış” verir; yukarıdaki ölçü ise kategori marjlarının basit ortalamasını verir. Hangisinin doğru olduğu soruya bağlıdır: ağırlıklı marj çoğu zaman doğrusudur.</p>
+
+<h2>Eşikli ölçüde toplam</h2>
+<p>“100.000'in üstündeki kategorilerin satışı” gibi bir ölçü her satırda doğru çalışır. Toplamda ise koşul <b>toplam</b> için sınanır: toplam zaten 100.000'den büyük olduğu için bütün satış görünür. Doğrusu, koşulu her kategori için ayrı sınamak ve sonuçları toplamaktır: <code>SUMX(VALUES(Urunler[Kategori]), …)</code>.</p>
+<pre class="dax">Büyük Kategori Satışı =
+SUMX(VALUES(Urunler[Kategori]), IF([Net Satış] > 200000, [Net Satış]))</pre>
+
+<h2>Toplamda göstermemek</h2>
+<p>Bazı ölçülerin toplamı anlamsızdır (ör. “en çok satan ürünün adı”, sıra numarası). <code>HASONEVALUE(Urunler[Kategori])</code> satırda tek kategori varsa DOĞRU döner; toplamda YANLIŞ. <code>IF(HASONEVALUE(…), [Ölçü])</code> toplamı boş bırakır.</p>
+<h2>Matrisin ara toplamları</h2><p>Aynı kural matrisin ara toplamlarında da geçerlidir: kategori ara toplamı, o kategorideki ürün satırlarının toplamı değil, ölçünün o kategori bağlamındaki hesabıdır. Ürün düzeyinde eşik uygulayan bir ölçü, ara toplamda yeniden “kategori” için sınanır. Bu yüzden eşik ve ortalama ölçülerinde SUMX(VALUES(Urunler[Urun]), …) ile hangi düzeyde topladığınızı açıkça yazın.</p>
+<div class="tip"><b>Kural</b>Toplam satırını gördüğünüzde kendinize sorun: “Bu sayı, satırların toplamı mı olmalı, yoksa tüm veri üzerinden aynı hesap mı?” Cevaba göre SUMX(VALUES(…)) ya da HASONEVALUE kullanın.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-genel-toplam/1">Alıştırmalara geç (6)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../iteratorler/">← Yineleyiciler (iterators): SUMX, AVERAGEX ve RELATED</a><a href="../iliski-fonk/">İlişkilerle hesap: RELATED, RELATEDTABLE, LOOKUPVALUE, USERELATIONSHIP →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

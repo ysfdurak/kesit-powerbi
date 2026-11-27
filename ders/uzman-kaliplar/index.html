@@ -110,7 +110,7 @@ RETURN
 <pre class="dax">Satış USD (GY Kuruyla) =
 SUMX(
     VALUES(Tarih[YilAy]),
-    VAR GecenYilAyBasi = EDATE(DATEVALUE(Tarih[YilAy] &amp; "-01"), -12)
+    VAR GecenYilAyBasi = EDATE(CALCULATE(MIN(Tarih[Tarih])), -12)
     VAR Kur =
         LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], GecenYilAyBasi, DovizKurlari[ParaBirimi], "USD")
     RETURN DIVIDE([Net Satış], Kur)
@@ -127,7 +127,7 @@ COUNTROWS(
     FILTER(
         VALUES(Tarih[YilAy]),
         ISBLANK(
-            LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], EDATE(DATEVALUE(Tarih[YilAy] &amp; "-01"), -12), DovizKurlari[ParaBirimi], "USD")
+            LOOKUPVALUE(DovizKurlari[Kur], DovizKurlari[Tarih], EDATE(CALCULATE(MIN(Tarih[Tarih])), -12), DovizKurlari[ParaBirimi], "USD")
         )
     )
 )</pre>
@@ -178,5 +178,5 @@ RETURN IF(GorunenGun = TamAyGun, [Hedef])</pre>
 </ol>
 </article>
 <div class="st-c"><a class="st-p" href="../../#ders-uzman-kaliplar/1">Alıştırmalara geç (10)</a></div>
-<nav class="st-n" aria-label="Ders sırası"><a href="../coka-cok/">← Çoka çok ilişkiler, köprü tablolar ve ilişki türleri</a><a href="../ozel-takvim/">Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı →</a></nav></main>
+<nav class="st-n" aria-label="Ders sırası"><a href="../ileri-kaliplar/">← İleri iş kalıpları: Top N + Diğer, sepet, LFL, para birimi</a><a href="../hiyerarsi/">Hiyerarşiler: ebeveyn-çocuk, düzensiz hiyerarşi, hiyerarşiye göre hesap →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

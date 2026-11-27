@@ -1,0 +1,32 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zaman pratiği: önceki ay, geçen yıl, hareketli dönem ve eksik dönemler | Kesit Power BI</title><meta name="description" content="DATEADD ve PREVIOUSMONTH ile önceki dönem, SAMEPERIODLASTYEAR ile yıllık değişim, DATESINPERIOD ile hareketli toplam ve yarım ayı tam ayla karşılaştırma…"><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-pratik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Zaman pratiği: önceki ay, geçen yıl, hareketli dönem ve eksik dönemler"><meta property="og:description" content="DATEADD ve PREVIOUSMONTH ile önceki dönem, SAMEPERIODLASTYEAR ile yıllık değişim, DATESINPERIOD ile hareketli toplam ve yarım ayı tam ayla karşılaştırma…"><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/zaman-pratik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Zaman pratiği: önceki ay, geçen yıl, hareketli dönem ve eksik dönemler","description":"DATEADD ve PREVIOUSMONTH ile önceki dönem, SAMEPERIODLASTYEAR ile yıllık değişim, DATESINPERIOD ile hareketli toplam ve yarım ayı tam ayla karşılaştırma…","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/zaman-pratik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · Zaman Zekâsı</span><h1>Zaman pratiği: önceki ay, geçen yıl, hareketli dönem ve eksik dönemler</h1><p class="st-l">DATEADD ve PREVIOUSMONTH ile önceki dönem, SAMEPERIODLASTYEAR ile yıllık değişim, DATESINPERIOD ile hareketli toplam ve yarım ayı tam ayla karşılaştırma hatası.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-pratik">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>Önceki dönem</h2>
+<p><code>DATEADD(Tarih[Tarih], -1, MONTH)</code> görseldeki her tarih aralığını bir ay geri kaydırır. Ay satırında önceki ayı, yıl satırında “bir ay geri kaydırılmış yılı” verir. <code>PREVIOUSMONTH(Tarih[Tarih])</code> ise her zaman bir önceki <b>tam ayı</b> döndürür. Zaman işlevlerinde tarih sütunu her zaman <b>tarih tablosundan</b> gelmelidir.</p>
+<pre class="dax">Önceki Ay Satışı =
+CALCULATE([Net Satış], DATEADD(Tarih[Tarih], -1, MONTH))</pre>
+
+<h2>Geçen yıl ve değişim</h2>
+<pre class="dax">Geçen Yıl Satışı =
+CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Tarih[Tarih]))</pre>
+<p>Değişim oranı = (bu yıl − geçen yıl) / geçen yıl. Geçen yıl boşsa sonuç boş kalmalıdır; DIVIDE bunu sağlar.</p>
+
+<h2>Hareketli dönem</h2>
+<p>“Son 3 ay” toplamı için <code>DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -3, MONTH)</code>: görseldeki son tarihten geriye 3 aylık tarih kümesi. Mevsim dalgalanmasını yumuşatır.</p>
+<pre class="dax">Son 3 Ay Satışı =
+CALCULATE([Net Satış], DATESINPERIOD(Tarih[Tarih], MAX(Tarih[Tarih]), -3, MONTH))</pre>
+
+<h2>Eksik dönem tuzağı</h2>
+<p>Veri ayın ortasında bitiyorsa son ay “düşmüş” görünür; gerçekte yarım aydır. Yıl başından bugüne (YTD) karşılaştırmada bu yıl 10 ay, geçen yıl 12 ay toplanırsa büyüme yanlış çıkar. Çözüm: geçen yılı da aynı güne kadar kesmek ya da yalnız tamamlanmış ayları karşılaştırmak.</p>
+<h2>Tarih tablosu olmadan olmaz</h2><p>Zaman işlevleri kesintisiz bir tarih sütunu ister: her gün bir satır, boşluk yok. Satislar[Tarih] sütununu doğrudan kullanırsanız satış olmayan günler eksik olduğu için DATEADD ve SAMEPERIODLASTYEAR beklenmedik sonuç verir. Modeldeki Tarih tablosu “tarih tablosu olarak işaretli” olduğu için bu derste her zaman Tarih[Tarih] kullanılır.</p>
+<div class="tip"><b>Kural</b>Her zaman ölçüsünün yanına “hangi tarih aralığını topladım?” sorusunu soran bir kontrol koyun: <code>MIN(Tarih[Tarih])</code> ve <code>MAX(Tarih[Tarih])</code> kartları.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-zaman-pratik/1">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../zaman-donem/">← Dönem fonksiyonları: DATESMTD, DATESQTD, STARTOF, ENDOF, OPENING ve CLOSINGBALANCE</a><a href="../hizli-olcu/">Hızlı ölçüler (quick measures) ve Copilot ile DAX →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

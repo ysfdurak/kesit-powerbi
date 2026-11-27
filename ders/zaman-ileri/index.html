@@ -67,7 +67,7 @@ RETURN
 <p>En sık görülen hata, zaman zekâsını olgu tablosunun tarih sütunuyla yazmaktır:</p>
 <pre class="dax">GY (Olgu Tarihiyle) =
 CALCULATE([Net Satış], SAMEPERIODLASTYEAR(Satislar[Tarih]))</pre>
-<p>Bu ölçü her ay satırında boş, toplam satırında 376.747,20 ₺ gösterir; ikisi de yanlıştır. Neden? Satislar[Tarih] yalnızca satış olan günleri içerir ve bu sütundaki filtre, Tarih tablosundaki ay filtresini kaldırmaz. Kaydırılmış tarihlerle ay filtresinin kesişimi boştur. Toplamda ay filtresi olmadığı için "satış olan günlerin bir yıl öncesi" toplanır: anlamsız bir sayı. Doğru yazım [Satış GY]: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
+<p>Bu ölçü her ay satırında boş, toplam satırında 503.706,75 ₺ gösterir; kategoriye göre kırınca da hata verir. Üçü de yanlıştır. Neden? Satislar[Tarih] yalnızca satış olan günleri içerir, yani kesintisiz bir takvim değildir. Böyle bir sütunda Power BI seçimi tek bir aralık olarak kaydırır ve seçimin sütundaki ardışık değerlerden oluşmasını ister. Kategori filtresi bazı günleri seçimden düşürdüğü için seçim bölünür ve ölçü “bitişik bir seçim gerekir” hatası verir. Ay satırlarında bu sütundaki filtre Tarih tablosundaki ay filtresini kaldırmaz; kaydırılmış tarihlerle ay filtresinin kesişimi boştur. Toplamda ay filtresi olmadığı için ilk satış gününün bir yıl öncesinden son satış gününün bir yıl öncesine kadarki bütün satışlar toplanır: anlamsız bir sayı. Doğru yazım [Satış GY]: <code>SAMEPERIODLASTYEAR(Tarih[Tarih])</code>.</p>
 <ul>
 <li><b>Kesintisiz olmalı:</b> Bu modelde Tarih 1.096 satır ve ilk ile son gün arası 1.096 gün; eksik gün yok. Satış Haziran 2022'de başlasa da tablo yılın başından başlar; zaman zekâsı tam yılları ister.</li>
 <li><b>Tarih tablosu olarak işaretle:</b> İşaret yoksa Tarih[Tarih] filtresi diğer tarih sütunlarındaki filtreleri kaldırmaz ve ALL/REMOVEFILTERS eklemen gerekir.</li>
@@ -123,5 +123,5 @@ RETURN CALCULATE([Net Satış], DATESBETWEEN(Tarih[Tarih], Bas, Bit))</pre>
 </ol>
 </section></article>
 <div class="st-c"><a class="st-p" href="../../#ders-zaman-ileri/1">Alıştırmalara geç (11)</a></div>
-<nav class="st-n" aria-label="Ders sırası"><a href="../baglam-gecisi/">← Bağlam geçişi (context transition)</a><a href="../dax-sorgu/">DAX sorguları ve tablo fonksiyonları →</a></nav></main>
+<nav class="st-n" aria-label="Ders sırası"><a href="../buyuk-model/">← Büyük modeller: artımlı yenileme, hibrit tablolar, toplama tabloları ve bileşik modeller</a><a href="../ozel-takvim/">Özel takvimler: mali yıl, hafta tabanlı ve 4-4-5 takvimlerle zaman zekâsı →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,33 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>İlişkilerle hesap: RELATED, RELATEDTABLE, LOOKUPVALUE, USERELATIONSHIP | Kesit Power BI</title><meta name="description" content="Bir tablodan ilişkili tablonun değerini okumak, bir boyut satırından olgu satırlarını saymak, ilişki yokken değer bulmak ve pasif ilişkiyi açmak."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/iliski-fonk/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="İlişkilerle hesap: RELATED, RELATEDTABLE, LOOKUPVALUE, USERELATIONSHIP"><meta property="og:description" content="Bir tablodan ilişkili tablonun değerini okumak, bir boyut satırından olgu satırlarını saymak, ilişki yokken değer bulmak ve pasif ilişkiyi açmak."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/iliski-fonk/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"İlişkilerle hesap: RELATED, RELATEDTABLE, LOOKUPVALUE, USERELATIONSHIP","description":"Bir tablodan ilişkili tablonun değerini okumak, bir boyut satırından olgu satırlarını saymak, ilişki yokken değer bulmak ve pasif ilişkiyi açmak.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/iliski-fonk/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>İlişkilerle hesap: RELATED, RELATEDTABLE, LOOKUPVALUE, USERELATIONSHIP</h1><p class="st-l">Bir tablodan ilişkili tablonun değerini okumak, bir boyut satırından olgu satırlarını saymak, ilişki yokken değer bulmak ve pasif ilişkiyi açmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-iliski-fonk">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>RELATED: çok tarafından bir tarafına</h2>
+<p>Satislar'ın bir satırındayken ürünün fiyatını okumak için <code>RELATED(Urunler[Fiyat])</code> yazılır. RELATED satır bağlamı ister: hesaplanmış sütunda ya da SUMX gibi bir yineleyicinin içinde çalışır.</p>
+<pre class="dax">Liste Fiyatıyla Ciro =
+SUMX(Satislar, Satislar[Adet] * RELATED(Urunler[Fiyat]))</pre>
+
+<h2>RELATEDTABLE: bir tarafından çok tarafına</h2>
+<p>Ürün tablosunun bir satırındayken o ürünün satış satırlarını almak için <code>RELATEDTABLE(Satislar)</code> kullanılır. Çoğu zaman COUNTROWS ile birlikte: “her ürünün kaç satış satırı var?”.</p>
+<pre class="dax">Satırı Olan Ürün =
+COUNTROWS(FILTER(Urunler, COUNTROWS(RELATEDTABLE(Satislar)) > 0))</pre>
+
+<h2>LOOKUPVALUE: ilişki yoksa</h2>
+<p>İki tablo arasında ilişki yoksa ya da bir tablodan tek bir değeri adla bulmak gerekiyorsa <code>LOOKUPVALUE(sonuç sütunu, arama sütunu, aranan değer)</code> Excel'deki DÜŞEYARA'ya benzer. Birden çok eşleşme varsa hata verir; modelde ilişki varsa RELATED hem hızlı hem güvenlidir.</p>
+<pre class="dax">Kulaklık Fiyatı =
+LOOKUPVALUE(Urunler[Fiyat], Urunler[Urun], "Kablosuz Kulaklık")</pre>
+
+<h2>USERELATIONSHIP: pasif ilişkiyi açmak</h2>
+<p>Satislar[TeslimTarihi] Tarih tablosuna <b>pasif</b> bir ilişkiyle bağlı. Teslim tarihine göre satış için ölçünün içinde bu ilişkiyi açarsınız. Açılan ilişki, o ölçü hesaplanırken etkin ilişkinin yerini alır.</p>
+<pre class="dax">Teslim Tarihine Göre Satış =
+CALCULATE([Net Satış], USERELATIONSHIP(Satislar[TeslimTarihi], Tarih[Tarih]))</pre>
+<div class="note"><b>TREATAS</b>Fiziksel ilişki olmayan iki tablo arasında filtreyi aktarmak için <code>TREATAS(VALUES(Kaynak[Sütun]), Hedef[Sütun])</code> kullanılır (Seçime göre çalışan hesaplar dersi).</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-iliski-fonk/1">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../genel-toplam/">← Genel toplam neden farklı? Satır toplamı, oran ve toplam satırı</a><a href="../var-mantik/">VAR / RETURN, IF ve SWITCH →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

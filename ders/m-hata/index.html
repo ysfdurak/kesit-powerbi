@@ -39,7 +39,7 @@ in
 <p><code>Table.SelectRowsWithErrors</code> yalnız hatalı satırları, <code>Table.RemoveRowsWithErrors</code> geri kalanını verir. Uygun desen: asıl sorgu temiz satırları yükler, ikinci sorgu hatalı satırları bir denetim sayfasına yükler. Hataları silmek toplamı sessizce küçültür; hangi satırların gittiğini izle.</p>
 <pre class="m" data-run>let
     Ham = #table({"Kod", "Tutar"}, {{"A", "120"}, {"B", "yok"}}),
-    Tipli = Table.TransformColumnTypes(Ham, {{"Tutar", type number}})
+    Tipli = Table.TransformColumnTypes(Ham, {{"Tutar", type number}}, "en-US")
 in
     [Temiz = Table.RowCount(Table.RemoveRowsWithErrors(Tipli)), Hatali = Table.RowCount(Table.SelectRowsWithErrors(Tipli))]</pre>
 <h2>Ertelenmiş hata tuzağı</h2>

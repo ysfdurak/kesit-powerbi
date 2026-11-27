@@ -1,0 +1,32 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CALCULATE pratiği: filtreyi korumak, değiştirmek, kaldırmak | Kesit Power BI</title><meta name="description" content="KEEPFILTERS ile kesişim, REMOVEFILTERS ile kaldırma, ALL ile tüm tablo ve ALLSELECTED ile seçilenin içindeki pay: aynı soruya farklı cevaplar."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/calculate-pratik/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="CALCULATE pratiği: filtreyi korumak, değiştirmek, kaldırmak"><meta property="og:description" content="KEEPFILTERS ile kesişim, REMOVEFILTERS ile kaldırma, ALL ile tüm tablo ve ALLSELECTED ile seçilenin içindeki pay: aynı soruya farklı cevaplar."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/calculate-pratik/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"CALCULATE pratiği: filtreyi korumak, değiştirmek, kaldırmak","description":"KEEPFILTERS ile kesişim, REMOVEFILTERS ile kaldırma, ALL ile tüm tablo ve ALLSELECTED ile seçilenin içindeki pay: aynı soruya farklı cevaplar.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Orta","url":"https://ysfdurak.github.io/kesit-powerbi/ders/calculate-pratik/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Orta · DAX Bağlamları</span><h1>CALCULATE pratiği: filtreyi korumak, değiştirmek, kaldırmak</h1><p class="st-l">KEEPFILTERS ile kesişim, REMOVEFILTERS ile kaldırma, ALL ile tüm tablo ve ALLSELECTED ile seçilenin içindeki pay: aynı soruya farklı cevaplar.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-calculate-pratik">Uygulamada aç, 8 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>CALCULATE filtreyi değiştirir</h2>
+<p><code>CALCULATE([Net Satış], Urunler[Kategori] = "Kitap")</code> bir görselde Elektronik satırında bile <b>Kitap</b> satışını gösterir: aynı sütundaki mevcut filtreyi <b>değiştirir</b>. Çoğu zaman istenen budur (ör. “Kitap satışı” sabit bir karşılaştırma sütunu).</p>
+<pre class="dax">Kitap Satışı =
+CALCULATE([Net Satış], Urunler[Kategori] = "Kitap")</pre>
+
+<h2>KEEPFILTERS: kesişim</h2>
+<p>“Bu satırda zaten Kitap seçiliyse göster, değilse boş kalsın” isteniyorsa filtre mevcut seçimle <b>kesişmelidir</b>: <code>KEEPFILTERS(Urunler[Kategori] = "Kitap")</code>. Elektronik satırında sonuç boş olur.</p>
+<pre class="dax">Kitap Satışı (Kesişim) =
+CALCULATE([Net Satış], KEEPFILTERS(Urunler[Kategori] = "Kitap"))</pre>
+
+<h2>REMOVEFILTERS, ALL ve ALLSELECTED</h2>
+<div class="tbl-wrap"><table><tr><th>Yazım</th><th>Etkisi</th><th>Tipik kullanım</th></tr>
+<tr><td><code>REMOVEFILTERS(Urunler[Kategori])</code></td><td>Kategori filtresini kaldırır</td><td>Payda: tüm kategoriler</td></tr>
+<tr><td><code>ALL(Urunler)</code></td><td>Ürün tablosundaki bütün filtreleri kaldırır</td><td>Ürünle ilgili hiçbir seçim sonucu değiştirmesin</td></tr>
+<tr><td><code>ALLSELECTED(Urunler[Kategori])</code></td><td>Görselin kendi satırını kaldırır, dilimleyici seçimini korur</td><td>“Seçilenlerin içindeki pay”</td></tr></table></div>
+<p>REMOVEFILTERS ile ALL'ın CALCULATE içindeki etkisi aynıdır; REMOVEFILTERS niyeti daha açık söyler. ALL ayrıca tablo döndüren bir işlev olarak da kullanılır (ör. COUNTROWS(ALL(Urunler))).</p>
+<pre class="dax">Kategori Payı =
+DIVIDE([Net Satış], CALCULATE([Net Satış], REMOVEFILTERS(Urunler[Kategori])))</pre>
+<div class="warn"><b>Ölçünün kendi filtresi</b>[Net Satış] içinde <code>Satislar[Durum] &lt;&gt; "İptal"</code> filtresi var. Bu yüzden görselde Durum dilimleyicisiyle "İptal" seçerseniz [Net Satış] yine iptal dışını gösterir: CALCULATE aynı sütundaki filtreyi değiştirir. Ölçünün içindeki filtreyi bilmeden dilimleyici sonucu şaşırtır.</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-calculate-pratik/1">Alıştırmalara geç (8)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../calculate/">← CALCULATE: filtre bağlamını değiştirmek</a><a href="../filter-all/">FILTER, ALL, ALLEXCEPT, ALLSELECTED: pay ve oranlar →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

@@ -1,0 +1,33 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Koşullar: IF, AND/OR, SWITCH ve SWITCH(TRUE()) ile sınıflar | Kesit Power BI</title><meta name="description" content="Bir ölçünün sonucuna göre metin ya da başka bir hesap döndürmek; birden çok koşulu bağlamak ve okunur sınıf ölçüleri yazmak."><link rel="canonical" href="https://ysfdurak.github.io/kesit-powerbi/ders/dax-kosul/">
+<meta property="og:type" content="article"><meta property="og:locale" content="tr_TR"><meta property="og:site_name" content="Kesit Power BI"><meta property="og:title" content="Koşullar: IF, AND/OR, SWITCH ve SWITCH(TRUE()) ile sınıflar"><meta property="og:description" content="Bir ölçünün sonucuna göre metin ya da başka bir hesap döndürmek; birden çok koşulu bağlamak ve okunur sınıf ölçüleri yazmak."><meta property="og:url" content="https://ysfdurak.github.io/kesit-powerbi/ders/dax-kosul/"><meta property="og:image" content="https://ysfdurak.github.io/kesit-powerbi/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/vendor/fonts.css"><link rel="stylesheet" href="../statik.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Koşullar: IF, AND/OR, SWITCH ve SWITCH(TRUE()) ile sınıflar","description":"Bir ölçünün sonucuna göre metin ya da başka bir hesap döndürmek; birden çok koşulu bağlamak ve okunur sınıf ölçüleri yazmak.","inLanguage":"tr","isAccessibleForFree":true,"learningResourceType":"Ders","educationalLevel":"Temel","url":"https://ysfdurak.github.io/kesit-powerbi/ders/dax-kosul/","isPartOf":{"@type":"Course","name":"Kesit Power BI","url":"https://ysfdurak.github.io/kesit-powerbi/","provider":{"@type":"Person","name":"Yusuf Durak"}}}</script></head>
+<body class="st"><a class="st-skip" href="#icerik">Ana içeriğe geç</a><header class="st-h"><a class="st-b" href="../../">Kesit Power BI</a><nav aria-label="Konum"><a href="../">Tüm dersler</a></nav></header>
+<main id="icerik" class="st-m"><span class="st-e">Temel · DAX Temelleri</span><h1>Koşullar: IF, AND/OR, SWITCH ve SWITCH(TRUE()) ile sınıflar</h1><p class="st-l">Bir ölçünün sonucuna göre metin ya da başka bir hesap döndürmek; birden çok koşulu bağlamak ve okunur sınıf ölçüleri yazmak.</p>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-kosul">Uygulamada aç, 7 alıştırmayı çöz</a><span>Ücretsiz, hesap gerekmez, kurulum yok.</span></div>
+<p class="st-not">Bu sayfa dersin okuma sürümüdür. Metin bir kutuyu çalıştırmanı ya da adıma geçmeni söylüyorsa dersi uygulamada aç.</p>
+<article class="panel theory">
+<h2>IF: iki yol</h2>
+<p><code>IF(koşul, doğruysa, yanlışsa)</code> Excel'deki EĞER ile aynı mantıktadır. Fark: DAX'ta koşul çoğu zaman bir <b>ölçünün</b> sonucudur ve her görsel hücresinde ayrı hesaplanır.</p>
+<pre class="dax">Satış Durumu =
+IF([Net Satış] >= 100000, "Güçlü", "Zayıf")</pre>
+<p>Üçüncü bağımsız değişkeni yazmazsanız yanlış durumda <b>BLANK</b> döner; görselde o satır görünmeyebilir.</p>
+
+<h2>Birden çok koşul: && ve ||</h2>
+<p>“Ve” için <code>&&</code>, “veya” için <code>||</code> kullanın. <code>AND(a, b)</code> ve <code>OR(a, b)</code> işlevleri de vardır ama yalnız iki bağımsız değişken alır; üç koşulda iç içe yazmak gerekir. <code>NOT</code> bir koşulu tersine çevirir.</p>
+<pre class="dax">Hedefte ve Kârlı =
+IF([Hedef Gerçekleşme %] >= 1 && [Kâr Marjı %] >= 0.3, "Evet", "Hayır")</pre>
+
+<h2>SWITCH: çok yol</h2>
+<p>Bir değeri birçok seçenekle karşılaştırırken iç içe IF yerine <code>SWITCH</code> okunurdur. Aralık (eşik) sınıfları için kalıp <code>SWITCH(TRUE(), koşul1, sonuç1, koşul2, sonuç2, varsayılan)</code>'dır: ilk doğru koşulun sonucu döner. Koşulları <b>büyükten küçüğe</b> sıralayın; yoksa her değer ilk geniş koşula takılır.</p>
+<pre class="dax">Performans Sınıfı =
+SWITCH(TRUE(),
+  [Kâr Marjı %] >= 0.40, "A",
+  [Kâr Marjı %] >= 0.30, "B",
+  "C")</pre>
+<h2>Boş ve sıfır karşılaştırması</h2><p>DAX'ta BLANK bir karşılaştırmada 0 gibi davranır: <code>BLANK() &lt; 1</code> DOĞRU'dur. Bu yüzden hiç satışı olmayan bir satırda <code>IF([Net Satış] &lt; 1000, "Düşük")</code> “Düşük” yazar. Boşu ayrı ele almak istiyorsanız önce <code>ISBLANK([Net Satış])</code> ile sınayın. Koşullu ölçüyü yazdıktan sonra hem dolu hem boş bir satırda deneyin.</p>
+<div class="warn"><b>Metin ölçüsü ve toplam</b>Metin döndüren ölçüler toplam satırında da hesaplanır: toplamın sınıfı, satırların sınıflarının “toplamı” değildir. Gerekirse toplamda boş döndürmek için HASONEVALUE kullanılır (Seçime göre çalışan hesaplar dersi).</div>
+</article>
+<div class="st-c"><a class="st-p" href="../../#ders-dax-kosul/1">Alıştırmalara geç (7)</a></div>
+<nav class="st-n" aria-label="Ders sırası"><a href="../dax-sayma/">← Saymanın yolları: COUNTROWS, DISTINCTCOUNT, COUNTBLANK ve boş sonuç</a><a href="../dax-tarih-metin/">DAX'ta tarih, metin ve sayma fonksiyonları →</a></nav></main>
+<footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>

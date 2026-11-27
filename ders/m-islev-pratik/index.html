@@ -23,6 +23,8 @@ in
 <h2>Table.Profile</h2>
 <p>Görünüm sekmesindeki sütun profilinin kod karşılığı: her sütun için en küçük, en büyük, ortalama, standart sapma, sayım, null ve ayrı sayısı. Denetim sorgusu olarak yükleyebilirsin.</p>
 <pre class="m" data-run>Table.Profile(Satislar)</pre>
+<p>Profil tablosunu süzeceksen (örneğin yalnız null içeren sütunlar) önce <code>Table.Buffer</code> ile sabitle: Power BI tamponsuz <code>Table.Profile</code> sonucunu <code>Table.SelectRows</code> ile süzerken “The field 'NullCount' of the record wasn't found.” hatası verir.</p>
+<pre class="m" data-run>Table.SelectRows(Table.Buffer(Table.Profile(Satislar)), each [NullCount] > 0)[Column]</pre>
 <h2>Takvim: M ile</h2>
 <p>PL-300’ün ortak tarih tablosu maddesi DAX ya da M ile yapılabilir. Veriye bağlı aralık kurmak için <code>List.Min</code> ve <code>List.Max</code> kullanılır:</p>
 <pre class="m" data-run>let
@@ -36,5 +38,5 @@ in
 in
     Table.FirstN(Ay, 5)</pre></article>
 <div class="st-c"><a class="st-p" href="../../#ders-m-islev-pratik/1">Alıştırmalara geç (19)</a></div>
-<nav class="st-n" aria-label="Ders sırası"><a href="../pq-uygulama/">← Power Query komutları uygulama: satır, sütun, ayıklama, örnekten sütun</a><a href="../dax-metin-pratik/">DAX metin fonksiyonları: LEFT, MID, SEARCH, SUBSTITUTE, VALUE alıştırmaları →</a></nav></main>
+<nav class="st-n" aria-label="Ders sırası"><a href="../m-liste-metin/">← List, Text, Date: List.Accumulate, List.Generate, Text.Split</a><a href="../baglam/">Filtre bağlamı (filter context) ve satır bağlamı (row context) →</a></nav></main>
 <footer class="st-f">Kesit ücretsiz bir eğitim ve portföy projesidir. Veri setleri hayalidir. <a href="/">Kesit ana sayfası</a> · <a href="/vaka/">Nasıl yapıldı</a></footer></body></html>
