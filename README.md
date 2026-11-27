@@ -7,7 +7,7 @@
 ![Alıştırma ekranı](ekran/alistirma.png)
 
 ## Neler var?
-- **150 ders, 1.250 ders içi alıştırma, 117 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
+- **158 ders, 1.381 ders içi alıştırma, 117 pratik görevi.** İlk ölçüden genişletilmiş tablolara, hesaplama gruplarına, Direct Lake'e ve mülakat kalıplarına kadar; Temel, Orta ve İleri seviyeler.
 - **12 öğrenme yolu:** veri analisti, BI geliştirici, PL-300, DP-600 / Fabric, DAX ustalığı, Excel'den Power BI'a ve diğerleri. Her yolun aşamaları ve işe hazırlık listesi var; bitirme projesi olanlar Bitirme projeleri sayfasında.
 - **Seviye testi:** 24 soruluk havuz. Geçtiğin seviyenin dersleri “sıradaki ders” listesinden atlanır; ilerleme yüzdesine tamamlanmış sayılmaz.
 - **24 örnek rapor, 104 sayfa:** yer işaretleri, araç ipucu sayfaları, detaya git, alan parametreleri ve mobil düzenle, adım adım anlatılmış. Bunlar Power BI raporu örnekleridir; Service'teki pano (dashboard) ayrı bir nesnedir.
@@ -22,7 +22,7 @@
 [İçerik sayımı](content-manifest.json)
 
 ## Nasıl çalışıyor?
-- Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (207 fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
+- Sunucu yok. DAX'ın filtre bağlamı, bağlam geçişi, zaman zekâsı ve tablo fonksiyonları tarayıcıda çalışan, DAX'ı benzeten bir motorla hesaplanıyor (260 fonksiyon). Microsoft'un motoru değildir; bilinen sınırları uygulamadaki Hakkında sayfasında listeli. Power Query adımları da tarayıcıda benzetiliyor. T-SQL, PySpark ve KQL çalışmaz: DP-600 ödevleri gerçek Fabric'te yapılır.
 - İlerleme yalnızca kullanıcının tarayıcısında saklanıyor; Profil sayfasından dosyaya kaydedilip başka cihazda yüklenebiliyor, mevcut ilerlemeyle birleştiriliyor. Hesap yok, kişisel veri toplanmıyor. Yazı tipleri siteyle birlikte sunuluyor, üçüncü taraf sunucuya istek gitmiyor.
 - İlk ziyaretten sonra service worker uygulama dosyalarını önbelleğe alır; internet yokken son kopya açılır, yeni sürümde eski önbellek silinir.
 - Alıştırmalar ve vaka paketlerinin beklenen sonuçları otomatik bir denetim setiyle doğrulanıyor; vaka paketlerinde her sonuç ayrıca SQL ile bağımsız olarak hesaplanıyor. Paketlerin adımları gerçek Power BI Desktop'ta baştan sona denenmedi. Paketler için Desktop gerekir; Desktop yalnız Windows'ta çalışır.
@@ -51,7 +51,7 @@ Hata ve önerileri bu deponun [Issues](https://github.com/ysfdurak/kesit-powerbi
 
 **Kesit Power BI** teaches Power BI, DAX and Fabric from scratch to job-ready level, in Turkish, in the browser: no install, no account. A DAX-emulating engine evaluates your measures and every exercise is checked instantly.
 
-- 150 lessons, 1,250 in-lesson exercises and 117 practice tasks across beginner, intermediate and advanced levels.
+- 158 lessons, 1,381 in-lesson exercises and 117 practice tasks across beginner, intermediate and advanced levels.
 - 12 learning paths (data analyst, BI developer, PL-300, DP-600 / Fabric and more), a placement test, and 24 sample reports (104 pages) explained step by step.
 - Six fictional datasets, including five case packs with CSVs, a model plan and expected results for working in Power BI Desktop.
 - 262 PL-300 and DP-600 question-bank items, 185 interview questions, DAX Playground, Power Query Lab, Measure Lab and DAX Arena.
