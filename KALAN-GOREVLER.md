@@ -37,7 +37,8 @@ Mobil menüde öğrenme yolları ve bitirme projeleri üstte yer alır. Yolun ba
 
 Teslimat vakasının portföy deposundaki G05/G24–G27 işleri ayrı proje kapsamındadır. Önceden yapılmış düzeltmeler yeniden açık iş sayılmaz; eksik doğrulama açık kalır. Bu plan bütün içerik için uzman onayı vermez.
 
-## G40 · Anadolu Market çalışma paketi Desktop doğrulaması (açık)
+## G40 · Anadolu Market çalışma paketi Desktop doğrulaması (kapandı, 28 Kasım 2026)
 
 `veri/anadolu-market-calisma.zip` (PBIP, 10 tablo, 11 ilişki, 80 ölçü) Windows Power BI Desktop'ta açılıp yenilenecek; `DOGRULAMA.md` içindeki 15 kontrol değeri bir tabloyla karşılaştırılacak. Aynı turda yeni DAX işlevlerinden örneklem: PPMT, NPER, LINESTX, CONFIDENCE.T, OPENINGBALANCEMONTH, INFO.VIEW.MEASURES. Kabul: kontrol değerleri birebir, ölçü hatası yok; fark varsa motor ya da ölçü düzeltilir ve NASIL.md › Bilinen motor sınırları'na yazılır.
 
+**Sonuç (28 Kasım 2026, Windows, Power BI Desktop):** Kontrol değerlerinin hepsi birebir tuttu; PPMT 70,46, NPER 10,59, CONFIDENCE.T 0,75, INFO.VIEW.MEASURES 80. İlk açılışta "ilişkiler yenilenmeli" ve "veri yok" şeritleri çıkar (PBIP veri taşımaz). İlk testte ilk yenilemede Musteriler ve Hedefler için "döngüsel başvuru" hatası görüldü, ikinci yenilemede kayboldu. Kök neden araştırması: modelde hesaplanmış tablo/sütun yok, sorgular arası başvuru yok, `__PBI_TimeIntelligenceEnabled` 0, Tarih tablosu işaretli; iki temiz kopyada (şerit sırasıyla ve doğrudan Giriş → Yenile) hata tekrar etmedi. Desktop'un ilk yükleme sırasına bağlı geçici bir durum olarak BENIOKU'ya not düşüldü. Tekrar görülürse hata metninin tamamı alınıp burada yeniden açılmalı.

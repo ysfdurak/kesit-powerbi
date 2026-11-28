@@ -109,7 +109,7 @@ const kontrol = [
 ];
 yaz('DOGRULAMA.md', `# Kontrol değerleri
 
-**Doğrulama durumu:** Bu paket Kesit Power BI'ın tarayıcı motoruyla üretildi ve dosya düzeyinde denetlendi. Power BI Desktop'ta henüz açılıp yenilenmedi. Açtığında aşağıdaki sayıları bir kart ya da tablo görseliyle karşılaştır; farklı çıkan olursa bildir.
+**Doğrulama durumu:** Windows'ta doğrulandı (28 Kasım 2026, Power BI Desktop, PBIP): aşağıdaki değerlerin hepsi Desktop sonucuyla birebir tuttu. Aynı turda yeni DAX işlevlerinden örneklem de denendi (PPMT, NPER, CONFIDENCE.T, INFO.VIEW.MEASURES = 80 ölçü). Değerler Kesit Power BI'ın tarayıcı motoruyla üretilir; Desktop'ta farklı bir sayı görürsen bildir.
 
 | Kontrol | Beklenen |
 |---|---|
@@ -130,7 +130,8 @@ Kesit Power BI derslerinin bütün alıştırmaları bu modelde yazılır. Bu pa
 
 1. ZIP'in tamamını bir klasöre çıkar. \`${AD}.pbip\` ile \`.Report\` ve \`.SemanticModel\` klasörleri yan yana kalsın.
 2. Windows'ta güncel Power BI Desktop ile \`${AD}.pbip\` dosyasını aç. Sürümün gerektiriyorsa **Dosya → Seçenekler ve ayarlar → Seçenekler → Önizleme özellikleri** bölümünde Power BI Project (.pbip) desteğini etkinleştir.
-3. **Giriş → Yenile** ile tabloları yükle. Veri Power Query içine gömülüdür; internet ya da dosya yolu gerekmez. \`Veri/\` klasöründeki CSV kopyaları inceleme ve elle kurma içindir.
+3. Dosya açılınca üstte iki şerit çıkar ("ilişkiler değişti, yenilenmeli" ve "bazı tablolarda veri yok"). Bu normaldir: PBIP veriyi değil modeli taşır. Önce üstteki şeritte **Şimdi yenile**'ye, bittikten sonra ikinci şeritteki **Şimdi yenile**'ye bas (ya da **Giriş → Yenile**). Veri Power Query içine gömülüdür; internet ya da dosya yolu gerekmez. \`Veri/\` klasöründeki CSV kopyaları inceleme ve elle kurma içindir.
+   - İlk yenilemede "döngüsel başvuru" (cyclic reference) hatası görürsen bir kez daha **Yenile**'ye bas. Windows testinde bir kez görüldü, ikinci yenilemede kayboldu ve bütün kontrol değerleri tuttu; iki temiz denemede tekrar etmedi. Modelde hesaplanmış tablo, hesaplanmış sütun ya da sorgular arası başvuru yoktur, otomatik tarih tablosu kapalıdır; hata Desktop'un ilk yükleme sırasından kaynaklanıyor görünüyor.
 4. [DOGRULAMA.md](DOGRULAMA.md) içindeki kontrol sayılarını bir kart ya da tabloyla karşılaştır.
 
 ## İçinde ne var?
