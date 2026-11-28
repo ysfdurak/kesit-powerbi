@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "date": "2026-11-27",
-  "sourceCommit": "17b968ede2cb56c97c24514341cf987c6199dee8",
+  "date": "2026-11-28",
+  "sourceCommit": "d8e301616ded3452a50e1822e8f948a32bc5c6e6",
   "checks": [
     "6 kurtarma kontrolü",
     "443 referans çözüm",
@@ -29,7 +29,7 @@
     "index.html": "6e4634e15ee88aa0e67e768f4703bf0a2db15d16ed34a2a1e98428b6edfbb88c",
     "kesit.js": "8834946bd814220c96057ee39874610010ce71ff53ab976cd20071d15da9062e",
     "config.js": "5462cd70d50ac5ddb43b91b99ab64795b2d7b9bece75888f323602f734e83f8b",
-    "sw.js": "6093bcc98d3caf0feeb6c707e6688f29219a8cd49a5ad9f5bdf44ccc256a5437",
+    "sw.js": "f296c624e8d9e9c6eab5fc017455022e084fd81968ee224c2b19be2924dd98a5",
     "veri/wms-sevkiyat/sevkiyat.csv": "01e1d34773073f013b630a031abb992d5b8b2387e79a77c14caad4733020444a",
     "veri/wms-sevkiyat/BRIF-UAT.md": "6c20ca28f337328b0f2db26ef4b261bd895f9ab16d9926f17dfcc07876d14664",
     "ders/dp600/index.html": "5e7d4e1b80090fd2856c22a5f14b7ece98f688d972b2493472fecdfce99a05ef",
@@ -47,7 +47,7 @@
     "KALAN-GOREVLER.md": "1e7a93a83bc729a1407068b19b0ede2576380099abd9687aa7ddf1ba856a5b83",
     "referans-rapor/README.md": "e1d4b0c47333ff3e605194b2c38ab0d6f64d81d78e9fe4abbccc6f89f60aa866",
     "veri/lezzet-kurye-desktop-referans.zip": "3fd0839afb0b90588b3dc0562d081be9313bf6111b538ae696e9f058d59f0423",
-    "veri/anadolu-market-calisma.zip": "553d233a33a95f57072ace70b1160c7949b79eb739a6bdfee65bad4e12800516",
+    "veri/anadolu-market-calisma.zip": "0e0d1e603b9127e0af93e470a38e01ba058595c532c442ac7effac96212643b4",
     "kesit-ek.js": "ee6b7cf289631a4ff8f8fd36496d281d98e044ea56988adb59f57ab0056dcdee"
   },
   "patches": [
